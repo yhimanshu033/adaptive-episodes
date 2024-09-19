@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Extract branch name
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+# Define the regex pattern
+PATTERN="^([A-Z]+-[0-9]+)-(feat|story|task|bug)-([a-z0-9-]+)$"
+
+# Check if the branch name matches the pattern or is "staging"
+if ! [[ $BRANCH_NAME =~ $PATTERN || $BRANCH_NAME == "main" ]]; then
+  echo "error: Invalid branch name format. Please follow the format: <ticketid>-(feat|story|task|bug)-<description> or use 'staging' branch"
+  exit 1
+fi
+
+npm run format:fix
+npm run lint
