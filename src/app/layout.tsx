@@ -5,29 +5,24 @@ import { fontSans } from '@/lib/fonts'
 
 import '@/styles/globals.css'
 
-import { ThemeProvider } from 'next-themes'
+import AppProvider from '@/providers/app-provider'
+import getServerSession from '@/lib/get-access-token'
 
 export const metadata: Metadata = {
 	title: 'Co-Writer',
 	description: 'Co-Writer',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+	const session = await getServerSession()
 	return (
 		<html lang="en">
 			<body className={`${fontSans.className} antialiased`}>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="dark"
-					enableSystem
-					disableTransitionOnChange
-				>
-					{children}
-				</ThemeProvider>
+				<AppProvider session={session}>{children}</AppProvider>
 			</body>
 		</html>
 	)
