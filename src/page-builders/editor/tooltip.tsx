@@ -55,7 +55,7 @@ const Tooltip = ({
 		<div>
 			{showTooltip && (
 				<div
-					className="absolute flex space-x-1 rounded-md border p-1 shadow-lg"
+					className="absolute flex space-x-1 rounded-md border bg-background p-1 shadow-lg"
 					style={{
 						top: `${tooltipPosition.top}px`,
 						left: `${tooltipPosition.left}px`,
