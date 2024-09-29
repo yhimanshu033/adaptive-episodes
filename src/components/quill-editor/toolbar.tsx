@@ -38,12 +38,12 @@ function redoChange(this: {
 }
 
 // Add sizes to whitelist and register them
-const Size: { whitelist: string[] } = Quill.import('formats/size')
+const Size = Quill.import('formats/size') as { whitelist: string[] }
 Size.whitelist = ['extra-small', 'small', 'medium', 'large']
 Quill.register(Size, true)
 
 // Add fonts to whitelist and register them
-const Font: { whitelist: string[] } = Quill.import('formats/font')
+const Font = Quill.import('formats/font') as { whitelist: string[] }
 Font.whitelist = [
 	'arial',
 	'comic-sans',
