@@ -38,8 +38,29 @@ function redoChange(this: {
 }
 
 // Add sizes to whitelist and register them
-const Size = Quill.import('formats/size') as { whitelist: string[] }
-Size.whitelist = ['extra-small', 'small', 'medium', 'large']
+// const Size = Quill.import('formats/size') as { whitelist: string[] }
+// Size.whitelist = ['12px', '16px', '24px', '32px']
+// Quill.register(Size, true)
+
+const fontSizeArr = [
+	'8px',
+	'9px',
+	'10px',
+	'12px',
+	'14px',
+	'16px',
+	'20px',
+	'24px',
+	'32px',
+	'42px',
+	'54px',
+	'68px',
+	'84px',
+	'98px',
+]
+
+const Size = Quill.import('attributors/style/size') as { whitelist: string[] }
+Size.whitelist = fontSizeArr
 Quill.register(Size, true)
 
 // Add fonts to whitelist and register them
@@ -63,6 +84,7 @@ export const modules = {
 			undo: undoChange,
 			redo: redoChange,
 		},
+		size: fontSizeArr,
 	},
 	history: {
 		delay: 500,
@@ -105,11 +127,12 @@ export const QuillToolbar = () => (
 				<option value="helvetica">Helvetica</option>
 				<option value="lucida">Lucida</option>
 			</select>
-			<select className="ql-size" defaultValue="medium">
-				<option value="extra-small">Size 1</option>
-				<option value="small">Size 2</option>
-				<option value="medium">Size 3</option>
-				<option value="large">Size 4</option>
+			<select className="ql-size" defaultValue={fontSizeArr[1]}>
+				{fontSizeArr.map((size) => (
+					<option key={`font-size-${size}`} value={size}>
+						{size}
+					</option>
+				))}
 			</select>
 			<select className="ql-header" defaultValue="3">
 				<option value="1">Heading</option>

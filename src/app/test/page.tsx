@@ -1,8 +1,11 @@
 'use client'
 
 import React from 'react'
+import dynamic from 'next/dynamic'
 
-import QuillEditor from '@/components/quill-editor'
+const QuillEditor = dynamic(() => import('@/components/quill-editor'), {
+	ssr: false,
+})
 
 export default function Page() {
 	return <QuillEditor />

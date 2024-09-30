@@ -1,7 +1,10 @@
+'use client'
+
 import React, { useState } from 'react'
 import ReactQuill from 'react-quill'
 
 import 'react-quill/dist/quill.snow.css'
+import 'react-quill/dist/quill.bubble.css'
 
 import QuillToolbar, { formats, modules } from './toolbar'
 
@@ -17,7 +20,7 @@ export default function QuillEditor() {
 		<>
 			<QuillToolbar />
 			<ReactQuill
-				theme="snow"
+				theme="bubble"
 				modules={modules}
 				formats={formats}
 				value={code}
