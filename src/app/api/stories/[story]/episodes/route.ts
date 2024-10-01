@@ -11,6 +11,7 @@ export async function GET(
 
 	const page = parseInt(searchParams.get('page') || '1')
 	const limit = 10
+	const episodeSearch = searchParams.get('episode_search') || '' // Episode search query
 	const episodesDir = path.join(
 		process.cwd(),
 		`data/stories/${story}/de/episodes`
@@ -39,9 +40,20 @@ export async function GET(
 				})
 		)
 
-		const totalEpisodes = episodes.length
+		// Fuzzy search: check if episode name contains the search string
+		let filteredEpisodes = episodes
+		if (episodeSearch) {
+			filteredEpisodes = episodes.filter((episode) =>
+				episode.episode_name.toLowerCase().includes(episodeSearch.toLowerCase())
+			)
+		}
+
+		const totalEpisodes = filteredEpisodes.length
 		const startIndex = (page - 1) * limit
-		const paginatedEpisodes = episodes.slice(startIndex, startIndex + limit)
+		const paginatedEpisodes = filteredEpisodes.slice(
+			startIndex,
+			startIndex + limit
+		)
 		const hasNext = startIndex + limit < totalEpisodes
 
 		return NextResponse.json({

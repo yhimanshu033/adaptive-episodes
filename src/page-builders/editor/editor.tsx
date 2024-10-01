@@ -26,23 +26,27 @@ const Editor = () => {
 			<div className="flex flex-1 gap-2">
 				<div className="flex flex-1 flex-col rounded-md">
 					<Toolbar editorRef={editorRef} />
-					<div className="relative flex flex-1 rounded-md">
+					<div className="relative flex flex-1 overflow-auto rounded-b-md">
 						<Tooltip editorRef={editorRef} />
 						<div
 							ref={editorRef}
 							contentEditable
-							className="flex-1 rounded-md border-r bg-background-editor p-4 shadow-editor focus:outline-none"
+							className="flex-1 border-r bg-background-editor p-4 shadow-editor focus:outline-none"
 							suppressContentEditableWarning={true}
 							onKeyUp={handleToolStates}
 							onMouseUp={handleToolStates}
 							dangerouslySetInnerHTML={{
-								__html: isLoading ? 'Loading...' : (content?.de as string),
+								__html: isLoading
+									? 'Loading...'
+									: (content?.de.replace(/\r\n/g, '<br />') as string),
 							}}
 						/>
 						{isTranslationOpen && (
 							<Translation
 								translatedContent={
-									isLoading ? 'Loading...' : (content?.us as string)
+									isLoading
+										? 'Loading...'
+										: (content?.us.replace(/\r\n/g, '<br />') as string)
 								}
 							/>
 						)}

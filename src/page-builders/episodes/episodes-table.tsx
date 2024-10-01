@@ -1,13 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { statuses } from '@/constants/episodes-constants'
 import useEpisodeData from '@/hooks/query/use-episode-data'
 import {
 	ColumnDef,
-	ColumnFiltersState,
 	flexRender,
 	getCoreRowModel,
-	getFilteredRowModel,
 	getSortedRowModel,
 	SortingState,
 	useReactTable,
@@ -15,7 +13,7 @@ import {
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 import EditableText from '@/components/editable-text'
-import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
 	Select,
 	SelectContent,
@@ -34,28 +32,26 @@ import {
 import { formatDate } from '@/lib/format-date'
 import { cn } from '@/lib/utils'
 
-import { EpisodeResponse, EpisodeType } from '@/types/episode-type'
+import { EpisodeType } from '@/types/episode-type'
 
+import SkeletonBuilder from './episode-skeleton'
 import Filters from './filters'
+import EpisodesPagination from './pagination'
 
 const EpisodesTable = () => {
 	const [episodes, setEpisodes] = useState<EpisodeType[]>([])
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+	const [currentPage, setCurrentPage] = useState<number>(1)
+	const [episodeFilter, setEpisodeFilter] = useState<string>('')
+
 	const router = useRouter()
 	const pathname = usePathname()
 	const { id } = useParams()
 
-	const {
-		data: episodePages,
-		isLoading,
-		hasNextPage,
-		fetchNextPage,
-	} = useEpisodeData(id as string)
-
-	const uniqueWriters = useMemo(
-		() => Array.from(new Set(episodes.map((e) => e.author))),
-		[episodes]
+	const { data: episodePage } = useEpisodeData(
+		id as string,
+		currentPage,
+		episodeFilter
 	)
 
 	const handleStatusChange = (episodeId: number, newStatus: string) => {
@@ -78,15 +74,11 @@ const EpisodesTable = () => {
 		router.push(`${pathname}/${episodeId}/editor`)
 	}
 
-	const handleRefetch = () => {
-		void fetchNextPage()
-	}
-
 	const columns: ColumnDef<EpisodeType>[] = [
 		{
 			accessorKey: 'serialNumber',
 			header: '#',
-			cell: ({ row }) => row.index + 1,
+			cell: ({ row }) => row.index + (currentPage - 1) * 10 + 1,
 		},
 		{
 			accessorKey: 'episode_name',
@@ -145,35 +137,30 @@ const EpisodesTable = () => {
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
-		getFilteredRowModel: getFilteredRowModel(),
 		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
+		pageCount: episodePage?.totalPages || 0,
 		state: {
 			sorting,
-			columnFilters,
 		},
 	})
-
 	useEffect(() => {
-		if (episodePages) {
-			const flattenEpisodes = episodePages.pages.flatMap(
-				(page: EpisodeResponse) => page.episodes
-			)
-			setEpisodes(flattenEpisodes)
-		}
-	}, [episodePages])
+		setEpisodes(episodePage?.episodes || [])
+	}, [episodePage])
 
 	return (
 		<>
-			<Filters table={table} uniqueWriters={uniqueWriters} />
-			<div className="rounded-md border">
+			<Filters setEpisodeFilter={setEpisodeFilter} />
+			<ScrollArea className="overflow-auto-y relative flex max-h-[calc(100vh-300px)] w-full flex-col rounded-md border">
 				<Table>
-					<TableHeader>
+					<TableHeader className="sticky top-0 z-10 bg-background">
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => {
 									return (
-										<TableHead key={header.id}>
+										<TableHead
+											key={header.id}
+											className="after:absolute after:bottom-0 after:left-0 after:w-full after:border-b after:border-border"
+										>
 											{header.isPlaceholder ? null : (
 												<div
 													className={cn(
@@ -218,26 +205,19 @@ const EpisodesTable = () => {
 							))
 						) : (
 							<TableRow>
-								<TableCell
-									colSpan={columns.length + 1}
-									className="h-24 text-center"
-								>
-									No results.
+								<TableCell colSpan={columns.length + 1}>
+									<SkeletonBuilder count={5} className="h-8" />
 								</TableCell>
 							</TableRow>
 						)}
 					</TableBody>
 				</Table>
-			</div>
-			<div className="mt-2 flex justify-center">
-				{isLoading ? (
-					<p>Loading...</p>
-				) : (
-					<Button disabled={!hasNextPage} onClick={handleRefetch}>
-						Load More
-					</Button>
-				)}
-			</div>
+			</ScrollArea>
+			<EpisodesPagination
+				setPage={setCurrentPage}
+				currentPage={currentPage}
+				totalPages={episodePage?.totalPages || 0}
+			/>
 		</>
 	)
 }

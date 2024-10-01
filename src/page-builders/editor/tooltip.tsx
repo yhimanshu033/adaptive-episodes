@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { rephraseMethods, tools } from '@/constants/editor-constants'
+import useLaserToolsHook from '@/hooks/mutation/use-lasertool-hook'
 import useEditorStore, {
 	handleToolStates,
 	setTooltipPosition,
@@ -8,6 +9,7 @@ import useEditorStore, {
 import { Bot } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import Spinner from '@/components/ui/spinner'
 
 const Tooltip = ({
 	editorRef,
@@ -15,16 +17,42 @@ const Tooltip = ({
 	editorRef: React.RefObject<HTMLDivElement>
 }) => {
 	const [showRephrase, setShowRephrase] = useState(false)
+	const [currentMethod, setMethod] = useState('')
+	const [selectedText, setSelectedText] = useState('')
 	const { showTooltip, tooltipPosition, toolsState } = useEditorStore()
+
+	const { laserToolsMutation } = useLaserToolsHook()
+	const { data, isPending, reset } = laserToolsMutation
 
 	const handleFormat = (command: string) => {
 		document.execCommand(command, false)
 		handleToolStates()
 	}
 
-	const handleRephrase = useCallback((toggle: boolean) => {
+	const toggleRephrase = useCallback((toggle: boolean) => {
 		setShowRephrase(toggle)
 	}, [])
+
+	const handleRephrase = (action: string) => {
+		setMethod(action)
+		laserToolsMutation.mutate({ action, text: selectedText })
+	}
+
+	const handleAcceptRephrase = (rephrasedText: string) => {
+		const selection = window.getSelection()
+		if (selection && !selection.isCollapsed) {
+			const range = selection.getRangeAt(0)
+			range.deleteContents()
+			range.insertNode(document.createTextNode(rephrasedText))
+			toggleTooltip(false)
+			reset()
+		}
+	}
+
+	const handleRejectRephrase = () => {
+		toggleTooltip(false)
+		reset()
+	}
 
 	const handleSelectionChange = useCallback(() => {
 		const selection = window.getSelection()
@@ -38,11 +66,13 @@ const Tooltip = ({
 				left: rect.left - editorRect.left,
 			})
 			toggleTooltip(true)
+			setSelectedText(selection.toString())
 		} else {
+			reset()
 			toggleTooltip(false)
-			handleRephrase(false)
+			toggleRephrase(false)
 		}
-	}, [editorRef, handleRephrase])
+	}, [editorRef, reset, toggleRephrase])
 
 	useEffect(() => {
 		document.addEventListener('selectionchange', handleSelectionChange)
@@ -55,7 +85,7 @@ const Tooltip = ({
 		<div>
 			{showTooltip && (
 				<div
-					className="absolute flex space-x-1 rounded-md border bg-background p-1 shadow-lg"
+					className="absolute flex flex-wrap space-x-1 rounded-md border bg-background p-1 shadow-lg"
 					style={{
 						top: `${tooltipPosition.top}px`,
 						left: `${tooltipPosition.left}px`,
@@ -76,21 +106,46 @@ const Tooltip = ({
 							<Button
 								variant="ghost"
 								size="icon"
-								onClick={() => handleRephrase(true)}
+								onClick={() => toggleRephrase(true)}
 							>
 								<Bot className="size-3" />
 							</Button>
 						</>
-					) : (
+					) : !data ? (
 						rephraseMethods.map((method) => (
 							<Button
-								key={method}
+								key={method.id}
 								variant="ghost"
-								onClick={() => handleRephrase(false)}
+								onClick={() => handleRephrase(method.id)}
 							>
-								{method}
+								{isPending && currentMethod === method.id ? (
+									<Spinner size={16} />
+								) : (
+									method.method
+								)}
 							</Button>
 						))
+					) : (
+						<div className="z-20 min-w-56 rounded-md p-4 shadow-md">
+							<div className="mb-2 text-muted-foreground">{selectedText}</div>
+							<div className="mb-4 text-accent-foreground">{data.result}</div>
+							<div className="flex items-center justify-end gap-2">
+								<Button
+									variant="outline"
+									size="sm"
+									className="mr-2"
+									onClick={handleRejectRephrase}
+								>
+									Reject
+								</Button>
+								<Button
+									size="sm"
+									onClick={() => handleAcceptRephrase(data.result)}
+								>
+									Accept
+								</Button>
+							</div>
+						</div>
 					)}
 				</div>
 			)}

@@ -44,7 +44,7 @@ const Toolbar = ({
 	}
 
 	return (
-		<div className="flex gap-2 rounded-md border-b bg-background-editor p-2 shadow-editor">
+		<div className="flex gap-2 rounded-t-md border-b bg-background-editor p-2 shadow-editor">
 			{tools.map(({ icon: Icon, type }) => (
 				<Button
 					key={type}
