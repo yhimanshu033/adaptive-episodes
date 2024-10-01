@@ -1,12 +1,18 @@
 'use client'
 
 import React from 'react'
-import dynamic from 'next/dynamic'
 
-const QuillEditor = dynamic(() => import('@/components/quill-editor'), {
-	ssr: false,
-})
+import PlateEditor from '@/components/plate-editor'
+import { TooltipProvider } from '@/components/plate-ui/tooltip'
 
 export default function Page() {
-	return <QuillEditor />
+	return (
+		<TooltipProvider
+			disableHoverableContent
+			delayDuration={500}
+			skipDelayDuration={0}
+		>
+			<PlateEditor />
+		</TooltipProvider>
+	)
 }
