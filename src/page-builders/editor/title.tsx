@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
 
-const Title = () => {
+const Title = ({ title }: { title: string }) => {
 	const router = useRouter()
 	const handleClick = () => {
 		router.back()
@@ -16,7 +16,8 @@ const Title = () => {
 				<ArrowLeft size={16} />
 			</Button>
 			<EditableText
-				text="Current Episode Name"
+				key={title}
+				text={decodeURIComponent(title)}
 				rootClass="text-xl"
 				inputClass="text-xl"
 				isEditable

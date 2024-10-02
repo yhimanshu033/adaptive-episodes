@@ -1,6 +1,5 @@
 import React from 'react'
 import { statuses } from '@/constants/episodes-constants'
-import { EpisodesType } from '@/mock-data/episodes'
 import { Table } from '@tanstack/react-table'
 
 import { Input } from '@/components/ui/input'
@@ -12,19 +11,24 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 
+import { EpisodeType } from '@/types/episode-type'
+
 const Filters = ({
 	table,
 	uniqueWriters,
 }: {
-	table: Table<EpisodesType>
+	table: Table<EpisodeType>
 	uniqueWriters: string[]
 }) => {
 	return (
 		<div className="mb-4 flex flex-wrap gap-2">
 			{table.getAllColumns().map((column) => {
-				if (column.id === 'writer') {
+				if (column.id === 'author') {
 					return (
-						<div key={column.id} className="min-w-[200px] flex-1">
+						<div
+							key={column.id}
+							className="min-w-[200px] flex-1 rounded-md border"
+						>
 							<Select
 								onValueChange={(value) =>
 									column.setFilterValue(value === 'all' ? '' : value)
@@ -48,7 +52,10 @@ const Filters = ({
 				}
 				if (column.id === 'status') {
 					return (
-						<div key={column.id} className="min-w-[200px] flex-1">
+						<div
+							key={column.id}
+							className="min-w-[200px] flex-1 rounded-md border"
+						>
 							<Select
 								onValueChange={(value) =>
 									column.setFilterValue(value === 'all' ? '' : value)
@@ -70,9 +77,12 @@ const Filters = ({
 						</div>
 					)
 				}
-				if (['title', 'lastUpdated'].includes(column.id)) {
+				if (['episode_name', 'last_updated'].includes(column.id)) {
 					return (
-						<div key={column.id} className="min-w-[200px] flex-1">
+						<div
+							key={column.id}
+							className="min-w-[200px] flex-1 rounded-md border"
+						>
 							<Input
 								placeholder={`Filter ${column.id}`}
 								value={(column.getFilterValue() ?? '') as string}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useEditorStore, { handleToolStates } from '@/store/editor-store'
 
 import Sidebar from './sidebar'
@@ -11,6 +12,8 @@ const Editor = () => {
 	const editorRef = useRef<HTMLDivElement>(null)
 	const isTranslationOpen = useEditorStore((state) => state.isTranslationOpen)
 
+	const { data: content, isLoading } = useEpisodeContent()
+
 	useEffect(() => {
 		if (editorRef.current) {
 			editorRef.current.focus()
@@ -19,23 +22,30 @@ const Editor = () => {
 
 	return (
 		<>
-			<Title />
+			<Title title={content?.episode_name as string} />
 			<div className="flex flex-1 gap-2">
-				<div className="flex flex-1 flex-col gap-2 rounded-md">
+				<div className="flex flex-1 flex-col rounded-md">
 					<Toolbar editorRef={editorRef} />
-					<div className="relative flex flex-1 gap-2 rounded-md">
+					<div className="relative flex flex-1 rounded-md">
 						<Tooltip editorRef={editorRef} />
 						<div
 							ref={editorRef}
 							contentEditable
-							className="flex-1 rounded-md bg-background-editor p-4 shadow-editor focus:outline-none focus:ring-2 focus:ring-blue-500"
+							className="flex-1 rounded-md border-r bg-background-editor p-4 shadow-editor focus:outline-none"
 							suppressContentEditableWarning={true}
 							onKeyUp={handleToolStates}
 							onMouseUp={handleToolStates}
-						>
-							German Text....
-						</div>
-						{isTranslationOpen && <Translation />}
+							dangerouslySetInnerHTML={{
+								__html: isLoading ? 'Loading...' : (content?.de as string),
+							}}
+						/>
+						{isTranslationOpen && (
+							<Translation
+								translatedContent={
+									isLoading ? 'Loading...' : (content?.us as string)
+								}
+							/>
+						)}
 					</div>
 				</div>
 				<Sidebar />

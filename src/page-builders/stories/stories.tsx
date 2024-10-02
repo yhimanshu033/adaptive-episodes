@@ -9,9 +9,14 @@ import { Card, CardContent } from '@/components/ui/card'
 
 const Stories = () => {
 	const { data: stories, isLoading } = useStoryData()
-	if (isLoading) return <Loader />
+	if (isLoading)
+		return (
+			<div className="flex flex-1 items-center justify-center">
+				<Loader />
+			</div>
+		)
 	return (
-		<section className="flex flex-wrap gap-6">
+		<section className="container my-6 flex flex-wrap gap-6 self-start">
 			{stories?.map((story) => (
 				<Card key={story.id} className="w-64 overflow-hidden">
 					<Link href={`/projects/${story.story_name}`}>

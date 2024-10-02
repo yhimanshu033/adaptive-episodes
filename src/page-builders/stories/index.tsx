@@ -6,10 +6,8 @@ import Stories from './stories'
 
 const StoryDashboard = () => {
 	return (
-		<main className="flex-1 animate-fade-in-up">
-			<div className="container py-4 text-center">
-				<Stories />
-			</div>
+		<main className="flex flex-1 animate-fade-in-up">
+			<Stories />
 		</main>
 	)
 }

@@ -34,6 +34,7 @@ export async function GET(
 						status: '1st Draft',
 						author: 'Author Name',
 						wordcount,
+						last_updated: new Date().toISOString(),
 					}
 				})
 		)
@@ -44,6 +45,8 @@ export async function GET(
 		const hasNext = startIndex + limit < totalEpisodes
 
 		return NextResponse.json({
+			status: 1,
+			error: null,
 			currentPage: page,
 			totalPages: Math.ceil(totalEpisodes / limit),
 			totalEpisodes,
@@ -52,9 +55,9 @@ export async function GET(
 		})
 	} catch (error) {
 		console.error('Error fetching episodes:', error)
-		return NextResponse.json(
-			{ error: 'Error fetching episodes' },
-			{ status: 500 }
-		)
+		return NextResponse.json({
+			status: 0,
+			error: 'Error fetching episodes',
+		})
 	}
 }
