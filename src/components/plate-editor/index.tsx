@@ -83,7 +83,6 @@ import { CodeLeaf } from '@/components/plate-ui/code-leaf'
 import { CodeLineElement } from '@/components/plate-ui/code-line-element'
 import { CodeSyntaxLeaf } from '@/components/plate-ui/code-syntax-leaf'
 import { CommentLeaf } from '@/components/plate-ui/comment-leaf'
-import { CommentsPopover } from '@/components/plate-ui/comments-popover'
 import {
 	CursorOverlay,
 	DragOverCursorPlugin,
@@ -120,6 +119,8 @@ import { TodoListElement } from '@/components/plate-ui/todo-list-element'
 import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 
+import CommentSidebar from '../plate-ui/comment-sidebar'
+
 export default function PlateEditor() {
 	const containerRef = useRef(null)
 
@@ -140,21 +141,26 @@ export default function PlateEditor() {
 						<FixedToolbarButtons />
 					</FixedToolbar>
 
-					<Editor
-						className="px-[96px] py-16"
-						autoFocus
-						focusRing={false}
-						variant="ghost"
-						size="md"
-					/>
+					<div className="flex justify-between">
+						<div className="w-full">
+							<Editor
+								className="px-[96px] py-16"
+								autoFocus
+								focusRing={false}
+								variant="ghost"
+								size="md"
+							/>
 
-					<FloatingToolbar>
-						<FloatingToolbarButtons />
-					</FloatingToolbar>
+							<FloatingToolbar>
+								<FloatingToolbarButtons />
+							</FloatingToolbar>
 
-					<CommentsPopover />
+							{/* <CommentsPopover /> */}
 
-					<CursorOverlay containerRef={containerRef} />
+							<CursorOverlay containerRef={containerRef} />
+						</div>
+						<CommentSidebar />
+					</div>
 				</div>
 			</Plate>
 		</DndProvider>

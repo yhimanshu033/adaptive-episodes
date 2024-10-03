@@ -53,6 +53,24 @@ const items = [
 		value: HEADING_KEYS.h3,
 	},
 	{
+		description: 'Heading 4',
+		icon: Icons.h4,
+		label: 'Heading 4',
+		value: HEADING_KEYS.h4,
+	},
+	{
+		description: 'Heading 5',
+		icon: Icons.h5,
+		label: 'Heading 5',
+		value: HEADING_KEYS.h5,
+	},
+	{
+		description: 'Heading 6',
+		icon: Icons.h6,
+		label: 'Heading 6',
+		value: HEADING_KEYS.h6,
+	},
+	{
 		description: 'Quote (⌘+⇧+.)',
 		icon: Icons.blockquote,
 		label: 'Quote',

@@ -20,6 +20,10 @@ export const Placeholder = (props: PlaceholderProps) => {
 
 	const { enabled } = usePlaceholderState(props)
 
+	const isEmpty = !props.editor.children.find((elem) =>
+		elem.children.find((child) => (child.text as string).length > 0)
+	)
+
 	return React.Children.map(children, (child) => {
 		return React.cloneElement(child, {
 			className: child.props.className,
@@ -27,6 +31,7 @@ export const Placeholder = (props: PlaceholderProps) => {
 				...nodeProps,
 				className: cn(
 					enabled &&
+						isEmpty &&
 						'before:absolute before:cursor-text before:opacity-30 before:content-[attr(placeholder)]'
 				),
 				placeholder,
