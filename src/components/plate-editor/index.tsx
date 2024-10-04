@@ -141,8 +141,8 @@ export default function PlateEditor() {
 						<FixedToolbarButtons />
 					</FixedToolbar>
 
-					<div className="flex justify-between">
-						<div className="w-full">
+					<div className="flex h-full grow justify-between">
+						<div className="w-full grow">
 							<Editor
 								className="px-[96px] py-16"
 								autoFocus

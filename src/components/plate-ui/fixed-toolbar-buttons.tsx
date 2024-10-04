@@ -12,23 +12,15 @@ import {
 	FontColorPlugin,
 } from '@udecode/plate-font/react'
 import { ListStyleType } from '@udecode/plate-indent-list'
-import { ImagePlugin } from '@udecode/plate-media/react'
 
 import { Icons, iconVariants } from '@/components/icons'
 import { AlignDropdownMenu } from '@/components/plate-ui/align-dropdown-menu'
 import { CommentToolbarButton } from '@/components/plate-ui/comment-toolbar-button'
-import { EmojiDropdownMenu } from '@/components/plate-ui/emoji-dropdown-menu'
 import { IndentListToolbarButton } from '@/components/plate-ui/indent-list-toolbar-button'
-import { IndentToolbarButton } from '@/components/plate-ui/indent-toolbar-button'
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
 import { LinkToolbarButton } from '@/components/plate-ui/link-toolbar-button'
-import { MediaToolbarButton } from '@/components/plate-ui/media-toolbar-button'
-import { MoreDropdownMenu } from '@/components/plate-ui/more-dropdown-menu'
-import { OutdentToolbarButton } from '@/components/plate-ui/outdent-toolbar-button'
-import { TableDropdownMenu } from '@/components/plate-ui/table-dropdown-menu'
 
 import { ColorDropdownMenu } from './color-dropdown-menu'
-import { IndentTodoToolbarButton } from './indent-todo-toolbar-button'
 import { InsertDropdownMenu } from './insert-dropdown-menu'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import { ModeDropdownMenu } from './mode-dropdown-menu'
@@ -103,22 +95,22 @@ export function FixedToolbarButtons() {
 
 							<IndentListToolbarButton nodeType={ListStyleType.Disc} />
 							<IndentListToolbarButton nodeType={ListStyleType.Decimal} />
-							<IndentTodoToolbarButton />
+							{/* <IndentTodoToolbarButton /> */}
 
-							<OutdentToolbarButton />
-							<IndentToolbarButton />
+							{/* <OutdentToolbarButton /> */}
+							{/* <IndentToolbarButton /> */}
 						</ToolbarGroup>
 
 						<ToolbarGroup>
 							<LinkToolbarButton />
 
-							<MediaToolbarButton nodeType={ImagePlugin.key} />
+							{/* <MediaToolbarButton nodeType={ImagePlugin.key} /> */}
 
-							<TableDropdownMenu />
+							{/* <TableDropdownMenu /> */}
 
-							<EmojiDropdownMenu />
+							{/* <EmojiDropdownMenu /> */}
 
-							<MoreDropdownMenu />
+							{/* <MoreDropdownMenu /> */}
 						</ToolbarGroup>
 					</>
 				)}

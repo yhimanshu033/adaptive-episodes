@@ -13,23 +13,17 @@ import { buttonVariants } from './button'
 import { CommentAvatar } from './comment-avatar'
 import { inputVariants } from './input'
 
-export function CommentCreateForm({ isBlur }: { isBlur?: boolean }) {
+export function CommentCreateForm() {
 	const { useOption } = useEditorPlugin(CommentsPlugin)
 
 	const myUserId = useOption('myUserId')
 
 	return (
-		<div className="flex w-full space-x-2">
+		<div className="flex w-full space-x-2 p-2">
 			<CommentAvatar userId={myUserId} />
 
 			<div className="flex grow flex-col items-end gap-2">
-				<CommentNewTextarea
-					setProps={(prevProps) => ({
-						...prevProps,
-						value: isBlur ? '' : prevProps.value,
-					})}
-					className={inputVariants()}
-				/>
+				<CommentNewTextarea className={inputVariants()} />
 
 				<CommentNewSubmitButton
 					className={cn(buttonVariants({ size: 'sm' }), 'w-[90px]')}
