@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { rephraseMethods, tools } from '@/constants/editor-constants'
 import useLaserToolsHook from '@/hooks/mutation/use-lasertool-hook'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useEditorStore, {
 	handleToolStates,
 	setTooltipPosition,
@@ -18,8 +19,13 @@ const Tooltip = ({
 }) => {
 	const [showRephrase, setShowRephrase] = useState(false)
 	const [currentMethod, setMethod] = useState('')
-	const [selectedText, setSelectedText] = useState('')
+	const [textState, setTextState] = useState({
+		text: '',
+		prevtext: '',
+		nexttext: '',
+	})
 	const { showTooltip, tooltipPosition, toolsState } = useEditorStore()
+	const { data: content } = useEpisodeContent()
 
 	const { laserToolsMutation } = useLaserToolsHook()
 	const { data, isPending, reset } = laserToolsMutation
@@ -34,8 +40,17 @@ const Tooltip = ({
 	}, [])
 
 	const handleRephrase = (action: string) => {
+		console.log({
+			action,
+			...textState,
+			context: content?.summary,
+		})
 		setMethod(action)
-		laserToolsMutation.mutate({ action, text: selectedText })
+		laserToolsMutation.mutate({
+			action,
+			...textState,
+			context: content?.summary,
+		})
 	}
 
 	const handleAcceptRephrase = (rephrasedText: string) => {
@@ -61,19 +76,39 @@ const Tooltip = ({
 			const rect = range.getBoundingClientRect()
 			const editorRect = editorRef.current.getBoundingClientRect()
 
+			const editorText = editorRef.current.textContent || ''
+			const selectionStart =
+				editorText.indexOf(range.startContainer.textContent ?? '') +
+				range.startOffset
+			const selectionEnd =
+				editorText.indexOf(range.endContainer.textContent ?? '') +
+				range.endOffset
+
+			const prevText =
+				editorText.slice(Math.max(0, selectionStart - 400), selectionStart) ||
+				''
+			const nextText =
+				editorText.slice(
+					selectionEnd,
+					Math.min(selectionEnd + 400, editorText.length)
+				) || ''
+
 			setTooltipPosition({
 				top: rect.bottom - editorRect.top + 10,
 				left: rect.left - editorRect.left,
 			})
 			toggleTooltip(true)
-			setSelectedText(selection.toString())
+			setTextState({
+				text: selection.toString(),
+				prevtext: prevText,
+				nexttext: nextText,
+			})
 		} else {
 			reset()
 			toggleTooltip(false)
 			toggleRephrase(false)
 		}
 	}, [editorRef, reset, toggleRephrase])
-
 	useEffect(() => {
 		document.addEventListener('selectionchange', handleSelectionChange)
 		return () => {
@@ -127,7 +162,7 @@ const Tooltip = ({
 						))
 					) : (
 						<div className="z-20 min-w-56 rounded-md p-4 shadow-md">
-							<div className="mb-2 text-muted-foreground">{selectedText}</div>
+							<div className="mb-2 text-muted-foreground">{textState.text}</div>
 							<div className="mb-4 text-accent-foreground">{data.result}</div>
 							<div className="flex items-center justify-end gap-2">
 								<Button
