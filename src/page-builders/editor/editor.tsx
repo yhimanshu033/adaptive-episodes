@@ -72,7 +72,7 @@ const Editor = () => {
 								dangerouslySetInnerHTML={{
 									__html: isLoading
 										? 'Loading...'
-										: (content?.de.replace(/\r\n/g, '<br />') as string),
+										: (content?.de.replace(/\n/g, '<br />') as string),
 								}}
 							/>
 							{isTranslationOpen && (
@@ -80,7 +80,7 @@ const Editor = () => {
 									translatedContent={
 										isLoading
 											? 'Loading...'
-											: (content?.us.replace(/\r\n/g, '<br />') as string)
+											: (content?.us.replace(/\n/g, '<br />') as string)
 									}
 								/>
 							)}
