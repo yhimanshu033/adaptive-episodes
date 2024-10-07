@@ -6,6 +6,8 @@ import {
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import { useEditorPlugin, useEditorRef } from '@udecode/plate-common/react'
 
+import { TCustomComment } from '@/types/editor-types'
+
 export default function useComments() {
 	const { useOption, setOptions } = useEditorPlugin(CommentsPlugin)
 	const editor = useEditorRef()
@@ -23,14 +25,14 @@ export default function useComments() {
 
 	const nodes = getCommentNodeEntries(editor)
 
-	const sortedComments: TComment[] = nodes
+	const sortedComments: TCustomComment[] = nodes
 		.filter(([node]) => node.comment)
 		.map(([node]) => {
 			const comment = comments.find((comment) =>
 				Object.keys(node).includes(getCommentKey(comment.id))
 			)
 			if (comment) {
-				return comment
+				return { ...comment, node }
 			}
 		})
 		.filter((comment) => !!comment)
@@ -41,7 +43,9 @@ export default function useComments() {
 				uniqueComments.push(comment)
 			}
 			return uniqueComments
-		}, [] as TComment[])
+		}, [] as TCustomComment[])
+
+	console.log({ sortedComments })
 
 	return {
 		allComments,

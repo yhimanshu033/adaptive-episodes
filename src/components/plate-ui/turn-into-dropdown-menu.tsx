@@ -90,6 +90,21 @@ const items = [
 	// },
 ]
 
+// const options = [
+// 	{
+// 		description: 'Text',
+// 		icon: Icons.paragraph,
+// 		label: 'Paragraph',
+// 		value: { type: ParagraphPlugin.key },
+// 	},
+// 	{
+// 		description: 'Paragraph',
+// 		icon: Icons.paragraph,
+// 		label: 'Paragraph',
+// 		value: ParagraphPlugin.key,
+// 	},
+// ]
+
 const defaultItem = items.find((item) => item.value === ParagraphPlugin.key)!
 
 export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
@@ -151,7 +166,9 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 						//   }
 						// } else {
 						//   unwrapList(editor);
+						console.log({ type })
 						editor.tf.toggle.block({ type })
+						editor.tf.toggle.mark({ key: 'Arial' })
 						// }
 
 						collapseSelection(editor)

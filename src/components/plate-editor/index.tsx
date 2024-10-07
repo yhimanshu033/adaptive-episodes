@@ -46,6 +46,7 @@ import { ExcalidrawPlugin } from '@udecode/plate-excalidraw/react'
 import {
 	FontBackgroundColorPlugin,
 	FontColorPlugin,
+	FontFamilyPlugin,
 	FontSizePlugin,
 } from '@udecode/plate-font/react'
 import { HEADING_KEYS, HEADING_LEVELS } from '@udecode/plate-heading'
@@ -205,6 +206,7 @@ export const useMyEditor = () => {
 			FontColorPlugin,
 			FontBackgroundColorPlugin,
 			FontSizePlugin,
+			FontFamilyPlugin,
 			HighlightPlugin,
 			KbdPlugin,
 
