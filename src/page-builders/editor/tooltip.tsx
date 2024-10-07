@@ -40,11 +40,6 @@ const Tooltip = ({
 	}, [])
 
 	const handleRephrase = (action: string) => {
-		console.log({
-			action,
-			...textState,
-			context: content?.summary,
-		})
 		setMethod(action)
 		laserToolsMutation.mutate({
 			action,

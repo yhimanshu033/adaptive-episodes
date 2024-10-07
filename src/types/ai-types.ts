@@ -16,3 +16,29 @@ export interface LaserToolsApiResponse {
 	}
 	message: string
 }
+
+export interface AIChatBotParams {
+	context?: string
+	ep_number?: string
+	highlighted_text?: string
+	messages: {
+		content: string
+		role: 'user' | 'assistant'
+	}[]
+	query: string
+}
+
+export interface AIChatBotApiResponse {
+	data: {
+		action: string
+		response: string
+	}
+	message: string
+}
+
+export interface AIStoreType {
+	messages: {
+		content: string
+		role: 'user' | 'assistant'
+	}[]
+}

@@ -19,18 +19,22 @@ export async function GET(
 
 	try {
 		const episodeFiles = await fs.readdir(episodesDir)
+		episodeFiles.sort((a, b) => {
+			const numA = parseInt(a.match(/(\d+)/)?.[0] || '0', 10)
+			const numB = parseInt(b.match(/(\d+)/)?.[0] || '0', 10)
+			return numA - numB
+		})
 
-		// Create an array of episodes with word count
 		const episodes = await Promise.all(
 			episodeFiles
 				.filter((file) => file.endsWith('.txt'))
 				.map(async (file, index) => {
 					const filePath = path.join(episodesDir, file)
 					const content = await fs.readFile(filePath, 'utf-8')
-					const wordcount = content.split(/\s+/).filter((word) => word).length // Count words
+					const wordcount = content.split(/\s+/).filter((word) => word).length
 
 					return {
-						id: index + 1, // You might want to change this logic based on actual episode IDs
+						id: index + 1,
 						episode_name: file.replace(/^\d+\s*/, '').replace('.txt', ''),
 						status: '1st Draft',
 						author: 'Author Name',

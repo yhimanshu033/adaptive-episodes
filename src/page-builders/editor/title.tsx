@@ -14,7 +14,7 @@ const Title = ({ title }: { title: string }) => {
 		)
 	}
 	return (
-		<div className="mb-5 flex gap-2">
+		<div className="flex gap-2">
 			<Button variant="ghost" size="icon" onClick={handleClick}>
 				<ArrowLeft size={16} />
 			</Button>

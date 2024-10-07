@@ -4,7 +4,7 @@ import { X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
-import AiChatbot from './sidebar-sections/ai-chatbot'
+import AIChatbot from './sidebar-sections/ai-chatbot'
 import Comments from './sidebar-sections/comments'
 import PlotOutline from './sidebar-sections/plot-outline'
 
@@ -24,7 +24,7 @@ const Sidebar = () => {
 			>
 				<X size={16} />
 			</Button>
-			{activeSidebar === 'ai' && <AiChatbot />}
+			{activeSidebar === 'ai' && <AIChatbot />}
 			{activeSidebar === 'comments' && <Comments />}
 			{activeSidebar === 'outline' && <PlotOutline />}
 		</div>
