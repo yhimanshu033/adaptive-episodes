@@ -27,6 +27,8 @@ import { ModeDropdownMenu } from './mode-dropdown-menu'
 import { ToolbarGroup } from './toolbar'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
 
+// import TranslationToggleButton from './translation-toggle-button'
+
 export function FixedToolbarButtons() {
 	const readOnly = useEditorReadOnly()
 
@@ -118,6 +120,7 @@ export function FixedToolbarButtons() {
 				<div className="grow" />
 
 				<ToolbarGroup noSeparator>
+					{/* <TranslationToggleButton /> */}
 					<CommentToolbarButton />
 					<ModeDropdownMenu />
 				</ToolbarGroup>

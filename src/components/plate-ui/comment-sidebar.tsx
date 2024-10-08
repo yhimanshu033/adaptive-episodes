@@ -66,7 +66,7 @@ export default function CommentSidebar() {
 	const { comments, get, sortedComments, set } = useComments()
 	const activeCommentId = get('activeCommentId')
 	const myUserId = get('myUserId')
-	const { commentSidebarOpen } = usePlateStore()
+	const commentSidebarOpen = usePlateStore((state) => state.commentSidebarOpen)
 
 	const commentExists = comments.find(
 		(comment) => comment.id === activeCommentId
@@ -79,10 +79,12 @@ export default function CommentSidebar() {
 		[set]
 	)
 
+	console.log({ comments })
+
 	if (!commentSidebarOpen) return null
 	return (
-		<div className="relative h-[calc(100vh-44px)] border-l">
-			<ScrollArea className="relative flex h-full min-w-[40vh] grow flex-col gap-2 overflow-y-scroll">
+		<div className="relative" style={{ opacity: commentSidebarOpen ? 1 : 0 }}>
+			<ScrollArea className="relative flex h-full w-[40vh] grow flex-col gap-2 overflow-y-scroll">
 				<div className="p-4">
 					{!comments.length && (!myUserId || !activeCommentId) && (
 						<h1 className="w-full text-center">No comments</h1>

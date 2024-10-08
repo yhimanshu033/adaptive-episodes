@@ -6,6 +6,7 @@ import { PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
 	commentSidebarOpen: false,
+	isTranslationOpen: false,
 }
 
 const usePlateStore = create(devtools(immer(() => initialState)))
@@ -16,4 +17,9 @@ export const toggleCommentSidebar = () => {
 	})
 }
 
+export const toggleTranslation = () => {
+	usePlateStore.setState((state) => {
+		return { isTranslationOpen: !state.isTranslationOpen }
+	})
+}
 export default usePlateStore

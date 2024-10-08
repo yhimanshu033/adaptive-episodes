@@ -2,6 +2,10 @@
 'use client'
 
 import React, { useRef } from 'react'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
+import Title from '@/page-builders/editor/title'
+import Translation from '@/page-builders/editor/translation'
+import usePlateStore from '@/store/plate-store'
 import { cn, withProps } from '@udecode/cn'
 import { AlignPlugin } from '@udecode/plate-alignment/react'
 import { AutoformatPlugin } from '@udecode/plate-autoformat/react'
@@ -124,16 +128,20 @@ import CommentSidebar from '../plate-ui/comment-sidebar'
 
 export default function PlateEditor() {
 	const containerRef = useRef(null)
+	const { data: content, isLoading } = useEpisodeContent()
 
-	const editor = useMyEditor()
+	const isTranslationOpen = usePlateStore((state) => state.isTranslationOpen)
+
+	const editor = useMyEditor({ content: content?.us })
 
 	return (
 		<DndProvider backend={HTML5Backend}>
+			<Title title={content?.episode_name as string} />
 			<Plate editor={editor}>
 				<div
 					ref={containerRef}
 					className={cn(
-						'relative',
+						'relative min-h-[60vh] rounded border',
 						// Block selection
 						'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 					)}
@@ -142,10 +150,10 @@ export default function PlateEditor() {
 						<FixedToolbarButtons />
 					</FixedToolbar>
 
-					<div className="flex h-full grow justify-between">
-						<div className="w-full grow">
+					<div className="flex justify-between">
+						<div className="w-full border-r">
 							<Editor
-								className="px-[96px] py-16"
+								className="min-h-[calc(60vh-44px)] p-12"
 								autoFocus
 								focusRing={false}
 								variant="ghost"
@@ -160,6 +168,13 @@ export default function PlateEditor() {
 
 							<CursorOverlay containerRef={containerRef} />
 						</div>
+						{isTranslationOpen && (
+							<Translation
+								translatedContent={
+									isLoading ? 'Loading...' : (content?.de as string)
+								}
+							/>
+						)}
 						<CommentSidebar />
 					</div>
 				</div>
@@ -168,7 +183,7 @@ export default function PlateEditor() {
 	)
 }
 
-export const useMyEditor = () => {
+export const useMyEditor = ({ content }: { content?: string }) => {
 	const editor = createPlateEditor({
 		plugins: [
 			// Nodes
@@ -437,7 +452,7 @@ export const useMyEditor = () => {
 			{
 				id: '1',
 				type: ParagraphPlugin.key,
-				children: [{ text: 'Hello, World!' }],
+				children: [{ text: content || 'Loading...' }],
 			},
 		],
 	})

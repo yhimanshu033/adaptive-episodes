@@ -10,7 +10,7 @@ import { ToolbarButton } from './toolbar'
 export function CommentToolbarButton() {
 	return (
 		<ToolbarButton tooltip="Comments" onClick={toggleCommentSidebar}>
-			<Icons.commentAdd />
+			<Icons.comment />
 		</ToolbarButton>
 	)
 }
