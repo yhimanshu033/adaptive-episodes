@@ -50,7 +50,7 @@ const AIChatbot = () => {
 	}, [messages])
 
 	return (
-		<div className="mx-auto flex h-full max-w-2xl flex-col">
+		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
 			<h1 className="mb-4 text-2xl font-bold">AI Chatbot</h1>
 			<ScrollArea className="mb-4 flex-1 rounded-md border p-4">
 				{messages.map((message, index) => (
