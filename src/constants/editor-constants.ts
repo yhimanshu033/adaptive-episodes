@@ -82,3 +82,6 @@ export const rephraseMethods = [
 	'Dialog',
 	'NoteToScript',
 ]
+
+export const MAIN_EDITOR_ID = 'main-editor'
+export const TRANSLATION_EDITOR_ID = 'translation-editor'

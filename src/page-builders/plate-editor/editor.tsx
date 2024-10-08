@@ -4,8 +4,7 @@
 import React, { useRef } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/editor/title'
-import Translation from '@/page-builders/editor/translation'
-import usePlateStore from '@/store/plate-store'
+import Translation from '@/page-builders/plate-editor/translation'
 import { cn, withProps } from '@udecode/cn'
 import { AlignPlugin } from '@udecode/plate-alignment/react'
 import { AutoformatPlugin } from '@udecode/plate-autoformat/react'
@@ -124,13 +123,11 @@ import { TodoListElement } from '@/components/plate-ui/todo-list-element'
 import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 
-import CommentSidebar from '../plate-ui/comment-sidebar'
+import Sidebar from './sidebar'
 
 export default function PlateEditor() {
 	const containerRef = useRef(null)
 	const { data: content, isLoading } = useEpisodeContent()
-
-	const isTranslationOpen = usePlateStore((state) => state.isTranslationOpen)
 
 	const editor = useMyEditor({ content: content?.us })
 
@@ -168,14 +165,13 @@ export default function PlateEditor() {
 
 							<CursorOverlay containerRef={containerRef} />
 						</div>
-						{isTranslationOpen && (
-							<Translation
-								translatedContent={
-									isLoading ? 'Loading...' : (content?.de as string)
-								}
-							/>
-						)}
-						<CommentSidebar />
+						<Translation
+							translatedContent={
+								isLoading ? 'Loading...' : (content?.de as string)
+							}
+						/>
+						{/* <CommentSidebar /> */}
+						<Sidebar />
 					</div>
 				</div>
 			</Plate>
@@ -183,7 +179,13 @@ export default function PlateEditor() {
 	)
 }
 
-export const useMyEditor = ({ content }: { content?: string }) => {
+export const useMyEditor = ({
+	content,
+	id,
+}: {
+	content?: string
+	id?: string
+}) => {
 	const editor = createPlateEditor({
 		plugins: [
 			// Nodes
@@ -455,6 +457,7 @@ export const useMyEditor = ({ content }: { content?: string }) => {
 				children: [{ text: content || 'Loading...' }],
 			},
 		],
+		...(id ? { id } : {}),
 	})
 
 	return editor

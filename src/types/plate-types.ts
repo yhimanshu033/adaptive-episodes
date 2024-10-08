@@ -1,4 +1,4 @@
 export type PlateStoreData = {
-	commentSidebarOpen: boolean
 	isTranslationOpen: boolean
+	sidebar: 'comments' | 'chatbot' | 'outline' | null
 }

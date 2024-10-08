@@ -1,5 +1,5 @@
 import React from 'react'
-import usePlateStore, { toggleCommentSidebar } from '@/store/plate-store'
+import usePlateStore, { setSidebar } from '@/store/plate-store'
 import {
 	BoldPlugin,
 	CodePlugin,
@@ -20,7 +20,7 @@ import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
 
 export function FloatingToolbarButtons() {
 	const readOnly = useEditorReadOnly()
-	const { commentSidebarOpen } = usePlateStore()
+	const sidebar = usePlateStore((state) => state.sidebar)
 	const { props } = useCommentAddButton()
 
 	return (
@@ -52,8 +52,8 @@ export function FloatingToolbarButtons() {
 					<MarkToolbarButton
 						{...props}
 						onClick={(e) => {
-							if (!commentSidebarOpen) {
-								toggleCommentSidebar()
+							if (sidebar !== 'comments') {
+								setSidebar('comments')
 							}
 							props.onClick(e)
 						}}

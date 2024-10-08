@@ -2,18 +2,17 @@
 
 import React from 'react'
 import { setSidebar } from '@/store/plate-store'
-
-import { Icons } from '@/components/icons'
+import { FileText } from 'lucide-react'
 
 import { ToolbarButton } from './toolbar'
 
-export function CommentToolbarButton() {
+export function OutlineToolbarButton() {
 	return (
 		<ToolbarButton
-			tooltip="Comments"
-			onClick={() => setSidebar('comments', true)}
+			tooltip="Outline"
+			onClick={() => setSidebar('outline', true)}
 		>
-			<Icons.comment />
+			<FileText />
 		</ToolbarButton>
 	)
 }

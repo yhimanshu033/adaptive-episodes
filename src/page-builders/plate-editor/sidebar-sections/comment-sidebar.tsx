@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
 import useComments from '@/hooks/plate/use-comments'
-import usePlateStore from '@/store/plate-store'
 import { BaseCommentsPlugin } from '@udecode/plate-comments'
 import {
 	CommentProvider,
@@ -9,14 +8,13 @@ import {
 import { useEditorRef } from '@udecode/plate-common/react'
 import { ReplyIcon } from 'lucide-react'
 
+import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
+import { CommentItem } from '@/components/plate-ui/comment-item'
+import { CommentReplyItems } from '@/components/plate-ui/comment-reply-items'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
 import { TCustomComment } from '@/types/editor-types'
-
-import { CommentCreateForm } from './comment-create-form'
-import { CommentItem } from './comment-item'
-import { CommentReplyItems } from './comment-reply-items'
 
 function CommentComponent({
 	comment,
@@ -66,7 +64,6 @@ export default function CommentSidebar() {
 	const { comments, get, sortedComments, set } = useComments()
 	const activeCommentId = get('activeCommentId')
 	const myUserId = get('myUserId')
-	const commentSidebarOpen = usePlateStore((state) => state.commentSidebarOpen)
 
 	const commentExists = comments.find(
 		(comment) => comment.id === activeCommentId
@@ -80,11 +77,9 @@ export default function CommentSidebar() {
 	)
 
 	console.log({ comments })
-
-	if (!commentSidebarOpen) return null
 	return (
-		<div className="relative" style={{ opacity: commentSidebarOpen ? 1 : 0 }}>
-			<ScrollArea className="relative flex h-full w-[40vh] grow flex-col gap-2 overflow-y-scroll">
+		<div className="relative">
+			<ScrollArea className="relative flex h-full min-w-[20vw] grow flex-col gap-2 overflow-y-scroll">
 				<div className="p-4">
 					{!comments.length && (!myUserId || !activeCommentId) && (
 						<h1 className="w-full text-center">No comments</h1>

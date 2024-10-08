@@ -20,14 +20,15 @@ import { IndentListToolbarButton } from '@/components/plate-ui/indent-list-toolb
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
 import { LinkToolbarButton } from '@/components/plate-ui/link-toolbar-button'
 
+import { ChatbotToolbarButton } from './chatbot-toggle-button'
 import { ColorDropdownMenu } from './color-dropdown-menu'
 import { InsertDropdownMenu } from './insert-dropdown-menu'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import { ModeDropdownMenu } from './mode-dropdown-menu'
+import { OutlineToolbarButton } from './outline-toggle-button'
 import { ToolbarGroup } from './toolbar'
+import TranslationToggleButton from './translation-toggle-button'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
-
-// import TranslationToggleButton from './translation-toggle-button'
 
 export function FixedToolbarButtons() {
 	const readOnly = useEditorReadOnly()
@@ -120,7 +121,9 @@ export function FixedToolbarButtons() {
 				<div className="grow" />
 
 				<ToolbarGroup noSeparator>
-					{/* <TranslationToggleButton /> */}
+					<TranslationToggleButton />
+					<ChatbotToolbarButton />
+					<OutlineToolbarButton />
 					<CommentToolbarButton />
 					<ModeDropdownMenu />
 				</ToolbarGroup>

@@ -2,18 +2,17 @@
 
 import React from 'react'
 import { setSidebar } from '@/store/plate-store'
-
-import { Icons } from '@/components/icons'
+import { Bot } from 'lucide-react'
 
 import { ToolbarButton } from './toolbar'
 
-export function CommentToolbarButton() {
+export function ChatbotToolbarButton() {
 	return (
 		<ToolbarButton
-			tooltip="Comments"
-			onClick={() => setSidebar('comments', true)}
+			tooltip="Chatbot"
+			onClick={() => setSidebar('chatbot', true)}
 		>
-			<Icons.comment />
+			<Bot />
 		</ToolbarButton>
 	)
 }

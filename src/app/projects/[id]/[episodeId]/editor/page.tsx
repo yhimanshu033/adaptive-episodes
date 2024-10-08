@@ -1,8 +1,8 @@
 import React from 'react'
-import EpisodeEditor from '@/page-builders/editor'
+import EpisodePlateEditor from '@/page-builders/plate-editor'
 
 const Page = () => {
-	return <EpisodeEditor />
+	return <EpisodePlateEditor />
 }
 
 export default Page
