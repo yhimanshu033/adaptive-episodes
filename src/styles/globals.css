@@ -24,8 +24,8 @@
 		/* Muted and Accent */
 		--muted: 210 25% 90%; /* Very light gray for muted elements */
 		--muted-foreground: 210 15% 40%; /* Medium gray */
-		--accent: 222.2 84% 4.9%; /* Darker accent color matching primary */
-		--accent-foreground: 0 0% 100%; /* White for readability */
+		--accent: 0 0% 80%; /* Off white accent color */
+		--accent-foreground: 0 0% 0%; /* White for readability */
 
 		/* Destructive */
 		--destructive: 0 70% 50%; /* Red for destructive actions */
@@ -33,7 +33,7 @@
 
 		/* Borders, Inputs, Rings */
 		--border: 210 15% 70%; /* Darker gray for better contrast with background */
-		--input: 210 20% 95%; /* Slightly darker input field background */
+		--input: 210 20% 75%; /* Slightly darker input field background */
 		--ring: 222.2 84% 4.9%; /* Dark ring for focus */
 		--radius: 0.5rem;
 

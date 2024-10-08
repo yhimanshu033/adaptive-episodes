@@ -5,7 +5,8 @@ import { parseTwitterUrl, parseVideoUrl } from '@udecode/plate-media'
 import { MediaEmbedPlugin, useMediaState } from '@udecode/plate-media/react'
 import { ResizableProvider, useResizableStore } from '@udecode/plate-resizable'
 import LiteYouTubeEmbed from 'react-lite-youtube-embed'
-import { Tweet } from 'react-tweet'
+
+// import { Tweet } from 'react-tweet'
 
 import { Caption, CaptionTextarea } from './caption'
 import { MediaPopover } from './media-popover'
@@ -21,7 +22,7 @@ export const MediaEmbedElement = withHOC(
 			isTweet,
 			isVideo,
 			isYoutube,
-			readOnly,
+			// readOnly,
 			selected,
 		} = useMediaState({
 			urlParsers: [parseTwitterUrl, parseVideoUrl],
@@ -96,7 +97,7 @@ export const MediaEmbedElement = withHOC(
 								)
 							) : null}
 
-							{isTweet && (
+							{/* {isTweet && (
 								<div
 									className={cn(
 										'[&_.react-tweet-theme]:my-0',
@@ -105,9 +106,9 @@ export const MediaEmbedElement = withHOC(
 											'[&_.react-tweet-theme]:ring-2 [&_.react-tweet-theme]:ring-ring [&_.react-tweet-theme]:ring-offset-2'
 									)}
 								>
-									<Tweet id={embed!.id} />
+									<Tweet id={embed?.id} apiUrl='' />
 								</div>
-							)}
+							)} */}
 
 							<ResizeHandle
 								className={mediaResizeHandleVariants({ direction: 'right' })}
