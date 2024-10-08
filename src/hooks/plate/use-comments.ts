@@ -45,7 +45,7 @@ export default function useComments() {
 			return uniqueComments
 		}, [] as TCustomComment[])
 
-	console.log({ sortedComments })
+	// console.log({ sortedComments })
 
 	return {
 		allComments,

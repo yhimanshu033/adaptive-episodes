@@ -1,4 +1,5 @@
 import React from 'react'
+import usePlateStore, { toggleCommentSidebar } from '@/store/plate-store'
 import {
 	BoldPlugin,
 	CodePlugin,
@@ -6,6 +7,10 @@ import {
 	StrikethroughPlugin,
 	UnderlinePlugin,
 } from '@udecode/plate-basic-marks/react'
+import {
+	CommentsPlugin,
+	useCommentAddButton,
+} from '@udecode/plate-comments/react'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 
 import { Icons } from '@/components/icons'
@@ -15,13 +20,14 @@ import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
 
 export function FloatingToolbarButtons() {
 	const readOnly = useEditorReadOnly()
+	const { commentSidebarOpen } = usePlateStore()
+	const { props } = useCommentAddButton()
 
 	return (
 		<>
 			{!readOnly && (
 				<>
 					<TurnIntoDropdownMenu />
-
 					<MarkToolbarButton nodeType={BoldPlugin.key} tooltip="Bold (⌘+B)">
 						<Icons.bold />
 					</MarkToolbarButton>
@@ -42,6 +48,19 @@ export function FloatingToolbarButtons() {
 					</MarkToolbarButton>
 					<MarkToolbarButton nodeType={CodePlugin.key} tooltip="Code (⌘+E)">
 						<Icons.code />
+					</MarkToolbarButton>
+					<MarkToolbarButton
+						{...props}
+						onClick={(e) => {
+							if (!commentSidebarOpen) {
+								toggleCommentSidebar()
+							}
+							props.onClick(e)
+						}}
+						nodeType={CommentsPlugin.key}
+						tooltip="Comment (⌘+⇧+M)"
+					>
+						<Icons.commentAdd />
 					</MarkToolbarButton>
 				</>
 			)}

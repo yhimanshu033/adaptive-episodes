@@ -21,10 +21,8 @@ export function CommentCreateForm() {
 	return (
 		<div className="flex w-full space-x-2 p-2">
 			<CommentAvatar userId={myUserId} />
-
 			<div className="flex grow flex-col items-end gap-2">
-				<CommentNewTextarea className={inputVariants()} />
-
+				<CommentNewTextarea autoFocus className={inputVariants()} />
 				<CommentNewSubmitButton
 					className={cn(buttonVariants({ size: 'sm' }), 'w-[90px]')}
 				>
