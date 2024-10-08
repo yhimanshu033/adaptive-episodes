@@ -23,7 +23,7 @@ export default function EpisodeListPage() {
 						width={80}
 						height={80}
 						objectFit="cover"
-						className="rounded-md"
+						className="rounded-lg"
 					/>
 					<h1 className="text-3xl font-bold">{story}</h1>
 				</div>
@@ -34,7 +34,6 @@ export default function EpisodeListPage() {
 					</Link>
 				</Button>
 			</div>
-
 			<EpisodesTable />
 		</main>
 	)

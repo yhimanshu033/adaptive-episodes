@@ -15,6 +15,9 @@
 		}
 	],
 
+	//Ensure LF line endings
+	"files.eol": "\n",
+
 	// Tailwind Intellisense power-up
 	"files.associations": { "*.css": "tailwindcss" },
 

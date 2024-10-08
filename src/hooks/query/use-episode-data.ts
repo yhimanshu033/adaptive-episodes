@@ -1,19 +1,17 @@
 'use client'
 
 import { getEpisodes } from '@/server-action/episode-action'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-const useEpisodeData = (story: string) => {
-	const query = useInfiniteQuery({
-		queryKey: [story, 'episodes'],
-		initialPageParam: 1,
-		queryFn: ({ pageParam }) => getEpisodes(story, pageParam),
-		getNextPageParam: (lastPage, allPages) => {
-			if (lastPage?.hasNext) {
-				return allPages.length + 1
-			}
-			return null
-		},
+const useEpisodeData = (
+	story: string,
+	page?: number,
+	episodeFilter?: string
+) => {
+	const query = useQuery({
+		queryKey: [story, 'episodes', page, episodeFilter],
+		queryFn: () => getEpisodes(story, page, episodeFilter),
+		placeholderData: keepPreviousData,
 	})
 	return query
 }

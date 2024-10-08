@@ -1,8 +1,15 @@
 import { EpisodeResponse } from '@/types/episode-type'
 
-export const getEpisodes = async (story: string, page: number) => {
+export const getEpisodes = async (
+	story: string,
+	page?: number,
+	episodeFilter?: string
+) => {
 	try {
-		const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story}/episodes?page=${page}`
+		const queryParams = new URLSearchParams()
+		if (page) queryParams.append('page', page.toString())
+		if (episodeFilter) queryParams.append('episode_search', episodeFilter)
+		const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story}/episodes?${queryParams.toString()}`
 		const data = (await fetch(url).then((res) => res.json())) as EpisodeResponse
 
 		if (!data.status) {
