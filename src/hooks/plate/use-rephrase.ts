@@ -80,9 +80,6 @@ export default function useRephrase() {
 				clonedNodes[0][0].children[start.path[0]].children[start.path[1]]
 
 			let startText = blockStart.text
-
-			console.log({ selection, start, end })
-
 			if (isSameBlock(selection)) {
 				if (isSameChild(selection)) {
 					startText = replaceTextInRange(
@@ -122,13 +119,9 @@ export default function useRephrase() {
 					i < clonedNodes[0][0].children[start.path[0]].children.length;
 					i++
 				) {
-					console.log(
-						clonedNodes[0][0].children[start.path[0]].children[i].text
-					)
 					clonedNodes[0][0].children[start.path[0]].children[i].text = ''
 				}
 				for (let i = 0; i < end.path[1]; i++) {
-					console.log(clonedNodes[0][0].children[end.path[0]].children[i].text)
 					clonedNodes[0][0].children[end.path[0]].children[i].text = ''
 				}
 				const lastChild =
@@ -143,5 +136,89 @@ export default function useRephrase() {
 		[editor]
 	)
 
-	return { onRephrase }
+	const getContent = useCallback(() => {
+		const nodes = getNodeEntries(editor).toArray()
+		const clonedNodes = JSON.parse(JSON.stringify(nodes)) as Node[][]
+		return clonedNodes[0][0].children.reduce((acc, block) => {
+			return (
+				acc +
+				'\n' +
+				block.children.reduce((acc, child) => {
+					return acc + ' ' + child.text
+				}, '')
+			)
+		}, '')
+	}, [editor])
+
+	const getSelectedText = useCallback(() => {
+		const nodes = getNodeEntries(editor).toArray()
+		const selection = editor.selection as Selection | null
+		if (!selection) return ''
+		const start = isSameBlock(selection)
+			? selection.anchor.path[1] <= selection.focus.path[1]
+				? selection.anchor
+				: selection.focus
+			: selection.anchor.path[0] <= selection.focus.path[0]
+				? selection.anchor
+				: selection.focus
+		const end = isSameBlock(selection)
+			? selection.anchor.path[1] <= selection.focus.path[1]
+				? selection.focus
+				: selection.anchor
+			: selection.anchor.path[0] <= selection.focus.path[0]
+				? selection.focus
+				: selection.anchor
+
+		const clonedNodes = JSON.parse(JSON.stringify(nodes)) as Node[][]
+		let selectedText: string = ''
+
+		if (isSameBlock(selection)) {
+			if (isSameChild(selection)) {
+				selectedText += clonedNodes[0][0].children[start.path[0]].children[
+					start.path[1]
+				].text.slice(start.offset, end.offset)
+			} else {
+				selectedText += clonedNodes[0][0].children[start.path[0]].children[
+					start.path[1]
+				].text.slice(start.offset)
+				for (let i = start.path[1] + 1; i < end.path[1]; i++) {
+					selectedText +=
+						clonedNodes[0][0].children[start.path[0]].children[i].text
+				}
+				selectedText += clonedNodes[0][0].children[end.path[0]].children[
+					end.path[1]
+				].text.slice(0, end.offset)
+			}
+		} else {
+			selectedText += clonedNodes[0][0].children[start.path[0]].children[
+				start.path[1]
+			].text.slice(start.offset)
+			for (
+				let i = start.path[1] + 1;
+				i < clonedNodes[0][0].children[start.path[0]].children.length;
+				i++
+			) {
+				selectedText +=
+					clonedNodes[0][0].children[start.path[0]].children[i].text
+			}
+			for (let i = start.path[0] + 1; i < end.path[0]; i++) {
+				selectedText += clonedNodes[0][0].children[i].children.reduce(
+					(acc, child) => {
+						return acc + ' ' + child.text
+					},
+					''
+				)
+			}
+			for (let i = 0; i < end.path[1]; i++) {
+				selectedText += clonedNodes[0][0].children[end.path[0]].children[i].text
+			}
+			selectedText += clonedNodes[0][0].children[end.path[0]].children[
+				end.path[1]
+			].text.slice(0, end.offset)
+		}
+
+		return selectedText
+	}, [editor])
+
+	return { onRephrase, getContent, getSelectedText }
 }
