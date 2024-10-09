@@ -116,7 +116,6 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 			mode: 'highest',
 		})
 		const nodes = Array.from(codeBlockEntries)
-
 		if (nodes.length > 0) {
 			initialNodeType = nodes[0][0].type as string
 			allNodesMatchInitialNodeType = nodes.every(([node]) => {
@@ -131,6 +130,9 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 
 	const editor = useEditorRef()
 	const openState = useOpenState()
+	// const id = useFloatingNodeId();
+
+	// console.log({ id })
 
 	const selectedItem = items.find((item) => item.value === value) ?? defaultItem
 	const { icon: SelectedItemIcon, label: selectedItemLabel } = selectedItem
@@ -168,7 +170,6 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 						//   unwrapList(editor);
 						console.log({ type })
 						editor.tf.toggle.block({ type })
-						editor.tf.toggle.mark({ key: 'Arial' })
 						// }
 
 						collapseSelection(editor)

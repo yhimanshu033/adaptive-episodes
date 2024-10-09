@@ -120,7 +120,7 @@ import {
 import { TableElement } from '@/components/plate-ui/table-element'
 import { TableRowElement } from '@/components/plate-ui/table-row-element'
 import { TodoListElement } from '@/components/plate-ui/todo-list-element'
-import { withDraggables } from '@/components/plate-ui/with-draggables'
+// import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 
 import Sidebar from './sidebar'
@@ -138,7 +138,7 @@ export default function PlateEditor() {
 				<div
 					ref={containerRef}
 					className={cn(
-						'relative min-h-[60vh] rounded border',
+						'relative mt-4 min-h-[60vh] rounded border',
 						// Block selection
 						'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 					)}
@@ -161,8 +161,6 @@ export default function PlateEditor() {
 								<FloatingToolbarButtons />
 							</FloatingToolbar>
 
-							{/* <CommentsPopover /> */}
-
 							<CursorOverlay containerRef={containerRef} />
 						</div>
 						<Translation
@@ -170,7 +168,6 @@ export default function PlateEditor() {
 								isLoading ? 'Loading...' : (content?.de as string)
 							}
 						/>
-						{/* <CommentSidebar /> */}
 						<Sidebar />
 					</div>
 				</div>
@@ -412,7 +409,8 @@ export const useMyEditor = ({
 			JuicePlugin,
 		],
 		override: {
-			components: withDraggables(
+			components:
+				// withDraggables(
 				withPlaceholders({
 					[BlockquotePlugin.key]: BlockquoteElement,
 					[CodeBlockPlugin.key]: CodeBlockElement,
@@ -447,8 +445,8 @@ export const useMyEditor = ({
 					[SuperscriptPlugin.key]: withProps(PlateLeaf, { as: 'sup' }),
 					[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
 					[CommentsPlugin.key]: CommentLeaf,
-				})
-			),
+				}),
+			// ),
 		},
 		value: [
 			{
