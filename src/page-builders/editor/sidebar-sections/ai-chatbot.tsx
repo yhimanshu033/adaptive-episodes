@@ -47,6 +47,7 @@ const AIChatbot = () => {
 			query: input,
 			ep_number: episodeId as string,
 			context: episodeContent?.summary,
+			ep_text: episodeContent?.de as string,
 		})
 	}
 
