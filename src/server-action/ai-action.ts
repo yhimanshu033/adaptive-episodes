@@ -45,8 +45,10 @@ export const getChatbotResponse = async ({
 	highlighted_text = '',
 	messages = [],
 	query,
+	ep_text = '',
 }: AIChatBotParams) => {
 	try {
+		messages = messages.slice(1)
 		const url = `${CHATBOT}`
 		const response = await fetch(url, {
 			method: 'POST',
@@ -60,6 +62,7 @@ export const getChatbotResponse = async ({
 				messages,
 				query,
 				ep_number,
+				ep_text,
 			}),
 		})
 		const data = (await response.json()) as AIChatBotApiResponse

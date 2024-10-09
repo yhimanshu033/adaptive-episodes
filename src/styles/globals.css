@@ -16,9 +16,9 @@
 		--popover-foreground: 210 10% 15%; /* Consistent foreground */
 
 		/* Primary and Secondary */
-		--primary: 220 60% 50%; /* Deep blue for primary elements */
+		--primary: 345 80% 50%; /* Deep pink for primary elements */
 		--primary-foreground: 0 0% 100%; /* White for contrast */
-		--secondary: 210 40% 85%; /* Soft blue for secondary elements */
+		--secondary: 345 80% 85%; /* Soft pink for secondary elements */
 		--secondary-foreground: 210 10% 20%; /* Darker gray for better contrast */
 
 		/* Muted and Accent */
@@ -61,9 +61,9 @@
 		--popover-foreground: 0 0% 90%; /* Consistent with card text */
 
 		/* Primary and Secondary */
-		--primary: 220 60% 60%; /* Deep blue */
+		--primary: 345 80% 50%; /* Deep pink */
 		--primary-foreground: 0 0% 100%; /* White for contrast */
-		--secondary: 210 30% 30%; /* Muted blue */
+		--secondary: 345 80% 85%; /* Muted pink */
 		--secondary-foreground: 0 0% 90%; /* Lighter gray text */
 
 		/* Muted and Accent */
