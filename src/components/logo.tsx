@@ -1,6 +1,6 @@
 import React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { Pen } from 'lucide-react'
 
 const Logo = ({ className }: { className?: string }) => {
 	return (
@@ -8,7 +8,12 @@ const Logo = ({ className }: { className?: string }) => {
 			href="/"
 			className="flex items-center gap-2 transition-all hover:scale-105"
 		>
-			<Pen className="size-6" />
+			<Image
+				src="/pocket-copilot-logo.png"
+				width={32}
+				height={32}
+				alt="Copilot Logo"
+			/>
 			<span className={className}>Co-Writer</span>
 		</Link>
 	)
