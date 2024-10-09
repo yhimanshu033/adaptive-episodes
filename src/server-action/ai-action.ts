@@ -48,6 +48,7 @@ export const getChatbotResponse = async ({
 	ep_text = '',
 }: AIChatBotParams) => {
 	try {
+		messages = messages.slice(1)
 		const url = `${CHATBOT}`
 		const response = await fetch(url, {
 			method: 'POST',
