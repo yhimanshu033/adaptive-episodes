@@ -20,7 +20,7 @@ export interface LaserToolsApiResponse {
 export interface AIChatBotParams {
 	context?: string
 	ep_number?: string
-	ep_text: string
+	ep_text?: string
 	highlighted_text?: string
 	messages: {
 		content: string
