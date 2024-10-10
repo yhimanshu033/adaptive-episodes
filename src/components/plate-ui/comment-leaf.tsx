@@ -1,6 +1,8 @@
 'use client'
 
 import React from 'react'
+import useComments from '@/hooks/plate/use-comments'
+import usePlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import type { TCommentText } from '@udecode/plate-comments'
 import {
@@ -8,8 +10,6 @@ import {
 	useCommentLeafState,
 } from '@udecode/plate-comments/react'
 import { PlateLeaf, type PlateLeafProps } from '@udecode/plate-common/react'
-import useComments from '@/hooks/plate/use-comments'
-import usePlateStore from '@/store/plate-store'
 
 export function CommentLeaf({
 	className,
@@ -21,7 +21,9 @@ export function CommentLeaf({
 	const sidebar = usePlateStore((state) => state.sidebar)
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
-	const active = isCommented(state.lastCommentId) || (sidebar === "comments" && state.isActive)
+	const active =
+		isCommented(state.lastCommentId) ||
+		(sidebar === 'comments' && state.isActive)
 
 	if (!state.commentCount || !active) return <>{children}</>
 

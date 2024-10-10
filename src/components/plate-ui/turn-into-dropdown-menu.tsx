@@ -168,7 +168,7 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 						//   }
 						// } else {
 						//   unwrapList(editor);
-						console.log({ type })
+						// console.log({ type })
 						editor.tf.toggle.block({ type })
 						// }
 
