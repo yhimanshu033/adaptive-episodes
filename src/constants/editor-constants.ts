@@ -81,6 +81,7 @@ export const rephraseMethods = [
 	{ id: 'recap', method: 'Recap' },
 	{ id: 'dialog', method: 'Dialog' },
 	{ id: 'notetoscript', method: 'NoteToScript' },
+	{ id: 'prompt', method: 'Prompt' },
 ]
 
 export const MAIN_EDITOR_ID = 'main-editor'

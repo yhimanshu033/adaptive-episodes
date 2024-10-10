@@ -31,7 +31,7 @@ export default function RephraseSelection({
 
 	useEffect(() => {
 		resetActiveComments()
-	}, [id])
+	}, [id, resetActiveComments])
 
 	const [currentMethod, setMethod] = useState('')
 	const [textState] = useState({
@@ -42,9 +42,12 @@ export default function RephraseSelection({
 
 	const { laserToolsMutation } = useLaserToolsHook()
 	const { data, isPending, reset } = laserToolsMutation
-	const toggleRephrase = useCallback((toggle: boolean) => {
-		setShowRephrase(toggle)
-	}, [])
+	const toggleRephrase = useCallback(
+		(toggle: boolean) => {
+			setShowRephrase(toggle)
+		},
+		[setShowRephrase]
+	)
 
 	const handleRephrase = (action: string) => {
 		setMethod(action)

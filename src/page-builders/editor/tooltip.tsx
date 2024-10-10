@@ -7,7 +7,7 @@ import useEditorStore, {
 	setTooltipPosition,
 	toggleTooltip,
 } from '@/store/editor-store'
-import { Bot } from 'lucide-react'
+import { Bot, RotateCw } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
@@ -158,22 +158,31 @@ const Tooltip = ({
 					) : (
 						<div className="z-20 min-w-56 rounded-md p-4 shadow-md">
 							<div className="mb-2 text-muted-foreground">{textState.text}</div>
-							<div className="mb-4 text-accent-foreground">{data.result}</div>
-							<div className="flex items-center justify-end gap-2">
+							<div className="mb-2 text-accent-foreground">{data.result}</div>
+							<div className="flex items-center justify-between">
 								<Button
-									variant="outline"
-									size="sm"
-									className="mr-2"
-									onClick={handleRejectRephrase}
+									variant="ghost"
+									size="icon"
+									onClick={() => handleRephrase(currentMethod)}
 								>
-									Reject
+									<RotateCw size={16} />
 								</Button>
-								<Button
-									size="sm"
-									onClick={() => handleAcceptRephrase(data.result)}
-								>
-									Accept
-								</Button>
+								<div className="flex gap-2">
+									<Button
+										variant="outline"
+										size="sm"
+										className="mr-2"
+										onClick={handleRejectRephrase}
+									>
+										Reject
+									</Button>
+									<Button
+										size="sm"
+										onClick={() => handleAcceptRephrase(data.result)}
+									>
+										Accept
+									</Button>
+								</div>
 							</div>
 						</div>
 					)}

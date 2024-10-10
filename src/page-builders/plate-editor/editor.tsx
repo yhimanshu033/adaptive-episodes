@@ -2,6 +2,7 @@
 'use client'
 
 import React, { useRef } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
@@ -78,6 +79,7 @@ import {
 	TableRowPlugin,
 } from '@udecode/plate-table/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
@@ -120,6 +122,7 @@ import {
 import { TableElement } from '@/components/plate-ui/table-element'
 import { TableRowElement } from '@/components/plate-ui/table-row-element'
 import { TodoListElement } from '@/components/plate-ui/todo-list-element'
+import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 // import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
@@ -129,18 +132,45 @@ import Sidebar from './sidebar'
 export default function PlateEditor() {
 	const containerRef = useRef(null)
 	const { data: content, isLoading } = useEpisodeContent()
+	const router = useRouter()
+	const { id } = useParams()
 
-	const editor = useMyEditor({ content: content?.us })
+	const editor = useMyEditor({ content: content?.de })
+
+	const handleEpisodeChange = (episode: number) => {
+		router.push(
+			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}/${episode}/editor`
+		)
+	}
 
 	return (
 		<DndProvider backend={HTML5Backend}>
-			<Title title={content?.episode_name as string} />
-
+			<div className="flex items-center justify-between">
+				<Title title={content?.episode_name as string} />
+				{!isLoading && (
+					<div className="flex gap-2">
+						<Button
+							variant="outline"
+							disabled={!content?.hasPrevious}
+							onClick={() => handleEpisodeChange((content?.episode ?? 0) - 1)}
+						>
+							<ArrowLeft className="mr-2 inline" />
+							Previous Episode
+						</Button>
+						<Button
+							disabled={!content?.hasNext}
+							onClick={() => handleEpisodeChange((content?.episode ?? 0) + 1)}
+						>
+							Next Episode <ArrowRight className="ml-2 inline" />
+						</Button>
+					</div>
+				)}
+			</div>
 			<Plate editor={editor}>
 				<div
 					ref={containerRef}
 					className={cn(
-						'relative mt-4 min-h-[60vh] rounded border',
+						'relative mt-4 min-h-[60vh] rounded border bg-background-editor shadow-editor',
 						// Block selection
 						'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 					)}
@@ -148,19 +178,12 @@ export default function PlateEditor() {
 					<FixedToolbar>
 						<FixedToolbarButtons />
 					</FixedToolbar>
-					<div className="flex w-full">
-						<ScrollArea className="h-[60vh] w-full overflow-x-hidden">
+					<div className="flex h-[60vh] w-full">
+						<ScrollArea className="w-full flex-1">
 							<div className="flex h-full">
-								<Translation
-									translatedContent={
-										isLoading
-											? 'Translation Loading...'
-											: (content?.de as string)
-									}
-								/>
 								<div className="flex w-full border-r">
 									<Editor
-										className="flex size-full p-12"
+										className="flex size-full px-12 py-5"
 										autoFocus
 										focusRing={false}
 										variant="ghost"
@@ -173,6 +196,13 @@ export default function PlateEditor() {
 
 									<CursorOverlay containerRef={containerRef} />
 								</div>
+								<Translation
+									translatedContent={
+										isLoading
+											? 'Translation Loading...'
+											: (content?.us as string)
+									}
+								/>
 							</div>
 						</ScrollArea>
 						<Sidebar />

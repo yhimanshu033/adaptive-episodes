@@ -4,6 +4,6 @@ export const aiInitialMessage: {
 }[] = [
 	{
 		role: 'assistant',
-		content: 'What can I help you re-write today?',
+		content: 'Wie kann ich dir heute beim Überarbeiten helfen?',
 	},
 ]

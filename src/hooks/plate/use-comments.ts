@@ -53,7 +53,7 @@ export default function useComments() {
 		if (!someNode(editor, { match: (n) => n[BaseCommentsPlugin.key] })) {
 			setOptions({ activeCommentId: null })
 		}
-	}, [])
+	}, [editor, setOptions])
 
 	const commentExists = comments.find(
 		(comment) => comment.id === activeCommentId

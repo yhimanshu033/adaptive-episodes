@@ -5,7 +5,6 @@ import usePlateStore, { setSidebar } from '@/store/plate-store'
 import { X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 
 import AiChatbot from './sidebar-sections/ai-chatbot'
 import PlotOutline from './sidebar-sections/plot-outline'
@@ -16,14 +15,11 @@ const Sidebar = () => {
 
 	useEffect(() => {
 		resetActiveComments()
-	}, [sidebar])
+	}, [resetActiveComments, sidebar])
 
 	if (!sidebar) return null
 	return (
-		<ScrollArea
-			aria-orientation="vertical"
-			className="relative h-[60vh] w-fit min-w-[25vw] rounded-md pt-4"
-		>
+		<div className="relative w-fit flex-1 rounded-md">
 			<Button
 				className="absolute right-2 top-1 z-50"
 				variant="ghost"
@@ -35,7 +31,7 @@ const Sidebar = () => {
 			{sidebar === 'chatbot' && <AiChatbot />}
 			{sidebar === 'comments' && <CommentSidebar />}
 			{sidebar === 'outline' && <PlotOutline />}
-		</ScrollArea>
+		</div>
 	)
 }
 
