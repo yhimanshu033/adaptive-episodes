@@ -53,17 +53,25 @@ function getBlockDistance(selection: Selection): number {
 
 function getStartAndEnd(selection: Selection) {
 	const start = isSameBlock(selection)
-		? selection.anchor.path[1] < selection.focus.path[1]
-			? selection.anchor
-			: selection.focus
+		? isSameChild(selection)
+			? selection.anchor.offset < selection.focus.offset
+				? selection.anchor
+				: selection.focus
+			: selection.anchor.path[1] < selection.focus.path[1]
+				? selection.anchor
+				: selection.focus
 		: selection.anchor.path[0] < selection.focus.path[0]
 			? selection.anchor
 			: selection.focus
 
 	const end = isSameBlock(selection)
-		? selection.anchor.path[1] < selection.focus.path[1]
-			? selection.focus
-			: selection.anchor
+		? isSameChild(selection)
+			? selection.anchor.offset < selection.focus.offset
+				? selection.focus
+				: selection.anchor
+			: selection.anchor.path[1] < selection.focus.path[1]
+				? selection.focus
+				: selection.anchor
 		: selection.anchor.path[0] < selection.focus.path[0]
 			? selection.focus
 			: selection.anchor
@@ -73,15 +81,15 @@ function getStartAndEnd(selection: Selection) {
 
 export default function useRephrase() {
 	const editor = useEditorRef()
+	const nodes = getNodeEntries(editor).toArray()
+	const clonedNodes = JSON.parse(JSON.stringify(nodes)) as Node[][]
+	const selection = editor.selection as Selection | null
 
 	const onRephrase = useCallback(
 		(rephraseText: string) => {
-			const nodes = getNodeEntries(editor).toArray()
-			const selection = editor.selection as Selection | null
 			if (!selection) return
 
 			const { start, end } = getStartAndEnd(selection)
-			const clonedNodes = JSON.parse(JSON.stringify(nodes)) as Node[][]
 			const blockStart =
 				clonedNodes[0][0].children[start.path[0]].children[start.path[1]]
 
@@ -139,12 +147,10 @@ export default function useRephrase() {
 			blockStart.text = startText
 			editor.tf.setValue(clonedNodes[0][0].children)
 		},
-		[editor]
+		[clonedNodes, editor, selection]
 	)
 
 	const getContent = useCallback(() => {
-		const nodes = getNodeEntries(editor).toArray()
-		const clonedNodes = JSON.parse(JSON.stringify(nodes)) as Node[][]
 		return clonedNodes[0][0].children.reduce((acc, block) => {
 			return (
 				acc +
@@ -152,15 +158,12 @@ export default function useRephrase() {
 				block.children.reduce((acc, child) => acc + ' ' + child.text, '')
 			)
 		}, '')
-	}, [editor])
+	}, [clonedNodes])
 
 	const getSelectedText = useCallback(() => {
-		const nodes = getNodeEntries(editor).toArray()
-		const selection = editor.selection as Selection | null
 		if (!selection) return ''
 
 		const { start, end } = getStartAndEnd(selection)
-		const clonedNodes = JSON.parse(JSON.stringify(nodes)) as Node[][]
 		let selectedText = ''
 
 		if (isSameBlock(selection)) {
@@ -207,7 +210,7 @@ export default function useRephrase() {
 		}
 
 		return selectedText
-	}, [editor])
+	}, [clonedNodes, selection])
 
 	return { onRephrase, getContent, getSelectedText }
 }

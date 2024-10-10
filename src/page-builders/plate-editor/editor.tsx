@@ -33,6 +33,7 @@ import {
 } from '@udecode/plate-code-block/react'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
+	HtmlPlugin,
 	isBlockAboveEmpty,
 	isSelectionAtBlockStart,
 	someNode,
@@ -57,6 +58,7 @@ import { HEADING_KEYS, HEADING_LEVELS } from '@udecode/plate-heading'
 import { HeadingPlugin } from '@udecode/plate-heading/react'
 import { HighlightPlugin } from '@udecode/plate-highlight/react'
 import { HorizontalRulePlugin } from '@udecode/plate-horizontal-rule/react'
+import { HtmlReactPlugin } from '@udecode/plate-html/react'
 import { IndentListPlugin } from '@udecode/plate-indent-list/react'
 import { IndentPlugin } from '@udecode/plate-indent/react'
 import { JuicePlugin } from '@udecode/plate-juice'
@@ -444,6 +446,8 @@ export const useMyEditor = ({
 			DocxPlugin,
 			MarkdownPlugin,
 			JuicePlugin,
+			HtmlReactPlugin,
+			HtmlPlugin,
 		],
 		override: {
 			components:
@@ -485,13 +489,19 @@ export const useMyEditor = ({
 				}),
 			// ),
 		},
-		value: [
-			{
-				id: '1',
-				type: ParagraphPlugin.key,
-				children: [{ text: content || 'Loading...' }],
-			},
-		],
+		value: !content
+			? [
+					{
+						id: '1',
+						type: ParagraphPlugin.key,
+						children: [{ text: 'Loading...' }],
+					},
+				]
+			: content.split('\n').map((text, index) => ({
+					id: `${index}`,
+					type: ParagraphPlugin.key,
+					children: [{ text }],
+				})),
 		...(id ? { id } : {}),
 	})
 

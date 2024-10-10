@@ -3,9 +3,7 @@ import useComments from '@/hooks/plate/use-comments'
 import { setSidebar } from '@/store/plate-store'
 import {
 	BoldPlugin,
-	CodePlugin,
 	ItalicPlugin,
-	StrikethroughPlugin,
 	UnderlinePlugin,
 } from '@udecode/plate-basic-marks/react'
 import {
@@ -13,9 +11,14 @@ import {
 	useCommentAddButton,
 } from '@udecode/plate-comments/react'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
+import {
+	FontBackgroundColorPlugin,
+	FontColorPlugin,
+} from '@udecode/plate-font/react'
 
-import { Icons } from '@/components/icons'
+import { Icons, iconVariants } from '@/components/icons'
 
+import { ColorDropdownMenu } from './color-dropdown-menu'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import RephraseSelection from './rephrase-selection'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
@@ -48,34 +51,37 @@ export function FloatingToolbarButtons() {
 							>
 								<Icons.underline />
 							</MarkToolbarButton>
-							<MarkToolbarButton
-								nodeType={StrikethroughPlugin.key}
-								tooltip="Strikethrough (⌘+⇧+X)"
+							<ColorDropdownMenu
+								nodeType={FontColorPlugin.key}
+								tooltip="Text Color"
 							>
-								<Icons.strikethrough />
-							</MarkToolbarButton>
-							<MarkToolbarButton nodeType={CodePlugin.key} tooltip="Code (⌘+E)">
-								<Icons.code />
-							</MarkToolbarButton>
-							{!commentExists && (
-								<MarkToolbarButton
-									{...props}
-									onClick={(e) => {
-										setSidebar('comments')
-										props.onClick(e)
-									}}
-									nodeType={CommentsPlugin.key}
-									tooltip="Comment (⌘+⇧+M)"
-								>
-									<Icons.commentAdd />
-								</MarkToolbarButton>
-							)}
+								<Icons.color className={iconVariants({ variant: 'toolbar' })} />
+							</ColorDropdownMenu>
+							<ColorDropdownMenu
+								nodeType={FontBackgroundColorPlugin.key}
+								tooltip="Highlight Color"
+							>
+								<Icons.bg className={iconVariants({ variant: 'toolbar' })} />
+							</ColorDropdownMenu>
 						</>
 					)}
 					<RephraseSelection
 						setShowRephrase={setShowRephrase}
 						showRephrase={showRephrase}
 					/>
+					{!commentExists && !showRephrase && (
+						<MarkToolbarButton
+							{...props}
+							onClick={(e) => {
+								setSidebar('comments')
+								props.onClick(e)
+							}}
+							nodeType={CommentsPlugin.key}
+							tooltip="Comment (⌘+⇧+M)"
+						>
+							<Icons.commentAdd />
+						</MarkToolbarButton>
+					)}
 				</>
 			)}
 		</>
