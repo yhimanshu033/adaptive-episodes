@@ -55,7 +55,7 @@ export default function useComments() {
 			setOptions({ activeComment: () => null })
 			editor.getApi(CommentsPlugin).comment.resetNewCommentValue()
 		}
-	}, [sortedComments, nodes])
+	}, [editor, setOptions])
 
 	const commentExists = comments.find(
 		(comment) => comment.id === activeCommentId

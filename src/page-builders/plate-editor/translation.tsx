@@ -20,7 +20,7 @@ const Translation = ({ translatedContent }: { translatedContent: string }) => {
 		<div className="flex w-full border-r">
 			<Plate editor={editor}>
 				<Editor
-					className="min-h-[calc(60vh-44px)] p-12"
+					className="min-h-[calc(60vh-44px)] px-12 py-5"
 					autoFocus
 					focusRing={false}
 					readOnly

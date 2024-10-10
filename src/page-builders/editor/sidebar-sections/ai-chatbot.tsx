@@ -94,10 +94,11 @@ const AIChatbot = () => {
 							</Avatar>
 						)}
 						<div
+							dangerouslySetInnerHTML={{
+								__html: message.content.replaceAll('\n', '<br/>'),
+							}}
 							className={`max-w-[70%] rounded-lg p-3 ${message.role === 'assistant' ? 'bg-background' : 'bg-primary'}`}
-						>
-							{message.content}
-						</div>
+						/>
 						{message.role === 'user' && (
 							<Avatar className="ml-2">
 								<AvatarImage
@@ -111,7 +112,7 @@ const AIChatbot = () => {
 				))}
 				<div ref={messageEndRef} />
 			</ScrollArea>
-			<div className="flex">
+			<div className="flex items-end">
 				<form
 					onSubmit={handleSendMessage}
 					className="flex flex-1 items-end space-x-2 rounded-md border bg-background"

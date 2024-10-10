@@ -69,8 +69,10 @@ export default function CommentSidebar() {
 		(comment: TCustomComment) => {
 			editor.setOption(BaseCommentsPlugin, 'activeCommentId', comment.id)
 		},
-		[set]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[set, editor]
 	)
+
 	return (
 		<div className="relative">
 			<ScrollArea className="relative flex h-full min-w-[20vw] grow flex-col gap-2 overflow-y-scroll">
