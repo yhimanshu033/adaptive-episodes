@@ -52,12 +52,18 @@ export default function useComments() {
 	const resetActiveComments = useCallback(() => {
 		if (!someNode(editor, { match: (n) => n[BaseCommentsPlugin.key] })) {
 			setOptions({ activeCommentId: null })
+			setOptions({ activeComment: () => null })
+			editor.getApi(CommentsPlugin).comment.resetNewCommentValue()
 		}
 	}, [editor, setOptions])
 
 	const commentExists = comments.find(
 		(comment) => comment.id === activeCommentId
 	)
+
+	const isCommented = (id: string) => {
+		return sortedComments.some((comment) => comment.id === id)
+	}
 
 	return {
 		allComments,
@@ -69,5 +75,6 @@ export default function useComments() {
 		resetActiveComments,
 		activeCommentId,
 		commentExists,
+		isCommented,
 	}
 }

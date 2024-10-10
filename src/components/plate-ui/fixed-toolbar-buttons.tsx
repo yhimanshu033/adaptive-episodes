@@ -67,7 +67,7 @@ export function FixedToolbarButtons() {
 
 							<MarkToolbarButton
 								nodeType={StrikethroughPlugin.key}
-								tooltip="Strikethrough (⌘+⇧+M)"
+								tooltip="Strikethrough (⌘+⇧+X)"
 							>
 								<Icons.strikethrough />
 							</MarkToolbarButton>

@@ -183,7 +183,7 @@ export default function PlateEditor() {
 							<div className="flex h-full">
 								<div className="flex w-full border-r">
 									<Editor
-										className="flex size-full px-12 py-5"
+										className="size-full p-12"
 										autoFocus
 										focusRing={false}
 										variant="ghost"
