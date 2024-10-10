@@ -4,6 +4,7 @@ import usePlateStore, { setSidebar } from '@/store/plate-store'
 import { X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 import AiChatbot from './sidebar-sections/ai-chatbot'
 import PlotOutline from './sidebar-sections/plot-outline'
@@ -11,11 +12,11 @@ import PlotOutline from './sidebar-sections/plot-outline'
 const Sidebar = () => {
 	const sidebar = usePlateStore((state) => state.sidebar)
 
-	console.log({ sidebar })
-
+	if (!sidebar) return null
 	return (
-		<div
-			className={`${sidebar ? 'w-fit min-w-[20vw]' : 'hidden'} relative rounded-md pt-4 shadow-editor`}
+		<ScrollArea
+			aria-orientation="vertical"
+			className="relative h-[60vh] w-fit min-w-[25vw] rounded-md pt-4"
 		>
 			<Button
 				className="absolute right-1 top-1 z-50"
@@ -28,7 +29,7 @@ const Sidebar = () => {
 			{sidebar === 'chatbot' && <AiChatbot />}
 			{sidebar === 'comments' && <CommentSidebar />}
 			{sidebar === 'outline' && <PlotOutline />}
-		</div>
+		</ScrollArea>
 	)
 }
 
