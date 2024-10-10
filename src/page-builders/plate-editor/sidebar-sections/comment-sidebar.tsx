@@ -61,13 +61,9 @@ function CommentComponent({
 
 export default function CommentSidebar() {
 	const editor = useEditorRef()
-	const { comments, get, sortedComments, set } = useComments()
-	const activeCommentId = get('activeCommentId')
+	const { get, sortedComments, set, activeCommentId, commentExists } =
+		useComments()
 	const myUserId = get('myUserId')
-
-	const commentExists = comments.find(
-		(comment) => comment.id === activeCommentId
-	)
 
 	const setActiveComment = useCallback(
 		(comment: TCustomComment) => {
@@ -75,13 +71,11 @@ export default function CommentSidebar() {
 		},
 		[set]
 	)
-
-	console.log({ comments })
 	return (
 		<div className="relative">
 			<ScrollArea className="relative flex h-full min-w-[20vw] grow flex-col gap-2 overflow-y-scroll">
 				<div className="p-4">
-					{!comments.length && (!myUserId || !activeCommentId) && (
+					{!sortedComments.length && (!myUserId || !activeCommentId) && (
 						<h1 className="w-full text-center">No comments</h1>
 					)}
 				</div>
