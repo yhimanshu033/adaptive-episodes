@@ -120,6 +120,7 @@ import {
 import { TableElement } from '@/components/plate-ui/table-element'
 import { TableRowElement } from '@/components/plate-ui/table-row-element'
 import { TodoListElement } from '@/components/plate-ui/todo-list-element'
+import { ScrollArea } from '@/components/ui/scroll-area'
 // import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 
@@ -134,6 +135,7 @@ export default function PlateEditor() {
 	return (
 		<DndProvider backend={HTML5Backend}>
 			<Title title={content?.episode_name as string} />
+
 			<Plate editor={editor}>
 				<div
 					ref={containerRef}
@@ -146,28 +148,33 @@ export default function PlateEditor() {
 					<FixedToolbar>
 						<FixedToolbarButtons />
 					</FixedToolbar>
+					<div className="flex w-full">
+						<ScrollArea className="h-[60vh] w-full overflow-x-hidden">
+							<div className="flex h-full">
+								<Translation
+									translatedContent={
+										isLoading
+											? 'Translation Loading...'
+											: (content?.de as string)
+									}
+								/>
+								<div className="flex w-full border-r">
+									<Editor
+										className="flex size-full p-12"
+										autoFocus
+										focusRing={false}
+										variant="ghost"
+										size="md"
+									/>
 
-					<div className="flex justify-between">
-						<div className="w-full border-r">
-							<Editor
-								className="min-h-[calc(60vh-44px)] p-12"
-								autoFocus
-								focusRing={false}
-								variant="ghost"
-								size="md"
-							/>
+									<FloatingToolbar>
+										<FloatingToolbarButtons />
+									</FloatingToolbar>
 
-							<FloatingToolbar>
-								<FloatingToolbarButtons />
-							</FloatingToolbar>
-
-							<CursorOverlay containerRef={containerRef} />
-						</div>
-						<Translation
-							translatedContent={
-								isLoading ? 'Loading...' : (content?.de as string)
-							}
-						/>
+									<CursorOverlay containerRef={containerRef} />
+								</div>
+							</div>
+						</ScrollArea>
 						<Sidebar />
 					</div>
 				</div>

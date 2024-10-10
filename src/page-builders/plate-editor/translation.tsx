@@ -13,8 +13,9 @@ const Translation = ({ translatedContent }: { translatedContent: string }) => {
 	})
 
 	const isTranslationOpen = usePlateStore((state) => state.isTranslationOpen)
+	const sidebar = usePlateStore((state) => state.sidebar)
 
-	if (!isTranslationOpen) return null
+	if (!isTranslationOpen || sidebar) return null
 	return (
 		<div className="flex w-full border-r">
 			<Plate editor={editor}>

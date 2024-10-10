@@ -1,17 +1,23 @@
-import React, { useCallback, useState } from 'react'
+import React, { Dispatch, SetStateAction, useCallback, useState } from 'react'
 import { rephraseMethods } from '@/constants/editor-constants'
 import useLaserToolsHook from '@/hooks/mutation/use-lasertool-hook'
 import useRephrase from '@/hooks/plate/use-rephrase'
-import { Bot } from 'lucide-react'
+import { ArrowLeft, Bot } from 'lucide-react'
 
 import Spinner from '../ui/spinner'
 import { Button } from './button'
 import { ToolbarButton } from './toolbar'
 
-export default function RephraseSelection() {
+interface RephraseSelectionProps {
+	setShowRephrase: Dispatch<SetStateAction<boolean>>
+	showRephrase: boolean
+}
+export default function RephraseSelection({
+	setShowRephrase,
+	showRephrase,
+}: RephraseSelectionProps) {
 	const { onRephrase, getContent, getSelectedText } = useRephrase()
 
-	const [showRephrase, setShowRephrase] = useState(false)
 	const [currentMethod, setMethod] = useState('')
 	const [textState] = useState({
 		text: '',
@@ -56,19 +62,28 @@ export default function RephraseSelection() {
 					</ToolbarButton>
 				</>
 			) : !data ? (
-				rephraseMethods.map((method) => (
+				<div className="flex items-center">
 					<Button
-						key={method.id}
 						variant="ghost"
-						onClick={() => handleRephrase(method.id)}
+						size="sm"
+						onClick={() => toggleRephrase(false)}
 					>
-						{isPending && currentMethod === method.id ? (
-							<Spinner size={16} />
-						) : (
-							method.method
-						)}
+						<ArrowLeft size={16} />
 					</Button>
-				))
+					{rephraseMethods.map((method) => (
+						<Button
+							key={method.id}
+							variant="ghost"
+							onClick={() => handleRephrase(method.id)}
+						>
+							{isPending && currentMethod === method.id ? (
+								<Spinner size={16} />
+							) : (
+								method.method
+							)}
+						</Button>
+					))}
+				</div>
 			) : (
 				<div className="z-20 min-w-56 rounded-md p-4 shadow-md">
 					<div className="mb-2 text-muted-foreground">{textState.text}</div>
