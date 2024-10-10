@@ -14,6 +14,14 @@ export const rephraseText = async ({
 	nexttext,
 	context,
 }: LaserToolsParams) => {
+	const d: LaserToolsApiResponse['data'] = {
+		text: '',
+		prevtext: '',
+		nexttext: '',
+		action: '',
+		result: 'test',
+	}
+	return d
 	try {
 		const url = `${LASERTOOLS_URL}`
 		const response = await fetch(url, {

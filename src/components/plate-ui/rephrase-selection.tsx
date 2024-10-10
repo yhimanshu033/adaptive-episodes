@@ -1,7 +1,15 @@
-import React, { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import React, {
+	Dispatch,
+	SetStateAction,
+	useCallback,
+	useEffect,
+	useState,
+} from 'react'
 import { rephraseMethods } from '@/constants/editor-constants'
 import useLaserToolsHook from '@/hooks/mutation/use-lasertool-hook'
+import useComments from '@/hooks/plate/use-comments'
 import useRephrase from '@/hooks/plate/use-rephrase'
+import { useFloatingNodeId } from '@udecode/plate-floating'
 import { ArrowLeft, Bot } from 'lucide-react'
 
 import Spinner from '../ui/spinner'
@@ -17,6 +25,13 @@ export default function RephraseSelection({
 	showRephrase,
 }: RephraseSelectionProps) {
 	const { onRephrase, getContent, getSelectedText } = useRephrase()
+	const { resetActiveComments } = useComments()
+
+	const id = useFloatingNodeId()
+
+	useEffect(() => {
+		resetActiveComments()
+	}, [id])
 
 	const [currentMethod, setMethod] = useState('')
 	const [textState] = useState({
@@ -44,6 +59,7 @@ export default function RephraseSelection({
 
 	const handleAcceptRephrase = (rephrasedText: string) => {
 		onRephrase(rephrasedText)
+		resetActiveComments()
 	}
 
 	const handleRejectRephrase = () => {

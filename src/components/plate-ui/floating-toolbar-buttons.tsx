@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import useComments from '@/hooks/plate/use-comments'
 import { setSidebar } from '@/store/plate-store'
 import {
 	BoldPlugin,
@@ -23,6 +24,7 @@ export function FloatingToolbarButtons() {
 	const readOnly = useEditorReadOnly()
 	const { props } = useCommentAddButton()
 	const [showRephrase, setShowRephrase] = useState(false)
+	const { commentExists } = useComments()
 
 	return (
 		<>
@@ -55,17 +57,19 @@ export function FloatingToolbarButtons() {
 							<MarkToolbarButton nodeType={CodePlugin.key} tooltip="Code (⌘+E)">
 								<Icons.code />
 							</MarkToolbarButton>
-							<MarkToolbarButton
-								{...props}
-								onClick={(e) => {
-									setSidebar('comments')
-									props.onClick(e)
-								}}
-								nodeType={CommentsPlugin.key}
-								tooltip="Comment (⌘+⇧+M)"
-							>
-								<Icons.commentAdd />
-							</MarkToolbarButton>
+							{!commentExists && (
+								<MarkToolbarButton
+									{...props}
+									onClick={(e) => {
+										setSidebar('comments')
+										props.onClick(e)
+									}}
+									nodeType={CommentsPlugin.key}
+									tooltip="Comment (⌘+⇧+M)"
+								>
+									<Icons.commentAdd />
+								</MarkToolbarButton>
+							)}
 						</>
 					)}
 					<RephraseSelection

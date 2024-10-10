@@ -1,9 +1,12 @@
+import { useCallback } from 'react'
 import {
+	BaseCommentsPlugin,
 	getCommentKey,
 	getCommentNodeEntries,
 	TComment,
 } from '@udecode/plate-comments'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
+import { someNode } from '@udecode/plate-common'
 import { useEditorPlugin, useEditorRef } from '@udecode/plate-common/react'
 
 import { TCustomComment } from '@/types/editor-types'
@@ -12,6 +15,7 @@ export default function useComments() {
 	const { useOption, setOptions } = useEditorPlugin(CommentsPlugin)
 	const editor = useEditorRef()
 	const allComments: TComment[] = Object.values(useOption('comments'))
+	const activeCommentId = useOption('activeCommentId')
 
 	const replies = allComments.filter((elm) => !!elm.parentId)
 
@@ -45,7 +49,15 @@ export default function useComments() {
 			return uniqueComments
 		}, [] as TCustomComment[])
 
-	// console.log({ sortedComments })
+	const resetActiveComments = useCallback(() => {
+		if (!someNode(editor, { match: (n) => n[BaseCommentsPlugin.key] })) {
+			setOptions({ activeCommentId: null })
+		}
+	}, [])
+
+	const commentExists = comments.find(
+		(comment) => comment.id === activeCommentId
+	)
 
 	return {
 		allComments,
@@ -54,5 +66,8 @@ export default function useComments() {
 		get: useOption,
 		sortedComments,
 		set: setOptions,
+		resetActiveComments,
+		activeCommentId,
+		commentExists,
 	}
 }
