@@ -2,7 +2,7 @@
 
 import React from 'react'
 import useComments from '@/hooks/plate/use-comments'
-import usePlateStore from '@/store/plate-store'
+import usePlateStore, { setSidebar } from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import type { TCommentText } from '@udecode/plate-comments'
 import {
@@ -17,7 +17,7 @@ export function CommentLeaf({
 }: PlateLeafProps<TCommentText>) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { children, leaf, nodeProps } = props
-	const { isCommented } = useComments()
+	const { isCommented, set } = useComments()
 	const sidebar = usePlateStore((state) => state.sidebar)
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
@@ -47,8 +47,13 @@ export function CommentLeaf({
 				...rootProps,
 				...nodeProps,
 			}}
+			onMouseDown={(e) => {
+				setSidebar('comments')
+				set({ activeCommentId: state.lastCommentId })
+				props.onClick?.(e)
+			}}
 		>
-			{aboveChildren}
+			{aboveChildren}1
 		</PlateLeaf>
 	)
 }

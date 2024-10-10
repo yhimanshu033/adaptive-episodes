@@ -1,17 +1,18 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import useComments from '@/hooks/plate/use-comments'
+import usePlateStore, { setResolved } from '@/store/plate-store'
 import { BaseCommentsPlugin } from '@udecode/plate-comments'
 import {
 	CommentProvider,
 	SCOPE_ACTIVE_COMMENT,
 } from '@udecode/plate-comments/react'
 import { useEditorRef } from '@udecode/plate-common/react'
-import { ReplyIcon } from 'lucide-react'
+import { CheckCheck, ReplyIcon } from 'lucide-react'
 
 import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { CommentItem } from '@/components/plate-ui/comment-item'
 import { CommentReplyItems } from '@/components/plate-ui/comment-reply-items'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 import { TCustomComment } from '@/types/editor-types'
@@ -27,6 +28,16 @@ function CommentComponent({
 	myUserId: string | null
 	setActiveComment: (comment: TCustomComment) => void
 }) {
+	const ref = React.useRef<HTMLDivElement>(null)
+
+	useEffect(() => {
+		if (ref.current && activeCommentId === comment.id) {
+			ref.current.scrollIntoView({
+				behavior: 'smooth',
+				block: 'nearest',
+			})
+		}
+	}, [ref, activeCommentId])
 	return (
 		<CommentProvider
 			id={comment.id}
@@ -34,6 +45,7 @@ function CommentComponent({
 			scope={SCOPE_ACTIVE_COMMENT}
 		>
 			<div
+				ref={ref}
 				role="button"
 				onMouseDown={() => {
 					setActiveComment(comment)
@@ -73,27 +85,41 @@ export default function CommentSidebar() {
 		[set, editor]
 	)
 
+	const unresolvedComments = [...sortedComments].filter(
+		(comment) => !comment.isResolved
+	)
+	const resolvedComments = [...sortedComments].filter(
+		(comment) => comment.isResolved
+	)
+	const showResolved = usePlateStore((state) => state.resolved)
+	const comments = showResolved ? resolvedComments : unresolvedComments
 	return (
 		<div className="relative">
-			<ScrollArea className="relative flex h-full min-w-[20vw] grow flex-col gap-2 overflow-y-scroll">
-				<div className="p-4">
-					{!sortedComments.length && (!myUserId || !activeCommentId) && (
-						<h1 className="w-full text-center">No comments</h1>
-					)}
-				</div>
-				{sortedComments.map((comment) => (
-					<CommentComponent
-						key={comment.id}
-						setActiveComment={setActiveComment}
-						comment={comment}
-						activeCommentId={activeCommentId}
-						myUserId={myUserId}
-					/>
-				))}
-				{!!myUserId && activeCommentId && !commentExists && (
-					<CommentCreateForm />
+			<div className="pb-8 pt-4">
+				{!comments.length && (!myUserId || !activeCommentId) && (
+					<h1 className="w-full text-center">
+						No {showResolved ? 'resolved' : 'unresolved'} comments
+					</h1>
 				)}
-			</ScrollArea>
+			</div>
+			<Button
+				className="op absolute left-2 top-1 z-50"
+				variant={showResolved ? 'default' : 'outline'}
+				size="icon"
+				onClick={() => setResolved(true, true)}
+			>
+				<CheckCheck size={16} />
+			</Button>
+			{comments.map((comment) => (
+				<CommentComponent
+					key={comment.id}
+					setActiveComment={setActiveComment}
+					comment={comment}
+					activeCommentId={activeCommentId}
+					myUserId={myUserId}
+				/>
+			))}
+			{!!myUserId && activeCommentId && !commentExists && <CommentCreateForm />}
 		</div>
 	)
 }

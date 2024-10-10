@@ -1,25 +1,20 @@
-import React, { useEffect } from 'react'
-import useComments from '@/hooks/plate/use-comments'
+import React from 'react'
 import CommentSidebar from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar'
 import usePlateStore, { setSidebar } from '@/store/plate-store'
 import { X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 import AiChatbot from './sidebar-sections/ai-chatbot'
 import PlotOutline from './sidebar-sections/plot-outline'
 
 const Sidebar = () => {
-	const { resetActiveComments } = useComments()
 	const sidebar = usePlateStore((state) => state.sidebar)
-
-	useEffect(() => {
-		resetActiveComments()
-	}, [resetActiveComments, sidebar])
 
 	if (!sidebar) return null
 	return (
-		<div className="relative w-fit flex-1 rounded-md">
+		<ScrollArea className="relative h-[60vh] w-fit min-w-[25vw] flex-1">
 			<Button
 				className="absolute right-2 top-1 z-50"
 				variant="ghost"
@@ -31,7 +26,7 @@ const Sidebar = () => {
 			{sidebar === 'chatbot' && <AiChatbot />}
 			{sidebar === 'comments' && <CommentSidebar />}
 			{sidebar === 'outline' && <PlotOutline />}
-		</div>
+		</ScrollArea>
 	)
 }
 
