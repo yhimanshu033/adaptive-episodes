@@ -15,7 +15,11 @@ export default function TranslationToggleButton() {
 		if (!translation || (translation && !sidebar)) toggleTranslation()
 	}, [sidebar, translation])
 	return (
-		<ToolbarButton tooltip="Translate" onClick={onTranslation}>
+		<ToolbarButton
+			variant={translation && !sidebar ? 'active' : 'default'}
+			tooltip="Translate"
+			onClick={onTranslation}
+		>
 			<Book className="size-4" />
 		</ToolbarButton>
 	)

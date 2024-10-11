@@ -1,4 +1,4 @@
-import { EpisodeResponse } from '@/types/episode-type'
+import { EpisodeResponse, LoglinesResponse } from '@/types/episode-type'
 
 export const getEpisodes = async (
 	story: string,
@@ -20,5 +20,27 @@ export const getEpisodes = async (
 	} catch (error) {
 		const { message } = error as Error
 		throw new Error(message || 'Failed to get episode')
+	}
+}
+
+export const getLoglines = async (
+	story: string,
+	start: string,
+	end: string
+) => {
+	try {
+		const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story}/loglines?start=${start}&end=${end}`
+		const data = (await fetch(url).then((res) =>
+			res.json()
+		)) as LoglinesResponse
+
+		if (!data.status) {
+			throw new Error(data.error as string)
+		}
+
+		return data
+	} catch (error) {
+		const { message } = error as Error
+		throw new Error(message || 'Failed to get loglines')
 	}
 }

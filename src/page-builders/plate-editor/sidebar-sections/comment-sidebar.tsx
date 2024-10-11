@@ -37,7 +37,7 @@ function CommentComponent({
 				block: 'nearest',
 			})
 		}
-	}, [ref, activeCommentId])
+	}, [ref, activeCommentId, comment.id])
 	return (
 		<CommentProvider
 			id={comment.id}

@@ -16,3 +16,9 @@ export interface EpisodeResponse {
 	totalEpisodes: number
 	totalPages: number
 }
+
+export interface LoglinesResponse {
+	error: string | null
+	loglines: string[]
+	status: number
+}

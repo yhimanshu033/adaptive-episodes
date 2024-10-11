@@ -82,6 +82,7 @@ import {
 } from '@udecode/plate-table/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
@@ -185,7 +186,7 @@ export default function PlateEditor() {
 							<div className="flex h-full">
 								<div className="flex w-full border-r">
 									<Editor
-										className="size-full p-12"
+										className="size-full px-12 py-5"
 										autoFocus
 										focusRing={false}
 										variant="ghost"
@@ -222,6 +223,7 @@ export const useMyEditor = ({
 	content?: string
 	id?: string
 }) => {
+	const { data: userData } = useSession()
 	const editor = createPlateEditor({
 		plugins: [
 			// Nodes
@@ -433,9 +435,8 @@ export const useMyEditor = ({
 					users: {
 						1: {
 							id: '1',
-							name: 'zbeyens',
-							avatarUrl:
-								'https://avatars.githubusercontent.com/u/19695832?s=96&v=4',
+							name: userData?.user?.name || 'User',
+							avatarUrl: userData?.user?.image || '/placeholder-user.jpg',
 						},
 					},
 					myUserId: '1',
