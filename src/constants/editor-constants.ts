@@ -74,14 +74,14 @@ export const sidebarSections: {
 ]
 
 export const rephraseMethods = [
-	{ id: 'shortenmore', method: 'Shorten' },
-	{ id: 'expand', method: 'Expand' },
-	{ id: 'expandmore', method: 'Stylize' },
-	{ id: 'improve', method: 'Improve' },
-	{ id: 'recap', method: 'Recap' },
-	{ id: 'dialog', method: 'Dialog' },
-	{ id: 'notetoscript', method: 'NoteToScript' },
-	{ id: 'prompt', method: 'Prompt' },
+	{ id: 'shortenmore', method: '🤏 Shorten' },
+	{ id: 'expand', method: '🤲 Expand' },
+	{ id: 'expandmore', method: '🎨 Stylize' },
+	// { id: 'improve', method: 'Improve' },
+	// { id: 'recap', method: 'Recap' },
+	{ id: 'dialog', method: '🗣️ Dialog' },
+	// { id: 'notetoscript', method: 'NoteToScript' },
+	{ id: 'prompt', method: '💬 Prompt' },
 ]
 
 export const MAIN_EDITOR_ID = 'main-editor'

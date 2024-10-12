@@ -3,12 +3,8 @@
 import React from 'react'
 import { cn, withRef } from '@udecode/cn'
 
-import { buttonVariants } from './button'
 import type { TColor } from './color-dropdown-menu'
 import { ColorDropdownMenuItems } from './color-dropdown-menu-items'
-import { ColorsCustom } from './colors-custom'
-import { DropdownMenuItem } from './dropdown-menu'
-import { Separator } from './separator'
 
 export const ColorPickerContent = withRef<
 	'div',
@@ -27,9 +23,9 @@ export const ColorPickerContent = withRef<
 			clearColor,
 			color,
 			colors,
-			customColors,
+			// customColors,
 			updateColor,
-			updateCustomColor,
+			// updateCustomColor,
 			...props
 		},
 		ref
@@ -40,32 +36,12 @@ export const ColorPickerContent = withRef<
 				className={cn('flex flex-col gap-4 p-4', className)}
 				{...props}
 			>
-				<ColorsCustom
-					color={color}
-					colors={colors}
-					customColors={customColors}
-					updateColor={updateColor}
-					updateCustomColor={updateCustomColor}
-				/>
-
-				<Separator />
-
 				<ColorDropdownMenuItems
 					color={color}
 					colors={colors}
 					updateColor={updateColor}
+					clearColor={clearColor}
 				/>
-				{color && (
-					<DropdownMenuItem
-						className={buttonVariants({
-							isMenu: true,
-							variant: 'outline',
-						})}
-						onClick={clearColor}
-					>
-						Clear
-					</DropdownMenuItem>
-				)}
 			</div>
 		)
 	}
