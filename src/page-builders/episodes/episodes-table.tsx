@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { statuses } from '@/constants/episodes-constants'
 import useEpisodeData from '@/hooks/query/use-episode-data'
 import {
@@ -46,13 +46,8 @@ const EpisodesTable = () => {
 
 	const router = useRouter()
 	const pathname = usePathname()
-	const { id } = useParams()
 
-	const { data: episodePage } = useEpisodeData(
-		id as string,
-		currentPage,
-		episodeFilter
-	)
+	const { data: episodePage } = useEpisodeData(currentPage, episodeFilter)
 
 	const handleStatusChange = (episodeId: number, newStatus: string) => {
 		setEpisodes(

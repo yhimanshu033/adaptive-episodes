@@ -51,6 +51,7 @@ const toolbarButtonVariants = cva(
 					'bg-transparent hover:bg-muted hover:text-muted-foreground aria-checked:bg-accent aria-checked:text-accent-foreground',
 				outline:
 					'border border-input bg-transparent hover:bg-accent hover:text-accent-foreground',
+				active: 'bg-primary text-primary-foreground hover:bg-primary/90',
 			},
 		},
 	}

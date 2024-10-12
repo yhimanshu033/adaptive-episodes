@@ -5,14 +5,17 @@ import React, {
 	useEffect,
 	useState,
 } from 'react'
+import { useParams } from 'next/navigation'
 import { rephraseMethods } from '@/constants/editor-constants'
 import useLaserToolsHook from '@/hooks/mutation/use-lasertool-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useRephrase from '@/hooks/plate/use-rephrase'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useFloatingNodeId } from '@udecode/plate-floating'
-import { ArrowLeft, Bot } from 'lucide-react'
+import { ArrowLeft, Bot, Delete, RotateCw, SendHorizonal } from 'lucide-react'
 
 import Spinner from '../ui/spinner'
+import { Textarea } from '../ui/textarea'
 import { Button } from './button'
 import { ToolbarButton } from './toolbar'
 
@@ -26,6 +29,11 @@ export default function RephraseSelection({
 }: RephraseSelectionProps) {
 	const { onRephrase, getContent, getSelectedText } = useRephrase()
 	const { resetActiveComments } = useComments()
+	const [textInput, setTextInput] = useState('')
+	const [showPrompt, setShowPrompt] = useState(false)
+	const [promptInput, setPromptInput] = useState('')
+	const { episodeId } = useParams()
+	const { data: episodeContent } = useEpisodeContent()
 
 	const id = useFloatingNodeId()
 
@@ -34,11 +42,6 @@ export default function RephraseSelection({
 	}, [id, resetActiveComments])
 
 	const [currentMethod, setMethod] = useState('')
-	const [textState] = useState({
-		text: '',
-		prevtext: '',
-		nexttext: '',
-	})
 
 	const { laserToolsMutation } = useLaserToolsHook()
 	const { data, isPending, reset } = laserToolsMutation
@@ -54,20 +57,26 @@ export default function RephraseSelection({
 		const content = getContent()
 		laserToolsMutation.mutate({
 			action,
-			...textState,
-			text: getSelectedText(),
+			...getSelectedText(),
 			context: content,
+			ep_number: episodeId as string,
+			ep_text: episodeContent?.de || '',
+			prompt: promptInput,
 		})
 	}
 
-	const handleAcceptRephrase = (rephrasedText: string) => {
-		onRephrase(rephrasedText)
+	const handleAcceptRephrase = () => {
+		onRephrase(textInput)
 		resetActiveComments()
 	}
 
 	const handleRejectRephrase = () => {
 		reset()
 	}
+
+	useEffect(() => {
+		if (data && !isPending) setTextInput(data.result)
+	}, [data, isPending, setTextInput])
 
 	return (
 		<div>
@@ -81,44 +90,101 @@ export default function RephraseSelection({
 					</ToolbarButton>
 				</>
 			) : !data ? (
-				<div className="flex items-center">
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => toggleRephrase(false)}
-					>
-						<ArrowLeft size={16} />
-					</Button>
-					{rephraseMethods.map((method) => (
+				!showPrompt ? (
+					<div className="flex items-center">
 						<Button
-							key={method.id}
 							variant="ghost"
-							onClick={() => handleRephrase(method.id)}
+							size="sm"
+							onClick={() => toggleRephrase(false)}
 						>
-							{isPending && currentMethod === method.id ? (
-								<Spinner size={16} />
-							) : (
-								method.method
-							)}
+							<ArrowLeft size={16} />
 						</Button>
-					))}
-				</div>
+						{rephraseMethods.map((method) => (
+							<Button
+								key={method.id}
+								variant="ghost"
+								className="my-1"
+								onClick={() =>
+									method.id === 'custom'
+										? setShowPrompt(true)
+										: handleRephrase(method.id)
+								}
+							>
+								{isPending && currentMethod === method.id ? (
+									<Spinner size={16} />
+								) : (
+									method.method
+								)}
+							</Button>
+						))}
+					</div>
+				) : (
+					<div className="p-5">
+						<Textarea
+							placeholder="Enter you prompt here..."
+							value={promptInput}
+							onMouseDown={(e) => e.stopPropagation()}
+							onChange={(e) => setPromptInput(e.target.value)}
+						/>
+						<div className="mt-3 flex justify-between">
+							<Button
+								size="icon"
+								variant="ghost"
+								onClick={() => setShowPrompt(false)}
+							>
+								<ArrowLeft size={16} />
+							</Button>
+							<div className="flex gap-2">
+								<Button
+									size="icon"
+									variant="ghost"
+									onClick={() => setPromptInput('')}
+								>
+									<Delete size={16} />
+								</Button>
+								<Button
+									size="icon"
+									onClick={() => {
+										setShowPrompt(false)
+										handleRephrase('custom')
+									}}
+								>
+									<SendHorizonal size={16} />
+								</Button>
+							</div>
+						</div>
+					</div>
+				)
 			) : (
 				<div className="z-20 min-w-56 rounded-md p-4 shadow-md">
-					<div className="mb-2 text-muted-foreground">{textState.text}</div>
-					<div className="mb-4 text-accent-foreground">{data.result}</div>
-					<div className="flex items-center justify-end gap-2">
+					<div className="mb-2 text-muted-foreground">
+						{getSelectedText().text}
+					</div>
+					<Textarea
+						className="mb-4 min-w-[300px] text-accent-foreground"
+						value={textInput}
+						onChange={(e) => setTextInput(e.target.value)}
+					/>
+					<div className="flex items-center justify-between">
 						<Button
-							variant="outline"
-							size="sm"
-							className="mr-2"
-							onClick={handleRejectRephrase}
+							variant="ghost"
+							onClick={() => handleRephrase(currentMethod)}
 						>
-							Reject
+							<RotateCw size={16} />
 						</Button>
-						<Button size="sm" onClick={() => handleAcceptRephrase(data.result)}>
-							Accept
-						</Button>
+						<div className="flex items-center justify-end gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								className="mr-2"
+								onClick={handleRejectRephrase}
+							>
+								Reject
+							</Button>
+							<Button size="sm" onClick={handleAcceptRephrase}>
+								Accept
+							</Button>
+						</div>
 					</div>
 				</div>
 			)}
