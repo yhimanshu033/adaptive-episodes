@@ -38,20 +38,6 @@ const fetchWithErrorHandling = async (
 export const rephraseText = async (
 	params: LaserToolsParams
 ): Promise<LaserToolsApiResponse['data']> => {
-	const d: LaserToolsApiResponse['data'] = {
-		action: '',
-		nexttext: '',
-		prevtext: '',
-		result: 'test',
-		text: '',
-	}
-
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			resolve(d)
-		}, 2000)
-	})
-	// return d
 	const body = {
 		api_key: process.env.NEXT_PUBLIC_LASERTOOLS_API_KEY,
 		...params,
