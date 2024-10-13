@@ -260,5 +260,5 @@ export default function useRephrase() {
 		return { text: selectedText, prevText, nextText }
 	}, [clonedNodes, selection])
 
-	return { onRephrase, getContent, getSelectedText }
+	return { onRephrase, getContent, getSelectedText, editor }
 }

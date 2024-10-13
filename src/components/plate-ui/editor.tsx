@@ -62,6 +62,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 	) => {
 		const scale = useCustomPlateStore((state) => state.scale)
 		const marginLeft = scale < 1 ? (1 - scale) * 50 : 0
+		const mihHeight = 100 / scale
 		return (
 			<div ref={ref} className="relative w-full overflow-scroll">
 				<PlateContent
@@ -83,6 +84,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 					style={{
 						transform: `scale(${scale})`,
 						marginLeft: `${marginLeft}%`,
+						minHeight: `${mihHeight}%`,
 						...props.style,
 					}}
 					{...props}
