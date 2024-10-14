@@ -25,6 +25,8 @@ import { OutlineToolbarButton } from './outline-toggle-button'
 import { ToolbarGroup } from './toolbar'
 import TranslationToggleButton from './translation-toggle-button'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
+import UndoRedoButtons from './undo-redo-buttons'
+import { ZoomDropdownMenu } from './zoom-dropdown'
 
 export function FixedToolbarButtons() {
 	const readOnly = useEditorReadOnly()
@@ -74,6 +76,11 @@ export function FixedToolbarButtons() {
 							>
 								<Icons.bg className={iconVariants({ variant: 'toolbar' })} />
 							</ColorDropdownMenu>
+						</ToolbarGroup>
+
+						<ToolbarGroup>
+							<UndoRedoButtons />
+							<ZoomDropdownMenu />
 						</ToolbarGroup>
 
 						<ToolbarGroup>

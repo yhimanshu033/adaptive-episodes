@@ -74,11 +74,11 @@ export const sidebarSections: {
 ]
 
 export const rephraseMethods = [
-	{ id: 'shorten', method: 'Shorten' },
-	{ id: 'expand', method: 'Expand' },
-	{ id: 'stylize', method: 'Stylize' },
-	{ id: 'dialogue ', method: 'Dialogue' },
-	{ id: 'custom', method: 'Prompt' },
+	{ id: 'shortenmore', method: '🤏 Shorten' },
+	{ id: 'expand', method: '🤲 Expand' },
+	{ id: 'expandmore', method: '🎨 Stylize' },
+	{ id: 'dialog', method: '🗣️ Dialog' },
+	{ id: 'custom', method: '💬 Prompt' },
 ]
 
 export const MAIN_EDITOR_ID = 'main-editor'

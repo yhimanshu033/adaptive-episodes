@@ -1,8 +1,11 @@
+/* eslint-disable  @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 'use client'
 
 import React from 'react'
 import type { DropdownMenuItemProps } from '@radix-ui/react-dropdown-menu'
 import { cn } from '@udecode/cn'
+import { Ban } from 'lucide-react'
 
 import { Icons } from '@/components/icons'
 
@@ -70,14 +73,43 @@ export function ColorDropdownMenuItems({
 	className,
 	color,
 	colors,
+	clearColor,
 	updateColor,
 	...props
-}: ColorDropdownMenuItemsProps) {
+}: ColorDropdownMenuItemsProps & { clearColor: () => void }) {
+	function onSelect(e: Event) {
+		e.preventDefault()
+		clearColor()
+	}
+	const noneItem = (
+		<DropdownMenuItem
+			className={cn(
+				buttonVariants({
+					isMenu: true,
+					variant: 'outline',
+				}),
+				'size-6 border border-solid border-muted p-0',
+				className
+			)}
+			style={{ backgroundColor: 'transparent' }}
+			onSelect={onSelect as any}
+			{...props}
+		>
+			<Ban />
+		</DropdownMenuItem>
+	)
+
 	return (
 		<div
 			className={cn('grid grid-cols-[repeat(10,1fr)] gap-1', className)}
 			{...props}
 		>
+			{color && (
+				<Tooltip>
+					<TooltipTrigger>{noneItem}</TooltipTrigger>
+					<TooltipContent>None</TooltipContent>
+				</Tooltip>
+			)}
 			{colors.map(({ isBrightColor, name, value }) => (
 				<ColorDropdownMenuItem
 					name={name}

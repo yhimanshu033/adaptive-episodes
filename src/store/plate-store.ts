@@ -8,6 +8,7 @@ const initialState: PlateStoreData = {
 	isTranslationOpen: false,
 	sidebar: null,
 	resolved: false,
+	scale: 1,
 }
 
 const usePlateStore = create(devtools(immer(() => initialState)))
@@ -32,4 +33,9 @@ export const setResolved = (resolved: boolean, toggle?: boolean) => {
 		return { resolved: toggle ? !state.resolved : resolved }
 	})
 }
+
+export const setScale = (scale: number) => {
+	usePlateStore.setState({ scale })
+}
+
 export default usePlateStore

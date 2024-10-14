@@ -1,4 +1,5 @@
 import React from 'react'
+import useCustomPlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import type { PlateContentProps } from '@udecode/plate-common/react'
 import { PlateContent } from '@udecode/plate-common/react'
@@ -59,8 +60,11 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		},
 		ref
 	) => {
+		const scale = useCustomPlateStore((state) => state.scale)
+		const marginLeft = scale < 1 ? (1 - scale) * 50 : 0
+		const mihHeight = 100 / scale
 		return (
-			<div ref={ref} className="relative w-full">
+			<div ref={ref} className="relative w-full overflow-scroll">
 				<PlateContent
 					className={cn(
 						editorVariants({
@@ -70,12 +74,19 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 							size,
 							variant,
 						}),
-						className
+						className,
+						'absolute h-fit origin-top-left overflow-scroll'
 					)}
 					readOnly={disabled ?? readOnly}
 					aria-disabled={disabled}
 					data-plate-selectable
 					disableDefaultStyles
+					style={{
+						transform: `scale(${scale})`,
+						marginLeft: `${marginLeft}%`,
+						minHeight: `${mihHeight}%`,
+						...props.style,
+					}}
 					{...props}
 				/>
 			</div>

@@ -14,6 +14,14 @@ import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useFloatingNodeId } from '@udecode/plate-floating'
 import { ArrowLeft, Bot, Delete, RotateCw, SendHorizonal } from 'lucide-react'
 
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog'
+
 import Spinner from '../ui/spinner'
 import { Textarea } from '../ui/textarea'
 import { Button } from './button'
@@ -23,11 +31,144 @@ interface RephraseSelectionProps {
 	setShowRephrase: Dispatch<SetStateAction<boolean>>
 	showRephrase: boolean
 }
+
+function PromptDialog({
+	dialogOpen,
+	setDialogOpen,
+	handleRephrase,
+	promptInput,
+	setPromptInput,
+	isPending,
+	reset,
+}: {
+	dialogOpen: boolean
+	handleRephrase: (action: string) => void
+	isPending: boolean
+	promptInput: string
+	reset: () => void
+	setDialogOpen: Dispatch<SetStateAction<boolean>>
+	setPromptInput: Dispatch<SetStateAction<string>>
+}) {
+	return (
+		<Dialog
+			open={dialogOpen}
+			onOpenChange={(o) => {
+				setDialogOpen(o)
+				reset()
+			}}
+		>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>💬 Prompt</DialogTitle>
+				</DialogHeader>
+				<Textarea
+					placeholder="Enter you prompt here..."
+					value={promptInput}
+					onMouseDown={(e) => e.stopPropagation()}
+					onChange={(e) => setPromptInput(e.target.value)}
+				/>
+				<div className="mt-3 flex justify-between">
+					<Button
+						size="icon"
+						variant="ghost"
+						onClick={() => setPromptInput('')}
+					>
+						<Delete size={16} />
+					</Button>
+					<Button
+						size="icon"
+						onClick={() => {
+							handleRephrase('custom')
+						}}
+					>
+						{isPending ? <Spinner size={16} /> : <SendHorizonal size={16} />}
+					</Button>
+				</div>
+			</DialogContent>
+		</Dialog>
+	)
+}
+
+function ResultDialog({
+	dialogOpen,
+	currentMethod,
+	handleRephrase,
+	handleAcceptRephrase,
+	handleRejectRephrase,
+	selectedText,
+	setTextInput,
+	textInput,
+	isPending,
+}: {
+	currentMethod: string
+	dialogOpen: boolean
+	handleAcceptRephrase: () => void
+	handleRejectRephrase: () => void
+	handleRephrase: (action: string) => void
+	isPending: boolean
+	selectedText: string
+	setTextInput: Dispatch<SetStateAction<string>>
+	textInput: string
+}) {
+	const method = rephraseMethods.find((m) => m.id === currentMethod)
+	return (
+		<Dialog
+			open={dialogOpen}
+			onOpenChange={() => {
+				handleRejectRephrase()
+			}}
+		>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>{method?.method || 'Result'}</DialogTitle>
+				</DialogHeader>
+				<DialogDescription className="truncate">
+					{selectedText}
+				</DialogDescription>
+				{isPending ? (
+					<div className="flex w-full justify-center">
+						<Spinner size={32} />
+					</div>
+				) : (
+					<>
+						<Textarea
+							className="mb-4 min-w-[300px] text-accent-foreground"
+							value={textInput}
+							onChange={(e) => setTextInput(e.target.value)}
+						/>
+						<div className="flex items-center justify-between">
+							<Button
+								variant="ghost"
+								onClick={() => handleRephrase(currentMethod)}
+							>
+								<RotateCw size={16} />
+							</Button>
+							<div className="flex items-center justify-end gap-2">
+								<Button
+									variant="outline"
+									size="sm"
+									className="mr-2"
+									onClick={handleRejectRephrase}
+								>
+									Reject
+								</Button>
+								<Button size="sm" onClick={handleAcceptRephrase}>
+									Accept
+								</Button>
+							</div>
+						</div>
+					</>
+				)}
+			</DialogContent>
+		</Dialog>
+	)
+}
+
 export default function RephraseSelection({
 	setShowRephrase,
 	showRephrase,
 }: RephraseSelectionProps) {
-	const { onRephrase, getContent, getSelectedText } = useRephrase()
+	const { onRephrase, getContent, getSelectedText, editor } = useRephrase()
 	const { resetActiveComments } = useComments()
 	const [textInput, setTextInput] = useState('')
 	const [showPrompt, setShowPrompt] = useState(false)
@@ -37,6 +178,12 @@ export default function RephraseSelection({
 
 	const id = useFloatingNodeId()
 
+	function resetFloatingToolbar() {
+		editor.setSelection({
+			anchor: { offset: 0, path: [0, 0] },
+			focus: { offset: 0, path: [0, 0] },
+		})
+	}
 	useEffect(() => {
 		resetActiveComments()
 	}, [id, resetActiveComments])
@@ -71,6 +218,7 @@ export default function RephraseSelection({
 	}
 
 	const handleRejectRephrase = () => {
+		resetFloatingToolbar()
 		reset()
 	}
 
@@ -89,103 +237,53 @@ export default function RephraseSelection({
 						<Bot />
 					</ToolbarButton>
 				</>
-			) : !data ? (
-				!showPrompt ? (
-					<div className="flex items-center">
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => toggleRephrase(false)}
-						>
-							<ArrowLeft size={16} />
-						</Button>
-						{rephraseMethods.map((method) => (
-							<Button
-								key={method.id}
-								variant="ghost"
-								className="my-1"
-								onClick={() =>
-									method.id === 'custom'
-										? setShowPrompt(true)
-										: handleRephrase(method.id)
-								}
-							>
-								{isPending && currentMethod === method.id ? (
-									<Spinner size={16} />
-								) : (
-									method.method
-								)}
-							</Button>
-						))}
-					</div>
-				) : (
-					<div className="p-5">
-						<Textarea
-							placeholder="Enter you prompt here..."
-							value={promptInput}
-							onMouseDown={(e) => e.stopPropagation()}
-							onChange={(e) => setPromptInput(e.target.value)}
-						/>
-						<div className="mt-3 flex justify-between">
-							<Button
-								size="icon"
-								variant="ghost"
-								onClick={() => setShowPrompt(false)}
-							>
-								<ArrowLeft size={16} />
-							</Button>
-							<div className="flex gap-2">
-								<Button
-									size="icon"
-									variant="ghost"
-									onClick={() => setPromptInput('')}
-								>
-									<Delete size={16} />
-								</Button>
-								<Button
-									size="icon"
-									onClick={() => {
-										setShowPrompt(false)
-										handleRephrase('custom')
-									}}
-								>
-									<SendHorizonal size={16} />
-								</Button>
-							</div>
-						</div>
-					</div>
-				)
 			) : (
-				<div className="z-20 min-w-56 rounded-md p-4 shadow-md">
-					<div className="mb-2 text-muted-foreground">
-						{getSelectedText().text}
-					</div>
-					<Textarea
-						className="mb-4 min-w-[300px] text-accent-foreground"
-						value={textInput}
-						onChange={(e) => setTextInput(e.target.value)}
-					/>
-					<div className="flex items-center justify-between">
+				<div className="flex items-center">
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={() => toggleRephrase(false)}
+					>
+						<ArrowLeft size={16} />
+					</Button>
+					{rephraseMethods.map((method) => (
 						<Button
+							key={method.id}
 							variant="ghost"
-							onClick={() => handleRephrase(currentMethod)}
+							className="my-1"
+							onClick={() =>
+								method.id === 'custom'
+									? setShowPrompt(true)
+									: handleRephrase(method.id)
+							}
 						>
-							<RotateCw size={16} />
+							{isPending && currentMethod === method.id ? (
+								<Spinner size={16} />
+							) : (
+								method.method
+							)}
 						</Button>
-						<div className="flex items-center justify-end gap-2">
-							<Button
-								variant="outline"
-								size="sm"
-								className="mr-2"
-								onClick={handleRejectRephrase}
-							>
-								Reject
-							</Button>
-							<Button size="sm" onClick={handleAcceptRephrase}>
-								Accept
-							</Button>
-						</div>
-					</div>
+					))}
+					<PromptDialog
+						reset={resetFloatingToolbar}
+						isPending={isPending}
+						dialogOpen={showPrompt && !data}
+						handleRephrase={handleRephrase}
+						promptInput={promptInput}
+						setDialogOpen={setShowPrompt}
+						setPromptInput={setPromptInput}
+					/>
+					<ResultDialog
+						isPending={isPending}
+						currentMethod={currentMethod}
+						dialogOpen={currentMethod === 'custom' ? !!data : !!currentMethod}
+						handleAcceptRephrase={handleAcceptRephrase}
+						handleRejectRephrase={handleRejectRephrase}
+						handleRephrase={handleRephrase}
+						selectedText={getSelectedText().text}
+						setTextInput={setTextInput}
+						textInput={textInput}
+					/>
 				</div>
 			)}
 		</div>
