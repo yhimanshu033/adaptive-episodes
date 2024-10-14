@@ -161,12 +161,12 @@ export default function useRephrase() {
 	}, [clonedNodes])
 
 	const getSelectedText = useCallback(() => {
-		if (!selection) return { text: '', prevText: '', nextText: '' }
+		if (!selection) return { text: '', prevtext: '', nexttext: '' }
 
 		const { start, end } = getStartAndEnd(selection)
 		let selectedText = ''
-		let prevText = ''
-		let nextText = ''
+		let prevtext = ''
+		let nexttext = ''
 
 		const currentBlock = clonedNodes[0][0].children[start.path[0]]
 		const blockStart = currentBlock.children[start.path[1]].text
@@ -213,11 +213,11 @@ export default function useRephrase() {
 				''
 			)
 			if (prevBlockText.length > remainingChars) {
-				prevText =
-					prevBlockText.slice(prevBlockText.length - remainingChars) + prevText
+				prevtext =
+					prevBlockText.slice(prevBlockText.length - remainingChars) + prevtext
 				remainingChars = 0 // We've reached our limit
 			} else {
-				prevText = prevBlockText + prevText
+				prevtext = prevBlockText + prevtext
 				remainingChars -= prevBlockText.length
 			}
 		}
@@ -232,7 +232,7 @@ export default function useRephrase() {
 		// Collect text from the current block
 		if (nextBlockText.length < remainingChars) {
 			remainingChars -= nextBlockText.length
-			nextText += nextBlockText
+			nexttext += nextBlockText
 		}
 
 		// Collect text from next blocks
@@ -246,18 +246,18 @@ export default function useRephrase() {
 				''
 			)
 			if (nextBlockText.length > remainingChars) {
-				nextText += nextBlockText.slice(0, remainingChars)
+				nexttext += nextBlockText.slice(0, remainingChars)
 				remainingChars = 0 // We've reached our limit
 			} else {
-				nextText += nextBlockText
+				nexttext += nextBlockText
 				remainingChars -= nextBlockText.length
 			}
 		}
 
-		// Add the text from the current block for prevText
-		prevText += blockStart.slice(startIndex, start.offset)
+		// Add the text from the current block for prevtext
+		prevtext += blockStart.slice(startIndex, start.offset)
 
-		return { text: selectedText, prevText, nextText }
+		return { text: selectedText, prevtext, nexttext }
 	}, [clonedNodes, selection])
 
 	return { onRephrase, getContent, getSelectedText, editor }
