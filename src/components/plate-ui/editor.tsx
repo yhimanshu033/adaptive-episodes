@@ -64,7 +64,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const marginLeft = scale < 1 ? (1 - scale) * 50 : 0
 		const mihHeight = 100 / scale
 		return (
-			<div ref={ref} className="relative w-full overflow-scroll">
+			<div ref={ref} className="relative w-full">
 				<PlateContent
 					className={cn(
 						editorVariants({
@@ -75,7 +75,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 							variant,
 						}),
 						className,
-						'absolute h-fit origin-top-left overflow-scroll'
+						'absolute h-fit origin-top-left'
 					)}
 					readOnly={disabled ?? readOnly}
 					aria-disabled={disabled}

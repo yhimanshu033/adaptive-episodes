@@ -17,10 +17,10 @@ const Translation = ({ translatedContent }: { translatedContent: string }) => {
 
 	if (!isTranslationOpen || sidebar) return null
 	return (
-		<div className="flex w-full border-r">
+		<div className="flex w-full">
 			<Plate editor={editor}>
 				<Editor
-					className="min-h-[calc(60vh-44px)] px-12 py-5"
+					className="rounded-none border-l px-12 py-5"
 					autoFocus
 					focusRing={false}
 					readOnly

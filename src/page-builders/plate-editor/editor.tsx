@@ -81,7 +81,7 @@ import {
 	TableRowPlugin,
 } from '@udecode/plate-table/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { CircleArrowLeft, CircleArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
@@ -126,7 +126,7 @@ import { TableElement } from '@/components/plate-ui/table-element'
 import { TableRowElement } from '@/components/plate-ui/table-row-element'
 import { TodoListElement } from '@/components/plate-ui/todo-list-element'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 // import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 
@@ -154,17 +154,20 @@ export default function PlateEditor() {
 					<div className="flex gap-2">
 						<Button
 							variant="outline"
+							size="icon"
+							className="rounded-full"
 							disabled={!content?.hasPrevious}
 							onClick={() => handleEpisodeChange((content?.episode ?? 0) - 1)}
 						>
-							<ArrowLeft className="mr-2 inline" />
-							Previous Episode
+							<CircleArrowLeft />
 						</Button>
 						<Button
 							disabled={!content?.hasNext}
+							className="rounded-full"
+							size="icon"
 							onClick={() => handleEpisodeChange((content?.episode ?? 0) + 1)}
 						>
-							Next Episode <ArrowRight className="ml-2 inline" />
+							<CircleArrowRight />
 						</Button>
 					</div>
 				)}
@@ -184,9 +187,9 @@ export default function PlateEditor() {
 					<div className="flex h-[60vh] w-full">
 						<ScrollArea className="w-full flex-1">
 							<div className="flex h-full">
-								<div className="flex w-full border-r">
+								<div className="flex w-full">
 									<Editor
-										className="size-full px-12 py-5"
+										className="size-full rounded-none px-12 py-5"
 										autoFocus
 										focusRing={false}
 										variant="ghost"
@@ -207,6 +210,7 @@ export default function PlateEditor() {
 									}
 								/>
 							</div>
+							<ScrollBar orientation="horizontal" />
 						</ScrollArea>
 						<Sidebar />
 					</div>
