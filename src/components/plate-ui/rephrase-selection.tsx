@@ -89,31 +89,7 @@ export default function RephraseSelection({
 						<Bot />
 					</ToolbarButton>
 				</>
-			) : !data ? (
-				<div className="flex items-center">
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => toggleRephrase(false)}
-					>
-						<ArrowLeft size={16} />
-					</Button>
-					{rephraseMethods.map((method) => (
-						<Button
-							key={method.id}
-							variant="ghost"
-							className="my-1"
-							onClick={() => handleRephrase(method.id)}
-						>
-							{isPending && currentMethod === method.id ? (
-								<Spinner size={16} />
-							) : (
-								method.method
-							)}
-						</Button>
-					))}
-				</div>
-			) : (
+			) : data ? (
 				<div className="z-20 min-w-56 rounded-md p-4 shadow-md">
 					<div className="mb-2 text-muted-foreground">
 						{getSelectedText().text}
@@ -144,6 +120,30 @@ export default function RephraseSelection({
 							</Button>
 						</div>
 					</div>
+				</div>
+			) : (
+				<div className="flex items-center">
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={() => toggleRephrase(false)}
+					>
+						<ArrowLeft size={16} />
+					</Button>
+					{rephraseMethods.map((method) => (
+						<Button
+							key={method.id}
+							variant="ghost"
+							className="my-1"
+							onClick={() => handleRephrase(method.id)}
+						>
+							{isPending && currentMethod === method.id ? (
+								<Spinner size={16} />
+							) : (
+								method.method
+							)}
+						</Button>
+					))}
 				</div>
 			)}
 		</div>
