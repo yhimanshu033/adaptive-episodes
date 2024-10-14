@@ -10,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import Sidebar from './sidebar'
 import Title from './title'
 import Toolbar from './toolbar'
-import Tooltip from './tooltip'
+// import Tooltip from './tooltip'
 import Translation from './translation'
 
 const Editor = () => {
@@ -61,7 +61,7 @@ const Editor = () => {
 				<div className="flex overflow-auto rounded-b-md shadow-editor">
 					<ScrollArea className="flex-1">
 						<div className="relative flex">
-							<Tooltip editorRef={editorRef} />
+							{/* <Tooltip editorRef={editorRef} /> */}
 							<div
 								ref={editorRef}
 								contentEditable
