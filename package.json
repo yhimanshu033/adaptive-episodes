@@ -99,6 +99,7 @@
     "react-lite-youtube-embed": "^2.4.0",
     "react-resizable-panels": "^2.1.4",
     "react-tweet": "^3.2.1",
+    "sharp": "^0.33.5",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.0",
