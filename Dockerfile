@@ -1,7 +1,7 @@
 FROM node:20.9.0 AS build-image
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
-RUN npm install --omit=dev
+RUN npm install
 COPY ./ ./
 ENV NODE_OPTIONS=--openssl-legacy-provider
 ENV GOOGLE_CLIENT_ID=486778135608-vp84uv9oiduciqalnt6fdit32il4jsp4.apps.googleusercontent.com
