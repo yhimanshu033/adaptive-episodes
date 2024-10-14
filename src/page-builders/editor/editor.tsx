@@ -56,16 +56,16 @@ const Editor = () => {
 					</div>
 				)}
 			</div>
-			<div className="flex h-[calc(100vh-225px)] gap-2">
-				<div className="flex flex-1 flex-col rounded-md">
-					<Toolbar editorRef={editorRef} />
-					<ScrollArea className="rounded-b-md">
-						<div className="relative flex overflow-auto">
+			<div className="flex h-[calc(100vh-225px)] flex-col rounded-md">
+				<Toolbar editorRef={editorRef} />
+				<div className="flex overflow-auto rounded-b-md shadow-editor">
+					<ScrollArea className="flex-1">
+						<div className="relative flex">
 							<Tooltip editorRef={editorRef} />
 							<div
 								ref={editorRef}
 								contentEditable
-								className="flex-1 bg-background-editor p-4 shadow-editor focus:outline-none"
+								className="flex-1 rounded-bl-md bg-background-editor p-4 shadow-editor focus:outline-none"
 								suppressContentEditableWarning={true}
 								onKeyUp={handleToolStates}
 								onMouseUp={handleToolStates}
@@ -86,8 +86,8 @@ const Editor = () => {
 							)}
 						</div>
 					</ScrollArea>
+					<Sidebar />
 				</div>
-				<Sidebar />
 			</div>
 		</>
 	)

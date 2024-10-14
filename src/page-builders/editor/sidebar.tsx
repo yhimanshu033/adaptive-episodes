@@ -14,7 +14,7 @@ const Sidebar = () => {
 
 	return (
 		<div
-			className={`${isSidebarOpen ? 'w-1/5' : 'hidden'} relative rounded-md bg-background-editor p-4 shadow-editor`}
+			className={`${!isSidebarOpen && 'hidden'} relative flex-1 border-l bg-background-editor`}
 		>
 			<Button
 				className="absolute right-0 top-0"

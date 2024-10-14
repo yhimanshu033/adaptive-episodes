@@ -32,6 +32,9 @@ export const handleToolStates = () => {
 }
 
 export const toggleTranslation = () => {
+	if (!useEditorStore.getState().isTranslationOpen) {
+		toggleSidebarOPen(false)
+	}
 	useEditorStore.setState((state) => {
 		return { isTranslationOpen: !state.isTranslationOpen }
 	})
@@ -49,6 +52,9 @@ export const setTooltipPosition = (tooltipPosition: {
 }
 
 export const toggleSidebarOPen = (toggle: boolean) => {
+	if (toggle) {
+		useEditorStore.setState({ isTranslationOpen: false })
+	}
 	useEditorStore.setState({ isSidebarOpen: toggle })
 }
 

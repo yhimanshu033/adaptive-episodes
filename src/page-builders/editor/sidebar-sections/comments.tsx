@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 
 const Comments = () => {
 	return (
-		<div className="space-y-4">
+		<div className="space-y-4 p-4">
 			<h1>Comments</h1>
 			<div className="rounded p-2">
 				<p className="font-bold">User1:</p>

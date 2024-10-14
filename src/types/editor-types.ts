@@ -1,3 +1,5 @@
+import { TComment, TCommentText } from '@udecode/plate-comments'
+
 import { LucideComponent } from './common'
 
 export type SidebarContent = 'ai' | 'comments' | 'outline'
@@ -30,3 +32,5 @@ export type ToolsType = {
 		| 'justifyCenter'
 		| 'justifyRight'
 }[]
+
+export type TCustomComment = TComment & { node: TCommentText }
