@@ -91,9 +91,7 @@ export default function RephraseSelection({
 				</>
 			) : data ? (
 				<div className="z-20 min-w-56 rounded-md p-4 shadow-md">
-					<div className="mb-2 text-muted-foreground">
-						{getSelectedText().text}
-					</div>
+					<p className="mb-2 text-muted-foreground">{getSelectedText().text}</p>
 					<Textarea
 						className="mb-4 min-w-[300px] text-accent-foreground"
 						value={textInput}
