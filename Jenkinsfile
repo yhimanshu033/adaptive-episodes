@@ -40,11 +40,11 @@ node("slave") {
         sh """ /usr/local/bin/kubectl get pods -n pocketfm-websites --kubeconfig ~/.kube/web-config """          
     }
     stage("Slack Notify"){
-        slackSend(color: "good", message: "Marketing deployment successful (<${env.BUILD_URL}|Open>)", channel: "C01CP9Y66RZ")
+        slackSend(color: "good", message: "Co-Writer deployment successful (<${env.BUILD_URL}|Open>)", channel: "C01CP9Y66RZ")
     }
   }
   catch(Exception e){
-    slackSend(color: "danger", message: "Marketing deployment failed (<${env.BUILD_URL}|Open>)", channel: "C01CP9Y66RZ")
+    slackSend(color: "danger", message: "Co-Writer deployment failed (<${env.BUILD_URL}|Open>)", channel: "C01CP9Y66RZ")
     throw e
   }
 }

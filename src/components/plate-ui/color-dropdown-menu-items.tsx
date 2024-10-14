@@ -76,10 +76,10 @@ export function ColorDropdownMenuItems({
 	clearColor,
 	updateColor,
 	...props
-}: ColorDropdownMenuItemsProps & { clearColor: () => void }) {
+}: ColorDropdownMenuItemsProps & { clearColor?: () => void }) {
 	function onSelect(e: Event) {
 		e.preventDefault()
-		clearColor()
+		clearColor?.()
 	}
 	const noneItem = (
 		<DropdownMenuItem
