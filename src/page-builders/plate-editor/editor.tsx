@@ -4,7 +4,7 @@
 import React, { useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import Title from '@/page-builders/editor/title'
+import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
 import { cn, withProps } from '@udecode/cn'
 import { AlignPlugin } from '@udecode/plate-alignment/react'
