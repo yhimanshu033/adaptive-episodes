@@ -17,7 +17,7 @@ export default function TranslationToggleButton() {
 	return (
 		<ToolbarButton
 			variant={translation && !sidebar ? 'active' : 'default'}
-			tooltip="Translate"
+			tooltip="Dual View"
 			onClick={onTranslation}
 		>
 			<Book className="size-4" />

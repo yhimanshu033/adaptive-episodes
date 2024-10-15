@@ -14,7 +14,7 @@ const Logo = ({ className }: { className?: string }) => {
 				height={32}
 				alt="Copilot Logo"
 			/>
-			<span className={className}>Co-Writer</span>
+			<span className={className}>Pocket CoPilot</span>
 		</Link>
 	)
 }

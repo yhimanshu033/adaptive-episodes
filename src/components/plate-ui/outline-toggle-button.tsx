@@ -2,7 +2,7 @@
 
 import React from 'react'
 import usePlateStore, { setSidebar } from '@/store/plate-store'
-import { FileText } from 'lucide-react'
+import { Search } from 'lucide-react'
 
 import { ToolbarButton } from './toolbar'
 
@@ -11,10 +11,10 @@ export function OutlineToolbarButton() {
 	return (
 		<ToolbarButton
 			variant={sidebar === 'outline' ? 'active' : 'default'}
-			tooltip="Outline"
+			tooltip="Story Explorer"
 			onClick={() => setSidebar('outline', true)}
 		>
-			<FileText />
+			<Search />
 		</ToolbarButton>
 	)
 }

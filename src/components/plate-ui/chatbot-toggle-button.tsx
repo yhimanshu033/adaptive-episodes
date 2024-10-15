@@ -11,7 +11,7 @@ export function ChatbotToolbarButton() {
 	return (
 		<ToolbarButton
 			variant={sidebar === 'chatbot' ? 'active' : 'default'}
-			tooltip="Chatbot"
+			tooltip="Story Chat"
 			onClick={() => setSidebar('chatbot', true)}
 		>
 			<Bot />

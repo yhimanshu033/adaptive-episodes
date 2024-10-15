@@ -2,6 +2,8 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { NextResponse } from 'next/server'
 
+import { authors } from '../../../../data/authors'
+
 export async function GET() {
 	const storiesDir = path.join(process.cwd(), 'data/stories')
 
@@ -25,7 +27,7 @@ export async function GET() {
 					id: index + 1,
 					story_name: storyDir,
 					episodes_count: episodeCount,
-					author: 'Author Name',
+					author: authors[storyDir],
 				}
 			})
 		)

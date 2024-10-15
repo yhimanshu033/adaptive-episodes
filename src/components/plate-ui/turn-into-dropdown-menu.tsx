@@ -135,19 +135,16 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 	// console.log({ id })
 
 	const selectedItem = items.find((item) => item.value === value) ?? defaultItem
-	const { icon: SelectedItemIcon, label: selectedItemLabel } = selectedItem
+	const { icon: SelectedItemIcon } = selectedItem
 
 	return (
 		<DropdownMenu modal={false} {...openState} {...props}>
 			<DropdownMenuTrigger asChild>
-				<ToolbarButton
-					className="lg:min-w-[130px]"
-					pressed={openState.open}
-					tooltip="Turn into"
-					isDropdown
-				>
+				<ToolbarButton pressed={openState.open} tooltip="Turn into" isDropdown>
 					<SelectedItemIcon className="size-5 lg:hidden" />
-					<span className="max-lg:hidden">{selectedItemLabel}</span>
+					<span className="max-lg:hidden">
+						<SelectedItemIcon />
+					</span>
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
