@@ -21,6 +21,7 @@ import { Icons, iconVariants } from '@/components/icons'
 import { ColorDropdownMenu } from './color-dropdown-menu'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import RephraseSelection from './rephrase-selection'
+import { ToolbarGroup } from './toolbar'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
 
 export function FloatingToolbarButtons() {
@@ -32,57 +33,68 @@ export function FloatingToolbarButtons() {
 	return (
 		<>
 			{!readOnly && (
-				<>
+				<div className="flex">
 					{!showRephrase && (
 						<>
-							<TurnIntoDropdownMenu />
-							<MarkToolbarButton nodeType={BoldPlugin.key} tooltip="Bold (⌘+B)">
-								<Icons.bold />
-							</MarkToolbarButton>
-							<MarkToolbarButton
-								nodeType={ItalicPlugin.key}
-								tooltip="Italic (⌘+I)"
-							>
-								<Icons.italic />
-							</MarkToolbarButton>
-							<MarkToolbarButton
-								nodeType={UnderlinePlugin.key}
-								tooltip="Underline (⌘+U)"
-							>
-								<Icons.underline />
-							</MarkToolbarButton>
-							<ColorDropdownMenu
-								nodeType={FontColorPlugin.key}
-								tooltip="Text Color"
-							>
-								<Icons.color className={iconVariants({ variant: 'toolbar' })} />
-							</ColorDropdownMenu>
-							<ColorDropdownMenu
-								nodeType={FontBackgroundColorPlugin.key}
-								tooltip="Highlight Color"
-							>
-								<Icons.bg className={iconVariants({ variant: 'toolbar' })} />
-							</ColorDropdownMenu>
+							<ToolbarGroup noSeparator>
+								<TurnIntoDropdownMenu />
+								<MarkToolbarButton
+									nodeType={BoldPlugin.key}
+									tooltip="Bold (⌘+B)"
+								>
+									<Icons.bold />
+								</MarkToolbarButton>
+								<MarkToolbarButton
+									nodeType={ItalicPlugin.key}
+									tooltip="Italic (⌘+I)"
+								>
+									<Icons.italic />
+								</MarkToolbarButton>
+								<MarkToolbarButton
+									nodeType={UnderlinePlugin.key}
+									tooltip="Underline (⌘+U)"
+								>
+									<Icons.underline />
+								</MarkToolbarButton>
+								<ColorDropdownMenu
+									nodeType={FontColorPlugin.key}
+									tooltip="Text Color"
+								>
+									<Icons.color
+										className={iconVariants({ variant: 'toolbar' })}
+									/>
+								</ColorDropdownMenu>
+								<ColorDropdownMenu
+									nodeType={FontBackgroundColorPlugin.key}
+									tooltip="Highlight Color"
+								>
+									<Icons.bg className={iconVariants({ variant: 'toolbar' })} />
+								</ColorDropdownMenu>
+							</ToolbarGroup>
 						</>
 					)}
-					<RephraseSelection
-						setShowRephrase={setShowRephrase}
-						showRephrase={showRephrase}
-					/>
-					{!commentExists && !showRephrase && (
-						<MarkToolbarButton
-							{...props}
-							onClick={(e) => {
-								setSidebar('comments')
-								props.onClick(e)
-							}}
-							nodeType={CommentsPlugin.key}
-							tooltip="Comment (⌘+⇧+M)"
-						>
-							<Icons.commentAdd />
-						</MarkToolbarButton>
-					)}
-				</>
+					<ToolbarGroup noSeparator={showRephrase}>
+						<RephraseSelection
+							setShowRephrase={setShowRephrase}
+							showRephrase={showRephrase}
+						/>
+					</ToolbarGroup>
+					<ToolbarGroup>
+						{!commentExists && !showRephrase && (
+							<MarkToolbarButton
+								{...props}
+								onClick={(e) => {
+									setSidebar('comments')
+									props.onClick(e)
+								}}
+								nodeType={CommentsPlugin.key}
+								tooltip="Comment (⌘+⇧+M)"
+							>
+								<Icons.commentAdd />
+							</MarkToolbarButton>
+						)}
+					</ToolbarGroup>
+				</div>
 			)}
 		</>
 	)

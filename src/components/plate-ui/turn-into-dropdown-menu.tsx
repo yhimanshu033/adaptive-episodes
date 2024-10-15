@@ -76,34 +76,7 @@ const items = [
 		label: 'Quote',
 		value: BlockquotePlugin.key,
 	},
-	// {
-	//   value: 'ul',
-	//   label: 'Bulleted list',
-	//   description: 'Bulleted list',
-	//   icon: Icons.ul,
-	// },
-	// {
-	//   value: 'ol',
-	//   label: 'Numbered list',
-	//   description: 'Numbered list',
-	//   icon: Icons.ol,
-	// },
 ]
-
-// const options = [
-// 	{
-// 		description: 'Text',
-// 		icon: Icons.paragraph,
-// 		label: 'Paragraph',
-// 		value: { type: ParagraphPlugin.key },
-// 	},
-// 	{
-// 		description: 'Paragraph',
-// 		icon: Icons.paragraph,
-// 		label: 'Paragraph',
-// 		value: ParagraphPlugin.key,
-// 	},
-// ]
 
 const defaultItem = items.find((item) => item.value === ParagraphPlugin.key)!
 
@@ -130,24 +103,18 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 
 	const editor = useEditorRef()
 	const openState = useOpenState()
-	// const id = useFloatingNodeId();
-
-	// console.log({ id })
 
 	const selectedItem = items.find((item) => item.value === value) ?? defaultItem
-	const { icon: SelectedItemIcon, label: selectedItemLabel } = selectedItem
+	const { icon: SelectedItemIcon } = selectedItem
 
 	return (
 		<DropdownMenu modal={false} {...openState} {...props}>
 			<DropdownMenuTrigger asChild>
-				<ToolbarButton
-					className="lg:min-w-[130px]"
-					pressed={openState.open}
-					tooltip="Turn into"
-					isDropdown
-				>
+				<ToolbarButton pressed={openState.open} tooltip="Turn into" isDropdown>
 					<SelectedItemIcon className="size-5 lg:hidden" />
-					<span className="max-lg:hidden">{selectedItemLabel}</span>
+					<span className="max-lg:hidden">
+						<SelectedItemIcon />
+					</span>
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
@@ -158,20 +125,7 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 					className="flex flex-col gap-0.5"
 					value={value}
 					onValueChange={(type) => {
-						// if (type === 'ul' || type === 'ol') {
-						//   if (settingsStore.get.checkedId(IndentListPlugin.key)) {
-						//     toggleIndentList(editor, {
-						//       listStyleType: type === 'ul' ? 'disc' : 'decimal',
-						//     });
-						//   } else if (settingsStore.get.checkedId('list')) {
-						//     toggleList(editor, { type });
-						//   }
-						// } else {
-						//   unwrapList(editor);
-						// console.log({ type })
 						editor.tf.toggle.block({ type })
-						// }
-
 						collapseSelection(editor)
 						focusEditor(editor)
 					}}

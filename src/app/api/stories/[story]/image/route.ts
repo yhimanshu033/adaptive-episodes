@@ -12,7 +12,9 @@ export async function GET(
 	// Fetch the image file (assuming it's one of .jpg, .jpeg, .png)
 	try {
 		const files = await fs.readdir(imagePath)
-		const imageFile = files.find((file) => /\.(jpg|jpeg|png|gif)$/.test(file))
+		const imageFile = files.find((file) =>
+			/\.(jpg|jpeg|png|gif|webp)$/.test(file)
+		)
 
 		if (!imageFile) {
 			return NextResponse.json({ error: 'Image not found' }, { status: 404 })

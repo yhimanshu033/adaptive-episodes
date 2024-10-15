@@ -9,12 +9,12 @@ const Logo = ({ className }: { className?: string }) => {
 			className="flex items-center gap-2 transition-all hover:scale-105"
 		>
 			<Image
-				src="/pocket-copilot-logo.png"
+				src="/pocket-copilot-logo.webp"
 				width={32}
 				height={32}
 				alt="Copilot Logo"
 			/>
-			<span className={className}>Co-Writer</span>
+			<span className={className}>Pocket CoPilot</span>
 		</Link>
 	)
 }

@@ -89,7 +89,7 @@ const AIChatbot = () => {
 					>
 						{message.role === 'assistant' && (
 							<Avatar className="mr-2">
-								<AvatarImage src="/pocket-copilot-logo.png" alt="AI" />
+								<AvatarImage src="/pocket-copilot-logo.webp" alt="AI" />
 								<AvatarFallback>AI</AvatarFallback>
 							</Avatar>
 						)}
@@ -102,7 +102,7 @@ const AIChatbot = () => {
 						{message.role === 'user' && (
 							<Avatar className="ml-2">
 								<AvatarImage
-									src={userData?.user?.image || '/placeholder-user.jpg'}
+									src={userData?.user?.image || '/placeholder-user.webp'}
 									alt="User"
 								/>
 								<AvatarFallback>U</AvatarFallback>

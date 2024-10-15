@@ -1,157 +1,141 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react'
-import { useParams } from 'next/navigation'
-import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { getLoglines } from '@/server-action/episode-action'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
-import { z } from 'zod'
+'use client'
+
+import React, { useState } from 'react'
+import { Send } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
-interface PlotlineForm {
-	character: string
-	description: string
-	end: string
-	parts: string
-	start: string
-}
+const StoryExplorer = () => {
+	const [startEpisode, setStartEpisode] = useState(1)
+	const [endEpisode, setEndEpisode] = useState(5)
+	const [customPrompt, setCustomPrompt] = useState('')
 
-const PlotOutline = () => {
-	const { id, episodeId } = useParams()
-	const { data: episodeContent } = useEpisodeContent()
-	const { plotlineMutation } = usePlotOutlineHook()
-	const { data: plotline, isPending } = plotlineMutation
-
-	console.log(plotline, isPending)
-
-	const formSchema = z.object({
-		start: z.string().min(1, {
-			message: 'Start episode must be at least 1.',
-		}),
-		end: z.string().min(1, {
-			message: 'End episode must be at least 1.',
-		}),
-		character: z.string().min(1, {
-			message: 'Character is required.',
-		}),
-		description: z.string().optional(),
-		parts: z.string().min(1, {
-			message: 'Parts must be at least 1.',
-		}),
-	})
-	const form = useForm({
-		resolver: zodResolver(formSchema),
-	})
-
-	const onSubmit = async (data: PlotlineForm) => {
-		if (episodeContent) {
-			const { loglines } = await getLoglines(id as string, data.start, data.end)
-			const plotlinePayload = {
-				character: data.character,
-				context: episodeContent.summary,
-				context_array: loglines,
-				dimension: data.description,
-				ep_from: data.start,
-				ep_to: data.end,
-				ep_number: episodeId as string,
-				max_parts: data.parts,
-			}
-			plotlineMutation.mutate(plotlinePayload)
+	const handleEpisodeChange = (type: 'start' | 'end', value: number) => {
+		if (type === 'start') {
+			setStartEpisode(Math.min(value, endEpisode))
+		} else {
+			setEndEpisode(Math.max(value, startEpisode))
 		}
 	}
 
 	return (
-		<div className="p-4">
-			<h1 className="mb-4 text-2xl font-bold">Plot Outlines</h1>
-			<Form {...form}>
-				<form
-					onSubmit={form.handleSubmit(onSubmit as SubmitHandler<FieldValues>)}
-					className="space-y-8"
-				>
-					<div className="flex space-x-4">
-						<FormField
-							control={form.control}
-							name="start"
-							render={({ field }) => (
-								<FormItem className="w-full">
-									<FormLabel>Start Episode</FormLabel>
-									<FormControl>
-										<Input min={1} type="number" placeholder="1" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
+		<div className="min-h-screen p-8">
+			<div className="mx-auto max-w-2xl">
+				<div className="mb-6 flex items-center justify-between">
+					<h1 className="text-2xl font-bold">Story Explorer</h1>
+					<div className="flex items-center space-x-2">
+						<span>Episode Range:</span>
+						<Input
+							type="number"
+							min={1}
+							max={endEpisode}
+							value={startEpisode}
+							onChange={(e) =>
+								handleEpisodeChange('start', parseInt(e.target.value))
+							}
+							className="w-16 text-center"
 						/>
-						<FormField
-							control={form.control}
-							name="end"
-							render={({ field }) => (
-								<FormItem className="w-full">
-									<FormLabel>End Episode</FormLabel>
-									<FormControl>
-										<Input min={1} type="number" placeholder="1" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
+						<span>-</span>
+						<Input
+							type="number"
+							min={startEpisode}
+							value={endEpisode}
+							onChange={(e) =>
+								handleEpisodeChange('end', parseInt(e.target.value))
+							}
+							className="w-16 text-center"
 						/>
 					</div>
-					<FormField
-						control={form.control}
-						name="character"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Character</FormLabel>
-								<FormControl>
-									<Input placeholder="Character Name" {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="description"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Description</FormLabel>
-								<FormControl>
-									<Textarea placeholder="Description..." {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="parts"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Parts</FormLabel>
-								<FormControl>
-									<Input min={1} type="number" placeholder="1" {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<Button type="submit">Create Plot Outline</Button>
-				</form>
-			</Form>
+				</div>
+
+				<Tabs defaultValue="plot" className="w-full">
+					<TabsList className="grid w-full grid-cols-3 bg-background">
+						<TabsTrigger
+							className="data-[state=active]:bg-primary"
+							value="plot"
+						>
+							Plot
+						</TabsTrigger>
+						<TabsTrigger
+							className="data-[state=active]:bg-primary"
+							value="character"
+						>
+							Character
+						</TabsTrigger>
+						<TabsTrigger
+							className="data-[state=active]:bg-primary"
+							value="world"
+						>
+							World
+						</TabsTrigger>
+					</TabsList>
+					<TabsContent value="plot" className="mt-6">
+						<div className="flex flex-col items-center space-y-2">
+							<Button variant="outline" className="w-48">
+								Summaries
+							</Button>
+							<Button variant="outline" className="w-48">
+								Scenes
+							</Button>
+							<Button variant="outline" className="w-48">
+								Arcs
+							</Button>
+						</div>
+					</TabsContent>
+					<TabsContent value="character" className="mt-6">
+						<div className="flex flex-col items-center space-y-2">
+							<Button variant="outline" className="w-48">
+								Bios
+							</Button>
+							<Button variant="outline" className="w-48">
+								Relationships
+							</Button>
+							<Button variant="outline" className="w-48">
+								Arcs
+							</Button>
+						</div>
+					</TabsContent>
+					<TabsContent value="world" className="mt-6">
+						<div className="flex flex-col items-center space-y-2">
+							<Button variant="outline" className="w-48">
+								Locations
+							</Button>
+							<Button variant="outline" className="w-48">
+								Props
+							</Button>
+							<Button variant="outline" className="w-48">
+								Rules
+							</Button>
+						</div>
+					</TabsContent>
+				</Tabs>
+
+				<div className="mt-6 flex items-center justify-center">
+					<div className="relative w-64">
+						<Input
+							type="text"
+							value={customPrompt}
+							onChange={(e) => setCustomPrompt(e.target.value)}
+							placeholder="Custom Prompt..."
+							className="w-full pr-10"
+						/>
+						<Button
+							size="icon"
+							variant="ghost"
+							className="absolute right-1 top-1/2 -translate-y-1/2"
+							onClick={() =>
+								console.log('Custom prompt submitted:', customPrompt)
+							}
+						>
+							<Send className="size-4" />
+						</Button>
+					</div>
+				</div>
+			</div>
 		</div>
 	)
 }
 
-export default PlotOutline
+export default StoryExplorer
