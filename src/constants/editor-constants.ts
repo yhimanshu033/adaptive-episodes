@@ -78,7 +78,6 @@ export const rephraseMethods = [
 	{ id: 'expand', method: '🤲 Expand' },
 	{ id: 'stylize', method: '🎨 Stylize' },
 	{ id: 'dialog', method: '🗣️ Dialog' },
-	// { id: 'custom', method: '💬 Prompt' },
 ]
 
 export const MAIN_EDITOR_ID = 'main-editor'

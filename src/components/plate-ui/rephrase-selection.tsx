@@ -14,7 +14,8 @@ import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useFloatingNodeId } from '@udecode/plate-floating'
 import { ArrowLeft, Bot, RotateCw } from 'lucide-react'
 
-import Spinner from '../ui/spinner'
+import Spinner from '@/components/ui/spinner'
+
 import { Textarea } from '../ui/textarea'
 import { Button } from './button'
 import { ToolbarButton } from './toolbar'
@@ -30,8 +31,6 @@ export default function RephraseSelection({
 	const { onRephrase, getContent, getSelectedText } = useRephrase()
 	const { resetActiveComments } = useComments()
 	const [textInput, setTextInput] = useState('')
-	// const [showPrompt, setShowPrompt] = useState(false)
-	// const [promptInput, setPromptInput] = useState('')
 	const { episodeId } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
 
@@ -61,7 +60,6 @@ export default function RephraseSelection({
 			context: content,
 			ep_number: episodeId as string,
 			ep_text: episodeContent?.de || '',
-			// prompt: promptInput,
 		})
 	}
 

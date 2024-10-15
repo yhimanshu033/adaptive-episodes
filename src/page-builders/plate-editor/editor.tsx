@@ -440,7 +440,7 @@ export const useMyEditor = ({
 						1: {
 							id: '1',
 							name: userData?.user?.name || 'User',
-							avatarUrl: userData?.user?.image || '/placeholder-user.jpg',
+							avatarUrl: userData?.user?.image || '/placeholder-user.webp',
 						},
 					},
 					myUserId: '1',
