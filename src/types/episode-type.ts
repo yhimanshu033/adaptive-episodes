@@ -18,7 +18,11 @@ export interface EpisodeResponse {
 }
 
 export interface LoglinesResponse {
+	context: string
 	error: string | null
-	loglines: string[]
+	metadata: {
+		beatsheets: string
+		loglines: string
+	}[]
 	status: number
 }

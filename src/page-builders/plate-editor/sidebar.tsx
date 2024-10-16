@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 import AiChatbot from './sidebar-sections/ai-chatbot'
-import PlotOutline from './sidebar-sections/plot-outline'
+import StoryExplorer from './sidebar-sections/story-explorer'
 
 const Sidebar = () => {
 	const sidebar = usePlateStore((state) => state.sidebar)
@@ -25,7 +25,7 @@ const Sidebar = () => {
 			</Button>
 			{sidebar === 'chatbot' && <AiChatbot />}
 			{sidebar === 'comments' && <CommentSidebar />}
-			{sidebar === 'outline' && <PlotOutline />}
+			{sidebar === 'outline' && <StoryExplorer />}
 		</ScrollArea>
 	)
 }

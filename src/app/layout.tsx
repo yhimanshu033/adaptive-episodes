@@ -9,8 +9,9 @@ import AppProvider from '@/providers/app-provider'
 import getServerSession from '@/lib/get-access-token'
 
 export const metadata: Metadata = {
-	title: 'Co-Writer',
-	description: 'Co-Writer',
+	title: 'Pocket CoPilot',
+	description:
+		'Pocket CoPilot: An AI-powered writing assistant that helps you effortlessly craft and enhance your stories, making the writing process seamless and inspiring.',
 }
 
 export default async function RootLayout({
