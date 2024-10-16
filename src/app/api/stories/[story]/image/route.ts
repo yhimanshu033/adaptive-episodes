@@ -27,6 +27,7 @@ export async function GET(
 			headers: {
 				'Content-Type': `image/${path.extname(imageFile).slice(1)}`,
 				'Content-Disposition': `inline; filename="${imageFile}"`,
+				'Cache-Control': 'public, max-age=86400, immutable', //1 day cache
 			},
 		})
 	} catch (error) {

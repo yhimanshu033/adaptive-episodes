@@ -13,6 +13,7 @@ const Logo = ({ className }: { className?: string }) => {
 				width={32}
 				height={32}
 				alt="Copilot Logo"
+				loading="lazy"
 			/>
 			<span className={className}>Pocket CoPilot</span>
 		</Link>

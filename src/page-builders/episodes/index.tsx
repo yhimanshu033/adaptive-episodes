@@ -18,12 +18,13 @@ export default function EpisodeListPage() {
 			<div className="mb-6 flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<Image
-						src={`/api/stories/${story}/image`}
+						src={`${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story}/image`}
 						alt={`${story} thumbnail`}
 						width={80}
 						height={80}
 						objectFit="cover"
 						className="rounded-lg"
+						loading="lazy"
 					/>
 					<h1 className="text-3xl font-bold">{story}</h1>
 				</div>
