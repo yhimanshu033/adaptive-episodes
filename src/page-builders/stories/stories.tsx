@@ -22,7 +22,7 @@ const Stories = () => {
 					<Link href={`/projects/${story.story_name}`}>
 						<div className="relative aspect-[1/1]">
 							<Image
-								src={`${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story.story_name}/image`}
+								src={`/api/stories/${story.story_name}/image`}
 								alt={`${story.story_name} thumbnail`}
 								layout="fill"
 								objectFit="cover"

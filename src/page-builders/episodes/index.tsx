@@ -18,7 +18,7 @@ export default function EpisodeListPage() {
 			<div className="mb-6 flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<Image
-						src={`${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story}/image`}
+						src={`/api/stories/${story}/image`}
 						alt={`${story} thumbnail`}
 						width={80}
 						height={80}
