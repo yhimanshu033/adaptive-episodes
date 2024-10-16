@@ -25,6 +25,7 @@ export default function EpisodeListPage() {
 						objectFit="cover"
 						className="rounded-lg"
 						loading="lazy"
+						unoptimized
 					/>
 					<h1 className="text-3xl font-bold">{story}</h1>
 				</div>
