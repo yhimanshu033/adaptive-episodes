@@ -1,7 +1,8 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { NextResponse } from 'next/server'
-import { authors } from 'data/authors'
+
+import { StoryJsonData } from '@/types/common'
 
 export async function GET() {
 	const storiesDir = path.join(process.cwd(), 'data/stories')
@@ -12,21 +13,15 @@ export async function GET() {
 		const storyDetails = await Promise.all(
 			storyDirs.map(async (storyDir, index) => {
 				const storyPath = path.join(storiesDir, storyDir)
-
-				// Fetching `de` episodes count
-				const deEpisodesDir = path.join(storyPath, 'de/episodes')
-				const episodes = await fs.readdir(deEpisodesDir)
-
-				// Get episode count based on .txt files
-				const episodeCount = episodes.filter((file) =>
-					file.endsWith('.txt')
-				).length
+				const jsonFile = path.join(storyPath, 'story.json')
+				const res = await fs.readFile(jsonFile, 'utf-8')
+				const jsonData = JSON.parse(res) as StoryJsonData
 
 				return {
 					id: index + 1,
-					story_name: storyDir,
-					episodes_count: episodeCount,
-					author: authors[storyDir],
+					story_name: jsonData?.story_title,
+					episodes_count: jsonData?.totalEpisodes,
+					author: jsonData?.author_name,
 				}
 			})
 		)

@@ -23,13 +23,14 @@ export const getEpisodes = async (
 	}
 }
 
-export const getLoglines = async (
+export const getMetadata = async (
 	story: string,
+	episode: string,
 	start: string,
 	end: string
 ) => {
 	try {
-		const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story}/loglines?start=${start}&end=${end}`
+		const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story}/episodes/${episode}/metadata?start=${start}&end=${end}`
 		const data = (await fetch(url).then((res) =>
 			res.json()
 		)) as LoglinesResponse

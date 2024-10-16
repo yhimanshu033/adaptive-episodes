@@ -2,6 +2,8 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { NextResponse } from 'next/server'
 
+import { StoryJsonData } from '@/types/common'
+
 export async function GET(
 	req: Request,
 	{ params }: { params: { story: string } }
@@ -11,53 +13,40 @@ export async function GET(
 
 	const page = parseInt(searchParams.get('page') || '1')
 	const limit = 10
-	const episodeSearch = searchParams.get('episode_search') || '' // Episode search query
-	const episodesDir = path.join(
-		process.cwd(),
-		`data/stories/${story}/de/episodes`
-	)
+	const episodeSearch = searchParams.get('episode_search') || ''
+	const jsonFile = path.join(process.cwd(), `data/stories/${story}/story.json`)
 
 	try {
-		const episodeFiles = await fs.readdir(episodesDir)
-		episodeFiles.sort((a, b) => {
-			const numA = parseInt(a.match(/(\d+)/)?.[0] || '0', 10)
-			const numB = parseInt(b.match(/(\d+)/)?.[0] || '0', 10)
-			return numA - numB
-		})
+		const res = await fs.readFile(jsonFile, 'utf-8')
+		const { episodes } = JSON.parse(res) as StoryJsonData
 
-		const episodes = await Promise.all(
-			episodeFiles
-				.filter((file) => file.endsWith('.txt'))
-				.map(async (file, index) => {
-					const filePath = path.join(episodesDir, file)
-					const content = await fs.readFile(filePath, 'utf-8')
-					const wordcount = content.split(/\s+/).filter((word) => word).length
+		let episodesRes = await Promise.all(
+			episodes.map(async (episode, index) => {
+				const filePath = path.join(process.cwd(), episode.path)
+				const content = await fs.readFile(filePath, 'utf-8')
+				const wordcount = content.split(/\s+/).filter((word) => word).length
 
-					return {
-						id: index + 1,
-						episode_name: file.replace(/^\d+\s*/, '').replace('.txt', ''),
-						status: '1st Draft',
-						author: 'Author Name',
-						wordcount,
-						last_updated: new Date().toISOString(),
-					}
-				})
+				return {
+					id: index + 1,
+					episode_name: episode.title,
+					status: episode.status || '1st Draft',
+					author: episode.author || 'John Doe',
+					wordcount,
+					last_updated: episode.updated_at,
+				}
+			})
 		)
 
 		// Fuzzy search: check if episode name contains the search string
-		let filteredEpisodes = episodes
 		if (episodeSearch) {
-			filteredEpisodes = episodes.filter((episode) =>
+			episodesRes = episodesRes.filter((episode) =>
 				episode.episode_name.toLowerCase().includes(episodeSearch.toLowerCase())
 			)
 		}
 
-		const totalEpisodes = filteredEpisodes.length
+		const totalEpisodes = episodesRes.length
 		const startIndex = (page - 1) * limit
-		const paginatedEpisodes = filteredEpisodes.slice(
-			startIndex,
-			startIndex + limit
-		)
+		const paginatedEpisodes = episodesRes.slice(startIndex, startIndex + limit)
 		const hasNext = startIndex + limit < totalEpisodes
 
 		return NextResponse.json({

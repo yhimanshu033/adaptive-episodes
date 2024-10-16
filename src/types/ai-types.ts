@@ -49,14 +49,16 @@ export interface AIStoreType {
 }
 
 export interface PlotExplorerParams {
-	character: string
-	context: string
-	context_array: string[]
-	dimension: string
-	ep_from: string
+	action: string
+	beatsheet_array?: Array<string>
+	context?: string
+	ep_from: number
 	ep_number: string
-	ep_to: string
-	max_parts: string
+	ep_to: number
+	instruction?: string
+	logline_array?: Array<string>
+	mode: string
+	scene_array?: Array<string>
 }
 
 export interface PlotExplorerApiResponse {
