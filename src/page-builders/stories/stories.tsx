@@ -28,6 +28,7 @@ const Stories = () => {
 								objectFit="cover"
 								className="transition-transform duration-300 hover:scale-105"
 								loading="lazy"
+								unoptimized
 							/>
 						</div>
 						<CardContent className="p-4">
