@@ -7,6 +7,8 @@ const useStoryData = () => {
 	const query = useQuery({
 		queryKey: ['story'],
 		queryFn: () => getStories(),
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
 	})
 	return query
 }

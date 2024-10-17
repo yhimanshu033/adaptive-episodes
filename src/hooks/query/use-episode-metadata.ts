@@ -10,6 +10,8 @@ const useEpisodeMetadata = (start: string, end: string) => {
 		queryKey: ['metadata', id, episodeId, start, end],
 		queryFn: () => getMetadata(id, episodeId, start, end),
 		enabled: false,
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
 	})
 	return query
 }

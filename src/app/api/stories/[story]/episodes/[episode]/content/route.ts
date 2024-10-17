@@ -46,6 +46,7 @@ export async function GET(
 			de: deContent,
 			us: usContent,
 			summary: summaryContent,
+			context: currentEpisode?.context || '',
 			hasNext,
 			hasPrevious,
 		})

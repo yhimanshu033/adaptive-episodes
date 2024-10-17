@@ -45,7 +45,7 @@ const StoryExplorer = () => {
 					/>
 				</div>
 			</div>
-			<Explorer start={episodeRange.start} end={episodeRange.end} />
+			<Explorer {...episodeRange} />
 		</section>
 	)
 }

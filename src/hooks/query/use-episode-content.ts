@@ -9,6 +9,8 @@ export const useEpisodeContent = () => {
 	const query = useQuery({
 		queryKey: [id, episodeId, 'content'],
 		queryFn: () => getEpisodeContent(id, episodeId),
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
 	})
 
 	return query

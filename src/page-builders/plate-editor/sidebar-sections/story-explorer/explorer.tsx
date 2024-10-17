@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-misused-promises */
-// eslint-disable-next-line react-hooks/exhaustive-deps
 
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { categories, defaultMode } from '@/constants/story-explorer-constants'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { getMetadata } from '@/server-action/episode-action'
 import { Send } from 'lucide-react'
 
@@ -31,7 +32,17 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 		action: '',
 		name: '',
 	})
-	const { plotlineMutation } = usePlotOutlineHook()
+	const {
+		plotlineMutation: { mutateAsync, reset },
+	} = usePlotOutlineHook()
+	const { data: currentEpisodeContent } = useEpisodeContent()
+
+	const handleTabChange = (mode: RequestState['mode']) => {
+		if (request.mode === mode) return
+		reset()
+		setRequest({ mode, action: '', name: '' })
+		setLoading(false)
+	}
 
 	const handleRequest = async (
 		action: string,
@@ -57,7 +68,7 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 		if (action === 'summary') {
 			setContent(res.metadata.map((data) => data.loglines))
 		} else {
-			const { result } = await plotlineMutation.mutateAsync({
+			const { result } = await mutateAsync({
 				action,
 				ep_from: parseInt(start),
 				ep_to: parseInt(end),
@@ -66,7 +77,8 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 				beatsheet_array: res.metadata.map((data) => data.beatsheets),
 				logline_array: res.metadata.map((data) => data.loglines),
 				context: res.context,
-				instruction, // Added instruction to the payload
+				current_ep: currentEpisodeContent?.de || ' ',
+				instruction,
 			})
 			if (result) setContent([result])
 		}
@@ -88,9 +100,7 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 							className="data-[state=active]:bg-primary"
 							key={idx}
 							value={id}
-							onClick={() => {
-								setRequest((prev) => ({ ...prev, action: '', name: '' }))
-							}}
+							onClick={() => handleTabChange(id)}
 						>
 							{mode}
 						</TabsTrigger>

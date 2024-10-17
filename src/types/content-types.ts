@@ -1,4 +1,5 @@
 export interface EpisodeContedApiResponse {
+	context: string
 	de: string
 	episode: number
 	episode_name: string

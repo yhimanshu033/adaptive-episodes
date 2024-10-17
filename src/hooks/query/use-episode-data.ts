@@ -10,6 +10,8 @@ const useEpisodeData = (page?: number, episodeFilter?: string) => {
 		queryKey: [id, 'episodes', page, episodeFilter],
 		queryFn: () => getEpisodes(id as string, page, episodeFilter),
 		placeholderData: keepPreviousData,
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
 	})
 	return query
 }
