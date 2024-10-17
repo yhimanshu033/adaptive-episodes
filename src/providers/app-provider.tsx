@@ -18,9 +18,7 @@ const AppProvider = ({
 	const queryClient = new QueryClient()
 
 	useEffect(() => {
-		if (session) {
-			updateUserData(session)
-		}
+		updateUserData(session)
 	}, [session])
 
 	return (

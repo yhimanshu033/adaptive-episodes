@@ -11,6 +11,6 @@ const initialState: GlobalStoreState = {
 
 export const useGlobalStore = create(devtools(immer(() => initialState)))
 
-export const updateUserData = (userData: Session) => {
+export const updateUserData = (userData: Session | null) => {
 	useGlobalStore.setState((state) => ({ ...state, userData }))
 }

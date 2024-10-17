@@ -32,12 +32,10 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 		action: '',
 		name: '',
 	})
-	const { plotlineMutation } = usePlotOutlineHook()
-	const { reset } = plotlineMutation
+	const {
+		plotlineMutation: { mutateAsync, reset },
+	} = usePlotOutlineHook()
 	const { data: currentEpisodeContent } = useEpisodeContent()
-
-	console.log(content)
-	console.log(request)
 
 	const handleTabChange = (mode: RequestState['mode']) => {
 		if (request.mode === mode) return
@@ -70,7 +68,7 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 		if (action === 'summary') {
 			setContent(res.metadata.map((data) => data.loglines))
 		} else {
-			const { result } = await plotlineMutation.mutateAsync({
+			const { result } = await mutateAsync({
 				action,
 				ep_from: parseInt(start),
 				ep_to: parseInt(end),
