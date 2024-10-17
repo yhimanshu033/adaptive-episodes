@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
+import { useGlobalStore } from '@/store/global-store'
 import { cn, withProps } from '@udecode/cn'
 import { AlignPlugin } from '@udecode/plate-alignment/react'
 import { AutoformatPlugin } from '@udecode/plate-autoformat/react'
@@ -82,9 +83,9 @@ import {
 } from '@udecode/plate-table/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
 import { CircleArrowLeft, CircleArrowRight } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { useShallow } from 'zustand/react/shallow'
 
 import { BlockquoteElement } from '@/components/plate-ui/blockquote-element'
 import { CodeBlockElement } from '@/components/plate-ui/code-block-element'
@@ -227,7 +228,7 @@ export const useMyEditor = ({
 	content?: string
 	id?: string
 }) => {
-	const { data: userData } = useSession()
+	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const editor = createPlateEditor({
 		plugins: [
 			// Nodes

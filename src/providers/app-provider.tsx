@@ -1,6 +1,7 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
+import { updateUserData } from '@/store/global-store'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
@@ -15,6 +16,13 @@ const AppProvider = ({
 	session: Session | null
 }) => {
 	const queryClient = new QueryClient()
+
+	useEffect(() => {
+		if (session) {
+			updateUserData(session)
+		}
+	}, [session])
+
 	return (
 		<SessionProvider session={session}>
 			<QueryClientProvider client={queryClient}>

@@ -52,6 +52,7 @@ export interface PlotExplorerParams {
 	action: string
 	beatsheet_array?: Array<string>
 	context?: string
+	current_ep?: string
 	ep_from: number
 	ep_number: string
 	ep_to: number

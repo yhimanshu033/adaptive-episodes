@@ -6,8 +6,9 @@ import { useParams } from 'next/navigation'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useAIStore, { addMessages, clearMessages } from '@/store/ai-store'
+import { useGlobalStore } from '@/store/global-store'
 import { LoaderCircle, Send, Trash2 } from 'lucide-react'
-import { useSession } from 'next-auth/react'
+import { useShallow } from 'zustand/react/shallow'
 
 import {
 	AlertDialog,
@@ -32,7 +33,7 @@ const AIChatbot = () => {
 	const { messages } = useAIStore()
 	const { aiChatbotMutation } = useAIChatbotHook()
 	const { data: aiResponse, isPending } = aiChatbotMutation
-	const { data: userData } = useSession()
+	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const { episodeId } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
 
@@ -46,7 +47,7 @@ const AIChatbot = () => {
 			messages,
 			query: input,
 			ep_number: episodeId as string,
-			context: episodeContent?.summary,
+			context: episodeContent?.context,
 			ep_text: episodeContent?.de as string,
 		})
 	}

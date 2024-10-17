@@ -1,5 +1,6 @@
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
 import { LucideProps } from 'lucide-react'
+import { Session } from 'next-auth'
 
 export type LucideComponent = ForwardRefExoticComponent<
 	Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
@@ -26,4 +27,8 @@ export interface StoryJsonData {
 	thumbnail_path: string
 	totalEpisodes: number
 	updated_at: string
+}
+
+export interface GlobalStoreState {
+	userData: Session | null
 }

@@ -1,4 +1,8 @@
-export const categories = [
+export const categories: Array<{
+	action: Array<{ id: string; name: string }>
+	id: 'plot' | 'character' | 'world'
+	mode: string
+}> = [
 	{
 		mode: 'Plot',
 		id: 'plot',

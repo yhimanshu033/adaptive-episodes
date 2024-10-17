@@ -16,6 +16,7 @@ import { ArrowLeft, Bot, RotateCw } from 'lucide-react'
 
 import Spinner from '@/components/ui/spinner'
 
+import { ScrollArea } from '../ui/scroll-area'
 import { Textarea } from '../ui/textarea'
 import { Button } from './button'
 import { ToolbarButton } from './toolbar'
@@ -28,7 +29,7 @@ export default function RephraseSelection({
 	setShowRephrase,
 	showRephrase,
 }: RephraseSelectionProps) {
-	const { onRephrase, getContent, getSelectedText } = useRephrase()
+	const { onRephrase, getSelectedText } = useRephrase()
 	const { resetActiveComments } = useComments()
 	const [textInput, setTextInput] = useState('')
 	const { episodeId } = useParams()
@@ -53,11 +54,10 @@ export default function RephraseSelection({
 
 	const handleRephrase = (action: string) => {
 		setMethod(action)
-		const content = getContent()
 		laserToolsMutation.mutate({
 			action,
 			...getSelectedText(),
-			context: content,
+			context: episodeContent?.context || '',
 			ep_number: episodeId as string,
 			ep_text: episodeContent?.de || '',
 		})
@@ -88,8 +88,12 @@ export default function RephraseSelection({
 					</ToolbarButton>
 				</>
 			) : data ? (
-				<div className="z-20 min-w-56 rounded-md p-4 shadow-md">
-					<p className="mb-2 text-muted-foreground">{getSelectedText().text}</p>
+				<div className="z-20 min-w-56 max-w-lg rounded-md p-4 shadow-md">
+					<ScrollArea className="pr-3">
+						<p className="mb-2 max-h-24 text-wrap text-muted-foreground">
+							{getSelectedText().text}
+						</p>
+					</ScrollArea>
 					<Textarea
 						className="mb-4 min-w-[300px] text-accent-foreground"
 						value={textInput}
