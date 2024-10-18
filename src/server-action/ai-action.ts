@@ -59,8 +59,9 @@ export const getChatbotResponse = async (
 		messages = [],
 		query,
 		ep_text = '',
+		loglines_array = [],
+		beatsheets_array = [],
 	} = params
-
 	const body = {
 		api_key: process.env.NEXT_PUBLIC_LASERTOOLS_API_KEY,
 		context,
@@ -69,6 +70,8 @@ export const getChatbotResponse = async (
 		query,
 		ep_number,
 		ep_text,
+		loglines_array,
+		beatsheets_array,
 	}
 	const data = (await fetchWithErrorHandling(
 		CHATBOT,

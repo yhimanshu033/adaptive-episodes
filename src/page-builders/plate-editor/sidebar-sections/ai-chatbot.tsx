@@ -40,7 +40,6 @@ const AIChatbot = () => {
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
-
 		addMessages({ role: 'user', content: input })
 		setInput('')
 		aiChatbotMutation.mutate({

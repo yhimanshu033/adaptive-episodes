@@ -22,15 +22,18 @@ export interface LaserToolsApiResponse {
 }
 
 export interface AIChatBotParams {
+	beatsheets_array?: string[]
 	context?: string
 	ep_number?: string
 	ep_text?: string
 	highlighted_text?: string
+	loglines_array?: string[]
 	messages: {
 		content: string
 		role: 'user' | 'assistant'
 	}[]
 	query: string
+	scenes_array?: string[]
 }
 
 export interface AIChatBotApiResponse {
