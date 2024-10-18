@@ -24,7 +24,7 @@ export interface RequestState {
 
 const Explorer = ({ start, end }: { end: string; start: string }) => {
 	const { id, episodeId } = useParams()
-	const [content, setContent] = useState<string[]>([])
+	const [content, setContent] = useState<string[] | string>([])
 	const [promptInput, setPromptInput] = useState<string>('')
 	const [isLoading, setLoading] = useState<boolean>(false)
 	const [request, setRequest] = useState<RequestState>({
@@ -53,18 +53,6 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 		setRequest({ ...request, action, name })
 		const res = await getMetadata(id as string, episodeId as string, start, end)
 
-		console.log({
-			action,
-			ep_from: parseInt(start),
-			ep_to: parseInt(end),
-			mode: request.mode,
-			ep_number: episodeId as string,
-			beatsheet_array: res.metadata.map((data) => data.beatsheets),
-			logline_array: res.metadata.map((data) => data.loglines),
-			context: res.context,
-			instruction,
-		})
-
 		if (action === 'summary') {
 			setContent(res.metadata.map((data) => data.loglines))
 		} else {
@@ -80,7 +68,7 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 				current_ep: currentEpisodeContent?.de || ' ',
 				instruction,
 			})
-			if (result) setContent([result])
+			if (result) setContent(result)
 		}
 		setLoading(false)
 	}
