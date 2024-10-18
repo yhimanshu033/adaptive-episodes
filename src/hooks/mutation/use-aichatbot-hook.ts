@@ -25,9 +25,11 @@ const useAIChatbotHook = () => {
 			start,
 			end
 		)
-		const loglines_array = metadata.map((data) => data.loglines)
-		const beatsheets_array = metadata.map((data) => data.beatsheets)
-		return getChatbotResponse({ ...params, loglines_array, beatsheets_array })
+		const chatBotMetadata = metadata.map((data) => ({
+			loglines_array: data.loglines,
+			beatsheets_array: data.beatsheets,
+		}))
+		return getChatbotResponse({ ...params, ...chatBotMetadata })
 	}
 
 	const aiChatbotMutation = useMutation({

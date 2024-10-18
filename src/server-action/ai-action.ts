@@ -62,7 +62,6 @@ export const getChatbotResponse = async (
 		loglines_array = [],
 		beatsheets_array = [],
 	} = params
-	console.log(params)
 	const body = {
 		api_key: process.env.NEXT_PUBLIC_LASERTOOLS_API_KEY,
 		context,

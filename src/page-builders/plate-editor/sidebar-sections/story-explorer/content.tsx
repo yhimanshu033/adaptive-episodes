@@ -31,6 +31,7 @@ const transformData = (input: string[] | string) => {
 	}
 	return result
 }
+
 const Content = ({
 	header,
 	data,
@@ -40,7 +41,6 @@ const Content = ({
 	header: string
 	setRequest: React.Dispatch<React.SetStateAction<RequestState>>
 }) => {
-	console.log(data)
 	const explorerData = transformData(data)
 	return (
 		<>
