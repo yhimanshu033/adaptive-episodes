@@ -66,7 +66,7 @@ export interface PlotExplorerParams {
 }
 
 export interface ExplorerType {
-	content: string
+	content: string | ExplorerType[]
 	title: string
 }
 

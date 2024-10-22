@@ -9,9 +9,36 @@ import {
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 
-import { PlotExplorerApiResponse } from '@/types/ai-types'
+import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
 
 import { RequestState } from './explorer'
+
+const renderContent = (content: string | ExplorerType[]): JSX.Element => {
+	if (typeof content === 'string') {
+		return (
+			<div
+				dangerouslySetInnerHTML={{
+					__html: content.replace(/\n/g, '<br/>'),
+				}}
+			/>
+		)
+	}
+
+	if (Array.isArray(content)) {
+		return (
+			<Accordion type="single" collapsible className="w-full">
+				{content.map((item, index) => (
+					<AccordionItem key={index} value={item.title}>
+						<AccordionTrigger>{item.title}</AccordionTrigger>
+						<AccordionContent>{renderContent(item.content)}</AccordionContent>
+					</AccordionItem>
+				))}
+			</Accordion>
+		)
+	}
+
+	return <div>Invalid content format</div>
+}
 
 const Content = ({
 	header,
@@ -40,13 +67,7 @@ const Content = ({
 				{explorerData.map((data, index) => (
 					<AccordionItem key={index} value={data.title}>
 						<AccordionTrigger>{data.title}</AccordionTrigger>
-						<AccordionContent>
-							<div
-								dangerouslySetInnerHTML={{
-									__html: data.content.replace(/\n/g, '<br/>'),
-								}}
-							/>
-						</AccordionContent>
+						<AccordionContent>{renderContent(data.content)}</AccordionContent>
 					</AccordionItem>
 				))}
 			</Accordion>
