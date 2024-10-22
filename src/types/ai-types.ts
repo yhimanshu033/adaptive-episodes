@@ -65,10 +65,12 @@ export interface PlotExplorerParams {
 	scene_array?: Array<string>
 }
 
+export interface ExplorerType {
+	content: string | ExplorerType[]
+	title: string
+}
+
 export interface PlotExplorerApiResponse {
-	data: {
-		action: string
-		result: string
-	}
+	data: ExplorerType[]
 	message: string
 }
