@@ -9,39 +9,19 @@ import {
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 
+import { PlotExplorerApiResponse } from '@/types/ai-types'
+
 import { RequestState } from './explorer'
-
-const transformData = (input: string[] | string) => {
-	let result: Array<{ content: string; title: string }> = []
-	if (typeof input === 'string') {
-		const splittedText = input.split(/([A-Z]+\s+\d+)/).filter(Boolean)
-
-		for (let i = 0; i < splittedText.length - 1; i += 2) {
-			const title = splittedText[i]
-			const content = splittedText[i + 1].trim().replace(/^:\s*/, '')
-			if (title && content) {
-				result.push({ title, content })
-			}
-		}
-	} else {
-		result = input.map((episode, index) => ({
-			title: `Episode ${index + 1}`,
-			content: episode,
-		}))
-	}
-	return result
-}
 
 const Content = ({
 	header,
-	data,
+	explorerData,
 	setRequest,
 }: {
-	data: string[] | string
+	explorerData: PlotExplorerApiResponse['data']
 	header: string
 	setRequest: React.Dispatch<React.SetStateAction<RequestState>>
 }) => {
-	const explorerData = transformData(data)
 	return (
 		<>
 			<div className="mb-4 flex items-center justify-between">
@@ -60,7 +40,13 @@ const Content = ({
 				{explorerData.map((data, index) => (
 					<AccordionItem key={index} value={data.title}>
 						<AccordionTrigger>{data.title}</AccordionTrigger>
-						<AccordionContent>{data.content}</AccordionContent>
+						<AccordionContent>
+							<div
+								dangerouslySetInnerHTML={{
+									__html: data.content.replace(/\n/g, '<br/>'),
+								}}
+							/>
+						</AccordionContent>
 					</AccordionItem>
 				))}
 			</Accordion>

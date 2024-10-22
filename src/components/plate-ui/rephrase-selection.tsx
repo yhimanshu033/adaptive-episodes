@@ -12,10 +12,11 @@ import useComments from '@/hooks/plate/use-comments'
 import useRephrase from '@/hooks/plate/use-rephrase'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useFloatingNodeId } from '@udecode/plate-floating'
-import { ArrowLeft, Bot, RotateCw } from 'lucide-react'
+import { ArrowLeft, Bot, RotateCw, Send } from 'lucide-react'
 
 import Spinner from '@/components/ui/spinner'
 
+import { Input } from '../ui/input'
 import { ScrollArea } from '../ui/scroll-area'
 import { Textarea } from '../ui/textarea'
 import { Button } from './button'
@@ -32,6 +33,8 @@ export default function RephraseSelection({
 	const { onRephrase, getSelectedText } = useRephrase()
 	const { resetActiveComments } = useComments()
 	const [textInput, setTextInput] = useState('')
+	const [showPrompt, setShowPrompt] = useState(false)
+	const [promptInput, setPromptInput] = useState('')
 	const { episodeId } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
 
@@ -60,6 +63,8 @@ export default function RephraseSelection({
 			context: episodeContent?.context || '',
 			ep_number: episodeId as string,
 			ep_text: episodeContent?.de || '',
+			prompt: promptInput,
+			style_template: '',
 		})
 	}
 
@@ -70,6 +75,12 @@ export default function RephraseSelection({
 
 	const handleRejectRephrase = () => {
 		reset()
+	}
+
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		setShowPrompt(false)
+		handleRephrase('custom')
 	}
 
 	useEffect(() => {
@@ -88,9 +99,9 @@ export default function RephraseSelection({
 					</ToolbarButton>
 				</>
 			) : data ? (
-				<div className="z-20 min-w-56 max-w-lg rounded-md p-4 shadow-md">
-					<ScrollArea className="pr-3">
-						<p className="mb-2 max-h-24 text-wrap text-muted-foreground">
+				<div className="z-20 min-w-56 max-w-lg rounded-md p-2 shadow-md">
+					<ScrollArea className="mb-1 rounded border p-2 pr-3">
+						<p className="mb-2 max-h-16 text-wrap text-muted-foreground">
 							{getSelectedText().text}
 						</p>
 					</ScrollArea>
@@ -121,6 +132,23 @@ export default function RephraseSelection({
 						</div>
 					</div>
 				</div>
+			) : showPrompt ? (
+				<div className="relative py-2">
+					<form
+						className="flex min-w-96 flex-1 items-end space-x-2 rounded-md border bg-background"
+						onSubmit={handleSubmit}
+					>
+						<Input
+							placeholder="Enter prompt..."
+							value={promptInput}
+							onChange={(e) => setPromptInput(e.target.value)}
+							className="min-h-[40px] grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+						/>
+						<Button variant="ghost" size="icon" type="submit">
+							<Send size={16} />
+						</Button>
+					</form>
+				</div>
 			) : (
 				<div className="flex items-center">
 					<Button
@@ -135,7 +163,11 @@ export default function RephraseSelection({
 							key={method.id}
 							variant="ghost"
 							className="my-1"
-							onClick={() => handleRephrase(method.id)}
+							onClick={() =>
+								method.id === 'custom'
+									? setShowPrompt(true)
+									: handleRephrase(method.id)
+							}
 						>
 							{isPending && currentMethod === method.id ? (
 								<Spinner size={16} />

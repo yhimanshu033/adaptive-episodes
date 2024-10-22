@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
+import { PlotExplorerApiResponse } from '@/types/ai-types'
+
 import Content from './content'
 
 export interface RequestState {
@@ -24,7 +26,7 @@ export interface RequestState {
 
 const Explorer = ({ start, end }: { end: string; start: string }) => {
 	const { id, episodeId } = useParams()
-	const [content, setContent] = useState<string[] | string>([])
+	const [content, setContent] = useState<PlotExplorerApiResponse['data']>([])
 	const [promptInput, setPromptInput] = useState<string>('')
 	const [isLoading, setLoading] = useState<boolean>(false)
 	const [request, setRequest] = useState<RequestState>({
@@ -54,9 +56,14 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 		const res = await getMetadata(id as string, episodeId as string, start, end)
 
 		if (action === 'summary') {
-			setContent(res.metadata.map((data) => data.loglines))
+			setContent(
+				res.metadata.map((data, index) => ({
+					title: `Episode ${index + 1}`,
+					content: data.loglines,
+				}))
+			)
 		} else {
-			const { result } = await mutateAsync({
+			const result = await mutateAsync({
 				action,
 				ep_from: parseInt(start),
 				ep_to: parseInt(end),
@@ -103,7 +110,7 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 						) : request.action && content.length ? (
 							<Content
 								header={request.name}
-								data={content}
+								explorerData={content}
 								setRequest={setRequest}
 							/>
 						) : (
