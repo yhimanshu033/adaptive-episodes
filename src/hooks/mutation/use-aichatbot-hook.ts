@@ -14,6 +14,7 @@ import useEpisodeData from '../query/use-episode-data'
 const useAIChatbotHook = () => {
 	const { data: episodeData } = useEpisodeData()
 	const { id, episodeId } = useParams()
+
 	const onAiChatbotMutation = async (params: AIChatBotParams) => {
 		const [start, end] = getMetaDataRange(
 			parseInt(episodeId as string),
@@ -25,11 +26,18 @@ const useAIChatbotHook = () => {
 			start,
 			end
 		)
-		const chatBotMetadata = metadata.map((data) => ({
-			loglines_array: data.loglines,
-			beatsheets_array: data.beatsheets,
-		}))
-		return getChatbotResponse({ ...params, ...chatBotMetadata })
+		const { loglines_array, beatsheets_array } = metadata.reduce<{
+			beatsheets_array: string[]
+			loglines_array: string[]
+		}>(
+			(acc, data) => {
+				acc.loglines_array.push(data.loglines)
+				acc.beatsheets_array.push(data.beatsheets)
+				return acc
+			},
+			{ loglines_array: [], beatsheets_array: [] }
+		)
+		return getChatbotResponse({ ...params, loglines_array, beatsheets_array })
 	}
 
 	const aiChatbotMutation = useMutation({
