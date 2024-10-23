@@ -20,19 +20,22 @@ const useAIChatbotHook = () => {
 			parseInt(episodeId as string),
 			episodeData?.totalEpisodes || 0
 		)
+
 		const { metadata } = await getMetadata(
 			id as string,
 			episodeId as string,
 			start,
 			end
 		)
+		let current = parseInt(start)
 		const { loglines_array, beatsheets_array } = metadata.reduce<{
 			beatsheets_array: string[]
 			loglines_array: string[]
 		}>(
 			(acc, data) => {
-				acc.loglines_array.push(data.loglines)
-				acc.beatsheets_array.push(data.beatsheets)
+				acc.loglines_array.push(`Ep${current} ${data.loglines}`)
+				acc.beatsheets_array.push(`Ep${current} ${data.beatsheets}`)
+				current++
 				return acc
 			},
 			{ loglines_array: [], beatsheets_array: [] }
