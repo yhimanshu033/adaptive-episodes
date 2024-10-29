@@ -11,6 +11,7 @@ export const useEpisodeContent = () => {
 		queryFn: () => getEpisodeContent(id, episodeId),
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
+		gcTime: 0,
 	})
 
 	return query

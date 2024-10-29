@@ -1,47 +1,90 @@
-import { EpisodeResponse, LoglinesResponse } from '@/types/episode-type'
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use server'
+
+import { episodeLimit } from '@/constants/episodes-constants'
+import {
+	collection,
+	doc,
+	getCountFromServer,
+	getDoc,
+	getDocs,
+	limit,
+	orderBy,
+	query,
+	startAt,
+	where,
+} from 'firebase/firestore'
+
+import { db } from '@/lib/firebase'
+
+import {
+	EpisodeDocType,
+	EpisodeType,
+	VersionDocType,
+} from '@/types/episode-type'
 
 export const getEpisodes = async (
-	story: string,
-	page?: number,
-	episodeFilter?: string
+	storyId: string,
+	page: number = 1,
+	episodeFilter: string = ''
 ) => {
 	try {
-		const queryParams = new URLSearchParams()
-		if (page) queryParams.append('page', page.toString())
-		if (episodeFilter) queryParams.append('episode_search', episodeFilter)
-		const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story}/episodes?${queryParams.toString()}`
-		const data = (await fetch(url).then((res) => res.json())) as EpisodeResponse
+		const firstEpisodeNumber = (page - 1) * 10 + 1
 
-		if (!data.status) {
-			throw new Error(data.error as string)
+		const storyDocRef = doc(db, 'stories', storyId)
+		const episodesCollRef = collection(storyDocRef, 'episodes') //Get episodes collection instance
+
+		const constraints: any[] = [orderBy('episodeNumber')]
+
+		if (episodeFilter) {
+			constraints.push(
+				where('title.de', '>=', episodeFilter),
+				where('title.de', '<=', episodeFilter + '\uf8ff') // Prefix filter
+			)
 		}
 
-		return data
-	} catch (error) {
-		const { message } = error as Error
-		throw new Error(message || 'Failed to get episode')
-	}
-}
+		//count total matches
+		const countQuery = query(episodesCollRef, ...constraints)
+		const totalEpisodes = (await getCountFromServer(countQuery)).data().count
 
-export const getMetadata = async (
-	story: string,
-	episode: string,
-	start: string,
-	end: string
-) => {
-	try {
-		const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/stories/${story}/episodes/${episode}/metadata?start=${start}&end=${end}`
-		const data = (await fetch(url).then((res) =>
-			res.json()
-		)) as LoglinesResponse
+		//Query to sort documents
+		const episodeQuery = query(
+			episodesCollRef,
+			...constraints,
+			startAt(firstEpisodeNumber),
+			limit(episodeLimit)
+		)
+		const episodesSnapshot = await getDocs(episodeQuery) //Fetch documents in sorted order
 
-		if (!data.status) {
-			throw new Error(data.error as string)
+		const episodes: EpisodeType[] = await Promise.all(
+			episodesSnapshot.docs.map(async (document) => {
+				const episodeData = document.data() as EpisodeDocType
+				const versionId = episodeData.activeVersionId
+				const versionDocRef = doc(document.ref, 'versions', versionId)
+				const versionData = (
+					await getDoc(versionDocRef)
+				).data() as VersionDocType
+				return {
+					writer: versionData.writer,
+					title: episodeData.title.de,
+					id: document.id,
+					updatedAt: versionData.updatedAt,
+					status: versionData.status,
+					wordCount: versionData.wordCount,
+				}
+			})
+		)
+
+		return {
+			currentPage: page,
+			episodes: episodes,
+			hasNext: totalEpisodes > page * 10,
+			totalEpisodes,
+			totalPages: Math.ceil(totalEpisodes / 10),
 		}
-
-		return data
 	} catch (error) {
 		const { message } = error as Error
-		throw new Error(message || 'Failed to get loglines')
+		throw Error(message || 'Failed to fetch episodes')
 	}
 }

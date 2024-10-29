@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+'use server'
+
 import {
 	CHATBOT,
 	LASERTOOLS_URL,
@@ -50,7 +52,7 @@ export const rephraseText = async (
 }
 
 export const getChatbotResponse = async (
-	params: AIChatBotParams
+	params: AIChatBotParams['aiChatbotData']
 ): Promise<AIChatBotApiResponse['data']> => {
 	const {
 		context = '',

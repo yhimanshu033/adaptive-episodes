@@ -7,8 +7,12 @@ import { Plate } from '@udecode/plate-common/react'
 import { Editor } from '@/components/plate-ui/editor'
 
 const Translation = ({ translatedContent }: { translatedContent: string }) => {
+	const episodeContent = translatedContent
+		.split('\n')
+		.map((text, id) => ({ id, type: 'p', children: [{ text }] }))
+
 	const editor = useMyEditor({
-		content: translatedContent,
+		episodeContent,
 		id: TRANSLATION_EDITOR_ID,
 	})
 
