@@ -12,7 +12,7 @@ const Page = async () => {
 
 	await queryClient.prefetchQuery({
 		queryKey: ['stories'],
-		queryFn: () => getStories(),
+		queryFn: getStories,
 	})
 
 	return (
