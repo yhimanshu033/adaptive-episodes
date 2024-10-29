@@ -30,7 +30,7 @@ export const getEpisodes = async (
 	episodeFilter: string = ''
 ) => {
 	try {
-		const firstEpisodeNumber = (page - 1) * 10 + 1
+		const firstEpisodeNumber = (page - 1) * episodeLimit + 1
 
 		const storyDocRef = doc(db, 'stories', storyId)
 		const episodesCollRef = collection(storyDocRef, 'episodes') //Get episodes collection instance
@@ -79,9 +79,9 @@ export const getEpisodes = async (
 		return {
 			currentPage: page,
 			episodes: episodes,
-			hasNext: totalEpisodes > page * 10,
+			hasNext: totalEpisodes > page * episodeLimit,
 			totalEpisodes,
-			totalPages: Math.ceil(totalEpisodes / 10),
+			totalPages: Math.ceil(totalEpisodes / episodeLimit),
 		}
 	} catch (error) {
 		const { message } = error as Error

@@ -13,14 +13,11 @@ import {
 const Versions = ({ activeVersionId }: { activeVersionId: string }) => {
 	const { data: allVersionIds } = useVersionData()
 
-	const handleSelect = (value: string) => {
-		if (value === 'add') {
-			console.log('add')
-		} else {
-			console.log('change version')
-		}
-	}
+	const currentVersionIndex = allVersionIds?.indexOf(activeVersionId) || 0
 
+	const handleSelect = (value: string) => {
+		console.log('Chaged to episode version', value)
+	}
 	if (!allVersionIds) return null
 	return (
 		<Select value={activeVersionId} onValueChange={handleSelect}>
@@ -29,7 +26,11 @@ const Versions = ({ activeVersionId }: { activeVersionId: string }) => {
 			</SelectTrigger>
 			<SelectContent>
 				{allVersionIds.map((id, index) => (
-					<SelectItem key={index} value={id}>{`v${index + 1}`}</SelectItem>
+					<SelectItem
+						disabled={index < currentVersionIndex}
+						key={index}
+						value={id}
+					>{`v${index + 1}`}</SelectItem>
 				))}
 				<SelectItem value="add">
 					<Plus size={16} />
