@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { statuses } from '@/constants/episodes-constants'
-import useEpisodeData from '@/hooks/query/use-episode-data'
+import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import {
 	ColumnDef,
 	flexRender,
@@ -47,9 +47,9 @@ const EpisodesTable = () => {
 	const router = useRouter()
 	const pathname = usePathname()
 
-	const { data: episodePage } = useEpisodeData(currentPage, episodeFilter)
+	const { data: episodePage } = useEpisodesData(currentPage, episodeFilter)
 
-	const handleStatusChange = (episodeId: number, newStatus: string) => {
+	const handleStatusChange = (episodeId: string, newStatus: string) => {
 		setEpisodes(
 			episodes.map((episode) =>
 				episode.id === episodeId ? { ...episode, status: newStatus } : episode
@@ -57,7 +57,7 @@ const EpisodesTable = () => {
 		)
 	}
 
-	const handleWriterChange = (episodeId: number, newWriter: string) => {
+	const handleWriterChange = (episodeId: string, newWriter: string) => {
 		setEpisodes(
 			episodes.map((episode) =>
 				episode.id === episodeId ? { ...episode, writer: newWriter } : episode
@@ -65,7 +65,7 @@ const EpisodesTable = () => {
 		)
 	}
 
-	const handleClick = (episodeId: number) => {
+	const handleClick = (episodeId: string) => {
 		router.push(`${pathname}/${episodeId}/editor`)
 	}
 
@@ -76,14 +76,14 @@ const EpisodesTable = () => {
 			cell: ({ row }) => row.index + (currentPage - 1) * 10 + 1,
 		},
 		{
-			accessorKey: 'episode_name',
+			accessorKey: 'title',
 			header: 'Title',
 			cell: ({ row }) => (
 				<div
 					className="cursor-pointer font-medium"
 					onClick={() => handleClick(row.original.id)}
 				>
-					{row.getValue('episode_name')} ({row.original.wordcount} words)
+					{row.getValue('title')} ({row.original.wordCount} words)
 				</div>
 			),
 		},
@@ -109,12 +109,12 @@ const EpisodesTable = () => {
 			),
 		},
 		{
-			accessorKey: 'author',
+			accessorKey: 'writer',
 			header: 'Writer',
 			cell: ({ row }) => (
 				<EditableText
 					key={row.original.id}
-					text={row.getValue('author')}
+					text={row.getValue('writer')}
 					isEditable
 					onComplete={handleWriterChange.bind(null, row.original.id)}
 				/>
@@ -123,7 +123,7 @@ const EpisodesTable = () => {
 		{
 			accessorKey: 'last_updated',
 			header: 'Last Updated',
-			cell: ({ row }) => formatDate(row.original.last_updated),
+			cell: ({ row }) => formatDate(row.original.updatedAt),
 		},
 	]
 
@@ -145,7 +145,7 @@ const EpisodesTable = () => {
 	return (
 		<>
 			<Filters setEpisodeFilter={setEpisodeFilter} />
-			<ScrollArea className="overflow-auto-y relative flex max-h-[calc(100vh-300px)] w-full flex-col rounded-md border">
+			<ScrollArea className="overflow-auto-y relative flex max-h-[48vh] w-full flex-col rounded-md border">
 				<Table>
 					<TableHeader className="sticky top-0 z-10 bg-background">
 						{table.getHeaderGroups().map((headerGroup) => (
@@ -199,7 +199,7 @@ const EpisodesTable = () => {
 								</TableRow>
 							))
 						) : (
-							<TableRow>
+							<TableRow className="hover:bg-transparent">
 								<TableCell colSpan={columns.length + 1}>
 									<SkeletonBuilder count={5} className="h-8" />
 								</TableCell>

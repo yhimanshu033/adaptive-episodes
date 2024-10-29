@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
@@ -12,32 +13,24 @@ import { AlignPlugin } from '@udecode/plate-alignment/react'
 import { AutoformatPlugin } from '@udecode/plate-autoformat/react'
 import {
 	BoldPlugin,
-	CodePlugin,
 	ItalicPlugin,
 	StrikethroughPlugin,
-	SubscriptPlugin,
-	SuperscriptPlugin,
 	UnderlinePlugin,
 } from '@udecode/plate-basic-marks/react'
 import { BlockquotePlugin } from '@udecode/plate-block-quote/react'
 import { ExitBreakPlugin, SoftBreakPlugin } from '@udecode/plate-break/react'
-import { CaptionPlugin } from '@udecode/plate-caption/react'
 import {
 	isCodeBlockEmpty,
 	isSelectionAtCodeBlockStart,
 	unwrapCodeBlock,
 } from '@udecode/plate-code-block'
-import {
-	CodeBlockPlugin,
-	CodeLinePlugin,
-	CodeSyntaxPlugin,
-} from '@udecode/plate-code-block/react'
+import { CodeBlockPlugin } from '@udecode/plate-code-block/react'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
 	HtmlPlugin,
 	isBlockAboveEmpty,
 	isSelectionAtBlockStart,
-	someNode,
+	Value,
 } from '@udecode/plate-common'
 import {
 	createPlateEditor,
@@ -47,13 +40,9 @@ import {
 } from '@udecode/plate-common/react'
 import { DndPlugin } from '@udecode/plate-dnd'
 import { DocxPlugin } from '@udecode/plate-docx'
-import { EmojiPlugin } from '@udecode/plate-emoji/react'
-import { ExcalidrawPlugin } from '@udecode/plate-excalidraw/react'
 import {
 	FontBackgroundColorPlugin,
 	FontColorPlugin,
-	FontFamilyPlugin,
-	FontSizePlugin,
 } from '@udecode/plate-font/react'
 import { HEADING_KEYS, HEADING_LEVELS } from '@udecode/plate-heading'
 import { HeadingPlugin } from '@udecode/plate-heading/react'
@@ -65,40 +54,36 @@ import { IndentPlugin } from '@udecode/plate-indent/react'
 import { JuicePlugin } from '@udecode/plate-juice'
 import { KbdPlugin } from '@udecode/plate-kbd/react'
 import { LineHeightPlugin } from '@udecode/plate-line-height/react'
-import { LinkPlugin } from '@udecode/plate-link/react'
 import { TodoListPlugin } from '@udecode/plate-list/react'
 import { MarkdownPlugin } from '@udecode/plate-markdown'
-import { ImagePlugin, MediaEmbedPlugin } from '@udecode/plate-media/react'
-import { MentionInputPlugin, MentionPlugin } from '@udecode/plate-mention/react'
+import { ImagePlugin } from '@udecode/plate-media/react'
 import { NodeIdPlugin } from '@udecode/plate-node-id'
 import { ResetNodePlugin } from '@udecode/plate-reset-node/react'
 import { SelectOnBackspacePlugin } from '@udecode/plate-select'
 import { BlockSelectionPlugin } from '@udecode/plate-selection/react'
-import { TabbablePlugin } from '@udecode/plate-tabbable/react'
 import {
 	TableCellHeaderPlugin,
 	TableCellPlugin,
-	TablePlugin,
-	TableRowPlugin,
 } from '@udecode/plate-table/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
-import { CircleArrowLeft, CircleArrowRight } from 'lucide-react'
+import {
+	CircleArrowLeft,
+	CircleArrowRight,
+	LoaderCircle,
+	Save,
+	SeparatorHorizontal,
+} from 'lucide-react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useShallow } from 'zustand/react/shallow'
 
-import { BlockquoteElement } from '@/components/plate-ui/blockquote-element'
-import { CodeBlockElement } from '@/components/plate-ui/code-block-element'
-import { CodeLeaf } from '@/components/plate-ui/code-leaf'
-import { CodeLineElement } from '@/components/plate-ui/code-line-element'
-import { CodeSyntaxLeaf } from '@/components/plate-ui/code-syntax-leaf'
+import { Loader } from '@/components/loader'
 import { CommentLeaf } from '@/components/plate-ui/comment-leaf'
 import {
 	CursorOverlay,
 	DragOverCursorPlugin,
 } from '@/components/plate-ui/cursor-overlay'
 import { Editor } from '@/components/plate-ui/editor'
-import { ExcalidrawElement } from '@/components/plate-ui/excalidraw-element'
 import { FixedToolbar } from '@/components/plate-ui/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui/fixed-toolbar-buttons'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
@@ -106,74 +91,109 @@ import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-b
 import { HeadingElement } from '@/components/plate-ui/heading-element'
 import { HighlightLeaf } from '@/components/plate-ui/highlight-leaf'
 import { HrElement } from '@/components/plate-ui/hr-element'
-import { ImageElement } from '@/components/plate-ui/image-element'
 import {
 	TodoLi,
 	TodoMarker,
 } from '@/components/plate-ui/indent-todo-marker-component'
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
-import { LinkElement } from '@/components/plate-ui/link-element'
-import { LinkFloatingToolbar } from '@/components/plate-ui/link-floating-toolbar'
-import { MediaEmbedElement } from '@/components/plate-ui/media-embed-element'
-import { MentionElement } from '@/components/plate-ui/mention-element'
-import { MentionInputElement } from '@/components/plate-ui/mention-input-element'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
-import {
-	TableCellElement,
-	TableCellHeaderElement,
-} from '@/components/plate-ui/table-cell-element'
-import { TableElement } from '@/components/plate-ui/table-element'
-import { TableRowElement } from '@/components/plate-ui/table-row-element'
-import { TodoListElement } from '@/components/plate-ui/todo-list-element'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 // import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
+import { valueToText } from '@/lib/plate/value-to-text'
 
 import Sidebar from './sidebar'
+import Versions from './versions'
 
 export default function PlateEditor() {
 	const containerRef = useRef(null)
 	const { data: content, isLoading } = useEpisodeContent()
+	const savedContent = useRef<Value>([])
+	const [episodeContent, setEpisodeContent] = useState<Value>([])
+
 	const router = useRouter()
 	const { id } = useParams()
 
-	const editor = useMyEditor({ content: content?.de })
+	const editor = useMyEditor({ episodeContent })
 
-	const handleEpisodeChange = (episode: number) => {
+	const { saveEpisodeMutation } = useEpisodeHook()
+
+	const handleEpisodeChange = (episode: string | null) => {
+		if (!episode) return
 		router.push(
 			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}/${episode}/editor`
 		)
 	}
 
+	const handleSave = useCallback(() => {
+		if (savedContent.current === episodeContent) return
+		setEpisodeContent(savedContent.current)
+		saveEpisodeMutation.mutate(valueToText(savedContent.current))
+	}, [episodeContent, saveEpisodeMutation])
+
+	useEffect(() => {
+		if (content?.de) {
+			const value = content.de.split('\n').map((text, index) => ({
+				id: `${index}`,
+				type: ParagraphPlugin.key,
+				children: [{ text }],
+			}))
+
+			setEpisodeContent(value)
+			savedContent.current = value
+		}
+	}, [content?.de])
+
+	useEffect(() => {
+		const intervalId = setInterval(handleSave, 30 * 1000)
+
+		return () => {
+			clearInterval(intervalId)
+		}
+	}, [handleSave])
+
+	if (!content)
+		return (
+			<div className="flex flex-1 items-center justify-center">
+				<Loader />
+			</div>
+		)
 	return (
 		<DndProvider backend={HTML5Backend}>
 			<div className="flex items-center justify-between">
-				<Title title={content?.episode_name as string} />
-				{!isLoading && (
-					<div className="flex gap-2">
-						<Button
-							variant="outline"
-							size="icon"
-							className="rounded-full"
-							disabled={!content?.hasPrevious}
-							onClick={() => handleEpisodeChange((content?.episode ?? 0) - 1)}
-						>
-							<CircleArrowLeft />
-						</Button>
-						<Button
-							disabled={!content?.hasNext}
-							className="rounded-full"
-							size="icon"
-							onClick={() => handleEpisodeChange((content?.episode ?? 0) + 1)}
-						>
-							<CircleArrowRight />
-						</Button>
-					</div>
-				)}
+				<Title
+					title={content?.title.de}
+					episodeNumber={content?.episodeNumber}
+				/>
+				<div className="flex items-center gap-2">
+					<Versions activeVersionId={content.activeVersionId} />
+					{!isLoading && (
+						<div className="flex gap-2">
+							{saveEpisodeMutation.isPending ? (
+								<div
+									className={cn(
+										buttonVariants({ variant: 'ghost', size: 'icon' })
+									)}
+								>
+									<LoaderCircle className="animate-spin" size={16} />
+								</div>
+							) : (
+								<Button size="icon" onClick={handleSave}>
+									<Save size={16} />
+								</Button>
+							)}
+						</div>
+					)}
+				</div>
 			</div>
-			<Plate editor={editor}>
+			<Plate
+				editor={editor}
+				onChange={(data) => {
+					savedContent.current = data.value
+				}}
+			>
 				<div
 					ref={containerRef}
 					className={cn(
@@ -185,7 +205,7 @@ export default function PlateEditor() {
 					<FixedToolbar>
 						<FixedToolbarButtons />
 					</FixedToolbar>
-					<div className="flex h-[60vh] w-full">
+					<div className="flex h-[58vh] w-full">
 						<ScrollArea className="w-full flex-1">
 							<div className="flex h-full">
 								<div className="flex w-full">
@@ -205,9 +225,7 @@ export default function PlateEditor() {
 								</div>
 								<Translation
 									translatedContent={
-										isLoading
-											? 'Translation Loading...'
-											: (content?.us as string)
+										isLoading ? 'Translation Loading...' : content.us
 									}
 								/>
 							</div>
@@ -217,15 +235,36 @@ export default function PlateEditor() {
 					</div>
 				</div>
 			</Plate>
+			<div className="mt-5 flex items-center justify-center gap-2">
+				<Button
+					variant="outline"
+					size="icon"
+					className="rounded-full"
+					disabled={!content?.previousEpisodeId}
+					onClick={() => handleEpisodeChange(content?.previousEpisodeId)}
+				>
+					<CircleArrowLeft />
+				</Button>
+				<Button
+					disabled={!content?.nextEpisodeId}
+					className="rounded-full"
+					size="icon"
+					onClick={() => handleEpisodeChange(content?.nextEpisodeId)}
+				>
+					<CircleArrowRight />
+				</Button>
+				<Button size="icon" variant="ghost">
+					<SeparatorHorizontal />
+				</Button>
+			</div>
 		</DndProvider>
 	)
 }
 
 export const useMyEditor = ({
-	content,
-	id,
+	episodeContent,
 }: {
-	content?: string
+	episodeContent?: Value
 	id?: string
 }) => {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
@@ -233,40 +272,15 @@ export const useMyEditor = ({
 		plugins: [
 			// Nodes
 			HeadingPlugin,
-			BlockquotePlugin,
-			CodeBlockPlugin,
-			CodeLinePlugin,
-			CodeSyntaxPlugin,
 			HorizontalRulePlugin,
-			LinkPlugin.configure({
-				render: { afterEditable: () => <LinkFloatingToolbar /> },
-			}),
-			ImagePlugin,
-			MediaEmbedPlugin,
-			CaptionPlugin.configure({
-				options: { plugins: [ImagePlugin, MediaEmbedPlugin] },
-			}),
-			MentionPlugin,
-			MentionInputPlugin,
-			TablePlugin,
-			TableRowPlugin,
-			TableCellPlugin,
-			TableCellHeaderPlugin,
-			TodoListPlugin,
-			ExcalidrawPlugin,
 
 			// Marks
 			BoldPlugin,
 			ItalicPlugin,
 			UnderlinePlugin,
 			StrikethroughPlugin,
-			CodePlugin,
-			SubscriptPlugin,
-			SuperscriptPlugin,
 			FontColorPlugin,
 			FontBackgroundColorPlugin,
-			FontSizePlugin,
-			FontFamilyPlugin,
 			HighlightPlugin,
 			KbdPlugin,
 
@@ -326,7 +340,6 @@ export const useMyEditor = ({
 			DndPlugin.configure({
 				options: { enableScroller: true },
 			}),
-			EmojiPlugin,
 			ExitBreakPlugin.configure({
 				options: {
 					rules: [
@@ -408,27 +421,6 @@ export const useMyEditor = ({
 					],
 				},
 			}),
-			TabbablePlugin.configure(({ editor }) => ({
-				options: {
-					query: () => {
-						if (isSelectionAtBlockStart(editor)) return false
-
-						return !someNode(editor, {
-							match: (n) => {
-								return !!(
-									n.type &&
-									([
-										TablePlugin.key,
-										TodoListPlugin.key,
-										CodeBlockPlugin.key,
-									].includes(n.type as string) ||
-										n.listStyleType)
-								)
-							},
-						})
-					},
-				},
-			})),
 			TrailingBlockPlugin.configure({
 				options: { type: ParagraphPlugin.key },
 			}),
@@ -459,10 +451,6 @@ export const useMyEditor = ({
 			components:
 				// withDraggables(
 				withPlaceholders({
-					[BlockquotePlugin.key]: BlockquoteElement,
-					[CodeBlockPlugin.key]: CodeBlockElement,
-					[CodeLinePlugin.key]: CodeLineElement,
-					[CodeSyntaxPlugin.key]: CodeSyntaxLeaf,
 					[HorizontalRulePlugin.key]: HrElement,
 					[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
 					[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
@@ -470,45 +458,18 @@ export const useMyEditor = ({
 					[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
 					[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
 					[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
-					[ImagePlugin.key]: ImageElement,
-					[LinkPlugin.key]: LinkElement,
-					[MediaEmbedPlugin.key]: MediaEmbedElement,
-					[MentionPlugin.key]: MentionElement,
-					[MentionInputPlugin.key]: MentionInputElement,
 					[ParagraphPlugin.key]: ParagraphElement,
-					[TablePlugin.key]: TableElement,
-					[TableRowPlugin.key]: TableRowElement,
-					[TableCellPlugin.key]: TableCellElement,
-					[TableCellHeaderPlugin.key]: TableCellHeaderElement,
-					[TodoListPlugin.key]: TodoListElement,
-					[ExcalidrawPlugin.key]: ExcalidrawElement,
 					[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
-					[CodePlugin.key]: CodeLeaf,
 					[HighlightPlugin.key]: HighlightLeaf,
 					[ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
 					[KbdPlugin.key]: KbdLeaf,
 					[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
-					[SubscriptPlugin.key]: withProps(PlateLeaf, { as: 'sub' }),
-					[SuperscriptPlugin.key]: withProps(PlateLeaf, { as: 'sup' }),
 					[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
 					[CommentsPlugin.key]: CommentLeaf,
 				}),
 			// ),
 		},
-		value: !content
-			? [
-					{
-						id: '1',
-						type: ParagraphPlugin.key,
-						children: [{ text: 'Loading...' }],
-					},
-				]
-			: content.split('\n').map((text, index) => ({
-					id: `${index}`,
-					type: ParagraphPlugin.key,
-					children: [{ text }],
-				})),
-		...(id ? { id } : {}),
+		value: episodeContent,
 	})
 
 	return editor

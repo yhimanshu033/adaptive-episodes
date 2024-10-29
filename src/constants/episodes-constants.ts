@@ -7,3 +7,5 @@ export const statuses = [
 	'Re-Opened',
 	'A-B Test',
 ]
+
+export const episodeLimit = 10
