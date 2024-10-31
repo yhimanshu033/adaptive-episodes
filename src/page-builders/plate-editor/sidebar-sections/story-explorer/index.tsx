@@ -1,23 +1,23 @@
 'use client'
 
 import React, { useState } from 'react'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { useParams } from 'next/navigation'
 
 import { Input } from '@/components/ui/input'
 
 import Explorer from './explorer'
 
 const StoryExplorer = () => {
-	const { data: episodeData } = useEpisodeContent()
+	const { episodeId } = useParams()
 	const [episodeRange, setEpisodeRange] = useState({
-		start: episodeData?.episodeNumber || 1,
-		end: episodeData?.episodeNumber || 1,
+		start: episodeId as string,
+		end: episodeId as string,
 	})
 
 	const handleEpisodeChange = (type: 'start' | 'end', value: string) => {
 		setEpisodeRange((prevRange) => ({
 			...prevRange,
-			[type]: parseInt(value),
+			[type]: value,
 		}))
 	}
 

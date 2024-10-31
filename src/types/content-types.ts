@@ -1,10 +1,12 @@
 export interface EpisodeContedApiResponse {
 	context: string
 	de: string
-	episodeNumber: number
-	nextEpisodeId: boolean
-	previousEpisodeId: boolean
+	episode: number
+	episode_name: string
+	error: string
+	hasNext: boolean
+	hasPrevious: boolean
+	status: number
 	summary: string
-	title: string
 	us: string
 }
