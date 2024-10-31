@@ -5,7 +5,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { useStoriesData } from '@/hooks/query/use-story-data'
 import useAIStore, { addMessages, clearMessages } from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
 import { LoaderCircle, Send, Trash2 } from 'lucide-react'
@@ -29,17 +28,14 @@ import { Textarea } from '@/components/ui/textarea'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
-	const { id, episodeId } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const { messages } = useAIStore()
 	const { aiChatbotMutation } = useAIChatbotHook()
 	const { data: aiResponse, isPending } = aiChatbotMutation
 	const userData = useGlobalStore(useShallow((state) => state.userData))
+	const { episodeId } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
-	const { data: stories } = useStoriesData()
-	const episodesCount =
-		stories?.find((data) => data.id === (id as string))?.episodesCount || 0
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -47,14 +43,11 @@ const AIChatbot = () => {
 		addMessages({ role: 'user', content: input })
 		setInput('')
 		aiChatbotMutation.mutate({
-			episodeNumber: episodeContent?.episodeNumber || 0,
-			episodesCount,
-			aiChatbotData: {
-				messages,
-				query: input,
-				ep_number: episodeId as string,
-				ep_text: episodeContent?.de as string,
-			},
+			messages,
+			query: input,
+			ep_number: episodeId as string,
+			context: episodeContent?.context,
+			ep_text: episodeContent?.de as string,
 		})
 	}
 
@@ -119,7 +112,7 @@ const AIChatbot = () => {
 				))}
 				<div ref={messageEndRef} />
 			</ScrollArea>
-			<div className="mb-4 flex items-end gap-1">
+			<div className="flex items-end">
 				<form
 					onSubmit={handleSendMessage}
 					className="flex flex-1 items-end space-x-2 rounded-md border bg-background"

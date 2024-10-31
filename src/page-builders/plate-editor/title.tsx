@@ -5,15 +5,9 @@ import { ArrowLeft } from 'lucide-react'
 import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
 
-const Title = ({
-	title,
-	episodeNumber,
-}: {
-	episodeNumber: number
-	title: string
-}) => {
+const Title = ({ title }: { title: string }) => {
 	const router = useRouter()
-	const { id } = useParams()
+	const { id, episodeId } = useParams()
 	const handleClick = () => {
 		router.replace(
 			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}`
@@ -24,7 +18,7 @@ const Title = ({
 			<Button variant="ghost" size="icon" onClick={handleClick}>
 				<ArrowLeft size={16} />
 			</Button>
-			<p className="text-xl">{episodeNumber}.</p>
+			<p className="text-xl">{episodeId}.</p>
 			<EditableText
 				key={title}
 				text={decodeURIComponent(title)}

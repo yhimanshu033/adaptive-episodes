@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation'
 import { categories, defaultMode } from '@/constants/story-explorer-constants'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { getMetadata } from '@/server-action/metadata-action'
+import { getMetadata } from '@/server-action/episode-action'
 import { Send } from 'lucide-react'
 
 import { Loader } from '@/components/loader'
@@ -24,7 +24,7 @@ export interface RequestState {
 	name: string
 }
 
-const Explorer = ({ start, end }: { end: number; start: number }) => {
+const Explorer = ({ start, end }: { end: string; start: string }) => {
 	const { id, episodeId } = useParams()
 	const [content, setContent] = useState<PlotExplorerApiResponse['data']>([])
 	const [promptInput, setPromptInput] = useState<string>('')
@@ -53,7 +53,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	) => {
 		setLoading(true)
 		setRequest({ ...request, action, name })
-		const res = await getMetadata(id as string, start, end)
+		const res = await getMetadata(id as string, episodeId as string, start, end)
 
 		if (action === 'summary') {
 			setContent(
@@ -65,13 +65,13 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		} else {
 			const result = await mutateAsync({
 				action,
-				ep_from: start,
-				ep_to: end,
+				ep_from: parseInt(start),
+				ep_to: parseInt(end),
 				mode: request.mode,
 				ep_number: episodeId as string,
 				beatsheet_array: res.metadata.map((data) => data.beatsheets),
 				logline_array: res.metadata.map((data) => data.loglines),
-				context: res.previousEpisodeContext || '',
+				context: res.context,
 				current_ep: currentEpisodeContent?.de || ' ',
 				instruction,
 			})
