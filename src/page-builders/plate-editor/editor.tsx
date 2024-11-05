@@ -86,6 +86,7 @@ import {
 import { Editor } from '@/components/plate-ui/editor'
 import { FixedToolbar } from '@/components/plate-ui/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui/fixed-toolbar-buttons'
+import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons'
 import { HeadingElement } from '@/components/plate-ui/heading-element'
@@ -96,12 +97,14 @@ import {
 	TodoMarker,
 } from '@/components/plate-ui/indent-todo-marker-component'
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
+import { LaserElement } from '@/components/plate-ui/laser-element'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 // import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
+import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { valueToText } from '@/lib/plate/value-to-text'
 
 import Sidebar from './sidebar'
@@ -220,6 +223,7 @@ export default function PlateEditor() {
 									<FloatingToolbar>
 										<FloatingToolbarButtons />
 									</FloatingToolbar>
+									<FloatingPrompt />
 
 									<CursorOverlay containerRef={containerRef} />
 								</div>
@@ -270,6 +274,8 @@ export const useMyEditor = ({
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const editor = createPlateEditor({
 		plugins: [
+			//Custom
+			LaserPlugin,
 			// Nodes
 			HeadingPlugin,
 			HorizontalRulePlugin,
@@ -451,6 +457,7 @@ export const useMyEditor = ({
 			components:
 				// withDraggables(
 				withPlaceholders({
+					[LaserPlugin.key]: withProps(LaserElement, { as: 'u' }),
 					[HorizontalRulePlugin.key]: HrElement,
 					[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
 					[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),

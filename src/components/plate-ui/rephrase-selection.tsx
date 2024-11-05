@@ -1,183 +1,219 @@
-import React, {
-	Dispatch,
-	SetStateAction,
-	useCallback,
-	useEffect,
-	useState,
-} from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { rephraseMethods } from '@/constants/editor-constants'
 import useLaserToolsHook from '@/hooks/mutation/use-lasertool-hook'
-import useComments from '@/hooks/plate/use-comments'
-import useRephrase from '@/hooks/plate/use-rephrase'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { useFloatingNodeId } from '@udecode/plate-floating'
-import { ArrowLeft, Bot, RotateCw, Send } from 'lucide-react'
+import useLaserStore, {
+	setActiveLaser,
+	setPromptActive,
+} from '@/store/laser-store'
+import { ArrowLeft, RotateCw, Send, X } from 'lucide-react'
 
 import Spinner from '@/components/ui/spinner'
+import DiffView, { DiffViewProps } from '@/lib/plate/plugins/diff'
 
-import { Input } from '../ui/input'
-import { ScrollArea } from '../ui/scroll-area'
-import { Textarea } from '../ui/textarea'
 import { Button } from './button'
-import { ToolbarButton } from './toolbar'
 
-interface RephraseSelectionProps {
-	setShowRephrase: Dispatch<SetStateAction<boolean>>
-	showRephrase: boolean
+interface RephraseSelectionProps extends DiffViewProps {
+	elemKey: string | null
+	getSelectedText: () => {
+		nexttext: string
+		prevtext: string
+		text: string
+	}
+	onRephrase: (text: string) => void
+	onResponse: (text: string) => void
+	reset: () => void
 }
-export default function RephraseSelection({
-	setShowRephrase,
-	showRephrase,
-}: RephraseSelectionProps) {
-	const { onRephrase, getSelectedText } = useRephrase()
-	const { resetActiveComments } = useComments()
-	const [textInput, setTextInput] = useState('')
-	const [showPrompt, setShowPrompt] = useState(false)
-	const [promptInput, setPromptInput] = useState('')
-	const { episodeId } = useParams()
-	const { data: episodeContent } = useEpisodeContent()
+const RephraseSelection = React.memo(
+	({
+		onResponse,
+		onRephrase,
+		getSelectedText,
+		reset: resetRephrase,
+		current,
+		previous,
+		elemKey: key,
+	}: RephraseSelectionProps) => {
+		// const { onRephrase, getSelectedText } = useRephrase()
+		// const { resetActiveComments } = useComments()
+		const [textInput, setTextInput] = useState('')
+		const [showPrompt, setShowPrompt] = useState(false)
+		const { episodeId } = useParams()
+		const { data: episodeContent } = useEpisodeContent()
 
-	const id = useFloatingNodeId()
+		// const id = useFloatingNodeId()
 
-	useEffect(() => {
-		resetActiveComments()
-	}, [id, resetActiveComments])
+		const [currentMethod, setMethod] = useState('')
 
-	const [currentMethod, setMethod] = useState('')
+		const { laserToolsMutation } = useLaserToolsHook()
+		const { data, isPending, reset } = laserToolsMutation
 
-	const { laserToolsMutation } = useLaserToolsHook()
-	const { data, isPending, reset } = laserToolsMutation
-	const toggleRephrase = useCallback(
-		(toggle: boolean) => {
-			setShowRephrase(toggle)
-		},
-		[setShowRephrase]
-	)
+		const { lasers } = useLaserStore()
 
-	const handleRephrase = (action: string) => {
-		setMethod(action)
-		laserToolsMutation.mutate({
-			action,
-			...getSelectedText(),
-			context: episodeContent?.context || '',
-			ep_number: episodeId as string,
-			ep_text: episodeContent?.de || '',
-			prompt: promptInput,
-			style_template: '',
-		})
-	}
+		const laser = lasers[key!] ?? { prompt: '' }
 
-	const handleAcceptRephrase = () => {
-		onRephrase(textInput)
-		resetActiveComments()
-	}
+		const { prompt: promptInput } = laser
+		const handleRephrase = (action: string) => {
+			setMethod(action)
+			laserToolsMutation.mutate({
+				action,
+				...getSelectedText(),
+				context: episodeContent?.context || '',
+				ep_number: episodeId as string,
+				ep_text: episodeContent?.de || '',
+				prompt: promptInput,
+				style_template: '',
+			})
+		}
 
-	const handleRejectRephrase = () => {
-		reset()
-	}
+		const handleAcceptRephrase = () => {
+			onRephrase(textInput)
+		}
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-		setShowPrompt(false)
-		handleRephrase('custom')
-	}
+		const handleRejectRephrase = () => {
+			reset()
+		}
 
-	useEffect(() => {
-		if (data && !isPending) setTextInput(data.result)
-	}, [data, isPending, setTextInput])
+		const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+			e.preventDefault()
+			setShowPrompt(false)
+			handleRephrase('custom')
+		}
 
-	return (
-		<div>
-			{!showRephrase ? (
-				<>
-					<ToolbarButton
-						onClick={() => toggleRephrase(true)}
-						tooltip="Rephrase"
-					>
-						<Bot />
-					</ToolbarButton>
-				</>
-			) : data ? (
-				<div className="z-20 min-w-56 max-w-lg rounded-md p-2 shadow-md">
-					<ScrollArea className="mb-1 rounded border p-2 pr-3">
-						<p className="mb-2 max-h-16 text-wrap text-muted-foreground">
-							{getSelectedText().text}
-						</p>
-					</ScrollArea>
-					<Textarea
-						className="mb-4 min-w-[300px] text-accent-foreground"
-						value={textInput}
-						onChange={(e) => setTextInput(e.target.value)}
-					/>
-					<div className="flex items-center justify-between">
+		useEffect(() => {
+			if (data && !isPending) {
+				setTextInput(data.result)
+				onResponse(data.result)
+			}
+		}, [data, isPending, setTextInput])
+
+		const handleSetPrompt = useCallback(() => {
+			setPromptActive(key)
+			setShowPrompt(true)
+			document.getElementById('prompt-input')?.focus()
+		}, [key])
+
+		return (
+			<div>
+				{data ? (
+					<div className="relative w-full">
 						<Button
-							variant="ghost"
-							onClick={() => handleRephrase(currentMethod)}
+							onClick={() => {
+								setActiveLaser(null)
+							}}
+							className="absolute right-2 top-2 z-10 !h-auto !p-2 opacity-65"
 						>
-							<RotateCw size={16} />
+							<X size={10} />
 						</Button>
-						<div className="flex items-center justify-end gap-2">
+						<DiffView previous={previous} current={current} />
+						<div className="flex items-center justify-between">
 							<Button
-								variant="outline"
-								size="sm"
-								className="mr-2"
-								onClick={handleRejectRephrase}
+								variant="ghost"
+								onClick={() => handleRephrase(currentMethod)}
 							>
-								Reject
+								<RotateCw size={16} />
 							</Button>
-							<Button size="sm" onClick={handleAcceptRephrase}>
-								Accept
-							</Button>
+							<div className="flex items-center justify-end gap-2">
+								<Button
+									variant="outline"
+									size="sm"
+									className="mr-2"
+									onClick={handleRejectRephrase}
+								>
+									Reject
+								</Button>
+								<Button size="sm" onClick={handleAcceptRephrase}>
+									Accept
+								</Button>
+							</div>
 						</div>
 					</div>
-				</div>
-			) : showPrompt ? (
-				<div className="relative py-2">
-					<form
-						className="flex min-w-96 flex-1 items-end space-x-2 rounded-md border bg-background"
-						onSubmit={handleSubmit}
-					>
-						<Input
-							placeholder="Enter prompt..."
-							value={promptInput}
-							onChange={(e) => setPromptInput(e.target.value)}
-							className="min-h-[40px] grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-						/>
-						<Button variant="ghost" size="icon" type="submit">
-							<Send size={16} />
-						</Button>
-					</form>
-				</div>
-			) : (
-				<div className="flex items-center">
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => toggleRephrase(false)}
-					>
-						<ArrowLeft size={16} />
-					</Button>
-					{rephraseMethods.map((method) => (
-						<Button
-							key={method.id}
-							variant="ghost"
-							className="my-1"
-							onClick={() =>
-								method.id === 'custom'
-									? setShowPrompt(true)
-									: handleRephrase(method.id)
-							}
+				) : showPrompt ? (
+					<div className="relative py-2">
+						<form
+							className="flex min-w-96 flex-1 items-end space-x-2 rounded-md border bg-background"
+							onSubmit={handleSubmit}
 						>
-							{isPending && currentMethod === method.id ? (
-								<Spinner size={16} />
-							) : (
-								method.method
-							)}
+							<Button
+								variant="ghost"
+								size="sm"
+								type="button"
+								onClick={() => {
+									setShowPrompt(false)
+									setPromptActive(null)
+								}}
+							>
+								<ArrowLeft size={16} />
+							</Button>
+							{/* <Input
+							placeholder="Enter prompt..."
+							// value={promptInput}
+							// onChange={(e) => setPromptInput(e.target.value)}
+							className="min-h-[40px] grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+						/> */}
+							<div className="relative overflow-hidden rounded-lg px-4 py-2 font-mono text-sm ring-1 ring-accent-foreground">
+								<span
+									style={{
+										position: 'absolute',
+										left: `calc(1rem + ${laser.caretPos || 0}ch)`, // Approximate width of each character
+										top: '50%',
+										transform: 'translateY(-50%)',
+										width: '1px',
+										height: '1.2em',
+										backgroundColor: 'white',
+										animation: 'blink 1s steps(2, start) infinite',
+									}}
+								/>
+								<input
+									onFocus={() => {
+										document.getElementById('prompt-input')?.focus()
+									}}
+									value={promptInput}
+									readOnly
+									className=""
+								/>
+							</div>
+							<Button variant="ghost" size="icon" type="submit">
+								<Send size={16} />
+							</Button>
+						</form>
+					</div>
+				) : (
+					<div className="flex items-center">
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => {
+								resetRephrase()
+							}}
+						>
+							<ArrowLeft size={16} />
 						</Button>
-					))}
-				</div>
-			)}
-		</div>
-	)
-}
+						{rephraseMethods.map((method) => (
+							<Button
+								key={method.id}
+								variant="ghost"
+								className="my-1"
+								onClick={() =>
+									method.id === 'custom'
+										? handleSetPrompt()
+										: handleRephrase(method.id)
+								}
+							>
+								{isPending && currentMethod === method.id ? (
+									<Spinner size={16} />
+								) : (
+									method.method
+								)}
+							</Button>
+						))}
+					</div>
+				)}
+			</div>
+		)
+	}
+)
+
+RephraseSelection.displayName = 'RephraseSelection'
+export default RephraseSelection
