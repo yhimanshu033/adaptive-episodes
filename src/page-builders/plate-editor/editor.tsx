@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
@@ -30,7 +29,6 @@ import {
 	HtmlPlugin,
 	isBlockAboveEmpty,
 	isSelectionAtBlockStart,
-	Value,
 } from '@udecode/plate-common'
 import {
 	createPlateEditor,
@@ -69,8 +67,6 @@ import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
 import {
 	CircleArrowLeft,
 	CircleArrowRight,
-	LoaderCircle,
-	Save,
 	SeparatorHorizontal,
 } from 'lucide-react'
 import { DndProvider } from 'react-dnd'
@@ -98,27 +94,23 @@ import {
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 // import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
-import { valueToText } from '@/lib/plate/value-to-text'
 
+import SaveEpisode from './save-episode'
 import Sidebar from './sidebar'
 import Versions from './versions'
 
 export default function PlateEditor() {
 	const containerRef = useRef(null)
 	const { data: content, isLoading } = useEpisodeContent()
-	const savedContent = useRef<Value>([])
-	const [episodeContent, setEpisodeContent] = useState<Value>([])
 
 	const router = useRouter()
 	const { id } = useParams()
 
-	const editor = useMyEditor({ episodeContent })
-
-	const { saveEpisodeMutation } = useEpisodeHook()
+	const editor = useMyEditor({ content: content?.de || '' })
 
 	const handleEpisodeChange = (episode: string | null) => {
 		if (!episode) return
@@ -126,33 +118,6 @@ export default function PlateEditor() {
 			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}/${episode}/editor`
 		)
 	}
-
-	const handleSave = useCallback(() => {
-		if (savedContent.current === episodeContent) return
-		setEpisodeContent(savedContent.current)
-		saveEpisodeMutation.mutate(valueToText(savedContent.current))
-	}, [episodeContent, saveEpisodeMutation])
-
-	useEffect(() => {
-		if (content?.de) {
-			const value = content.de.split('\n').map((text, index) => ({
-				id: `${index}`,
-				type: ParagraphPlugin.key,
-				children: [{ text }],
-			}))
-
-			setEpisodeContent(value)
-			savedContent.current = value
-		}
-	}, [content?.de])
-
-	useEffect(() => {
-		const intervalId = setInterval(handleSave, 30 * 1000)
-
-		return () => {
-			clearInterval(intervalId)
-		}
-	}, [handleSave])
 
 	if (!content)
 		return (
@@ -162,38 +127,17 @@ export default function PlateEditor() {
 		)
 	return (
 		<DndProvider backend={HTML5Backend}>
-			<div className="flex items-center justify-between">
-				<Title
-					title={content?.title.de}
-					episodeNumber={content?.episodeNumber}
-				/>
-				<div className="flex items-center gap-2">
-					<Versions activeVersionId={content.activeVersionId} />
-					{!isLoading && (
-						<div className="flex gap-2">
-							{saveEpisodeMutation.isPending ? (
-								<div
-									className={cn(
-										buttonVariants({ variant: 'ghost', size: 'icon' })
-									)}
-								>
-									<LoaderCircle className="animate-spin" size={16} />
-								</div>
-							) : (
-								<Button size="icon" onClick={handleSave}>
-									<Save size={16} />
-								</Button>
-							)}
-						</div>
-					)}
+			<Plate editor={editor}>
+				<div className="flex items-center justify-between">
+					<Title
+						title={content?.title.de}
+						episodeNumber={content?.episodeNumber}
+					/>
+					<div className="flex items-center gap-2">
+						<Versions activeVersionId={content.activeVersionId} />
+						<SaveEpisode isLoading={isLoading} />
+					</div>
 				</div>
-			</div>
-			<Plate
-				editor={editor}
-				onChange={(data) => {
-					savedContent.current = data.value
-				}}
-			>
 				<div
 					ref={containerRef}
 					className={cn(
@@ -223,48 +167,46 @@ export default function PlateEditor() {
 
 									<CursorOverlay containerRef={containerRef} />
 								</div>
-								<Translation
-									translatedContent={
-										isLoading ? 'Translation Loading...' : content.us
-									}
-								/>
+								<Translation translatedContent={content.us} />
 							</div>
 							<ScrollBar orientation="horizontal" />
 						</ScrollArea>
 						<Sidebar />
 					</div>
 				</div>
+
+				<div className="mt-5 flex items-center justify-center gap-2">
+					<Button
+						variant="outline"
+						size="icon"
+						className="rounded-full"
+						disabled={!content?.previousEpisodeId}
+						onClick={() => handleEpisodeChange(content?.previousEpisodeId)}
+					>
+						<CircleArrowLeft />
+					</Button>
+					<Button
+						disabled={!content?.nextEpisodeId}
+						className="rounded-full"
+						size="icon"
+						onClick={() => handleEpisodeChange(content?.nextEpisodeId)}
+					>
+						<CircleArrowRight />
+					</Button>
+					<Button size="icon" variant="ghost">
+						<SeparatorHorizontal />
+					</Button>
+				</div>
 			</Plate>
-			<div className="mt-5 flex items-center justify-center gap-2">
-				<Button
-					variant="outline"
-					size="icon"
-					className="rounded-full"
-					disabled={!content?.previousEpisodeId}
-					onClick={() => handleEpisodeChange(content?.previousEpisodeId)}
-				>
-					<CircleArrowLeft />
-				</Button>
-				<Button
-					disabled={!content?.nextEpisodeId}
-					className="rounded-full"
-					size="icon"
-					onClick={() => handleEpisodeChange(content?.nextEpisodeId)}
-				>
-					<CircleArrowRight />
-				</Button>
-				<Button size="icon" variant="ghost">
-					<SeparatorHorizontal />
-				</Button>
-			</div>
 		</DndProvider>
 	)
 }
 
 export const useMyEditor = ({
-	episodeContent,
+	content,
+	id,
 }: {
-	episodeContent?: Value
+	content: string
 	id?: string
 }) => {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
@@ -469,7 +411,12 @@ export const useMyEditor = ({
 				}),
 			// ),
 		},
-		value: episodeContent,
+		value: content.split('\n').map((text, index) => ({
+			id: `${index}`,
+			type: ParagraphPlugin.key,
+			children: [{ text }],
+		})),
+		...(id ? { id } : {}),
 	})
 
 	return editor
