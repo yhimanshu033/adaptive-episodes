@@ -1,7 +1,3 @@
-/* eslint-disable  @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable  @typescript-eslint/no-unsafe-call */
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-/* eslint-disable  @typescript-eslint/no-unsafe-return */
 import React from 'react'
 import { cn } from '@udecode/cn'
 import { BoldPlugin, ItalicPlugin } from '@udecode/plate-basic-marks/react'
@@ -36,8 +32,8 @@ const describeUpdate = ({ newProperties, properties }: DiffUpdate) => {
 	const updatedProps: string[] = []
 
 	Object.keys(newProperties).forEach((key) => {
-		const oldValue = properties[key]
-		const newValue = newProperties[key]
+		const oldValue = properties[key] as string
+		const newValue = newProperties[key] as string
 
 		if (oldValue === undefined) {
 			addedProps.push(key)
@@ -77,7 +73,7 @@ const DiffPlugin = toPlatePlugin(
 			aboveNodes:
 				() =>
 				({ children, editor, element }) => {
-					if (!element.diff) return children
+					if (!element.diff) return children as React.ReactNode
 
 					const diffOperation = element.diffOperation as DiffOperation
 					const label = {
@@ -113,7 +109,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 		delete: 'del',
 		insert: 'ins',
 		update: 'span',
-	}[diffOperation.type] as any
+	}[diffOperation.type] as keyof JSX.IntrinsicElements
 
 	return (
 		<PlateLeaf {...props} asChild>
@@ -134,7 +130,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 export interface DiffViewProps {
 	className?: string
 	current: Value | null
-	plugins?: any[]
+	plugins?: typeof defaultPlugins
 	previous: Value | null
 }
 

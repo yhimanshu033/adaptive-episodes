@@ -97,7 +97,7 @@ import {
 	TodoMarker,
 } from '@/components/plate-ui/indent-todo-marker-component'
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
-import { LaserElement } from '@/components/plate-ui/laser-element'
+import { LaserLeaf } from '@/components/plate-ui/laser-element'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -111,7 +111,7 @@ import Sidebar from './sidebar'
 import Versions from './versions'
 
 export default function PlateEditor() {
-	const containerRef = useRef(null)
+	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content, isLoading } = useEpisodeContent()
 	const savedContent = useRef<Value>([])
 	const [episodeContent, setEpisodeContent] = useState<Value>([])
@@ -412,7 +412,7 @@ export const useMyEditor = ({
 			SoftBreakPlugin.configure({
 				options: {
 					rules: [
-						{ hotkey: 'shift+enter' },
+						{ hotkey: 'enter' },
 						{
 							hotkey: 'enter',
 							query: {
@@ -457,7 +457,7 @@ export const useMyEditor = ({
 			components:
 				// withDraggables(
 				withPlaceholders({
-					[LaserPlugin.key]: withProps(LaserElement, { as: 'u' }),
+					[LaserPlugin.key]: LaserLeaf,
 					[HorizontalRulePlugin.key]: HrElement,
 					[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
 					[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),

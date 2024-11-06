@@ -21,8 +21,15 @@ export default function FloatingPrompt() {
 	useEffect(() => {
 		const caret = inputRef.current?.selectionStart
 		if (!caret || !activeLaser || !laser) return
-		setLaser({ id: activeLaser, laser: { ...laser, caretPos: caret } })
-	}, [inputRef.current?.selectionStart, activeLaser])
+		setLaser({
+			id: activeLaser,
+			laser: { ...laser, caretPos: inputRef.current?.selectionEnd || caret },
+		})
+	}, [
+		inputRef.current?.selectionStart,
+		activeLaser,
+		inputRef.current?.selectionEnd,
+	])
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (!activeLaser || !laser) return
@@ -32,6 +39,7 @@ export default function FloatingPrompt() {
 				laser: {
 					...laser,
 					caretPos: Math.max((inputRef.current?.selectionStart || 0) - 1, 0),
+					caretEnd: Math.max((inputRef.current?.selectionStart || 0) - 1, 0),
 				},
 			})
 		} else if (e.key === 'ArrowRight') {
@@ -40,6 +48,10 @@ export default function FloatingPrompt() {
 				laser: {
 					...laser,
 					caretPos: Math.min(
+						(inputRef.current?.selectionStart || 0) + 1,
+						inputRef.current?.value.length || 0
+					),
+					caretEnd: Math.min(
 						(inputRef.current?.selectionStart || 0) + 1,
 						inputRef.current?.value.length || 0
 					),

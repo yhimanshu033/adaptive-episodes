@@ -7,6 +7,7 @@ import useLaserStore, {
 	setActiveLaser,
 	setPromptActive,
 } from '@/store/laser-store'
+import usePlateStore from '@/store/plate-store'
 import { ArrowLeft, RotateCw, Send, X } from 'lucide-react'
 
 import Spinner from '@/components/ui/spinner'
@@ -42,6 +43,7 @@ const RephraseSelection = React.memo(
 		const { episodeId } = useParams()
 		const { data: episodeContent } = useEpisodeContent()
 
+		const { isTranslationOpen } = usePlateStore()
 		// const id = useFloatingNodeId()
 
 		const [currentMethod, setMethod] = useState('')
@@ -95,9 +97,11 @@ const RephraseSelection = React.memo(
 		}, [key])
 
 		return (
-			<div>
+			<>
 				{data ? (
-					<div className="relative w-full">
+					<div
+						className={`relative w-full ${isTranslationOpen ? '' : 'min-w-[70vw]'} `}
+					>
 						<Button
 							onClick={() => {
 								setActiveLaser(null)
@@ -153,25 +157,39 @@ const RephraseSelection = React.memo(
 							className="min-h-[40px] grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
 						/> */}
 							<div className="relative overflow-hidden rounded-lg px-4 py-2 font-mono text-sm ring-1 ring-accent-foreground">
-								<span
+								{laser.caretPos && (
+									<span
+										style={{
+											position: 'absolute',
+											left: `calc(1rem + ${laser.caretPos % (isTranslationOpen ? 50 : 250) || 0}ch)`, // Approximate width of each character
+											top: '50%',
+											transform: 'translateY(-50%)',
+											width: '1px',
+											height: '1.2em',
+											backgroundColor: 'white',
+											animation: 'blink 1s steps(2, start) infinite',
+										}}
+									/>
+								)}
+								{/* {laser.caretPos && laser.caretEnd && <span
 									style={{
 										position: 'absolute',
-										left: `calc(1rem + ${laser.caretPos || 0}ch)`, // Approximate width of each character
+										left: `calc(1rem + ${Math.min(laser.caretPos, laser.caretEnd) || 0}ch)`, // Approximate width of each character
 										top: '50%',
 										transform: 'translateY(-50%)',
-										width: '1px',
+										width: `${Math.abs(laser.caretPos - laser.caretEnd)}ch`,
 										height: '1.2em',
-										backgroundColor: 'white',
-										animation: 'blink 1s steps(2, start) infinite',
+										backgroundColor: 'rbga(255, 0, 0, 0.2)',
+										// animation: 'blink 1s steps(2, start) infinite',
 									}}
-								/>
+								/>} */}
 								<input
 									onFocus={() => {
 										document.getElementById('prompt-input')?.focus()
 									}}
 									value={promptInput}
 									readOnly
-									className=""
+									className={` ${isTranslationOpen ? 'w-[50ch]' : 'w-[250ch]'}`}
 								/>
 							</div>
 							<Button variant="ghost" size="icon" type="submit">
@@ -210,7 +228,7 @@ const RephraseSelection = React.memo(
 						))}
 					</div>
 				)}
-			</div>
+			</>
 		)
 	}
 )

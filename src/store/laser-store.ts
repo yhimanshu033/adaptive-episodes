@@ -3,6 +3,7 @@ import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
 type Laser = {
+	caretEnd?: number
 	caretPos?: number
 	clientX?: number
 	clientY?: number
@@ -20,7 +21,9 @@ const initialState: LaserStoreType = {
 	active: null,
 }
 
-const useLaserStore = create(devtools(immer(() => initialState)))
+const useLaserStore = create(
+	devtools(immer<LaserStoreType>(() => initialState))
+)
 
 export const setLaser = (laser: { id: string; laser: Laser }) => {
 	useLaserStore.setState((state) => {
