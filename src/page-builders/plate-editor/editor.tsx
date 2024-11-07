@@ -29,6 +29,7 @@ import {
 	HtmlPlugin,
 	isBlockAboveEmpty,
 	isSelectionAtBlockStart,
+	Value,
 } from '@udecode/plate-common'
 import {
 	createPlateEditor,
@@ -93,7 +94,7 @@ import {
 	TodoMarker,
 } from '@/components/plate-ui/indent-todo-marker-component'
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
-import { LaserLeaf } from '@/components/plate-ui/laser-element'
+import { LaserLeaf } from '@/components/plate-ui/laser-leaf'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { Button } from '@/components/ui/button'
@@ -206,6 +207,15 @@ export default function PlateEditor() {
 	)
 }
 
+function jsonify(value: string): string | Value {
+	try {
+		const val = JSON.parse(value)
+		return val as Value
+	} catch (e) {
+		return value
+	}
+}
+
 export const useMyEditor = ({
 	content,
 	id,
@@ -214,6 +224,7 @@ export const useMyEditor = ({
 	id?: string
 }) => {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
+	const initialValue = jsonify(content)
 	const editor = createPlateEditor({
 		plugins: [
 			//Custom
@@ -418,11 +429,16 @@ export const useMyEditor = ({
 				}),
 			// ),
 		},
-		value: content.split('\n').map((text, index) => ({
-			id: `${index}`,
-			type: ParagraphPlugin.key,
-			children: [{ text }],
-		})),
+		value:
+			typeof initialValue === 'string'
+				? [
+						{
+							id: `0`,
+							type: ParagraphPlugin.key,
+							children: [{ text: initialValue }],
+						},
+					]
+				: initialValue,
 		...(id ? { id } : {}),
 	})
 

@@ -43,7 +43,8 @@ const RephraseSelection = React.memo(
 		const { episodeId } = useParams()
 		const { data: episodeContent } = useEpisodeContent()
 
-		const { isTranslationOpen } = usePlateStore()
+		const { isTranslationOpen, sidebar } = usePlateStore()
+		const minify = sidebar || isTranslationOpen
 		// const id = useFloatingNodeId()
 
 		const [currentMethod, setMethod] = useState('')
@@ -100,7 +101,7 @@ const RephraseSelection = React.memo(
 			<>
 				{data ? (
 					<div
-						className={`relative w-full ${isTranslationOpen ? '' : 'min-w-[70vw]'} `}
+						className={`relative w-full ${minify ? 'min-w-[35vw]' : 'min-w-[70vw]'} `}
 					>
 						<Button
 							onClick={() => {
@@ -161,7 +162,7 @@ const RephraseSelection = React.memo(
 									<span
 										style={{
 											position: 'absolute',
-											left: `calc(1rem + ${laser.caretPos % (isTranslationOpen ? 50 : 250) || 0}ch)`, // Approximate width of each character
+											left: `calc(1rem + ${laser.caretPos % (minify ? 50 : 250) || 0}ch)`, // Approximate width of each character
 											top: '50%',
 											transform: 'translateY(-50%)',
 											width: '1px',
@@ -189,7 +190,7 @@ const RephraseSelection = React.memo(
 									}}
 									value={promptInput}
 									readOnly
-									className={` ${isTranslationOpen ? 'w-[50ch]' : 'w-[250ch]'}`}
+									className={` ${minify ? 'w-[50ch]' : 'w-[250ch]'}`}
 								/>
 							</div>
 							<Button variant="ghost" size="icon" type="submit">
