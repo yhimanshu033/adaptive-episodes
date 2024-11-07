@@ -15,6 +15,7 @@ import {
 	FontBackgroundColorPlugin,
 	FontColorPlugin,
 } from '@udecode/plate-font/react'
+import { Bot } from 'lucide-react'
 import { nanoid } from 'nanoid'
 
 import { Icons, iconVariants } from '@/components/icons'
@@ -53,7 +54,7 @@ const FloatingToolbarButtons = React.memo(() => {
 								nodeType={LaserPlugin.key}
 								tooltip="Laser (⌘+B)"
 							>
-								<Icons.laptop />
+								<Bot />
 							</MarkToolbarButton>
 							<MarkToolbarButton
 								nodeType={ItalicPlugin.key}
