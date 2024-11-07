@@ -7,7 +7,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { valueToText } from '@/lib/plate/value-to-text'
 import { cn } from '@/lib/utils'
 
-const SaveEpisode = ({ isLoading }: { isLoading: boolean }) => {
+const SaveEpisode = () => {
 	const { children } = useEditorState()
 	const savedRef = useRef(JSON.stringify(children))
 	const { saveEpisodeMutation } = useEpisodeHook()
@@ -27,21 +27,17 @@ const SaveEpisode = ({ isLoading }: { isLoading: boolean }) => {
 	}, [handleSave])
 
 	return (
-		!isLoading && (
-			<div className="flex gap-2">
-				{saveEpisodeMutation.isPending ? (
-					<div
-						className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}
-					>
-						<LoaderCircle className="animate-spin" size={16} />
-					</div>
-				) : (
-					<Button size="icon" onClick={handleSave}>
-						<Save size={16} />
-					</Button>
-				)}
-			</div>
-		)
+		<div className="flex gap-2">
+			{saveEpisodeMutation.isPending ? (
+				<div className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}>
+					<LoaderCircle className="animate-spin" size={16} />
+				</div>
+			) : (
+				<Button size="icon" onClick={handleSave}>
+					<Save size={16} />
+				</Button>
+			)}
+		</div>
 	)
 }
 

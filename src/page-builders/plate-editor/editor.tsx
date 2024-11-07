@@ -105,7 +105,7 @@ import Versions from './versions'
 
 export default function PlateEditor() {
 	const containerRef = useRef(null)
-	const { data: content, isLoading } = useEpisodeContent()
+	const { data: content } = useEpisodeContent()
 
 	const router = useRouter()
 	const { id } = useParams()
@@ -134,8 +134,8 @@ export default function PlateEditor() {
 						episodeNumber={content?.episodeNumber}
 					/>
 					<div className="flex items-center gap-2">
-						<Versions activeVersionId={content.activeVersionId} />
-						<SaveEpisode isLoading={isLoading} />
+						<Versions />
+						<SaveEpisode />
 					</div>
 				</div>
 				<div
