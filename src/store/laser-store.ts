@@ -11,8 +11,11 @@ type Laser = {
 }
 type LaserStoreType = {
 	active: string | null
+	editorX?: number
+	editorY?: number
 	lasers: Record<string, Laser>
 	promptActive: string | null
+	triggerRephrase?: string | null
 }
 
 const initialState: LaserStoreType = {
@@ -56,6 +59,14 @@ export const setPromptActive = (value: string | null) => {
 
 export const getLaser = (id: string) => {
 	return useLaserStore.getState().lasers[id]
+}
+
+export const setEditorCoords = (x: number, y: number) => {
+	useLaserStore.setState({ editorX: x, editorY: y })
+}
+
+export const setTriggerRephrase = (value: string | null) => {
+	useLaserStore.setState({ triggerRephrase: value })
 }
 
 export default useLaserStore

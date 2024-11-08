@@ -1,10 +1,30 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
-import useLaserStore, { setLaser } from '@/store/laser-store'
+import React, { useCallback, useMemo } from 'react'
+import useLaserStore, {
+	setLaser,
+	setPromptActive,
+	setTriggerRephrase,
+} from '@/store/laser-store'
+import usePlateStore from '@/store/plate-store'
+import { ArrowLeft, Send } from 'lucide-react'
 import { nanoid } from 'nanoid'
 
+import { Textarea } from '../ui/textarea'
+import { Button } from './button'
+
 export default function FloatingPrompt() {
-	const { active: activeLaser, lasers: allLasers } = useLaserStore()
-	const laser = activeLaser ? allLasers[activeLaser] : null
+	const {
+		active: activeLaser,
+		lasers: allLasers,
+		editorY,
+		promptActive,
+	} = useLaserStore()
+	const laser =
+		promptActive === activeLaser && promptActive
+			? allLasers[promptActive]
+			: null
+
+	const { isTranslationOpen, sidebar } = usePlateStore()
+	const minify = sidebar || isTranslationOpen
 
 	const setVal = useCallback(
 		(val: string) => {
@@ -16,62 +36,54 @@ export default function FloatingPrompt() {
 
 	const val = laser?.prompt || ''
 
-	const inputRef = React.useRef<HTMLInputElement>(null)
-
-	useEffect(() => {
-		const caret = inputRef.current?.selectionStart
-		if (!caret || !activeLaser || !laser) return
-		setLaser({
-			id: activeLaser,
-			laser: { ...laser, caretPos: inputRef.current?.selectionEnd || caret },
-		})
-	}, [
-		inputRef.current?.selectionStart,
-		activeLaser,
-		inputRef.current?.selectionEnd,
-	])
-
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (!activeLaser || !laser) return
-		if (e.key === 'ArrowLeft') {
-			setLaser({
-				id: activeLaser,
-				laser: {
-					...laser,
-					caretPos: Math.max((inputRef.current?.selectionStart || 0) - 1, 0),
-					caretEnd: Math.max((inputRef.current?.selectionStart || 0) - 1, 0),
-				},
-			})
-		} else if (e.key === 'ArrowRight') {
-			setLaser({
-				id: activeLaser,
-				laser: {
-					...laser,
-					caretPos: Math.min(
-						(inputRef.current?.selectionStart || 0) + 1,
-						inputRef.current?.value.length || 0
-					),
-					caretEnd: Math.min(
-						(inputRef.current?.selectionStart || 0) + 1,
-						inputRef.current?.value.length || 0
-					),
-				},
-			})
-		}
-	}
-
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const name = useMemo(() => nanoid(), [activeLaser])
 
 	return (
-		<input
-			name={name}
-			autoComplete="off"
-			onKeyDown={handleKeyDown}
-			ref={inputRef}
-			value={val}
-			className="absolute right-0 top-0 w-0 bg-red-500 opacity-0"
-			onChange={(e) => setVal(e.target.value)}
-			id="prompt-input"
-		/>
+		laser && (
+			<div
+				onBlur={(e) => {
+					if (e.currentTarget.contains(e.relatedTarget)) return
+					setPromptActive(null)
+				}}
+				className={`absolute z-[9999] flex gap-2 bg-popover ${minify ? 'w-[35vw]' : 'w-[70vw]'} rounded-lg`}
+				style={{
+					top: (laser?.clientY || 0) - (editorY || 0),
+					left: 48,
+				}}
+			>
+				<Button
+					variant="ghost"
+					size="sm"
+					className="h-24"
+					onClick={() => {
+						setPromptActive(null)
+					}}
+				>
+					<ArrowLeft size={16} />
+				</Button>
+				<Textarea
+					autoFocus
+					name={name}
+					autoComplete="off"
+					value={val}
+					onChange={(e) => setVal(e.target.value)}
+					id="prompt-input"
+				/>
+				<Button
+					variant="default"
+					size="sm"
+					className="h-24"
+					onClick={(e) => {
+						if (!val.trim()) return
+						setTriggerRephrase(activeLaser)
+						e.stopPropagation()
+						e.preventDefault()
+					}}
+				>
+					<Send size={16} />
+				</Button>
+			</div>
+		)
 	)
 }

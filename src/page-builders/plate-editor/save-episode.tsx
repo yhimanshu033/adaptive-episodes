@@ -13,7 +13,6 @@ const SaveEpisode = () => {
 	const { saveEpisodeMutation } = useEpisodeHook()
 
 	const handleSave = useCallback(() => {
-		console.log({ children })
 		if (savedRef.current === JSON.stringify(children)) return
 		savedRef.current = JSON.stringify(children)
 		saveEpisodeMutation.mutate(savedRef.current)

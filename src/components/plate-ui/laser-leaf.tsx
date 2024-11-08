@@ -1,11 +1,16 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import useLaserStore, {
 	getLaser,
 	setActiveLaser,
 	setLaser,
 } from '@/store/laser-store'
 import { cn } from '@udecode/cn'
-import { getNodeEntries, TElement, TText } from '@udecode/plate-common'
+import {
+	getNodeEntries,
+	TDescendant,
+	TElement,
+	TText,
+} from '@udecode/plate-common'
 import {
 	PlateLeaf,
 	PlateLeafProps,
@@ -32,50 +37,78 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		null
 	)
 	const key = getLaserKey(leaf)
+	const divRef = useRef<HTMLDivElement>(null)
+
+	useEffect(() => {
+		if (!key || !divRef?.current) return
+		let laser = getLaser(key)
+		laser ??= { prompt: '' }
+		const rect = divRef.current?.getBoundingClientRect()
+		if (!rect) return
+		setLaser({
+			laser: {
+				...laser,
+				clientX: rect.x,
+				clientY: rect.y,
+			},
+			id: key,
+		})
+	}, [divRef, key])
 
 	const { active: activeLaser } = useLaserStore()
 
 	const getSelectedText = useCallback(() => {
+		if (!key) return { text: leaf.text, prevtext: '', nexttext: '' }
 		const text = leaf.text
 		let prevtext = ''
 		let nexttext = ''
 
-		const texts: string[] = (
+		const descendants: TDescendant[] = (
 			children as TLaserLeafChildren
-		).props.parent.children.map((child) => (child?.text as string) || '')
-		const laserIndex = texts.indexOf(text)
+		).props.parent.children.map((child) => child)
+
+		const laserIndex = descendants.findIndex(
+			(child) => child.laser && Object.keys(child).includes(key)
+		)
+		const texts = descendants.map((child) => child.text)
 
 		if (laserIndex !== -1) {
-			prevtext = texts.slice(0, laserIndex).join('')
-			nexttext = texts.slice(laserIndex + 1).join('')
+			prevtext = texts.slice(0, laserIndex).join('').split('\n').pop() || ''
+			nexttext =
+				texts
+					.slice(laserIndex + 1)
+					.join('')
+					.split('\n')
+					.shift() || ''
 		}
 
 		return { text, prevtext, nexttext }
-	}, [children, leaf.text])
+	}, [children, leaf.text, key])
+
+	const getPreviousElement = useCallback(() => {
+		const { prevtext, nexttext, text } = getSelectedText()
+		return {
+			type: 'p',
+			children: [prevtext, text, nexttext].map((text) => ({ text })),
+		} as TElement
+	}, [getSelectedText])
 
 	const onResponse = useCallback(
 		(text: string) => {
-			const childrenCopy = structuredClone(element.children)
-
-			childrenCopy.forEach((child) => {
-				if (child.laser && child.text === leaf.text) {
-					child.text = text
-					delete child.laser
-				}
-			})
-			const rephrased = {
-				...element,
-				children: childrenCopy,
+			const { nexttext, prevtext } = getSelectedText()
+			const newRephrased: TElement = {
+				type: 'p',
+				children: [prevtext, text, nexttext].map((text) => ({ text })),
 			}
-			setRephrasedText(rephrased)
+			setRephrasedText(newRephrased)
 		},
-		[element, leaf.text]
+		[getSelectedText]
 	)
 
 	const onRephrase = useCallback(
 		(text: string) => {
 			try {
-				const nodes = getNodeEntries(editor).toArray() as Node[][]
+				const nodes = getNodeEntries(editor).toArray() as unknown as Node[][]
 				const childrenCopy = structuredClone(element.children)
 
 				childrenCopy.forEach((child) => {
@@ -115,42 +148,6 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		setActiveLaser(null)
 	}
 
-	// const reset = useCallback(() => {
-	// 	try {
-	// 		const nodes: any = getNodeEntries(editor).toArray()
-	// 		const childrenCopy = structuredClone(element.children)
-
-	// 		childrenCopy.forEach((child) => {
-	// 			if (child.laser && child.text === leaf.text) {
-	// 				delete child.laser
-	// 			}
-	// 		})
-
-	// 		nodes[0][0].children.forEach((child: any) => {
-	// 			if (child.id === element.id) {
-	// 				child.children = childrenCopy
-	// 			}
-	// 		})
-	// 		const path = findNodePath(editor, element)
-
-	// 		if (!path) return
-	// 		editor.removeNodes({
-	// 			at: path,
-	// 		})
-	// 		editor.insertNodes(
-	// 			{
-	// 				...element,
-	// 				children: childrenCopy,
-	// 			},
-	// 			{
-	// 				at: path,
-	// 			}
-	// 		)
-	// 	} catch (error) {
-	// 		console.error(error)
-	// 	}
-	// }, [editor, element, leaf.text])
-
 	useEffect(() => {
 		if (!key) return
 		let laser = getLaser(key)
@@ -178,6 +175,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		>
 			{children}
 			<div
+				ref={divRef}
 				id={`toolbar-${key}`}
 				onClick={(e) => e.stopPropagation()}
 				className={`absolute bottom-0 z-[9999] max-w-[75vw] translate-y-full whitespace-nowrap rounded border bg-popover px-1 shadow-md print:hidden ${activeLaser !== key ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
@@ -188,7 +186,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 					onResponse={onResponse}
 					reset={resetActive}
 					onRephrase={onRephrase}
-					previous={[structuredClone(element)]}
+					previous={[getPreviousElement()]}
 					current={rephrasedText ? [structuredClone(rephrasedText)] : null}
 				/>
 			</div>

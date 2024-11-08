@@ -55,73 +55,9 @@ const items = [
 				label: 'Quote',
 				value: BlockquotePlugin.key,
 			},
-			// {
-			//   value: TablePlugin.key,
-			//   label: 'Table',
-			//   description: 'Table',
-			//   icon: Icons.table,
-			// },
-			// {
-			//   value: 'ul',
-			//   label: 'Bulleted list',
-			//   description: 'Bulleted list',
-			//   icon: Icons.ul,
-			// },
-			// {
-			//   value: 'ol',
-			//   label: 'Numbered list',
-			//   description: 'Numbered list',
-			//   icon: Icons.ol,
-			// },
-			// {
-			//   value: HorizontalRulePlugin.key,
-			//   label: 'Divider',
-			//   description: 'Divider (---)',
-			//   icon: Icons.hr,
-			// },
 		],
 		label: 'Basic blocks',
 	},
-	// {
-	//   label: 'Media',
-	//   items: [
-	//     {
-	//       value: CodeBlockPlugin.key,
-	//       label: 'Code',
-	//       description: 'Code (```)',
-	//       icon: Icons.codeblock,
-	//     },
-	//     {
-	//       value: ImagePlugin.key,
-	//       label: 'Image',
-	//       description: 'Image',
-	//       icon: Icons.image,
-	//     },
-	//     {
-	//       value: MediaEmbedPlugin.key,
-	//       label: 'Embed',
-	//       description: 'Embed',
-	//       icon: Icons.embed,
-	//     },
-	//     {
-	//       value: ExcalidrawPlugin.key,
-	//       label: 'Excalidraw',
-	//       description: 'Excalidraw',
-	//       icon: Icons.excalidraw,
-	//     },
-	//   ],
-	// },
-	// {
-	//   label: 'Inline',
-	//   items: [
-	//     {
-	//       value: LinkPlugin.key,
-	//       label: 'Link',
-	//       description: 'Link',
-	//       icon: Icons.link,
-	//     },
-	//   ],
-	// },
 ]
 
 export function InsertDropdownMenu(props: DropdownMenuProps) {
@@ -152,50 +88,6 @@ export function InsertDropdownMenu(props: DropdownMenuProps) {
 									className="min-w-[180px]"
 									onSelect={() => {
 										switch (type) {
-											// case CodeBlockPlugin.key: {
-											//   insertEmptyCodeBlock(editor);
-											//
-											//   break;
-											// }
-											// case ImagePlugin.key: {
-											//   await insertMedia(editor, { type: ImagePlugin.key });
-											//
-											//   break;
-											// }
-											// case MediaEmbedPlugin.key: {
-											//   await insertMedia(editor, {
-											//     type: MediaEmbedPlugin.key,
-											//   });
-											//
-											//   break;
-											// }
-											// case 'ul':
-											// case 'ol': {
-											//   insertEmptyElement(editor, ParagraphPlugin.key, {
-											//     select: true,
-											//     nextBlock: true,
-											//   });
-											//
-											//   if (settingsStore.get.checkedId(IndentListPlugin.key)) {
-											//     toggleIndentList(editor, {
-											//       listStyleType: type === 'ul' ? 'disc' : 'decimal',
-											//     });
-											//   } else if (settingsStore.get.checkedId('list')) {
-											//     toggleList(editor, { type });
-											//   }
-											//
-											//   break;
-											// }
-											// case TablePlugin.key: {
-											//   insertTable(editor);
-											//
-											//   break;
-											// }
-											// case LinkPlugin.key: {
-											//   triggerFloatingLink(editor, { focused: true });
-											//
-											//   break;
-											// }
 											default: {
 												insertEmptyElement(editor, type, {
 													nextBlock: true,
