@@ -5,10 +5,10 @@ import { getEpisodeContent } from '@/server-action/content-action'
 import { useQuery } from '@tanstack/react-query'
 
 export const useEpisodeContent = () => {
-	const { id, episodeId }: { episodeId: string; id: string } = useParams()
+	const { episodeId }: { episodeId: string } = useParams()
 	const query = useQuery({
-		queryKey: [id, episodeId, 'content'],
-		queryFn: () => getEpisodeContent(id, episodeId),
+		queryKey: [episodeId, 'content'],
+		queryFn: () => getEpisodeContent(parseInt(episodeId)),
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 		gcTime: 0,

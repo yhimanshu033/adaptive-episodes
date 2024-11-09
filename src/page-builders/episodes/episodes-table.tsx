@@ -32,14 +32,15 @@ import {
 import { formatDate } from '@/lib/format-date'
 import { cn } from '@/lib/utils'
 
-import { EpisodeType } from '@/types/episode-type'
+import { EStatus } from '@/types/common'
+import { TEpisode } from '@/types/episode-type'
 
 import SkeletonBuilder from './episode-skeleton'
 import Filters from './filters'
 import EpisodesPagination from './pagination'
 
 const EpisodesTable = () => {
-	const [episodes, setEpisodes] = useState<EpisodeType[]>([])
+	const [episodes, setEpisodes] = useState<TEpisode[]>([])
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [currentPage, setCurrentPage] = useState<number>(1)
 	const [episodeFilter, setEpisodeFilter] = useState<string>('')
@@ -47,9 +48,9 @@ const EpisodesTable = () => {
 	const router = useRouter()
 	const pathname = usePathname()
 
-	const { data: episodePage } = useEpisodesData(currentPage, episodeFilter)
+	const { episodesList, query } = useEpisodesData(episodeFilter)
 
-	const handleStatusChange = (episodeId: string, newStatus: string) => {
+	const handleStatusChange = (episodeId: number, newStatus: EStatus) => {
 		setEpisodes(
 			episodes.map((episode) =>
 				episode.id === episodeId ? { ...episode, status: newStatus } : episode
@@ -57,7 +58,7 @@ const EpisodesTable = () => {
 		)
 	}
 
-	const handleWriterChange = (episodeId: string, newWriter: string) => {
+	const handleWriterChange = (episodeId: number, newWriter: string) => {
 		setEpisodes(
 			episodes.map((episode) =>
 				episode.id === episodeId ? { ...episode, writer: newWriter } : episode
@@ -65,25 +66,25 @@ const EpisodesTable = () => {
 		)
 	}
 
-	const handleClick = (episodeId: string) => {
+	const handleClick = (episodeId: number) => {
 		router.push(`${pathname}/${episodeId}/editor`)
 	}
 
-	const columns: ColumnDef<EpisodeType>[] = [
+	const columns: ColumnDef<TEpisode>[] = [
 		{
 			accessorKey: 'serialNumber',
 			header: '#',
 			cell: ({ row }) => row.index + (currentPage - 1) * 10 + 1,
 		},
 		{
-			accessorKey: 'title',
+			accessorKey: 'chapter_title',
 			header: 'Title',
 			cell: ({ row }) => (
 				<div
 					className="cursor-pointer font-medium"
 					onClick={() => handleClick(row.original.id)}
 				>
-					{row.getValue('title')} ({row.original.wordCount} words)
+					{row.getValue('chapter_title')} ({row.original.word_count} words)
 				</div>
 			),
 		},
@@ -93,7 +94,9 @@ const EpisodesTable = () => {
 			cell: ({ row }) => (
 				<Select
 					value={row.getValue('status')}
-					onValueChange={(value) => handleStatusChange(row.original.id, value)}
+					onValueChange={(value) =>
+						handleStatusChange(row.original.id, value as EStatus)
+					}
 				>
 					<SelectTrigger className="w-32">
 						<SelectValue>{row.getValue('status')}</SelectValue>
@@ -114,16 +117,16 @@ const EpisodesTable = () => {
 			cell: ({ row }) => (
 				<EditableText
 					key={row.original.id}
-					text={row.getValue('writer')}
+					text={row.getValue('writer') || 'Anonymous'}
 					isEditable
 					onComplete={handleWriterChange.bind(null, row.original.id)}
 				/>
 			),
 		},
 		{
-			accessorKey: 'last_updated',
+			accessorKey: 'update_time',
 			header: 'Last Updated',
-			cell: ({ row }) => formatDate(row.original.updatedAt),
+			cell: ({ row }) => formatDate(row.original.update_time),
 		},
 	]
 
@@ -133,14 +136,14 @@ const EpisodesTable = () => {
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		onSortingChange: setSorting,
-		pageCount: episodePage?.totalPages || 0,
+		pageCount: query?.data?.pages.length || 0,
 		state: {
 			sorting,
 		},
 	})
 	useEffect(() => {
-		setEpisodes(episodePage?.episodes || [])
-	}, [episodePage])
+		if (episodesList) setEpisodes(episodesList)
+	}, [episodesList])
 
 	return (
 		<>
@@ -211,7 +214,7 @@ const EpisodesTable = () => {
 			<EpisodesPagination
 				setPage={setCurrentPage}
 				currentPage={currentPage}
-				totalPages={episodePage?.totalPages || 0}
+				totalPages={query?.data?.pages.length || 0}
 			/>
 		</>
 	)

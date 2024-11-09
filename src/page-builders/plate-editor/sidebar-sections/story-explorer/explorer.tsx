@@ -72,7 +72,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				beatsheet_array: res.metadata.map((data) => data.beatsheets),
 				logline_array: res.metadata.map((data) => data.loglines),
 				context: res.previousEpisodeContext || '',
-				current_ep: currentEpisodeContent?.de || ' ',
+				current_ep: currentEpisodeContent?.text || ' ',
 				instruction,
 			})
 			if (result) setContent(result)

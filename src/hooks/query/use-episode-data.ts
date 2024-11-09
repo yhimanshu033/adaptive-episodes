@@ -1,14 +1,21 @@
+import { useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { getEpisodes } from '@/server-action/episode-action'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
-export const useEpisodesData = (page?: number, episodeFilter?: string) => {
+export const useEpisodesData = (title: string = '') => {
 	const { id } = useParams()
-	const query = useQuery({
-		queryKey: [id, 'episodes', page, episodeFilter],
-		queryFn: () => getEpisodes(id as string, page, episodeFilter),
-		refetchOnMount: false,
-		refetchOnWindowFocus: false,
+	const storyId = parseInt(id as string)
+	const query = useInfiniteQuery({
+		queryKey: [storyId, 'episodes', title],
+		queryFn: ({ pageParam }) => getEpisodes(storyId, pageParam, title),
+		getNextPageParam: (lastPage) => lastPage.data?.next,
+		initialPageParam: 1,
 	})
-	return query
+
+	const episodesList = useMemo(
+		() => query.data?.pages.flatMap((page) => page.data?.results.data ?? []),
+		[query.data]
+	)
+	return { query, episodesList }
 }

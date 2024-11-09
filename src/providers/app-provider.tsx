@@ -15,7 +15,14 @@ const AppProvider = ({
 	children: React.ReactNode
 	session: Session | null
 }) => {
-	const queryClient = new QueryClient()
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: {
+				refetchOnMount: false,
+				refetchOnWindowFocus: false,
+			},
+		},
+	})
 
 	useEffect(() => {
 		updateUserData(session)

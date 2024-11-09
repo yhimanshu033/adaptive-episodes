@@ -1,3 +1,5 @@
+import { EStatus } from './common'
+
 export interface EpisodeType {
 	id: string
 	status: string | null
@@ -57,4 +59,55 @@ export interface VersionDocType {
 	versionNumber: number
 	wordCount: number
 	writer: string
+}
+
+export type TEpisode = {
+	chapter_title: string
+	create_time: string
+	file_url: string
+	id: number
+	latest_version: number
+	project: number
+	props: Record<string, unknown>
+	seq_number: number
+	status: EStatus
+	update_time: string
+	word_count: number
+}
+
+export type TEpisodesData = {
+	data: TEpisode[]
+	message: string
+}
+
+export type TGetEpisodesResponse = {
+	count: number
+	next: number | null
+	previous: number | null
+	results: TEpisodesData
+}
+
+export type TGeEpisodesQueryParams = {
+	page?: number
+	project_id: number
+	title?: string
+}
+
+export type TGetEpisodeResponse = {
+	chapter: TEpisode
+	text: string
+}
+
+export type TGetEpisodeUrlParams = {
+	chapterId: number
+}
+
+export type TPatchEpisodeBody = {
+	seq: number
+	text: string
+} & Partial<TEpisode>
+
+export type TPatchEpisodeUrlParams = {
+	projectId: number
+	title: string
 }
