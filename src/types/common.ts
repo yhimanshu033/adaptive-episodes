@@ -32,3 +32,15 @@ export interface StoryJsonData {
 export interface GlobalStoreState {
 	userData: Session | null
 }
+
+export enum EStatus {
+	AB_TEST = 'A-B Test',
+	FIRST_DRAFT = '1st Draft',
+	IN_REVIEW = 'In Review',
+	POLISH = 'Polish',
+	PUBLISHED = 'Published',
+	REOPENED = 'Re-Opened',
+	SECOND_DRAFT = '2nd Draft',
+}
+
+export type TNoParams = Record<string, never>

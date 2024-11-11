@@ -114,9 +114,9 @@ export default function PlateEditor() {
 	const router = useRouter()
 	const { id } = useParams()
 
-	const editor = useMyEditor({ content: content?.de || '' })
+	const editor = useMyEditor({ content: content?.text || '' })
 
-	const handleEpisodeChange = (episode: string | null) => {
+	const handleEpisodeChange = (episode: number | null) => {
 		if (!episode) return
 		router.push(
 			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}/${episode}/editor`
@@ -134,8 +134,8 @@ export default function PlateEditor() {
 			<Plate editor={editor}>
 				<div className="flex items-center justify-between">
 					<Title
-						title={content?.title.de}
-						episodeNumber={content?.episodeNumber}
+						title={content.chapter.chapter_title}
+						episodeNumber={content.chapter.seq_number}
 					/>
 					<div className="flex items-center gap-2">
 						<Versions />
@@ -172,7 +172,7 @@ export default function PlateEditor() {
 
 									<CursorOverlay containerRef={containerRef} />
 								</div>
-								<Translation translatedContent={content.us} />
+								<Translation translatedContent={content.text} />
 							</div>
 							<ScrollBar orientation="horizontal" />
 						</ScrollArea>
@@ -185,16 +185,16 @@ export default function PlateEditor() {
 						variant="outline"
 						size="icon"
 						className="rounded-full"
-						disabled={!content?.previousEpisodeId}
-						onClick={() => handleEpisodeChange(content?.previousEpisodeId)}
+						disabled={content.chapter.seq_number < 2}
+						onClick={() => handleEpisodeChange(content.chapter.seq_number - 1)}
 					>
 						<CircleArrowLeft />
 					</Button>
 					<Button
-						disabled={!content?.nextEpisodeId}
+						disabled={content.chapter.seq_number >= 10} // WILL NEED TO DISCUSS THIS
 						className="rounded-full"
 						size="icon"
-						onClick={() => handleEpisodeChange(content?.nextEpisodeId)}
+						onClick={() => handleEpisodeChange(content.chapter.seq_number + 1)}
 					>
 						<CircleArrowRight />
 					</Button>

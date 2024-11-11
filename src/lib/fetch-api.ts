@@ -1,0 +1,124 @@
+import { TNoParams } from '@/types/common'
+
+type FetchRequestParams<
+	ResponseDataT = TNoParams,
+	UrlParamsT = TNoParams,
+	BodyParamsT = TNoParams,
+	QueryParamsT = TNoParams,
+> = {
+	body?: BodyParamsT
+	defaultData?: ResponseDataT
+	headers?: Headers
+	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
+	onError?: (error: Error) => void
+	query?: QueryParamsT
+	throwOnError?: boolean
+	url: string
+	urlParams?: UrlParamsT
+}
+
+type FetchResponseResult<ResponseDataT = TNoParams> =
+	| {
+			data: ResponseDataT
+			error: null
+			status: number
+			success: true
+	  }
+	| {
+			data: null | ResponseDataT
+			error: Error
+			status: 0
+			success: false
+	  }
+
+export async function fetchAPI<
+	ResponseDataT = TNoParams,
+	UrlParamsT = TNoParams,
+	BodyParamsT = TNoParams,
+	QueryParamsT = TNoParams,
+>(
+	params: FetchRequestParams<
+		ResponseDataT,
+		UrlParamsT,
+		BodyParamsT,
+		QueryParamsT
+	>
+): Promise<FetchResponseResult<ResponseDataT>> {
+	const {
+		url,
+		method,
+		urlParams = {},
+		query = {},
+		body = {},
+		headers = {},
+		onError,
+		defaultData,
+		throwOnError,
+	} = params
+
+	const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+
+	if (!BASE_URL) {
+		throw new Error('Backend URL not set in env!')
+	}
+
+	let resolvedUrl = BASE_URL + url
+	for (const key in urlParams as Record<string, string>) {
+		const value = (urlParams as Record<string, string>)[key]
+		resolvedUrl = resolvedUrl
+			.replace(`:${key}`, value.toString())
+			.replace(`[${key}]`, value.toString())
+	}
+
+	const queryStr = new URLSearchParams(
+		query as Record<string, string>
+	).toString()
+	if (queryStr) {
+		resolvedUrl += `?${queryStr}`
+	}
+
+	try {
+		// console.dir({ resolvedUrl, headers, body, method }, { depth: null }) // Uncomment this line to debug
+		const response = await fetch(resolvedUrl, {
+			method,
+			headers: {
+				'Content-Type': 'application/json',
+				...headers,
+			},
+			...(method !== 'GET' && method !== 'DELETE'
+				? { body: JSON.stringify(body) }
+				: {}),
+			next: {
+				revalidate: 1,
+			},
+		})
+
+		// console.log({ response: response.status }) // Uncomment this line to debug
+
+		const responseData = (await response.json()) as ResponseDataT
+
+		return {
+			success: true,
+			status: response.status,
+			data: responseData,
+			error: null,
+		}
+	} catch (error) {
+		const errorInstance = error as Error
+
+		if (throwOnError) {
+			throw errorInstance
+		}
+
+		if (onError) {
+			onError(errorInstance)
+		}
+
+		return {
+			success: false,
+			status: 0,
+			data: defaultData ?? null,
+			error: errorInstance,
+		}
+	}
+}

@@ -10,48 +10,30 @@ import {
 	query,
 	where,
 } from 'firebase/firestore'
-import { ref, uploadBytes } from 'firebase/storage'
 
-import { db, storage } from '@/lib/firebase'
+import { fetchAPI } from '@/lib/fetch-api'
+import { db } from '@/lib/firebase'
 
-import { EpisodeDocType, VersionDocType } from '@/types/episode-type'
+import {
+	EpisodeDocType,
+	TGetEpisodeResponse,
+	TGetEpisodeUrlParams,
+	TPatchEpisodeBody,
+	TPatchEpisodeUrlParams,
+} from '@/types/episode-type'
 
-import { fetchDownloadURL } from './file-action'
-
-export const getEpisodeContent = async (storyId: string, episodeId: string) => {
-	try {
-		const storyDocRef = doc(db, 'stories', storyId)
-
-		const episodeDocRef = doc(storyDocRef, 'episodes', episodeId)
-		const { episodeNumber, title, activeVersionId } = (
-			await getDoc(episodeDocRef)
-		).data() as EpisodeDocType
-
-		const versionDocRef = doc(episodeDocRef, 'versions', activeVersionId)
-		const { context, content, summaries } = (
-			await getDoc(versionDocRef)
-		).data() as VersionDocType
-
-		const { nextEpisodeId, previousEpisodeId } = await getEpisodeWithNeighbors(
-			storyId,
-			episodeId
-		)
-
-		return {
-			context: await fetchDownloadURL(context),
-			de: await fetchDownloadURL(content.de),
-			episodeNumber,
-			title,
-			nextEpisodeId,
-			previousEpisodeId,
-			us: await fetchDownloadURL(content.us),
-			summary: summaries.de,
-			activeVersionId,
+export const getEpisodeContent = async (chapterId: number) => {
+	const episodeData = await fetchAPI<TGetEpisodeResponse, TGetEpisodeUrlParams>(
+		{
+			method: 'GET',
+			url: '/chapter/:chapterId/content/',
+			urlParams: {
+				chapterId,
+			},
 		}
-	} catch (error) {
-		const { message } = error as Error
-		throw new Error(message || 'Episode content not found')
-	}
+	)
+
+	return episodeData.data
 }
 
 export const getEpisodeWithNeighbors = async (
@@ -113,35 +95,29 @@ export const getEpisodeWithNeighbors = async (
 }
 
 export const saveContent = async ({
-	storyId,
-	episodeId,
-	content,
+	title,
+	projectId,
+	...data
 }: {
-	content: string
-	episodeId: string
-	storyId: string
-}) => {
-	try {
-		const episodeDocRef = doc(db, 'stories', storyId, 'episodes', episodeId)
-		const { activeVersionId } = (
-			await getDoc(episodeDocRef)
-		).data() as EpisodeDocType
+	projectId: number
+	text: string
+	title: string
+} & TPatchEpisodeBody) => {
+	const responseData = await fetchAPI<
+		TPatchEpisodeBody,
+		TPatchEpisodeUrlParams,
+		TPatchEpisodeBody
+	>({
+		method: 'PATCH',
+		url: '/chapter/:projectId/:title/',
+		body: {
+			...data,
+		},
+		urlParams: {
+			projectId,
+			title,
+		},
+	})
 
-		const versionDocRef = doc(episodeDocRef, 'versions', activeVersionId)
-		const {
-			content: { de },
-		} = (await getDoc(versionDocRef)).data() as VersionDocType
-
-		const storageRef = ref(storage, de)
-		const textBlob = new Blob([content], { type: 'text/plain' })
-		await uploadBytes(storageRef, textBlob)
-
-		return {
-			status: 'OK',
-			message: 'File Saved Successfully',
-		}
-	} catch (error) {
-		const { message } = error as Error
-		throw new Error(message || 'File not saved')
-	}
+	return responseData.data
 }
