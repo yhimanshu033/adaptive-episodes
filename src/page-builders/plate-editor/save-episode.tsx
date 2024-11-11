@@ -4,7 +4,7 @@ import { useEditorState } from '@udecode/plate-common/react'
 import { LoaderCircle, Save } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-import { valueToText } from '@/lib/plate/value-to-text'
+// import { valueToText } from '@/lib/plate/value-to-text'
 import { cn } from '@/lib/utils'
 
 const SaveEpisode = () => {
@@ -15,7 +15,7 @@ const SaveEpisode = () => {
 	const handleSave = useCallback(() => {
 		if (savedRef.current === JSON.stringify(children)) return
 		savedRef.current = JSON.stringify(children)
-		saveEpisodeMutation.mutate(valueToText(children))
+		saveEpisodeMutation.mutate(savedRef.current)
 	}, [children, saveEpisodeMutation])
 
 	useEffect(() => {

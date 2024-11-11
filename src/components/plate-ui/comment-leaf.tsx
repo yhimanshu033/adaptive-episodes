@@ -53,7 +53,7 @@ export function CommentLeaf({
 				props.onClick?.(e)
 			}}
 		>
-			{aboveChildren}1
+			{aboveChildren}
 		</PlateLeaf>
 	)
 }

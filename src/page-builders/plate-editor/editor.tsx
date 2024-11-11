@@ -29,6 +29,7 @@ import {
 	HtmlPlugin,
 	isBlockAboveEmpty,
 	isSelectionAtBlockStart,
+	Value,
 } from '@udecode/plate-common'
 import {
 	createPlateEditor,
@@ -82,6 +83,7 @@ import {
 import { Editor } from '@/components/plate-ui/editor'
 import { FixedToolbar } from '@/components/plate-ui/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui/fixed-toolbar-buttons'
+import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons'
 import { HeadingElement } from '@/components/plate-ui/heading-element'
@@ -92,19 +94,21 @@ import {
 	TodoMarker,
 } from '@/components/plate-ui/indent-todo-marker-component'
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
+import { LaserLeaf } from '@/components/plate-ui/laser-leaf'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 // import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
+import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 
 import SaveEpisode from './save-episode'
 import Sidebar from './sidebar'
 import Versions from './versions'
 
 export default function PlateEditor() {
-	const containerRef = useRef(null)
+	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content } = useEpisodeContent()
 
 	const router = useRouter()
@@ -164,6 +168,7 @@ export default function PlateEditor() {
 									<FloatingToolbar>
 										<FloatingToolbarButtons />
 									</FloatingToolbar>
+									<FloatingPrompt />
 
 									<CursorOverlay containerRef={containerRef} />
 								</div>
@@ -202,6 +207,15 @@ export default function PlateEditor() {
 	)
 }
 
+function jsonify(value: string): string | Value {
+	try {
+		const val = JSON.parse(value)
+		return val as Value
+	} catch (e) {
+		return value
+	}
+}
+
 export const useMyEditor = ({
 	content,
 	id,
@@ -210,8 +224,11 @@ export const useMyEditor = ({
 	id?: string
 }) => {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
+	const initialValue = jsonify(content)
 	const editor = createPlateEditor({
 		plugins: [
+			//Custom
+			LaserPlugin,
 			// Nodes
 			HeadingPlugin,
 			HorizontalRulePlugin,
@@ -348,7 +365,7 @@ export const useMyEditor = ({
 			SoftBreakPlugin.configure({
 				options: {
 					rules: [
-						{ hotkey: 'shift+enter' },
+						{ hotkey: 'enter' },
 						{
 							hotkey: 'enter',
 							query: {
@@ -393,6 +410,7 @@ export const useMyEditor = ({
 			components:
 				// withDraggables(
 				withPlaceholders({
+					[LaserPlugin.key]: LaserLeaf,
 					[HorizontalRulePlugin.key]: HrElement,
 					[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
 					[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
@@ -411,11 +429,16 @@ export const useMyEditor = ({
 				}),
 			// ),
 		},
-		value: content.split('\n').map((text, index) => ({
-			id: `${index}`,
-			type: ParagraphPlugin.key,
-			children: [{ text }],
-		})),
+		value:
+			typeof initialValue === 'string'
+				? [
+						{
+							id: `0`,
+							type: ParagraphPlugin.key,
+							children: [{ text: initialValue }],
+						},
+					]
+				: initialValue,
 		...(id ? { id } : {}),
 	})
 
