@@ -1,3 +1,5 @@
-export const statuses = ['1st Draft', '2nd Draft', 'Polish', 'Published']
+import { EStatus } from '@/types/common'
+
+export const statuses = Object.values(EStatus)
 
 export const episodeLimit = 10

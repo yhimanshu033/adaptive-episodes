@@ -22,8 +22,8 @@ const Stories = () => {
 					<Link href={`/projects/${story.id}`}>
 						<div className="relative aspect-[1/1]">
 							<Image
-								src={story.thumbnailUrl}
-								alt={`${story.title} thumbnail`}
+								src={story.image}
+								alt={`${story.project_title} thumbnail`}
 								layout="fill"
 								objectFit="cover"
 								className="transition-transform duration-300 hover:scale-105"
@@ -33,15 +33,15 @@ const Stories = () => {
 						</div>
 						<CardContent className="p-4">
 							<h3 className="mb-1 line-clamp-1 text-lg font-bold">
-								{story.title}
+								{story.project_title}
 							</h3>
 							<p className="mb-2 flex items-center text-sm">
 								<User className="mr-1 size-3" />
-								{story.author}
+								{story.author ?? 'Anonymous'}
 							</p>
 							<p className="flex items-center text-sm">
 								<BookOpen className="mr-2 size-4" />
-								<span>{story.episodesCount} episodes</span>
+								<span>{story.episode_count} episodes</span>
 							</p>
 						</CardContent>
 					</Link>

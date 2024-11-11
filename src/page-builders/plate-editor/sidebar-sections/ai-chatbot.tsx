@@ -39,7 +39,8 @@ const AIChatbot = () => {
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
 	const episodesCount =
-		stories?.find((data) => data.id === (id as string))?.episodesCount || 0
+		stories?.find((data) => data?.id === Number(id))?.episode_count || 0
+	// stories?.find((data) => data.id === (id as string))?.episodesCount || 0
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -47,13 +48,13 @@ const AIChatbot = () => {
 		addMessages({ role: 'user', content: input })
 		setInput('')
 		aiChatbotMutation.mutate({
-			episodeNumber: episodeContent?.episodeNumber || 0,
+			episodeNumber: episodeContent?.chapter.seq_number || 0,
 			episodesCount,
 			aiChatbotData: {
 				messages,
 				query: input,
 				ep_number: episodeId as string,
-				ep_text: episodeContent?.de as string,
+				ep_text: episodeContent?.text as string,
 			},
 		})
 	}

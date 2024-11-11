@@ -15,15 +15,15 @@ export default function EpisodeListPage() {
 	const { id } = useParams()
 	const { data } = useStoriesData()
 
-	const storyData = data?.find((doc) => doc.id === id)
+	const storyData = data?.find((story) => story.id === parseInt(id as string))
 
 	return (
 		<main className="container flex-1 animate-fade-in-up px-4 py-8">
 			<div className="mb-6 flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<Image
-						src={storyData?.thumbnailUrl || ''}
-						alt={`${storyData?.title} thumbnail`}
+						src={storyData?.image || ''}
+						alt={`${storyData?.project_title} thumbnail`}
 						width={80}
 						height={80}
 						objectFit="cover"
@@ -31,7 +31,7 @@ export default function EpisodeListPage() {
 						loading="lazy"
 						unoptimized
 					/>
-					<h1 className="text-3xl font-bold">{storyData?.title}</h1>
+					<h1 className="text-3xl font-bold">{storyData?.project_title}</h1>
 				</div>
 				<Button variant="outline" size="sm" asChild>
 					<Link href="/projects">

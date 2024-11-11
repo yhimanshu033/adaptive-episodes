@@ -10,8 +10,8 @@ import Explorer from './explorer'
 const StoryExplorer = () => {
 	const { data: episodeData } = useEpisodeContent()
 	const [episodeRange, setEpisodeRange] = useState({
-		start: episodeData?.episodeNumber || 1,
-		end: episodeData?.episodeNumber || 1,
+		start: episodeData?.chapter.seq_number || 1,
+		end: episodeData?.chapter.seq_number || 1,
 	})
 
 	const handleEpisodeChange = (type: 'start' | 'end', value: string) => {
