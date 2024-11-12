@@ -3,28 +3,30 @@ import { useParams } from 'next/navigation'
 import { saveContent } from '@/server-action/content-action'
 import { useMutation } from '@tanstack/react-query'
 
-import { EStatus } from '@/types/common'
+import { BASE_STATUS, EStatus } from '@/types/common'
 
 import useEpisodeContent from '../query/use-episode-content'
 
 const useEpisodeHook = () => {
-	const { id } = useParams()
+	const { id, episodeId } = useParams()
 	const { data } = useEpisodeContent()
+	const status = data?.chapter.status || BASE_STATUS
+	const chapterId = data?.chapter.parent || Number(episodeId)
+
 	const onSaveEpisode = useCallback(
 		(text: string) => {
 			return saveContent({
-				title: data?.chapter.chapter_title || '',
+				episodeId: chapterId,
 				projectId: Number(id),
 				text,
-				status: data?.chapter.status || EStatus.FIRST_DRAFT,
-				seq: data?.chapter.seq_number || 1,
+				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
 			})
 		},
-		[data, id]
+		[chapterId, id, status]
 	)
 
 	const saveEpisodeMutation = useMutation({
-		mutationKey: ['save', id, data?.chapter.chapter_title],
+		mutationKey: ['save', id, chapterId],
 		mutationFn: onSaveEpisode,
 	})
 

@@ -172,7 +172,7 @@ export default function PlateEditor() {
 
 									<CursorOverlay containerRef={containerRef} />
 								</div>
-								<Translation translatedContent={content.text} />
+								<Translation translatedContent={content.translation_text} />
 							</div>
 							<ScrollBar orientation="horizontal" />
 						</ScrollArea>
@@ -185,16 +185,18 @@ export default function PlateEditor() {
 						variant="outline"
 						size="icon"
 						className="rounded-full"
-						disabled={content.chapter.seq_number < 2}
-						onClick={() => handleEpisodeChange(content.chapter.seq_number - 1)}
+						disabled={!content.previous_latest_chapter_id}
+						onClick={() =>
+							handleEpisodeChange(content.previous_latest_chapter_id)
+						}
 					>
 						<CircleArrowLeft />
 					</Button>
 					<Button
-						disabled={content.chapter.seq_number >= 10} // WILL NEED TO DISCUSS THIS
+						disabled={!content.next_latest_chapter_id}
 						className="rounded-full"
 						size="icon"
-						onClick={() => handleEpisodeChange(content.chapter.seq_number + 1)}
+						onClick={() => handleEpisodeChange(content.next_latest_chapter_id)}
 					>
 						<CircleArrowRight />
 					</Button>

@@ -95,13 +95,13 @@ export const getEpisodeWithNeighbors = async (
 }
 
 export const saveContent = async ({
-	title,
 	projectId,
+	episodeId,
 	...data
 }: {
+	episodeId: number
 	projectId: number
 	text: string
-	title: string
 } & TPatchEpisodeBody) => {
 	const responseData = await fetchAPI<
 		TPatchEpisodeBody,
@@ -109,15 +109,17 @@ export const saveContent = async ({
 		TPatchEpisodeBody
 	>({
 		method: 'PATCH',
-		url: '/chapter/:projectId/:title/',
+		url: '/chapter/:projectId/:episodeId/',
 		body: {
 			...data,
 		},
 		urlParams: {
 			projectId,
-			title,
+			episodeId,
 		},
 	})
+
+	console.log(responseData.data)
 
 	return responseData.data
 }
