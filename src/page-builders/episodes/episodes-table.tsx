@@ -50,8 +50,6 @@ const EpisodesTable = () => {
 
 	const { data } = useEpisodesData(episodeFilter)
 
-	const episodesList = data?.results.data || []
-
 	const handleStatusChange = (episodeId: number, newStatus: EStatus) => {
 		setEpisodes(
 			episodes.map((episode) =>
@@ -148,8 +146,8 @@ const EpisodesTable = () => {
 		},
 	})
 	useEffect(() => {
-		if (episodesList) setEpisodes(episodesList)
-	}, [episodesList])
+		if (data) setEpisodes(data?.results.data)
+	}, [data])
 
 	return (
 		<>
