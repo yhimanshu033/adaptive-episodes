@@ -4,28 +4,49 @@ import { fetchAPI } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
 import {
-	TGeEpisodesQueryParams,
+	TGetEpisodeDetailsQueryParams,
+	TGetEpisodesQueryParams,
 	TGetEpisodesResponse,
 } from '@/types/episode-type'
 
 export const getEpisodes = async (
 	project_id: number,
 	page: number = 1,
-	title: string = ''
+	search: string = ''
 ) => {
 	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
 		TNoParams,
 		TNoParams,
-		TGeEpisodesQueryParams
+		TGetEpisodesQueryParams
 	>({
 		method: 'GET',
 		url: '/chapter/',
 		query: {
 			project_id,
 			page,
-			title,
+			search,
 		},
 	})
-	return episodes
+	return episodes.data
+}
+
+export const getEpisodeDetails = async (
+	project_id: number,
+	parent: number = 1
+) => {
+	const episodes = await fetchAPI<
+		TGetEpisodesResponse,
+		TNoParams,
+		TNoParams,
+		TGetEpisodeDetailsQueryParams
+	>({
+		method: 'GET',
+		url: '/chapter/',
+		query: {
+			project_id,
+			parent,
+		},
+	})
+	return episodes.data
 }

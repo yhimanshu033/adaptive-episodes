@@ -97,6 +97,8 @@ export async function fetchAPI<
 
 		const responseData = (await response.json()) as ResponseDataT
 
+		// console.log({ responseData }) // Uncomment this line to debug
+
 		return {
 			success: true,
 			status: response.status,
@@ -113,6 +115,8 @@ export async function fetchAPI<
 		if (onError) {
 			onError(errorInstance)
 		}
+
+		console.log(error)
 
 		return {
 			success: false,

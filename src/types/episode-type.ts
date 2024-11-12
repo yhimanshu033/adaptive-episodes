@@ -63,14 +63,18 @@ export interface VersionDocType {
 
 export type TEpisode = {
 	chapter_title: string
+	comments: string | null
+	context: string | null
 	create_time: string
 	file_url: string
 	id: number
 	latest_version: number
+	parent: number | null
 	project: number
 	props: Record<string, unknown>
 	seq_number: number
 	status: EStatus
+	translation_url: string | null
 	update_time: string
 	word_count: number
 }
@@ -82,20 +86,23 @@ export type TEpisodesData = {
 
 export type TGetEpisodesResponse = {
 	count: number
-	next: number | null
+	next: string | null
 	previous: number | null
 	results: TEpisodesData
 }
 
-export type TGeEpisodesQueryParams = {
+export type TGetEpisodesQueryParams = {
 	page?: number
 	project_id: number
-	title?: string
+	search?: string
 }
 
 export type TGetEpisodeResponse = {
 	chapter: TEpisode
+	next_latest_chapter_id: number | null
+	previous_latest_chapter_id: number | null
 	text: string
+	translation_text: string
 }
 
 export type TGetEpisodeUrlParams = {
@@ -103,11 +110,15 @@ export type TGetEpisodeUrlParams = {
 }
 
 export type TPatchEpisodeBody = {
-	seq: number
 	text: string
 } & Partial<TEpisode>
 
 export type TPatchEpisodeUrlParams = {
+	episodeId: number
 	projectId: number
-	title: string
+}
+
+export type TGetEpisodeDetailsQueryParams = {
+	parent: number
+	project_id: number
 }

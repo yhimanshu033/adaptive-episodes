@@ -34,13 +34,17 @@ export interface GlobalStoreState {
 }
 
 export enum EStatus {
-	AB_TEST = 'A-B Test',
-	FIRST_DRAFT = '1st Draft',
-	IN_REVIEW = 'In Review',
-	POLISH = 'Polish',
-	PUBLISHED = 'Published',
-	REOPENED = 'Re-Opened',
-	SECOND_DRAFT = '2nd Draft',
+	AB_TEST = 'AB_TEST',
+	FIRST_DRAFT = '1ST_DRAFT',
+	IN_REVIEW = 'IN_REVIEW',
+	POLISH = 'POLISH',
+	PUBLISHED = 'PUBLISHED',
+	REOPENED = 'REOPENED',
+	SECOND_DRAFT = '2ND_DRAFT',
 }
+
+export const BASE_STATUS = 'BASE'
+
+export type TBackendStatus = typeof BASE_STATUS | EStatus
 
 export type TNoParams = Record<string, never>

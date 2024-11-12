@@ -32,7 +32,7 @@ import {
 import { formatDate } from '@/lib/format-date'
 import { cn } from '@/lib/utils'
 
-import { EStatus } from '@/types/common'
+import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
 
 import SkeletonBuilder from './episode-skeleton'
@@ -48,7 +48,9 @@ const EpisodesTable = () => {
 	const router = useRouter()
 	const pathname = usePathname()
 
-	const { episodesList, query } = useEpisodesData(episodeFilter)
+	const { data } = useEpisodesData(episodeFilter)
+
+	const episodesList = data?.results.data || []
 
 	const handleStatusChange = (episodeId: number, newStatus: EStatus) => {
 		setEpisodes(
@@ -82,7 +84,7 @@ const EpisodesTable = () => {
 			cell: ({ row }) => (
 				<div
 					className="cursor-pointer font-medium"
-					onClick={() => handleClick(row.original.id)}
+					onClick={() => handleClick(row.original.parent || row.original.id)}
 				>
 					{row.getValue('chapter_title')} ({row.original.word_count} words)
 				</div>
@@ -99,7 +101,11 @@ const EpisodesTable = () => {
 					}
 				>
 					<SelectTrigger className="w-32">
-						<SelectValue>{row.getValue('status')}</SelectValue>
+						<SelectValue>
+							{row.getValue('status') === BASE_STATUS
+								? EStatus.FIRST_DRAFT
+								: row.getValue('status')}
+						</SelectValue>
 					</SelectTrigger>
 					<SelectContent>
 						{statuses.map((status) => (
@@ -136,7 +142,7 @@ const EpisodesTable = () => {
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		onSortingChange: setSorting,
-		pageCount: query?.data?.pages.length || 0,
+		pageCount: data?.count || 0,
 		state: {
 			sorting,
 		},
@@ -214,7 +220,7 @@ const EpisodesTable = () => {
 			<EpisodesPagination
 				setPage={setCurrentPage}
 				currentPage={currentPage}
-				totalPages={query?.data?.pages.length || 0}
+				totalPages={data?.count || 0}
 			/>
 		</>
 	)

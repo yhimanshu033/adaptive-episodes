@@ -62,7 +62,7 @@ const RephraseSelection = React.memo(
 				laserToolsMutation.mutate({
 					action,
 					...getSelectedText(),
-					context: '', // will need to discuss this with the team
+					context: episodeContent?.chapter.context || '',
 					ep_number: episodeId as string,
 					ep_text: episodeContent?.text || '',
 					prompt: promptInput,
