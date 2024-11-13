@@ -1,30 +1,31 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
-import { useEditorState } from '@udecode/plate-common/react'
+import { useEditorReadOnly, useEditorState } from '@udecode/plate-common/react'
 import { LoaderCircle, Save } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-// import { valueToText } from '@/lib/plate/value-to-text'
 import { cn } from '@/lib/utils'
 
 const SaveEpisode = () => {
 	const { children } = useEditorState()
 	const savedRef = useRef(JSON.stringify(children))
 	const { saveEpisodeMutation } = useEpisodeHook()
+	const readOnly = useEditorReadOnly()
 
 	const handleSave = useCallback(() => {
-		if (savedRef.current === JSON.stringify(children)) return
-		savedRef.current = JSON.stringify(children)
-		saveEpisodeMutation.mutate(savedRef.current)
+		const currentChildren = JSON.stringify(children)
+		if (savedRef.current !== currentChildren) {
+			savedRef.current = currentChildren
+			saveEpisodeMutation.mutate({ text: savedRef.current })
+		}
 	}, [children, saveEpisodeMutation])
 
 	useEffect(() => {
-		const intervalId = setInterval(handleSave, 30 * 1000)
-
-		return () => {
-			clearInterval(intervalId)
-		}
+		const intervalId = setInterval(handleSave, 30000)
+		return () => clearInterval(intervalId)
 	}, [handleSave])
+
+	if (readOnly) return null
 
 	return (
 		<div className="flex gap-2">

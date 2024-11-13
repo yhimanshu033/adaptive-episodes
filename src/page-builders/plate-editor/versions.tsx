@@ -1,5 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { statuses } from '@/constants/episodes-constants'
+import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import { usePlateStore } from '@udecode/plate-common/react'
+import { Eye } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -16,43 +19,83 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 
-const Versions = () => {
-	const [currentStage, setCurrentStage] = useState<number>(1)
-	const [selectedStage, setSelectedStage] = useState<number | null>(null)
-	const [isDialogOpen, setIsDialogOpen] = useState(false)
+import { EStatus } from '@/types/common'
 
-	const handleSelect = (value: string) => {
-		setSelectedStage(parseInt(value))
-		setIsDialogOpen(true)
+const Versions = ({
+	latestStatus,
+	selectedStatus,
+	setSelectedStatus,
+}: {
+	latestStatus: EStatus | undefined
+	selectedStatus: EStatus | undefined
+	setSelectedStatus: React.Dispatch<React.SetStateAction<EStatus | undefined>>
+}) => {
+	const currentSelection = useRef<EStatus>()
+	const [isDialogOpen, setIsDialogOpen] = useState(false)
+	const setReadOnly = usePlateStore().set.readOnly()
+
+	const { saveEpisodeMutation } = useEpisodeHook()
+
+	const latestIndex = latestStatus ? statuses.indexOf(latestStatus) : 0
+	const selectedIndex = selectedStatus
+		? statuses.indexOf(selectedStatus)
+		: latestIndex
+
+	const handleSelect = (value: EStatus) => {
+		const currentIndex = statuses.indexOf(value)
+		currentSelection.current = value
+		if (currentIndex > latestIndex) {
+			setIsDialogOpen(true)
+		} else {
+			setSelectedStatus(value)
+		}
 	}
 
 	const handleConfirm = () => {
-		if (selectedStage !== null) {
-			setCurrentStage(selectedStage)
-			console.log('Changed to episode version', selectedStage)
-		}
 		setIsDialogOpen(false)
+		if (currentSelection.current) {
+			saveEpisodeMutation.mutate(
+				{
+					text: 'Status update',
+					statusChange: currentSelection.current,
+				},
+				{
+					onSuccess: () => {
+						setSelectedStatus(currentSelection.current)
+					},
+				}
+			)
+		}
 	}
 
 	const handleCancel = () => {
-		setSelectedStage(null)
 		setIsDialogOpen(false)
 	}
 
+	useEffect(() => {
+		if (latestStatus && selectedStatus) {
+			setReadOnly(selectedIndex < latestIndex)
+		}
+	}, [latestIndex, latestStatus, selectedIndex, selectedStatus, setReadOnly])
+
 	return (
 		<>
-			<Select value={currentStage.toString()} onValueChange={handleSelect}>
+			<Select
+				value={selectedStatus || latestStatus}
+				onValueChange={handleSelect}
+			>
 				<SelectTrigger className="gap-2">
 					<SelectValue placeholder="Version" />
 				</SelectTrigger>
 				<SelectContent>
 					{statuses.map((status, index) => (
 						<SelectItem
-							disabled={index < currentStage - 1 || index > currentStage}
+							disabled={index > latestIndex + 1}
 							key={index}
-							value={(index + 1).toString()}
+							value={status}
 						>
 							{status}
+							{index < latestIndex && <Eye className="ml-2 inline" size={16} />}
 						</SelectItem>
 					))}
 				</SelectContent>
@@ -61,10 +104,7 @@ const Versions = () => {
 			<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 				<DialogContent>
 					<DialogTitle>Confirm Selection</DialogTitle>
-					<p>
-						Are you sure you want to switch to{' '}
-						{selectedStage && statuses[selectedStage - 1]}?
-					</p>
+					<p>Are you sure you want to switch to {currentSelection.current}?</p>
 					<DialogFooter>
 						<Button variant="outline" onClick={handleCancel}>
 							Cancel

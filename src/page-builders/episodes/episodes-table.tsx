@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { statuses } from '@/constants/episodes-constants'
+import { episodeLimit, statuses } from '@/constants/episodes-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import {
 	ColumnDef,
 	flexRender,
 	getCoreRowModel,
 	getSortedRowModel,
+	RowSelectionState,
 	SortingState,
 	useReactTable,
 } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 import EditableText from '@/components/editable-text'
+import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
 	Select,
@@ -44,11 +46,12 @@ const EpisodesTable = () => {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [currentPage, setCurrentPage] = useState<number>(1)
 	const [episodeFilter, setEpisodeFilter] = useState<string>('')
+	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
 	const router = useRouter()
 	const pathname = usePathname()
 
-	const { data } = useEpisodesData(episodeFilter)
+	const { data } = useEpisodesData(episodeFilter, currentPage)
 
 	const handleStatusChange = (episodeId: number, newStatus: EStatus) => {
 		setEpisodes(
@@ -71,6 +74,23 @@ const EpisodesTable = () => {
 	}
 
 	const columns: ColumnDef<TEpisode>[] = [
+		{
+			id: 'select-col',
+			header: ({ table }) => (
+				<Checkbox
+					checked={table.getIsAllRowsSelected()}
+					// indeterminate={table.getIsSomeRowsSelected()}
+					onClick={table.getToggleAllRowsSelectedHandler()} //or getToggleAllPageRowsSelectedHandler
+				/>
+			),
+			cell: ({ row }) => (
+				<Checkbox
+					checked={row.getIsSelected()}
+					disabled={!row.getCanSelect()}
+					onClick={row.getToggleSelectedHandler()}
+				/>
+			),
+		},
 		{
 			accessorKey: 'serialNumber',
 			header: '#',
@@ -140,18 +160,37 @@ const EpisodesTable = () => {
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		onSortingChange: setSorting,
+		onRowSelectionChange: setRowSelection,
 		pageCount: data?.count || 0,
 		state: {
 			sorting,
+			rowSelection,
 		},
 	})
+
 	useEffect(() => {
 		if (data) setEpisodes(data?.results.data)
 	}, [data])
 
 	return (
 		<>
-			<Filters setEpisodeFilter={setEpisodeFilter} />
+			<div className="flex gap-2">
+				<Filters setEpisodeFilter={setEpisodeFilter} />
+				{Object.keys(rowSelection).length ? (
+					<Select>
+						<SelectTrigger className="w-32">
+							<SelectValue>Select Status</SelectValue>
+						</SelectTrigger>
+						<SelectContent>
+							{statuses.map((status) => (
+								<SelectItem key={status} value={status}>
+									{status}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				) : null}
+			</div>
 			<ScrollArea className="overflow-auto-y relative flex max-h-[48vh] w-full flex-col rounded-md border">
 				<Table>
 					<TableHeader className="sticky top-0 z-10 bg-background">
@@ -192,8 +231,7 @@ const EpisodesTable = () => {
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									data-state={row.getIsSelected() && 'selected'}
-									className="transition-colors"
+									className={cn({ selected: row.getIsSelected() })}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
@@ -218,7 +256,7 @@ const EpisodesTable = () => {
 			<EpisodesPagination
 				setPage={setCurrentPage}
 				currentPage={currentPage}
-				totalPages={data?.count || 0}
+				totalPages={data ? data.count / episodeLimit : 0}
 			/>
 		</>
 	)
