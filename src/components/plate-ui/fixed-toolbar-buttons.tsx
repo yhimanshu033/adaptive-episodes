@@ -19,6 +19,7 @@ import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdo
 
 import { ChatbotToolbarButton } from './chatbot-toggle-button'
 import { ColorDropdownMenu } from './color-dropdown-menu'
+import FaRToggleButton from './far-toggle-button'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import { ModeDropdownMenu } from './mode-dropdown-menu'
 import { OutlineToolbarButton } from './outline-toggle-button'
@@ -95,6 +96,7 @@ export function FixedToolbarButtons() {
 				<div className="grow" />
 
 				<ToolbarGroup noSeparator>
+					<FaRToggleButton />
 					<TranslationToggleButton />
 					<ChatbotToolbarButton />
 					<OutlineToolbarButton />
