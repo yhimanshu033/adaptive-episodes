@@ -99,8 +99,8 @@ export type TGetEpisodesQueryParams = {
 
 export type TGetEpisodeResponse = {
 	chapter: TEpisode
-	next_latest_chapter_id: number | null
-	previous_latest_chapter_id: number | null
+	next_parent_id: number | null
+	previous_parent_id: number | null
 	text: string
 	translation_text: string
 }

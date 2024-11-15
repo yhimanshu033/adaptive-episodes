@@ -187,18 +187,16 @@ export default function PlateEditor() {
 						variant="outline"
 						size="icon"
 						className="rounded-full"
-						disabled={!content.previous_latest_chapter_id}
-						onClick={() =>
-							handleEpisodeChange(content.previous_latest_chapter_id)
-						}
+						disabled={!content.previous_parent_id}
+						onClick={() => handleEpisodeChange(content.previous_parent_id)}
 					>
 						<CircleArrowLeft />
 					</Button>
 					<Button
-						disabled={!content.next_latest_chapter_id}
+						disabled={!content.next_parent_id}
 						className="rounded-full"
 						size="icon"
-						onClick={() => handleEpisodeChange(content.next_latest_chapter_id)}
+						onClick={() => handleEpisodeChange(content.next_parent_id)}
 					>
 						<CircleArrowRight />
 					</Button>
