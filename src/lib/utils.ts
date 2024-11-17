@@ -45,3 +45,18 @@ export const getLatestEpisode = (data: TGetEpisodesResponse): TEpisode => {
 	}
 	return data.results.data[0]
 }
+
+export function replaceNthInsensitive(
+	str: string,
+	search: string,
+	replace: string,
+	nth: number
+): string {
+	const regex = new RegExp(search, 'gi')
+	let matchCount = 0
+
+	return str.replace(regex, (match) => {
+		matchCount++
+		return matchCount === nth + 1 ? replace : match
+	})
+}

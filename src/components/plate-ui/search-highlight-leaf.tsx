@@ -11,26 +11,41 @@ import {
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn } from '@/lib/utils'
 
+function isCurrent(arr1: number[], arr2: number[]) {
+	return arr1.every((v, i) => v === arr2[i])
+}
 export const SearchHighlightLeaf = ({
 	className,
 	...props
 }: PlateLeafProps) => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const { children } = props
+	const { children, leaf } = props
 	const sidebar = usePlateStore((state) => state.sidebar)
-	const { useOption } = useEditorPlugin(FindReplacePlugin)
+	const { useOption, setOption } = useEditorPlugin(FindReplacePlugin)
 	const replaceWith = useOption('replace')
 	const replaceEnabled = useOption('replaceEnabled')
-	return sidebar === 'far' ? (
-		<PlateLeaf {...props} className={cn(className)}>
-			{replaceEnabled ? (
+	const currentId = useOption('currentId') || [0, 0, 0]
+	const id = leaf.id as number[]
+	function setCurrent() {
+		setOption('currentId', id)
+	}
+	function renderContent() {
+		if (isCurrent(id, currentId) && replaceEnabled) {
+			return (
 				<>
-					<del className="c bg-red-500/60">{children}</del>
+					<del className="bg-red-500/60">{children}</del>
 					<span className="bg-blue-500/60">{replaceWith}</span>
 				</>
-			) : (
-				<span className="bg-yellow-500/60">{children}</span>
-			)}
+			)
+		} else if (isCurrent(id, currentId)) {
+			return <span className="bg-yellow-500/60">{children}</span>
+		} else {
+			return <span className="bg-green-500/60">{children}</span>
+		}
+	}
+	return sidebar === 'far' ? (
+		<PlateLeaf onClick={setCurrent} {...props} className={cn(className)}>
+			{renderContent()}
 		</PlateLeaf>
 	) : (
 		<>{children}</>

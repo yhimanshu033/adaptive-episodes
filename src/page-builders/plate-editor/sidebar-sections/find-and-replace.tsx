@@ -1,17 +1,23 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
 } from '@udecode/plate-common/react'
 import { TElement, TText } from '@udecode/slate'
-import { ChevronRight } from 'lucide-react'
+import {
+	ChevronDown,
+	ChevronRight,
+	ChevronUp,
+	ReplaceAllIcon,
+	ReplaceIcon,
+} from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
-import { cn } from '@/lib/utils'
+import { cn, replaceNthInsensitive } from '@/lib/utils'
 
 export default function FindAndReplace() {
 	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
@@ -19,6 +25,15 @@ export default function FindAndReplace() {
 	const search = useOption('search') || ''
 	const replace = useOption('replace') || ''
 	const replaceEnabled = useOption('replaceEnabled')
+	const [ptr, setPtr] = useState(0)
+
+	function handlePrev() {
+		setPtr(ptr > 0 ? ptr - 1 : ptr)
+	}
+
+	function handleNext() {
+		setPtr(ptr < records.length - 1 ? ptr + 1 : ptr)
+	}
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
@@ -26,7 +41,7 @@ export default function FindAndReplace() {
 	function toggleReplace() {
 		setOptions({ replaceEnabled: !replaceEnabled })
 	}
-	function onReplace() {
+	function onReplaceAll() {
 		if (!search || !replaceEnabled || !editor) return
 
 		const updatedChildren = structuredClone(children)
@@ -45,7 +60,23 @@ export default function FindAndReplace() {
 		setOptions({ search: '', replace: '', replaceEnabled: false })
 	}
 
-	const occurences = useMemo(() => {
+	function onReplace() {
+		const path = records[ptr]
+		const updatedChildren = structuredClone(children)
+		const node = updatedChildren[path[0]].children[path[1]] as TElement
+		const text = replaceNthInsensitive(
+			node.text as string,
+			search,
+			replace,
+			path[2]
+		)
+		updatedChildren[path[0]].children[path[1]] = {
+			...node,
+			text,
+		}
+		editor.tf.setValue(updatedChildren)
+	}
+	const occurrences = useMemo(() => {
 		return children.reduce((acc, node) => {
 			const getCount = (node: TElement | TText): number => {
 				if ('text' in node) {
@@ -60,10 +91,32 @@ export default function FindAndReplace() {
 				}
 				return 0
 			}
-
 			return acc + getCount(node)
 		}, 0)
 	}, [children, search])
+
+	const records = useMemo(() => {
+		const records: number[][] = []
+		children.forEach((node, index) => {
+			const getCount = (node: TElement | TText, path: number[]): void => {
+				if ('text' in node) {
+					const regex = new RegExp(search, 'gi')
+					const matches = String(node.text).match(regex)
+					matches?.forEach((m, i) => records.push([...path, i]))
+				} else if ('children' in node) {
+					node.children.forEach((child, childIndex) =>
+						getCount(child, [...path, childIndex])
+					)
+				}
+			}
+			getCount(node, [index])
+		})
+		return records
+	}, [children, search])
+
+	useEffect(() => {
+		setOptions({ currentId: records[ptr] })
+	}, [ptr, children, records, setOptions])
 
 	return (
 		<div className="flex flex-col gap-4 p-4">
@@ -83,9 +136,17 @@ export default function FindAndReplace() {
 					}}
 					type="text"
 					placeholder="Find"
-					className="col-span-2 flex-1 rounded border border-gray-300 p-2"
+					className="flex-1 rounded border border-gray-300 p-2"
 				/>
 
+				<div className="flex gap-2">
+					<Button onClick={handlePrev} disabled={ptr < 1}>
+						<ChevronUp />
+					</Button>
+					<Button onClick={handleNext} disabled={ptr === records.length - 1}>
+						<ChevronDown />
+					</Button>
+				</div>
 				{replaceEnabled && (
 					<>
 						<Input
@@ -95,14 +156,21 @@ export default function FindAndReplace() {
 							placeholder="Replace with"
 							className="col-start-2 flex-1 rounded border border-gray-300 p-2"
 						/>
-						<Button onClick={onReplace}>Replace</Button>
+						<div className="flex gap-2">
+							<Button title="replace" onClick={onReplace}>
+								<ReplaceIcon />{' '}
+							</Button>
+							<Button title="replace all" onClick={onReplaceAll}>
+								<ReplaceAllIcon />{' '}
+							</Button>
+						</div>
 					</>
 				)}
 			</div>
 			{search && (
 				<p className="text-lg text-muted-foreground">
-					Found <span className="font-bold text-foreground">{occurences}</span>{' '}
-					occurences of{' '}
+					Found <span className="font-bold text-foreground">{occurrences}</span>{' '}
+					occurrences of{' '}
 					<span className="font-medium italic text-foreground">{search}</span>
 				</p>
 			)}

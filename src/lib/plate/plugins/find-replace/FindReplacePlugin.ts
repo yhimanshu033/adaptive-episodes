@@ -5,6 +5,7 @@ import { decorateFindReplace } from './decorateFindReplace'
 export type FindReplaceConfig = PluginConfig<
 	'search_highlight',
 	{
+		currentId?: number[]
 		replace?: string
 		replaceEnabled?: boolean
 		search?: string
@@ -15,5 +16,10 @@ export const FindReplacePlugin = createTSlatePlugin<FindReplaceConfig>({
 	key: 'search_highlight',
 	decorate: decorateFindReplace,
 	node: { isLeaf: true },
-	options: { search: '', replace: '', replaceEnabled: false },
+	options: {
+		search: '',
+		replace: '',
+		replaceEnabled: false,
+		currentId: [0, 0, 0],
+	},
 })

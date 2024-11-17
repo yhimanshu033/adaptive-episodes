@@ -27,6 +27,7 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 				focus: { offset, path },
 				search,
 				[type]: true,
+				id: [...path, ranges.length],
 			})
 		}
 
@@ -37,5 +38,6 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 }
 
 type SearchRange = {
+	id: number[]
 	search: string
 } & Range
