@@ -1,6 +1,6 @@
 import React from 'react'
 import usePlateStore, { setSidebar } from '@/store/plate-store'
-import { Replace } from 'lucide-react'
+import { Globe } from 'lucide-react'
 
 import { ToolbarButton } from './toolbar'
 
@@ -15,7 +15,7 @@ export default function FaRToggleButton() {
 			tooltip="Find and Replace"
 			onClick={onToggle}
 		>
-			<Replace className="size-4" />
+			<Globe className="size-4" />
 		</ToolbarButton>
 	)
 }

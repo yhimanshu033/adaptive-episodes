@@ -144,6 +144,15 @@ export default function FindAndReplace() {
 		editor.tf.setValue(updatedChildren)
 	}
 
+	function handleSuggestionClick(suggestion: string) {
+		setOptions({ search: suggestion })
+		const updatedChildren = structuredClone(children)
+		editor.tf.setValue(updatedChildren)
+	}
+
+	const characters = ['Joe', 'John', 'Jane', 'Jack']
+	const places = ['home', 'work', 'school', 'park']
+
 	return (
 		<div className="flex flex-col gap-4 p-4">
 			<h2 className="text-lg font-bold">Find and Replace</h2>
@@ -206,6 +215,32 @@ export default function FindAndReplace() {
 					<span className="font-medium italic text-foreground">{search}</span>
 				</p>
 			)}
+			<div className="flex flex-col">
+				<h4 className="text-lg font-semibold">Characters</h4>
+				<div className="flex gap-2 overflow-x-scroll pt-1">
+					{characters.map((character, index) => (
+						<Button
+							onClick={() => handleSuggestionClick(character)}
+							key={index}
+							variant="outline"
+						>
+							{character}
+						</Button>
+					))}
+				</div>
+				<h4 className="pt-2 text-lg font-semibold">Places</h4>
+				<div className="flex gap-2 overflow-x-scroll pt-1">
+					{places.map((character, index) => (
+						<Button
+							onClick={() => handleSuggestionClick(character)}
+							key={index}
+							variant="outline"
+						>
+							{character}
+						</Button>
+					))}
+				</div>
+			</div>
 		</div>
 	)
 }
