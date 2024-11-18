@@ -9,16 +9,19 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 	type,
 	getOption,
 }) => {
-	const search = getOption('search') || ''
+	const originalSearch = getOption('search') || ''
+	const caseSensitive = getOption('caseSensitive') || false
 
 	const ranges: SearchRange[] = []
 
-	if (!search || !isText(node)) {
+	if (!originalSearch || !isText(node)) {
 		return ranges
 	}
 
-	const { text } = node
-	const parts = text.toLowerCase().split(search.toLowerCase())
+	const { text: originalText } = node
+	const text = caseSensitive ? originalText : originalText.toLowerCase()
+	const search = caseSensitive ? originalSearch : originalSearch.toLowerCase()
+	const parts = text.split(search)
 	let offset = 0
 	parts.forEach((part, i) => {
 		if (i !== 0) {

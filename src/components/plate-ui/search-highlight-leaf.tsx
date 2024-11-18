@@ -44,7 +44,12 @@ export const SearchHighlightLeaf = ({
 		}
 	}
 	return sidebar === 'far' ? (
-		<PlateLeaf onClick={setCurrent} {...props} className={cn(className)}>
+		<PlateLeaf
+			onClick={setCurrent}
+			id={`search-highlight-${id.join('-')}`}
+			{...props}
+			className={cn(className)}
+		>
 			{renderContent()}
 		</PlateLeaf>
 	) : (
