@@ -1,3 +1,4 @@
+import { TDescendant, Value } from '@udecode/plate-common'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -59,4 +60,29 @@ export function replaceNthInsensitive(
 		matchCount++
 		return matchCount === nth + 1 ? replace : match
 	})
+}
+
+export function getText(val: Value) {
+	let text = ''
+	function getTextFromNode(node: TDescendant) {
+		if ('text' in node) {
+			text += String(node.text)
+		} else {
+			node.children.forEach(getTextFromNode)
+		}
+	}
+	val.forEach((node, i) => {
+		if (i > 0) text += '\n'
+		getTextFromNode(node)
+	})
+	console.log({ text })
+	return text
+}
+
+export function prettifyNumber(
+	num: number,
+	locale: string = 'de-DE', // 'en-US' for English
+	options?: Intl.NumberFormatOptions
+): string {
+	return new Intl.NumberFormat(locale, options).format(num)
 }

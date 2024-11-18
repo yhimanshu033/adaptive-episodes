@@ -10,11 +10,20 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import AiChatbot from './sidebar-sections/ai-chatbot'
 import FindAndReplace from './sidebar-sections/find-and-replace'
 import StoryExplorer from './sidebar-sections/story-explorer'
+import WordCount from './sidebar-sections/word-count'
 
 const Sidebar = () => {
 	const sidebar = usePlateStore(useShallow((state) => state.sidebar))
 
 	if (!sidebar) return null
+
+	const renderSidebar: Record<typeof sidebar, React.ReactNode> = {
+		chatbot: <AiChatbot />,
+		comments: <CommentSidebar />,
+		outline: <StoryExplorer />,
+		far: <FindAndReplace />,
+		'word-count': <WordCount />,
+	}
 
 	return (
 		<ScrollArea className="relative h-[60vh] w-fit min-w-[25vw] flex-1">
@@ -26,10 +35,7 @@ const Sidebar = () => {
 			>
 				<X size={16} />
 			</Button>
-			{sidebar === 'chatbot' && <AiChatbot />}
-			{sidebar === 'comments' && <CommentSidebar />}
-			{sidebar === 'outline' && <StoryExplorer />}
-			{sidebar === 'far' && <FindAndReplace />}
+			{renderSidebar[sidebar]}
 		</ScrollArea>
 	)
 }

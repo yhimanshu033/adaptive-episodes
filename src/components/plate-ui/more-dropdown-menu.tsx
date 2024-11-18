@@ -1,12 +1,11 @@
 import React from 'react'
+import { setSidebar } from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
-import {
-	SubscriptPlugin,
-	SuperscriptPlugin,
-} from '@udecode/plate-basic-marks/react'
-import { focusEditor, useEditorRef } from '@udecode/plate-common/react'
+import { useEditorState } from '@udecode/plate-common/react'
+import { Globe, WholeWordIcon } from 'lucide-react'
 
 import { Icons } from '@/components/icons'
+import { getText, prettifyNumber } from '@/lib/utils'
 
 import {
 	DropdownMenu,
@@ -18,9 +17,12 @@ import {
 import { ToolbarButton } from './toolbar'
 
 export function MoreDropdownMenu(props: DropdownMenuProps) {
-	const editor = useEditorRef()
 	const openState = useOpenState()
-
+	const { children } = useEditorState()
+	const text = getText(children)
+	const words = text
+		.split(/\s+/)
+		.filter((w) => w.trim().length > 0 && /^[^\d\s]+$/.test(w))
 	return (
 		<DropdownMenu modal={false} {...openState} {...props}>
 			<DropdownMenuTrigger asChild>
@@ -35,28 +37,24 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 			>
 				<DropdownMenuItem
 					onSelect={() => {
-						editor.tf.toggle.mark({
-							key: SuperscriptPlugin.key,
-							clear: [SubscriptPlugin.key, SuperscriptPlugin.key],
-						})
-						focusEditor(editor)
+						setSidebar('far', true)
 					}}
 				>
-					<Icons.superscript className="mr-2 size-5" />
-					Superscript
-					{/* (⌘+,) */}
+					<Globe className="mr-2 size-5" />
+					Localization
 				</DropdownMenuItem>
 				<DropdownMenuItem
 					onSelect={() => {
-						editor.tf.toggle.mark({
-							key: SubscriptPlugin.key,
-							clear: [SuperscriptPlugin.key, SubscriptPlugin.key],
-						})
-						focusEditor(editor)
+						setSidebar('word-count', true)
 					}}
 				>
-					<Icons.subscript className="mr-2 size-5" />
-					Subscript
+					<WholeWordIcon className="mr-2 size-5" />
+					Word Count
+					{/* (⌘+.) */}
+				</DropdownMenuItem>
+				<DropdownMenuItem disabled>
+					<WholeWordIcon className="mr-2 size-5" />
+					Words: {prettifyNumber(words.length)}
 					{/* (⌘+.) */}
 				</DropdownMenuItem>
 			</DropdownMenuContent>
