@@ -111,6 +111,7 @@ import Versions from './versions'
 
 export default function PlateEditor() {
 	const [selectedStatus, setSelectedStatus] = useState<EStatus | undefined>()
+	const [versionIsUpdating, setIsUpdating] = useState<boolean>(false)
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content, latestStatus } = useEpisodeContent(selectedStatus)
 
@@ -126,7 +127,7 @@ export default function PlateEditor() {
 		)
 	}
 
-	if (!content)
+	if (!content || !latestStatus || versionIsUpdating)
 		return (
 			<div className="flex flex-1 items-center justify-center">
 				<Loader />
@@ -142,7 +143,12 @@ export default function PlateEditor() {
 					/>
 					<div className="flex items-center gap-2">
 						<Versions
-							{...{ latestStatus, selectedStatus, setSelectedStatus }}
+							{...{
+								latestStatus,
+								selectedStatus,
+								setSelectedStatus,
+								setIsUpdating,
+							}}
 						/>
 						<SaveEpisode />
 					</div>
@@ -190,18 +196,16 @@ export default function PlateEditor() {
 						variant="outline"
 						size="icon"
 						className="rounded-full"
-						disabled={!content.previous_latest_chapter_id}
-						onClick={() =>
-							handleEpisodeChange(content.previous_latest_chapter_id)
-						}
+						disabled={!content.previous_parent_id}
+						onClick={() => handleEpisodeChange(content.previous_parent_id)}
 					>
 						<CircleArrowLeft />
 					</Button>
 					<Button
-						disabled={!content.next_latest_chapter_id}
+						disabled={!content.next_parent_id}
 						className="rounded-full"
 						size="icon"
-						onClick={() => handleEpisodeChange(content.next_latest_chapter_id)}
+						onClick={() => handleEpisodeChange(content.next_parent_id)}
 					>
 						<CircleArrowRight />
 					</Button>

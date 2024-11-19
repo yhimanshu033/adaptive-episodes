@@ -4,13 +4,16 @@ import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePlateStore } from '@udecode/plate-common/react'
 import { Eye } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import {
-	Dialog,
-	DialogContent,
-	DialogFooter,
-	DialogTitle,
-} from '@/components/ui/dialog'
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import {
 	Select,
 	SelectContent,
@@ -19,15 +22,17 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 
-import { EStatus } from '@/types/common'
+import { BASE_STATUS, EStatus } from '@/types/common'
 
 const Versions = ({
 	latestStatus,
 	selectedStatus,
 	setSelectedStatus,
+	setIsUpdating,
 }: {
-	latestStatus: EStatus | undefined
+	latestStatus: EStatus | typeof BASE_STATUS
 	selectedStatus: EStatus | undefined
+	setIsUpdating: React.Dispatch<React.SetStateAction<boolean>>
 	setSelectedStatus: React.Dispatch<React.SetStateAction<EStatus | undefined>>
 }) => {
 	const currentSelection = useRef<EStatus>()
@@ -36,12 +41,14 @@ const Versions = ({
 
 	const { saveEpisodeMutation } = useEpisodeHook()
 
-	const latestIndex = latestStatus ? statuses.indexOf(latestStatus) : 0
+	const latestIndex =
+		latestStatus !== 'BASE' ? statuses.indexOf(latestStatus) : 0
 	const selectedIndex = selectedStatus
 		? statuses.indexOf(selectedStatus)
 		: latestIndex
 
 	const handleSelect = (value: EStatus) => {
+		console.log(value)
 		const currentIndex = statuses.indexOf(value)
 		currentSelection.current = value
 		if (currentIndex > latestIndex) {
@@ -52,7 +59,6 @@ const Versions = ({
 	}
 
 	const handleConfirm = () => {
-		setIsDialogOpen(false)
 		if (currentSelection.current) {
 			saveEpisodeMutation.mutate(
 				{
@@ -68,20 +74,20 @@ const Versions = ({
 		}
 	}
 
-	const handleCancel = () => {
-		setIsDialogOpen(false)
-	}
-
 	useEffect(() => {
 		if (latestStatus && selectedStatus) {
 			setReadOnly(selectedIndex < latestIndex)
 		}
 	}, [latestIndex, latestStatus, selectedIndex, selectedStatus, setReadOnly])
 
+	useEffect(() => {
+		setIsUpdating(saveEpisodeMutation.isPending)
+	}, [saveEpisodeMutation.isPending, setIsUpdating])
+
 	return (
 		<>
 			<Select
-				value={selectedStatus || latestStatus}
+				value={selectedStatus || statuses[latestIndex]}
 				onValueChange={handleSelect}
 			>
 				<SelectTrigger className="gap-2">
@@ -101,18 +107,24 @@ const Versions = ({
 				</SelectContent>
 			</Select>
 
-			<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-				<DialogContent>
-					<DialogTitle>Confirm Selection</DialogTitle>
-					<p>Are you sure you want to switch to {currentSelection.current}?</p>
-					<DialogFooter>
-						<Button variant="outline" onClick={handleCancel}>
-							Cancel
-						</Button>
-						<Button onClick={handleConfirm}>Confirm</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+			<AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Confirm Selection</AlertDialogTitle>
+					</AlertDialogHeader>
+					<AlertDialogDescription>
+						<p>
+							Are you sure you want to switch to {currentSelection.current}?
+						</p>
+					</AlertDialogDescription>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction onClick={handleConfirm}>
+							Confirm
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</>
 	)
 }

@@ -5,6 +5,6 @@ const getMetaDataRange = (currEpisode: number, totalEpisodes: number) => {
 		Math.max(1, currEpisode - range / 2 + 1),
 		Math.max(totalEpisodes - range + 1, 1)
 	)
-	return [start, end]
+	return [start - 1, end]
 }
 export default getMetaDataRange

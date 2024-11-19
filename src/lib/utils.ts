@@ -25,7 +25,7 @@ export function getQueryParam(
 export const getSelectedEpisode = (
 	data: TGetEpisodesResponse,
 	selectedStatus?: EStatus
-): { episode: TEpisode; latestStatus: EStatus } => {
+): { episode: TEpisode; latestStatus: EStatus | 'BASE' } => {
 	const prioritizedStatuses = [
 		EStatus.PUBLISHED,
 		EStatus.POLISH,

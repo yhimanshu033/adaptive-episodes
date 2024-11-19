@@ -34,7 +34,7 @@ export function FixedToolbarButtons({
 	selectedStatus,
 	latestStatus,
 }: {
-	latestStatus?: EStatus
+	latestStatus?: EStatus | 'BASE'
 	selectedStatus?: EStatus
 }) {
 	const readOnly = useEditorReadOnly()
