@@ -10,7 +10,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import AiChatbot from './sidebar-sections/ai-chatbot'
 import FindAndReplace from './sidebar-sections/find-and-replace'
 import StoryExplorer from './sidebar-sections/story-explorer'
-import WordCount from './sidebar-sections/word-count'
 
 const Sidebar = () => {
 	const sidebar = usePlateStore(useShallow((state) => state.sidebar))
@@ -22,7 +21,6 @@ const Sidebar = () => {
 		comments: <CommentSidebar />,
 		outline: <StoryExplorer />,
 		far: <FindAndReplace />,
-		'word-count': <WordCount />,
 	}
 
 	return (

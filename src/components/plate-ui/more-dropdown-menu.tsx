@@ -43,15 +43,6 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 					<Globe className="mr-2 size-5" />
 					Localization
 				</DropdownMenuItem>
-				<DropdownMenuItem
-					onSelect={() => {
-						setSidebar('word-count', true)
-					}}
-				>
-					<WholeWordIcon className="mr-2 size-5" />
-					Word Count
-					{/* (⌘+.) */}
-				</DropdownMenuItem>
 				<DropdownMenuItem disabled>
 					<WholeWordIcon className="mr-2 size-5" />
 					Words: {prettifyNumber(words.length)}
