@@ -114,6 +114,9 @@ const AIChatbot = () => {
 		stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	// stories?.find((data) => data.id === (id as string))?.episodesCount || 0
 
+	// const { children: diffChildren } = useEditorState("diff-editor")
+	// const { children: diffChildren, nodes } = useEditorRef("diff-editor")
+
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
@@ -186,6 +189,19 @@ const AIChatbot = () => {
 		'Add a scene',
 		'Rename Characters',
 	]
+
+	// const diffRecords = useMemo(() => {
+	// 	let diffs: TDescendant[] = []
+	// 	function getDiffs(node: TDescendant) {
+	// 		if ("diff" in node) {
+	// 			diffs.push(node)
+	// 		} else if ("children" in node) {
+	// 			(node.children as TDescendant[]).forEach(getDiffs)
+	// 		}
+	// 	}
+	// 	diffChildren.forEach(getDiffs)
+	// 	return diffs;
+	// }, diffChildren)
 
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">

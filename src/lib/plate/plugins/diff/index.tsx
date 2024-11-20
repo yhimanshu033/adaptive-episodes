@@ -1,8 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from 'react'
 import { cn } from '@udecode/cn'
 import { BoldPlugin, ItalicPlugin } from '@udecode/plate-basic-marks/react'
 import { SoftBreakPlugin } from '@udecode/plate-break/react'
-import { createSlatePlugin, isInline, type Value } from '@udecode/plate-common'
+import {
+	createSlatePlugin,
+	isInline,
+	nanoid,
+	TDescendant,
+	type Value,
+} from '@udecode/plate-common'
 import {
 	createPlateEditor,
 	Plate,
@@ -14,6 +22,7 @@ import {
 } from '@udecode/plate-common/react'
 import {
 	computeDiff,
+	DiffProps,
 	withGetFragmentExcludeDiff,
 	type DiffOperation,
 	type DiffUpdate,
@@ -105,6 +114,7 @@ export const DiffPlugin = toPlatePlugin(
 
 function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	const diffOperation = props.leaf.diffOperation as DiffOperation
+	// console.log(props.leaf)
 	const Component = {
 		delete: 'del',
 		insert: 'ins',
@@ -136,6 +146,35 @@ export interface DiffViewProps {
 
 const defaultPlugins = [BoldPlugin, ItalicPlugin, DiffPlugin, SoftBreakPlugin]
 
+const getInsertProps = (): DiffProps & { id: string } => ({
+	diff: true,
+	diffOperation: {
+		type: 'insert',
+	},
+	id: nanoid(),
+})
+
+export const getDeleteProps = (): DiffProps & { id: string } => ({
+	diff: true,
+	diffOperation: {
+		type: 'delete',
+	},
+	id: nanoid(),
+})
+
+export const getUpdateProps = (
+	_node: TDescendant,
+	properties: any,
+	newProperties: any
+): DiffProps & { id: string } => ({
+	diff: true,
+	diffOperation: {
+		newProperties,
+		properties,
+		type: 'update',
+	},
+	id: nanoid(),
+})
 export const useDiffEditor = ({
 	current,
 	previous,
@@ -151,6 +190,9 @@ export const useDiffEditor = ({
 		return computeDiff(cloneDeep(previous), cloneDeep(current), {
 			isInline: editor.isInline,
 			lineBreakChar: '¶',
+			getInsertProps,
+			getDeleteProps,
+			getUpdateProps,
 		}) as Value
 	}, [previous, current, plugins])
 
