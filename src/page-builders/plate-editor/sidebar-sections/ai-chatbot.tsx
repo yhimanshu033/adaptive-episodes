@@ -288,7 +288,7 @@ const AIChatbot = () => {
 					</Button>
 				))}
 			</div>
-			<div className="mb-4 flex items-end gap-1">
+			<div className="flex items-end gap-1">
 				<form
 					onSubmit={handleSendMessage}
 					className="flex flex-1 items-end space-x-2 rounded-md border bg-background"
