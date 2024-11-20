@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
@@ -14,8 +14,10 @@ import useAIStore, {
 	setResponseValue,
 	updateMessages,
 } from '@/store/ai-store'
+import useDiffStore from '@/store/diff-store'
 import { useGlobalStore } from '@/store/global-store'
 import { useEditorRef } from '@udecode/plate-common/react'
+import { TDescendant } from '@udecode/slate'
 import { cloneDeep } from 'lodash'
 import { LoaderCircle, Send, Trash2 } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -114,8 +116,7 @@ const AIChatbot = () => {
 		stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	// stories?.find((data) => data.id === (id as string))?.episodesCount || 0
 
-	// const { children: diffChildren } = useEditorState("diff-editor")
-	// const { children: diffChildren, nodes } = useEditorRef("diff-editor")
+	const diffValue = useDiffStore((state) => state.value)
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -190,18 +191,27 @@ const AIChatbot = () => {
 		'Rename Characters',
 	]
 
-	// const diffRecords = useMemo(() => {
-	// 	let diffs: TDescendant[] = []
-	// 	function getDiffs(node: TDescendant) {
-	// 		if ("diff" in node) {
-	// 			diffs.push(node)
-	// 		} else if ("children" in node) {
-	// 			(node.children as TDescendant[]).forEach(getDiffs)
-	// 		}
-	// 	}
-	// 	diffChildren.forEach(getDiffs)
-	// 	return diffs;
-	// }, diffChildren)
+	console.log({ diffValue })
+	const diffRecords = useMemo(() => {
+		const diffs: TDescendant[] = []
+		function getDiffs(node: TDescendant) {
+			if ('diff' in node) {
+				diffs.push(node)
+			} else if ('children' in node) {
+				;(node.children as TDescendant[]).forEach(getDiffs)
+			}
+		}
+		diffValue.forEach(getDiffs)
+		return diffs
+	}, [diffValue])
+
+	// function onAcceptDiff(ind: number) {
+	// 	const diff = diffRecords[ind];
+	// 	const updatedCurrent = cloneDeep(ex.current)
+
+	// }
+
+	console.log({ diffRecords })
 
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
