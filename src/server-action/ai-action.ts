@@ -24,7 +24,6 @@ const fetchWithErrorHandling = async (
 	body: Record<string, unknown>
 ): Promise<unknown> => {
 	try {
-		console.log({ url })
 		const response = await fetch(url, {
 			method: 'POST',
 			headers: {
@@ -131,7 +130,6 @@ export const getChatbotResponseTest = async (
 		api_key: process.env.NEXT_PUBLIC_LASERTOOLS_API_KEY,
 		...params,
 	})) as TAiChatbotResponse
-	console.log({ data })
 	return data.data
 }
 

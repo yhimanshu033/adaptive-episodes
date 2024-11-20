@@ -38,7 +38,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 // import { maxify } from '@/lib/utils'
 
-import { MinifiedValue } from '@/types/common'
+// import { MinifiedValue } from '@/types/common'
 
 const ex = {
 	previous: [
@@ -160,8 +160,7 @@ const AIChatbot = () => {
 
 	useEffect(() => {
 		if (!aiResponseTest) return
-		const response = JSON.parse(aiResponseTest.response) as MinifiedValue
-		console.log({ response })
+		// const response = JSON.parse(aiResponseTest.response) as MinifiedValue
 		// const value = maxify(response, children)
 		setResponseValue(cloneDeep(ex.current))
 		setPrevValue(cloneDeep(ex.previous))

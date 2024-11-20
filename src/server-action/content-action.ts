@@ -119,7 +119,5 @@ export const saveContent = async ({
 		},
 	})
 
-	console.log(responseData.data)
-
 	return responseData.data
 }

@@ -147,15 +147,12 @@ export const useDiffEditor = ({
 			plugins,
 			id: 'diff-editor',
 		})
-		console.log({ current, previous })
 		if (!previous || !current) return []
 		return computeDiff(cloneDeep(previous), cloneDeep(current), {
 			isInline: editor.isInline,
 			lineBreakChar: '¶',
 		}) as Value
 	}, [previous, current, plugins])
-
-	console.log({ diffValue })
 
 	const editor = usePlateEditor(
 		{
