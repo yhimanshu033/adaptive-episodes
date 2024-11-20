@@ -98,7 +98,7 @@ const ex = {
 }
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
-	const { id, episodeId } = useParams()
+	const { id } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const { messages } = useAIStore()
@@ -125,8 +125,8 @@ const AIChatbot = () => {
 			aiChatbotData: {
 				messages,
 				query: input,
-				ep_number: episodeId as string,
-				ep_text: episodeContent?.text as string,
+				ep_number: episodeContent?.chapter.seq_number?.toString(),
+				ep_text: episodeContent?.text,
 			},
 		})
 	}
@@ -251,7 +251,7 @@ const AIChatbot = () => {
 								aiChatbotData: {
 									messages,
 									query: suggestion,
-									ep_number: episodeId as string,
+									ep_number: episodeContent?.chapter.seq_number?.toString(),
 									ep_text: episodeContent?.text as string,
 								},
 							})

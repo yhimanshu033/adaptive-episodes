@@ -11,6 +11,8 @@ import { minify } from '@/lib/utils'
 
 import { AIChatBotParams } from '@/types/ai-types'
 
+import { extractFromMetadata } from './use-aichatbot-hook'
+
 const useAIChatbotHookTest = () => {
 	const { id } = useParams()
 	const { children } = useEditorState()
@@ -21,29 +23,15 @@ const useAIChatbotHookTest = () => {
 			params.episodeNumber,
 			params.episodesCount
 		)
-		const { metadata, previousEpisodeContext } = await getMetadata(
-			id as string,
-			start,
+		const { data: metadata } = await getMetadata(
+			Number(id),
+			Math.max(start, 1),
 			end
 		)
-		let current = start
-		const { loglines_array, beatsheets_array } = metadata.reduce<{
-			beatsheets_array: string[]
-			loglines_array: string[]
-		}>(
-			(acc, data) => {
-				acc.loglines_array.push(`Ep${current} ${data.loglines}`)
-				acc.beatsheets_array.push(`Ep${current} ${data.beatsheets}`)
-				current++
-				return acc
-			},
-			{ loglines_array: [], beatsheets_array: [] }
-		)
+		const extractedData = extractFromMetadata(metadata, start)
 		return getChatbotResponseTest({
 			...params.aiChatbotData,
-			loglines_array,
-			beatsheets_array,
-			context: previousEpisodeContext || '',
+			...extractedData,
 			ep_text_json: minifiedValue.slice(0, 3),
 		})
 	}

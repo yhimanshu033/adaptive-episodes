@@ -3,20 +3,24 @@
 import { getEpisodeContent } from '@/server-action/content-action'
 import { useQuery } from '@tanstack/react-query'
 
-import { getLatestEpisode } from '@/lib/utils'
+import { getSelectedEpisode } from '@/lib/utils'
+
+import { EStatus } from '@/types/common'
 
 import useEpisodeInfo from './use-episode-info'
 
-export const useEpisodeContent = () => {
+export const useEpisodeContent = (selectedStatus?: EStatus) => {
 	const { data } = useEpisodeInfo()
-	const latestEp = data ? getLatestEpisode(data) : null
+	const { episode, latestStatus } = data
+		? getSelectedEpisode(data, selectedStatus)
+		: { episode: undefined, latestStatus: undefined }
 	const query = useQuery({
-		queryKey: [latestEp?.id, 'content'],
-		queryFn: () => getEpisodeContent(latestEp?.id || 0),
-		enabled: !!latestEp,
+		queryKey: [episode?.id, 'content'],
+		queryFn: () => getEpisodeContent(episode?.id || 0),
+		enabled: !!episode,
 	})
 
-	return query
+	return { ...query, latestStatus }
 }
 
 export default useEpisodeContent

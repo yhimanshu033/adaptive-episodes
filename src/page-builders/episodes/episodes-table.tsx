@@ -1,18 +1,33 @@
-import React, { useEffect, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import React, { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { statuses } from '@/constants/episodes-constants'
+import { episodeLimit, statuses } from '@/constants/episodes-constants'
+import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import {
 	ColumnDef,
 	flexRender,
 	getCoreRowModel,
 	getSortedRowModel,
+	RowSelectionState,
 	SortingState,
 	useReactTable,
 } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 import EditableText from '@/components/editable-text'
+import { Loader } from '@/components/loader'
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
 	Select,
@@ -44,18 +59,73 @@ const EpisodesTable = () => {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [currentPage, setCurrentPage] = useState<number>(1)
 	const [episodeFilter, setEpisodeFilter] = useState<string>('')
+	const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+
+	const selectedEpisodeRef = useRef<{
+		episodes: TEpisode[]
+		status: EStatus
+	} | null>(null)
+
+	const alertContentRef = useRef<{
+		description: string
+		notValid?: boolean
+	} | null>(null)
 
 	const router = useRouter()
 	const pathname = usePathname()
 
-	const { data } = useEpisodesData(episodeFilter)
+	const { data } = useEpisodesData(episodeFilter, currentPage)
+	const { saveEpisodeMutation } = useEpisodeHook()
 
-	const handleStatusChange = (episodeId: number, newStatus: EStatus) => {
-		setEpisodes(
-			episodes.map((episode) =>
-				episode.id === episodeId ? { ...episode, status: newStatus } : episode
+	const hasConsistentStatus = (selectedRows: TEpisode[]) =>
+		selectedRows.every((row) => row.status === selectedRows[0].status)
+
+	const handleStatusChange = (episode: TEpisode, status: EStatus) => {
+		const selectedRows = table
+			.getRowModel()
+			.rows.filter((row) => rowSelection[row.id])
+			.map((row) => row.original)
+
+		selectedEpisodeRef.current = {
+			episodes: selectedRows.length ? selectedRows : [episode],
+			status,
+		}
+		if (selectedRows.length <= 1) {
+			alertContentRef.current = {
+				description: `Status of selected episode will switch to ${status}`,
+			}
+		} else if (hasConsistentStatus(selectedRows)) {
+			alertContentRef.current = {
+				description: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
+			}
+		} else {
+			alertContentRef.current = {
+				description: `All selected episodes must have the same current status to update.`,
+				notValid: true,
+			}
+		}
+		setIsDialogOpen(true)
+	}
+
+	const handleConfirm = async () => {
+		if (selectedEpisodeRef.current) {
+			const { episodes, status } = selectedEpisodeRef.current
+			await Promise.all(
+				episodes.map((episode) => {
+					console.log({
+						text: 'Status update',
+						statusChange: status,
+						selectedChapterId: episode.parent ?? episode.id,
+					})
+					return saveEpisodeMutation.mutateAsync({
+						text: 'Status update',
+						statusChange: status,
+						selectedChapterId: episode.parent ?? undefined,
+					})
+				})
 			)
-		)
+		}
 	}
 
 	const handleWriterChange = (episodeId: number, newWriter: string) => {
@@ -71,6 +141,22 @@ const EpisodesTable = () => {
 	}
 
 	const columns: ColumnDef<TEpisode>[] = [
+		{
+			id: 'select-col',
+			header: ({ table }) => (
+				<Checkbox
+					checked={table.getIsAllRowsSelected()}
+					onClick={table.getToggleAllRowsSelectedHandler()}
+				/>
+			),
+			cell: ({ row }) => (
+				<Checkbox
+					checked={row.getIsSelected()}
+					disabled={!row.getCanSelect()}
+					onClick={row.getToggleSelectedHandler()}
+				/>
+			),
+		},
 		{
 			accessorKey: 'serialNumber',
 			header: '#',
@@ -91,29 +177,38 @@ const EpisodesTable = () => {
 		{
 			accessorKey: 'status',
 			header: 'Status',
-			cell: ({ row }) => (
-				<Select
-					value={row.getValue('status')}
-					onValueChange={(value) =>
-						handleStatusChange(row.original.id, value as EStatus)
-					}
-				>
-					<SelectTrigger className="w-32">
-						<SelectValue>
-							{row.getValue('status') === BASE_STATUS
-								? EStatus.FIRST_DRAFT
-								: row.getValue('status')}
-						</SelectValue>
-					</SelectTrigger>
-					<SelectContent>
-						{statuses.map((status) => (
-							<SelectItem key={status} value={status}>
-								{status}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-			),
+			cell: ({ row }) => {
+				const isSelected = !!rowSelection[row.id]
+				const latestStatus: EStatus =
+					row.getValue('status') === BASE_STATUS
+						? EStatus.FIRST_DRAFT
+						: row.getValue('status')
+				const latestIndex = statuses.indexOf(latestStatus)
+				return (
+					<Select
+						value={latestStatus}
+						onValueChange={(value) =>
+							handleStatusChange(row.original, value as EStatus)
+						}
+						disabled={!isSelected && Object.keys(rowSelection).length > 0}
+					>
+						<SelectTrigger className="w-32">
+							<SelectValue>{latestStatus}</SelectValue>
+						</SelectTrigger>
+						<SelectContent>
+							{statuses.map((status, index) => (
+								<SelectItem
+									disabled={index < latestIndex || index > latestIndex + 1}
+									key={status}
+									value={status}
+								>
+									{status}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				)
+			},
 		},
 		{
 			accessorKey: 'writer',
@@ -140,18 +235,27 @@ const EpisodesTable = () => {
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		onSortingChange: setSorting,
-		pageCount: data?.count || 0,
+		onRowSelectionChange: setRowSelection,
 		state: {
 			sorting,
+			rowSelection,
 		},
 	})
+
 	useEffect(() => {
 		if (data) setEpisodes(data?.results.data)
 	}, [data])
-
+	if (saveEpisodeMutation.isPending)
+		return (
+			<div className="flex flex-1 items-center justify-center">
+				<Loader />
+			</div>
+		)
 	return (
 		<>
-			<Filters setEpisodeFilter={setEpisodeFilter} />
+			<div className="flex gap-2">
+				<Filters setEpisodeFilter={setEpisodeFilter} />
+			</div>
 			<ScrollArea className="overflow-auto-y relative flex max-h-[48vh] w-full flex-col rounded-md border">
 				<Table>
 					<TableHeader className="sticky top-0 z-10 bg-background">
@@ -192,8 +296,7 @@ const EpisodesTable = () => {
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									data-state={row.getIsSelected() && 'selected'}
-									className="transition-colors"
+									className={cn({ selected: row.getIsSelected() })}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
@@ -218,8 +321,26 @@ const EpisodesTable = () => {
 			<EpisodesPagination
 				setPage={setCurrentPage}
 				currentPage={currentPage}
-				totalPages={data?.count || 0}
+				totalPages={data ? Math.ceil(data.count / episodeLimit) : 0}
 			/>
+			<AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Confirm Selection</AlertDialogTitle>
+					</AlertDialogHeader>
+					<AlertDialogDescription>
+						{alertContentRef.current?.description}
+					</AlertDialogDescription>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						{!alertContentRef.current?.notValid && (
+							<AlertDialogAction onClick={handleConfirm}>
+								Confirm
+							</AlertDialogAction>
+						)}
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</>
 	)
 }

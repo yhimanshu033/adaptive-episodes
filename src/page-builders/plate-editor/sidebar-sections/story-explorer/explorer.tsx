@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { categories, defaultMode } from '@/constants/story-explorer-constants'
+import { extractFromMetadata } from '@/hooks/mutation/use-aichatbot-hook'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { getMetadata } from '@/server-action/metadata-action'
@@ -53,25 +54,28 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	) => {
 		setLoading(true)
 		setRequest({ ...request, action, name })
-		const res = await getMetadata(id as string, start, end)
-
+		const { data: metadata } = await getMetadata(
+			Number(id),
+			Math.max(start - 1, 1),
+			end
+		)
 		if (action === 'summary') {
+			const metadataEntries = Object.values(metadata?.data || {})
 			setContent(
-				res.metadata.map((data, index) => ({
-					title: `Episode ${index + 1}`,
+				metadataEntries.map((data, index) => ({
+					title: `Episode ${index + start}`,
 					content: data.loglines,
 				}))
 			)
 		} else {
+			const extractedData = extractFromMetadata(metadata, start - 1)
 			const result = await mutateAsync({
 				action,
 				ep_from: start,
 				ep_to: end,
 				mode: request.mode,
 				ep_number: episodeId as string,
-				beatsheet_array: res.metadata.map((data) => data.beatsheets),
-				logline_array: res.metadata.map((data) => data.loglines),
-				context: res.previousEpisodeContext || '',
+				...extractedData,
 				current_ep: currentEpisodeContent?.text || ' ',
 				instruction,
 			})
