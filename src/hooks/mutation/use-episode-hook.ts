@@ -14,12 +14,24 @@ const useEpisodeHook = () => {
 	const chapterId = data?.chapter.parent || Number(episodeId)
 
 	const onSaveEpisode = useCallback(
-		(text: string) => {
+		({
+			text,
+			statusChange,
+			selectedChapterId,
+			selectedProjectId,
+		}: {
+			selectedChapterId?: number
+			selectedProjectId?: number
+			statusChange?: EStatus
+			text: string
+		}) => {
 			return saveContent({
-				episodeId: chapterId,
-				projectId: Number(id),
+				episodeId: selectedChapterId || chapterId,
+				projectId: selectedProjectId || Number(id),
 				text,
-				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
+				status:
+					statusChange ||
+					(status === BASE_STATUS ? EStatus.FIRST_DRAFT : status),
 			})
 		},
 		[chapterId, id, status]

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/plate-editor/title'
@@ -105,13 +105,17 @@ import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 
+import { EStatus } from '@/types/common'
+
 import SaveEpisode from './save-episode'
 import Sidebar from './sidebar'
 import Versions from './versions'
 
 export default function PlateEditor() {
+	const [selectedStatus, setSelectedStatus] = useState<EStatus | undefined>()
+	const [versionIsUpdating, setIsUpdating] = useState<boolean>(false)
 	const containerRef = useRef<HTMLDivElement>(null)
-	const { data: content } = useEpisodeContent()
+	const { data: content, latestStatus } = useEpisodeContent(selectedStatus)
 
 	const router = useRouter()
 	const { id } = useParams()
@@ -125,7 +129,7 @@ export default function PlateEditor() {
 		)
 	}
 
-	if (!content)
+	if (!content || !latestStatus || versionIsUpdating)
 		return (
 			<div className="flex flex-1 items-center justify-center">
 				<Loader />
@@ -140,7 +144,14 @@ export default function PlateEditor() {
 						episodeNumber={content.chapter.seq_number}
 					/>
 					<div className="flex items-center gap-2">
-						<Versions />
+						<Versions
+							{...{
+								latestStatus,
+								selectedStatus,
+								setSelectedStatus,
+								setIsUpdating,
+							}}
+						/>
 						<SaveEpisode />
 					</div>
 				</div>
@@ -153,7 +164,7 @@ export default function PlateEditor() {
 					)}
 				>
 					<FixedToolbar>
-						<FixedToolbarButtons />
+						<FixedToolbarButtons {...{ selectedStatus, latestStatus }} />
 					</FixedToolbar>
 					<div className="flex h-[58vh] w-full">
 						<ScrollArea className="w-full flex-1">

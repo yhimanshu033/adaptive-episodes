@@ -18,7 +18,7 @@ export default function EpisodeListPage() {
 	const storyData = data?.find((story) => story.id === parseInt(id as string))
 
 	return (
-		<main className="container flex-1 animate-fade-in-up px-4 py-8">
+		<main className="container flex-1 animate-fade-in-up flex-col px-4 py-8">
 			<div className="mb-6 flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<Image

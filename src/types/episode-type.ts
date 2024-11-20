@@ -1,4 +1,4 @@
-import { EStatus } from './common'
+import { BASE_STATUS, EStatus } from './common'
 
 export interface EpisodeType {
 	id: string
@@ -61,6 +61,13 @@ export interface VersionDocType {
 	writer: string
 }
 
+type TEpisodeProps = {
+	beatsheet: string
+	context: string
+	loglines: string
+	summary: string
+}
+
 export type TEpisode = {
 	chapter_title: string
 	comments: string | null
@@ -71,9 +78,11 @@ export type TEpisode = {
 	latest_version: number
 	parent: number | null
 	project: number
-	props: Record<string, unknown>
+	props: Record<string, unknown> & {
+		llm_memories: TEpisodeProps
+	}
 	seq_number: number
-	status: EStatus
+	status: EStatus | typeof BASE_STATUS
 	translation_url: string | null
 	update_time: string
 	word_count: number

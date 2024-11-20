@@ -23,28 +23,40 @@ export function getQueryParam(
 	}
 }
 
-export const getLatestEpisode = (data: TGetEpisodesResponse): TEpisode => {
-	for (const episode of data.results.data) {
-		if (episode.status === EStatus.PUBLISHED) {
-			return episode
-		}
-		if (episode.status === EStatus.REOPENED) {
-			return episode
-		}
-		if (episode.status === EStatus.IN_REVIEW) {
-			return episode
-		}
-		if (episode.status === EStatus.AB_TEST) {
-			return episode
-		}
-		if (episode.status === EStatus.SECOND_DRAFT) {
-			return episode
-		}
-		if (episode.status === EStatus.FIRST_DRAFT) {
-			return episode
+export const getSelectedEpisode = (
+	data: TGetEpisodesResponse,
+	selectedStatus?: EStatus
+): { episode: TEpisode; latestStatus: EStatus | 'BASE' } => {
+	const prioritizedStatuses = [
+		EStatus.PUBLISHED,
+		EStatus.POLISH,
+		EStatus.SECOND_DRAFT,
+		EStatus.FIRST_DRAFT,
+	]
+
+	let selectedEpisode: TEpisode | undefined
+
+	if (selectedStatus) {
+		selectedEpisode = data.results.data.find(
+			(episode) => episode.status === selectedStatus
+		)
+	}
+
+	if (!selectedEpisode) {
+		for (const status of prioritizedStatuses) {
+			selectedEpisode = data.results.data.find(
+				(episode) => episode.status === status
+			)
+			if (selectedEpisode) break
 		}
 	}
-	return data.results.data[0]
+
+	const latestStatus =
+		prioritizedStatuses.find((status) =>
+			data.results.data.some((episode) => episode.status === status)
+		) ?? data.results.data[0].status
+
+	return { episode: selectedEpisode ?? data.results.data[0], latestStatus }
 }
 
 export function replaceNthInsensitive(

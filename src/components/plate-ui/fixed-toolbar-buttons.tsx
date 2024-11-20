@@ -17,6 +17,8 @@ import { CommentToolbarButton } from '@/components/plate-ui/comment-toolbar-butt
 import { IndentListToolbarButton } from '@/components/plate-ui/indent-list-toolbar-button'
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
 
+import { EStatus } from '@/types/common'
+
 import { ChatbotToolbarButton } from './chatbot-toggle-button'
 import { ColorDropdownMenu } from './color-dropdown-menu'
 import { MarkToolbarButton } from './mark-toolbar-button'
@@ -29,7 +31,13 @@ import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
 import UndoRedoButtons from './undo-redo-buttons'
 import { ZoomDropdownMenu } from './zoom-dropdown'
 
-export function FixedToolbarButtons() {
+export function FixedToolbarButtons({
+	selectedStatus,
+	latestStatus,
+}: {
+	latestStatus?: EStatus | 'BASE'
+	selectedStatus?: EStatus
+}) {
 	const readOnly = useEditorReadOnly()
 
 	return (
@@ -100,7 +108,9 @@ export function FixedToolbarButtons() {
 					<ChatbotToolbarButton />
 					<OutlineToolbarButton />
 					<CommentToolbarButton />
-					<ModeDropdownMenu />
+					{(!selectedStatus || selectedStatus === latestStatus) && (
+						<ModeDropdownMenu />
+					)}
 					<MoreDropdownMenu />
 				</ToolbarGroup>
 			</div>

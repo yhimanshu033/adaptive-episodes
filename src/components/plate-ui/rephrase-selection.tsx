@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useParams } from 'next/navigation'
 import { rephraseMethods } from '@/constants/editor-constants'
 import useLaserToolsHook from '@/hooks/mutation/use-lasertool-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -38,7 +37,6 @@ const RephraseSelection = React.memo(
 		elemKey: key,
 	}: RephraseSelectionProps) => {
 		const [textInput, setTextInput] = useState('')
-		const { episodeId } = useParams()
 		const { data: episodeContent } = useEpisodeContent()
 
 		const { isTranslationOpen, sidebar } = usePlateStore()
@@ -62,20 +60,14 @@ const RephraseSelection = React.memo(
 				laserToolsMutation.mutate({
 					action,
 					...getSelectedText(),
-					context: episodeContent?.chapter.context || '',
-					ep_number: episodeId as string,
+					context: episodeContent?.chapter.props.llm_memories.context || '',
+					ep_number: episodeContent?.chapter.seq_number.toString() || '',
 					ep_text: episodeContent?.text || '',
 					prompt: promptInput,
 					style_template: '',
 				})
 			},
-			[
-				laserToolsMutation,
-				getSelectedText,
-				episodeContent,
-				episodeId,
-				promptInput,
-			]
+			[laserToolsMutation, getSelectedText, episodeContent, promptInput]
 		)
 
 		const handleAcceptRephrase = () => {

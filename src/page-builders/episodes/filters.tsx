@@ -17,7 +17,10 @@ const Filters = ({
 	}
 
 	return (
-		<form onSubmit={handleSubmit} className="mb-2 flex items-center gap-2">
+		<form
+			onSubmit={handleSubmit}
+			className="mb-2 flex flex-1 items-center gap-2"
+		>
 			<Input
 				placeholder="Search Episode"
 				className="border"
