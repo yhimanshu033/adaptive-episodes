@@ -97,10 +97,12 @@ import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
 import { LaserLeaf } from '@/components/plate-ui/laser-leaf'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
+import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 // import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
+import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 
 import { EStatus } from '@/types/common'
@@ -235,11 +237,14 @@ export const useMyEditor = ({
 	id?: string
 }) => {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
+	// const search = usePlateStore(useShallow((state) => state.search))
 	const initialValue = jsonify(content)
+
 	const editor = createPlateEditor({
 		plugins: [
 			//Custom
 			LaserPlugin,
+			FindReplacePlugin,
 			// Nodes
 			HeadingPlugin,
 			HorizontalRulePlugin,
@@ -422,6 +427,7 @@ export const useMyEditor = ({
 				// withDraggables(
 				withPlaceholders({
 					[LaserPlugin.key]: LaserLeaf,
+					[FindReplacePlugin.key]: SearchHighlightLeaf,
 					[HorizontalRulePlugin.key]: HrElement,
 					[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
 					[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
