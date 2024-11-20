@@ -129,6 +129,7 @@ export default function PlateEditor() {
 				<Loader />
 			</div>
 		)
+
 	return (
 		<DndProvider backend={HTML5Backend}>
 			<Plate editor={editor}>

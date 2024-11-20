@@ -62,7 +62,7 @@ const describeUpdate = ({ newProperties, properties }: DiffUpdate) => {
 	return descriptionParts.join('\n')
 }
 
-const DiffPlugin = toPlatePlugin(
+export const DiffPlugin = toPlatePlugin(
 	createSlatePlugin({
 		key: 'diff',
 		extendEditor: withGetFragmentExcludeDiff,
@@ -136,22 +136,26 @@ export interface DiffViewProps {
 
 const defaultPlugins = [BoldPlugin, ItalicPlugin, DiffPlugin, SoftBreakPlugin]
 
-export function DiffView({
+export const useDiffEditor = ({
 	current,
 	previous,
 	plugins = defaultPlugins,
-	className,
-}: DiffViewProps) {
+}: DiffViewProps) => {
+	// const {children} = useEditorState()
 	const diffValue = React.useMemo(() => {
 		const editor = createPlateEditor({
 			plugins,
+			id: 'diff-editor',
 		})
-		if (!previous || !current) return
-		return computeDiff(previous, cloneDeep(current), {
+		console.log({ current, previous })
+		if (!previous || !current) return []
+		return computeDiff(cloneDeep(previous), cloneDeep(current), {
 			isInline: editor.isInline,
 			lineBreakChar: '¶',
 		}) as Value
 	}, [previous, current, plugins])
+
+	console.log({ diffValue })
 
 	const editor = usePlateEditor(
 		{
@@ -161,6 +165,16 @@ export function DiffView({
 		[diffValue]
 	)
 
+	return editor
+}
+
+export function DiffView({
+	current,
+	previous,
+	plugins = defaultPlugins,
+	className,
+}: DiffViewProps) {
+	const editor = useDiffEditor({ current, previous, plugins })
 	return (
 		previous &&
 		current && (
