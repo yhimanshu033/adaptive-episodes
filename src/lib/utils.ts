@@ -135,7 +135,6 @@ export function getText(val: Value) {
 		if (i > 0) text += '\n'
 		getTextFromNode(node)
 	})
-	console.log({ text })
 	return text
 }
 

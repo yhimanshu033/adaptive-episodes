@@ -95,7 +95,7 @@ export async function fetchAPI<
 				? { body: JSON.stringify(body) }
 				: {}),
 			next: {
-				revalidate: 1,
+				revalidate: 0,
 			},
 		})
 

@@ -19,7 +19,6 @@ export const useEpisodeContent = (selectedStatus?: EStatus) => {
 		queryFn: () => getEpisodeContent(episode?.id || 0),
 		enabled: !!episode,
 	})
-
 	return { ...query, latestStatus }
 }
 

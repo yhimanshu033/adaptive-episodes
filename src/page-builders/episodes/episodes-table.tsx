@@ -111,13 +111,9 @@ const EpisodesTable = () => {
 	const handleConfirm = async () => {
 		if (selectedEpisodeRef.current) {
 			const { episodes, status } = selectedEpisodeRef.current
+
 			await Promise.all(
 				episodes.map((episode) => {
-					console.log({
-						text: 'Status update',
-						statusChange: status,
-						selectedChapterId: episode.parent ?? episode.id,
-					})
 					return saveEpisodeMutation.mutateAsync({
 						text: 'Status update',
 						statusChange: status,

@@ -113,7 +113,6 @@ import Versions from './versions'
 
 export default function PlateEditor() {
 	const [selectedStatus, setSelectedStatus] = useState<EStatus | undefined>()
-	const [versionIsUpdating, setIsUpdating] = useState<boolean>(false)
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content, latestStatus } = useEpisodeContent(selectedStatus)
 
@@ -129,7 +128,7 @@ export default function PlateEditor() {
 		)
 	}
 
-	if (!content || !latestStatus || versionIsUpdating)
+	if (!content || !latestStatus)
 		return (
 			<div className="flex flex-1 items-center justify-center">
 				<Loader />
@@ -150,7 +149,6 @@ export default function PlateEditor() {
 								latestStatus,
 								selectedStatus,
 								setSelectedStatus,
-								setIsUpdating,
 							}}
 						/>
 						<SaveEpisode />

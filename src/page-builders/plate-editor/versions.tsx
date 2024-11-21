@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useEffect, useRef, useState } from 'react'
 import { statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import { useQueryClient } from '@tanstack/react-query'
 import { usePlateStore } from '@udecode/plate-common/react'
 import { Eye } from 'lucide-react'
 
@@ -21,6 +23,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import Spinner from '@/components/ui/spinner'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 
@@ -28,16 +31,16 @@ const Versions = ({
 	latestStatus,
 	selectedStatus,
 	setSelectedStatus,
-	setIsUpdating,
 }: {
 	latestStatus: EStatus | typeof BASE_STATUS
 	selectedStatus: EStatus | undefined
-	setIsUpdating: React.Dispatch<React.SetStateAction<boolean>>
 	setSelectedStatus: React.Dispatch<React.SetStateAction<EStatus | undefined>>
 }) => {
 	const currentSelection = useRef<EStatus>()
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const setReadOnly = usePlateStore().set.readOnly()
+
+	const queryClient = useQueryClient()
 
 	const { saveEpisodeMutation } = useEpisodeHook()
 
@@ -48,7 +51,6 @@ const Versions = ({
 		: latestIndex
 
 	const handleSelect = (value: EStatus) => {
-		console.log(value)
 		const currentIndex = statuses.indexOf(value)
 		currentSelection.current = value
 		if (currentIndex > latestIndex) {
@@ -58,19 +60,21 @@ const Versions = ({
 		}
 	}
 
-	const handleConfirm = () => {
+	const handleConfirm = async () => {
 		if (currentSelection.current) {
-			saveEpisodeMutation.mutate(
-				{
-					text: 'Status update',
-					statusChange: currentSelection.current,
-				},
-				{
-					onSuccess: () => {
-						setSelectedStatus(currentSelection.current)
-					},
-				}
-			)
+			await saveEpisodeMutation.mutateAsync({
+				text: 'Status update',
+				statusChange: currentSelection.current,
+			})
+			await queryClient.invalidateQueries({ queryKey: ['info'], type: 'all' })
+			await queryClient.invalidateQueries({
+				queryKey: ['content'],
+				type: 'all',
+			})
+			await queryClient.invalidateQueries({
+				queryKey: ['episodes'],
+				type: 'all',
+			})
 		}
 	}
 
@@ -80,9 +84,7 @@ const Versions = ({
 		}
 	}, [latestIndex, latestStatus, selectedIndex, selectedStatus, setReadOnly])
 
-	useEffect(() => {
-		setIsUpdating(saveEpisodeMutation.isPending)
-	}, [saveEpisodeMutation.isPending, setIsUpdating])
+	if (saveEpisodeMutation.isPending) return <Spinner size={24} />
 
 	return (
 		<>
@@ -113,9 +115,7 @@ const Versions = ({
 						<AlertDialogTitle>Confirm Selection</AlertDialogTitle>
 					</AlertDialogHeader>
 					<AlertDialogDescription>
-						<p>
-							Are you sure you want to switch to {currentSelection.current}?
-						</p>
+						Are you sure you want to switch to {currentSelection.current}?
 					</AlertDialogDescription>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>

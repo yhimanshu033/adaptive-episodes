@@ -191,7 +191,6 @@ const AIChatbot = () => {
 		'Rename Characters',
 	]
 
-	console.log({ diffValue })
 	const diffRecords = useMemo(() => {
 		const diffs: TDescendant[] = []
 		function getDiffs(node: TDescendant) {

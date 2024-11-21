@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
 import {
 	collection,
 	doc,
@@ -119,8 +118,6 @@ export const saveContent = async ({
 			episodeId,
 		},
 	})
-	revalidatePath('projects/[id]/[episodeId]/editor', 'page')
-	revalidatePath('project/[id]', 'page')
 
 	return responseData.data
 }
