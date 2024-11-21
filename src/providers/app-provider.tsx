@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import { SocketProvider } from '@/hooks/use-socket'
 import { updateUserData } from '@/store/global-store'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Session } from 'next-auth'
@@ -30,17 +31,19 @@ const AppProvider = ({
 
 	return (
 		<SessionProvider session={session}>
-			<QueryClientProvider client={queryClient}>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="dark"
-					enableSystem
-					disableTransitionOnChange
-				>
-					<NextTopLoader />
-					{children}
-				</ThemeProvider>
-			</QueryClientProvider>
+			<SocketProvider>
+				<QueryClientProvider client={queryClient}>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="dark"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<NextTopLoader />
+						{children}
+					</ThemeProvider>
+				</QueryClientProvider>
+			</SocketProvider>
 		</SessionProvider>
 	)
 }
