@@ -106,3 +106,43 @@ export const maxify = (minified: MinifiedValue, children: Value): Value => {
 		children: applyText(child.children, [index]),
 	}))
 }
+
+export function replaceNthInsensitive(
+	str: string,
+	search: string,
+	replace: string,
+	nth: number
+): string {
+	const regex = new RegExp(search, 'gi')
+	let matchCount = 0
+
+	return str.replace(regex, (match) => {
+		matchCount++
+		return matchCount === nth + 1 ? replace : match
+	})
+}
+
+export function getText(val: Value) {
+	let text = ''
+	function getTextFromNode(node: TDescendant) {
+		if ('text' in node) {
+			text += String(node.text)
+		} else {
+			node.children.forEach(getTextFromNode)
+		}
+	}
+	val.forEach((node, i) => {
+		if (i > 0) text += '\n'
+		getTextFromNode(node)
+	})
+	console.log({ text })
+	return text
+}
+
+export function prettifyNumber(
+	num: number,
+	locale: string = 'de-DE', // 'en-US' for English
+	options?: Intl.NumberFormatOptions
+): string {
+	return new Intl.NumberFormat(locale, options).format(num)
+}

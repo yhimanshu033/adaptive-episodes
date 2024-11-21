@@ -23,6 +23,7 @@ import { ChatbotToolbarButton } from './chatbot-toggle-button'
 import { ColorDropdownMenu } from './color-dropdown-menu'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import { ModeDropdownMenu } from './mode-dropdown-menu'
+import { MoreDropdownMenu } from './more-dropdown-menu'
 import { OutlineToolbarButton } from './outline-toggle-button'
 import { ToolbarGroup } from './toolbar'
 import TranslationToggleButton from './translation-toggle-button'
@@ -110,6 +111,7 @@ export function FixedToolbarButtons({
 					{(!selectedStatus || selectedStatus === latestStatus) && (
 						<ModeDropdownMenu />
 					)}
+					<MoreDropdownMenu />
 				</ToolbarGroup>
 			</div>
 		</div>
