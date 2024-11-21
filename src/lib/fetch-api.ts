@@ -83,7 +83,7 @@ export async function fetchAPI<
 	}
 
 	try {
-		// console.dir({ resolvedUrl, headers, body, method }, { depth: null }) // Uncomment this line to debug
+		// console.dir({ resolvedUrl, headers, method }, { depth: null }) // Uncomment this line to debug
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {

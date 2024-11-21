@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
@@ -14,10 +14,9 @@ import useAIStore, {
 	setResponseValue,
 	updateMessages,
 } from '@/store/ai-store'
-import useDiffStore from '@/store/diff-store'
+// import useDiffStore from '@/store/diff-store'
 import { useGlobalStore } from '@/store/global-store'
 import { useEditorRef } from '@udecode/plate-common/react'
-import { TDescendant } from '@udecode/slate'
 import { cloneDeep } from 'lodash'
 import { LoaderCircle, Send, Trash2 } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -116,7 +115,7 @@ const AIChatbot = () => {
 		stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	// stories?.find((data) => data.id === (id as string))?.episodesCount || 0
 
-	const diffValue = useDiffStore((state) => state.value)
+	// const diffValue = useDiffStore((state) => state.value)
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -128,7 +127,7 @@ const AIChatbot = () => {
 			episodesCount,
 			aiChatbotData: {
 				messages,
-				query: input,
+				user_message: input,
 				ep_number: episodeContent?.chapter.seq_number?.toString(),
 				ep_text: episodeContent?.text,
 			},
@@ -144,7 +143,7 @@ const AIChatbot = () => {
 
 	useEffect(() => {
 		if (!isPending && aiResponse) {
-			addMessages({ role: 'assistant', content: aiResponse.response })
+			addMessages({ role: 'assistant', content: aiResponse })
 		}
 	}, [aiResponse, isPending])
 
@@ -191,26 +190,24 @@ const AIChatbot = () => {
 		'Rename Characters',
 	]
 
-	const diffRecords = useMemo(() => {
-		const diffs: TDescendant[] = []
-		function getDiffs(node: TDescendant) {
-			if ('diff' in node) {
-				diffs.push(node)
-			} else if ('children' in node) {
-				;(node.children as TDescendant[]).forEach(getDiffs)
-			}
-		}
-		diffValue.forEach(getDiffs)
-		return diffs
-	}, [diffValue])
+	// const diffRecords = useMemo(() => {
+	// 	const diffs: TDescendant[] = []
+	// 	function getDiffs(node: TDescendant) {
+	// 		if ('diff' in node) {
+	// 			diffs.push(node)
+	// 		} else if ('children' in node) {
+	// 			; (node.children as TDescendant[]).forEach(getDiffs)
+	// 		}
+	// 	}
+	// 	diffValue.forEach(getDiffs)
+	// 	return diffs
+	// }, [diffValue])
 
 	// function onAcceptDiff(ind: number) {
 	// 	const diff = diffRecords[ind];
 	// 	const updatedCurrent = cloneDeep(ex.current)
 
 	// }
-
-	console.log({ diffRecords })
 
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
@@ -275,7 +272,7 @@ const AIChatbot = () => {
 								episodesCount,
 								aiChatbotData: {
 									messages,
-									query: suggestion,
+									user_message: suggestion,
 									ep_number: episodeContent?.chapter.seq_number?.toString(),
 									ep_text: episodeContent?.text as string,
 								},
