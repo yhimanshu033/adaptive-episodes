@@ -1,8 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from 'react'
+import { setDiffValue } from '@/store/diff-store'
 import { cn } from '@udecode/cn'
 import { BoldPlugin, ItalicPlugin } from '@udecode/plate-basic-marks/react'
 import { SoftBreakPlugin } from '@udecode/plate-break/react'
-import { createSlatePlugin, isInline, type Value } from '@udecode/plate-common'
+import {
+	createSlatePlugin,
+	isInline,
+	nanoid,
+	TDescendant,
+	type Value,
+} from '@udecode/plate-common'
 import {
 	createPlateEditor,
 	Plate,
@@ -14,6 +23,7 @@ import {
 } from '@udecode/plate-common/react'
 import {
 	computeDiff,
+	DiffProps,
 	withGetFragmentExcludeDiff,
 	type DiffOperation,
 	type DiffUpdate,
@@ -62,7 +72,7 @@ const describeUpdate = ({ newProperties, properties }: DiffUpdate) => {
 	return descriptionParts.join('\n')
 }
 
-const DiffPlugin = toPlatePlugin(
+export const DiffPlugin = toPlatePlugin(
 	createSlatePlugin({
 		key: 'diff',
 		extendEditor: withGetFragmentExcludeDiff,
@@ -105,6 +115,7 @@ const DiffPlugin = toPlatePlugin(
 
 function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	const diffOperation = props.leaf.diffOperation as DiffOperation
+	// console.log(props.leaf)
 	const Component = {
 		delete: 'del',
 		insert: 'ins',
@@ -136,20 +147,53 @@ export interface DiffViewProps {
 
 const defaultPlugins = [BoldPlugin, ItalicPlugin, DiffPlugin, SoftBreakPlugin]
 
-export function DiffView({
+const getInsertProps = (): DiffProps & { id: string } => ({
+	diff: true,
+	diffOperation: {
+		type: 'insert',
+	},
+	id: nanoid(),
+})
+
+export const getDeleteProps = (): DiffProps & { id: string } => ({
+	diff: true,
+	diffOperation: {
+		type: 'delete',
+	},
+	id: nanoid(),
+})
+
+export const getUpdateProps = (
+	_node: TDescendant,
+	properties: any,
+	newProperties: any
+): DiffProps & { id: string } => ({
+	diff: true,
+	diffOperation: {
+		newProperties,
+		properties,
+		type: 'update',
+	},
+	id: nanoid(),
+})
+export const useDiffEditor = ({
 	current,
 	previous,
 	plugins = defaultPlugins,
-	className,
-}: DiffViewProps) {
+}: DiffViewProps) => {
+	// const {children} = useEditorState()
 	const diffValue = React.useMemo(() => {
 		const editor = createPlateEditor({
 			plugins,
+			id: 'diff-editor',
 		})
-		if (!previous || !current) return
-		return computeDiff(previous, cloneDeep(current), {
+		if (!previous || !current) return []
+		return computeDiff(cloneDeep(previous), cloneDeep(current), {
 			isInline: editor.isInline,
 			lineBreakChar: '¶',
+			getInsertProps,
+			getDeleteProps,
+			getUpdateProps,
 		}) as Value
 	}, [previous, current, plugins])
 
@@ -161,6 +205,20 @@ export function DiffView({
 		[diffValue]
 	)
 
+	React.useEffect(() => {
+		setDiffValue(diffValue)
+	}, [diffValue])
+
+	return editor
+}
+
+export function DiffView({
+	current,
+	previous,
+	plugins = defaultPlugins,
+	className,
+}: DiffViewProps) {
+	const editor = useDiffEditor({ current, previous, plugins })
 	return (
 		previous &&
 		current && (

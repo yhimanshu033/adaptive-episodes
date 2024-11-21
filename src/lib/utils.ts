@@ -2,7 +2,7 @@ import { TDescendant, Value } from '@udecode/plate-common'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-import { EStatus } from '@/types/common'
+import { EStatus, MinifiedValue } from '@/types/common'
 import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
 
 export function cn(...inputs: ClassValue[]) {
@@ -57,6 +57,54 @@ export const getSelectedEpisode = (
 		) ?? data.results.data[0].status
 
 	return { episode: selectedEpisode ?? data.results.data[0], latestStatus }
+}
+
+export const minify = (children: Value): MinifiedValue => {
+	const traverse = (nodes: TDescendant[], path: number[]): MinifiedValue => {
+		return nodes.flatMap((node, index) => {
+			const currentPath = [...path, index]
+			if ('text' in node) {
+				return [{ id: currentPath.join('_'), text: String(node.text) }]
+			} else if ('children' in node) {
+				return traverse(node.children, currentPath)
+			}
+			return []
+		})
+	}
+
+	return traverse(children, [])
+}
+
+export const maxify = (minified: MinifiedValue, children: Value): Value => {
+	const applyText = (nodes: TDescendant[], path: number[]): TDescendant[] => {
+		return nodes.map((node, index) => {
+			const currentPath = [...path, index]
+
+			if ('text' in node) {
+				const matchingValue = minified.find(
+					(item) => item.id === currentPath.join('_')
+				)
+				if (matchingValue) {
+					return {
+						...node,
+						text: matchingValue.text,
+					}
+				}
+				return node
+			} else if ('children' in node) {
+				return {
+					...node,
+					children: applyText(node.children, currentPath),
+				}
+			}
+			return node
+		})
+	}
+
+	return children.map((child, index) => ({
+		...child,
+		children: applyText(child.children, [index]),
+	}))
 }
 
 export function replaceNthInsensitive(

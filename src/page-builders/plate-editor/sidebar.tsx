@@ -24,7 +24,7 @@ const Sidebar = () => {
 	}
 
 	return (
-		<ScrollArea className="relative h-[60vh] w-fit min-w-[25vw] flex-1">
+		<ScrollArea className="relative h-[58vh] w-fit min-w-[25vw] flex-1">
 			<Button
 				className="absolute right-2 top-1 z-50"
 				variant="ghost"

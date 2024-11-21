@@ -7,6 +7,8 @@ import { AIStoreType } from '@/types/ai-types'
 
 const initialState: AIStoreType = {
 	messages: aiInitialMessage,
+	responseValue: null,
+	prevValue: null,
 }
 
 const useAIStore = create(devtools(immer(() => initialState)))
@@ -20,8 +22,27 @@ export const addMessages = (message: {
 	})
 }
 
+export const updateMessages = (
+	message: {
+		content: string
+		role: 'user' | 'assistant'
+	},
+	index: number
+) => {
+	useAIStore.setState((state) => {
+		state.messages[index] = message
+	})
+}
+
 export const clearMessages = () => {
 	useAIStore.setState({ messages: aiInitialMessage })
 }
 
+export const setResponseValue = (value: AIStoreType['responseValue']) => {
+	useAIStore.setState({ responseValue: value })
+}
+
+export const setPrevValue = (value: AIStoreType['prevValue']) => {
+	useAIStore.setState({ prevValue: value })
+}
 export default useAIStore

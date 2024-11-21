@@ -48,3 +48,10 @@ export const BASE_STATUS = 'BASE'
 export type TBackendStatus = typeof BASE_STATUS | EStatus
 
 export type TNoParams = Record<string, never>
+
+export type IndexedText = {
+	id: string
+	text: string
+}
+
+export type MinifiedValue = Array<IndexedText>
