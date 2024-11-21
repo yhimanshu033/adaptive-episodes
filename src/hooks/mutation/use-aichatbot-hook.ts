@@ -10,6 +10,8 @@ import getMetaDataRange from '@/lib/get-metadta-range'
 import { AIChatBotParams } from '@/types/ai-types'
 import { TGetMetadataResponse } from '@/types/content-types'
 
+// import useSocket from '../use-socket'
+
 export const extractFromMetadata = (
 	metadata: TGetMetadataResponse | null,
 	start: number
@@ -37,6 +39,7 @@ export const extractFromMetadata = (
 
 const useAIChatbotHook = () => {
 	const { id } = useParams()
+	//   const { startTask, getResponse } = useSocket()
 
 	const onAiChatbotMutation = async (params: AIChatBotParams) => {
 		const [start, end] = getMetaDataRange(
@@ -53,6 +56,15 @@ const useAIChatbotHook = () => {
 			...params.aiChatbotData,
 			...extractedData,
 		})
+		// const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
+		//   method: 'POST',
+		//   url: '/llm',
+		//   body: {
+		//     ...params.aiChatbotData,
+		//     ...extractedData,
+		//   },
+		// })
+		// return (await getResponse(taskId)) as AIChatBotApiResponse['data']
 	}
 
 	const aiChatbotMutation = useMutation({

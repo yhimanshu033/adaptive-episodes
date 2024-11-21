@@ -1,11 +1,14 @@
+'use server'
+
 import { TNoParams } from '@/types/common'
 
-type FetchRequestParams<
+export type FetchRequestParams<
 	ResponseDataT = TNoParams,
 	UrlParamsT = TNoParams,
 	BodyParamsT = TNoParams,
 	QueryParamsT = TNoParams,
 > = {
+	baseUrl?: string
 	body?: BodyParamsT
 	defaultData?: ResponseDataT
 	headers?: Headers
@@ -54,9 +57,11 @@ export async function fetchAPI<
 		onError,
 		defaultData,
 		throwOnError,
+		baseUrl,
 	} = params
 
-	const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
+	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {
 		throw new Error('Backend URL not set in env!')
@@ -83,6 +88,7 @@ export async function fetchAPI<
 			method,
 			headers: {
 				'Content-Type': 'application/json',
+				'API-Key': API_KEY,
 				...headers,
 			},
 			...(method !== 'GET' && method !== 'DELETE'
@@ -116,7 +122,7 @@ export async function fetchAPI<
 			onError(errorInstance)
 		}
 
-		console.log(error)
+		console.log({ errorInstance })
 
 		return {
 			success: false,
