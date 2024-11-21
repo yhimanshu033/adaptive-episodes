@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { PlotExplorerParams } from '@/types/ai-types'
+import { PlotExplorerApiResponse, PlotExplorerParams } from '@/types/ai-types'
 
 import useSocket from '../use-socket'
 
@@ -13,7 +13,8 @@ const usePlotOutlineHook = () => {
 			url: '/aicopilot/explorer',
 			body: params,
 		})
-		return await getResponse(taskId)
+		const response: PlotExplorerApiResponse['data'] = await getResponse(taskId)
+		return response
 	}
 	const plotlineMutation = useMutation({
 		mutationKey: ['plotoutline'],

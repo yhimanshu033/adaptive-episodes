@@ -59,7 +59,8 @@ const useAIChatbotHook = () => {
 				...extractedData,
 			},
 		})
-		return await getResponse(taskId)
+		const response: string = await getResponse(taskId)
+		return response
 	}
 
 	const aiChatbotMutation = useMutation({

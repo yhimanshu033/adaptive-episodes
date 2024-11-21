@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { LaserToolsParams } from '@/types/ai-types'
+import { LaserToolsApiResponse, LaserToolsParams } from '@/types/ai-types'
 
 import useSocket from '../use-socket'
 
@@ -12,7 +12,8 @@ const useLaserToolsHook = () => {
 			url: '/aicopilot/lasertools',
 			body: params,
 		})
-		return await getResponse(taskId)
+		const response: LaserToolsApiResponse['data'] = await getResponse(taskId)
+		return response
 	}
 	const laserToolsMutation = useMutation({
 		mutationKey: ['lasertools'],
