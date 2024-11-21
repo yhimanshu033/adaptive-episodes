@@ -16,6 +16,7 @@ import {
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Toggle } from '@/components/ui/toggle'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn, replaceNthInsensitive } from '@/lib/utils'
@@ -150,11 +151,42 @@ export default function FindAndReplace() {
 		editor.tf.setValue(updatedChildren)
 	}
 
-	const characters = ['Joe', 'John', 'Jane', 'Jack']
-	const places = ['home', 'work', 'school', 'park']
+	const characters = ['Alex', 'Cathy', 'Billy', 'Karen']
+	const places = [
+		'Sheraton New York',
+		'Sheraton Hotel',
+		'Times Square',
+		'First Republic Bank',
+		'VIP Lounge',
+	]
+
+	const concepts = [
+		'Regenmantel',
+		'Kondome',
+		'Päckchen',
+		'Taschentücher',
+		'Zimmer 1302',
+		'Bademantel',
+		'Haar',
+		'Duschgel',
+		'Schampoo',
+		'Geld',
+		'Erbe',
+		'Luxushotel',
+		'Tür',
+		'Bank',
+		'Karte',
+		'Kunden',
+		'Vermögen',
+		'Tasche',
+		'Regentropfen',
+		'SMS',
+		'VIP-Bereich',
+		'Lounge',
+	]
 
 	return (
-		<div className="flex flex-col gap-4 p-4">
+		<div className="flex h-[58vh] flex-col gap-4 p-4">
 			<h2 className="text-lg font-bold">Find and Replace</h2>
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
 				<Toggle onClick={toggleReplace} aria-label="Toggle replace">
@@ -215,9 +247,15 @@ export default function FindAndReplace() {
 					<span className="font-medium italic text-foreground">{search}</span>
 				</p>
 			)}
-			<div className="flex flex-col">
+
+			<ScrollArea
+				className={cn(
+					'flex h-full flex-col overflow-y-auto',
+					replaceEnabled ? '~h-[30vh]' : '~h-[37vh]'
+				)}
+			>
 				<h4 className="text-lg font-semibold">Characters</h4>
-				<div className="flex gap-2 overflow-x-scroll pt-1">
+				<div className="flex flex-wrap gap-2 pt-1">
 					{characters.map((character, index) => (
 						<Button
 							onClick={() => handleSuggestionClick(character)}
@@ -229,7 +267,7 @@ export default function FindAndReplace() {
 					))}
 				</div>
 				<h4 className="pt-2 text-lg font-semibold">Places</h4>
-				<div className="flex gap-2 overflow-x-scroll pt-1">
+				<div className="flex flex-wrap gap-2 pt-1">
 					{places.map((character, index) => (
 						<Button
 							onClick={() => handleSuggestionClick(character)}
@@ -240,7 +278,21 @@ export default function FindAndReplace() {
 						</Button>
 					))}
 				</div>
-			</div>
+				<h4 className="pt-2 text-lg font-semibold">Concepts</h4>
+				<div className="flex flex-wrap gap-2 pt-1">
+					{concepts.map((character, index) => (
+						<Button
+							onClick={() => handleSuggestionClick(character)}
+							key={index}
+							variant="outline"
+						>
+							{character}
+						</Button>
+					))}
+				</div>
+			</ScrollArea>
+
+			<Button className="w-fit self-end">Scan the Episode</Button>
 		</div>
 	)
 }
