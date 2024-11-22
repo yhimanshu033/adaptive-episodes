@@ -73,6 +73,7 @@ export type TEpisode = {
 	comments: string | null
 	context: string | null
 	create_time: string
+	episodes?: TEpisode[]
 	file_url: string
 	id: number
 	latest_version: number
