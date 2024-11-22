@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { getChatbotResponse } from '@/server-action/ai-action'
+import useSocket from '@/hooks/use-socket'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useMutation } from '@tanstack/react-query'
 
@@ -9,8 +9,6 @@ import getMetaDataRange from '@/lib/get-metadta-range'
 
 import { AIChatBotParams } from '@/types/ai-types'
 import { TGetMetadataResponse } from '@/types/content-types'
-
-// import useSocket from '../use-socket'
 
 export const extractFromMetadata = (
 	metadata: TGetMetadataResponse | null,
@@ -39,7 +37,7 @@ export const extractFromMetadata = (
 
 const useAIChatbotHook = () => {
 	const { id } = useParams()
-	//   const { startTask, getResponse } = useSocket()
+	const { startTask, getResponse } = useSocket()
 
 	const onAiChatbotMutation = async (params: AIChatBotParams) => {
 		const [start, end] = getMetaDataRange(
@@ -52,19 +50,17 @@ const useAIChatbotHook = () => {
 			end
 		)
 		const extractedData = extractFromMetadata(metadata, start)
-		return getChatbotResponse({
-			...params.aiChatbotData,
-			...extractedData,
+
+		const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
+			method: 'POST',
+			url: '/aicopilot/chatbot',
+			body: {
+				...params.aiChatbotData,
+				...extractedData,
+			},
 		})
-		// const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
-		//   method: 'POST',
-		//   url: '/llm',
-		//   body: {
-		//     ...params.aiChatbotData,
-		//     ...extractedData,
-		//   },
-		// })
-		// return (await getResponse(taskId)) as AIChatBotApiResponse['data']
+		const response: string = await getResponse(taskId)
+		return response
 	}
 
 	const aiChatbotMutation = useMutation({

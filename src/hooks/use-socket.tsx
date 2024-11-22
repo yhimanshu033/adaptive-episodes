@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
 import React, {
@@ -7,6 +9,7 @@ import React, {
 	useContext,
 	useEffect,
 	useRef,
+	useState,
 } from 'react'
 import { nanoid } from 'nanoid'
 import { io } from 'socket.io-client'
@@ -17,14 +20,24 @@ import { TNoParams } from '@/types/common'
 
 export const useSocketUtil = () => {
 	const socketUrl = process.env.NEXT_PUBLIC_SOCKET_BASE_URL || ''
-	const socket = io(socketUrl, {
-		autoConnect: false,
-	})
+	const [socket] = useState(() =>
+		io(socketUrl, {
+			autoConnect: false,
+		})
+	)
 	const responsesRef = useRef<Record<string, any>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
 
 	useEffect(() => {
 		socket.connect()
+		socket.onAny((taskId: string, data) => {
+			const callback = taskCallbacksRef.current[taskId]
+			if (callback) {
+				callback(data)
+				delete taskCallbacksRef.current[taskId]
+			}
+			responsesRef.current[taskId] = data
+		})
 		return () => {
 			socket.disconnect()
 		}
@@ -52,15 +65,6 @@ export const useSocketUtil = () => {
 				taskCallbacksRef.current[taskId] = params.onResponse
 			}
 
-			socket.on(taskId, (data: ResponseDataT) => {
-				const callback = taskCallbacksRef.current[taskId]
-				if (callback) {
-					callback(data)
-					delete taskCallbacksRef.current[taskId]
-				}
-				responsesRef.current[taskId] = data
-			})
-
 			await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
@@ -69,19 +73,19 @@ export const useSocketUtil = () => {
 			>({
 				...params,
 				query: { task_id: taskId, ...(params.query as QueryParamsT) },
-				baseUrl: process.env.NEXT_PUBLIC_SOCKET_BASE_URL || '',
 			})
 
 			return taskId
 		},
-		[socket]
+		[]
 	)
 
 	const getResponse = useCallback(<T,>(taskId: string) => {
 		return new Promise<T>((resolve) => {
 			const checkResponse = () => {
+				// console.log({ responsesRef: responsesRef.current, taskId }) // Uncomment for debugging
 				if (responsesRef.current[taskId]) {
-					resolve(responsesRef.current[taskId] as T)
+					resolve(responsesRef.current[taskId].result as T)
 				}
 			}
 

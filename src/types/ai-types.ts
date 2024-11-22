@@ -37,8 +37,8 @@ export interface AIChatBotParams {
 			content: string
 			role: 'user' | 'assistant'
 		}[]
-		query: string
 		scenes_array?: string[]
+		user_message: string
 	}
 	episodeNumber: number
 	episodesCount: number
