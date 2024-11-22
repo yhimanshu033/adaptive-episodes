@@ -24,7 +24,7 @@ import { ColorDropdownMenu } from './color-dropdown-menu'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import { ModeDropdownMenu } from './mode-dropdown-menu'
 import { MoreDropdownMenu } from './more-dropdown-menu'
-import { OutlineToolbarButton } from './outline-toggle-button'
+// import { OutlineToolbarButton } from './outline-toggle-button'
 import { ToolbarGroup } from './toolbar'
 import TranslationToggleButton from './translation-toggle-button'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
@@ -106,7 +106,7 @@ export function FixedToolbarButtons({
 				<ToolbarGroup noSeparator>
 					<TranslationToggleButton />
 					<ChatbotToolbarButton />
-					<OutlineToolbarButton />
+					{/* <OutlineToolbarButton /> */}
 					<CommentToolbarButton />
 					{(!selectedStatus || selectedStatus === latestStatus) && (
 						<ModeDropdownMenu />
