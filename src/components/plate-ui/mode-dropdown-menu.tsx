@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React from 'react'
+import React, { useEffect } from 'react'
+import useCustomPlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
 	focusEditor,
@@ -26,6 +27,17 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	const setReadOnly = usePlateStore().set.readOnly()
 	const readOnly = useEditorReadOnly()
 	const openState = useOpenState()
+
+	const sidebar = useCustomPlateStore((state) => state.sidebar)
+
+	useEffect(() => {
+		if (sidebar === 'far') {
+			setReadOnly(true)
+		}
+		if (!sidebar) {
+			setReadOnly(false)
+		}
+	}, [sidebar, setReadOnly])
 
 	let value = 'editing'
 
@@ -79,7 +91,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 						}
 					}}
 				>
-					<DropdownMenuRadioItem value="editing">
+					<DropdownMenuRadioItem disabled={sidebar === 'far'} value="editing">
 						{item.editing}
 					</DropdownMenuRadioItem>
 

@@ -1,3 +1,7 @@
+import { Value } from '@udecode/plate-common'
+
+import { MinifiedValue } from './common'
+
 export interface LaserToolsParams {
 	action: string
 	context?: string
@@ -22,18 +26,22 @@ export interface LaserToolsApiResponse {
 }
 
 export interface AIChatBotParams {
-	beatsheets_array?: string[]
-	context?: string
-	ep_number?: string
-	ep_text?: string
-	highlighted_text?: string
-	loglines_array?: string[]
-	messages: {
-		content: string
-		role: 'user' | 'assistant'
-	}[]
-	query: string
-	scenes_array?: string[]
+	aiChatbotData: {
+		beatsheets_array?: string[]
+		context?: string
+		ep_number?: string
+		ep_text?: string
+		highlighted_text?: string
+		loglines_array?: string[]
+		messages: {
+			content: string
+			role: 'user' | 'assistant'
+		}[]
+		scenes_array?: string[]
+		user_message: string
+	}
+	episodeNumber: number
+	episodesCount: number
 }
 
 export interface AIChatBotApiResponse {
@@ -49,6 +57,8 @@ export interface AIStoreType {
 		content: string
 		role: 'user' | 'assistant'
 	}[]
+	prevValue: Value | null
+	responseValue: Value | null
 }
 
 export interface PlotExplorerParams {
@@ -72,5 +82,27 @@ export interface ExplorerType {
 
 export interface PlotExplorerApiResponse {
 	data: ExplorerType[]
+	message: string
+}
+
+export interface TAiChatbotRequest {
+	beatsheets_array: string[]
+	chat_history: string
+	context: string
+	ep_number: string
+	ep_text: string
+	ep_text_json: MinifiedValue
+	highlighted_text: string
+	loglines_array: string[]
+	next_text: string
+	prev_text: string
+	user_message: string
+}
+
+export interface TAiChatbotResponse {
+	data: {
+		action: string
+		response: string
+	}
 	message: string
 }

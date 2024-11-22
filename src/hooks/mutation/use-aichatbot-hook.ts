@@ -1,46 +1,65 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { getChatbotResponse } from '@/server-action/ai-action'
-import { getMetadata } from '@/server-action/episode-action'
+import useSocket from '@/hooks/use-socket'
+import { getMetadata } from '@/server-action/metadata-action'
 import { useMutation } from '@tanstack/react-query'
 
 import getMetaDataRange from '@/lib/get-metadta-range'
 
 import { AIChatBotParams } from '@/types/ai-types'
+import { TGetMetadataResponse } from '@/types/content-types'
 
-import useEpisodeData from '../query/use-episode-data'
+export const extractFromMetadata = (
+	metadata: TGetMetadataResponse | null,
+	start: number
+) => {
+	const loglines_array: string[] = []
+	const beatsheets_array: string[] = []
+	let context: string = ''
+	let current = start + 1
+
+	if (metadata?.data) {
+		const metadataEntries = Object.values(metadata?.data)
+
+		if (start) {
+			context = metadataEntries[0].context
+		}
+
+		for (const data of Object.values(metadata.data).slice(start ? 1 : 0)) {
+			loglines_array.push(`Ep${current} ${data.loglines}`)
+			beatsheets_array.push(`Ep${current} ${data.beatsheet}`)
+			current++
+		}
+	}
+	return { loglines_array, beatsheets_array, context }
+}
 
 const useAIChatbotHook = () => {
-	const { data: episodeData } = useEpisodeData()
-	const { id, episodeId } = useParams()
+	const { id } = useParams()
+	const { startTask, getResponse } = useSocket()
 
 	const onAiChatbotMutation = async (params: AIChatBotParams) => {
 		const [start, end] = getMetaDataRange(
-			parseInt(episodeId as string),
-			episodeData?.totalEpisodes || 0
+			params.episodeNumber,
+			params.episodesCount
 		)
-
-		const { metadata } = await getMetadata(
-			id as string,
-			episodeId as string,
-			start,
+		const { data: metadata } = await getMetadata(
+			Number(id),
+			Math.max(start, 1),
 			end
 		)
-		let current = parseInt(start)
-		const { loglines_array, beatsheets_array } = metadata.reduce<{
-			beatsheets_array: string[]
-			loglines_array: string[]
-		}>(
-			(acc, data) => {
-				acc.loglines_array.push(`Ep${current} ${data.loglines}`)
-				acc.beatsheets_array.push(`Ep${current} ${data.beatsheets}`)
-				current++
-				return acc
+		const extractedData = extractFromMetadata(metadata, start)
+
+		const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
+			method: 'POST',
+			url: '/aicopilot/chatbot',
+			body: {
+				...params.aiChatbotData,
+				...extractedData,
 			},
-			{ loglines_array: [], beatsheets_array: [] }
-		)
-		return getChatbotResponse({ ...params, loglines_array, beatsheets_array })
+		})
+		return getResponse(taskId)
 	}
 
 	const aiChatbotMutation = useMutation({

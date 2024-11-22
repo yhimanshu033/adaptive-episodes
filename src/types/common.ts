@@ -32,3 +32,26 @@ export interface StoryJsonData {
 export interface GlobalStoreState {
 	userData: Session | null
 }
+
+export enum EStatus {
+	AB_TEST = 'AB_TEST',
+	FIRST_DRAFT = '1ST_DRAFT',
+	IN_REVIEW = 'IN_REVIEW',
+	POLISH = 'POLISH',
+	PUBLISHED = 'PUBLISHED',
+	REOPENED = 'REOPENED',
+	SECOND_DRAFT = '2ND_DRAFT',
+}
+
+export const BASE_STATUS = 'BASE'
+
+export type TBackendStatus = typeof BASE_STATUS | EStatus
+
+export type TNoParams = Record<string, never>
+
+export type IndexedText = {
+	id: string
+	text: string
+}
+
+export type MinifiedValue = Array<IndexedText>

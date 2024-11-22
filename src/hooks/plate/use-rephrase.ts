@@ -2,30 +2,13 @@ import { useCallback } from 'react'
 import { getNodeEntries } from '@udecode/plate-common'
 import { useEditorRef } from '@udecode/plate-common/react'
 
-export type Selection = {
-	anchor: {
-		offset: number
-		path: [number, number]
-	}
-	focus: {
-		offset: number
-		path: [number, number]
-	}
-}
-
-export type Child = {
-	id: string
-	text: string
-}
-
-export type Block = {
-	children: Child[]
-	type: string
-}
-
-export type Node = {
-	children: Block[]
-}
+import { Node, Selection } from '@/lib/plate/types/block'
+import {
+	getBlockDistance,
+	getStartAndEnd,
+	isSameBlock,
+	isSameChild,
+} from '@/lib/plate/utils/block'
 
 function replaceTextInRange(
 	text: string,
@@ -37,46 +20,6 @@ function replaceTextInRange(
 	const validEnd = Math.min(Math.max(start, end), text.length)
 
 	return text.slice(0, validStart) + replacement + text.slice(validEnd)
-}
-
-function isSameBlock(selection: Selection): boolean {
-	return selection.anchor.path[0] === selection.focus.path[0]
-}
-
-function isSameChild(selection: Selection): boolean {
-	return selection.anchor.path[1] === selection.focus.path[1]
-}
-
-function getBlockDistance(selection: Selection): number {
-	return Math.abs(selection.anchor.path[0] - selection.focus.path[0])
-}
-
-function getStartAndEnd(selection: Selection) {
-	const start = isSameBlock(selection)
-		? isSameChild(selection)
-			? selection.anchor.offset < selection.focus.offset
-				? selection.anchor
-				: selection.focus
-			: selection.anchor.path[1] < selection.focus.path[1]
-				? selection.anchor
-				: selection.focus
-		: selection.anchor.path[0] < selection.focus.path[0]
-			? selection.anchor
-			: selection.focus
-
-	const end = isSameBlock(selection)
-		? isSameChild(selection)
-			? selection.anchor.offset < selection.focus.offset
-				? selection.focus
-				: selection.anchor
-			: selection.anchor.path[1] < selection.focus.path[1]
-				? selection.focus
-				: selection.anchor
-		: selection.anchor.path[0] < selection.focus.path[0]
-			? selection.focus
-			: selection.anchor
-
-	return { start, end }
 }
 
 export default function useRephrase() {

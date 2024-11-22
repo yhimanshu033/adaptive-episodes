@@ -1,19 +1,14 @@
-'use client'
-
 import { useParams } from 'next/navigation'
 import { getEpisodes } from '@/server-action/episode-action'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
-const useEpisodeData = (page?: number, episodeFilter?: string) => {
+export const useEpisodesData = (title: string = '', page: number = 1) => {
 	const { id } = useParams()
+	const storyId = parseInt(id as string)
 	const query = useQuery({
-		queryKey: [id, 'episodes', page, episodeFilter],
-		queryFn: () => getEpisodes(id as string, page, episodeFilter),
-		placeholderData: keepPreviousData,
-		refetchOnMount: false,
-		refetchOnWindowFocus: false,
+		queryKey: [storyId, 'episodes', page, title],
+		queryFn: () => getEpisodes(storyId, page, title),
 	})
+
 	return query
 }
-
-export default useEpisodeData

@@ -3,14 +3,10 @@
 import { getStories } from '@/server-action/story-action'
 import { useQuery } from '@tanstack/react-query'
 
-const useStoryData = () => {
+export const useStoriesData = () => {
 	const query = useQuery({
-		queryKey: ['story'],
+		queryKey: ['stories'],
 		queryFn: () => getStories(),
-		refetchOnMount: false,
-		refetchOnWindowFocus: false,
 	})
 	return query
 }
-
-export default useStoryData

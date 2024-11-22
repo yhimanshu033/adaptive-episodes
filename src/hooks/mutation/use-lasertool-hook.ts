@@ -1,10 +1,23 @@
-import { rephraseText } from '@/server-action/ai-action'
 import { useMutation } from '@tanstack/react-query'
 
+import { LaserToolsApiResponse, LaserToolsParams } from '@/types/ai-types'
+
+import useSocket from '../use-socket'
+
 const useLaserToolsHook = () => {
+	const { startTask, getResponse } = useSocket()
+	async function onRephraseMutation(params: LaserToolsParams) {
+		const taskId = await startTask<LaserToolsParams>({
+			method: 'POST',
+			url: '/aicopilot/lasertools',
+			body: params,
+		})
+		const response: LaserToolsApiResponse['data'] = await getResponse(taskId)
+		return response
+	}
 	const laserToolsMutation = useMutation({
 		mutationKey: ['lasertools'],
-		mutationFn: rephraseText,
+		mutationFn: onRephraseMutation,
 	})
 	return { laserToolsMutation }
 }

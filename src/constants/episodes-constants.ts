@@ -1,9 +1,10 @@
-export const statuses = [
-	'1st Draft',
-	'2nd Draft',
-	'Polish',
-	'In Review',
-	'Published',
-	'Re-Opened',
-	'A-B Test',
+import { EStatus } from '@/types/common'
+
+export const statuses: EStatus[] = [
+	EStatus.FIRST_DRAFT,
+	EStatus.SECOND_DRAFT,
+	EStatus.POLISH,
+	EStatus.PUBLISHED,
 ]
+
+export const episodeLimit = 10

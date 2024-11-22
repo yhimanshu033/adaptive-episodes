@@ -1,12 +1,22 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
+import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useAIStore, { addMessages, clearMessages } from '@/store/ai-store'
+import { useStoriesData } from '@/hooks/query/use-story-data'
+import { ex } from '@/mock-data/aichatbot'
+import useAIStore, {
+	addMessages,
+	clearMessages,
+	setPrevValue,
+	setResponseValue,
+	updateMessages,
+} from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
+import { useEditorRef } from '@udecode/plate-common/react'
 import { LoaderCircle, Send, Trash2 } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -23,19 +33,28 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
+	const { id } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const { messages } = useAIStore()
 	const { aiChatbotMutation } = useAIChatbotHook()
+	const { aiChatbotMutationTest } = useAIChatbotHookTest()
 	const { data: aiResponse, isPending } = aiChatbotMutation
+	const { data: aiResponseTest } = aiChatbotMutationTest
 	const userData = useGlobalStore(useShallow((state) => state.userData))
-	const { episodeId } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
+	const { data: stories } = useStoriesData()
+	const editor = useEditorRef()
+
+	const episodesCount = useMemo(() => {
+		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
+	}, [stories, id])
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -43,11 +62,14 @@ const AIChatbot = () => {
 		addMessages({ role: 'user', content: input })
 		setInput('')
 		aiChatbotMutation.mutate({
-			messages,
-			query: input,
-			ep_number: episodeId as string,
-			context: episodeContent?.context,
-			ep_text: episodeContent?.de as string,
+			episodeNumber: episodeContent?.chapter.seq_number || 0,
+			episodesCount,
+			aiChatbotData: {
+				messages,
+				user_message: input,
+				ep_number: episodeContent?.chapter.seq_number?.toString(),
+				ep_text: episodeContent?.text,
+			},
 		})
 	}
 
@@ -57,10 +79,9 @@ const AIChatbot = () => {
 			handleSendMessage(e)
 		}
 	}
-
 	useEffect(() => {
 		if (!isPending && aiResponse) {
-			addMessages({ role: 'assistant', content: aiResponse.response })
+			addMessages({ role: 'assistant', content: aiResponse as string })
 		}
 	}, [aiResponse, isPending])
 
@@ -78,6 +99,33 @@ const AIChatbot = () => {
 		}
 	}, [input])
 
+	useEffect(() => {
+		if (!aiResponseTest) return
+		setResponseValue(structuredClone(ex.current))
+		setPrevValue(structuredClone(ex.previous))
+		addMessages({ role: 'assistant', content: 'accept-reject' })
+	}, [aiResponseTest])
+
+	function handleAccept(i: number) {
+		editor.tf.setValue(structuredClone(ex.current))
+		updateMessages({ role: 'assistant', content: 'accepted' }, i)
+		setResponseValue(null)
+		setPrevValue(null)
+	}
+
+	function handleReject(i: number) {
+		updateMessages({ role: 'assistant', content: 'rejected' }, i)
+		setResponseValue(null)
+		setPrevValue(null)
+	}
+
+	const suggestions = [
+		'Add sound effects 🎶',
+		'Enhance Vocabulary 🪄',
+		'Review ✅',
+		'Add a scene 🎞️',
+	]
+
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
 			<h1 className="mb-4 text-2xl font-bold">AI Chatbot</h1>
@@ -93,12 +141,31 @@ const AIChatbot = () => {
 								<AvatarFallback>AI</AvatarFallback>
 							</Avatar>
 						)}
-						<div
-							dangerouslySetInnerHTML={{
-								__html: message.content.replaceAll('\n', '<br/>'),
-							}}
-							className={`max-w-[70%] rounded-lg p-3 ${message.role === 'assistant' ? 'bg-background' : 'bg-primary'}`}
-						/>
+						{message.role === 'assistant' &&
+						message.content === 'accept-reject' ? (
+							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
+								<Button onClick={() => handleAccept(index)}>Accept</Button>
+								<Button variant="outline" onClick={() => handleReject(index)}>
+									Reject
+								</Button>
+							</div>
+						) : message.role === 'assistant' &&
+						  (message.content === 'accepted' ||
+								message.content === 'rejected') ? (
+							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
+								<p className="italic">{message.content} changes from chatbot</p>
+							</div>
+						) : (
+							<div
+								dangerouslySetInnerHTML={{
+									__html: message.content.replaceAll('\n', '<br/>'),
+								}}
+								className={cn(
+									'max-w-[70%] rounded-lg p-3',
+									message.role === 'assistant' ? 'bg-background' : 'bg-primary'
+								)}
+							/>
+						)}
 						{message.role === 'user' && (
 							<Avatar className="ml-2">
 								<AvatarImage
@@ -112,7 +179,33 @@ const AIChatbot = () => {
 				))}
 				<div ref={messageEndRef} />
 			</ScrollArea>
-			<div className="flex items-end">
+			<ScrollArea className="overflow-x-auto pb-2 *:*:flex">
+				<ScrollBar orientation="horizontal" />
+				{suggestions.map((suggestion, index) => (
+					<Button
+						key={index}
+						variant="outline"
+						size="sm"
+						onClick={() => {
+							addMessages({ role: 'user', content: suggestion })
+							aiChatbotMutationTest.mutate({
+								episodeNumber: episodeContent?.chapter.seq_number || 0,
+								episodesCount,
+								aiChatbotData: {
+									messages,
+									user_message: suggestion,
+									ep_number: episodeContent?.chapter.seq_number?.toString(),
+									ep_text: episodeContent?.text as string,
+								},
+							})
+						}}
+						className="mr-2"
+					>
+						{suggestion}
+					</Button>
+				))}
+			</ScrollArea>
+			<div className="flex items-end gap-1">
 				<form
 					onSubmit={handleSendMessage}
 					className="flex flex-1 items-end space-x-2 rounded-md border bg-background"

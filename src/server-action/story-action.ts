@@ -1,17 +1,19 @@
-import { StoryResponse } from '@/types/story-types'
+'use server'
+
+import { fetchAPI } from '@/lib/fetch-api'
+
+import { TGetStoriesResponse } from '@/types/story-types'
 
 export const getStories = async () => {
-	try {
-		const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/stories`
-		const data = (await fetch(url).then((res) => res.json())) as StoryResponse
+	const stories = await fetchAPI<TGetStoriesResponse>({
+		method: 'GET',
+		url: '/projects/',
+		defaultData: [],
+		onError: (error) => {
+			const { message } = error
+			throw new Error(message || 'Failed to fetch stories')
+		},
+	})
 
-		if (!data.status) {
-			throw new Error(data.error as string)
-		}
-
-		return data.data
-	} catch (error) {
-		const { message } = error as Error
-		throw new Error(message || 'Failed to get story')
-	}
+	return stories.data
 }

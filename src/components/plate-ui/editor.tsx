@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
+import useAIStore from '@/store/ai-store'
+import { setEditorCoords } from '@/store/laser-store'
 import useCustomPlateStore from '@/store/plate-store'
+import usePlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import type { PlateContentProps } from '@udecode/plate-common/react'
 import { PlateContent } from '@udecode/plate-common/react'
 import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
+import { useShallow } from 'zustand/react/shallow'
+
+import DiffView from '@/lib/plate/plugins/diff'
 
 const editorVariants = cva(
 	cn(
@@ -63,32 +69,63 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const scale = useCustomPlateStore((state) => state.scale)
 		const marginLeft = scale < 1 ? (1 - scale) * 50 : 0
 		const mihHeight = 100 / scale
+		const contentRef = useRef<HTMLDivElement>(null)
+
+		useEffect(() => {
+			if (!contentRef.current) return
+			const rect = contentRef.current?.getBoundingClientRect()
+			if (!rect) return
+			setEditorCoords(rect.x, rect.y)
+		}, [contentRef])
+
+		const sidebar = usePlateStore((state) => state.sidebar)
+		const responseValue = useAIStore(useShallow((state) => state.responseValue))
+		const prevValue = useAIStore(useShallow((state) => state.prevValue))
+
 		return (
 			<div ref={ref} className="relative w-full">
-				<PlateContent
-					className={cn(
-						editorVariants({
-							disabled,
-							focusRing,
-							focused,
-							size,
-							variant,
-						}),
-						className,
-						'absolute h-fit origin-top-left'
-					)}
-					readOnly={disabled ?? readOnly}
-					aria-disabled={disabled}
-					data-plate-selectable
-					disableDefaultStyles
-					style={{
-						transform: `scale(${scale})`,
-						marginLeft: `${marginLeft}%`,
-						minHeight: `${mihHeight}%`,
-						...props.style,
-					}}
-					{...props}
-				/>
+				{sidebar === 'chatbot' && responseValue && prevValue ? (
+					<DiffView
+						current={responseValue}
+						previous={prevValue}
+						className={cn(
+							editorVariants({
+								disabled,
+								focusRing,
+								focused,
+								size,
+								variant,
+							}),
+							className
+						)}
+					/>
+				) : (
+					<PlateContent
+						className={cn(
+							editorVariants({
+								disabled,
+								focusRing,
+								focused,
+								size,
+								variant,
+							}),
+							className,
+							'absolute h-fit origin-top-left'
+						)}
+						ref={contentRef}
+						readOnly={disabled ?? readOnly}
+						aria-disabled={disabled}
+						data-plate-selectable
+						disableDefaultStyles
+						style={{
+							transform: `scale(${scale})`,
+							marginLeft: `${marginLeft}%`,
+							minHeight: `${mihHeight}%`,
+							...props.style,
+						}}
+						{...props}
+					/>
+				)}
 			</div>
 		)
 	}

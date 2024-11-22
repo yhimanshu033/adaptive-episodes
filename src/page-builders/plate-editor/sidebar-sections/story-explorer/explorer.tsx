@@ -4,9 +4,10 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { categories, defaultMode } from '@/constants/story-explorer-constants'
+import { extractFromMetadata } from '@/hooks/mutation/use-aichatbot-hook'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { getMetadata } from '@/server-action/episode-action'
+import { getMetadata } from '@/server-action/metadata-action'
 import { Send } from 'lucide-react'
 
 import { Loader } from '@/components/loader'
@@ -24,7 +25,7 @@ export interface RequestState {
 	name: string
 }
 
-const Explorer = ({ start, end }: { end: string; start: string }) => {
+const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const { id, episodeId } = useParams()
 	const [content, setContent] = useState<PlotExplorerApiResponse['data']>([])
 	const [promptInput, setPromptInput] = useState<string>('')
@@ -53,29 +54,32 @@ const Explorer = ({ start, end }: { end: string; start: string }) => {
 	) => {
 		setLoading(true)
 		setRequest({ ...request, action, name })
-		const res = await getMetadata(id as string, episodeId as string, start, end)
-
+		const { data: metadata } = await getMetadata(
+			Number(id),
+			Math.max(start - 1, 1),
+			end
+		)
 		if (action === 'summary') {
+			const metadataEntries = Object.values(metadata?.data || {})
 			setContent(
-				res.metadata.map((data, index) => ({
-					title: `Episode ${index + 1}`,
+				metadataEntries.map((data, index) => ({
+					title: `Episode ${index + start}`,
 					content: data.loglines,
 				}))
 			)
 		} else {
+			const extractedData = extractFromMetadata(metadata, start - 1)
 			const result = await mutateAsync({
 				action,
-				ep_from: parseInt(start),
-				ep_to: parseInt(end),
+				ep_from: start,
+				ep_to: end,
 				mode: request.mode,
 				ep_number: episodeId as string,
-				beatsheet_array: res.metadata.map((data) => data.beatsheets),
-				logline_array: res.metadata.map((data) => data.loglines),
-				context: res.context,
-				current_ep: currentEpisodeContent?.de || ' ',
+				...extractedData,
+				current_ep: currentEpisodeContent?.text || ' ',
 				instruction,
 			})
-			if (result) setContent(result)
+			if (result) setContent(result as PlotExplorerApiResponse['data'])
 		}
 		setLoading(false)
 	}

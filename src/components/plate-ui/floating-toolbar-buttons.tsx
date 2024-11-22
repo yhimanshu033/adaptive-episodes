@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import useComments from '@/hooks/plate/use-comments'
+import { setActiveLaser } from '@/store/laser-store'
 import { setSidebar } from '@/store/plate-store'
 import {
 	BoldPlugin,
@@ -10,77 +10,81 @@ import {
 	CommentsPlugin,
 	useCommentAddButton,
 } from '@udecode/plate-comments/react'
-import { useEditorReadOnly } from '@udecode/plate-common/react'
+import { useEditorReadOnly, useEditorRef } from '@udecode/plate-common/react'
 import {
 	FontBackgroundColorPlugin,
 	FontColorPlugin,
 } from '@udecode/plate-font/react'
+import { Bot } from 'lucide-react'
+import { nanoid } from 'nanoid'
 
 import { Icons, iconVariants } from '@/components/icons'
+import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 
 import { ColorDropdownMenu } from './color-dropdown-menu'
 import { MarkToolbarButton } from './mark-toolbar-button'
-import RephraseSelection from './rephrase-selection'
 import { ToolbarGroup } from './toolbar'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
 
-export function FloatingToolbarButtons() {
+const FloatingToolbarButtons = () => {
 	const readOnly = useEditorReadOnly()
 	const { props } = useCommentAddButton()
 	const [showRephrase, setShowRephrase] = useState(false)
-	const { commentExists } = useComments()
+
+	const editor = useEditorRef()
 
 	return (
 		<>
-			{!readOnly && (
+			{!readOnly && !showRephrase && (
 				<div className="flex">
-					{!showRephrase && (
-						<>
-							<ToolbarGroup noSeparator>
-								<TurnIntoDropdownMenu />
-								<MarkToolbarButton
-									nodeType={BoldPlugin.key}
-									tooltip="Bold (⌘+B)"
-								>
-									<Icons.bold />
-								</MarkToolbarButton>
-								<MarkToolbarButton
-									nodeType={ItalicPlugin.key}
-									tooltip="Italic (⌘+I)"
-								>
-									<Icons.italic />
-								</MarkToolbarButton>
-								<MarkToolbarButton
-									nodeType={UnderlinePlugin.key}
-									tooltip="Underline (⌘+U)"
-								>
-									<Icons.underline />
-								</MarkToolbarButton>
-								<ColorDropdownMenu
-									nodeType={FontColorPlugin.key}
-									tooltip="Text Color"
-								>
-									<Icons.color
-										className={iconVariants({ variant: 'toolbar' })}
-									/>
-								</ColorDropdownMenu>
-								<ColorDropdownMenu
-									nodeType={FontBackgroundColorPlugin.key}
-									tooltip="Highlight Color"
-								>
-									<Icons.bg className={iconVariants({ variant: 'toolbar' })} />
-								</ColorDropdownMenu>
-							</ToolbarGroup>
-						</>
-					)}
-					<ToolbarGroup noSeparator={showRephrase}>
-						<RephraseSelection
-							setShowRephrase={setShowRephrase}
-							showRephrase={showRephrase}
-						/>
-					</ToolbarGroup>
+					<>
+						<ToolbarGroup noSeparator>
+							<TurnIntoDropdownMenu />
+							<MarkToolbarButton nodeType={BoldPlugin.key} tooltip="Bold (⌘+B)">
+								<Icons.bold />
+							</MarkToolbarButton>
+							<MarkToolbarButton
+								onClick={() => {
+									setShowRephrase(true)
+									const key = `laser-${nanoid()}`
+									editor.tf.toggle.mark({ key: LaserPlugin.key })
+									editor.tf.toggle.mark({ key })
+									setActiveLaser(key)
+								}}
+								nodeType={LaserPlugin.key}
+								tooltip="Laser (⌘+B)"
+							>
+								<Bot />
+							</MarkToolbarButton>
+							<MarkToolbarButton
+								nodeType={ItalicPlugin.key}
+								tooltip="Italic (⌘+I)"
+							>
+								<Icons.italic />
+							</MarkToolbarButton>
+							<MarkToolbarButton
+								nodeType={UnderlinePlugin.key}
+								tooltip="Underline (⌘+U)"
+							>
+								<Icons.underline />
+							</MarkToolbarButton>
+							<ColorDropdownMenu
+								nodeType={FontColorPlugin.key}
+								tooltip="Text Color"
+							>
+								<Icons.color className={iconVariants({ variant: 'toolbar' })} />
+							</ColorDropdownMenu>
+							<ColorDropdownMenu
+								nodeType={FontBackgroundColorPlugin.key}
+								tooltip="Highlight Color"
+							>
+								<Icons.bg className={iconVariants({ variant: 'toolbar' })} />
+							</ColorDropdownMenu>
+						</ToolbarGroup>
+						{/* <Input /> */}
+					</>
 					<ToolbarGroup>
-						{!commentExists && !showRephrase && (
+						{!showRephrase && (
 							<MarkToolbarButton
 								{...props}
 								onClick={(e) => {
@@ -99,3 +103,7 @@ export function FloatingToolbarButtons() {
 		</>
 	)
 }
+
+FloatingToolbarButtons.displayName = 'FloatingToolbarButtons'
+
+export { FloatingToolbarButtons }
