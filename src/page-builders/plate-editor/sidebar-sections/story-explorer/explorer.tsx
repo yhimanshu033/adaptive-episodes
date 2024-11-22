@@ -79,7 +79,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				current_ep: currentEpisodeContent?.text || ' ',
 				instruction,
 			})
-			if (result) setContent(result)
+			if (result) setContent(result as PlotExplorerApiResponse['data'])
 		}
 		setLoading(false)
 	}
