@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
@@ -51,8 +51,10 @@ const AIChatbot = () => {
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
-	const episodesCount =
-		stories?.find((data) => data?.id === Number(id))?.episode_count || 0
+
+	const episodesCount = useMemo(() => {
+		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
+	}, [stories, id])
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -99,7 +101,6 @@ const AIChatbot = () => {
 
 	useEffect(() => {
 		if (!aiResponseTest) return
-		// const value = maxify(response, children)
 		setResponseValue(structuredClone(ex.current))
 		setPrevValue(structuredClone(ex.previous))
 		addMessages({ role: 'assistant', content: 'accept-reject' })
@@ -142,7 +143,7 @@ const AIChatbot = () => {
 						)}
 						{message.role === 'assistant' &&
 						message.content === 'accept-reject' ? (
-							<div className={`flex max-w-[70%] gap-2 rounded-lg p-3`}>
+							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
 								<Button onClick={() => handleAccept(index)}>Accept</Button>
 								<Button variant="outline" onClick={() => handleReject(index)}>
 									Reject
@@ -151,7 +152,7 @@ const AIChatbot = () => {
 						) : message.role === 'assistant' &&
 						  (message.content === 'accepted' ||
 								message.content === 'rejected') ? (
-							<div className={`flex max-w-[70%] gap-2 rounded-lg p-3`}>
+							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
 								<p className="italic">{message.content} changes from chatbot</p>
 							</div>
 						) : (

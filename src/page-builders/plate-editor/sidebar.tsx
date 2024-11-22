@@ -2,7 +2,6 @@ import React from 'react'
 import CommentSidebar from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar'
 import usePlateStore, { setSidebar } from '@/store/plate-store'
 import { X } from 'lucide-react'
-import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -12,7 +11,7 @@ import FindAndReplace from './sidebar-sections/find-and-replace'
 import StoryExplorer from './sidebar-sections/story-explorer'
 
 const Sidebar = () => {
-	const sidebar = usePlateStore(useShallow((state) => state.sidebar))
+	const sidebar = usePlateStore((state) => state.sidebar)
 
 	if (!sidebar) return null
 

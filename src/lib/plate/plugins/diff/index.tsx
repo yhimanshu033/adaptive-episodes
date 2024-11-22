@@ -185,7 +185,6 @@ export const useDiffEditor = ({
 	previous,
 	plugins = defaultPlugins,
 }: DiffViewProps) => {
-	// const {children} = useEditorState()
 	const diffValue = React.useMemo(() => {
 		const editor = createPlateEditor({
 			plugins,
