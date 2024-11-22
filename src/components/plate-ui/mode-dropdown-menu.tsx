@@ -9,7 +9,6 @@ import {
 	useEditorRef,
 	usePlateStore,
 } from '@udecode/plate-common/react'
-import { useShallow } from 'zustand/react/shallow'
 
 import { Icons } from '@/components/icons'
 
@@ -29,7 +28,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	const readOnly = useEditorReadOnly()
 	const openState = useOpenState()
 
-	const sidebar = useCustomPlateStore(useShallow((state) => state.sidebar))
+	const sidebar = useCustomPlateStore((state) => state.sidebar)
 
 	useEffect(() => {
 		if (sidebar === 'far') {

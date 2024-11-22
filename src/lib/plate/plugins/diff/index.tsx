@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React from 'react'
+import React, { useEffect } from 'react'
 import { setDiffValue } from '@/store/diff-store'
 import { cn } from '@udecode/cn'
 import { BoldPlugin, ItalicPlugin } from '@udecode/plate-basic-marks/react'
@@ -28,7 +28,6 @@ import {
 	type DiffOperation,
 	type DiffUpdate,
 } from '@udecode/plate-diff'
-import { cloneDeep } from 'lodash'
 
 const diffOperationColors: Record<DiffOperation['type'], string> = {
 	delete: 'bg-red-500/40',
@@ -37,24 +36,30 @@ const diffOperationColors: Record<DiffOperation['type'], string> = {
 }
 
 const describeUpdate = ({ newProperties, properties }: DiffUpdate) => {
-	const addedProps: string[] = []
-	const removedProps: string[] = []
-	const updatedProps: string[] = []
+	const { addedProps, removedProps, updatedProps } = Object.entries(
+		newProperties
+	).reduce(
+		(
+			acc: {
+				addedProps: string[]
+				removedProps: string[]
+				updatedProps: string[]
+			},
+			[key, newValue]
+		) => {
+			const oldValue = properties[key] as string
 
-	Object.keys(newProperties).forEach((key) => {
-		const oldValue = properties[key] as string
-		const newValue = newProperties[key] as string
-
-		if (oldValue === undefined) {
-			addedProps.push(key)
-			return
-		}
-		if (newValue === undefined) {
-			removedProps.push(key)
-			return
-		}
-		updatedProps.push(key)
-	})
+			if (oldValue === undefined) {
+				acc.addedProps.push(key)
+			}
+			if (newValue === undefined) {
+				acc.removedProps.push(key)
+			}
+			acc.updatedProps.push(key)
+			return acc
+		},
+		{ addedProps: [], removedProps: [], updatedProps: [] }
+	)
 
 	const descriptionParts = []
 	if (addedProps.length > 0)
@@ -115,7 +120,6 @@ export const DiffPlugin = toPlatePlugin(
 
 function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	const diffOperation = props.leaf.diffOperation as DiffOperation
-	// console.log(props.leaf)
 	const Component = {
 		delete: 'del',
 		insert: 'ins',
@@ -188,7 +192,7 @@ export const useDiffEditor = ({
 			id: 'diff-editor',
 		})
 		if (!previous || !current) return []
-		return computeDiff(cloneDeep(previous), cloneDeep(current), {
+		return computeDiff(structuredClone(previous), structuredClone(current), {
 			isInline: editor.isInline,
 			lineBreakChar: '¶',
 			getInsertProps,
@@ -205,7 +209,7 @@ export const useDiffEditor = ({
 		[diffValue]
 	)
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setDiffValue(diffValue)
 	}, [diffValue])
 
@@ -219,13 +223,12 @@ export function DiffView({
 	className,
 }: DiffViewProps) {
 	const editor = useDiffEditor({ current, previous, plugins })
+
+	if (!previous || !current) return null
 	return (
-		previous &&
-		current && (
-			<Plate editor={editor} readOnly>
-				<PlateContent className={cn('rounded-md border p-3', className)} />
-			</Plate>
-		)
+		<Plate editor={editor} readOnly>
+			<PlateContent className={cn('rounded-md border p-3', className)} />
+		</Plate>
 	)
 }
 

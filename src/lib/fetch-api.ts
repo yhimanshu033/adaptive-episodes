@@ -83,7 +83,6 @@ export async function fetchAPI<
 	}
 
 	try {
-		// console.dir({ resolvedUrl, headers, method }, { depth: null }) // Uncomment this line to debug
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {
@@ -99,11 +98,7 @@ export async function fetchAPI<
 			},
 		})
 
-		// console.log({ response: response.status }) // Uncomment this line to debug
-
 		const responseData = (await response.json()) as ResponseDataT
-
-		// console.log({ responseData }) // Uncomment this line to debug
 
 		return {
 			success: true,

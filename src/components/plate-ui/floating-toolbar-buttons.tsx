@@ -26,7 +26,7 @@ import { MarkToolbarButton } from './mark-toolbar-button'
 import { ToolbarGroup } from './toolbar'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
 
-const FloatingToolbarButtons = React.memo(() => {
+const FloatingToolbarButtons = () => {
 	const readOnly = useEditorReadOnly()
 	const { props } = useCommentAddButton()
 	const [showRephrase, setShowRephrase] = useState(false)
@@ -102,7 +102,7 @@ const FloatingToolbarButtons = React.memo(() => {
 			)}
 		</>
 	)
-})
+}
 
 FloatingToolbarButtons.displayName = 'FloatingToolbarButtons'
 

@@ -1,5 +1,7 @@
 import { TComment, TCommentText } from '@udecode/plate-comments'
 
+import { DiffViewProps } from '@/lib/plate/plugins/diff'
+
 import { LucideComponent } from './common'
 
 export type SidebarContent = 'ai' | 'comments' | 'outline'
@@ -34,3 +36,15 @@ export type ToolsType = {
 }[]
 
 export type TCustomComment = TComment & { node: TCommentText }
+
+export interface RephraseSelectionProps extends DiffViewProps {
+	elemKey: string | null
+	getSelectedText: () => {
+		nexttext: string
+		prevtext: string
+		text: string
+	}
+	onRephrase: (text: string) => void
+	onResponse: (text: string) => void
+	reset: () => void
+}

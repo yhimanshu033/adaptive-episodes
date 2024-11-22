@@ -23,21 +23,20 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 	const search = caseSensitive ? originalSearch : originalSearch.toLowerCase()
 	const parts = text.split(search)
 	let offset = 0
-	parts.forEach((part, i) => {
+	return parts.reduce<SearchRange[]>((acc, part, i) => {
 		if (i !== 0) {
-			ranges.push({
+			acc.push({
 				anchor: { offset: offset - search.length, path },
 				focus: { offset, path },
 				search,
 				[type]: true,
-				id: [...path, ranges.length],
+				id: [...path, acc.length],
 			})
 		}
 
 		offset = offset + part.length + search.length
-	})
-
-	return ranges
+		return acc
+	}, ranges)
 }
 
 type SearchRange = {

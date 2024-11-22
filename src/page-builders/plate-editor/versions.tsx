@@ -45,7 +45,7 @@ const Versions = ({
 	const { saveEpisodeMutation } = useEpisodeHook()
 
 	const latestIndex =
-		latestStatus !== 'BASE' ? statuses.indexOf(latestStatus) : 0
+		latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0
 	const selectedIndex = selectedStatus
 		? statuses.indexOf(selectedStatus)
 		: latestIndex

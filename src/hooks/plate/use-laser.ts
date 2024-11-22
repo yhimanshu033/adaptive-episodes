@@ -3,7 +3,6 @@ import { useEditorPlugin } from '@udecode/plate-common/react'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 
 export default function useLaser() {
-	//   const editor = useEditorRef()
 	const { useOption, setOption } = useEditorPlugin(LaserPlugin)
 	const laserStore = useOption('laserStore')
 	const activeLaser = useOption('active')

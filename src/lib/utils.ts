@@ -2,7 +2,7 @@ import { TDescendant, Value } from '@udecode/plate-common'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-import { EStatus, MinifiedValue } from '@/types/common'
+import { BASE_STATUS, EStatus, MinifiedValue } from '@/types/common'
 import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
 
 export function cn(...inputs: ClassValue[]) {
@@ -26,7 +26,7 @@ export function getQueryParam(
 export const getSelectedEpisode = (
 	data: TGetEpisodesResponse,
 	selectedStatus?: EStatus
-): { episode: TEpisode; latestStatus: EStatus | 'BASE' } => {
+): { episode: TEpisode; latestStatus: EStatus | typeof BASE_STATUS } => {
 	const prioritizedStatuses = [
 		EStatus.PUBLISHED,
 		EStatus.POLISH,
@@ -144,4 +144,14 @@ export function prettifyNumber(
 	options?: Intl.NumberFormatOptions
 ): string {
 	return new Intl.NumberFormat(locale, options).format(num)
+}
+
+export function jsonify(value: string): string | Value {
+	try {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const val = JSON.parse(value)
+		return val as Value
+	} catch (e) {
+		return value
+	}
 }

@@ -78,11 +78,9 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			setEditorCoords(rect.x, rect.y)
 		}, [contentRef])
 
-		const sidebar = usePlateStore(useShallow((state) => state.sidebar))
+		const sidebar = usePlateStore((state) => state.sidebar)
 		const responseValue = useAIStore(useShallow((state) => state.responseValue))
 		const prevValue = useAIStore(useShallow((state) => state.prevValue))
-		// console.log({ current: responseValue, previous: prevValue })
-		// const diffEditor = useDiffEditor({ current: responseValue ? responseValue : [], previous: prevValue ? prevValue : [] })
 
 		return (
 			<div ref={ref} className="relative w-full">

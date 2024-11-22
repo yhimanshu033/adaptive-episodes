@@ -4,7 +4,6 @@ import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { useEditorState } from '@udecode/plate-common/react'
 import { Globe, Search, WholeWordIcon } from 'lucide-react'
 
-import { Icons } from '@/components/icons'
 import { getText, prettifyNumber } from '@/lib/utils'
 
 import {
@@ -27,7 +26,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 		<DropdownMenu modal={false} {...openState} {...props}>
 			<DropdownMenuTrigger asChild>
 				<ToolbarButton pressed={openState.open} tooltip="Insert">
-					<Icons.more />
+					<Search />
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 

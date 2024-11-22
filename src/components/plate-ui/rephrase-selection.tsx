@@ -11,168 +11,169 @@ import usePlateStore from '@/store/plate-store'
 import { ArrowLeft, RotateCw, X } from 'lucide-react'
 
 import Spinner from '@/components/ui/spinner'
-import DiffView, { DiffViewProps } from '@/lib/plate/plugins/diff'
+import DiffView from '@/lib/plate/plugins/diff'
+import { cn } from '@/lib/utils'
+
+import { RephraseSelectionProps } from '@/types/editor-types'
 
 import { Button } from './button'
 
-interface RephraseSelectionProps extends DiffViewProps {
-	elemKey: string | null
-	getSelectedText: () => {
-		nexttext: string
-		prevtext: string
-		text: string
+const RephraseSelection = ({
+	onResponse,
+	onRephrase,
+	getSelectedText,
+	reset: resetRephrase,
+	current,
+	previous,
+	elemKey: key,
+}: RephraseSelectionProps) => {
+	const [textInput, setTextInput] = useState('')
+	const { data: episodeContent } = useEpisodeContent()
+
+	const { isTranslationOpen, sidebar } = usePlateStore()
+	const minify = sidebar || isTranslationOpen
+
+	const [currentMethod, setMethod] = useState('')
+
+	const {
+		laserToolsMutation: { data, isPending, reset, mutate },
+	} = useLaserToolsHook()
+
+	const { lasers, promptActive, active, triggerRephrase } = useLaserStore()
+
+	const laser = useMemo(() => lasers[key!] ?? { prompt: '' }, [lasers, key])
+
+	const showPrompt = promptActive === key && active === key
+
+	const { prompt: promptInput } = laser
+	const handleRephrase = useCallback(
+		(action: string) => {
+			setMethod(action)
+			mutate({
+				action,
+				...getSelectedText(),
+				context: episodeContent?.chapter.props.llm_memories?.context || '',
+				ep_number: episodeContent?.chapter.seq_number.toString() || '',
+				ep_text: episodeContent?.text || '',
+				prompt: promptInput,
+				style_template: '',
+			})
+		},
+		[
+			mutate,
+			getSelectedText,
+			episodeContent?.chapter.props.llm_memories?.context,
+			episodeContent?.chapter.seq_number,
+			episodeContent?.text,
+			promptInput,
+		]
+	)
+
+	const handleAcceptRephrase = () => {
+		onRephrase(textInput)
 	}
-	onRephrase: (text: string) => void
-	onResponse: (text: string) => void
-	reset: () => void
-}
-const RephraseSelection = React.memo(
-	({
-		onResponse,
-		onRephrase,
-		getSelectedText,
-		reset: resetRephrase,
-		current,
-		previous,
-		elemKey: key,
-	}: RephraseSelectionProps) => {
-		const [textInput, setTextInput] = useState('')
-		const { data: episodeContent } = useEpisodeContent()
 
-		const { isTranslationOpen, sidebar } = usePlateStore()
-		const minify = sidebar || isTranslationOpen
+	const handleRejectRephrase = () => {
+		reset()
+	}
 
-		const [currentMethod, setMethod] = useState('')
-
-		const { laserToolsMutation } = useLaserToolsHook()
-		const { data, isPending, reset } = laserToolsMutation
-
-		const { lasers, promptActive, active, triggerRephrase } = useLaserStore()
-
-		const laser = useMemo(() => lasers[key!] ?? { prompt: '' }, [lasers, key])
-
-		const showPrompt = promptActive === key && active === key
-
-		const { prompt: promptInput } = laser
-		const handleRephrase = useCallback(
-			(action: string) => {
-				setMethod(action)
-				laserToolsMutation.mutate({
-					action,
-					...getSelectedText(),
-					context: episodeContent?.chapter.props.llm_memories?.context || '',
-					ep_number: episodeContent?.chapter.seq_number.toString() || '',
-					ep_text: episodeContent?.text || '',
-					prompt: promptInput,
-					style_template: '',
-				})
-			},
-			[laserToolsMutation, getSelectedText, episodeContent, promptInput]
-		)
-
-		const handleAcceptRephrase = () => {
-			onRephrase(textInput)
+	useEffect(() => {
+		if (data && !isPending) {
+			setTextInput(data.result)
+			onResponse(data.result)
 		}
+	}, [data, isPending, setTextInput, onResponse])
 
-		const handleRejectRephrase = () => {
-			reset()
+	useEffect(() => {
+		if (!laser.prompt.trim() || !key) return
+		if (triggerRephrase === key) {
+			setPromptActive(null)
+			handleRephrase('custom')
+			setTriggerRephrase(null)
 		}
+	}, [triggerRephrase, key, laser, handleRephrase])
 
-		useEffect(() => {
-			if (data && !isPending) {
-				setTextInput(data.result)
-				onResponse(data.result)
-			}
-		}, [data, isPending, setTextInput, onResponse])
+	const handleSetPrompt = useCallback(() => {
+		setPromptActive(key)
+		document.getElementById('prompt-input')?.focus()
+	}, [key])
 
-		useEffect(() => {
-			if (!laser.prompt.trim() || !key) return
-			if (triggerRephrase === key) {
-				setPromptActive(null)
-				handleRephrase('custom')
-				setTriggerRephrase(null)
-			}
-		}, [triggerRephrase, key, laser, handleRephrase])
-
-		const handleSetPrompt = useCallback(() => {
-			setPromptActive(key)
-			document.getElementById('prompt-input')?.focus()
-		}, [key])
-
-		return (
-			<>
-				{data ? (
-					<div
-						className={`relative w-full ${minify ? 'min-w-[35vw]' : 'min-w-[70vw]'} `}
+	return (
+		<>
+			{data ? (
+				<div
+					className={cn(
+						'relative w-full',
+						minify ? 'min-w-[35vw]' : 'min-w-[70vw]'
+					)}
+				>
+					<Button
+						onClick={() => {
+							setActiveLaser(null)
+						}}
+						className="absolute right-2 top-2 z-10 !h-auto !p-2 opacity-65"
 					>
+						<X size={10} />
+					</Button>
+					<DiffView previous={previous} current={current} />
+					<div className="flex items-center justify-between">
 						<Button
-							onClick={() => {
-								setActiveLaser(null)
-							}}
-							className="absolute right-2 top-2 z-10 !h-auto !p-2 opacity-65"
+							variant="ghost"
+							onClick={() => handleRephrase(currentMethod)}
 						>
-							<X size={10} />
+							<RotateCw size={16} />
 						</Button>
-						<DiffView previous={previous} current={current} />
-						<div className="flex items-center justify-between">
+						<div className="flex items-center justify-end gap-2">
 							<Button
-								variant="ghost"
-								onClick={() => handleRephrase(currentMethod)}
+								variant="outline"
+								size="sm"
+								className="mr-2"
+								onClick={handleRejectRephrase}
 							>
-								<RotateCw size={16} />
+								Reject
 							</Button>
-							<div className="flex items-center justify-end gap-2">
-								<Button
-									variant="outline"
-									size="sm"
-									className="mr-2"
-									onClick={handleRejectRephrase}
-								>
-									Reject
-								</Button>
-								<Button size="sm" onClick={handleAcceptRephrase}>
-									Accept
-								</Button>
-							</div>
+							<Button size="sm" onClick={handleAcceptRephrase}>
+								Accept
+							</Button>
 						</div>
 					</div>
-				) : (
-					!showPrompt && (
-						<div className="flex items-center">
+				</div>
+			) : (
+				!showPrompt && (
+					<div className="flex items-center">
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => {
+								resetRephrase()
+							}}
+						>
+							<ArrowLeft size={16} />
+						</Button>
+						{rephraseMethods.map((method) => (
 							<Button
+								key={method.id}
 								variant="ghost"
-								size="sm"
-								onClick={() => {
-									resetRephrase()
-								}}
+								className="my-1"
+								onClick={() =>
+									method.id === 'custom'
+										? handleSetPrompt()
+										: handleRephrase(method.id)
+								}
 							>
-								<ArrowLeft size={16} />
+								{isPending && currentMethod === method.id ? (
+									<Spinner size={16} />
+								) : (
+									method.method
+								)}
 							</Button>
-							{rephraseMethods.map((method) => (
-								<Button
-									key={method.id}
-									variant="ghost"
-									className="my-1"
-									onClick={() =>
-										method.id === 'custom'
-											? handleSetPrompt()
-											: handleRephrase(method.id)
-									}
-								>
-									{isPending && currentMethod === method.id ? (
-										<Spinner size={16} />
-									) : (
-										method.method
-									)}
-								</Button>
-							))}
-						</div>
-					)
-				)}
-			</>
-		)
-	}
-)
+						))}
+					</div>
+				)
+			)}
+		</>
+	)
+}
 
 RephraseSelection.displayName = 'RephraseSelection'
 export default RephraseSelection

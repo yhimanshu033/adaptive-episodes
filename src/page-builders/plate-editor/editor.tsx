@@ -29,7 +29,6 @@ import {
 	HtmlPlugin,
 	isBlockAboveEmpty,
 	isSelectionAtBlockStart,
-	Value,
 } from '@udecode/plate-common'
 import {
 	createPlateEditor,
@@ -100,10 +99,10 @@ import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-// import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
+import { jsonify } from '@/lib/utils'
 
 import { EStatus } from '@/types/common'
 
@@ -219,15 +218,6 @@ export default function PlateEditor() {
 	)
 }
 
-function jsonify(value: string): string | Value {
-	try {
-		const val = JSON.parse(value)
-		return val as Value
-	} catch (e) {
-		return value
-	}
-}
-
 export const useMyEditor = ({
 	content,
 	id,
@@ -236,15 +226,12 @@ export const useMyEditor = ({
 	id?: string
 }) => {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
-	// const search = usePlateStore(useShallow((state) => state.search))
 	const initialValue = jsonify(content)
 
 	const editor = createPlateEditor({
 		plugins: [
-			//Custom
 			LaserPlugin,
 			FindReplacePlugin,
-			// Nodes
 			HeadingPlugin,
 			HorizontalRulePlugin,
 

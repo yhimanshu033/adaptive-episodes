@@ -8,8 +8,9 @@ import usePlateStore from '@/store/plate-store'
 import { ArrowLeft, Send } from 'lucide-react'
 import { nanoid } from 'nanoid'
 
-import { Textarea } from '../ui/textarea'
-import { Button } from './button'
+import { Button } from '@/components/plate-ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 
 export default function FloatingPrompt() {
 	const {
@@ -37,53 +38,56 @@ export default function FloatingPrompt() {
 	const val = laser?.prompt || ''
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const name = useMemo(() => nanoid(), [activeLaser])
+	const name = useMemo(nanoid, [activeLaser])
+
+	if (!laser) return null
 
 	return (
-		laser && (
-			<div
-				onBlur={(e) => {
-					if (e.currentTarget.contains(e.relatedTarget)) return
+		<div
+			onBlur={(e) => {
+				if (e.currentTarget.contains(e.relatedTarget)) return
+				setPromptActive(null)
+			}}
+			className={cn(
+				'absolute z-[9999] flex gap-2 rounded-lg bg-popover',
+				minify ? 'w-[35vw]' : 'w-[70vw]'
+			)}
+			style={{
+				top: (laser?.clientY || 0) - (editorY || 0),
+				left: 48,
+			}}
+		>
+			<Button
+				variant="ghost"
+				size="sm"
+				className="h-24"
+				onClick={() => {
 					setPromptActive(null)
 				}}
-				className={`absolute z-[9999] flex gap-2 bg-popover ${minify ? 'w-[35vw]' : 'w-[70vw]'} rounded-lg`}
-				style={{
-					top: (laser?.clientY || 0) - (editorY || 0),
-					left: 48,
+			>
+				<ArrowLeft size={16} />
+			</Button>
+			<Textarea
+				autoFocus
+				name={name}
+				autoComplete="off"
+				value={val}
+				onChange={(e) => setVal(e.target.value)}
+				id="prompt-input"
+			/>
+			<Button
+				variant="default"
+				size="sm"
+				className="h-24"
+				onClick={(e) => {
+					e.stopPropagation()
+					e.preventDefault()
+					if (!val.trim()) return
+					setTriggerRephrase(activeLaser)
 				}}
 			>
-				<Button
-					variant="ghost"
-					size="sm"
-					className="h-24"
-					onClick={() => {
-						setPromptActive(null)
-					}}
-				>
-					<ArrowLeft size={16} />
-				</Button>
-				<Textarea
-					autoFocus
-					name={name}
-					autoComplete="off"
-					value={val}
-					onChange={(e) => setVal(e.target.value)}
-					id="prompt-input"
-				/>
-				<Button
-					variant="default"
-					size="sm"
-					className="h-24"
-					onClick={(e) => {
-						if (!val.trim()) return
-						setTriggerRephrase(activeLaser)
-						e.stopPropagation()
-						e.preventDefault()
-					}}
-				>
-					<Send size={16} />
-				</Button>
-			</div>
-		)
+				<Send size={16} />
+			</Button>
+		</div>
 	)
 }

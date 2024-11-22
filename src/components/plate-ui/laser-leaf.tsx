@@ -59,18 +59,17 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 
 	const getSelectedText = useCallback(() => {
 		if (!key) return { text: leaf.text, prevtext: '', nexttext: '' }
-		const text = leaf.text
+		const { text } = leaf
 		let prevtext = ''
 		let nexttext = ''
 
-		const descendants: TDescendant[] = (
-			children as TLaserLeafChildren
-		).props.parent.children.map((child) => child)
+		const descendants: TDescendant[] = (children as TLaserLeafChildren).props
+			.parent.children
+		const texts = descendants.map((child) => child.text)
 
 		const laserIndex = descendants.findIndex(
-			(child) => child.laser && Object.keys(child).includes(key)
+			(child) => child.laser && key in child
 		)
-		const texts = descendants.map((child) => child.text)
 
 		if (laserIndex !== -1) {
 			prevtext = texts.slice(0, laserIndex).join('').split('\n').pop() || ''
@@ -83,13 +82,13 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		}
 
 		return { text, prevtext, nexttext }
-	}, [children, leaf.text, key])
+	}, [key, leaf, children])
 
 	const getPreviousElement = useCallback(() => {
 		const { prevtext, nexttext, text } = getSelectedText()
 		return {
 			type: 'p',
-			children: [prevtext, text, nexttext].map((text) => ({ text })),
+			children: [{ text: prevtext }, { text }, { text: nexttext }],
 		} as TElement
 	}, [getSelectedText])
 
@@ -98,7 +97,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			const { nexttext, prevtext } = getSelectedText()
 			const newRephrased: TElement = {
 				type: 'p',
-				children: [prevtext, text, nexttext].map((text) => ({ text })),
+				children: [{ text: prevtext }, { text }, { text: nexttext }],
 			}
 			setRephrasedText(newRephrased)
 		},
@@ -178,7 +177,13 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 				ref={divRef}
 				id={`toolbar-${key}`}
 				onClick={(e) => e.stopPropagation()}
-				className={`absolute bottom-0 z-[9999] max-w-[75vw] translate-y-full whitespace-nowrap rounded border bg-popover px-1 shadow-md print:hidden ${activeLaser !== key ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
+				className={cn(
+					'absolute bottom-0 z-[9999] max-w-[75vw] translate-y-full whitespace-nowrap rounded border bg-popover px-1 shadow-md print:hidden',
+					{
+						'pointer-events-none opacity-0': activeLaser !== key,
+						'opacity-100': activeLaser === key,
+					}
+				)}
 			>
 				<RephraseSelection
 					elemKey={key || null}

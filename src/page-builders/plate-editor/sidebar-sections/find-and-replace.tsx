@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
 	useEditorPlugin,
 	useEditorRef,
@@ -89,7 +89,7 @@ export default function FindAndReplace() {
 	function toggleReplace() {
 		setOptions({ replaceEnabled: !replaceEnabled })
 	}
-	function onReplaceAll() {
+	const onReplaceAll = useCallback(() => {
 		if (!search || !replaceEnabled || !editor) return
 
 		const updatedChildren = structuredClone(children)
@@ -106,9 +106,17 @@ export default function FindAndReplace() {
 		updatedChildren.forEach(processNode)
 		editor.tf.setValue(updatedChildren)
 		setOptions({ search: '', replace: '', replaceEnabled: false })
-	}
+	}, [
+		caseSensitive,
+		children,
+		editor,
+		replace,
+		replaceEnabled,
+		search,
+		setOptions,
+	])
 
-	function onReplace() {
+	const onReplace = useCallback(() => {
 		const path = records[ptr]
 		const updatedChildren = structuredClone(children)
 		const node = updatedChildren[path[0]].children[path[1]] as TElement
@@ -123,7 +131,7 @@ export default function FindAndReplace() {
 			text,
 		}
 		editor.tf.setValue(updatedChildren)
-	}
+	}, [children, editor.tf, ptr, records, replace, search])
 
 	function handlePrev() {
 		setPtr(ptr > 0 ? ptr - 1 : ptr)
@@ -207,9 +215,7 @@ export default function FindAndReplace() {
 						aria-label="Toggle case-sensitivity"
 						className="absolute inset-y-0 right-0 my-auto scale-75"
 					>
-						<CaseSensitive
-						// className={cn('transition-all', replaceEnabled && 'rotate-90')}
-						/>
+						<CaseSensitive />
 					</Toggle>
 				</div>
 				<div className="flex gap-2">

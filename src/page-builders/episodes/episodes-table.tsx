@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { episodeLimit, statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
@@ -77,64 +77,6 @@ const EpisodesTable = () => {
 
 	const { data } = useEpisodesData(episodeFilter, currentPage)
 	const { saveEpisodeMutation } = useEpisodeHook()
-
-	const hasConsistentStatus = (selectedRows: TEpisode[]) =>
-		selectedRows.every((row) => row.status === selectedRows[0].status)
-
-	const handleStatusChange = (episode: TEpisode, status: EStatus) => {
-		const selectedRows = table
-			.getRowModel()
-			.rows.filter((row) => rowSelection[row.id])
-			.map((row) => row.original)
-
-		selectedEpisodeRef.current = {
-			episodes: selectedRows.length ? selectedRows : [episode],
-			status,
-		}
-		if (selectedRows.length <= 1) {
-			alertContentRef.current = {
-				description: `Status of selected episode will switch to ${status}`,
-			}
-		} else if (hasConsistentStatus(selectedRows)) {
-			alertContentRef.current = {
-				description: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
-			}
-		} else {
-			alertContentRef.current = {
-				description: `All selected episodes must have the same current status to update.`,
-				notValid: true,
-			}
-		}
-		setIsDialogOpen(true)
-	}
-
-	const handleConfirm = async () => {
-		if (selectedEpisodeRef.current) {
-			const { episodes, status } = selectedEpisodeRef.current
-
-			await Promise.all(
-				episodes.map((episode) => {
-					return saveEpisodeMutation.mutateAsync({
-						text: 'Status update',
-						statusChange: status,
-						selectedChapterId: episode.parent ?? undefined,
-					})
-				})
-			)
-		}
-	}
-
-	const handleWriterChange = (episodeId: number, newWriter: string) => {
-		setEpisodes(
-			episodes.map((episode) =>
-				episode.id === episodeId ? { ...episode, writer: newWriter } : episode
-			)
-		)
-	}
-
-	const handleClick = (episodeId: number) => {
-		router.push(`${pathname}/${episodeId}/editor`)
-	}
 
 	const columns: ColumnDef<TEpisode>[] = [
 		{
@@ -237,6 +179,66 @@ const EpisodesTable = () => {
 			rowSelection,
 		},
 	})
+
+	const hasConsistentStatus = (selectedRows: TEpisode[]) =>
+		selectedRows.every((row) => row.status === selectedRows[0].status)
+
+	const handleStatusChange = useCallback(
+		(episode: TEpisode, status: EStatus) => {
+			const selectedRows = table
+				.getRowModel()
+				.rows.filter((row) => rowSelection[row.id])
+				.map((row) => row.original)
+
+			selectedEpisodeRef.current = {
+				episodes: selectedRows.length ? selectedRows : [episode],
+				status,
+			}
+			if (selectedRows.length <= 1) {
+				alertContentRef.current = {
+					description: `Status of selected episode will switch to ${status}`,
+				}
+			} else if (hasConsistentStatus(selectedRows)) {
+				alertContentRef.current = {
+					description: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
+				}
+			} else {
+				alertContentRef.current = {
+					description: `All selected episodes must have the same current status to update.`,
+					notValid: true,
+				}
+			}
+			setIsDialogOpen(true)
+		},
+		[rowSelection, table]
+	)
+
+	const handleConfirm = async () => {
+		if (!selectedEpisodeRef.current) return
+		const { episodes, status } = selectedEpisodeRef.current
+
+		await Promise.all(
+			episodes.map((episode) => {
+				return saveEpisodeMutation.mutateAsync({
+					text: 'Status update',
+					statusChange: status,
+					selectedChapterId: episode.parent ?? undefined,
+				})
+			})
+		)
+	}
+
+	const handleWriterChange = (episodeId: number, newWriter: string) => {
+		setEpisodes(
+			episodes.map((episode) =>
+				episode.id === episodeId ? { ...episode, writer: newWriter } : episode
+			)
+		)
+	}
+
+	const handleClick = (episodeId: number) => {
+		router.push(`${pathname}/${episodeId}/editor`)
+	}
 
 	useEffect(() => {
 		if (data) setEpisodes(data?.results.data)
