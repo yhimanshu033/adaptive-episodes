@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 
 // import { maxify } from '@/lib/utils'
@@ -184,10 +184,10 @@ const AIChatbot = () => {
 	}
 
 	const suggestions = [
-		'Add sound effects',
-		'Add formatting',
-		'Add a scene',
-		'Rename Characters',
+		'Add sound effects 🎶',
+		'Enhance Vocabulary 🪄',
+		'Spell Check ✅',
+		'Add a scene 🎞️',
 	]
 
 	// const diffRecords = useMemo(() => {
@@ -259,7 +259,8 @@ const AIChatbot = () => {
 				))}
 				<div ref={messageEndRef} />
 			</ScrollArea>
-			<div className="flex overflow-x-scroll pb-2">
+			<ScrollArea className="overflow-x-auto pb-2 *:*:flex">
+				<ScrollBar orientation="horizontal" />
 				{suggestions.map((suggestion, index) => (
 					<Button
 						key={index}
@@ -283,7 +284,7 @@ const AIChatbot = () => {
 						{suggestion}
 					</Button>
 				))}
-			</div>
+			</ScrollArea>
 			<div className="flex items-end gap-1">
 				<form
 					onSubmit={handleSendMessage}

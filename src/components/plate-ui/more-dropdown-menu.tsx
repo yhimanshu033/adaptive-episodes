@@ -2,7 +2,7 @@ import React from 'react'
 import { setSidebar } from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { useEditorState } from '@udecode/plate-common/react'
-import { Globe, WholeWordIcon } from 'lucide-react'
+import { Globe, Search, WholeWordIcon } from 'lucide-react'
 
 import { Icons } from '@/components/icons'
 import { getText, prettifyNumber } from '@/lib/utils'
@@ -42,6 +42,14 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 				>
 					<Globe className="mr-2 size-5" />
 					Localization
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onSelect={() => {
+						setSidebar('outline', true)
+					}}
+				>
+					<Search className="mr-2 size-5" />
+					Story Explorer
 				</DropdownMenuItem>
 				<DropdownMenuItem disabled>
 					<WholeWordIcon className="mr-2 size-5" />
