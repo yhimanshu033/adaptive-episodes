@@ -13,6 +13,7 @@ const Hero = () => {
 				alt="logo_animation"
 				width={300}
 				height={300}
+				unoptimized
 			/>
 			<h1 className="font-display text-center text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
 				Welcome to Pocket CoPilot
