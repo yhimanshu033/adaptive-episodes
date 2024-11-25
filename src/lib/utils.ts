@@ -155,3 +155,22 @@ export function jsonify(value: string): string | Value {
 		return value
 	}
 }
+
+export function clearLasers(ogVal: Value): Value {
+	const val = structuredClone(ogVal)
+	const traverse = (node: TDescendant) => {
+		const keys = Object.keys(node)
+		if ('laser' in node || keys.some((key) => key.startsWith('laser-'))) {
+			if (node.laser) return
+			const laserKeys = keys.filter((key) => key.startsWith('laser-'))
+			laserKeys.forEach((key) => {
+				delete node[key]
+			})
+			delete node.laser
+		} else if ('children' in node) {
+			;(node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+	val.forEach(traverse)
+	return val
+}
