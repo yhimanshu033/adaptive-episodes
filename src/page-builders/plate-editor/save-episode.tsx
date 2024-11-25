@@ -1,10 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
-import {
-	useEditorReadOnly,
-	useEditorRef,
-	useEditorState,
-} from '@udecode/plate-common/react'
+import { useEditorReadOnly, useEditorState } from '@udecode/plate-common/react'
 import { LoaderCircle, Save } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -12,18 +8,17 @@ import { clearLasers, cn } from '@/lib/utils'
 
 const SaveEpisode = () => {
 	const { children } = useEditorState()
-	const editor = useEditorRef()
 	const savedRef = useRef(JSON.stringify(children))
 	const { saveEpisodeMutation } = useEpisodeHook()
 	const readOnly = useEditorReadOnly()
 
 	const handleSave = useCallback(() => {
-		const clearedLaser = clearLasers(children)
-		editor.tf.setValue(clearedLaser)
-		const currentChildren = JSON.stringify(clearedLaser)
+		const currentChildren = JSON.stringify(children)
 		if (savedRef.current !== currentChildren) {
 			savedRef.current = currentChildren
-			saveEpisodeMutation.mutate({ text: savedRef.current })
+			const clearedLaser = clearLasers(children)
+			const text = JSON.stringify(clearedLaser)
+			saveEpisodeMutation.mutate({ text })
 		}
 	}, [children, saveEpisodeMutation])
 
