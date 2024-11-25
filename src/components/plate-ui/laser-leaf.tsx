@@ -20,7 +20,7 @@ import {
 import { findNodePath } from '@udecode/slate-react'
 
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
-import { Node, TLaserLeafChildren } from '@/lib/plate/types/block'
+import { Node as BlockNode, TLaserLeafChildren } from '@/lib/plate/types/block'
 
 import RephraseSelection from './rephrase-selection'
 
@@ -38,6 +38,8 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	)
 	const key = getLaserKey(leaf)
 	const divRef = useRef<HTMLDivElement>(null)
+	const areaRef = useRef<HTMLDivElement>(null)
+	const btnRef = useRef<HTMLButtonElement>(null)
 
 	useEffect(() => {
 		if (!key || !divRef?.current) return
@@ -107,7 +109,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	const onRephrase = useCallback(
 		(text: string) => {
 			try {
-				const nodes = getNodeEntries(editor).toArray() as unknown as Node[][]
+				const nodes = getNodeEntries(
+					editor
+				).toArray() as unknown as BlockNode[][]
 				const childrenCopy = structuredClone(element.children)
 
 				childrenCopy.forEach((child) => {
@@ -143,9 +147,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		[editor, element, leaf.text]
 	)
 
-	const resetActive = () => {
+	const resetActive = useCallback(() => {
 		setActiveLaser(null)
-	}
+	}, [activeLaser])
 
 	useEffect(() => {
 		if (!key) return
@@ -159,12 +163,29 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		})
 	}, [key])
 
+	const handleBlur = useCallback(
+		(e: React.FocusEvent) => {
+			if (activeLaser !== key) return
+			if (!areaRef.current?.contains(e.relatedTarget)) resetActive()
+			else {
+				btnRef.current?.focus()
+			}
+		},
+		[activeLaser]
+	)
+
+	useEffect(() => {
+		if (activeLaser === key) {
+			btnRef.current?.focus()
+		}
+	}, [])
+
 	return (
 		<PlateLeaf
+			ref={areaRef}
 			{...props}
 			onClick={() => {
-				if (!key) return
-				setActiveLaser(key)
+				btnRef.current?.focus()
 			}}
 			className={cn(
 				'relative border-b-2 border-b-primary/40',
@@ -173,10 +194,21 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			)}
 		>
 			{children}
+			<button
+				ref={btnRef}
+				onFocus={() => {
+					if (!key) return
+					setActiveLaser(key)
+				}}
+				onBlur={handleBlur}
+				className="w-0"
+			/>
 			<div
 				ref={divRef}
 				id={`toolbar-${key}`}
-				onClick={(e) => e.stopPropagation()}
+				onClick={(e) => {
+					e.stopPropagation()
+				}}
 				className={cn(
 					'absolute bottom-0 z-[9999] max-w-[75vw] translate-y-full whitespace-nowrap rounded border bg-popover px-1 shadow-md print:hidden',
 					{

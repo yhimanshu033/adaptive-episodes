@@ -119,12 +119,7 @@ const AIChatbot = () => {
 		setPrevValue(null)
 	}
 
-	const suggestions = [
-		'Add sound effects 🎶',
-		'Enhance Vocabulary 🪄',
-		'Review ✅',
-		'Add a scene 🎞️',
-	]
+	const suggestions = ['Add Music / Sound FX 🎶', 'Voice Pass 🎙️', 'Review ✅']
 
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">

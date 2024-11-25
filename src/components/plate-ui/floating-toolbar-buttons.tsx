@@ -44,19 +44,6 @@ const FloatingToolbarButtons = () => {
 								<Icons.bold />
 							</MarkToolbarButton>
 							<MarkToolbarButton
-								onClick={() => {
-									setShowRephrase(true)
-									const key = `laser-${nanoid()}`
-									editor.tf.toggle.mark({ key: LaserPlugin.key })
-									editor.tf.toggle.mark({ key })
-									setActiveLaser(key)
-								}}
-								nodeType={LaserPlugin.key}
-								tooltip="Laser (⌘+B)"
-							>
-								<Bot />
-							</MarkToolbarButton>
-							<MarkToolbarButton
 								nodeType={ItalicPlugin.key}
 								tooltip="Italic (⌘+I)"
 							>
@@ -84,6 +71,19 @@ const FloatingToolbarButtons = () => {
 						{/* <Input /> */}
 					</>
 					<ToolbarGroup>
+						<MarkToolbarButton
+							onClick={() => {
+								setShowRephrase(true)
+								const key = `laser-${nanoid()}`
+								editor.tf.toggle.mark({ key: LaserPlugin.key })
+								editor.tf.toggle.mark({ key })
+								setActiveLaser(key)
+							}}
+							nodeType={LaserPlugin.key}
+							tooltip="Laser (⌘+B)"
+						>
+							<Bot />
+						</MarkToolbarButton>
 						{!showRephrase && (
 							<MarkToolbarButton
 								{...props}
