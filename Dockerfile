@@ -17,7 +17,7 @@ RUN echo "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=ai-cowriter-german-team.appspot.co
 RUN echo "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=486778135608" >> .env
 RUN echo "NEXT_PUBLIC_FIREBASE_APP_ID=1:486778135608:web:673271b6c06a0cb10ff2cd" >> .env
 RUN echo "NEXT_PUBLIC_BACKEND_URL=http://18.141.139.126" >> .env
-RUN echo "NEXT_PUBLIC_SOCKET_BASE_URL=http://18.141.139.126:5000" >> .env
+RUN echo "NEXT_PUBLIC_SOCKET_BASE_URL=https://ghost-writer.pocketfm.ai" >> .env
 RUN echo "NEXT_PUBLIC_BACKEND_API_KEY='2n{WHwe2[V,VG\K0A[!r.g1+[uar*d#w'" >> .env
 
 
