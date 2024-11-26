@@ -25,7 +25,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 	return (
 		<DropdownMenu modal={false} {...openState} {...props}>
 			<DropdownMenuTrigger asChild>
-				<ToolbarButton pressed={openState.open} tooltip="Insert">
+				<ToolbarButton pressed={openState.open} tooltip="Story Explorer +">
 					<Search />
 				</ToolbarButton>
 			</DropdownMenuTrigger>
