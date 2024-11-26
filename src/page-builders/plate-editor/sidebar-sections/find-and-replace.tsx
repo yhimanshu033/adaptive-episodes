@@ -195,7 +195,7 @@ export default function FindAndReplace() {
 
 	return (
 		<div className="flex h-[58vh] flex-col gap-4 p-4">
-			<h2 className="text-lg font-bold">Find and Replace</h2>
+			<h2 className="text-lg font-bold">Localization</h2>
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
 				<Toggle onClick={toggleReplace} aria-label="Toggle replace">
 					<ChevronRight
