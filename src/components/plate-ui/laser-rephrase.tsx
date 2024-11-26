@@ -94,9 +94,9 @@ export default function LaserRephrase({
 			{data || responseActive === key ? (
 				<></>
 			) : (
-				<div className="flex items-center gap-2 p-4">
+				<div className="flex items-center gap-1 p-2">
 					<Button size="sm" onClick={onResetLeaf}>
-						<X />
+						<X size={16} />
 					</Button>
 					<h4>
 						{rephraseMethods.find((m) => m.id === methodId)?.method} working...
