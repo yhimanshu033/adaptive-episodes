@@ -1,3 +1,5 @@
+'use server'
+
 import { TNoParams } from '@/types/common'
 
 export type FetchRequestParams<
