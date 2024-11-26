@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { rephraseMethods } from '@/constants/editor-constants'
-import useLaserStore, {
+import {
 	setActiveLaser,
 	setPromptActive,
 	setScreenY,
@@ -19,9 +19,9 @@ export default function FloatingLaserBtns({
 	setShowLaser: Dispatch<SetStateAction<boolean>>
 }) {
 	const editor = useEditorRef()
-	const { promptActive } = useLaserStore()
+	const [clicked, setClicked] = React.useState(false)
 	return (
-		!promptActive && (
+		!clicked && (
 			<div className="flex items-center">
 				<Button
 					variant="ghost"
@@ -38,9 +38,9 @@ export default function FloatingLaserBtns({
 						variant="ghost"
 						className="my-1"
 						onClick={(e) => {
+							setClicked(true)
 							if (method.id === 'custom') {
-								console.log(e)
-								setScreenY(e.screenY - e.currentTarget.clientHeight)
+								setScreenY(e.clientY + e.currentTarget.clientHeight)
 								const key = `floating-prompt-id-${nanoid()}`
 								editor.tf.toggle.mark({ key: PromptPlugin.key })
 								editor.tf.toggle.mark({ key })

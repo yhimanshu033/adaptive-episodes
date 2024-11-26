@@ -1,6 +1,5 @@
+import { Dispatch, SetStateAction } from 'react'
 import { TComment, TCommentText } from '@udecode/plate-comments'
-
-import { DiffViewProps } from '@/lib/plate/plugins/diff'
 
 import { LucideComponent } from './common'
 
@@ -37,14 +36,15 @@ export type ToolsType = {
 
 export type TCustomComment = TComment & { node: TCommentText }
 
-export interface RephraseSelectionProps extends DiffViewProps {
+export interface RephraseSelectionProps {
 	elemKey: string | null
 	getSelectedText: () => {
 		nexttext: string
 		prevtext: string
 		text: string
 	}
-	onRephrase: (text: string) => void
-	onResponse: (text: string) => void
-	reset: () => void
+	methodId: string
+	onResetLeaf: () => void
+	promptInput: string
+	setResponseMode: Dispatch<SetStateAction<boolean>>
 }

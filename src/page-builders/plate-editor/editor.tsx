@@ -82,6 +82,7 @@ import {
 import { Editor } from '@/components/plate-ui/editor'
 import { FixedToolbar } from '@/components/plate-ui/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui/fixed-toolbar-buttons'
+import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response'
 import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons'
@@ -216,6 +217,7 @@ export default function PlateEditor() {
 					</Button>
 				</div>
 				<FloatingPrompt />
+				<FloatingLaserResponse />
 			</Plate>
 		</DndProvider>
 	)

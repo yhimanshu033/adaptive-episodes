@@ -3,9 +3,10 @@ import useLaserStore, {
 	getLaser,
 	setActiveLaser,
 	setLaser,
+	setResponseActive,
 } from '@/store/laser-store'
 import { cn } from '@udecode/cn'
-import { TDescendant, TElement, TText } from '@udecode/plate-common'
+import { TDescendant, TText } from '@udecode/plate-common'
 import {
 	PlateLeaf,
 	PlateLeafProps,
@@ -32,9 +33,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	const { children, leaf } = props
 	// const {} = useEditorState()
 	const editor = useEditorRef()
-	const [rephrasedText, setRephrasedText] = React.useState<TElement | null>(
-		null
-	)
+	const [responseMode, setResponseMode] = React.useState(false)
 	const key = getLaserKey(leaf)
 	const methodId = getMethodId(leaf)
 	const divRef = useRef<HTMLDivElement>(null)
@@ -44,7 +43,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	useEffect(() => {
 		if (!key || !divRef?.current) return
 		let laser = getLaser(key)
-		laser ??= { prompt: '' }
+		laser ??= { response: '', text: '' }
 		const rect = divRef.current?.getBoundingClientRect()
 		if (!rect) return
 		setLaser({
@@ -86,57 +85,6 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		return { text, prevtext, nexttext }
 	}, [key, leaf, children])
 
-	const getPreviousElement = useCallback(() => {
-		const { prevtext, nexttext, text } = getSelectedText()
-		return {
-			type: 'p',
-			children: [{ text: prevtext }, { text }, { text: nexttext }],
-		} as TElement
-	}, [getSelectedText])
-
-	const onResponse = useCallback(
-		(text: string) => {
-			const { nexttext, prevtext } = getSelectedText()
-			const newRephrased: TElement = {
-				type: 'p',
-				children: [{ text: prevtext }, { text }, { text: nexttext }],
-			}
-			setRephrasedText(newRephrased)
-		},
-		[getSelectedText]
-	)
-
-	const traverseAndReplace = useCallback(
-		(node: TDescendant, text: string) => {
-			if (!key) return
-			if (key in node) {
-				node.text = text
-				const keys = Object.keys(node).filter((key) => key.startsWith('laser'))
-				keys.forEach((key) => {
-					delete node[key]
-				})
-			} else if ('children' in node) {
-				;(node.children as TDescendant[]).forEach((child) =>
-					traverseAndReplace(child, text)
-				)
-			}
-		},
-		[key]
-	)
-
-	const onRephrase = useCallback(
-		(text: string) => {
-			try {
-				const val = structuredClone(editor.children)
-				val.forEach((child) => traverseAndReplace(child, text))
-				editor.tf.setValue(val)
-			} catch (error) {
-				console.error(error)
-			}
-		},
-		[editor, traverseAndReplace]
-	)
-
 	const traverse = useCallback(
 		(node: TDescendant) => {
 			if (!key) return
@@ -169,7 +117,12 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	useEffect(() => {
 		if (!key) return
 		let laser = getLaser(key)
-		laser ??= { prompt: '' }
+		const rect = areaRef.current?.getBoundingClientRect()
+		laser ??= {
+			response: '',
+			text: '',
+			clientY: rect ? rect.top - rect.height : 0,
+		}
 		setLaser({
 			laser: {
 				...laser,
@@ -184,10 +137,15 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		(e: React.FocusEvent) => {
 			if (activeLaser !== key) return
 			const responseDiv = document.getElementById(`leaf-response-${key}`)
+			const responseInput = document.getElementById(
+				`leaf-response-editor-${key}`
+			)
 			if (
-				!areaRef.current?.contains(e.relatedTarget) &&
-				!responseDiv?.contains(e.relatedTarget)
-			) {
+				document.activeElement === responseInput ||
+				responseDiv?.contains(e.relatedTarget)
+			)
+				return
+			if (!areaRef.current?.contains(e.relatedTarget)) {
 				resetActive()
 			} else {
 				btnRef.current?.focus()
@@ -202,17 +160,20 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		}
 	}, [activeLaser, key])
 
-	// console.log({ key, methodId, activeLaser })
+	const handleClick = useCallback(() => {
+		if (!key) return
+		setActiveLaser(key)
+		if (responseMode) {
+			setResponseActive(key)
+		}
+		btnRef.current?.focus()
+	}, [key, responseMode])
 
 	return (
 		<PlateLeaf
 			ref={areaRef}
 			{...props}
-			onClick={() => {
-				if (!key) return
-				setActiveLaser(key)
-				btnRef.current?.focus()
-			}}
+			onClick={handleClick}
 			className={cn(
 				'relative border-b-2 border-b-primary/40',
 				'bg-primary/40',
@@ -243,20 +204,14 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 					}
 				)}
 			>
-				{!!methodId && (
-					<LaserRephrase
-						promptInput={(leaf['laser-inserted-prompt'] as string) || ''}
-						onResetLeaf={onResetLeaf}
-						methodId={methodId}
-						elemKey={key || null}
-						getSelectedText={getSelectedText}
-						onResponse={onResponse}
-						reset={resetActive}
-						onRephrase={onRephrase}
-						previous={[getPreviousElement()]}
-						current={rephrasedText ? [structuredClone(rephrasedText)] : null}
-					/>
-				)}
+				<LaserRephrase
+					setResponseMode={setResponseMode}
+					promptInput={(leaf['laser-inserted-prompt'] as string) || ''}
+					onResetLeaf={onResetLeaf}
+					methodId={methodId || ''}
+					elemKey={key || null}
+					getSelectedText={getSelectedText}
+				/>
 			</div>
 		</PlateLeaf>
 	)

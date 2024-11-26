@@ -25,7 +25,6 @@ export default function FloatingPrompt() {
 
 	const traverse = useCallback(
 		(node: TDescendant, intoLaser: boolean) => {
-			console.log({ promptActive })
 			if (!promptActive) return
 			if (promptActive in node) {
 				const keys = Object.keys(node).filter((key) =>
@@ -56,7 +55,6 @@ export default function FloatingPrompt() {
 			try {
 				const val = structuredClone(editor.children)
 				val.forEach((node) => traverse(node, intoLaser))
-				console.log({ val })
 				editor.tf.setValue(val)
 				setPromptActive(null)
 			} catch (error) {
@@ -85,7 +83,7 @@ export default function FloatingPrompt() {
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
-				top: (screenY || 0) - (editorY || 0),
+				top: (screenY || 0) - (editorY || 0) + 50,
 				left: 48,
 			}}
 		>
