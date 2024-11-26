@@ -154,10 +154,13 @@ export default function FloatingLaserResponse() {
 				}}
 				className={cn('w-full')}
 			>
-				<ScrollArea className="mb-1 rounded border p-2 pr-3">
-					<p className="mb-2 max-h-16 text-wrap text-muted-foreground">
-						{laser.text}
-					</p>
+				<ScrollArea className="mb-1 overflow-y-auto rounded border p-2 pr-3">
+					<div
+						dangerouslySetInnerHTML={{
+							__html: laser.text.replace(/\n/g, '<br/>'),
+						}}
+						className="mb-2 max-h-16 text-wrap text-muted-foreground"
+					/>
 				</ScrollArea>
 				<Textarea
 					name={name}
