@@ -24,8 +24,6 @@ const RephraseSelection = ({
 	onRephrase,
 	getSelectedText,
 	reset: resetRephrase,
-	// current,
-	// previous,
 	elemKey: key,
 }: RephraseSelectionProps) => {
 	const [textInput, setTextInput] = useState('')
