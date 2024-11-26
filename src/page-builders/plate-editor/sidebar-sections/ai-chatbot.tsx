@@ -16,7 +16,7 @@ import useAIStore, {
 	updateMessages,
 } from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
-import { useEditorRef } from '@udecode/plate-common/react'
+import { useEditorRef, useEditorState } from '@udecode/plate-common/react'
 import { LoaderCircle, Send, Trash2 } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -35,7 +35,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
+import { cn, getText } from '@/lib/utils'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
@@ -51,6 +51,7 @@ const AIChatbot = () => {
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
+	const { children } = useEditorState()
 
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
@@ -68,7 +69,7 @@ const AIChatbot = () => {
 				messages,
 				user_message: input,
 				ep_number: episodeContent?.chapter.seq_number?.toString(),
-				ep_text: episodeContent?.text,
+				ep_text: getText(children),
 			},
 		})
 	}

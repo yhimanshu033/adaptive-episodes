@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useCallback, useEffect } from 'react'
 import { rephraseMethods } from '@/constants/editor-constants'
 import useLaserToolsHook from '@/hooks/mutation/use-lasertool-hook'
@@ -8,8 +12,11 @@ import useLaserStore, {
 	setResponseActive,
 	setTriggerRephrase,
 } from '@/store/laser-store'
+import { useEditorState } from '@udecode/plate-common/react'
 import { X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
+
+import { getText } from '@/lib/utils'
 
 import { RephraseSelectionProps } from '@/types/editor-types'
 
@@ -25,6 +32,7 @@ export default function LaserRephrase({
 	setResponseMode,
 }: RephraseSelectionProps) {
 	const { data: episodeContent } = useEpisodeContent()
+	const { children } = useEditorState()
 	const {
 		laserToolsMutation: { data, isPending, reset, mutate },
 	} = useLaserToolsHook()
@@ -47,7 +55,7 @@ export default function LaserRephrase({
 				...getSelectedText(),
 				context: episodeContent?.chapter.props.llm_memories?.context || '',
 				ep_number: episodeContent?.chapter.seq_number.toString() || '',
-				ep_text: episodeContent?.text || '',
+				ep_text: getText(children) || '',
 				prompt: promptInput,
 				style_template: '',
 			})
@@ -57,7 +65,7 @@ export default function LaserRephrase({
 			getSelectedText,
 			episodeContent?.chapter.props.llm_memories?.context,
 			episodeContent?.chapter.seq_number,
-			episodeContent?.text,
+			children,
 			promptInput,
 		]
 	)

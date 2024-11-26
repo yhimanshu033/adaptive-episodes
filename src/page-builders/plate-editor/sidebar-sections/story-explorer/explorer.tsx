@@ -6,14 +6,15 @@ import { useParams } from 'next/navigation'
 import { categories, defaultMode } from '@/constants/story-explorer-constants'
 import { extractFromMetadata } from '@/hooks/mutation/use-aichatbot-hook'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { getMetadata } from '@/server-action/metadata-action'
+import { useEditorState } from '@udecode/plate-common/react'
 import { Send } from 'lucide-react'
 
 import { Loader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { getText } from '@/lib/utils'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
 
@@ -35,10 +36,10 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		action: '',
 		name: '',
 	})
+	const { children } = useEditorState()
 	const {
 		plotlineMutation: { mutateAsync, reset },
 	} = usePlotOutlineHook()
-	const { data: currentEpisodeContent } = useEpisodeContent()
 
 	const handleTabChange = (mode: RequestState['mode']) => {
 		if (request.mode === mode) return
@@ -76,7 +77,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				mode: request.mode,
 				ep_number: episodeId as string,
 				...extractedData,
-				current_ep: currentEpisodeContent?.text || ' ',
+				current_ep: getText(children) || ' ',
 				instruction,
 			})
 			if (result) setContent(result as PlotExplorerApiResponse['data'])
