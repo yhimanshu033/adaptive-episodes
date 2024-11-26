@@ -12,6 +12,7 @@ const useLaserToolsHook = () => {
 			url: '/aicopilot/lasertools',
 			body: params,
 		})
+
 		const response: LaserToolsApiResponse['data'] = await getResponse(taskId)
 		return response
 	}

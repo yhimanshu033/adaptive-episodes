@@ -32,3 +32,21 @@ export function getLaserPlugin() {
 }
 
 export const LaserPlugin = getLaserPlugin()
+
+export type PromptPluginT = PluginConfig<
+	'floating-prompt',
+	Record<string, never>,
+	object
+>
+export function getPromptPlugin() {
+	const PromptPlugin = createTPlatePlugin<PromptPluginT>({
+		key: 'floating-prompt',
+		node: {
+			isLeaf: true,
+		},
+		options: {},
+	})
+	return PromptPlugin
+}
+
+export const PromptPlugin = getPromptPlugin()

@@ -159,11 +159,12 @@ export function jsonify(value: string): string | Value {
 export function clearLasers(ogVal: Value): Value {
 	const val = structuredClone(ogVal)
 	const traverse = (node: TDescendant) => {
-		const keys = Object.keys(node)
-		if ('laser' in node || keys.some((key) => key.startsWith('laser-'))) {
-			if (node.laser) return
-			const laserKeys = keys.filter((key) => key.startsWith('laser-'))
-			laserKeys.forEach((key) => {
+		const keys = Object.keys(node).filter(
+			(key) => key.startsWith('laser') || key.startsWith('floating-prompt')
+		)
+		if (keys.length) {
+			// if (node.laser) return
+			keys.forEach((key) => {
 				delete node[key]
 			})
 			delete node.laser

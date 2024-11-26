@@ -7,7 +7,8 @@ type Laser = {
 	caretPos?: number
 	clientX?: number
 	clientY?: number
-	prompt: string
+	response: string
+	text: string
 }
 type LaserStoreType = {
 	active: string | null
@@ -15,6 +16,8 @@ type LaserStoreType = {
 	editorY?: number
 	lasers: Record<string, Laser>
 	promptActive: string | null
+	responseActive: string | null
+	screenY?: number
 	triggerRephrase?: string | null
 }
 
@@ -22,6 +25,7 @@ const initialState: LaserStoreType = {
 	lasers: {},
 	promptActive: null,
 	active: null,
+	responseActive: null,
 }
 
 const useLaserStore = create(
@@ -34,15 +38,15 @@ export const setLaser = (laser: { id: string; laser: Laser }) => {
 	})
 }
 
-export const setPrompt = (prompt: string) => {
+export const setPrompt = (response: string) => {
 	useLaserStore.setState((state) => {
-		state.lasers[state.active!].prompt = prompt
+		state.lasers[state.active!].response = response
 	})
 }
 
 export const getPrompt = () => {
 	return useLaserStore.getState().lasers[useLaserStore.getState().active!]
-		?.prompt
+		?.response
 }
 
 export const getActiveLaser = () => {
@@ -69,4 +73,11 @@ export const setTriggerRephrase = (value: string | null) => {
 	useLaserStore.setState({ triggerRephrase: value })
 }
 
+export const setScreenY = (screenY: number) => {
+	useLaserStore.setState({ screenY })
+}
+
+export const setResponseActive = (responseActive: string | null) => {
+	useLaserStore.setState({ responseActive })
+}
 export default useLaserStore
