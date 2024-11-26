@@ -83,7 +83,7 @@ export default function FloatingPrompt() {
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
-				top: (screenY || 0) - (editorY || 0) + 50,
+				top: (screenY || 0) - (editorY || 0) + 20,
 				left: 48,
 			}}
 		>
