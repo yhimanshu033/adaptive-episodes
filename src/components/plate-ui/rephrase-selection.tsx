@@ -11,11 +11,12 @@ import usePlateStore from '@/store/plate-store'
 import { ArrowLeft, RotateCw, X } from 'lucide-react'
 
 import Spinner from '@/components/ui/spinner'
-import DiffView from '@/lib/plate/plugins/diff'
 import { cn } from '@/lib/utils'
 
 import { RephraseSelectionProps } from '@/types/editor-types'
 
+import { ScrollArea } from '../ui/scroll-area'
+import { Textarea } from '../ui/textarea'
 import { Button } from './button'
 
 const RephraseSelection = ({
@@ -23,8 +24,8 @@ const RephraseSelection = ({
 	onRephrase,
 	getSelectedText,
 	reset: resetRephrase,
-	current,
-	previous,
+	// current,
+	// previous,
 	elemKey: key,
 }: RephraseSelectionProps) => {
 	const [textInput, setTextInput] = useState('')
@@ -115,7 +116,16 @@ const RephraseSelection = ({
 					>
 						<X size={10} />
 					</Button>
-					<DiffView previous={previous} current={current} />
+					<ScrollArea className="mb-1 rounded border p-2 pr-3">
+						<p className="mb-2 max-h-16 text-wrap text-muted-foreground">
+							{getSelectedText().text}
+						</p>
+					</ScrollArea>
+					<Textarea
+						className="mb-4 min-w-[300px] text-accent-foreground"
+						value={textInput}
+						onChange={(e) => setTextInput(e.target.value)}
+					/>
 					<div className="flex items-center justify-between">
 						<Button
 							variant="ghost"
