@@ -28,7 +28,6 @@ export default function FloatingLaserResponse() {
 	const { isTranslationOpen, sidebar } = usePlateStore()
 	const minify = sidebar || isTranslationOpen
 
-	// const [val, setVal] = React.useState<string>('')
 	const laser =
 		responseActive === activeLaser && responseActive
 			? allLasers[responseActive]
@@ -126,8 +125,6 @@ export default function FloatingLaserResponse() {
 		<div
 			onBlur={(e) => {
 				if (e.currentTarget.contains(e.relatedTarget)) return
-				// onResetLeaf()
-				// setPromptActive(null)
 				setActiveLaser(null)
 			}}
 			className={cn(
