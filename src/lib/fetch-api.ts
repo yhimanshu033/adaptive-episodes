@@ -96,6 +96,7 @@ export async function fetchAPI<
 			next: {
 				revalidate: 0,
 			},
+			mode: 'cors',
 		})
 
 		const responseData = (await response.json()) as ResponseDataT
