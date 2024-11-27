@@ -49,7 +49,6 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		setLaser({
 			laser: {
 				...laser,
-				clientX: rect.x,
 				clientY: rect.y,
 			},
 			id: key,

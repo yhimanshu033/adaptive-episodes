@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React, { useEffect } from 'react'
-import { setDiffValue } from '@/store/diff-store'
+import React from 'react'
 import { cn } from '@udecode/cn'
 import { BoldPlugin, ItalicPlugin } from '@udecode/plate-basic-marks/react'
 import { SoftBreakPlugin } from '@udecode/plate-break/react'
@@ -207,10 +206,6 @@ export const useDiffEditor = ({
 		},
 		[diffValue]
 	)
-
-	useEffect(() => {
-		setDiffValue(diffValue)
-	}, [diffValue])
 
 	return editor
 }

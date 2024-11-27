@@ -1,7 +1,5 @@
 import { Value } from '@udecode/plate-common'
 
-import { MinifiedValue } from './common'
-
 export interface LaserToolsParams {
 	action: string
 	context?: string
@@ -44,14 +42,6 @@ export interface AIChatBotParams {
 	episodesCount: number
 }
 
-export interface AIChatBotApiResponse {
-	data: {
-		action: string
-		response: string
-	}
-	message: string
-}
-
 export interface AIStoreType {
 	messages: {
 		content: string
@@ -83,20 +73,6 @@ export interface ExplorerType {
 export interface PlotExplorerApiResponse {
 	data: ExplorerType[]
 	message: string
-}
-
-export interface TAiChatbotRequest {
-	beatsheets_array: string[]
-	chat_history: string
-	context: string
-	ep_number: string
-	ep_text: string
-	ep_text_json: MinifiedValue
-	highlighted_text: string
-	loglines_array: string[]
-	next_text: string
-	prev_text: string
-	user_message: string
 }
 
 export interface TAiChatbotResponse {
