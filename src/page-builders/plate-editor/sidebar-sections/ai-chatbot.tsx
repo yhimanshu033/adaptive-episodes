@@ -11,12 +11,14 @@ import { ex } from '@/mock-data/aichatbot'
 import useAIStore, {
 	addMessages,
 	clearMessages,
+	setAcceptedValue,
 	setPrevValue,
 	setResponseValue,
 	updateMessages,
 } from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
 import { useEditorRef } from '@udecode/plate-common/react'
+import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
 import { LoaderCircle, Send, Trash2 } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -35,6 +37,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
+import { DiffStatus } from '@/lib/plate/plugins/diff'
 import { cn } from '@/lib/utils'
 
 const AIChatbot = () => {
@@ -51,7 +54,10 @@ const AIChatbot = () => {
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
+	// const { children: value } = useEditorState("diff-editor")
+	const value = useAIStore(useShallow((state) => state.acceptedValue))
 
+	console.log({ value, c: editor.children })
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
@@ -102,15 +108,17 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!aiResponseTest) return
 		setResponseValue(structuredClone(ex.current))
+		setAcceptedValue(structuredClone(ex.current))
 		setPrevValue(structuredClone(ex.previous))
 		addMessages({ role: 'assistant', content: 'accept-reject' })
 	}, [aiResponseTest])
 
 	function handleAccept(i: number) {
-		editor.tf.setValue(structuredClone(ex.current))
+		handleAcceptResponse()
+		// editor.tf.setValue(structuredClone(ex.current))
 		updateMessages({ role: 'assistant', content: 'accepted' }, i)
-		setResponseValue(null)
-		setPrevValue(null)
+		// setResponseValue(null)
+		// setPrevValue(null)
 	}
 
 	function handleReject(i: number) {
@@ -125,6 +133,50 @@ const AIChatbot = () => {
 		'Review ✅',
 		'Add a scene 🎞️',
 	]
+
+	function handleAcceptResponse() {
+		if (!value) return
+		const newValue = structuredClone(value)
+		const currVal = newValue.map((node) => ({
+			...node,
+			children: node.children.map((child) => {
+				const accepted =
+					child.status === DiffStatus.ACCEPTED ||
+					child.status === DiffStatus.PENDING
+				if ('diff' in child && child.diff_id) {
+					if (
+						(accepted &&
+							(child.diffOperation as DiffOperation).type !== 'delete') ||
+						(!accepted &&
+							(child.diffOperation as DiffOperation).type === 'delete') ||
+						(!accepted &&
+							(child.diffOperation as DiffOperation).type === 'update')
+					) {
+						if (
+							accepted &&
+							(child.diffOperation as DiffOperation).type === 'update'
+						) {
+							Object.keys(
+								(child.diffOperation as DiffUpdate)?.newProperties
+							).forEach((key) => {
+								delete child[key]
+							})
+						}
+						delete child.diff
+						delete child.diff_id
+						delete child.status
+						delete child.diffOperation
+					}
+				}
+				return child
+			}),
+		}))
+		// console.log({ currVal, value })
+		editor.tf.setValue(currVal)
+		setResponseValue(null)
+		setPrevValue(null)
+		setAcceptedValue(null)
+	}
 
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">

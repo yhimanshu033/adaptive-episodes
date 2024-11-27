@@ -53,6 +53,7 @@ export interface AIChatBotApiResponse {
 }
 
 export interface AIStoreType {
+	acceptedValue: Value | null
 	messages: {
 		content: string
 		role: 'user' | 'assistant'

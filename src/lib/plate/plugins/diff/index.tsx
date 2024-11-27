@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import React, { useEffect } from 'react'
-import { setPrevValue } from '@/store/ai-store'
+import { setAcceptedValue } from '@/store/ai-store'
 import { setDiffValue } from '@/store/diff-store'
 import usePlateStore, { setActiveDiffId } from '@/store/plate-store'
 import { cn } from '@udecode/cn'
@@ -32,6 +32,7 @@ import {
 	type DiffOperation,
 	type DiffUpdate,
 } from '@udecode/plate-diff'
+import { Check, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/ui/button'
@@ -137,41 +138,6 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	const value = structuredClone(props.editor.children)
 	const activeDiffId = usePlateStore(useShallow((state) => state.activeDiffId))
 
-	function transformChildren(children: TDescendant[]) {
-		const newChildren: TDescendant[] = []
-		children.forEach((child) => {
-			if ('diff' in child) {
-				if (
-					(child.status === DiffStatus.ACCEPTED &&
-						(child.diffOperation as any)!.type !== 'delete') ||
-					(child.status !== DiffStatus.ACCEPTED &&
-						(child.diffOperation as any)!.type === 'delete') ||
-					(child.status !== DiffStatus.ACCEPTED &&
-						(child.diffOperation as any)!.type === 'update')
-				) {
-					if (
-						child.status !== DiffStatus.ACCEPTED &&
-						(child.diffOperation as any)!.type === 'update'
-					) {
-						Object.keys((child.diffOperation as any)?.newProperties).forEach(
-							(key) => {
-								delete child[key]
-							}
-						)
-					}
-					delete child.diff
-					delete child.diff_id
-					delete child.status
-					delete child.diffOperation
-					newChildren.push(child)
-				}
-			} else {
-				newChildren.push(child)
-			}
-		})
-		return newChildren
-	}
-
 	function handleStatusChange(status: DiffStatus) {
 		console.log({ status })
 		function findNode(node: TDescendant) {
@@ -184,25 +150,17 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 			}
 		}
 		value.forEach(findNode)
-		let newValue = structuredClone(value)
-		if (status === DiffStatus.REJECTED) {
-			newValue = newValue.map((node) => ({
-				...node,
-				children: node.children.filter(
-					(child) => child.diff_id !== leaf.diff_id
-				),
-			}))
-			console.log({ newValue })
-		}
-		const currVal = newValue.map((node) => ({
-			...node,
-			children: transformChildren(node.children),
-		}))
-		props.editor.tf.setValue(newValue)
-		// setResponseValue(value)
-		setPrevValue(currVal)
+		props.editor.tf.setValue(structuredClone(value))
+		setAcceptedValue(structuredClone(value))
 	}
+
+	const status = leaf.status
+	const operation = leaf.diffOperation.type
 	const isActive = activeDiffId === leaf.diff_id
+	const show =
+		(status === DiffStatus.ACCEPTED && operation === 'insert') ||
+		(status === DiffStatus.REJECTED && operation === 'delete') ||
+		operation === 'update'
 	return (
 		<PlateLeaf
 			onClick={() => {
@@ -212,27 +170,38 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 			{...props}
 			asChild
 		>
-			<Component
-				className={cn(diffOperationColors[diffOperation.type], 'relative')}
-				title={
-					diffOperation.type === 'update'
-						? describeUpdate(diffOperation)
-						: undefined
-				}
-			>
-				{isActive && (
-					<div className="absolute bottom-0 translate-y-full rounded-md bg-primary p-2">
-						{leaf.status}
-						<Button onClick={() => handleStatusChange(DiffStatus.ACCEPTED)}>
-							accept
-						</Button>
-						<Button onClick={() => handleStatusChange(DiffStatus.REJECTED)}>
-							reject
-						</Button>
-					</div>
-				)}
-				{children}
-			</Component>
+			{leaf.status === DiffStatus.PENDING ? (
+				<Component
+					className={cn(diffOperationColors[diffOperation.type], 'relative')}
+					title={
+						diffOperation.type === 'update'
+							? describeUpdate(diffOperation)
+							: undefined
+					}
+				>
+					{isActive && (
+						<div className="absolute bottom-0 flex translate-y-full gap-2 rounded-md p-1">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => handleStatusChange(DiffStatus.ACCEPTED)}
+							>
+								<Check size={16} />
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => handleStatusChange(DiffStatus.REJECTED)}
+							>
+								<X size={16} />
+							</Button>
+						</div>
+					)}
+					{children}
+				</Component>
+			) : (
+				show && <>{children}</>
+			)}
 		</PlateLeaf>
 	)
 }
