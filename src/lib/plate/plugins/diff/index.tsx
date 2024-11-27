@@ -139,7 +139,6 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	const activeDiffId = usePlateStore(useShallow((state) => state.activeDiffId))
 
 	function handleStatusChange(status: DiffStatus) {
-		console.log({ status })
 		function findNode(node: TDescendant) {
 			if ('diff' in node) {
 				if (node.diff_id === leaf.diff_id) {
@@ -164,7 +163,6 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	return (
 		<PlateLeaf
 			onClick={() => {
-				console.log({ leaf })
 				setActiveDiffId(leaf.diff_id)
 			}}
 			{...props}
@@ -221,7 +219,6 @@ export interface DiffProps extends LegacyDiffProps {
 const defaultPlugins = [BoldPlugin, ItalicPlugin, DiffPlugin, SoftBreakPlugin]
 
 const getInsertProps = (): DiffProps => {
-	// console.log({ node })
 	return {
 		diff: true,
 		diffOperation: {
@@ -280,6 +277,10 @@ export const useDiffEditor = ({
 			getUpdateProps,
 		}) as Value
 	}, [previous, current, plugins])
+
+	useEffect(() => {
+		setAcceptedValue(diffValue)
+	}, [diffValue])
 
 	const editor = usePlateEditor(
 		{

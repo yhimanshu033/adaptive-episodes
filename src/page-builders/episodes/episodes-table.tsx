@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { episodeLimit, statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
+import { useQueryClient } from '@tanstack/react-query'
 import {
 	ColumnDef,
 	flexRender,
@@ -61,6 +62,8 @@ const EpisodesTable = () => {
 	const [episodeFilter, setEpisodeFilter] = useState<string>('')
 	const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+
+	const queryClient = useQueryClient()
 
 	const selectedEpisodeRef = useRef<{
 		episodes: TEpisode[]
@@ -226,6 +229,10 @@ const EpisodesTable = () => {
 				})
 			})
 		)
+		await queryClient.invalidateQueries({
+			queryKey: ['episodes'],
+			type: 'all',
+		})
 	}
 
 	const handleWriterChange = (episodeId: number, newWriter: string) => {

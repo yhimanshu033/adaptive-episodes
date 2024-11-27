@@ -1,4 +1,4 @@
-import { TDescendant, Value } from '@udecode/plate-common'
+import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -154,4 +154,59 @@ export function jsonify(value: string): string | Value {
 	} catch (e) {
 		return value
 	}
+}
+
+export function clearLasers(ogVal: Value): Value {
+	const val = structuredClone(ogVal)
+	const traverse = (node: TDescendant) => {
+		const keys = Object.keys(node).filter(
+			(key) =>
+				key.startsWith('laser') ||
+				key.startsWith('floating-prompt') ||
+				key.startsWith('prompt-')
+		)
+		if (keys.length) {
+			// if (node.laser) return
+			keys.forEach((key) => {
+				delete node[key]
+			})
+			delete node.laser
+		} else if ('children' in node) {
+			;(node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+	val.forEach(traverse)
+	return val
+}
+
+export function mergeElementNodes(ogVal: TElement): TElement {
+	const val = structuredClone(ogVal)
+	const merged: TDescendant[] = []
+	val.children.forEach((node) => {
+		const keys = Object.keys(node)
+		const prevKeys = merged.length ? Object.keys(merged[merged.length - 1]) : []
+		if ('text' in node) {
+			if (
+				merged.length &&
+				'text' in merged[merged.length - 1] &&
+				keys.every((key) => prevKeys.includes(key))
+			) {
+				;(merged[merged.length - 1] as TText).text += String(node.text)
+			} else {
+				merged.push(node)
+			}
+		} else {
+			merged.push(node)
+		}
+	})
+	return { ...val, children: merged }
+}
+
+export function mergeValue(ogVal: Value): Value {
+	const val = structuredClone(ogVal)
+	const merged: Value = []
+	val.forEach((node) => {
+		merged.push(mergeElementNodes(node))
+	})
+	return merged
 }

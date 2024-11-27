@@ -5,7 +5,7 @@ import { useEditorReadOnly, useEditorState } from '@udecode/plate-common/react'
 import { LoaderCircle, Save } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { clearLasers, cn } from '@/lib/utils'
 
 const SaveEpisode = () => {
 	const { children } = useEditorState()
@@ -21,7 +21,9 @@ const SaveEpisode = () => {
 		const currentChildren = JSON.stringify(children)
 		if (savedRef.current !== currentChildren) {
 			savedRef.current = currentChildren
-			saveEpisodeMutation.mutate({ text: savedRef.current })
+			const clearedLaser = clearLasers(children)
+			const text = JSON.stringify(clearedLaser)
+			saveEpisodeMutation.mutate({ text })
 		}
 	}, [children, saveEpisodeMutation])
 

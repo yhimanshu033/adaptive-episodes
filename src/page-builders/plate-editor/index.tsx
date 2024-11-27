@@ -16,6 +16,7 @@ const EpisodePlateEditor = () => {
 			>
 				<PlateEditor />
 			</TooltipProvider>
+			{/* <FloatingPrompt /> */}
 		</main>
 	)
 }

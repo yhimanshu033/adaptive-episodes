@@ -82,6 +82,7 @@ import {
 import { Editor } from '@/components/plate-ui/editor'
 import { FixedToolbar } from '@/components/plate-ui/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui/fixed-toolbar-buttons'
+import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response'
 import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons'
@@ -94,6 +95,7 @@ import {
 } from '@/components/plate-ui/indent-todo-marker-component'
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
 import { LaserLeaf } from '@/components/plate-ui/laser-leaf'
+import LaserPromptLeaf from '@/components/plate-ui/laser-prompt-leaf'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
@@ -101,7 +103,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
-import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
+import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { jsonify } from '@/lib/utils'
 
 import { EStatus } from '@/types/common'
@@ -178,8 +180,9 @@ export default function PlateEditor() {
 
 									<FloatingToolbar>
 										<FloatingToolbarButtons />
+										{/* <FloatingPrompt /> */}
 									</FloatingToolbar>
-									<FloatingPrompt />
+									{/* <FloatingPrompt /> */}
 
 									<CursorOverlay containerRef={containerRef} />
 								</div>
@@ -213,6 +216,8 @@ export default function PlateEditor() {
 						<SeparatorHorizontal />
 					</Button>
 				</div>
+				<FloatingPrompt />
+				<FloatingLaserResponse />
 			</Plate>
 		</DndProvider>
 	)
@@ -231,6 +236,7 @@ export const useMyEditor = ({
 	const editor = createPlateEditor({
 		plugins: [
 			LaserPlugin,
+			PromptPlugin,
 			FindReplacePlugin,
 			HeadingPlugin,
 			HorizontalRulePlugin,
@@ -429,6 +435,7 @@ export const useMyEditor = ({
 					[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
 					[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
 					[CommentsPlugin.key]: CommentLeaf,
+					[PromptPlugin.key]: LaserPromptLeaf,
 				}),
 			// ),
 		},

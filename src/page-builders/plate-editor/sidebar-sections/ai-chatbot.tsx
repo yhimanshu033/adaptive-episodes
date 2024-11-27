@@ -17,7 +17,7 @@ import useAIStore, {
 	updateMessages,
 } from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
-import { useEditorRef } from '@udecode/plate-common/react'
+import { useEditorRef, useEditorState } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
 import { LoaderCircle, Send, Trash2 } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -38,7 +38,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { DiffStatus } from '@/lib/plate/plugins/diff'
-import { cn } from '@/lib/utils'
+import { cn, getText } from '@/lib/utils'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
@@ -54,10 +54,9 @@ const AIChatbot = () => {
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
-	// const { children: value } = useEditorState("diff-editor")
+	const { children } = useEditorState()
 	const value = useAIStore(useShallow((state) => state.acceptedValue))
 
-	console.log({ value, c: editor.children })
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
@@ -74,7 +73,7 @@ const AIChatbot = () => {
 				messages,
 				user_message: input,
 				ep_number: episodeContent?.chapter.seq_number?.toString(),
-				ep_text: episodeContent?.text,
+				ep_text: getText(children),
 			},
 		})
 	}
@@ -108,7 +107,6 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!aiResponseTest) return
 		setResponseValue(structuredClone(ex.current))
-		setAcceptedValue(structuredClone(ex.current))
 		setPrevValue(structuredClone(ex.previous))
 		addMessages({ role: 'assistant', content: 'accept-reject' })
 	}, [aiResponseTest])
@@ -127,35 +125,22 @@ const AIChatbot = () => {
 		setPrevValue(null)
 	}
 
-	const suggestions = [
-		'Add sound effects 🎶',
-		'Enhance Vocabulary 🪄',
-		'Review ✅',
-		'Add a scene 🎞️',
-	]
+	const suggestions = ['Add Music / Sound FX 🎶', 'Voice Pass 🎙️', 'Review ✅']
 
 	function handleAcceptResponse() {
 		if (!value) return
 		const newValue = structuredClone(value)
 		const currVal = newValue.map((node) => ({
 			...node,
-			children: node.children.map((child) => {
-				const accepted =
-					child.status === DiffStatus.ACCEPTED ||
-					child.status === DiffStatus.PENDING
-				if ('diff' in child && child.diff_id) {
-					if (
-						(accepted &&
-							(child.diffOperation as DiffOperation).type !== 'delete') ||
-						(!accepted &&
-							(child.diffOperation as DiffOperation).type === 'delete') ||
-						(!accepted &&
-							(child.diffOperation as DiffOperation).type === 'update')
-					) {
-						if (
-							accepted &&
-							(child.diffOperation as DiffOperation).type === 'update'
-						) {
+			children: node.children
+				.map((child) => {
+					let add = true
+					if ('diff' in child && child.diff_id) {
+						const accepted =
+							child.status === DiffStatus.ACCEPTED ||
+							child.status === DiffStatus.PENDING
+						const type = (child.diffOperation as DiffOperation).type
+						if (type === 'update') {
 							Object.keys(
 								(child.diffOperation as DiffUpdate)?.newProperties
 							).forEach((key) => {
@@ -166,12 +151,22 @@ const AIChatbot = () => {
 						delete child.diff_id
 						delete child.status
 						delete child.diffOperation
+						if (
+							(accepted && type !== 'delete') ||
+							(!accepted && type === 'delete')
+						) {
+							add = true
+						} else {
+							add = false
+						}
 					}
-				}
-				return child
-			}),
+					// child.text = "test"
+					if (add) {
+						return child
+					}
+				})
+				.filter((child) => !!child),
 		}))
-		// console.log({ currVal, value })
 		editor.tf.setValue(currVal)
 		setResponseValue(null)
 		setPrevValue(null)
@@ -180,7 +175,7 @@ const AIChatbot = () => {
 
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
-			<h1 className="mb-4 text-2xl font-bold">AI Chatbot</h1>
+			<h1 className="mb-4 text-2xl font-bold">StoryChat</h1>
 			<ScrollArea className="mb-4 flex-1 rounded-md border p-4">
 				{messages.map((message, index) => (
 					<div
