@@ -4,10 +4,6 @@ import { Session } from 'next-auth'
 import { getToken } from 'next-auth/jwt'
 
 const handleUIRoutes = (req: NextRequest, session: Session) => {
-	const response = NextResponse.next()
-
-	response.headers.set('Access-Control-Allow-Origin', '*')
-
 	const auth = req.nextUrl.clone()
 	auth.pathname = AUTH
 	const afterAuth = req.nextUrl.clone()
@@ -20,7 +16,7 @@ const handleUIRoutes = (req: NextRequest, session: Session) => {
 		return NextResponse.redirect(afterAuth)
 	}
 
-	return response
+	return NextResponse.next()
 }
 
 export async function middleware(req: NextRequest) {
