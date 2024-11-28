@@ -19,7 +19,9 @@ const useEpisodeHook = () => {
 			statusChange,
 			selectedChapterId,
 			selectedProjectId,
+			chapter_title,
 		}: {
+			chapter_title?: string
 			selectedChapterId?: number
 			selectedProjectId?: number
 			statusChange?: EStatus
@@ -32,6 +34,7 @@ const useEpisodeHook = () => {
 				status:
 					statusChange ||
 					(status === BASE_STATUS ? EStatus.FIRST_DRAFT : status),
+				chapter_title,
 			})
 		},
 		[chapterId, id, status]
