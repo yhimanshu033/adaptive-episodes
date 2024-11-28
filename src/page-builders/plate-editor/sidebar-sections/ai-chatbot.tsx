@@ -19,7 +19,7 @@ import useAIStore, {
 import { useGlobalStore } from '@/store/global-store'
 import { useEditorRef, useEditorState } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
-import { LoaderCircle, Send, Trash2 } from 'lucide-react'
+import { Check, CheckCheck, LoaderCircle, Send, Trash2, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
@@ -37,6 +37,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
+import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { DiffStatus } from '@/lib/plate/plugins/diff'
 import { cn, getText } from '@/lib/utils'
 
@@ -56,6 +57,7 @@ const AIChatbot = () => {
 	const editor = useEditorRef()
 	const { children } = useEditorState()
 	const value = useAIStore(useShallow((state) => state.acceptedValue))
+	const prevValue = useAIStore(useShallow((state) => state.prevValue))
 
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
@@ -111,8 +113,8 @@ const AIChatbot = () => {
 		addMessages({ role: 'assistant', content: 'accept-reject' })
 	}, [aiResponseTest])
 
-	function handleAccept(i: number) {
-		handleAcceptResponse()
+	function handleAccept(i: number, all: boolean = true) {
+		handleAcceptResponse(all)
 		// editor.tf.setValue(structuredClone(ex.current))
 		updateMessages({ role: 'assistant', content: 'accepted' }, i)
 		// setResponseValue(null)
@@ -123,11 +125,12 @@ const AIChatbot = () => {
 		updateMessages({ role: 'assistant', content: 'rejected' }, i)
 		setResponseValue(null)
 		setPrevValue(null)
+		if (prevValue) editor.tf.setValue(structuredClone(prevValue))
 	}
 
 	const suggestions = ['Add Music / Sound FX 🎶', 'Voice Pass 🎙️', 'Review ✅']
 
-	function handleAcceptResponse() {
+	function handleAcceptResponse(all: boolean = true) {
 		if (!value) return
 		const newValue = structuredClone(value)
 		const currVal = newValue.map((node) => ({
@@ -136,9 +139,10 @@ const AIChatbot = () => {
 				.map((child) => {
 					let add = true
 					if ('diff' in child && child.diff_id) {
-						const accepted =
-							child.status === DiffStatus.ACCEPTED ||
-							child.status === DiffStatus.PENDING
+						const accepted = all
+							? child.status === DiffStatus.ACCEPTED ||
+								child.status === DiffStatus.PENDING
+							: child.status === DiffStatus.ACCEPTED
 						const type = (child.diffOperation as DiffOperation).type
 						if (type === 'update') {
 							Object.keys(
@@ -191,10 +195,26 @@ const AIChatbot = () => {
 						{message.role === 'assistant' &&
 						message.content === 'accept-reject' ? (
 							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
-								<Button onClick={() => handleAccept(index)}>Accept</Button>
-								<Button variant="outline" onClick={() => handleReject(index)}>
-									Reject
-								</Button>
+								<TooltipComponent tooltip={'Done'}>
+									<Button onClick={() => handleAccept(index, false)}>
+										{' '}
+										<Check />
+									</Button>
+								</TooltipComponent>
+								<TooltipComponent tooltip={'Accept All'}>
+									<Button
+										variant="outline"
+										onClick={() => handleAccept(index, true)}
+									>
+										{' '}
+										<CheckCheck />
+									</Button>
+								</TooltipComponent>
+								<TooltipComponent tooltip={'Reject All'}>
+									<Button variant="outline" onClick={() => handleReject(index)}>
+										<X />
+									</Button>
+								</TooltipComponent>
 							</div>
 						) : message.role === 'assistant' &&
 						  (message.content === 'accepted' ||
