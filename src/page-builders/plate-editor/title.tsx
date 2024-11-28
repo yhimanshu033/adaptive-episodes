@@ -1,5 +1,8 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { useEditorReadOnly } from '@udecode/plate-common/react'
 import { ArrowLeft } from 'lucide-react'
 
 import EditableText from '@/components/editable-text'
@@ -14,11 +17,24 @@ const Title = ({
 }) => {
 	const router = useRouter()
 	const { id } = useParams()
+	const { data: episodeContent } = useEpisodeContent()
+	const { saveEpisodeMutation } = useEpisodeHook()
+	const readOnly = useEditorReadOnly()
+
 	const handleClick = () => {
 		router.replace(
 			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}`
 		)
 	}
+
+	const updateChapterTitle = (chapter_title: string) => {
+		if (episodeContent?.chapter.chapter_title === chapter_title) return
+		saveEpisodeMutation.mutate({
+			chapter_title,
+			text: episodeContent?.text || '',
+		})
+	}
+
 	return (
 		<div className="flex items-center gap-2">
 			<Button variant="ghost" size="icon" onClick={handleClick}>
@@ -30,7 +46,8 @@ const Title = ({
 				text={decodeURIComponent(title)}
 				rootClass="text-xl"
 				inputClass="text-xl"
-				isEditable
+				isEditable={!readOnly}
+				onComplete={updateChapterTitle}
 			/>
 		</div>
 	)
