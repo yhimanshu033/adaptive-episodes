@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { DiffStatus } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -38,7 +39,6 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
-import { DiffStatus } from '@/lib/plate/plugins/diff'
 import { cn, getText } from '@/lib/utils'
 
 const AIChatbot = () => {
@@ -56,8 +56,8 @@ const AIChatbot = () => {
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
 	const { children } = useEditorState()
-	const value = useAIStore(useShallow((state) => state.acceptedValue))
-	const prevValue = useAIStore(useShallow((state) => state.prevValue))
+	const value = useAIStore((state) => state.acceptedValue)
+	const prevValue = useAIStore((state) => state.prevValue)
 
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
@@ -115,10 +115,7 @@ const AIChatbot = () => {
 
 	function handleAccept(i: number, all: boolean = true) {
 		handleAcceptResponse(all)
-		// editor.tf.setValue(structuredClone(ex.current))
 		updateMessages({ role: 'assistant', content: 'accepted' }, i)
-		// setResponseValue(null)
-		// setPrevValue(null)
 	}
 
 	function handleReject(i: number) {
@@ -130,52 +127,54 @@ const AIChatbot = () => {
 
 	const suggestions = ['Add Music / Sound FX 🎶', 'Voice Pass 🎙️', 'Review ✅']
 
-	function handleAcceptResponse(all: boolean = true) {
-		if (!value) return
-		const newValue = structuredClone(value)
-		const currVal = newValue.map((node) => ({
-			...node,
-			children: node.children
-				.map((child) => {
-					let add = true
-					if ('diff' in child && child.diff_id) {
-						const accepted = all
-							? child.status === DiffStatus.ACCEPTED ||
-								child.status === DiffStatus.PENDING
-							: child.status === DiffStatus.ACCEPTED
-						const type = (child.diffOperation as DiffOperation).type
-						if (type === 'update') {
-							Object.keys(
-								(child.diffOperation as DiffUpdate)?.newProperties
-							).forEach((key) => {
-								delete child[key]
-							})
+	const handleAcceptResponse = useCallback(
+		(all: boolean = true) => {
+			if (!value) return
+			const newValue = structuredClone(value)
+			const currVal = newValue.map((node) => ({
+				...node,
+				children: node.children
+					.map((child) => {
+						let add = true
+						if ('diff' in child && child.diff_id) {
+							const accepted = all
+								? child.status === DiffStatus.ACCEPTED ||
+									child.status === DiffStatus.PENDING
+								: child.status === DiffStatus.ACCEPTED
+							const type = (child.diffOperation as DiffOperation).type
+							if (type === 'update') {
+								Object.keys(
+									(child.diffOperation as DiffUpdate)?.newProperties
+								).forEach((key) => {
+									delete child[key]
+								})
+							}
+							delete child.diff
+							delete child.diff_id
+							delete child.status
+							delete child.diffOperation
+							if (
+								(accepted && type !== 'delete') ||
+								(!accepted && type === 'delete')
+							) {
+								add = true
+							} else {
+								add = false
+							}
 						}
-						delete child.diff
-						delete child.diff_id
-						delete child.status
-						delete child.diffOperation
-						if (
-							(accepted && type !== 'delete') ||
-							(!accepted && type === 'delete')
-						) {
-							add = true
-						} else {
-							add = false
+						if (add) {
+							return child
 						}
-					}
-					// child.text = "test"
-					if (add) {
-						return child
-					}
-				})
-				.filter((child) => !!child),
-		}))
-		editor.tf.setValue(currVal)
-		setResponseValue(null)
-		setPrevValue(null)
-		setAcceptedValue(null)
-	}
+					})
+					.filter((child) => !!child),
+			}))
+			editor.tf.setValue(currVal)
+			setResponseValue(null)
+			setPrevValue(null)
+			setAcceptedValue(null)
+		},
+		[value, editor.tf]
+	)
 
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
@@ -197,7 +196,6 @@ const AIChatbot = () => {
 							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
 								<TooltipComponent tooltip={'Done'}>
 									<Button onClick={() => handleAccept(index, false)}>
-										{' '}
 										<Check />
 									</Button>
 								</TooltipComponent>
@@ -206,7 +204,6 @@ const AIChatbot = () => {
 										variant="outline"
 										onClick={() => handleAccept(index, true)}
 									>
-										{' '}
 										<CheckCheck />
 									</Button>
 								</TooltipComponent>

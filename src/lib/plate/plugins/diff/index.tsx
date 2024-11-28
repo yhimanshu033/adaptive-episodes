@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
+import { AiDiffOperation, DiffStatus } from '@/constants/ai-constants'
 import { setAcceptedValue } from '@/store/ai-store'
 import { setDiffValue } from '@/store/diff-store'
 import usePlateStore, { setActiveDiffId } from '@/store/plate-store'
@@ -33,14 +34,13 @@ import {
 	type DiffUpdate,
 } from '@udecode/plate-diff'
 import { Check, X } from 'lucide-react'
-import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/ui/button'
 
 const diffOperationColors: Record<DiffOperation['type'], string> = {
-	delete: 'bg-red-500/40',
-	insert: 'bg-green-500/40',
-	update: 'bg-blue-500/40',
+	[AiDiffOperation.DELETE]: 'bg-red-500/40',
+	[AiDiffOperation.INSERT]: 'bg-green-500/40',
+	[AiDiffOperation.UPDATE]: 'bg-blue-500/40',
 }
 
 const describeUpdate = ({ newProperties, properties }: DiffUpdate) => {
@@ -100,9 +100,9 @@ export const DiffPlugin = toPlatePlugin(
 
 					const diffOperation = element.diffOperation as DiffOperation
 					const label = {
-						delete: 'deletion',
-						insert: 'insertion',
-						update: 'update',
+						[AiDiffOperation.DELETE]: 'deletion',
+						[AiDiffOperation.INSERT]: 'insertion',
+						[AiDiffOperation.UPDATE]: 'update',
 					}[diffOperation.type]
 
 					const Component = isInline(editor, element) ? 'span' : 'div'
@@ -111,7 +111,7 @@ export const DiffPlugin = toPlatePlugin(
 						<Component
 							className={diffOperationColors[diffOperation.type]}
 							title={
-								diffOperation.type === 'update'
+								diffOperation.type === AiDiffOperation.UPDATE
 									? describeUpdate(diffOperation)
 									: undefined
 							}
@@ -129,37 +129,40 @@ export const DiffPlugin = toPlatePlugin(
 function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	const diffOperation = props.leaf.diffOperation as DiffOperation
 	const Component = {
-		delete: 'del',
-		insert: 'ins',
-		update: 'span',
+		[AiDiffOperation.DELETE]: 'del',
+		[AiDiffOperation.INSERT]: 'ins',
+		[AiDiffOperation.UPDATE]: 'span',
 	}[diffOperation.type] as keyof JSX.IntrinsicElements
 	const leaf: any = props.leaf
 
 	const value = structuredClone(props.editor.children)
-	const activeDiffId = usePlateStore(useShallow((state) => state.activeDiffId))
+	const activeDiffId = usePlateStore((state) => state.activeDiffId)
 
-	function handleStatusChange(status: DiffStatus) {
-		function findNode(node: TDescendant) {
-			if ('diff' in node) {
-				if (node.diff_id === leaf.diff_id) {
-					node.status = status
+	const handleStatusChange = useCallback(
+		(status: DiffStatus) => {
+			function findNode(node: TDescendant) {
+				if ('diff' in node) {
+					if (node.diff_id === leaf.diff_id) {
+						node.status = status
+					}
+				} else if ('children' in node) {
+					;(node.children as any[]).forEach(findNode)
 				}
-			} else if ('children' in node) {
-				;(node.children as any[]).forEach(findNode)
 			}
-		}
-		value.forEach(findNode)
-		props.editor.tf.setValue(structuredClone(value))
-		setAcceptedValue(structuredClone(value))
-	}
+			value.forEach(findNode)
+			props.editor.tf.setValue(structuredClone(value))
+			setAcceptedValue(structuredClone(value))
+		},
+		[value, leaf.diff_id, props.editor.tf]
+	)
 
 	const status = leaf.status
 	const operation = leaf.diffOperation.type
 	const isActive = activeDiffId === leaf.diff_id
 	const show =
-		(status === DiffStatus.ACCEPTED && operation === 'insert') ||
-		(status === DiffStatus.REJECTED && operation === 'delete') ||
-		operation === 'update'
+		(status === DiffStatus.ACCEPTED && operation === AiDiffOperation.INSERT) ||
+		(status === DiffStatus.REJECTED && operation === AiDiffOperation.DELETE) ||
+		operation === AiDiffOperation.UPDATE
 	return (
 		<PlateLeaf
 			onClick={() => {
@@ -172,7 +175,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 				<Component
 					className={cn(diffOperationColors[diffOperation.type], 'relative')}
 					title={
-						diffOperation.type === 'update'
+						diffOperation.type === AiDiffOperation.UPDATE
 							? describeUpdate(diffOperation)
 							: undefined
 					}
@@ -222,23 +225,17 @@ const getInsertProps = (): DiffProps => {
 	return {
 		diff: true,
 		diffOperation: {
-			type: 'insert',
+			type: AiDiffOperation.INSERT,
 		},
 		diff_id: nanoid(),
 		status: DiffStatus.PENDING,
 	}
 }
 
-export enum DiffStatus {
-	ACCEPTED = 'accepted',
-	PENDING = 'pending',
-	REJECTED = 'rejected',
-}
-
 export const getDeleteProps = (): DiffProps => ({
 	diff: true,
 	diffOperation: {
-		type: 'delete',
+		type: AiDiffOperation.DELETE,
 	},
 	diff_id: nanoid(),
 	status: DiffStatus.PENDING,
@@ -253,7 +250,7 @@ export const getUpdateProps = (
 	diffOperation: {
 		newProperties,
 		properties,
-		type: 'update',
+		type: AiDiffOperation.UPDATE,
 	},
 	diff_id: nanoid(),
 	status: DiffStatus.PENDING,
@@ -303,7 +300,6 @@ export function DiffView({
 	plugins = defaultPlugins,
 	className,
 }: DiffViewProps) {
-	// const current = usePlateStore(useShallow((state) => state.currentDiffValue))
 	const editor = useDiffEditor({ current, previous, plugins })
 
 	if (!previous || !current) return null
