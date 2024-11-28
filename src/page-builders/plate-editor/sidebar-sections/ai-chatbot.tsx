@@ -176,6 +176,8 @@ const AIChatbot = () => {
 		[value, editor.tf]
 	)
 
+	const changesPending = prevValue && value
+
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
 			<h1 className="mb-4 text-2xl font-bold">StoryChat</h1>
@@ -264,6 +266,7 @@ const AIChatbot = () => {
 							})
 						}}
 						className="mr-2"
+						disabled={!!changesPending}
 					>
 						{suggestion}
 					</Button>
