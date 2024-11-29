@@ -33,7 +33,7 @@ export default function FindAndReplace() {
 	const replaceEnabled = useOption('replaceEnabled')
 	const caseSensitive = useOption('caseSensitive')
 	const [ptr, setPtr] = useState(0)
-	const { data, isLoading, refetch } = useLocalizeHook()
+	const { data, refetch, isFetching } = useLocalizeHook()
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
@@ -166,57 +166,23 @@ export default function FindAndReplace() {
 		editor.tf.setValue(updatedChildren)
 	}
 
-	// const characters = ['Alex', 'Cathy', 'Billy', 'Karen']
-	// const places = [
-	// 	'Sheraton New York',
-	// 	'Sheraton Hotel',
-	// 	'Times Square',
-	// 	'First Republic Bank',
-	// 	'VIP Lounge',
-	// ]
-
-	// const concepts = [
-	// 	'Regenmantel',
-	// 	'Kondome',
-	// 	'Päckchen',
-	// 	'Taschentücher',
-	// 	'Zimmer 1302',
-	// 	'Bademantel',
-	// 	'Haar',
-	// 	'Duschgel',
-	// 	'Schampoo',
-	// 	'Geld',
-	// 	'Erbe',
-	// 	'Luxushotel',
-	// 	'Tür',
-	// 	'Bank',
-	// 	'Karte',
-	// 	'Kunden',
-	// 	'Vermögen',
-	// 	'Tasche',
-	// 	'Regentropfen',
-	// 	'SMS',
-	// 	'VIP-Bereich',
-	// 	'Lounge',
-	// ]
-
-	const characters = data
+	const characters = useMemo(() => data
 		? Object.keys(data.characters).map((key) => {
-				return { ...data.characters[key], name: key }
-			})
-		: []
+			return { ...data.characters[key], name: key }
+		})
+		: [], [data])
 
-	const places = data
+	const places = useMemo(() => data
 		? Object.keys(data.places).map((key) => {
-				return { ...data.places[key], name: key }
-			})
-		: []
+			return { ...data.places[key], name: key }
+		})
+		: [], [data])
 
-	const concepts = data
+	const concepts = useMemo(() => data
 		? Object.keys(data.concepts).map((key) => {
-				return { ...data.concepts[key], name: key }
-			})
-		: []
+			return { ...data.concepts[key], name: key }
+		})
+		: [], [data])
 
 	return (
 		<div className="flex h-[58vh] flex-col gap-4 p-4">
@@ -279,7 +245,7 @@ export default function FindAndReplace() {
 				</p>
 			)}
 
-			{isLoading ? (
+			{isFetching ? (
 				<div className="flex items-center justify-center py-12">
 					<Spinner size={64} />
 				</div>
@@ -305,25 +271,25 @@ export default function FindAndReplace() {
 						</div>
 						<h4 className="pt-2 text-lg font-semibold">Places</h4>
 						<div className="flex flex-wrap gap-2 pt-1">
-							{places.map((character, index) => (
+							{places.map((place, index) => (
 								<Button
-									onClick={() => handleSuggestionClick(character)}
+									onClick={() => handleSuggestionClick(place)}
 									key={index}
 									variant="outline"
 								>
-									{character.name}
+									{place.name}
 								</Button>
 							))}
 						</div>
 						<h4 className="pt-2 text-lg font-semibold">Concepts</h4>
 						<div className="flex flex-wrap gap-2 pt-1">
-							{concepts.map((character, index) => (
+							{concepts.map((concept, index) => (
 								<Button
-									onClick={() => handleSuggestionClick(character)}
+									onClick={() => handleSuggestionClick(concept)}
 									key={index}
 									variant="outline"
 								>
-									{character.name}
+									{concept.name}
 								</Button>
 							))}
 						</div>
