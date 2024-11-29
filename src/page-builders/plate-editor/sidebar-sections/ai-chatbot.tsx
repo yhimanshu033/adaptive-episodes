@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { DiffStatus } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -11,13 +12,15 @@ import { ex } from '@/mock-data/aichatbot'
 import useAIStore, {
 	addMessages,
 	clearMessages,
+	setAcceptedValue,
 	setPrevValue,
 	setResponseValue,
 	updateMessages,
 } from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
 import { useEditorRef, useEditorState } from '@udecode/plate-common/react'
-import { LoaderCircle, Send, Trash2 } from 'lucide-react'
+import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
+import { Check, CheckCheck, LoaderCircle, Send, Trash2, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
@@ -35,6 +38,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
+import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { cn, getText } from '@/lib/utils'
 
 const AIChatbot = () => {
@@ -52,6 +56,8 @@ const AIChatbot = () => {
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
 	const { children } = useEditorState()
+	const value = useAIStore((state) => state.acceptedValue)
+	const prevValue = useAIStore((state) => state.prevValue)
 
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
@@ -107,20 +113,70 @@ const AIChatbot = () => {
 		addMessages({ role: 'assistant', content: 'accept-reject' })
 	}, [aiResponseTest])
 
-	function handleAccept(i: number) {
-		editor.tf.setValue(structuredClone(ex.current))
+	function handleAccept(i: number, all: boolean = true) {
+		handleAcceptResponse(all)
 		updateMessages({ role: 'assistant', content: 'accepted' }, i)
-		setResponseValue(null)
-		setPrevValue(null)
 	}
 
 	function handleReject(i: number) {
 		updateMessages({ role: 'assistant', content: 'rejected' }, i)
 		setResponseValue(null)
 		setPrevValue(null)
+		if (prevValue) editor.tf.setValue(structuredClone(prevValue))
 	}
 
 	const suggestions = ['Add Music / Sound FX 🎶', 'Voice Pass 🎙️', 'Review ✅']
+
+	const handleAcceptResponse = useCallback(
+		(all: boolean = true) => {
+			if (!value) return
+			const newValue = structuredClone(value)
+			const currVal = newValue.map((node) => ({
+				...node,
+				children: node.children
+					.map((child) => {
+						let add = true
+						if ('diff' in child && child.diff_id) {
+							const accepted = all
+								? child.status === DiffStatus.ACCEPTED ||
+									child.status === DiffStatus.PENDING
+								: child.status === DiffStatus.ACCEPTED
+							const type = (child.diffOperation as DiffOperation).type
+							if (type === 'update') {
+								Object.keys(
+									(child.diffOperation as DiffUpdate)?.newProperties
+								).forEach((key) => {
+									delete child[key]
+								})
+							}
+							delete child.diff
+							delete child.diff_id
+							delete child.status
+							delete child.diffOperation
+							if (
+								(accepted && type !== 'delete') ||
+								(!accepted && type === 'delete')
+							) {
+								add = true
+							} else {
+								add = false
+							}
+						}
+						if (add) {
+							return child
+						}
+					})
+					.filter((child) => !!child),
+			}))
+			editor.tf.setValue(currVal)
+			setResponseValue(null)
+			setPrevValue(null)
+			setAcceptedValue(null)
+		},
+		[value, editor.tf]
+	)
+
+	const changesPending = prevValue && value
 
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
@@ -140,10 +196,24 @@ const AIChatbot = () => {
 						{message.role === 'assistant' &&
 						message.content === 'accept-reject' ? (
 							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
-								<Button onClick={() => handleAccept(index)}>Accept</Button>
-								<Button variant="outline" onClick={() => handleReject(index)}>
-									Reject
-								</Button>
+								<TooltipComponent tooltip={'Done'}>
+									<Button onClick={() => handleAccept(index, false)}>
+										<Check />
+									</Button>
+								</TooltipComponent>
+								<TooltipComponent tooltip={'Accept All'}>
+									<Button
+										variant="outline"
+										onClick={() => handleAccept(index, true)}
+									>
+										<CheckCheck />
+									</Button>
+								</TooltipComponent>
+								<TooltipComponent tooltip={'Reject All'}>
+									<Button variant="outline" onClick={() => handleReject(index)}>
+										<X />
+									</Button>
+								</TooltipComponent>
 							</div>
 						) : message.role === 'assistant' &&
 						  (message.content === 'accepted' ||
@@ -196,6 +266,7 @@ const AIChatbot = () => {
 							})
 						}}
 						className="mr-2"
+						disabled={!!changesPending}
 					>
 						{suggestion}
 					</Button>
