@@ -16,8 +16,6 @@ const SaveEpisode = () => {
 	const { saveEpisodeMutation } = useEpisodeHook()
 	const readOnly = useEditorReadOnly()
 
-	console.log({ children })
-
 	useEffect(() => {
 		setCurrentDiffValue(structuredClone(children))
 	}, [children])
