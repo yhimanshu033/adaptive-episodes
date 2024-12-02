@@ -52,12 +52,31 @@ export interface AIChatBotApiResponse {
 	message: string
 }
 
+export enum EMessenger {
+	ASSISTANT = 'assistant',
+	USER = 'user',
+}
+export enum EAction {
+	ACCEPT = 'accept',
+	CHANGES = 'changes',
+	MESSAGE = 'message',
+	REJECT = 'reject',
+	REVIEW = 'review',
+}
+
+export type TMessage =
+	| {
+			content: string
+			role: EMessenger.USER
+	  }
+	| {
+			action: EAction
+			content: string
+			role: EMessenger.ASSISTANT
+	  }
 export interface AIStoreType {
 	acceptedValue: Value | null
-	messages: {
-		content: string
-		role: 'user' | 'assistant'
-	}[]
+	messages: TMessage[]
 	prevValue: Value | null
 	responseValue: Value | null
 }

@@ -65,6 +65,8 @@ export default function useComments() {
 		return sortedComments.some((comment) => comment.id === id)
 	}
 
+	console.log({ allComments })
+
 	return {
 		allComments,
 		comments,
