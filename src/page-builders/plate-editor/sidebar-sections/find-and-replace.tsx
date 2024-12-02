@@ -166,23 +166,35 @@ export default function FindAndReplace() {
 		editor.tf.setValue(updatedChildren)
 	}
 
-	const characters = useMemo(() => data
-		? Object.keys(data.characters).map((key) => {
-			return { ...data.characters[key], name: key }
-		})
-		: [], [data])
+	const characters = useMemo(
+		() =>
+			data
+				? Object.keys(data.characters).map((key) => {
+						return { ...data.characters[key], name: key }
+					})
+				: [],
+		[data]
+	)
 
-	const places = useMemo(() => data
-		? Object.keys(data.places).map((key) => {
-			return { ...data.places[key], name: key }
-		})
-		: [], [data])
+	const places = useMemo(
+		() =>
+			data
+				? Object.keys(data.places).map((key) => {
+						return { ...data.places[key], name: key }
+					})
+				: [],
+		[data]
+	)
 
-	const concepts = useMemo(() => data
-		? Object.keys(data.concepts).map((key) => {
-			return { ...data.concepts[key], name: key }
-		})
-		: [], [data])
+	const concepts = useMemo(
+		() =>
+			data
+				? Object.keys(data.concepts).map((key) => {
+						return { ...data.concepts[key], name: key }
+					})
+				: [],
+		[data]
+	)
 
 	return (
 		<div className="flex h-[58vh] flex-col gap-4 p-4">

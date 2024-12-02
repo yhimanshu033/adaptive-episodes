@@ -1,3 +1,4 @@
+import { TComment } from '@udecode/plate-comments'
 import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -209,4 +210,14 @@ export function mergeValue(ogVal: Value): Value {
 		merged.push(mergeElementNodes(node))
 	})
 	return merged
+}
+
+export function getRecord(comments: TComment[]) {
+	const records: Record<string, TComment> = comments.reduce(
+		(prev, curr) => {
+			return { ...prev, [curr.id]: curr }
+		},
+		{} as Record<string, TComment>
+	)
+	return records
 }

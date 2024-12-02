@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { saveContent } from '@/server-action/content-action'
 import { useMutation } from '@tanstack/react-query'
+import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 
@@ -20,8 +21,10 @@ const useEpisodeHook = () => {
 			selectedChapterId,
 			selectedProjectId,
 			chapter_title,
+			comments,
 		}: {
 			chapter_title?: string
+			comments?: TComment[]
 			selectedChapterId?: number
 			selectedProjectId?: number
 			statusChange?: EStatus
@@ -35,6 +38,9 @@ const useEpisodeHook = () => {
 					statusChange ||
 					(status === BASE_STATUS ? EStatus.FIRST_DRAFT : status),
 				chapter_title,
+				props: {
+					comments,
+				},
 			})
 		},
 		[chapterId, id, status]

@@ -24,6 +24,7 @@ import {
 	unwrapCodeBlock,
 } from '@udecode/plate-code-block'
 import { CodeBlockPlugin } from '@udecode/plate-code-block/react'
+import { TComment } from '@udecode/plate-comments'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
 	HtmlPlugin,
@@ -104,7 +105,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
-import { jsonify } from '@/lib/utils'
+import { getRecord, jsonify } from '@/lib/utils'
 
 import { EStatus } from '@/types/common'
 
@@ -120,7 +121,10 @@ export default function PlateEditor() {
 	const router = useRouter()
 	const { id } = useParams()
 
-	const editor = useMyEditor({ content: content?.text || '' })
+	const editor = useMyEditor({
+		content: content?.text || '',
+		comments: content?.chapter.props.comments,
+	})
 
 	const handleEpisodeChange = (episode: number | null) => {
 		if (!episode) return
@@ -226,7 +230,9 @@ export default function PlateEditor() {
 export const useMyEditor = ({
 	content,
 	id,
+	comments,
 }: {
+	comments?: TComment[]
 	content: string
 	id?: string
 }) => {
@@ -403,6 +409,7 @@ export const useMyEditor = ({
 							avatarUrl: userData?.user?.image || '/placeholder-user.webp',
 						},
 					},
+					comments: comments ? getRecord(comments) : {},
 					myUserId: '1',
 				},
 			}),
