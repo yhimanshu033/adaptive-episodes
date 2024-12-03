@@ -91,7 +91,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 						setReadOnly(newValue === EditorModes.viewing)
 						setOption('isSuggesting', newValue === EditorModes.suggesting)
 
-						if (newValue === 'editing') {
+						if (newValue === EditorModes.editing) {
 							focusEditor(editorRef)
 						}
 					}}
