@@ -42,10 +42,11 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 		}
 	}, [sidebar, setReadOnly])
 
-	let value = 'editing'
-
-	if (readOnly) value = 'viewing'
-	else if (getOption('isSuggesting')) value = 'suggesting'
+	const value = readOnly
+		? 'viewing'
+		: getOption('isSuggesting')
+			? 'suggesting'
+			: 'editing'
 
 	const item: any = {
 		editing: (
