@@ -1,3 +1,5 @@
+import { TComment } from '@udecode/plate-comments'
+
 import { BASE_STATUS, EStatus } from './common'
 
 type TEpisodeProps = {
@@ -19,7 +21,8 @@ export type TEpisode = {
 	parent: number | null
 	project: number
 	props: Record<string, unknown> & {
-		llm_memories: TEpisodeProps
+		comments?: TComment[]
+		llm_memories?: TEpisodeProps
 	}
 	seq_number: number
 	status: EStatus | typeof BASE_STATUS

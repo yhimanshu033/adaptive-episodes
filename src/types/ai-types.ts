@@ -43,6 +43,7 @@ export interface AIChatBotParams {
 }
 
 export interface AIStoreType {
+	acceptedValue: Value | null
 	messages: {
 		content: string
 		role: 'user' | 'assistant'
@@ -81,4 +82,22 @@ export interface TAiChatbotResponse {
 		response: string
 	}
 	message: string
+}
+
+export type TLocalizeObject = {
+	localized_name: string
+	reason: string
+}
+
+export type TLocalizeArrayItem = TLocalizeObject & { name: string }
+
+export type LocalizeRecord = Record<string, TLocalizeObject>
+
+export interface TLocalizeResponse {
+	result: {
+		characters: LocalizeRecord
+		concepts: LocalizeRecord
+		places: LocalizeRecord
+	}
+	task_id: string
 }

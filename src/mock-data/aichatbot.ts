@@ -7,7 +7,6 @@ export const ex = {
 				},
 				{
 					text: 'Regenmantel über und schwang',
-					bold: true,
 				},
 				{
 					text: 'sich auf sein E-Bike Richtung Sheraton Hotel am Times Square.',
