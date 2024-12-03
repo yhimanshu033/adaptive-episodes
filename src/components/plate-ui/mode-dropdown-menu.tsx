@@ -5,10 +5,12 @@ import useCustomPlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
 	focusEditor,
+	useEditorPlugin,
 	useEditorReadOnly,
 	useEditorRef,
 	usePlateStore,
 } from '@udecode/plate-common/react'
+import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 
 import { Icons } from '@/components/icons'
 
@@ -23,10 +25,11 @@ import {
 import { ToolbarButton } from './toolbar'
 
 export function ModeDropdownMenu(props: DropdownMenuProps) {
-	const editor = useEditorRef()
+	const editorRef = useEditorRef()
 	const setReadOnly = usePlateStore().set.readOnly()
 	const readOnly = useEditorReadOnly()
 	const openState = useOpenState()
+	const { setOption, getOption } = useEditorPlugin(SuggestionPlugin)
 
 	const sidebar = useCustomPlateStore((state) => state.sidebar)
 
@@ -42,6 +45,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	let value = 'editing'
 
 	if (readOnly) value = 'viewing'
+	else if (getOption('isSuggesting')) value = 'suggesting'
 
 	const item: any = {
 		editing: (
@@ -54,6 +58,12 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 			<>
 				<Icons.viewing className="mr-2 size-5" />
 				<span className="hidden lg:inline">Viewing</span>
+			</>
+		),
+		suggesting: (
+			<>
+				<Icons.suggesting className="mr-2 size-5" />
+				<span className="hidden lg:inline">Suggesting</span>
 			</>
 		),
 	}
@@ -76,23 +86,23 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 					className="flex flex-col gap-0.5"
 					value={value}
 					onValueChange={(newValue) => {
-						if (newValue !== 'viewing') {
-							setReadOnly(false)
-						}
-						if (newValue === 'viewing') {
-							setReadOnly(true)
+						setReadOnly(newValue === 'viewing')
+						setOption('isSuggesting', newValue === 'suggesting')
 
-							return
-						}
 						if (newValue === 'editing') {
-							focusEditor(editor)
-
-							return
+							focusEditor(editorRef)
 						}
 					}}
 				>
 					<DropdownMenuRadioItem disabled={sidebar === 'far'} value="editing">
 						{item.editing}
+					</DropdownMenuRadioItem>
+
+					<DropdownMenuRadioItem
+						disabled={sidebar === 'far'}
+						value="suggesting"
+					>
+						{item.suggesting}
 					</DropdownMenuRadioItem>
 
 					<DropdownMenuRadioItem value="viewing">
