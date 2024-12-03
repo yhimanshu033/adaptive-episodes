@@ -152,6 +152,7 @@ export function jsonify(value: string): string | Value {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const val = JSON.parse(value)
 		return val as Value
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	} catch (e) {
 		return value
 	}
