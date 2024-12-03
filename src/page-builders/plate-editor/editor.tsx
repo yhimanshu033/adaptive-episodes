@@ -186,9 +186,7 @@ export default function PlateEditor() {
 
 									<FloatingToolbar>
 										<FloatingToolbarButtons />
-										{/* <FloatingPrompt /> */}
 									</FloatingToolbar>
-									{/* <FloatingPrompt /> */}
 
 									<CursorOverlay containerRef={containerRef} />
 								</div>

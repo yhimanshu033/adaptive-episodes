@@ -180,7 +180,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 					}
 				>
 					{isActive && (
-						<div className="absolute bottom-0 flex translate-y-full gap-2 rounded-md p-1">
+						<div className="absolute bottom-0 z-50 flex translate-y-full gap-2 rounded-md p-1">
 							<Button
 								variant="outline"
 								size="sm"

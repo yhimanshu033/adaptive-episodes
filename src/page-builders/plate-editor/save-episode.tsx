@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useComments from '@/hooks/plate/use-comments'
 import { setCurrentDiffValue } from '@/store/plate-store'
@@ -36,9 +36,32 @@ const SaveEpisode = () => {
 	}, [children, saveEpisodeMutation, allComments])
 
 	useEffect(() => {
-		const intervalId = setInterval(handleSave, 30000)
+		const intervalId = setInterval(handleSave, 10000)
 		return () => clearInterval(intervalId)
 	}, [handleSave])
+
+	const isSaved = useMemo(() => {
+		const currentChildren = JSON.stringify(children)
+		const currentComments = JSON.stringify(allComments)
+		return (
+			savedRef.current === currentChildren &&
+			savedCommentsRef.current === currentComments
+		)
+	}, [children, allComments])
+
+	useEffect(() => {
+		const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+			if (!isSaved) {
+				event.preventDefault()
+			}
+		}
+
+		window.addEventListener('beforeunload', handleBeforeUnload)
+
+		return () => {
+			window.removeEventListener('beforeunload', handleBeforeUnload)
+		}
+	}, [isSaved])
 
 	if (readOnly) return null
 
@@ -49,7 +72,7 @@ const SaveEpisode = () => {
 					<LoaderCircle className="animate-spin" size={16} />
 				</div>
 			) : (
-				<Button size="icon" onClick={handleSave}>
+				<Button disabled={isSaved} size="icon" onClick={handleSave}>
 					<Save size={16} />
 				</Button>
 			)}
