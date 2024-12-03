@@ -44,10 +44,10 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	}, [sidebar, setReadOnly])
 
 	const value = readOnly
-		? EditorModes.editing
+		? EditorModes.viewing
 		: getOption('isSuggesting')
-			? EditorModes.viewing
-			: EditorModes.suggesting
+			? EditorModes.suggesting
+			: EditorModes.editing
 
 	const item: any = {
 		editing: (
@@ -88,7 +88,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 					className="flex flex-col gap-0.5"
 					value={value}
 					onValueChange={(newValue) => {
-						setReadOnly(newValue === EditorModes.editing)
+						setReadOnly(newValue === EditorModes.viewing)
 						setOption('isSuggesting', newValue === EditorModes.suggesting)
 
 						if (newValue === 'editing') {
