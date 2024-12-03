@@ -86,6 +86,12 @@ export enum SuggestionActions {
 	REJECT = 'reject',
 }
 
+export enum SuggestionTypes {
+	DELETION = 'deletion',
+	INSERTION = 'insertion',
+	REPLACEMENT = 'replacement',
+}
+
 export const EditorModes = {
 	editing: 'editing',
 	suggesting: 'suggesting',

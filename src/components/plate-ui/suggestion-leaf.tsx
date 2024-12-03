@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from 'react'
-import { SuggestionActions } from '@/constants/editor-constants'
+import {
+	SuggestionActions,
+	SuggestionTypes,
+} from '@/constants/editor-constants'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
 import { TSuggestionText } from '@udecode/plate-suggestion'
@@ -25,7 +28,7 @@ export default function SuggestionLeaf({
 	const isActive =
 		activeSuggestionId === leaf.suggestionId &&
 		!(
-			activeSuggestionDescription.type === 'replacement' &&
+			activeSuggestionDescription.type === SuggestionTypes.REPLACEMENT &&
 			leaf.suggestionDeletion
 		)
 
