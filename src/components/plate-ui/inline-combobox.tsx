@@ -173,16 +173,11 @@ const InlineCombobox = ({
 	)
 
 	const store = useComboboxStore({
-		// open: ,
 		setValue: (newValue) => startTransition(() => setValue(newValue)),
 	})
 
 	const items = store.useState('items')
 
-	/**
-	 * If there is no active ID and the list of items changes, select the first
-	 * item.
-	 */
 	useEffect(() => {
 		if (!store.getState().activeId) {
 			store.setActiveId(store.first())
@@ -264,7 +259,6 @@ const InlineComboboxContent: typeof ComboboxPopover = ({
 	className,
 	...props
 }) => {
-	// Portal prevents CSS from leaking into popover
 	return (
 		<Portal>
 			<ComboboxPopover
@@ -310,7 +304,6 @@ const InlineComboboxItem = ({
 
 	const store = useComboboxContext()!
 
-	// Optimization: Do not subscribe to value if filter is false
 	const search = filter && store.useState('value')
 
 	const visible = useMemo(

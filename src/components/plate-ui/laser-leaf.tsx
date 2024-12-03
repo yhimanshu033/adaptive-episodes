@@ -31,7 +31,6 @@ function getMethodId(elem: TText) {
 export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { children, leaf } = props
-	// const {} = useEditorState()
 	const editor = useEditorRef()
 	const [responseMode, setResponseMode] = React.useState(false)
 	const key = getLaserKey(leaf)
@@ -129,8 +128,6 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			id: key,
 		})
 	}, [key])
-
-	// const showPrompt = promptActive === key && active === key
 
 	const handleBlur = useCallback(
 		(e: React.FocusEvent) => {

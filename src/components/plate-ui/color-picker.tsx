@@ -16,36 +16,22 @@ export const ColorPickerContent = withRef<
 		updateColor: (color: string) => void
 		updateCustomColor: (color: string) => void
 	}
->(
-	(
-		{
-			className,
-			clearColor,
-			color,
-			colors,
-			// customColors,
-			updateColor,
-			// updateCustomColor,
-			...props
-		},
-		ref
-	) => {
-		return (
-			<div
-				ref={ref}
-				className={cn('flex flex-col gap-4 p-4', className)}
-				{...props}
-			>
-				<ColorDropdownMenuItems
-					color={color}
-					colors={colors}
-					updateColor={updateColor}
-					clearColor={clearColor}
-				/>
-			</div>
-		)
-	}
-)
+>(({ className, clearColor, color, colors, updateColor, ...props }, ref) => {
+	return (
+		<div
+			ref={ref}
+			className={cn('flex flex-col gap-4 p-4', className)}
+			{...props}
+		>
+			<ColorDropdownMenuItems
+				color={color}
+				colors={colors}
+				updateColor={updateColor}
+				clearColor={clearColor}
+			/>
+		</div>
+	)
+})
 
 export const ColorPicker = React.memo(
 	ColorPickerContent,

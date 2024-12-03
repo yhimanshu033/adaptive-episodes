@@ -37,7 +37,7 @@ export const getChatbotResponseTest = async (
 				],
 			},
 		]),
+		...params,
 	} as TAiChatbotResponse['data']
-	console.log(params)
 	// TODO: Implement the actual API call
 }
