@@ -167,7 +167,6 @@ export function clearLasers(ogVal: Value): Value {
 				key.startsWith('prompt-')
 		)
 		if (keys.length) {
-			// if (node.laser) return
 			keys.forEach((key) => {
 				delete node[key]
 			})

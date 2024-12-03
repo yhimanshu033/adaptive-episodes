@@ -5,7 +5,6 @@
 import React, { useCallback, useEffect } from 'react'
 import { AiDiffOperation, DiffStatus } from '@/constants/ai-constants'
 import { setAcceptedValue } from '@/store/ai-store'
-import { setDiffValue } from '@/store/diff-store'
 import usePlateStore, { setActiveDiffId } from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import { BoldPlugin, ItalicPlugin } from '@udecode/plate-basic-marks/react'
@@ -286,10 +285,6 @@ export const useDiffEditor = ({
 		},
 		[diffValue]
 	)
-
-	useEffect(() => {
-		setDiffValue(diffValue)
-	}, [diffValue])
 
 	return editor
 }

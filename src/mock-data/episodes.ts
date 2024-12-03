@@ -44,8 +44,6 @@ export const episodes_list = [
 	},
 ]
 
-export type EpisodesType = (typeof episodes_list)[0]
-
 export const mergedEpisodes: TEpisode[] = [
 	{
 		chapter_title: 'Merged Episode 1',

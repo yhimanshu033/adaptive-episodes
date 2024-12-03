@@ -3,9 +3,6 @@ import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
 type Laser = {
-	caretEnd?: number
-	caretPos?: number
-	clientX?: number
 	clientY?: number
 	response: string
 	text: string
@@ -36,21 +33,6 @@ export const setLaser = (laser: { id: string; laser: Laser }) => {
 	useLaserStore.setState((state) => {
 		state.lasers[laser.id] = laser.laser
 	})
-}
-
-export const setPrompt = (response: string) => {
-	useLaserStore.setState((state) => {
-		state.lasers[state.active!].response = response
-	})
-}
-
-export const getPrompt = () => {
-	return useLaserStore.getState().lasers[useLaserStore.getState().active!]
-		?.response
-}
-
-export const getActiveLaser = () => {
-	return useLaserStore.getState().active
 }
 
 export const setActiveLaser = (id: string | null) => {
