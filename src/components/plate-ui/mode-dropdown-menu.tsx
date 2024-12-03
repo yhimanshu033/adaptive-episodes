@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useEffect } from 'react'
+import { EditorModes } from '@/constants/editor-constants'
 import useCustomPlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
@@ -43,10 +44,10 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	}, [sidebar, setReadOnly])
 
 	const value = readOnly
-		? 'viewing'
+		? EditorModes.editing
 		: getOption('isSuggesting')
-			? 'suggesting'
-			: 'editing'
+			? EditorModes.viewing
+			: EditorModes.suggesting
 
 	const item: any = {
 		editing: (
@@ -87,26 +88,29 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 					className="flex flex-col gap-0.5"
 					value={value}
 					onValueChange={(newValue) => {
-						setReadOnly(newValue === 'viewing')
-						setOption('isSuggesting', newValue === 'suggesting')
+						setReadOnly(newValue === EditorModes.editing)
+						setOption('isSuggesting', newValue === EditorModes.suggesting)
 
 						if (newValue === 'editing') {
 							focusEditor(editorRef)
 						}
 					}}
 				>
-					<DropdownMenuRadioItem disabled={sidebar === 'far'} value="editing">
+					<DropdownMenuRadioItem
+						disabled={sidebar === 'far'}
+						value={EditorModes.editing}
+					>
 						{item.editing}
 					</DropdownMenuRadioItem>
 
 					<DropdownMenuRadioItem
 						disabled={sidebar === 'far'}
-						value="suggesting"
+						value={EditorModes.suggesting}
 					>
 						{item.suggesting}
 					</DropdownMenuRadioItem>
 
-					<DropdownMenuRadioItem value="viewing">
+					<DropdownMenuRadioItem value={EditorModes.viewing}>
 						{item.viewing}
 					</DropdownMenuRadioItem>
 				</DropdownMenuRadioGroup>

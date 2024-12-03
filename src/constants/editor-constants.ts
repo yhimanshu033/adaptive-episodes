@@ -86,5 +86,11 @@ export enum SuggestionActions {
 	REJECT = 'reject',
 }
 
+export const EditorModes = {
+	editing: 'editing',
+	suggesting: 'suggesting',
+	viewing: 'viewing',
+}
+
 export const MAIN_EDITOR_ID = 'main-editor'
 export const TRANSLATION_EDITOR_ID = 'translation-editor'
