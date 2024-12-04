@@ -5,6 +5,7 @@ import {
 	SuggestionTypes,
 } from '@/constants/editor-constants'
 import useSuggestions from '@/hooks/plate/use-suggestions'
+import { setSidebar } from '@/store/plate-store'
 import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
 import { TSuggestionText } from '@udecode/plate-suggestion'
 import { Check, X } from 'lucide-react'
@@ -40,7 +41,10 @@ export default function SuggestionLeaf({
 				leaf.suggestionDeletion && 'bg-green-400/20 italic line-through',
 				className
 			)}
-			onClick={() => set('activeSuggestionId', leaf.suggestionId || '')}
+			onClick={() => {
+				set('activeSuggestionId', leaf.suggestionId || '')
+				setSidebar('comments')
+			}}
 			nodeProps={{ ...nodeProps }}
 		>
 			{isActive && (
