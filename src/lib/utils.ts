@@ -235,6 +235,8 @@ export function convertReviewResponse(
 ) {
 	const comments: ReviewComment[] = []
 
+	const responseMap = new Map(response.map((item) => [item.id, item]))
+
 	const applyComment = (
 		nodes: TDescendant[],
 		path: number[]
@@ -243,21 +245,19 @@ export function convertReviewResponse(
 			const currentPath = [...path, index]
 
 			if ('text' in node) {
-				const matchingValue = response.find(
-					(item) => item.id === currentPath.join('_')
-				)
+				const nodeId = currentPath.join('_')
+				const matchingValue = responseMap.get(nodeId)
+
 				if (matchingValue) {
 					const { start, end } = matchingValue.path
 					const { text } = node as { text: string }
 
 					const segments: TText[] = []
 
-					// Before `path.start`
 					if (start > 0) {
 						segments.push({ text: text.slice(0, start) })
 					}
 
-					// Between `path.start` and `path.end`
 					const commentSegment = {
 						text: text.slice(start, end),
 						comment: true,
@@ -268,7 +268,6 @@ export function convertReviewResponse(
 					comments.push({ id, text: matchingValue.comment })
 					segments.push(commentSegment)
 
-					// After `path.end`
 					if (end < text.length) {
 						segments.push({ text: text.slice(end) })
 					}
@@ -276,7 +275,6 @@ export function convertReviewResponse(
 					return segments
 				}
 
-				// No matching value, return the node as is
 				return [node]
 			} else if ('children' in node) {
 				return [
