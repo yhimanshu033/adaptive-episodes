@@ -17,6 +17,12 @@ export enum SuggestionTypes {
 	REPLACEMENT = 'replacement',
 }
 
+export const SuggestionTypesMap: Record<SuggestionTypes, string> = {
+	deletion: 'Delete',
+	insertion: 'Add',
+	replacement: 'Replace',
+}
+
 export const EditorModes = {
 	editing: 'editing',
 	suggesting: 'suggesting',

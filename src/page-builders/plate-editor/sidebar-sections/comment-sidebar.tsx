@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils'
 
 import { TCustomComment } from '@/types/editor-types'
 
+import Suggestions from './suggestions'
+
 function CommentComponent({
 	comment,
 	activeCommentId,
@@ -120,6 +122,7 @@ export default function CommentSidebar() {
 				/>
 			))}
 			{!!myUserId && activeCommentId && !commentExists && <CommentCreateForm />}
+			<Suggestions />
 		</div>
 	)
 }
