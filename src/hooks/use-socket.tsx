@@ -83,7 +83,6 @@ export const useSocketUtil = () => {
 	const getResponse = useCallback(<T,>(taskId: string) => {
 		return new Promise<T>((resolve) => {
 			const checkResponse = () => {
-				// console.log({ responsesRef: responsesRef.current, taskId }) // Uncomment for debugging
 				if (responsesRef.current[taskId]) {
 					resolve(responsesRef.current[taskId].result as T)
 				}

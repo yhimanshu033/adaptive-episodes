@@ -67,8 +67,6 @@ export default function FloatingPrompt() {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const name = useMemo(nanoid, [promptActive])
 
-	// if (!laser) return null
-
 	if (!promptActive || !promptActive.startsWith('floating')) return null
 
 	return (
@@ -76,7 +74,6 @@ export default function FloatingPrompt() {
 			onBlur={(e) => {
 				if (e.currentTarget.contains(e.relatedTarget)) return
 				onResetLeaf()
-				// setPromptActive(null)
 			}}
 			className={cn(
 				'absolute z-[9999] flex gap-2 rounded-lg bg-popover',
@@ -93,7 +90,6 @@ export default function FloatingPrompt() {
 				className="h-24"
 				onClick={() => {
 					onResetLeaf()
-					// setPromptActive(null)
 				}}
 			>
 				<ArrowLeft size={16} />
@@ -115,7 +111,6 @@ export default function FloatingPrompt() {
 					e.preventDefault()
 					if (!val.trim()) return
 					onResetLeaf(true)
-					// setTriggerRephrase(activeLaser)
 				}}
 			>
 				<Send size={16} />

@@ -39,24 +39,3 @@ export function Loader({
 		</>
 	)
 }
-
-export function FullScreenLoader({
-	className,
-	...rest
-}: {
-	className?: string
-	size?: number
-	text?: string
-	textClass?: string
-}) {
-	return (
-		<div
-			className={cn(
-				'fixed inset-0 z-[100] flex min-h-screen w-full flex-col items-center justify-center gap-4 bg-background/90',
-				className
-			)}
-		>
-			<Loader {...rest} />
-		</div>
-	)
-}

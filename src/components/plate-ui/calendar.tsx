@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { cn } from '@udecode/cn'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { DayPicker } from 'react-day-picker'
 
 import { buttonVariants } from './button'
@@ -51,10 +50,6 @@ function Calendar({
 				row: 'flex w-full mt-2',
 				table: 'w-full border-collapse space-y-1',
 				...classNames,
-			}}
-			components={{
-				IconLeft: () => <ChevronLeft className="size-4" />,
-				IconRight: () => <ChevronRight className="size-4" />,
 			}}
 			showOutsideDays={showOutsideDays}
 			{...props}

@@ -21,6 +21,7 @@ export function CommentLeaf({
 	const sidebar = usePlateStore((state) => state.sidebar)
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
+
 	const active =
 		isCommented(state.lastCommentId) ||
 		(sidebar === 'comments' && state.isActive)
