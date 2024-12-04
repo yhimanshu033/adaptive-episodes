@@ -1,9 +1,16 @@
 import { TComment } from '@udecode/plate-comments'
-import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
+import {
+	nanoid,
+	TDescendant,
+	TElement,
+	TText,
+	Value,
+} from '@udecode/plate-common'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 import { BASE_STATUS, EStatus, MinifiedValue } from '@/types/common'
+import { IndexedCommentsResponse, ReviewComment } from '@/types/editor-types'
 import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
 
 export function cn(...inputs: ClassValue[]) {
@@ -220,4 +227,74 @@ export function getRecord(comments: TComment[]) {
 		{} as Record<string, TComment>
 	)
 	return records
+}
+
+export function convertReviewResponse(
+	response: IndexedCommentsResponse[],
+	children: Value
+) {
+	const comments: ReviewComment[] = []
+
+	const applyComment = (
+		nodes: TDescendant[],
+		path: number[]
+	): TDescendant[] => {
+		return nodes.flatMap((node, index) => {
+			const currentPath = [...path, index]
+
+			if ('text' in node) {
+				const matchingValue = response.find(
+					(item) => item.id === currentPath.join('_')
+				)
+				if (matchingValue) {
+					const { start, end } = matchingValue.path
+					const { text } = node as { text: string }
+
+					const segments: TText[] = []
+
+					// Before `path.start`
+					if (start > 0) {
+						segments.push({ text: text.slice(0, start) })
+					}
+
+					// Between `path.start` and `path.end`
+					const commentSegment = {
+						text: text.slice(start, end),
+						comment: true,
+					} as TText
+					const id = nanoid()
+					const commentKey = `comment_${id}`
+					commentSegment[commentKey] = true
+					comments.push({ id, text: matchingValue.comment })
+					segments.push(commentSegment)
+
+					// After `path.end`
+					if (end < text.length) {
+						segments.push({ text: text.slice(end) })
+					}
+
+					return segments
+				}
+
+				// No matching value, return the node as is
+				return [node]
+			} else if ('children' in node) {
+				return [
+					{
+						...node,
+						children: applyComment(node.children, currentPath),
+					},
+				]
+			}
+
+			return [node]
+		})
+	}
+
+	const value = children.map((child, index) => ({
+		...child,
+		children: applyComment(child.children, [index]),
+	}))
+
+	return { value, comments }
 }
