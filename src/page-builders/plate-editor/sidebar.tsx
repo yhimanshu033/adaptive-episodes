@@ -3,26 +3,31 @@ import CommentSidebar from '@/page-builders/plate-editor/sidebar-sections/commen
 import usePlateStore from '@/store/plate-store'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { cn } from '@/lib/utils'
 
 import AiChatbot from './sidebar-sections/ai-chatbot'
 import FindAndReplace from './sidebar-sections/find-and-replace'
 import StoryExplorer from './sidebar-sections/story-explorer'
 
+const renderSidebar: Record<string, React.ReactNode> = {
+	chatbot: <AiChatbot />,
+	comments: <CommentSidebar />,
+	outline: <StoryExplorer />,
+	far: <FindAndReplace />,
+}
+
 const Sidebar = () => {
 	const sidebar = usePlateStore((state) => state.sidebar)
-
-	if (!sidebar) return null
-
-	const renderSidebar: Record<typeof sidebar, React.ReactNode> = {
-		chatbot: <AiChatbot />,
-		comments: <CommentSidebar />,
-		outline: <StoryExplorer />,
-		far: <FindAndReplace />,
-	}
-
+	// if (!sidebar || sidebar === "translation") return null
+	const showSidebar = sidebar && sidebar !== 'translation'
 	return (
-		<ScrollArea className="relative h-full w-fit min-w-[25vw] flex-1">
-			{renderSidebar[sidebar]}
+		<ScrollArea
+			className={cn(
+				'relative h-full flex-1 transition-all',
+				!showSidebar ? 'max-w-0' : 'max-w-[45vw] duration-500'
+			)}
+		>
+			{sidebar && renderSidebar[sidebar]}
 		</ScrollArea>
 	)
 }
