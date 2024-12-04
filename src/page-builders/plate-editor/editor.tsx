@@ -410,6 +410,11 @@ export const useMyEditor = ({
 							name: userData?.user?.name || 'User',
 							avatarUrl: userData?.user?.image || '/placeholder-user.webp',
 						},
+						'COPILOT-AI': {
+							id: 'COPILOT-AI',
+							name: 'Copilot AI',
+							avatarUrl: '/pocket-copilot-logo.webp',
+						},
 					},
 					comments: comments ? getRecord(comments) : {},
 					myUserId: '1',

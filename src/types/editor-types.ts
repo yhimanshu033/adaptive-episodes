@@ -15,3 +15,17 @@ export interface RephraseSelectionProps {
 	promptInput: string
 	setResponseMode: Dispatch<SetStateAction<boolean>>
 }
+
+export interface IndexedCommentsResponse {
+	comment: string
+	id: string
+	path: {
+		end: number
+		start: number
+	}
+}
+
+export interface ReviewComment {
+	id: string
+	text: string
+}
