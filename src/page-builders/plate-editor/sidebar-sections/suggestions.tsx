@@ -14,7 +14,7 @@ import { SuggestionAvatar } from '@/components/plate-ui/suggestion-avatar'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-const SuggestionComponent = ({
+const SuggestionBlock = ({
 	description,
 }: {
 	description: TSuggestionDescription
@@ -38,12 +38,11 @@ const SuggestionComponent = ({
 			<div className="relative flex items-center gap-2">
 				<SuggestionAvatar user={user} />
 				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
-				<div className="flex-1"></div>
 				<div
 					title="Accept Suggestion"
 					className={cn(
 						buttonVariants({ variant: 'ghost' }),
-						'h-6 p-1 text-muted-foreground'
+						'ml-auto h-6 p-1 text-muted-foreground'
 					)}
 					onClick={() =>
 						suggestionAction(SuggestionActions.ACCEPT, description)
@@ -81,10 +80,7 @@ const Suggestions = () => {
 	const descriptions = getAllSuggestionDescriptions(editor)
 
 	return descriptions.map((description) => (
-		<SuggestionComponent
-			key={description.suggestionId}
-			description={description}
-		/>
+		<SuggestionBlock key={description.suggestionId} description={description} />
 	))
 }
 
