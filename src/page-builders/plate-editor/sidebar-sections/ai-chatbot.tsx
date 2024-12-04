@@ -129,7 +129,7 @@ const AIChatbot = () => {
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			action: EAction.CHANGES,
-			content: 'Added changes from chatbot',
+			content: 'Added changes from StoryChat',
 		})
 	}, [aiResponseTest])
 
@@ -139,7 +139,7 @@ const AIChatbot = () => {
 			{
 				role: EMessenger.ASSISTANT,
 				action: EAction.ACCEPT,
-				content: 'Accepted changes from chatbot',
+				content: 'Accepted changes from StoryChat',
 			},
 			i
 		)
@@ -150,7 +150,7 @@ const AIChatbot = () => {
 			{
 				role: EMessenger.ASSISTANT,
 				action: EAction.REJECT,
-				content: 'Rejected changes from chatbot',
+				content: 'Rejected changes from StoryChat',
 			},
 			i
 		)
@@ -222,7 +222,7 @@ const AIChatbot = () => {
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			action: EAction.REVIEW,
-			content: 'Added review in comments',
+			content: 'StoryChat added review in comments',
 		})
 	}
 
@@ -232,7 +232,7 @@ const AIChatbot = () => {
 	return (
 		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
 			<h1 className="mb-4 text-2xl font-bold">StoryChat</h1>
-			<ScrollArea className="mb-4 h-[36vh] flex-1 rounded-md border p-4">
+			<ScrollArea className="mb-4 h-[56vh] flex-1 rounded-md border p-4">
 				{messages.map((message, index) => (
 					<div
 						key={index}

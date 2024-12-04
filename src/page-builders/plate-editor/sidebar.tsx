@@ -21,7 +21,7 @@ const Sidebar = () => {
 	}
 
 	return (
-		<ScrollArea className="relative h-[58vh] w-fit min-w-[25vw] flex-1">
+		<ScrollArea className="relative h-full w-fit min-w-[25vw] flex-1">
 			{renderSidebar[sidebar]}
 		</ScrollArea>
 	)

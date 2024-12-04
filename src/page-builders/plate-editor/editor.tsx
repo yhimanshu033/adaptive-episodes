@@ -164,7 +164,7 @@ export default function PlateEditor() {
 				<div
 					ref={containerRef}
 					className={cn(
-						'relative mt-4 min-h-[60vh] rounded border bg-background-editor shadow-editor',
+						'relative mt-4 rounded border bg-background-editor shadow-editor',
 						// Block selection
 						'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 					)}
@@ -172,7 +172,7 @@ export default function PlateEditor() {
 					<FixedToolbar>
 						<FixedToolbarButtons {...{ selectedStatus, latestStatus }} />
 					</FixedToolbar>
-					<div className="flex h-[58vh] w-full">
+					<div className="flex min-h-[78vh] w-full">
 						<ScrollArea className="w-full flex-1 bg-background">
 							<div className="flex h-full">
 								<div className="flex w-full">
