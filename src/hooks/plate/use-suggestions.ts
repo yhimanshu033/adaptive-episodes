@@ -28,18 +28,14 @@ const useSuggestions = () => {
 
 	const findAllSuggestionNodes = <E extends SlateEditor>(
 		editor: E
-	): Array<{ node: TSuggestionText; path: any }> => {
-		const suggestionNodes: Array<{ node: TSuggestionText; path: any }> = []
-
-		for (const [node, path] of editor.nodes<TSuggestionText>({
-			match: (n) => BaseSuggestionPlugin.key in n,
-			at: [],
-		})) {
-			suggestionNodes.push({ node, path })
-		}
-
-		return suggestionNodes
-	}
+	): Array<{ node: TSuggestionText; path: any }> =>
+		Array.from(
+			editor.nodes<TSuggestionText>({
+				match: (n) => BaseSuggestionPlugin.key in n,
+				at: [],
+			}),
+			([node, path]) => ({ node, path })
+		)
 
 	const createSuggestionDescription = ({
 		suggestionId,
@@ -50,14 +46,17 @@ const useSuggestions = () => {
 		suggestionId: string
 		userId: string
 	}): TSuggestionDescription | null => {
-		const insertedText = nodes
-			.filter((node) => !node.suggestionDeletion)
-			.map((node) => node.text)
-			.join('')
-		const deletedText = nodes
-			.filter((node) => node.suggestionDeletion)
-			.map((node) => node.text)
-			.join('')
+		const { insertedText, deletedText } = nodes.reduce(
+			(acc, node) => {
+				if (node.suggestionDeletion) {
+					acc.deletedText += node.text
+				} else {
+					acc.insertedText += node.text
+				}
+				return acc
+			},
+			{ insertedText: '', deletedText: '' }
+		)
 
 		if (insertedText && deletedText) {
 			return {
@@ -95,31 +94,34 @@ const useSuggestions = () => {
 	): TSuggestionDescription[] => {
 		const processedSuggestionIds = new Set<string>()
 
-		return findAllSuggestionNodes(editor).reduce((descriptions, { node }) => {
-			const suggestionId = node.suggestionId!
-			if (processedSuggestionIds.has(suggestionId)) return descriptions
+		return findAllSuggestionNodes(editor).reduce<TSuggestionDescription[]>(
+			(descriptions, { node }) => {
+				const suggestionId = node.suggestionId!
+				if (processedSuggestionIds.has(suggestionId)) return descriptions
 
-			processedSuggestionIds.add(suggestionId)
-			const userIds = getSuggestionUserIds(node)
+				processedSuggestionIds.add(suggestionId)
 
-			userIds.forEach((userId) => {
-				const nodes = Array.from(
-					getSuggestionNodeEntries(editor, suggestionId, {
-						match: (n: any) => n[getSuggestionKey(userId)],
+				getSuggestionUserIds(node).forEach((userId) => {
+					const nodes = Array.from(
+						getSuggestionNodeEntries(editor, suggestionId, {
+							match: (n: any) => n[getSuggestionKey(userId)],
+						}),
+						([node]) => node
+					)
+
+					const description = createSuggestionDescription({
+						suggestionId,
+						userId,
+						nodes,
 					})
-				).map(([node]) => node)
 
-				const description = createSuggestionDescription({
-					suggestionId,
-					userId,
-					nodes,
+					if (description) descriptions.push(description)
 				})
 
-				if (description) descriptions.push(description)
-			})
-
-			return descriptions
-		}, [] as TSuggestionDescription[])
+				return descriptions
+			},
+			[]
+		)
 	}
 
 	const suggestionAction = (
