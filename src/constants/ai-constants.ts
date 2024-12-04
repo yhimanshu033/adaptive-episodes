@@ -18,3 +18,9 @@ export enum DiffStatus {
 	PENDING = 'pending',
 	REJECTED = 'rejected',
 }
+
+export enum LocalizationType {
+	CONCEPT = 'concept',
+	PERSON = 'person',
+	PLACE = 'place',
+}
