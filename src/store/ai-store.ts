@@ -35,6 +35,12 @@ export const updateMessages = (
 	})
 }
 
+export const popMessage = () => {
+	useAIStore.setState((state) => {
+		state.messages.pop()
+	})
+}
+
 export const clearMessages = () => {
 	useAIStore.setState({ messages: aiInitialMessage })
 }

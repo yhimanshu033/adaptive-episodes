@@ -1,5 +1,5 @@
 import React from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
@@ -16,15 +16,12 @@ const Title = ({
 	title: string
 }) => {
 	const router = useRouter()
-	const { id } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
 	const { saveEpisodeMutation } = useEpisodeHook()
 	const readOnly = useEditorReadOnly()
 
 	const handleClick = () => {
-		router.replace(
-			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}`
-		)
+		router.back()
 	}
 
 	const updateChapterTitle = (chapter_title: string) => {

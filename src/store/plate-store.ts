@@ -30,6 +30,12 @@ export const setSidebar = (
 	})
 }
 
+export const setTranslationOpen = (
+	isTranslationOpen: PlateStoreData['isTranslationOpen']
+) => {
+	usePlateStore.setState({ isTranslationOpen })
+}
+
 export const setResolved = (resolved: boolean, toggle?: boolean) => {
 	usePlateStore.setState((state) => {
 		return { resolved: toggle ? !state.resolved : resolved }

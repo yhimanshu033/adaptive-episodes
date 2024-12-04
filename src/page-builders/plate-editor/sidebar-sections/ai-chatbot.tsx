@@ -12,6 +12,7 @@ import { ex } from '@/mock-data/aichatbot'
 import useAIStore, {
 	addMessages,
 	clearMessages,
+	popMessage,
 	setAcceptedValue,
 	setPrevValue,
 	setResponseValue,
@@ -20,7 +21,7 @@ import useAIStore, {
 import { useGlobalStore } from '@/store/global-store'
 import { useEditorRef, useEditorState } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
-import { Check, CheckCheck, LoaderCircle, Send, Trash2, X } from 'lucide-react'
+import { Check, CheckCheck, Send, StopCircle, Trash2, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
@@ -49,7 +50,7 @@ const AIChatbot = () => {
 	const { messages } = useAIStore()
 	const { aiChatbotMutation } = useAIChatbotHook()
 	const { aiChatbotMutationTest } = useAIChatbotHookTest()
-	const { data: aiResponse, isPending } = aiChatbotMutation
+	const { data: aiResponse, isPending, reset } = aiChatbotMutation
 	const { data: aiResponseTest } = aiChatbotMutationTest
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const { data: episodeContent } = useEpisodeContent()
@@ -287,18 +288,23 @@ const AIChatbot = () => {
 						className="min-h-[40px] grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
 						style={{ height: '40px' }}
 					/>
-					<Button
-						variant="ghost"
-						size="icon"
-						type="submit"
-						disabled={isPending}
-					>
-						{isPending ? (
-							<LoaderCircle className="animate-spin" size={16} />
-						) : (
+					{isPending ? (
+						<Button
+							variant="ghost"
+							size="icon"
+							type="button"
+							onClick={() => {
+								popMessage()
+								reset()
+							}}
+						>
+							<StopCircle size={16} />
+						</Button>
+					) : (
+						<Button variant="ghost" size="icon" type="submit">
 							<Send size={16} />
-						)}
-					</Button>
+						</Button>
+					)}
 				</form>
 				<AlertDialog>
 					<AlertDialogTrigger asChild>
