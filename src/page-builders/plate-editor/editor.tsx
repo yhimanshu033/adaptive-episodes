@@ -24,6 +24,7 @@ import {
 	unwrapCodeBlock,
 } from '@udecode/plate-code-block'
 import { CodeBlockPlugin } from '@udecode/plate-code-block/react'
+import { TComment } from '@udecode/plate-comments'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
 	HtmlPlugin,
@@ -59,6 +60,7 @@ import { NodeIdPlugin } from '@udecode/plate-node-id'
 import { ResetNodePlugin } from '@udecode/plate-reset-node/react'
 import { SelectOnBackspacePlugin } from '@udecode/plate-select'
 import { BlockSelectionPlugin } from '@udecode/plate-selection/react'
+import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 import {
 	TableCellHeaderPlugin,
 	TableCellPlugin,
@@ -99,12 +101,13 @@ import LaserPromptLeaf from '@/components/plate-ui/laser-prompt-leaf'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
+import SuggestionLeaf from '@/components/plate-ui/suggestion-leaf'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
-import { jsonify } from '@/lib/utils'
+import { getRecord, jsonify } from '@/lib/utils'
 
 import { EStatus } from '@/types/common'
 
@@ -120,7 +123,10 @@ export default function PlateEditor() {
 	const router = useRouter()
 	const { id } = useParams()
 
-	const editor = useMyEditor({ content: content?.text || '' })
+	const editor = useMyEditor({
+		content: content?.text || '',
+		comments: content?.chapter.props.comments,
+	})
 
 	const handleEpisodeChange = (episode: number | null) => {
 		if (!episode) return
@@ -226,7 +232,9 @@ export default function PlateEditor() {
 export const useMyEditor = ({
 	content,
 	id,
+	comments,
 }: {
+	comments?: TComment[]
 	content: string
 	id?: string
 }) => {
@@ -402,8 +410,26 @@ export const useMyEditor = ({
 							name: userData?.user?.name || 'User',
 							avatarUrl: userData?.user?.image || '/placeholder-user.webp',
 						},
+						'COPILOT-AI': {
+							id: 'COPILOT-AI',
+							name: 'Copilot AI',
+							avatarUrl: '/pocket-copilot-logo.webp',
+						},
 					},
+					comments: comments ? getRecord(comments) : {},
 					myUserId: '1',
+				},
+			}),
+			SuggestionPlugin.configure({
+				options: {
+					users: {
+						1: {
+							id: '1',
+							name: userData?.user?.name || 'User',
+							avatarUrl: userData?.user?.image || '/placeholder-user.webp',
+						},
+					},
+					currentUserId: '1',
 				},
 			}),
 
@@ -435,6 +461,7 @@ export const useMyEditor = ({
 					[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
 					[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
 					[CommentsPlugin.key]: CommentLeaf,
+					[SuggestionPlugin.key]: SuggestionLeaf,
 					[PromptPlugin.key]: LaserPromptLeaf,
 				}),
 			// ),

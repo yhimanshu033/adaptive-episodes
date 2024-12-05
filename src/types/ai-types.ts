@@ -1,7 +1,5 @@
 import { Value } from '@udecode/plate-common'
 
-import { MinifiedValue } from './common'
-
 export interface LaserToolsParams {
 	action: string
 	context?: string
@@ -52,11 +50,31 @@ export interface AIChatBotApiResponse {
 	message: string
 }
 
+export enum EMessenger {
+	ASSISTANT = 'assistant',
+	USER = 'user',
+}
+export enum EAction {
+	ACCEPT = 'accept',
+	CHANGES = 'changes',
+	MESSAGE = 'message',
+	REJECT = 'reject',
+	REVIEW = 'review',
+}
+
+export type TMessage =
+	| {
+			content: string
+			role: EMessenger.USER
+	  }
+	| {
+			action: EAction
+			content: string
+			role: EMessenger.ASSISTANT
+	  }
 export interface AIStoreType {
-	messages: {
-		content: string
-		role: 'user' | 'assistant'
-	}[]
+	acceptedValue: Value | null
+	messages: TMessage[]
 	prevValue: Value | null
 	responseValue: Value | null
 }
@@ -85,24 +103,28 @@ export interface PlotExplorerApiResponse {
 	message: string
 }
 
-export interface TAiChatbotRequest {
-	beatsheets_array: string[]
-	chat_history: string
-	context: string
-	ep_number: string
-	ep_text: string
-	ep_text_json: MinifiedValue
-	highlighted_text: string
-	loglines_array: string[]
-	next_text: string
-	prev_text: string
-	user_message: string
-}
-
 export interface TAiChatbotResponse {
 	data: {
 		action: string
 		response: string
 	}
 	message: string
+}
+
+export type TLocalizeObject = {
+	localized_name: string
+	reason: string
+}
+
+export type TLocalizeArrayItem = TLocalizeObject & { name: string }
+
+export type LocalizeRecord = Record<string, TLocalizeObject>
+
+export interface TLocalizeResponse {
+	result: {
+		characters: LocalizeRecord
+		concepts: LocalizeRecord
+		places: LocalizeRecord
+	}
+	task_id: string
 }

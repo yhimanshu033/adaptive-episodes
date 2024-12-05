@@ -1,3 +1,5 @@
+import { IndexedCommentsResponse } from '@/types/editor-types'
+
 export const ex = {
 	previous: [
 		{
@@ -7,7 +9,6 @@ export const ex = {
 				},
 				{
 					text: 'Regenmantel über und schwang',
-					bold: true,
 				},
 				{
 					text: 'sich auf sein E-Bike Richtung Sheraton Hotel am Times Square.',
@@ -54,3 +55,37 @@ export const ex = {
 		},
 	],
 }
+export const exampleReview: IndexedCommentsResponse[] = [
+	{
+		comment: 'test',
+		id: '0_0',
+		path: {
+			start: 5,
+			end: 8,
+		},
+	},
+	{
+		comment: 'test4',
+		id: '0_4',
+		path: {
+			start: 3,
+			end: 12,
+		},
+	},
+	{
+		comment: 'test5',
+		id: '0_4',
+		path: {
+			start: 14,
+			end: 18,
+		},
+	},
+	{
+		comment: 'test3',
+		id: '0_1',
+		path: {
+			start: 5,
+			end: 6,
+		},
+	},
+]

@@ -1,8 +1,16 @@
-import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
+import { TComment } from '@udecode/plate-comments'
+import {
+	nanoid,
+	TDescendant,
+	TElement,
+	TText,
+	Value,
+} from '@udecode/plate-common'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 import { BASE_STATUS, EStatus, MinifiedValue } from '@/types/common'
+import { IndexedCommentsResponse, ReviewComment } from '@/types/editor-types'
 import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
 
 export function cn(...inputs: ClassValue[]) {
@@ -151,6 +159,7 @@ export function jsonify(value: string): string | Value {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const val = JSON.parse(value)
 		return val as Value
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	} catch (e) {
 		return value
 	}
@@ -166,7 +175,6 @@ export function clearLasers(ogVal: Value): Value {
 				key.startsWith('prompt-')
 		)
 		if (keys.length) {
-			// if (node.laser) return
 			keys.forEach((key) => {
 				delete node[key]
 			})
@@ -209,4 +217,82 @@ export function mergeValue(ogVal: Value): Value {
 		merged.push(mergeElementNodes(node))
 	})
 	return merged
+}
+
+export function getRecord(comments: TComment[]) {
+	const records: Record<string, TComment> = comments.reduce(
+		(prev, curr) => {
+			return { ...prev, [curr.id]: curr }
+		},
+		{} as Record<string, TComment>
+	)
+	return records
+}
+
+export function convertReviewResponse(
+	response: IndexedCommentsResponse[],
+	children: Value
+) {
+	const comments: ReviewComment[] = []
+
+	const responseMap = new Map(response.map((item) => [item.id, item]))
+
+	const applyComment = (
+		nodes: TDescendant[],
+		path: number[]
+	): TDescendant[] => {
+		return nodes.flatMap((node, index) => {
+			const currentPath = [...path, index]
+
+			if ('text' in node) {
+				const nodeId = currentPath.join('_')
+				const matchingValue = responseMap.get(nodeId)
+
+				if (matchingValue) {
+					const { start, end } = matchingValue.path
+					const { text } = node as { text: string }
+
+					const segments: TText[] = []
+
+					if (start > 0) {
+						segments.push({ text: text.slice(0, start) })
+					}
+
+					const commentSegment = {
+						text: text.slice(start, end),
+						comment: true,
+					} as TText
+					const id = nanoid()
+					const commentKey = `comment_${id}`
+					commentSegment[commentKey] = true
+					comments.push({ id, text: matchingValue.comment })
+					segments.push(commentSegment)
+
+					if (end < text.length) {
+						segments.push({ text: text.slice(end) })
+					}
+
+					return segments
+				}
+
+				return [node]
+			} else if ('children' in node) {
+				return [
+					{
+						...node,
+						children: applyComment(node.children, currentPath),
+					},
+				]
+			}
+
+			return [node]
+		})
+	}
+
+	const value = children.map((child, index) => ({
+		...child,
+		children: applyComment(child.children, [index]),
+	}))
+
+	return { value, comments }
 }

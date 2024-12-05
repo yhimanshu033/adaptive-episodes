@@ -1,9 +1,20 @@
-export const aiInitialMessage: {
-	content: string
-	role: 'assistant' | 'user'
-}[] = [
+import { EAction, EMessenger, TMessage } from '@/types/ai-types'
+
+export const aiInitialMessage: TMessage[] = [
 	{
-		role: 'assistant',
+		role: EMessenger.ASSISTANT,
 		content: 'Wie kann ich dir heute beim Überarbeiten helfen?',
+		action: EAction.MESSAGE,
 	},
 ]
+export enum AiDiffOperation {
+	DELETE = 'delete',
+	INSERT = 'insert',
+	UPDATE = 'update',
+}
+
+export enum DiffStatus {
+	ACCEPTED = 'accepted',
+	PENDING = 'pending',
+	REJECTED = 'rejected',
+}

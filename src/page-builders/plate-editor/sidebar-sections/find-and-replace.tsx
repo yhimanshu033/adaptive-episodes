@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import useLocalizeHook from '@/hooks/mutation/use-localize-hook'
 import {
 	useEditorPlugin,
 	useEditorRef,
@@ -17,9 +18,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import Spinner from '@/components/ui/spinner'
 import { Toggle } from '@/components/ui/toggle'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn, replaceNthInsensitive } from '@/lib/utils'
+
+import { TLocalizeArrayItem } from '@/types/ai-types'
 
 export default function FindAndReplace() {
 	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
@@ -29,6 +33,7 @@ export default function FindAndReplace() {
 	const replaceEnabled = useOption('replaceEnabled')
 	const caseSensitive = useOption('caseSensitive')
 	const [ptr, setPtr] = useState(0)
+	const { data, refetch, isFetching } = useLocalizeHook()
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
@@ -153,45 +158,43 @@ export default function FindAndReplace() {
 		editor.tf.setValue(updatedChildren)
 	}
 
-	function handleSuggestionClick(suggestion: string) {
-		setOptions({ search: suggestion })
+	function handleSuggestionClick(suggestion: TLocalizeArrayItem) {
+		setOptions({ search: suggestion.name })
+		setOptions({ replace: suggestion.localized_name })
+		setOptions({ replaceEnabled: true })
 		const updatedChildren = structuredClone(children)
 		editor.tf.setValue(updatedChildren)
 	}
 
-	const characters = ['Alex', 'Cathy', 'Billy', 'Karen']
-	const places = [
-		'Sheraton New York',
-		'Sheraton Hotel',
-		'Times Square',
-		'First Republic Bank',
-		'VIP Lounge',
-	]
+	const characters = useMemo(
+		() =>
+			data
+				? Object.keys(data.characters).map((key) => {
+						return { ...data.characters[key], name: key }
+					})
+				: [],
+		[data]
+	)
 
-	const concepts = [
-		'Regenmantel',
-		'Kondome',
-		'Päckchen',
-		'Taschentücher',
-		'Zimmer 1302',
-		'Bademantel',
-		'Haar',
-		'Duschgel',
-		'Schampoo',
-		'Geld',
-		'Erbe',
-		'Luxushotel',
-		'Tür',
-		'Bank',
-		'Karte',
-		'Kunden',
-		'Vermögen',
-		'Tasche',
-		'Regentropfen',
-		'SMS',
-		'VIP-Bereich',
-		'Lounge',
-	]
+	const places = useMemo(
+		() =>
+			data
+				? Object.keys(data.places).map((key) => {
+						return { ...data.places[key], name: key }
+					})
+				: [],
+		[data]
+	)
+
+	const concepts = useMemo(
+		() =>
+			data
+				? Object.keys(data.concepts).map((key) => {
+						return { ...data.concepts[key], name: key }
+					})
+				: [],
+		[data]
+	)
 
 	return (
 		<div className="flex h-[58vh] flex-col gap-4 p-4">
@@ -254,51 +257,60 @@ export default function FindAndReplace() {
 				</p>
 			)}
 
-			<ScrollArea
-				className={cn(
-					'flex h-full flex-col overflow-y-auto',
-					replaceEnabled ? '~h-[30vh]' : '~h-[37vh]'
-				)}
-			>
-				<h4 className="text-lg font-semibold">Characters</h4>
-				<div className="flex flex-wrap gap-2 pt-1">
-					{characters.map((character, index) => (
-						<Button
-							onClick={() => handleSuggestionClick(character)}
-							key={index}
-							variant="outline"
-						>
-							{character}
-						</Button>
-					))}
+			{isFetching ? (
+				<div className="flex items-center justify-center py-12">
+					<Spinner size={64} />
 				</div>
-				<h4 className="pt-2 text-lg font-semibold">Places</h4>
-				<div className="flex flex-wrap gap-2 pt-1">
-					{places.map((character, index) => (
-						<Button
-							onClick={() => handleSuggestionClick(character)}
-							key={index}
-							variant="outline"
-						>
-							{character}
-						</Button>
-					))}
-				</div>
-				<h4 className="pt-2 text-lg font-semibold">Concepts</h4>
-				<div className="flex flex-wrap gap-2 pt-1">
-					{concepts.map((character, index) => (
-						<Button
-							onClick={() => handleSuggestionClick(character)}
-							key={index}
-							variant="outline"
-						>
-							{character}
-						</Button>
-					))}
-				</div>
-			</ScrollArea>
-
-			<Button className="w-fit self-end">Scan the Episode</Button>
+			) : (
+				<>
+					<ScrollArea
+						className={cn(
+							'flex h-full flex-col overflow-y-auto',
+							replaceEnabled ? '~h-[30vh]' : '~h-[37vh]'
+						)}
+					>
+						<h4 className="text-lg font-semibold">Characters</h4>
+						<div className="flex flex-wrap gap-2 pt-1">
+							{characters.map((character, index) => (
+								<Button
+									onClick={() => handleSuggestionClick(character)}
+									key={index}
+									variant="outline"
+								>
+									{character.name}
+								</Button>
+							))}
+						</div>
+						<h4 className="pt-2 text-lg font-semibold">Places</h4>
+						<div className="flex flex-wrap gap-2 pt-1">
+							{places.map((place, index) => (
+								<Button
+									onClick={() => handleSuggestionClick(place)}
+									key={index}
+									variant="outline"
+								>
+									{place.name}
+								</Button>
+							))}
+						</div>
+						<h4 className="pt-2 text-lg font-semibold">Concepts</h4>
+						<div className="flex flex-wrap gap-2 pt-1">
+							{concepts.map((concept, index) => (
+								<Button
+									onClick={() => handleSuggestionClick(concept)}
+									key={index}
+									variant="outline"
+								>
+									{concept.name}
+								</Button>
+							))}
+						</div>
+					</ScrollArea>
+					<Button onClick={() => void refetch()} className="w-fit self-end">
+						Scan the Episode
+					</Button>
+				</>
+			)}
 		</div>
 	)
 }

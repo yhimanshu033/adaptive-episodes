@@ -1,23 +1,31 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { DiffStatus } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
-import { ex } from '@/mock-data/aichatbot'
+import { ex, exampleReview } from '@/mock-data/aichatbot'
 import useAIStore, {
 	addMessages,
 	clearMessages,
+	setAcceptedValue,
 	setPrevValue,
 	setResponseValue,
 	updateMessages,
 } from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
-import { useEditorRef, useEditorState } from '@udecode/plate-common/react'
-import { LoaderCircle, Send, Trash2 } from 'lucide-react'
+import { CommentsPlugin } from '@udecode/plate-comments/react'
+import {
+	useEditorPlugin,
+	useEditorRef,
+	useEditorState,
+} from '@udecode/plate-common/react'
+import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
+import { Check, CheckCheck, LoaderCircle, Send, Trash2, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
@@ -35,7 +43,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
-import { cn, getText } from '@/lib/utils'
+import { TooltipComponent } from '@/components/ui/tooltip-component'
+import { cn, convertReviewResponse, getText } from '@/lib/utils'
+
+import { EAction, EMessenger } from '@/types/ai-types'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
@@ -52,6 +63,9 @@ const AIChatbot = () => {
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
 	const { children } = useEditorState()
+	const value = useAIStore((state) => state.acceptedValue)
+	const prevValue = useAIStore((state) => state.prevValue)
+	const { api } = useEditorPlugin(CommentsPlugin)
 
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
@@ -60,13 +74,16 @@ const AIChatbot = () => {
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
-		addMessages({ role: 'user', content: input })
+		addMessages({ role: EMessenger.USER, content: input })
 		setInput('')
 		aiChatbotMutation.mutate({
 			episodeNumber: episodeContent?.chapter.seq_number || 0,
 			episodesCount,
 			aiChatbotData: {
-				messages,
+				messages: messages.map((message) => ({
+					content: message.content || '',
+					role: message.role,
+				})),
 				user_message: input,
 				ep_number: episodeContent?.chapter.seq_number?.toString(),
 				ep_text: getText(children),
@@ -82,7 +99,11 @@ const AIChatbot = () => {
 	}
 	useEffect(() => {
 		if (!isPending && aiResponse) {
-			addMessages({ role: 'assistant', content: aiResponse as string })
+			addMessages({
+				role: EMessenger.ASSISTANT,
+				content: aiResponse as string,
+				action: EAction.MESSAGE,
+			})
 		}
 	}, [aiResponse, isPending])
 
@@ -104,23 +125,108 @@ const AIChatbot = () => {
 		if (!aiResponseTest) return
 		setResponseValue(structuredClone(ex.current))
 		setPrevValue(structuredClone(ex.previous))
-		addMessages({ role: 'assistant', content: 'accept-reject' })
+		addMessages({
+			role: EMessenger.ASSISTANT,
+			action: EAction.CHANGES,
+			content: 'Added changes from chatbot',
+		})
 	}, [aiResponseTest])
 
-	function handleAccept(i: number) {
-		editor.tf.setValue(structuredClone(ex.current))
-		updateMessages({ role: 'assistant', content: 'accepted' }, i)
-		setResponseValue(null)
-		setPrevValue(null)
+	function handleAccept(i: number, all: boolean = true) {
+		handleAcceptResponse(all)
+		updateMessages(
+			{
+				role: EMessenger.ASSISTANT,
+				action: EAction.ACCEPT,
+				content: 'Accepted changes from chatbot',
+			},
+			i
+		)
 	}
 
 	function handleReject(i: number) {
-		updateMessages({ role: 'assistant', content: 'rejected' }, i)
+		updateMessages(
+			{
+				role: EMessenger.ASSISTANT,
+				action: EAction.REJECT,
+				content: 'Rejected changes from chatbot',
+			},
+			i
+		)
 		setResponseValue(null)
 		setPrevValue(null)
+		if (prevValue) editor.tf.setValue(structuredClone(prevValue))
+	}
+
+	const handleAcceptResponse = useCallback(
+		(all: boolean = true) => {
+			if (!value) return
+			const newValue = structuredClone(value)
+			const currVal = newValue.map((node) => ({
+				...node,
+				children: node.children
+					.map((child) => {
+						let add = true
+						if ('diff' in child && child.diff_id) {
+							const accepted = all
+								? child.status === DiffStatus.ACCEPTED ||
+									child.status === DiffStatus.PENDING
+								: child.status === DiffStatus.ACCEPTED
+							const type = (child.diffOperation as DiffOperation).type
+							if (type === 'update') {
+								Object.keys(
+									(child.diffOperation as DiffUpdate)?.newProperties
+								).forEach((key) => {
+									delete child[key]
+								})
+							}
+							delete child.diff
+							delete child.diff_id
+							delete child.status
+							delete child.diffOperation
+							if (
+								(accepted && type !== 'delete') ||
+								(!accepted && type === 'delete')
+							) {
+								add = true
+							} else {
+								add = false
+							}
+						}
+						if (add) {
+							return child
+						}
+					})
+					.filter((child) => !!child),
+			}))
+			editor.tf.setValue(currVal)
+			setResponseValue(null)
+			setPrevValue(null)
+			setAcceptedValue(null)
+		},
+		[value, editor.tf]
+	)
+
+	function addReview() {
+		const resp = convertReviewResponse(exampleReview, children)
+		resp.comments.forEach((comment) => {
+			api.comment.addComment({
+				value: [{ type: 'p', children: [{ text: comment.text }] }],
+				id: comment.id,
+				userId: 'COPILOT-AI',
+				createdAt: Date.now(),
+			})
+		})
+		editor.tf.setValue(resp.value)
+		addMessages({
+			role: EMessenger.ASSISTANT,
+			action: EAction.REVIEW,
+			content: 'Added review in comments',
+		})
 	}
 
 	const suggestions = ['Add Music / Sound FX 🎶', 'Voice Pass 🎙️', 'Review ✅']
+	const changesPending = prevValue && value
 
 	return (
 		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
@@ -129,27 +235,35 @@ const AIChatbot = () => {
 				{messages.map((message, index) => (
 					<div
 						key={index}
-						className={`mb-4 flex items-start ${message.role === 'assistant' ? 'justify-start' : 'justify-end'}`}
+						className={`mb-4 flex items-start ${message.role === EMessenger.ASSISTANT ? 'justify-start' : 'justify-end'}`}
 					>
-						{message.role === 'assistant' && (
+						{message.role === EMessenger.ASSISTANT && (
 							<Avatar className="mr-2">
 								<AvatarImage src="/pocket-copilot-logo.webp" alt="AI" />
 								<AvatarFallback>AI</AvatarFallback>
 							</Avatar>
 						)}
-						{message.role === 'assistant' &&
-						message.content === 'accept-reject' ? (
+						{message.role === EMessenger.ASSISTANT &&
+						message.action === EAction.CHANGES ? (
 							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
-								<Button onClick={() => handleAccept(index)}>Accept</Button>
-								<Button variant="outline" onClick={() => handleReject(index)}>
-									Reject
-								</Button>
-							</div>
-						) : message.role === 'assistant' &&
-						  (message.content === 'accepted' ||
-								message.content === 'rejected') ? (
-							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
-								<p className="italic">{message.content} changes from chatbot</p>
+								<TooltipComponent tooltip={'Done'}>
+									<Button onClick={() => handleAccept(index, false)}>
+										<Check />
+									</Button>
+								</TooltipComponent>
+								<TooltipComponent tooltip={'Accept All'}>
+									<Button
+										variant="outline"
+										onClick={() => handleAccept(index, true)}
+									>
+										<CheckCheck />
+									</Button>
+								</TooltipComponent>
+								<TooltipComponent tooltip={'Reject All'}>
+									<Button variant="outline" onClick={() => handleReject(index)}>
+										<X />
+									</Button>
+								</TooltipComponent>
 							</div>
 						) : (
 							<div
@@ -158,11 +272,13 @@ const AIChatbot = () => {
 								}}
 								className={cn(
 									'max-w-[70%] rounded-lg p-3',
-									message.role === 'assistant' ? 'bg-background' : 'bg-primary'
+									message.role === EMessenger.ASSISTANT
+										? 'bg-background'
+										: 'bg-primary'
 								)}
 							/>
 						)}
-						{message.role === 'user' && (
+						{message.role === EMessenger.USER && (
 							<Avatar className="ml-2">
 								<AvatarImage
 									src={userData?.user?.image || '/placeholder-user.webp'}
@@ -183,7 +299,11 @@ const AIChatbot = () => {
 						variant="outline"
 						size="sm"
 						onClick={() => {
-							addMessages({ role: 'user', content: suggestion })
+							addMessages({ role: EMessenger.USER, content: suggestion })
+							if (index === 2) {
+								addReview()
+								return
+							}
 							aiChatbotMutationTest.mutate({
 								episodeNumber: episodeContent?.chapter.seq_number || 0,
 								episodesCount,
@@ -196,6 +316,7 @@ const AIChatbot = () => {
 							})
 						}}
 						className="mr-2"
+						disabled={!!changesPending}
 					>
 						{suggestion}
 					</Button>

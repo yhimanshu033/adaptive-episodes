@@ -9,6 +9,8 @@ const initialState: PlateStoreData = {
 	sidebar: null,
 	resolved: false,
 	scale: 1,
+	activeDiffId: null,
+	currentDiffValue: null,
 }
 
 const usePlateStore = create(devtools(immer(() => initialState)))
@@ -36,6 +38,18 @@ export const setResolved = (resolved: boolean, toggle?: boolean) => {
 
 export const setScale = (scale: number) => {
 	usePlateStore.setState({ scale })
+}
+
+export const setActiveDiffId = (
+	activeDiffId: PlateStoreData['activeDiffId']
+) => {
+	usePlateStore.setState({ activeDiffId })
+}
+
+export const setCurrentDiffValue = (
+	currentDiffValue: PlateStoreData['currentDiffValue']
+) => {
+	usePlateStore.setState({ currentDiffValue })
 }
 
 export default usePlateStore
