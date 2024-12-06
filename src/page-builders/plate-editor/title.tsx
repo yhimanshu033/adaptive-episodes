@@ -8,13 +8,7 @@ import { ArrowLeft } from 'lucide-react'
 import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
 
-const Title = ({
-	title,
-	episodeNumber,
-}: {
-	episodeNumber: number
-	title: string
-}) => {
+const Title = () => {
 	const router = useRouter()
 	const { id } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
@@ -40,10 +34,10 @@ const Title = ({
 			<Button variant="ghost" size="icon" onClick={handleClick}>
 				<ArrowLeft size={16} />
 			</Button>
-			<p className="text-xl">{episodeNumber}.</p>
+			<p className="text-xl">{episodeContent?.chapter.seq_number}.</p>
 			<EditableText
-				key={title}
-				text={decodeURIComponent(title)}
+				key={episodeContent?.chapter.chapter_title}
+				text={decodeURIComponent(episodeContent?.chapter.chapter_title || '')}
 				rootClass="text-xl"
 				inputClass="text-xl"
 				isEditable={!readOnly}

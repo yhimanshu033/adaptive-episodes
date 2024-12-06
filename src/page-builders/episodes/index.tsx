@@ -22,7 +22,7 @@ export default function EpisodeListPage() {
 			<div className="mb-6 flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<Image
-						src={storyData?.image || ''}
+						src={storyData?.image || '/pocket-copilot-logo.webp'}
 						alt={`${storyData?.project_title} thumbnail`}
 						width={80}
 						height={80}

@@ -1,3 +1,5 @@
+'use client'
+
 import { useParams } from 'next/navigation'
 import { getEpisodes } from '@/server-action/episode-action'
 import { useQuery } from '@tanstack/react-query'

@@ -7,14 +7,23 @@ import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useQueryClient } from '@tanstack/react-query'
 import {
 	ColumnDef,
+	ExpandedState,
 	flexRender,
 	getCoreRowModel,
+	getExpandedRowModel,
 	getSortedRowModel,
 	RowSelectionState,
 	SortingState,
 	useReactTable,
 } from '@tanstack/react-table'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import {
+	ChevronDown,
+	ChevronRight,
+	ChevronUp,
+	Plus,
+	Trash2,
+} from 'lucide-react'
+import { useForm } from 'react-hook-form'
 
 import EditableText from '@/components/editable-text'
 import { Loader } from '@/components/loader'
@@ -28,7 +37,24 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog'
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
 	Select,
@@ -49,7 +75,7 @@ import { formatDate } from '@/lib/format-date'
 import { cn } from '@/lib/utils'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
-import { TEpisode } from '@/types/episode-type'
+import { TEpisode, TEpisodeInventForm } from '@/types/episode-type'
 
 import SkeletonBuilder from './episode-skeleton'
 import Filters from './filters'
@@ -57,11 +83,16 @@ import EpisodesPagination from './pagination'
 
 const EpisodesTable = () => {
 	const [episodes, setEpisodes] = useState<TEpisode[]>([])
+	const [expanded, setExpanded] = React.useState<ExpandedState>({})
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [currentPage, setCurrentPage] = useState<number>(1)
 	const [episodeFilter, setEpisodeFilter] = useState<string>('')
 	const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+	const [isInventOpen, setIsInventOpen] = useState<boolean>(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+	const currentSelectedIndex = useRef<number | null>(null)
+	const deleteEpisodeId = useRef<number | null>(null)
 
 	const queryClient = useQueryClient()
 
@@ -71,15 +102,22 @@ const EpisodesTable = () => {
 	} | null>(null)
 
 	const alertContentRef = useRef<{
+		action?: 'update' | 'delete'
 		description: string
-		notValid?: boolean
 	} | null>(null)
 
 	const router = useRouter()
 	const pathname = usePathname()
 
 	const { data } = useEpisodesData(episodeFilter, currentPage)
-	const { saveEpisodeMutation } = useEpisodeHook()
+	const { saveEpisodeMutation, episodeInventMutation, episodeDeleteMutation } =
+		useEpisodeHook()
+
+	const form = useForm<TEpisodeInventForm>({
+		defaultValues: {
+			title: '',
+		},
+	})
 
 	const columns: ColumnDef<TEpisode>[] = [
 		{
@@ -90,27 +128,41 @@ const EpisodesTable = () => {
 					onClick={table.getToggleAllRowsSelectedHandler()}
 				/>
 			),
-			cell: ({ row }) => (
-				<Checkbox
-					checked={row.getIsSelected()}
-					disabled={!row.getCanSelect()}
-					onClick={row.getToggleSelectedHandler()}
-				/>
-			),
+			cell: ({ row }) =>
+				!row.depth && (
+					<Checkbox
+						checked={row.getIsSelected()}
+						disabled={!row.getCanSelect()}
+						onClick={row.getToggleSelectedHandler()}
+					/>
+				),
 		},
 		{
 			accessorKey: 'serialNumber',
 			header: '#',
-			cell: ({ row }) => row.index + (currentPage - 1) * 10 + 1,
+			cell: ({ row }) =>
+				!row.depth && Number(row.id) + (currentPage - 1) * episodeLimit + 1,
 		},
 		{
 			accessorKey: 'chapter_title',
 			header: 'Title',
 			cell: ({ row }) => (
 				<div
-					className="cursor-pointer font-medium"
+					className="flex cursor-pointer items-center gap-2 font-medium"
 					onClick={() => handleClick(row.original.parent || row.original.id)}
 				>
+					{row.getCanExpand() && (
+						<Button
+							variant="ghost"
+							size="icon"
+							onClick={(e) => {
+								e.stopPropagation()
+								row.getToggleExpandedHandler()()
+							}}
+						>
+							{row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
+						</Button>
+					)}
 					{row.getValue('chapter_title')} ({row.original.word_count} words)
 				</div>
 			),
@@ -125,6 +177,7 @@ const EpisodesTable = () => {
 						? EStatus.FIRST_DRAFT
 						: row.getValue('status')
 				const latestIndex = statuses.indexOf(latestStatus)
+				if (row.depth) return latestStatus
 				return (
 					<Select
 						value={latestStatus}
@@ -154,19 +207,36 @@ const EpisodesTable = () => {
 		{
 			accessorKey: 'writer',
 			header: 'Writer',
-			cell: ({ row }) => (
-				<EditableText
-					key={row.original.id}
-					text={row.getValue('writer') || 'Anonymous'}
-					isEditable
-					onComplete={handleWriterChange.bind(null, row.original.id)}
-				/>
-			),
+			cell: ({ row }) =>
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				!row.depth ? (
+					<EditableText
+						key={row.original.id}
+						text={row.getValue('writer') || 'Anonymous'}
+						isEditable
+						onComplete={handleWriterChange.bind(null, row.original.id)}
+					/>
+				) : (
+					row.getValue('writer') || 'Anonymous'
+				),
 		},
 		{
 			accessorKey: 'update_time',
 			header: 'Last Updated',
 			cell: ({ row }) => formatDate(row.original.update_time),
+		},
+		{
+			accessorKey: 'delete',
+			header: 'Delete',
+			cell: ({ row }) => (
+				<Button
+					variant="ghost"
+					size="icon"
+					onClick={() => handleDeleteEpisode(row.original.id)}
+				>
+					<Trash2 size={16} />
+				</Button>
+			),
 		},
 	]
 
@@ -177,9 +247,13 @@ const EpisodesTable = () => {
 		getSortedRowModel: getSortedRowModel(),
 		onSortingChange: setSorting,
 		onRowSelectionChange: setRowSelection,
+		getExpandedRowModel: getExpandedRowModel(),
+		getSubRows: (row) => row.props?.original_chapters,
+		onExpandedChange: setExpanded,
 		state: {
 			sorting,
 			rowSelection,
+			expanded,
 		},
 	})
 
@@ -200,15 +274,16 @@ const EpisodesTable = () => {
 			if (selectedRows.length <= 1) {
 				alertContentRef.current = {
 					description: `Status of selected episode will switch to ${status}`,
+					action: 'update',
 				}
 			} else if (hasConsistentStatus(selectedRows)) {
 				alertContentRef.current = {
 					description: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
+					action: 'update',
 				}
 			} else {
 				alertContentRef.current = {
 					description: `All selected episodes must have the same current status to update.`,
-					notValid: true,
 				}
 			}
 			setIsDialogOpen(true)
@@ -217,22 +292,28 @@ const EpisodesTable = () => {
 	)
 
 	const handleConfirm = async () => {
-		if (!selectedEpisodeRef.current) return
-		const { episodes, status } = selectedEpisodeRef.current
+		if (!alertContentRef.current) return
+		if (alertContentRef.current.action === 'update') {
+			if (!selectedEpisodeRef.current) return
+			const { episodes, status } = selectedEpisodeRef.current
 
-		await Promise.all(
-			episodes.map((episode) => {
-				return saveEpisodeMutation.mutateAsync({
-					text: 'Status update',
-					statusChange: status,
-					selectedChapterId: episode.parent ?? undefined,
+			await Promise.all(
+				episodes.map((episode) => {
+					return saveEpisodeMutation.mutateAsync({
+						text: 'Status update',
+						statusChange: status,
+						selectedChapterId: episode.parent ?? undefined,
+					})
 				})
+			)
+			await queryClient.invalidateQueries({
+				queryKey: ['episodes'],
+				type: 'all',
 			})
-		)
-		await queryClient.invalidateQueries({
-			queryKey: ['episodes'],
-			type: 'all',
-		})
+		} else {
+			if (!deleteEpisodeId.current) return
+			episodeDeleteMutation.mutate(deleteEpisodeId.current)
+		}
 	}
 
 	const handleWriterChange = (episodeId: number, newWriter: string) => {
@@ -247,10 +328,34 @@ const EpisodesTable = () => {
 		router.push(`${pathname}/${episodeId}/editor`)
 	}
 
+	const handleAddEpisode = (data: TEpisodeInventForm) => {
+		episodeInventMutation.mutate({
+			chapter_title: data.title,
+			seq_number:
+				(currentSelectedIndex.current || 0) +
+				2 +
+				(currentPage - 1) * episodeLimit,
+		})
+		setIsInventOpen(false)
+	}
+
+	const handleDeleteEpisode = (episodeId: number) => {
+		alertContentRef.current = {
+			description: 'Selected episode will get permanently deleted',
+			action: 'delete',
+		}
+		deleteEpisodeId.current = episodeId
+		setIsDialogOpen(true)
+	}
+
 	useEffect(() => {
 		if (data) setEpisodes(data?.results.data)
 	}, [data])
-	if (saveEpisodeMutation.isPending)
+	if (
+		saveEpisodeMutation.isPending ||
+		episodeInventMutation.isPending ||
+		episodeDeleteMutation.isPending
+	)
 		return (
 			<div className="flex flex-1 items-center justify-center">
 				<Loader />
@@ -259,7 +364,7 @@ const EpisodesTable = () => {
 	return (
 		<>
 			<div className="flex gap-2">
-				<Filters setEpisodeFilter={setEpisodeFilter} />
+				<Filters {...{ setEpisodeFilter, table }} />
 			</div>
 			<ScrollArea className="overflow-auto-y relative flex max-h-[48vh] w-full flex-col rounded-md border">
 				<Table>
@@ -298,20 +403,43 @@ const EpisodesTable = () => {
 					</TableHeader>
 					<TableBody>
 						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									className={cn({ selected: row.getIsSelected() })}
-								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext()
-											)}
-										</TableCell>
-									))}
-								</TableRow>
+							table.getRowModel().rows.map((row, rowIndex) => (
+								<React.Fragment key={row.id}>
+									<TableRow className={cn({ selected: row.getIsSelected() })}>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell
+												key={cell.id}
+												onMouseEnter={
+													cell.column.id === 'select-col' && !row.depth
+														? () => setHoverIndex(rowIndex)
+														: () => setHoverIndex(null)
+												}
+											>
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext()
+												)}
+											</TableCell>
+										))}
+									</TableRow>
+
+									{hoverIndex === rowIndex && (
+										<TableRow className="relative border-none">
+											<TableCell className="relative p-0">
+												<div
+													title="Invent episode"
+													className="absolute z-10 -translate-y-1/2 cursor-pointer rounded-full bg-primary p-1"
+													onClick={() => {
+														setIsInventOpen(true)
+														currentSelectedIndex.current = rowIndex
+													}}
+												>
+													<Plus size={12} />
+												</div>
+											</TableCell>
+										</TableRow>
+									)}
+								</React.Fragment>
 							))
 						) : (
 							<TableRow className="hover:bg-transparent">
@@ -338,7 +466,7 @@ const EpisodesTable = () => {
 					</AlertDialogDescription>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						{!alertContentRef.current?.notValid && (
+						{alertContentRef.current?.action && (
 							<AlertDialogAction onClick={handleConfirm}>
 								Confirm
 							</AlertDialogAction>
@@ -346,6 +474,50 @@ const EpisodesTable = () => {
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			<Dialog onOpenChange={setIsInventOpen} open={isInventOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Invent New Episode</DialogTitle>
+						<DialogDescription>
+							Enter the details for the new episode.
+						</DialogDescription>
+					</DialogHeader>
+
+					<Form {...form}>
+						<form
+							onSubmit={form.handleSubmit(handleAddEpisode)}
+							className="space-y-4"
+						>
+							{/* Episode Title Field */}
+							<FormField
+								control={form.control}
+								name="title"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Episode Title</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Enter Episode Title"
+												id="title"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							{/* Submit Button */}
+							<div className="text-right">
+								<Button type="submit" size="sm" className="mt-4 font-bold">
+									Create
+								</Button>
+							</div>
+						</form>
+					</Form>
+				</DialogContent>
+			</Dialog>
 		</>
 	)
 }
