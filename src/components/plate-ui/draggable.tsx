@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable  @typescript-eslint/no-unsafe-member-access */
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { cn, withRef } from '@udecode/cn'
 import type { ClassNames, TEditor } from '@udecode/plate-common'
 import {
@@ -115,6 +116,16 @@ export const Draggable = withRef<'div', DraggableProps>(
 			handleRef,
 		}: any = useDraggable(state)
 
+		useEffect(() => {
+			if (!previewRef.current) return
+			// if (!state.isDragging || !state.nodeRef) return
+			const selection = window.getSelection()
+			selection?.removeAllRanges() // Clear any existing selection
+			const range = document.createRange()
+			range.selectNodeContents(previewRef.current) // Select the entire content of the node
+			selection?.addRange(range)
+		}, [state.isDragging, previewRef])
+
 		return (
 			<div
 				ref={ref}
@@ -128,7 +139,7 @@ export const Draggable = withRef<'div', DraggableProps>(
 			>
 				<div
 					className={cn(
-						'pointer-events-none absolute -top-px z-50 flex h-full -translate-x-full cursor-text opacity-0 group-hover:opacity-100',
+						'~pointer-events-none absolute -top-px z-50 flex h-full -translate-x-full cursor-grab opacity-0 group-hover:opacity-100',
 						classNames.gutterLeft
 					)}
 					{...gutterLeftProps}
@@ -145,6 +156,7 @@ export const Draggable = withRef<'div', DraggableProps>(
 								className="size-4"
 								data-key={element.id as string}
 							>
+								{/* <DragHandle /> */}
 								{isHovered && <DragHandle />}
 							</div>
 						</div>

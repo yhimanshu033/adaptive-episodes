@@ -19,8 +19,8 @@ const Translation = ({ translatedContent }: { translatedContent: string }) => {
 	return (
 		<div
 			className={cn(
-				'~ease-in-out flex w-full transition-all',
-				!showTranslation ? 'max-w-0' : 'max-w-[45vw] duration-500'
+				'flex w-full transition-all duration-200',
+				!showTranslation ? 'max-w-0' : 'max-w-[45vw]'
 			)}
 		>
 			{showTranslation && (

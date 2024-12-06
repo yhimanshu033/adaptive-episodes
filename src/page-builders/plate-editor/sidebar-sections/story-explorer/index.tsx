@@ -11,7 +11,7 @@ const StoryExplorer = () => {
 	const { data: episodeData } = useEpisodeContent()
 	const [episodeRange, setEpisodeRange] = useState({
 		start: episodeData?.chapter.seq_number || 1,
-		end: episodeData?.chapter.seq_number || 1,
+		end: (episodeData?.chapter.seq_number || 1) + 9,
 	})
 
 	const handleEpisodeChange = (type: 'start' | 'end', value: string) => {

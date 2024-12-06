@@ -48,7 +48,7 @@ const formSchema = z.object({
 	type: z.string(),
 })
 
-const types = Object.keys(LocalizationType)
+const types: (keyof typeof LocalizationType)[] = ['PERSON', 'PLACE', 'CONCEPT']
 
 function AddForm() {
 	const form = useForm<z.infer<typeof formSchema>>({

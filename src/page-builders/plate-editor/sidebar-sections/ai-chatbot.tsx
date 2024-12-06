@@ -21,6 +21,7 @@ import useAIStore, {
 import { useGlobalStore } from '@/store/global-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
+	ParagraphPlugin,
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
@@ -49,6 +50,8 @@ import { cn, convertReviewResponse, getText } from '@/lib/utils'
 
 import { EAction, EMessenger } from '@/types/ai-types'
 
+import AiDnd from './ai-editor'
+
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
 	const { id } = useParams()
@@ -72,8 +75,22 @@ const AIChatbot = () => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
 
+	const handleBlock = ({ text }: { text: string }) => {
+		addMessages({
+			role: EMessenger.ASSISTANT,
+			content: JSON.stringify([
+				{
+					id: `0`,
+					type: ParagraphPlugin.key,
+					children: [{ text: text }],
+				},
+			]),
+			action: EAction.BLOCK,
+		})
+	}
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
+		// handleBlock()
 		if (!input.trim()) return
 		addMessages({ role: EMessenger.USER, content: input })
 		setInput('')
@@ -100,11 +117,12 @@ const AIChatbot = () => {
 	}
 	useEffect(() => {
 		if (!isPending && aiResponse) {
-			addMessages({
-				role: EMessenger.ASSISTANT,
-				content: aiResponse as string,
-				action: EAction.MESSAGE,
-			})
+			handleBlock({ text: aiResponse as string })
+			// addMessages({
+			// 	role: EMessenger.ASSISTANT,
+			// 	content: aiResponse as string,
+			// 	action: EAction.MESSAGE,
+			// })
 		}
 	}, [aiResponse, isPending])
 
@@ -232,7 +250,7 @@ const AIChatbot = () => {
 	return (
 		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
 			<h1 className="mb-4 text-2xl font-bold">StoryChat</h1>
-			<ScrollArea className="mb-4 h-[56vh] flex-1 rounded-md border p-4">
+			<ScrollArea className="mb-4 h-[56vh] flex-1 rounded-md border px-4 *:py-4">
 				{messages.map((message, index) => (
 					<div
 						key={index}
@@ -266,6 +284,11 @@ const AIChatbot = () => {
 									</Button>
 								</TooltipComponent>
 							</div>
+						) : message.role === EMessenger.ASSISTANT &&
+						  message.action === EAction.BLOCK ? (
+							<>
+								<AiDnd id="TEST" val={message.content} />
+							</>
 						) : (
 							<div
 								dangerouslySetInnerHTML={{

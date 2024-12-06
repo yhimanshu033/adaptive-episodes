@@ -56,6 +56,7 @@ export enum EMessenger {
 }
 export enum EAction {
 	ACCEPT = 'accept',
+	BLOCK = 'block',
 	CHANGES = 'changes',
 	MESSAGE = 'message',
 	REJECT = 'reject',

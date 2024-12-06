@@ -23,8 +23,8 @@ const Sidebar = () => {
 	return (
 		<ScrollArea
 			className={cn(
-				'relative h-full flex-1 transition-all',
-				!showSidebar ? 'max-w-0' : 'max-w-[45vw] duration-500'
+				'relative h-full flex-1 transition-all duration-200',
+				!showSidebar ? 'max-w-0' : 'max-w-[45vw]'
 			)}
 		>
 			{sidebar && renderSidebar[sidebar]}
