@@ -53,7 +53,7 @@ export default function LaserRephrase({
 			mutate({
 				action,
 				...getSelectedText(),
-				context: episodeContent?.chapter.props.llm_memories?.context || '',
+				context: episodeContent?.chapter.props?.llm_memories?.context || '',
 				ep_number: episodeContent?.chapter.seq_number.toString() || '',
 				ep_text: getText(children) || '',
 				prompt: promptInput,
@@ -63,7 +63,7 @@ export default function LaserRephrase({
 		[
 			mutate,
 			getSelectedText,
-			episodeContent?.chapter.props.llm_memories?.context,
+			episodeContent?.chapter.props?.llm_memories?.context,
 			episodeContent?.chapter.seq_number,
 			children,
 			promptInput,
