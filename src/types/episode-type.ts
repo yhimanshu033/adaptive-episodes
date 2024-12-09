@@ -2,6 +2,11 @@ import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EStatus } from './common'
 
+export type EpisodeStoreState = {
+	currentPage: number
+	episodeSearch: string
+}
+
 type TEpisodeProps = {
 	beatsheet: string
 	context: string

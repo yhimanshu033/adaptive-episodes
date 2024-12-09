@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { episodeLimit, statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
+import { useEpisodeStore } from '@/store/episode-store'
 import { useQueryClient } from '@tanstack/react-query'
 import {
 	ColumnDef,
@@ -26,7 +27,7 @@ import {
 import { useForm } from 'react-hook-form'
 
 import EditableText from '@/components/editable-text'
-import { Loader } from '@/components/loader'
+import { FullScreenLoader } from '@/components/loader'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -85,7 +86,6 @@ const EpisodesTable = () => {
 	const [episodes, setEpisodes] = useState<TEpisode[]>([])
 	const [expanded, setExpanded] = React.useState<ExpandedState>({})
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [currentPage, setCurrentPage] = useState<number>(1)
 	const [episodeFilter, setEpisodeFilter] = useState<string>('')
 	const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 	const [isInventOpen, setIsInventOpen] = useState<boolean>(false)
@@ -93,6 +93,8 @@ const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const currentSelectedIndex = useRef<number | null>(null)
 	const deleteEpisodeId = useRef<number | null>(null)
+
+	const currentPage = useEpisodeStore((state) => state.currentPage)
 
 	const queryClient = useQueryClient()
 
@@ -351,18 +353,13 @@ const EpisodesTable = () => {
 	useEffect(() => {
 		if (data) setEpisodes(data?.results.data)
 	}, [data])
-	if (
-		saveEpisodeMutation.isPending ||
-		episodeInventMutation.isPending ||
-		episodeDeleteMutation.isPending
-	)
-		return (
-			<div className="flex flex-1 items-center justify-center">
-				<Loader />
-			</div>
-		)
 	return (
 		<>
+			{saveEpisodeMutation.isPending ||
+			episodeInventMutation.isPending ||
+			episodeDeleteMutation.isPending ? (
+				<FullScreenLoader />
+			) : null}
 			<div className="flex gap-2">
 				<Filters {...{ setEpisodeFilter, table }} />
 			</div>
@@ -452,8 +449,6 @@ const EpisodesTable = () => {
 				</Table>
 			</ScrollArea>
 			<EpisodesPagination
-				setPage={setCurrentPage}
-				currentPage={currentPage}
 				totalPages={data ? Math.ceil(data.count / episodeLimit) : 0}
 			/>
 			<AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

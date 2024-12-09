@@ -9,6 +9,7 @@ import {
 	inventEpisode,
 	unmergeEpisodes,
 } from '@/server-action/episode-action'
+import { useEpisodeStore } from '@/store/episode-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TComment } from '@udecode/plate-comments'
 
@@ -28,10 +29,15 @@ const useEpisodeHook = () => {
 
 	const queryClient = useQueryClient()
 
+	const { currentPage, episodeSearch } = useEpisodeStore()
+
 	const onSuccess = async () => {
+		console.log('hello')
+		await queryClient.invalidateQueries({
+			queryKey: [Number(id), 'episodes', currentPage, episodeSearch],
+			type: 'all',
+		})
 		revalidatePath('/projects/[id]', 'page')
-		await queryClient.invalidateQueries({ queryKey: ['episodes'], type: 'all' })
-		window.location.reload()
 	}
 
 	const onSaveEpisode = useCallback(

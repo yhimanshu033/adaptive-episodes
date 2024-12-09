@@ -1,8 +1,10 @@
 import React, { useRef, useState } from 'react'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import { setEpisodeSearch, useEpisodeStore } from '@/store/episode-store'
 import { Table } from '@tanstack/react-table'
 import { Merge, Search, Split } from 'lucide-react'
 
+import { FullScreenLoader } from '@/components/loader'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -15,7 +17,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import Spinner from '@/components/ui/spinner'
 
 import { TEpisode } from '@/types/episode-type'
 
@@ -26,7 +27,7 @@ const Filters = ({
 	setEpisodeFilter: (episode: string) => void
 	table: Table<TEpisode>
 }) => {
-	const [episodeSearch, setEpisodeSearch] = useState<string>('')
+	const episodeSearch = useEpisodeStore((state) => state.episodeSearch)
 	const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 	const {
 		episodesMergeMutation: { mutate: mergeMutate, isPending: isMerging },
@@ -100,6 +101,7 @@ const Filters = ({
 
 	return (
 		<>
+			{isMerging || isUnmerging ? <FullScreenLoader /> : null}
 			<form
 				onSubmit={handleSubmit}
 				className="mb-2 flex flex-1 items-center gap-2"
@@ -119,7 +121,7 @@ const Filters = ({
 				onClick={handleMerge}
 				title="Merge episodes"
 			>
-				{isMerging ? <Spinner size={16} /> : <Merge size={16} />}
+				<Merge size={16} />
 			</Button>
 			<Button
 				size="icon"
@@ -127,7 +129,7 @@ const Filters = ({
 				onClick={handleUnmerge}
 				title="Unmerge episodes"
 			>
-				{isUnmerging ? <Spinner size={16} /> : <Split size={16} />}
+				<Split size={16} />
 			</Button>
 			<AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 				<AlertDialogContent>
