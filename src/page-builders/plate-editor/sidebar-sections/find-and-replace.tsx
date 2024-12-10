@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { LocalizationType } from '@/constants/ai-constants'
-import useLocalizeHook from '@/hooks/mutation/use-localize-hook'
+import useLocalizeHook, {
+	useLocalizeMutation,
+} from '@/hooks/mutation/use-localize-hook'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
 	useEditorPlugin,
@@ -51,6 +53,7 @@ const formSchema = z.object({
 const types: (keyof typeof LocalizationType)[] = ['PERSON', 'PLACE', 'CONCEPT']
 
 function AddForm() {
+	const { mutate, isPending } = useLocalizeMutation()
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -62,7 +65,16 @@ function AddForm() {
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			console.log(values)
+			mutate({
+				ls_mapping: {
+					[values.original]: {
+						type: LocalizationType[
+							values.type as keyof typeof LocalizationType
+						],
+						localized_name: values.replace_with,
+					},
+				},
+			})
 		} catch (error) {
 			console.error('Form submission error', error)
 		}
@@ -144,7 +156,9 @@ function AddForm() {
 							</FormItem>
 						)}
 					/>
-					<Button type="submit">Submit</Button>
+					<Button disabled={isPending} type="submit">
+						Submit
+					</Button>
 				</div>
 			</form>
 		</Form>

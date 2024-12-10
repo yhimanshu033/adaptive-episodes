@@ -172,7 +172,7 @@ export default function PlateEditor() {
 					<FixedToolbar>
 						<FixedToolbarButtons {...{ selectedStatus, latestStatus }} />
 					</FixedToolbar>
-					<div className="flex min-h-[78vh] w-full">
+					<div className="flex h-[78vh] w-full">
 						<ScrollArea className="w-full flex-1 bg-background">
 							<div className="flex h-full">
 								<div className="flex w-full">

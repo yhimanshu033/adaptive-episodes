@@ -114,7 +114,7 @@ export interface TAiChatbotResponse {
 
 export type TLocalizeObject = {
 	localized_name: string
-	reason: string
+	reason?: string
 }
 
 export type TLocalizeArrayItem = TLocalizeObject & { name: string }
@@ -128,4 +128,8 @@ export interface TLocalizeResponse {
 		places: LocalizeRecord
 	}
 	task_id: string
+}
+
+export interface TLocalizeUpdateRequest {
+	ls_mapping: Record<string, { localized_name: string; type: string }>
 }

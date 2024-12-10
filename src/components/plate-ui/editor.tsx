@@ -50,7 +50,7 @@ const editorVariants = cva(
 )
 
 export type EditorProps = PlateContentProps &
-	VariantProps<typeof editorVariants>
+	VariantProps<typeof editorVariants> & { isAi?: boolean }
 
 const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 	(
@@ -62,6 +62,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			readOnly,
 			size,
 			variant,
+			isAi,
 			...props
 		},
 		ref
@@ -126,6 +127,15 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 							...props.style,
 						}}
 						{...props}
+					/>
+				)}
+				{isAi && (
+					<div
+						id="test"
+						style={{
+							height: contentRef.current?.clientHeight,
+							width: contentRef?.current?.clientWidth,
+						}}
 					/>
 				)}
 			</div>

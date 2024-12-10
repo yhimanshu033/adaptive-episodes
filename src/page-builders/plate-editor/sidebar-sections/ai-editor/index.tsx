@@ -13,10 +13,11 @@ export default function AiDnd({ val }: { id: string; val: string }) {
 		value: JSON.parse(val) as Value,
 		// id: id,
 	})
+	const ref = React.useRef<HTMLDivElement>(null)
 
 	return (
 		<Plate editor={editor}>
-			<Editor />
+			<Editor ref={ref} isAi />
 		</Plate>
 	)
 }

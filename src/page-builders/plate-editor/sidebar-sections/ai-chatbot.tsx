@@ -90,7 +90,6 @@ const AIChatbot = () => {
 	}
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
-		// handleBlock()
 		if (!input.trim()) return
 		addMessages({ role: EMessenger.USER, content: input })
 		setInput('')
@@ -118,11 +117,6 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!isPending && aiResponse) {
 			handleBlock({ text: aiResponse as string })
-			// addMessages({
-			// 	role: EMessenger.ASSISTANT,
-			// 	content: aiResponse as string,
-			// 	action: EAction.MESSAGE,
-			// })
 		}
 	}, [aiResponse, isPending])
 
