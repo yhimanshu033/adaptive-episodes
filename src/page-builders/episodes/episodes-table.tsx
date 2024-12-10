@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { episodeLimit, statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
@@ -94,7 +94,7 @@ const EpisodesTable = () => {
 	const currentSelectedIndex = useRef<number | null>(null)
 	const deleteEpisodeId = useRef<number | null>(null)
 
-	const currentPage = useEpisodeStore((state) => state.currentPage)
+	const { currentPage, episodeSearch } = useEpisodeStore()
 
 	const queryClient = useQueryClient()
 
@@ -108,6 +108,7 @@ const EpisodesTable = () => {
 		description: string
 	} | null>(null)
 
+	const { id } = useParams()
 	const router = useRouter()
 	const pathname = usePathname()
 
@@ -303,13 +304,13 @@ const EpisodesTable = () => {
 				episodes.map((episode) => {
 					return saveEpisodeMutation.mutateAsync({
 						text: 'Status update',
-						statusChange: status,
-						selectedChapterId: episode.parent ?? undefined,
+						status,
+						chapterId: episode.parent ?? episode.id,
 					})
 				})
 			)
 			await queryClient.invalidateQueries({
-				queryKey: ['episodes'],
+				queryKey: [Number(id), 'episodes', currentPage, episodeSearch],
 				type: 'all',
 			})
 		} else {

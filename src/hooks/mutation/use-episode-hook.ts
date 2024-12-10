@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback } from 'react'
-import { revalidatePath } from 'next/cache'
 import { useParams } from 'next/navigation'
 import { saveContent } from '@/server-action/content-action'
 import {
@@ -16,15 +15,10 @@ import { TComment } from '@udecode/plate-comments'
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisodeMergeParams } from '@/types/episode-type'
 
-import useEpisodeContent from '../query/use-episode-content'
 import useSocket from '../use-socket'
 
 const useEpisodeHook = () => {
 	const { id, episodeId } = useParams()
-	const { data } = useEpisodeContent()
-	const status = data?.chapter.status || BASE_STATUS
-	const chapterId = data?.chapter.parent || Number(episodeId)
-
 	const { startTask, getResponse } = useSocket()
 
 	const queryClient = useQueryClient()
@@ -32,44 +26,38 @@ const useEpisodeHook = () => {
 	const { currentPage, episodeSearch } = useEpisodeStore()
 
 	const onSuccess = async () => {
-		console.log('hello')
 		await queryClient.invalidateQueries({
 			queryKey: [Number(id), 'episodes', currentPage, episodeSearch],
 			type: 'all',
 		})
-		revalidatePath('/projects/[id]', 'page')
 	}
 
 	const onSaveEpisode = useCallback(
 		({
 			text,
-			statusChange,
-			selectedChapterId,
-			selectedProjectId,
+			status,
+			chapterId,
 			chapter_title,
 			comments,
 		}: {
+			chapterId?: number | null
 			chapter_title?: string
 			comments?: TComment[]
-			selectedChapterId?: number
-			selectedProjectId?: number
-			statusChange?: EStatus
+			status: EStatus | typeof BASE_STATUS
 			text: string
 		}) => {
 			return saveContent({
-				episodeId: selectedChapterId || chapterId,
-				projectId: selectedProjectId || Number(id),
+				episodeId: chapterId ?? Number(episodeId),
+				projectId: Number(id),
 				text,
-				status:
-					statusChange ||
-					(status === BASE_STATUS ? EStatus.FIRST_DRAFT : status),
+				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
 				chapter_title,
 				props: {
 					comments,
 				},
 			})
 		},
-		[chapterId, id, status]
+		[episodeId, id]
 	)
 
 	const onEpisodeMerge = async (chapter_ids: number[]) => {
@@ -100,7 +88,7 @@ const useEpisodeHook = () => {
 	}
 
 	const saveEpisodeMutation = useMutation({
-		mutationKey: ['save', id, chapterId],
+		mutationKey: ['save', id, episodeId],
 		mutationFn: onSaveEpisode,
 	})
 
