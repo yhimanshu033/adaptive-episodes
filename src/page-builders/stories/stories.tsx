@@ -7,6 +7,8 @@ import { BookOpen, User } from 'lucide-react'
 import { Loader } from '@/components/loader'
 import { Card, CardContent } from '@/components/ui/card'
 
+import ImportStoryCard from './import-story-card'
+
 const Stories = () => {
 	const { data: stories, isLoading } = useStoriesData()
 	if (isLoading)
@@ -47,6 +49,7 @@ const Stories = () => {
 					</Link>
 				</Card>
 			))}
+			<ImportStoryCard />
 		</section>
 	)
 }
