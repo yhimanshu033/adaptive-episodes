@@ -143,8 +143,7 @@ const EpisodesTable = () => {
 		{
 			accessorKey: 'serialNumber',
 			header: '#',
-			cell: ({ row }) =>
-				!row.depth && Number(row.id) + (currentPage - 1) * episodeLimit + 1,
+			cell: ({ row }) => !row.depth && row.original.seq_number,
 		},
 		{
 			accessorKey: 'chapter_title',
@@ -231,15 +230,16 @@ const EpisodesTable = () => {
 		{
 			accessorKey: 'delete',
 			header: 'Delete',
-			cell: ({ row }) => (
-				<Button
-					variant="ghost"
-					size="icon"
-					onClick={() => handleDeleteEpisode(row.original.id)}
-				>
-					<Trash2 size={16} />
-				</Button>
-			),
+			cell: ({ row }) =>
+				row.original.props?.creation_timestamp && (
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={() => handleDeleteEpisode(row.original.id)}
+					>
+						<Trash2 size={16} />
+					</Button>
+				),
 		},
 	]
 
