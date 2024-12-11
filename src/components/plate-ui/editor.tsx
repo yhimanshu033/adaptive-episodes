@@ -68,9 +68,8 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		ref
 	) => {
 		const scale = useCustomPlateStore((state) => state.scale)
-		// const marginLeft = scale < 1 ? (1 - scale) * 50 : 0
 		const mihHeight = 100 / scale
-		const minWidth = scale < 1 ? 100 / scale : 100 / scale
+		const minWidth = 100 / scale
 		const contentRef = useRef<HTMLDivElement>(null)
 
 		useEffect(() => {
@@ -121,7 +120,6 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						disableDefaultStyles
 						style={{
 							transform: `scale(${scale})`,
-							// marginLeft: `${marginLeft}%`,
 							minHeight: `${mihHeight}%`,
 							width: `${minWidth}%`,
 							...props.style,
@@ -145,5 +143,3 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 Editor.displayName = 'Editor'
 
 export { Editor }
-
-// 100 -> 75 ---> x*0.75 = 100 100/12.

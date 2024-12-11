@@ -118,7 +118,6 @@ export const Draggable = withRef<'div', DraggableProps>(
 
 		useEffect(() => {
 			if (!previewRef.current) return
-			// if (!state.isDragging || !state.nodeRef) return
 			const selection = window.getSelection()
 			selection?.removeAllRanges() // Clear any existing selection
 			const range = document.createRange()
@@ -156,7 +155,6 @@ export const Draggable = withRef<'div', DraggableProps>(
 								className="size-4"
 								data-key={element.id as string}
 							>
-								{/* <DragHandle /> */}
 								{isHovered && <DragHandle />}
 							</div>
 						</div>

@@ -11,7 +11,6 @@ import { useCreateEditor } from './create-editor'
 export default function AiDnd({ val }: { id: string; val: string }) {
 	const editor = useCreateEditor({
 		value: JSON.parse(val) as Value,
-		// id: id,
 	})
 	const ref = React.useRef<HTMLDivElement>(null)
 

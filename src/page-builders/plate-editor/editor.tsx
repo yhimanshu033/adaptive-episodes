@@ -309,7 +309,6 @@ export const useMyEditor = ({
 					enableUndoOnDelete: true,
 				},
 			}),
-			// BlockSelectionPlugin,
 			DndPlugin.configure({
 				options: {
 					enableScroller: true,
