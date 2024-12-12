@@ -40,6 +40,7 @@ const useAIChatbotHook = () => {
 	const { startTask, getResponse } = useSocket()
 
 	const onAiChatbotMutation = async (params: AIChatBotParams) => {
+		return 'test'
 		const [start, end] = getMetaDataRange(
 			params.episodeNumber,
 			params.episodesCount
