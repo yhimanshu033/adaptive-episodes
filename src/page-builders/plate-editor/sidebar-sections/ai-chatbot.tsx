@@ -168,7 +168,6 @@ const AIChatbot = () => {
 		)
 		setResponseValue(null)
 		setPrevValue(null)
-		if (prevValue) editor.tf.setValue(structuredClone(prevValue))
 	}
 
 	const handleAcceptResponse = useCallback(

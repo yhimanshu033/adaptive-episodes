@@ -85,7 +85,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 
 		return (
 			<div id="editor-container" ref={ref} className="relative size-full">
-				{sidebar === 'chatbot' && responseValue && prevValue ? (
+				{sidebar === 'chatbot' && responseValue && prevValue && !isAi ? (
 					<DiffView
 						current={responseValue}
 						previous={prevValue}
