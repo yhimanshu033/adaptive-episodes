@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
@@ -15,6 +18,7 @@ import {
 	useReactTable,
 } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { useQueryState } from 'nuqs'
 
 import EditableText from '@/components/editable-text'
 import { Loader } from '@/components/loader'
@@ -58,7 +62,11 @@ import EpisodesPagination from './pagination'
 const EpisodesTable = () => {
 	const [episodes, setEpisodes] = useState<TEpisode[]>([])
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [currentPage, setCurrentPage] = useState<number>(1)
+	const [currentPage, setCurrentPage] = useQueryState<number>('page', {
+		defaultValue: 1,
+		parse: (value) => parseInt(value),
+	})
+
 	const [episodeFilter, setEpisodeFilter] = useState<string>('')
 	const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})

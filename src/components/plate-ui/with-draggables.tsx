@@ -40,7 +40,7 @@ export const withDraggable = (
 
 export const withDraggablesPrimitive = createNodesWithHOC(withDraggable)
 
-export const withDraggables = (components: any) => {
+export const withDraggables = (components: any, draggable: boolean = true) => {
 	return withDraggablesPrimitive(components, [
 		{
 			keys: [
@@ -54,7 +54,7 @@ export const withDraggables = (components: any) => {
 			key: HEADING_KEYS.h1,
 			draggableProps: {
 				classNames: {
-					blockToolbarWrapper: 'h-[1.3em]',
+					blockToolbarWrapper: `h-[1.3em] ${!draggable && 'hidden'}`,
 					gutterLeft: 'px-0 pb-1 text-[1.875em]',
 				},
 			},
@@ -63,7 +63,7 @@ export const withDraggables = (components: any) => {
 			key: HEADING_KEYS.h2,
 			draggableProps: {
 				classNames: {
-					blockToolbarWrapper: 'h-[1.3em]',
+					blockToolbarWrapper: `h-[1.3em] ${!draggable && 'hidden'}`,
 					gutterLeft: 'px-0 pb-1 text-[1.5em]',
 				},
 			},
@@ -72,7 +72,7 @@ export const withDraggables = (components: any) => {
 			key: HEADING_KEYS.h3,
 			draggableProps: {
 				classNames: {
-					blockToolbarWrapper: 'h-[1.3em]',
+					blockToolbarWrapper: `h-[1.3em] ${!draggable && 'hidden'}`,
 					gutterLeft: 'pt-[2px] px-0 pb-1 text-[1.25em]',
 				},
 			},
@@ -81,7 +81,7 @@ export const withDraggables = (components: any) => {
 			keys: [HEADING_KEYS.h4, HEADING_KEYS.h5],
 			draggableProps: {
 				classNames: {
-					blockToolbarWrapper: 'h-[1.3em]',
+					blockToolbarWrapper: `h-[1.3em] ${!draggable && 'hidden'}`,
 					gutterLeft: 'pt-[3px] px-0 pb-0 text-[1.1em]',
 				},
 			},
@@ -90,6 +90,7 @@ export const withDraggables = (components: any) => {
 			keys: [ParagraphPlugin.key],
 			draggableProps: {
 				classNames: {
+					blockToolbarWrapper: `${!draggable && 'hidden'}`,
 					gutterLeft: 'pt-[3px] px-0 pb-0',
 				},
 			},
@@ -98,6 +99,7 @@ export const withDraggables = (components: any) => {
 			keys: [HEADING_KEYS.h6, BulletedListPlugin.key, NumberedListPlugin.key],
 			draggableProps: {
 				classNames: {
+					blockToolbarWrapper: `${!draggable && 'hidden'}`,
 					gutterLeft: 'px-0 pb-0',
 				},
 			},

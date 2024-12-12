@@ -12,6 +12,7 @@ import { ex, exampleReview } from '@/mock-data/aichatbot'
 import useAIStore, {
 	addMessages,
 	clearMessages,
+	popMessage,
 	setAcceptedValue,
 	setPrevValue,
 	setResponseValue,
@@ -20,12 +21,13 @@ import useAIStore, {
 import { useGlobalStore } from '@/store/global-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
+	ParagraphPlugin,
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
 } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
-import { Check, CheckCheck, LoaderCircle, Send, Trash2, X } from 'lucide-react'
+import { Check, CheckCheck, Send, StopCircle, Trash2, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
@@ -48,6 +50,8 @@ import { cn, convertReviewResponse, getText } from '@/lib/utils'
 
 import { EAction, EMessenger } from '@/types/ai-types'
 
+import AiDnd from './ai-editor'
+
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
 	const { id } = useParams()
@@ -56,7 +60,7 @@ const AIChatbot = () => {
 	const { messages } = useAIStore()
 	const { aiChatbotMutation } = useAIChatbotHook()
 	const { aiChatbotMutationTest } = useAIChatbotHookTest()
-	const { data: aiResponse, isPending } = aiChatbotMutation
+	const { data: aiResponse, isPending, reset } = aiChatbotMutation
 	const { data: aiResponseTest } = aiChatbotMutationTest
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const { data: episodeContent } = useEpisodeContent()
@@ -71,6 +75,19 @@ const AIChatbot = () => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
 
+	const handleBlock = ({ text }: { text: string }) => {
+		addMessages({
+			role: EMessenger.ASSISTANT,
+			content: JSON.stringify([
+				{
+					id: `0`,
+					type: ParagraphPlugin.key,
+					children: [{ text: text }],
+				},
+			]),
+			action: EAction.BLOCK,
+		})
+	}
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
@@ -99,11 +116,7 @@ const AIChatbot = () => {
 	}
 	useEffect(() => {
 		if (!isPending && aiResponse) {
-			addMessages({
-				role: EMessenger.ASSISTANT,
-				content: aiResponse as string,
-				action: EAction.MESSAGE,
-			})
+			handleBlock({ text: aiResponse as string })
 		}
 	}, [aiResponse, isPending])
 
@@ -128,7 +141,7 @@ const AIChatbot = () => {
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			action: EAction.CHANGES,
-			content: 'Added changes from chatbot',
+			content: 'Added changes from StoryChat',
 		})
 	}, [aiResponseTest])
 
@@ -138,7 +151,7 @@ const AIChatbot = () => {
 			{
 				role: EMessenger.ASSISTANT,
 				action: EAction.ACCEPT,
-				content: 'Accepted changes from chatbot',
+				content: 'Accepted changes from StoryChat',
 			},
 			i
 		)
@@ -149,7 +162,7 @@ const AIChatbot = () => {
 			{
 				role: EMessenger.ASSISTANT,
 				action: EAction.REJECT,
-				content: 'Rejected changes from chatbot',
+				content: 'Rejected changes from StoryChat',
 			},
 			i
 		)
@@ -221,7 +234,7 @@ const AIChatbot = () => {
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			action: EAction.REVIEW,
-			content: 'Added review in comments',
+			content: 'StoryChat added review in comments',
 		})
 	}
 
@@ -229,9 +242,9 @@ const AIChatbot = () => {
 	const changesPending = prevValue && value
 
 	return (
-		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
+		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
 			<h1 className="mb-4 text-2xl font-bold">StoryChat</h1>
-			<ScrollArea className="mb-4 flex-1 rounded-md border p-4">
+			<ScrollArea className="mb-4 h-[56vh] flex-1 rounded-md border px-4 *:py-4">
 				{messages.map((message, index) => (
 					<div
 						key={index}
@@ -265,6 +278,11 @@ const AIChatbot = () => {
 									</Button>
 								</TooltipComponent>
 							</div>
+						) : message.role === EMessenger.ASSISTANT &&
+						  message.action === EAction.BLOCK ? (
+							<>
+								<AiDnd id="TEST" val={message.content} />
+							</>
 						) : (
 							<div
 								dangerouslySetInnerHTML={{
@@ -337,18 +355,23 @@ const AIChatbot = () => {
 						className="min-h-[40px] grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
 						style={{ height: '40px' }}
 					/>
-					<Button
-						variant="ghost"
-						size="icon"
-						type="submit"
-						disabled={isPending}
-					>
-						{isPending ? (
-							<LoaderCircle className="animate-spin" size={16} />
-						) : (
+					{isPending ? (
+						<Button
+							variant="ghost"
+							size="icon"
+							type="button"
+							onClick={() => {
+								popMessage()
+								reset()
+							}}
+						>
+							<StopCircle size={16} />
+						</Button>
+					) : (
+						<Button variant="ghost" size="icon" type="submit">
 							<Send size={16} />
-						)}
-					</Button>
+						</Button>
+					)}
 				</form>
 				<AlertDialog>
 					<AlertDialogTrigger asChild>

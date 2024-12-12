@@ -50,7 +50,7 @@ const editorVariants = cva(
 )
 
 export type EditorProps = PlateContentProps &
-	VariantProps<typeof editorVariants>
+	VariantProps<typeof editorVariants> & { isAi?: boolean }
 
 const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 	(
@@ -62,13 +62,14 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			readOnly,
 			size,
 			variant,
+			isAi,
 			...props
 		},
 		ref
 	) => {
 		const scale = useCustomPlateStore((state) => state.scale)
-		const marginLeft = scale < 1 ? (1 - scale) * 50 : 0
 		const mihHeight = 100 / scale
+		const minWidth = 100 / scale
 		const contentRef = useRef<HTMLDivElement>(null)
 
 		useEffect(() => {
@@ -83,7 +84,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const prevValue = useAIStore(useShallow((state) => state.prevValue))
 
 		return (
-			<div ref={ref} className="relative w-full">
+			<div id="editor-container" ref={ref} className="relative size-full">
 				{sidebar === 'chatbot' && responseValue && prevValue ? (
 					<DiffView
 						current={responseValue}
@@ -119,11 +120,20 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						disableDefaultStyles
 						style={{
 							transform: `scale(${scale})`,
-							marginLeft: `${marginLeft}%`,
 							minHeight: `${mihHeight}%`,
+							width: `${minWidth}%`,
 							...props.style,
 						}}
 						{...props}
+					/>
+				)}
+				{isAi && (
+					<div
+						id="test"
+						style={{
+							height: contentRef.current?.clientHeight,
+							width: contentRef?.current?.clientWidth,
+						}}
 					/>
 				)}
 			</div>

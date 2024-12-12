@@ -18,8 +18,8 @@ export default function FloatingPrompt() {
 	const { editorY, screenY, promptActive } = useLaserStore()
 	const editor = useEditorRef()
 
-	const { isTranslationOpen, sidebar } = usePlateStore()
-	const minify = sidebar || isTranslationOpen
+	const { sidebar } = usePlateStore()
+	const minify = !!sidebar
 
 	const [val, setVal] = React.useState<string>('')
 

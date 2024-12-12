@@ -55,11 +55,10 @@ import { KbdPlugin } from '@udecode/plate-kbd/react'
 import { LineHeightPlugin } from '@udecode/plate-line-height/react'
 import { TodoListPlugin } from '@udecode/plate-list/react'
 import { MarkdownPlugin } from '@udecode/plate-markdown'
-import { ImagePlugin } from '@udecode/plate-media/react'
+import { ImagePlugin, PlaceholderPlugin } from '@udecode/plate-media/react'
 import { NodeIdPlugin } from '@udecode/plate-node-id'
 import { ResetNodePlugin } from '@udecode/plate-reset-node/react'
 import { SelectOnBackspacePlugin } from '@udecode/plate-select'
-import { BlockSelectionPlugin } from '@udecode/plate-selection/react'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 import {
 	TableCellHeaderPlugin,
@@ -102,6 +101,7 @@ import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
 import SuggestionLeaf from '@/components/plate-ui/suggestion-leaf'
+import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
@@ -164,7 +164,7 @@ export default function PlateEditor() {
 				<div
 					ref={containerRef}
 					className={cn(
-						'relative mt-4 min-h-[60vh] rounded border bg-background-editor shadow-editor',
+						'relative mt-4 rounded border bg-background-editor shadow-editor',
 						// Block selection
 						'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 					)}
@@ -172,8 +172,8 @@ export default function PlateEditor() {
 					<FixedToolbar>
 						<FixedToolbarButtons {...{ selectedStatus, latestStatus }} />
 					</FixedToolbar>
-					<div className="flex h-[58vh] w-full">
-						<ScrollArea className="w-full flex-1">
+					<div className="flex h-[78vh] w-full">
+						<ScrollArea className="w-full flex-1 bg-background">
 							<div className="flex h-full">
 								<div className="flex w-full">
 									<Editor
@@ -186,9 +186,7 @@ export default function PlateEditor() {
 
 									<FloatingToolbar>
 										<FloatingToolbarButtons />
-										{/* <FloatingPrompt /> */}
 									</FloatingToolbar>
-									{/* <FloatingPrompt /> */}
 
 									<CursorOverlay containerRef={containerRef} />
 								</div>
@@ -311,9 +309,15 @@ export const useMyEditor = ({
 					enableUndoOnDelete: true,
 				},
 			}),
-			BlockSelectionPlugin,
 			DndPlugin.configure({
-				options: { enableScroller: true },
+				options: {
+					enableScroller: true,
+					onDropFiles: ({ dragItem, editor, target }) => {
+						editor
+							.getTransforms(PlaceholderPlugin)
+							.insert.media(dragItem.files, { at: target, nextBlock: false })
+					},
+				},
 			}),
 			ExitBreakPlugin.configure({
 				options: {
@@ -441,8 +445,7 @@ export const useMyEditor = ({
 			HtmlPlugin,
 		],
 		override: {
-			components:
-				// withDraggables(
+			components: withDraggables(
 				withPlaceholders({
 					[LaserPlugin.key]: LaserLeaf,
 					[FindReplacePlugin.key]: SearchHighlightLeaf,
@@ -464,7 +467,8 @@ export const useMyEditor = ({
 					[SuggestionPlugin.key]: SuggestionLeaf,
 					[PromptPlugin.key]: LaserPromptLeaf,
 				}),
-			// ),
+				false
+			),
 		},
 		value:
 			typeof initialValue === 'string'

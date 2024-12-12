@@ -4,6 +4,7 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { ArrowLeft } from 'lucide-react'
 
@@ -22,7 +23,7 @@ export default function EpisodeListPage() {
 			<div className="mb-6 flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<Image
-						src={storyData?.image || ''}
+						src={storyData?.image || COPILOT_LOGO_URL}
 						alt={`${storyData?.project_title} thumbnail`}
 						width={80}
 						height={80}
