@@ -3,8 +3,14 @@ import { TComment } from '@udecode/plate-comments'
 import { BASE_STATUS, EStatus } from './common'
 
 export type EpisodeStoreState = {
+	alertInfo: {
+		action?: 'merge' | 'unmerge' | 'invent' | 'delete' | 'update'
+		description: string
+	} | null
 	currentPage: number
 	episodeSearch: string
+	isDialogOpen: boolean
+	isInventOpen: boolean
 }
 
 type TEpisodeProps = {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { saveContent } from '@/server-action/content-action'
 import {
@@ -9,6 +9,7 @@ import {
 	unmergeEpisodes,
 } from '@/server-action/episode-action'
 import { useEpisodeStore } from '@/store/episode-store'
+import { setFullScreenLoading } from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TComment } from '@udecode/plate-comments'
 
@@ -115,6 +116,23 @@ const useEpisodeHook = () => {
 		mutationFn: deleteEpisode,
 		onSuccess,
 	})
+
+	useEffect(() => {
+		setFullScreenLoading(
+			(saveEpisodeMutation.isPending && !episodeId) ||
+				episodesMergeMutation.isPending ||
+				episodeUnmergeMutation.isPending ||
+				episodeInventMutation.isPending ||
+				episodeDeleteMutation.isPending
+		)
+	}, [
+		episodeDeleteMutation.isPending,
+		episodeId,
+		episodeInventMutation.isPending,
+		episodeUnmergeMutation.isPending,
+		episodesMergeMutation.isPending,
+		saveEpisodeMutation.isPending,
+	])
 
 	return {
 		saveEpisodeMutation,
