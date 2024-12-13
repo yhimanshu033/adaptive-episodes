@@ -25,7 +25,7 @@ import { Input } from '@/components/ui/input'
 import { TEpisodeInventForm } from '@/types/episode-type'
 
 const InventForm = () => {
-	const { currentPage, isInventOpen } = useEpisodeStore()
+	const { isInventOpen } = useEpisodeStore()
 	const { handleAddEpisode } = useEpisodeTable()
 
 	const form = useForm<TEpisodeInventForm>({
@@ -45,9 +45,7 @@ const InventForm = () => {
 
 				<Form {...form}>
 					<form
-						onSubmit={form.handleSubmit((data) =>
-							handleAddEpisode(data, currentPage)
-						)}
+						onSubmit={form.handleSubmit((data) => handleAddEpisode(data))}
 						className="space-y-4"
 					>
 						<FormField

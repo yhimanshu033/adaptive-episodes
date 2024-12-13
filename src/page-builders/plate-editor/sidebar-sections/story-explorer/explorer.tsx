@@ -65,7 +65,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 			setContent(
 				metadataEntries.map((data, index) => ({
 					title: `Episode ${index + start}`,
-					content: data.loglines,
+					content: data.summary,
 				}))
 			)
 		} else {

@@ -10,6 +10,9 @@ const initialState: EpisodeStoreState = {
 	isDialogOpen: false,
 	isInventOpen: false,
 	alertInfo: null,
+	deleteEpisodeId: null,
+	selectedEpisodes: null,
+	currentInventIndex: null,
 }
 
 export const useEpisodeStore = create(devtools(immer(() => initialState)))
@@ -32,4 +35,19 @@ export const setIsInventOpen = (isInventOpen: boolean) => {
 
 export const setAlertInfo = (alertInfo: EpisodeStoreState['alertInfo']) => {
 	useEpisodeStore.setState({ alertInfo })
+}
+
+export const setSelectedEpisodes = (
+	selectedEpisodes: EpisodeStoreState['selectedEpisodes']
+) => {
+	useEpisodeStore.setState({ selectedEpisodes })
+}
+export const setDeleteEpisodeId = (
+	deleteEpisodeId: EpisodeStoreState['deleteEpisodeId']
+) => {
+	useEpisodeStore.setState({ deleteEpisodeId })
+}
+
+export const setInventIndex = (currentInventIndex: number) => {
+	useEpisodeStore.setState({ currentInventIndex })
 }

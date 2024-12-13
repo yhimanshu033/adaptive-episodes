@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { episodeLimit } from '@/constants/episodes-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
-import { setIsInventOpen, useEpisodeStore } from '@/store/episode-store'
+import {
+	setInventIndex,
+	setIsInventOpen,
+	useEpisodeStore,
+} from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 
@@ -26,8 +30,6 @@ import EpisodesPagination from './pagination'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
-	const currentSelectedIndex = useRef<number | null>(null)
-
 	const { currentPage, episodeSearch } = useEpisodeStore()
 	const { data } = useEpisodesData(episodeSearch, currentPage)
 	const tableData = useMemo(() => data?.results?.data ?? [], [data])
@@ -103,7 +105,7 @@ const EpisodesTable = () => {
 													className="absolute z-10 -translate-y-1/2 cursor-pointer rounded-full bg-primary p-1"
 													onClick={() => {
 														setIsInventOpen(true)
-														currentSelectedIndex.current = rowIndex
+														setInventIndex(rowIndex)
 													}}
 												>
 													<Plus size={12} />

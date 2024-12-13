@@ -7,10 +7,16 @@ export type EpisodeStoreState = {
 		action?: 'merge' | 'unmerge' | 'invent' | 'delete' | 'update'
 		description: string
 	} | null
+	currentInventIndex: number | null
 	currentPage: number
+	deleteEpisodeId: number | null
 	episodeSearch: string
 	isDialogOpen: boolean
 	isInventOpen: boolean
+	selectedEpisodes: {
+		episodes: TEpisode[]
+		status: EStatus | typeof BASE_STATUS
+	} | null
 }
 
 type TEpisodeProps = {

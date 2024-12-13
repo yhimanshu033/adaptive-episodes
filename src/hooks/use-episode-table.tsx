@@ -1,18 +1,19 @@
-import { useRef, useState } from 'react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { episodeLimit } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import {
 	setAlertInfo,
+	setDeleteEpisodeId,
 	setIsDialogOpen,
 	setIsInventOpen,
+	setSelectedEpisodes,
 	useEpisodeStore,
 } from '@/store/episode-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { Row, Table } from '@tanstack/react-table'
 import { useShallow } from 'zustand/react/shallow'
 
-import { BASE_STATUS, EStatus } from '@/types/common'
+import { EStatus } from '@/types/common'
 import { TEpisode, TEpisodeInventForm } from '@/types/episode-type'
 
 const useEpisodeTable = () => {
@@ -20,14 +21,6 @@ const useEpisodeTable = () => {
 	const router = useRouter()
 	const pathname = usePathname()
 	const queryClient = useQueryClient()
-
-	const currentSelectedIndex = useRef<number | null>(null)
-	const [deleteEpisodeId, setDeleteEpisodeId] = useState<number | null>()
-	console.log(deleteEpisodeId)
-	const [selectedEpisodes, setSelectedEpisodes] = useState<{
-		episodes: TEpisode[]
-		status: EStatus | typeof BASE_STATUS
-	} | null>()
 
 	const {
 		saveEpisodeMutation,
@@ -37,7 +30,13 @@ const useEpisodeTable = () => {
 		episodeUnmergeMutation,
 	} = useEpisodeHook()
 
-	const { currentPage, episodeSearch } = useEpisodeStore()
+	const {
+		currentPage,
+		episodeSearch,
+		deleteEpisodeId,
+		selectedEpisodes,
+		currentInventIndex,
+	} = useEpisodeStore()
 	const alertInfo = useEpisodeStore(useShallow((state) => state.alertInfo))
 
 	const handleTitleClick = (episodeId: number) => {
@@ -128,13 +127,11 @@ const useEpisodeTable = () => {
 		setIsDialogOpen(true)
 	}
 
-	const handleAddEpisode = (data: TEpisodeInventForm, currentPage: number) => {
+	const handleAddEpisode = (data: TEpisodeInventForm) => {
 		episodeInventMutation.mutate({
 			chapter_title: data.title,
 			seq_number:
-				(currentSelectedIndex.current || 0) +
-				2 +
-				(currentPage - 1) * episodeLimit,
+				(currentInventIndex || 0) + 2 + (currentPage - 1) * episodeLimit,
 		})
 		setIsInventOpen(false)
 	}
@@ -144,7 +141,6 @@ const useEpisodeTable = () => {
 			description: 'Selected episode will get permanently deleted',
 			action: 'delete',
 		})
-		console.log(episodeId)
 		setDeleteEpisodeId(episodeId)
 		setIsDialogOpen(true)
 	}
