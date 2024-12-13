@@ -25,8 +25,8 @@ export default function FloatingLaserResponse() {
 	} = useLaserStore()
 	const editor = useEditorRef()
 
-	const { isTranslationOpen, sidebar } = usePlateStore()
-	const minify = sidebar || isTranslationOpen
+	const { sidebar } = usePlateStore()
+	const minify = !!sidebar
 
 	const laser =
 		responseActive === activeLaser && responseActive

@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useMemo, useState } from 'react'
 import { episodeLimit } from '@/constants/episodes-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
+import { usePageState } from '@/hooks/use-page-state'
 import {
 	setInventIndex,
 	setIsInventOpen,
@@ -30,7 +34,8 @@ import EpisodesPagination from './pagination'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
-	const { currentPage, episodeSearch } = useEpisodeStore()
+	const { episodeSearch } = useEpisodeStore()
+	const { currentPage } = usePageState()
 	const { data } = useEpisodesData(episodeSearch, currentPage)
 	const tableData = useMemo(() => data?.results?.data ?? [], [data])
 	const { table, columnSize } = useCreateTable(tableData)

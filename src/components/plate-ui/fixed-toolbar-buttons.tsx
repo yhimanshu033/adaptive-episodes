@@ -21,6 +21,7 @@ import { BASE_STATUS, EStatus } from '@/types/common'
 
 import { ChatbotToolbarButton } from './chatbot-toggle-button'
 import { ColorDropdownMenu } from './color-dropdown-menu'
+import { FixedToolbarClose } from './fixed-toolbar-close'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import { ModeDropdownMenu } from './mode-dropdown-menu'
 import { MoreDropdownMenu } from './more-dropdown-menu'
@@ -116,6 +117,7 @@ export function FixedToolbarButtons({
 					{(!selectedStatus || selectedStatus === latestStatus) && (
 						<ModeDropdownMenu />
 					)}
+					<FixedToolbarClose />
 				</ToolbarGroup>
 			</div>
 		</div>

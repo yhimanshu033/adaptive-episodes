@@ -26,6 +26,12 @@ export const updateMessages = (message: TMessage, index: number) => {
 	})
 }
 
+export const popMessage = () => {
+	useAIStore.setState((state) => {
+		state.messages.pop()
+	})
+}
+
 export const clearMessages = () => {
 	useAIStore.setState({ messages: aiInitialMessage })
 }

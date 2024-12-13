@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import useLocalizeHook from '@/hooks/mutation/use-localize-hook'
+import { LocalizationType } from '@/constants/ai-constants'
+import useLocalizeHook, {
+	useLocalizeMutation,
+} from '@/hooks/mutation/use-localize-hook'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
 	useEditorPlugin,
 	useEditorRef,
@@ -14,16 +18,152 @@ import {
 	ReplaceAllIcon,
 	ReplaceIcon,
 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
 import { Toggle } from '@/components/ui/toggle'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn, replaceNthInsensitive } from '@/lib/utils'
 
 import { TLocalizeArrayItem } from '@/types/ai-types'
+
+const formSchema = z.object({
+	original: z.string(),
+	replace_with: z.string(),
+	type: z.string(),
+})
+
+const types: (keyof typeof LocalizationType)[] = ['PERSON', 'PLACE', 'CONCEPT']
+
+function AddForm() {
+	const { mutate, isPending } = useLocalizeMutation()
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			original: '',
+			replace_with: '',
+			type: types[0],
+		},
+	})
+
+	function onSubmit(values: z.infer<typeof formSchema>) {
+		try {
+			mutate({
+				ls_mapping: {
+					[values.original]: {
+						type: LocalizationType[
+							values.type as keyof typeof LocalizationType
+						],
+						localized_name: values.replace_with,
+					},
+				},
+			})
+		} catch (error) {
+			console.error('Form submission error', error)
+		}
+	}
+
+	return (
+		<Form {...form}>
+			<form
+				onSubmit={(e) => {
+					void form.handleSubmit(onSubmit)(e)
+				}}
+				className="space-y-4 pb-6"
+			>
+				<div className="flex w-full items-center justify-between">
+					<h2 className="text-lg font-bold">Add to sheet</h2>
+					<FormField
+						control={form.control}
+						name="type"
+						render={({ field }) => (
+							<FormItem>
+								<Select
+									onValueChange={field.onChange}
+									defaultValue={field.value}
+								>
+									<FormControl>
+										<SelectTrigger>
+											<SelectValue placeholder="Select a type" />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>
+										{types.map((type, idx) => (
+											<SelectItem key={idx} value={type}>
+												{type}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+				<div className="grid grid-cols-[4fr_4fr_1fr] gap-4">
+					<FormField
+						control={form.control}
+						name="original"
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										placeholder="Original"
+										type="text"
+										className="flex-1 rounded border border-gray-300 p-2"
+										{...field}
+									/>
+								</FormControl>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="replace_with"
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										placeholder="Replace with"
+										type="text"
+										className="flex-1 rounded border border-gray-300 p-2"
+										{...field}
+									/>
+								</FormControl>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<Button disabled={isPending} type="submit">
+						Submit
+					</Button>
+				</div>
+			</form>
+		</Form>
+	)
+}
 
 export default function FindAndReplace() {
 	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
@@ -197,7 +337,7 @@ export default function FindAndReplace() {
 	)
 
 	return (
-		<div className="flex h-[58vh] flex-col gap-4 p-4">
+		<div className="flex h-full flex-col gap-4 p-4">
 			<h2 className="text-2xl font-bold">Localization</h2>
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
 				<Toggle onClick={toggleReplace} aria-label="Toggle replace">
@@ -263,10 +403,10 @@ export default function FindAndReplace() {
 				</div>
 			) : (
 				<>
-					<ScrollArea
+					<div
 						className={cn(
-							'flex h-full flex-col overflow-y-auto',
-							replaceEnabled ? '~h-[30vh]' : '~h-[37vh]'
+							'flex h-full flex-col'
+							// replaceEnabled ? '~h-[30vh]' : '~h-[37vh]'
 						)}
 					>
 						<h4 className="text-lg font-semibold">Characters</h4>
@@ -305,12 +445,14 @@ export default function FindAndReplace() {
 								</Button>
 							))}
 						</div>
-					</ScrollArea>
+					</div>
 					<Button onClick={() => void refetch()} className="w-fit self-end">
 						Scan the Episode
 					</Button>
 				</>
 			)}
+			<hr />
+			<AddForm />
 		</div>
 	)
 }

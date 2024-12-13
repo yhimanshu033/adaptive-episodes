@@ -16,6 +16,8 @@ import { useShallow } from 'zustand/react/shallow'
 import { EStatus } from '@/types/common'
 import { TEpisode, TEpisodeInventForm } from '@/types/episode-type'
 
+import { usePageState } from './use-page-state'
+
 const useEpisodeTable = () => {
 	const { id } = useParams()
 	const router = useRouter()
@@ -31,13 +33,14 @@ const useEpisodeTable = () => {
 	} = useEpisodeHook()
 
 	const {
-		currentPage,
 		episodeSearch,
 		deleteEpisodeId,
 		selectedEpisodes,
 		currentInventIndex,
 	} = useEpisodeStore()
 	const alertInfo = useEpisodeStore(useShallow((state) => state.alertInfo))
+
+	const { currentPage } = usePageState()
 
 	const handleTitleClick = (episodeId: number) => {
 		router.push(`${pathname}/${episodeId}/editor`)

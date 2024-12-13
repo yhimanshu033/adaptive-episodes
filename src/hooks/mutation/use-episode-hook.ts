@@ -16,6 +16,7 @@ import { TComment } from '@udecode/plate-comments'
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisodeMergeParams } from '@/types/episode-type'
 
+import { usePageState } from '../use-page-state'
 import useSocket from '../use-socket'
 
 const useEpisodeHook = () => {
@@ -24,7 +25,8 @@ const useEpisodeHook = () => {
 
 	const queryClient = useQueryClient()
 
-	const { currentPage, episodeSearch } = useEpisodeStore()
+	const { episodeSearch } = useEpisodeStore()
+	const { currentPage } = usePageState()
 
 	const onSuccess = async () => {
 		await queryClient.invalidateQueries({

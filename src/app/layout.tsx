@@ -21,7 +21,7 @@ export default async function RootLayout({
 }>) {
 	const session = await getServerSession()
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<body className={`${fontSans.className} antialiased`}>
 				<AppProvider session={session}>{children}</AppProvider>
 			</body>
