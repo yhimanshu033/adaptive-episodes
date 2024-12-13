@@ -7,4 +7,12 @@ export const statuses: EStatus[] = [
 	EStatus.PUBLISHED,
 ]
 
+export enum EpisodeActions {
+	DELETE = 'delete',
+	INVENT = 'invent',
+	MERGE = 'merge',
+	UNMERGE = 'unmerge',
+	UPDATE = 'update',
+}
+
 export const episodeLimit = 10

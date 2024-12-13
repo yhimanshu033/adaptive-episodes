@@ -125,7 +125,7 @@ export default function PlateEditor() {
 
 	const editor = useMyEditor({
 		content: content?.text || '',
-		comments: content?.chapter.props.comments,
+		comments: content?.chapter.props?.comments,
 	})
 
 	const handleEpisodeChange = (episode: number | null) => {
@@ -146,10 +146,7 @@ export default function PlateEditor() {
 		<DndProvider backend={HTML5Backend}>
 			<Plate editor={editor}>
 				<div className="flex items-center justify-between">
-					<Title
-						title={content.chapter.chapter_title}
-						episodeNumber={content.chapter.seq_number}
-					/>
+					<Title />
 					<div className="flex items-center gap-2">
 						<Versions
 							{...{

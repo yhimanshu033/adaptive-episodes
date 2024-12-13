@@ -64,7 +64,7 @@ const Versions = ({
 		if (currentSelection.current) {
 			await saveEpisodeMutation.mutateAsync({
 				text: 'Status update',
-				statusChange: currentSelection.current,
+				status: currentSelection.current,
 			})
 			await queryClient.invalidateQueries({ queryKey: ['info'], type: 'all' })
 			await queryClient.invalidateQueries({

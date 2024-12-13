@@ -1,35 +1,80 @@
-import React, { useState } from 'react'
-import { Search } from 'lucide-react'
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import React from 'react'
+import useEpisodeTable from '@/hooks/use-episode-table'
+import { setEpisodeSearch } from '@/store/episode-store'
+import { Table } from '@tanstack/react-table'
+import { Merge, Search, Split } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-const Filters = ({
-	setEpisodeFilter,
-}: {
-	setEpisodeFilter: (episode: string) => void
-}) => {
-	const [episodeSearch, setEpisodeSearch] = useState<string>('')
+import { TEpisode, TEpisodeSearchForm } from '@/types/episode-type'
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-		setEpisodeFilter(episodeSearch)
+const Filters = ({ table }: { table: Table<TEpisode> }) => {
+	const { handleMerge, handleUnmerge } = useEpisodeTable()
+
+	const selectedRowModel = table.getSelectedRowModel().rows
+	const selectedRowData = selectedRowModel.map((row) => row.original)
+
+	const handleSearch = (data: TEpisodeSearchForm) => {
+		setEpisodeSearch(data.input)
 	}
 
+	const form = useForm<TEpisodeSearchForm>({
+		defaultValues: {
+			input: '',
+		},
+	})
+
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className="mb-2 flex flex-1 items-center gap-2"
-		>
-			<Input
-				placeholder="Search Episode"
-				className="border"
-				onChange={(e) => setEpisodeSearch(e.target.value)}
-			/>
-			<Button type="submit" size="icon">
-				<Search size={16} />
+		<>
+			<Form {...form}>
+				<form
+					onSubmit={form.handleSubmit(handleSearch)}
+					className="mb-2 flex flex-1 items-center gap-2"
+				>
+					<FormField
+						control={form.control}
+						name="input"
+						render={({ field }) => (
+							<FormItem className="flex-1">
+								<FormControl>
+									<Input placeholder="Search Episode" {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<Button size="icon">
+						<Search size={16} />
+					</Button>
+				</form>
+			</Form>
+			<Button
+				size="icon"
+				disabled={Object.keys(selectedRowData).length <= 1}
+				onClick={() => handleMerge(selectedRowData)}
+				title="Merge episodes"
+			>
+				<Merge size={16} />
 			</Button>
-		</form>
+			<Button
+				size="icon"
+				disabled={selectedRowData.length !== 1}
+				onClick={() => handleUnmerge(selectedRowModel)}
+				title="Unmerge episodes"
+			>
+				<Split size={16} />
+			</Button>
+		</>
 	)
 }
 

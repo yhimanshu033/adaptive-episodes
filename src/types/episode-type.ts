@@ -1,6 +1,24 @@
+import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EStatus } from './common'
+
+export type EpisodeStoreState = {
+	alertInfo: {
+		action?: EpisodeActions
+		description: string
+	} | null
+	currentInventIndex: number | null
+	currentPage: number
+	deleteEpisodeId: number | null
+	episodeSearch: string
+	isDialogOpen: boolean
+	isInventOpen: boolean
+	selectedEpisodes: {
+		episodes: TEpisode[]
+		status: EStatus | typeof BASE_STATUS
+	} | null
+}
 
 type TEpisodeProps = {
 	beatsheet: string
@@ -14,15 +32,16 @@ export type TEpisode = {
 	comments: string | null
 	context: string | null
 	create_time: string
-	episodes?: TEpisode[]
 	file_url: string
 	id: number
 	latest_version: number
 	parent: number | null
 	project: number
-	props: Record<string, unknown> & {
+	props?: Record<string, unknown> & {
 		comments?: TComment[]
 		llm_memories?: TEpisodeProps
+		merged_chapter_ids?: number[]
+		original_chapters?: TEpisode[]
 	}
 	seq_number: number
 	status: EStatus | typeof BASE_STATUS
@@ -72,5 +91,53 @@ export type TPatchEpisodeUrlParams = {
 
 export type TGetEpisodeDetailsQueryParams = {
 	parent: number
+	project_id: number
+}
+
+export type TEpisodeInventForm = {
+	title: string
+}
+export type TEpisodeSearchForm = {
+	input: string
+}
+
+export type TEpisodeMergeParams = {
+	chapter_ids: number[]
+	project_id: number
+	status: string
+}
+
+export type TEpisodeUnmergeParams = {
+	merged_chapter_id: number
+}
+
+export type TEpisodeUnmergeResponse = {
+	merged_chapter_id: number
+	restored_chapter_ids: number[]
+	status: string
+}
+
+export type TEpisodeInventParams = {
+	chapter_title: string
+	content: string
+	project_id: number
+	seq_number: number
+}
+
+export type TEpisodeInventResponse = {
+	chapter_title: string
+	id: number
+	project_id: number
+	seq_number: number
+	status: string
+}
+
+export type TEpisodeDeleteURLParams = {
+	chapter_id: number
+}
+
+export type TEpisodeDeleteResponse = {
+	deleted_chapter_id: number
+	message: string
 	project_id: number
 }

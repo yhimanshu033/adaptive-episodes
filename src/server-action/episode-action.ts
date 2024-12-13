@@ -4,6 +4,12 @@ import { fetchAPI } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
 import {
+	TEpisodeDeleteResponse,
+	TEpisodeDeleteURLParams,
+	TEpisodeInventParams,
+	TEpisodeInventResponse,
+	TEpisodeUnmergeParams,
+	TEpisodeUnmergeResponse,
 	TGetEpisodeDetailsQueryParams,
 	TGetEpisodesQueryParams,
 	TGetEpisodesResponse,
@@ -49,4 +55,56 @@ export const getEpisodeDetails = async (
 		},
 	})
 	return episodes.data
+}
+
+export const unmergeEpisodes = async (merged_chapter_id: number) => {
+	const res = await fetchAPI<
+		TEpisodeUnmergeResponse,
+		TNoParams,
+		TEpisodeUnmergeParams
+	>({
+		method: 'PATCH',
+		url: '/chapters/unmerge/',
+		body: {
+			merged_chapter_id,
+		},
+	})
+	return res.data
+}
+
+export const inventEpisode = async ({
+	project_id,
+	chapter_title,
+	seq_number,
+}: {
+	chapter_title: string
+	project_id: number
+	seq_number: number
+}) => {
+	const res = await fetchAPI<
+		TEpisodeInventResponse,
+		TNoParams,
+		TEpisodeInventParams
+	>({
+		method: 'POST',
+		url: '/chapters/invent/',
+		body: {
+			project_id,
+			chapter_title,
+			seq_number,
+			content: 'demo',
+		},
+	})
+	return res.data
+}
+
+export const deleteEpisode = async (chapter_id: number) => {
+	const res = await fetchAPI<TEpisodeDeleteResponse, TEpisodeDeleteURLParams>({
+		method: 'PATCH',
+		url: '/chapters/:chapter_id/delete/',
+		urlParams: {
+			chapter_id,
+		},
+	})
+	return res.data
 }

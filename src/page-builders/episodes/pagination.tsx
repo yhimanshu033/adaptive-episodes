@@ -1,23 +1,18 @@
 import React, { useState } from 'react'
+import { usePageState } from '@/hooks/use-page-state'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-const EpisodesPagination = ({
-	setPage,
-	totalPages,
-	currentPage,
-}: {
-	currentPage: number
-	setPage: (page: number) => void
-	totalPages: number
-}) => {
+const EpisodesPagination = ({ totalPages }: { totalPages: number }) => {
 	const [inputPage, setInputPage] = useState<number>(0)
 	const showEllipsis = totalPages > 7
 	const pageNumbers = []
 
+	const { currentPage, setCurrentPage } = usePageState()
+
 	const handlePageChange = (page?: number) => {
-		setPage(page ?? inputPage)
+		void setCurrentPage(page ?? inputPage)
 	}
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()

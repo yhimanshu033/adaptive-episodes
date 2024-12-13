@@ -1,57 +1,149 @@
-import { useCallback } from 'react'
+'use client'
+
+import { useCallback, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import { EpisodeActions } from '@/constants/episodes-constants'
 import { saveContent } from '@/server-action/content-action'
-import { useMutation } from '@tanstack/react-query'
+import {
+	deleteEpisode,
+	inventEpisode,
+	unmergeEpisodes,
+} from '@/server-action/episode-action'
+import { useEpisodeStore } from '@/store/episode-store'
+import { setFullScreenLoading } from '@/store/global-store'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
+import { TEpisodeMergeParams } from '@/types/episode-type'
 
-import useEpisodeContent from '../query/use-episode-content'
+import { usePageState } from '../use-page-state'
+import useSocket from '../use-socket'
 
 const useEpisodeHook = () => {
 	const { id, episodeId } = useParams()
-	const { data } = useEpisodeContent()
-	const status = data?.chapter.status || BASE_STATUS
-	const chapterId = data?.chapter.parent || Number(episodeId)
+	const { startTask, getResponse } = useSocket()
+
+	const queryClient = useQueryClient()
+
+	const { episodeSearch } = useEpisodeStore()
+	const { currentPage } = usePageState()
+
+	const onSuccess = async () => {
+		await queryClient.invalidateQueries({
+			queryKey: [Number(id), 'episodes', currentPage, episodeSearch],
+			type: 'all',
+		})
+	}
 
 	const onSaveEpisode = useCallback(
 		({
 			text,
-			statusChange,
-			selectedChapterId,
-			selectedProjectId,
+			status,
+			chapterId,
 			chapter_title,
 			comments,
 		}: {
+			chapterId?: number | null
 			chapter_title?: string
 			comments?: TComment[]
-			selectedChapterId?: number
-			selectedProjectId?: number
-			statusChange?: EStatus
+			status: EStatus | typeof BASE_STATUS
 			text: string
 		}) => {
 			return saveContent({
-				episodeId: selectedChapterId || chapterId,
-				projectId: selectedProjectId || Number(id),
+				episodeId: chapterId ?? Number(episodeId),
+				projectId: Number(id),
 				text,
-				status:
-					statusChange ||
-					(status === BASE_STATUS ? EStatus.FIRST_DRAFT : status),
+				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
 				chapter_title,
 				props: {
 					comments,
 				},
 			})
 		},
-		[chapterId, id, status]
+		[episodeId, id]
 	)
 
+	const onEpisodeMerge = async (chapter_ids: number[]) => {
+		const taskId = await startTask<TEpisodeMergeParams>({
+			method: 'PATCH',
+			url: '/chapters/merge/',
+			body: {
+				chapter_ids,
+				project_id: Number(id),
+				status: EStatus.FIRST_DRAFT,
+			},
+		})
+		return getResponse(taskId)
+	}
+
+	const onEpisodeInvent = async ({
+		chapter_title,
+		seq_number,
+	}: {
+		chapter_title: string
+		seq_number: number
+	}) => {
+		return inventEpisode({
+			project_id: Number(id),
+			chapter_title,
+			seq_number,
+		})
+	}
+
 	const saveEpisodeMutation = useMutation({
-		mutationKey: ['save', id, chapterId],
+		mutationKey: [EpisodeActions.UPDATE, id, episodeId],
 		mutationFn: onSaveEpisode,
 	})
 
-	return { saveEpisodeMutation }
+	const episodesMergeMutation = useMutation({
+		mutationKey: [EpisodeActions.MERGE, id],
+		mutationFn: onEpisodeMerge,
+		onSuccess,
+	})
+
+	const episodeUnmergeMutation = useMutation({
+		mutationKey: [EpisodeActions.UNMERGE, id],
+		mutationFn: unmergeEpisodes,
+		onSuccess,
+	})
+
+	const episodeInventMutation = useMutation({
+		mutationKey: [EpisodeActions.INVENT, id],
+		mutationFn: onEpisodeInvent,
+		onSuccess,
+	})
+
+	const episodeDeleteMutation = useMutation({
+		mutationKey: [EpisodeActions.DELETE, id],
+		mutationFn: deleteEpisode,
+		onSuccess,
+	})
+
+	useEffect(() => {
+		setFullScreenLoading(
+			(saveEpisodeMutation.isPending && !episodeId) ||
+				episodesMergeMutation.isPending ||
+				episodeUnmergeMutation.isPending ||
+				episodeInventMutation.isPending ||
+				episodeDeleteMutation.isPending
+		)
+	}, [
+		episodeDeleteMutation.isPending,
+		episodeId,
+		episodeInventMutation.isPending,
+		episodeUnmergeMutation.isPending,
+		episodesMergeMutation.isPending,
+		saveEpisodeMutation.isPending,
+	])
+
+	return {
+		saveEpisodeMutation,
+		episodesMergeMutation,
+		episodeUnmergeMutation,
+		episodeInventMutation,
+		episodeDeleteMutation,
+	}
 }
 
 export default useEpisodeHook
