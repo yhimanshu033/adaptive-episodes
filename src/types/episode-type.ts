@@ -1,10 +1,11 @@
+import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EStatus } from './common'
 
 export type EpisodeStoreState = {
 	alertInfo: {
-		action?: 'merge' | 'unmerge' | 'invent' | 'delete' | 'update'
+		action?: EpisodeActions
 		description: string
 	} | null
 	currentInventIndex: number | null
@@ -95,6 +96,9 @@ export type TGetEpisodeDetailsQueryParams = {
 
 export type TEpisodeInventForm = {
 	title: string
+}
+export type TEpisodeSearchForm = {
+	input: string
 }
 
 export type TEpisodeMergeParams = {

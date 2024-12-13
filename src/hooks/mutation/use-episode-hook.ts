@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import { EpisodeActions } from '@/constants/episodes-constants'
 import { saveContent } from '@/server-action/content-action'
 import {
 	deleteEpisode,
@@ -91,30 +92,30 @@ const useEpisodeHook = () => {
 	}
 
 	const saveEpisodeMutation = useMutation({
-		mutationKey: ['save', id, episodeId],
+		mutationKey: [EpisodeActions.UPDATE, id, episodeId],
 		mutationFn: onSaveEpisode,
 	})
 
 	const episodesMergeMutation = useMutation({
-		mutationKey: ['merge', id],
+		mutationKey: [EpisodeActions.MERGE, id],
 		mutationFn: onEpisodeMerge,
 		onSuccess,
 	})
 
 	const episodeUnmergeMutation = useMutation({
-		mutationKey: ['unmerge', id],
+		mutationKey: [EpisodeActions.UNMERGE, id],
 		mutationFn: unmergeEpisodes,
 		onSuccess,
 	})
 
 	const episodeInventMutation = useMutation({
-		mutationKey: ['invent', id],
+		mutationKey: [EpisodeActions.INVENT, id],
 		mutationFn: onEpisodeInvent,
 		onSuccess,
 	})
 
 	const episodeDeleteMutation = useMutation({
-		mutationKey: ['delete', id],
+		mutationKey: [EpisodeActions.DELETE, id],
 		mutationFn: deleteEpisode,
 		onSuccess,
 	})

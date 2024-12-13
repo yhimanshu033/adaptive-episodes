@@ -1,5 +1,5 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { episodeLimit } from '@/constants/episodes-constants'
+import { EpisodeActions, episodeLimit } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import {
 	setAlertInfo,
@@ -65,12 +65,12 @@ const useEpisodeTable = () => {
 		if (selectedRows.length <= 1) {
 			setAlertInfo({
 				description: `Status of selected episode will switch to ${status}`,
-				action: 'update',
+				action: EpisodeActions.UPDATE,
 			})
 		} else if (hasConsistentStatus(selectedRows)) {
 			setAlertInfo({
 				description: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
-				action: 'update',
+				action: EpisodeActions.UPDATE,
 			})
 		} else {
 			setAlertInfo({
@@ -81,14 +81,20 @@ const useEpisodeTable = () => {
 	}
 
 	const handleMerge = (selectedRowData: TEpisode[]) => {
-		const isStatusSame = selectedRowData.every(
-			(row) => row.status === selectedRowData[0].status
-		)
-
-		const isContinuous = selectedRowData.every(
-			(row, index) =>
-				index === 0 ||
-				row.seq_number - selectedRowData[index - 1].seq_number === 1
+		const { isStatusSame, isContinuous } = selectedRowData.reduce(
+			(acc, row, index) => ({
+				isStatusSame:
+					acc.isStatusSame &&
+					(index === 0 || row.status === selectedRowData[0].status),
+				isContinuous:
+					acc.isContinuous &&
+					(index === 0 ||
+						row.seq_number - selectedRowData[index - 1].seq_number === 1),
+			}),
+			{
+				isStatusSame: true,
+				isContinuous: true,
+			}
 		)
 
 		if (!isStatusSame) {
@@ -106,7 +112,7 @@ const useEpisodeTable = () => {
 			})
 			setAlertInfo({
 				description: 'Selected episodes will get merged',
-				action: 'merge',
+				action: EpisodeActions.MERGE,
 			})
 		}
 		setIsDialogOpen(true)
@@ -124,7 +130,7 @@ const useEpisodeTable = () => {
 			})
 			setAlertInfo({
 				description: 'Selected Episode will get unmerged',
-				action: 'unmerge',
+				action: EpisodeActions.UNMERGE,
 			})
 		}
 		setIsDialogOpen(true)
@@ -142,7 +148,7 @@ const useEpisodeTable = () => {
 	const handleDeleteEpisode = (episodeId: number) => {
 		setAlertInfo({
 			description: 'Selected episode will get permanently deleted',
-			action: 'delete',
+			action: EpisodeActions.DELETE,
 		})
 		setDeleteEpisodeId(episodeId)
 		setIsDialogOpen(true)
@@ -150,13 +156,16 @@ const useEpisodeTable = () => {
 
 	const handleConfirm = async () => {
 		if (!alertInfo) return
-		if (alertInfo.action === 'merge' && selectedEpisodes) {
+		if (alertInfo.action === EpisodeActions.MERGE && selectedEpisodes) {
 			episodesMergeMutation.mutate(
 				selectedEpisodes.episodes.map((episode) => episode.id) || []
 			)
-		} else if (alertInfo.action === 'unmerge' && selectedEpisodes) {
+		} else if (
+			alertInfo.action === EpisodeActions.UNMERGE &&
+			selectedEpisodes
+		) {
 			episodeUnmergeMutation.mutate(selectedEpisodes.episodes[0].id)
-		} else if (alertInfo.action === 'update' && selectedEpisodes) {
+		} else if (alertInfo.action === EpisodeActions.UPDATE && selectedEpisodes) {
 			const { episodes, status } = selectedEpisodes
 
 			await Promise.all(
@@ -172,7 +181,7 @@ const useEpisodeTable = () => {
 				queryKey: [Number(id), 'episodes', currentPage, episodeSearch],
 				type: 'all',
 			})
-		} else if (alertInfo.action === 'delete' && deleteEpisodeId) {
+		} else if (alertInfo.action === EpisodeActions.DELETE && deleteEpisodeId) {
 			episodeDeleteMutation.mutate(deleteEpisodeId)
 		}
 	}
