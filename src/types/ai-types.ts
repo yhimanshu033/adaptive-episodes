@@ -1,5 +1,7 @@
 import { Value } from '@udecode/plate-common'
 
+import { MinifiedValue } from './common'
+
 export interface LaserToolsParams {
 	action: string
 	context?: string
@@ -26,9 +28,11 @@ export interface LaserToolsApiResponse {
 export interface AIChatBotParams {
 	aiChatbotData: {
 		beatsheets_array?: string[]
+		chat_mode?: 'review' | 'pass'
 		context?: string
 		ep_number?: string
 		ep_text?: string
+		ep_text_json?: MinifiedValue
 		highlighted_text?: string
 		loglines_array?: string[]
 		messages: {
@@ -56,11 +60,17 @@ export enum EMessenger {
 }
 export enum EAction {
 	ACCEPT = 'accept',
+	ADD = 'add',
 	BLOCK = 'block',
 	CHANGES = 'changes',
 	MESSAGE = 'message',
 	REJECT = 'reject',
 	REVIEW = 'review',
+}
+
+export type TStoryChatSuggestion = {
+	action: EAction
+	value: string
 }
 
 export type TMessage =
@@ -77,6 +87,7 @@ export interface AIStoreType {
 	acceptedValue: Value | null
 	messages: TMessage[]
 	prevValue: Value | null
+	requestedAction: EAction | null
 	responseValue: Value | null
 }
 

@@ -3,13 +3,14 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
-import { AIStoreType, TMessage } from '@/types/ai-types'
+import { AIStoreType, EAction, TMessage } from '@/types/ai-types'
 
 const initialState: AIStoreType = {
 	messages: aiInitialMessage,
 	responseValue: null,
 	prevValue: null,
 	acceptedValue: null,
+	requestedAction: null,
 }
 
 const useAIStore = create(devtools(immer(() => initialState)))
@@ -47,4 +48,9 @@ export const setPrevValue = (value: AIStoreType['prevValue']) => {
 export const setAcceptedValue = (value: AIStoreType['acceptedValue']) => {
 	useAIStore.setState({ acceptedValue: value })
 }
+
+export const setRequestedAction = (requestedAction: EAction | null) => {
+	useAIStore.setState({ requestedAction })
+}
+
 export default useAIStore

@@ -61,7 +61,7 @@ export const exampleReview: IndexedCommentsResponse[] = [
 		id: '0_0',
 		path: {
 			start: 5,
-			end: 8,
+			end: 13,
 		},
 	},
 	{

@@ -4,17 +4,20 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { DiffStatus } from '@/constants/ai-constants'
+import {
+	moreChatSuggestions,
+	storyChatSuggestions,
+} from '@/constants/editor-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
-import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
-import { ex, exampleReview } from '@/mock-data/aichatbot'
 import useAIStore, {
 	addMessages,
 	clearMessages,
 	popMessage,
 	setAcceptedValue,
 	setPrevValue,
+	setRequestedAction,
 	setResponseValue,
 	updateMessages,
 } from '@/store/ai-store'
@@ -46,22 +49,22 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
-import { cn, convertReviewResponse, getText } from '@/lib/utils'
+import { cn, convertReviewResponse, getText, minify } from '@/lib/utils'
 
-import { EAction, EMessenger } from '@/types/ai-types'
+import { EAction, EMessenger, TStoryChatSuggestion } from '@/types/ai-types'
+import { IndexedCommentsResponse } from '@/types/editor-types'
 
 import AiDnd from './ai-editor'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
+	const [suggestions, setSuggestions] = useState(storyChatSuggestions)
 	const { id } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const { messages } = useAIStore()
 	const { aiChatbotMutation } = useAIChatbotHook()
-	const { aiChatbotMutationTest } = useAIChatbotHookTest()
 	const { data: aiResponse, isPending, reset } = aiChatbotMutation
-	const { data: aiResponseTest } = aiChatbotMutationTest
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
@@ -69,6 +72,7 @@ const AIChatbot = () => {
 	const { children } = useEditorState()
 	const value = useAIStore((state) => state.acceptedValue)
 	const prevValue = useAIStore((state) => state.prevValue)
+	const requestedAction = useAIStore((state) => state.requestedAction)
 	const { api } = useEditorPlugin(CommentsPlugin)
 
 	const episodesCount = useMemo(() => {
@@ -91,8 +95,6 @@ const AIChatbot = () => {
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
-		addMessages({ role: EMessenger.USER, content: input })
-		setInput('')
 		aiChatbotMutation.mutate({
 			episodeNumber: episodeContent?.chapter.seq_number || 0,
 			episodesCount,
@@ -106,6 +108,30 @@ const AIChatbot = () => {
 				ep_text: getText(children),
 			},
 		})
+		addMessages({ role: EMessenger.USER, content: input })
+		setInput('')
+		setRequestedAction(EAction.BLOCK)
+	}
+
+	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
+		if (suggestion.action === EAction.ADD) {
+			setSuggestions((prev) => [...prev.slice(0, -1), ...moreChatSuggestions])
+			return
+		}
+		addMessages({ role: EMessenger.USER, content: suggestion.value })
+		aiChatbotMutation.mutate({
+			episodeNumber: episodeContent?.chapter.seq_number || 0,
+			episodesCount,
+			aiChatbotData: {
+				messages,
+				user_message: suggestion.value,
+				ep_number: episodeContent?.chapter.seq_number?.toString(),
+				ep_text: episodeContent?.text as string,
+				ep_text_json: minify(children),
+				chat_mode: 'pass',
+			},
+		})
+		setRequestedAction(suggestion.action)
 	}
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -114,36 +140,6 @@ const AIChatbot = () => {
 			handleSendMessage(e)
 		}
 	}
-	useEffect(() => {
-		if (!isPending && aiResponse) {
-			handleBlock({ text: aiResponse as string })
-		}
-	}, [aiResponse, isPending])
-
-	useEffect(() => {
-		if (messageEndRef.current) {
-			messageEndRef.current.scrollIntoView({ behavior: 'smooth' })
-		}
-	}, [messages])
-
-	useEffect(() => {
-		if (textareaRef.current) {
-			textareaRef.current.style.height = '40px'
-			const scrollHeight = textareaRef.current.scrollHeight
-			textareaRef.current.style.height = `${Math.min(scrollHeight, 150)}px`
-		}
-	}, [input])
-
-	useEffect(() => {
-		if (!aiResponseTest) return
-		setResponseValue(structuredClone(ex.current))
-		setPrevValue(structuredClone(ex.previous))
-		addMessages({
-			role: EMessenger.ASSISTANT,
-			action: EAction.CHANGES,
-			content: 'Added changes from StoryChat',
-		})
-	}, [aiResponseTest])
 
 	function handleAccept(i: number, all: boolean = true) {
 		handleAcceptResponse(all)
@@ -219,8 +215,8 @@ const AIChatbot = () => {
 		[value, editor.tf]
 	)
 
-	function addReview() {
-		const resp = convertReviewResponse(exampleReview, children)
+	function addReview(reviewResponse: IndexedCommentsResponse[]) {
+		const resp = convertReviewResponse(reviewResponse, children)
 		resp.comments.forEach((comment) => {
 			api.comment.addComment({
 				value: [{ type: 'p', children: [{ text: comment.text }] }],
@@ -233,12 +229,50 @@ const AIChatbot = () => {
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			action: EAction.REVIEW,
-			content: 'StoryChat added review in comments',
+			content: reviewResponse.length
+				? 'StoryChat added review in comments'
+				: 'No reviews from StoryChat',
 		})
 	}
 
-	const suggestions = ['Add Music / Sound FX 🎶', 'Voice Pass 🎙️', 'Review ✅']
 	const changesPending = prevValue && value
+
+	useEffect(() => {
+		if (!isPending && aiResponse) {
+			console.log(requestedAction, aiResponse)
+			if (requestedAction === EAction.BLOCK)
+				handleBlock({ text: aiResponse as string })
+			else if (requestedAction === EAction.REVIEW)
+				addReview(aiResponse as IndexedCommentsResponse[])
+			setRequestedAction(null)
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [aiResponse, isPending])
+
+	useEffect(() => {
+		if (messageEndRef.current) {
+			messageEndRef.current.scrollIntoView({ behavior: 'smooth' })
+		}
+	}, [messages])
+
+	useEffect(() => {
+		if (textareaRef.current) {
+			textareaRef.current.style.height = '40px'
+			const scrollHeight = textareaRef.current.scrollHeight
+			textareaRef.current.style.height = `${Math.min(scrollHeight, 150)}px`
+		}
+	}, [input])
+
+	// useEffect(() => {
+	// 	if (!aiResponseTest) return
+	// 	setResponseValue(structuredClone(ex.current))
+	// 	setPrevValue(structuredClone(ex.previous))
+	// 	addMessages({
+	// 		role: EMessenger.ASSISTANT,
+	// 		action: EAction.CHANGES,
+	// 		content: 'Added changes from StoryChat',
+	// 	})
+	// }, [aiResponseTest])
 
 	return (
 		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
@@ -316,26 +350,12 @@ const AIChatbot = () => {
 						variant="outline"
 						size="sm"
 						onClick={() => {
-							addMessages({ role: EMessenger.USER, content: suggestion })
-							if (index === 2) {
-								addReview()
-								return
-							}
-							aiChatbotMutationTest.mutate({
-								episodeNumber: episodeContent?.chapter.seq_number || 0,
-								episodesCount,
-								aiChatbotData: {
-									messages,
-									user_message: suggestion,
-									ep_number: episodeContent?.chapter.seq_number?.toString(),
-									ep_text: episodeContent?.text as string,
-								},
-							})
+							handleSuggestion(suggestion)
 						}}
 						className="mr-2"
-						disabled={!!changesPending}
+						disabled={!!changesPending || isPending}
 					>
-						{suggestion}
+						{suggestion.value}
 					</Button>
 				))}
 			</ScrollArea>
