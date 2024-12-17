@@ -16,7 +16,7 @@ const SyncMetaData = () => {
 
 	return (
 		<Button variant="outline" className="gap-2" onClick={handleSync}>
-			MetaData
+			AI Sync
 			<RefreshCw
 				size={16}
 				className={cn({ 'animate-spin': metadataSyncMutation.isPending })}
