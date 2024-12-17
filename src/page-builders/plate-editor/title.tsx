@@ -8,9 +8,11 @@ import { ArrowLeft } from 'lucide-react'
 import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
 
+import { EStatus } from '@/types/common'
+
 const Title = () => {
 	const router = useRouter()
-	const { data: episodeContent } = useEpisodeContent()
+	const { data: episodeContent, latestStatus } = useEpisodeContent()
 	const { saveEpisodeMutation } = useEpisodeHook()
 	const readOnly = useEditorReadOnly()
 
@@ -23,6 +25,7 @@ const Title = () => {
 		saveEpisodeMutation.mutate({
 			chapter_title,
 			text: episodeContent?.text || '',
+			status: latestStatus || EStatus.FIRST_DRAFT,
 		})
 	}
 
