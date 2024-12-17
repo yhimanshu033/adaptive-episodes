@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { setCurrentDiffValue } from '@/store/plate-store'
+import usePlateStore from '@/store/plate-store'
 import { useEditorReadOnly, useEditorState } from '@udecode/plate-common/react'
 import { LoaderCircle, Save } from 'lucide-react'
 
@@ -19,10 +19,11 @@ const SaveEpisode = () => {
 	const { saveEpisodeMutation } = useEpisodeHook()
 	const { data } = useEpisodeContent()
 	const readOnly = useEditorReadOnly()
+	const { setCurrentDiffValue } = usePlateStore()
 
 	useEffect(() => {
 		setCurrentDiffValue(structuredClone(children))
-	}, [children])
+	}, [children, setCurrentDiffValue])
 
 	const handleSave = useCallback(() => {
 		const currentChildren = JSON.stringify(children)

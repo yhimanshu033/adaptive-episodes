@@ -1,5 +1,5 @@
 import React from 'react'
-import { setSidebar } from '@/store/plate-store'
+import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { useEditorState } from '@udecode/plate-common/react'
 import { Globe, Search, WholeWordIcon } from 'lucide-react'
@@ -16,6 +16,7 @@ import {
 import { ToolbarButton } from './toolbar'
 
 export function MoreDropdownMenu(props: DropdownMenuProps) {
+	const { setSidebar } = usePlateStore()
 	const openState = useOpenState()
 	const { children } = useEditorState()
 	const text = getText(children)

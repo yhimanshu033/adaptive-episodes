@@ -17,7 +17,8 @@ const renderSidebar: Record<string, React.ReactNode> = {
 }
 
 const Sidebar = () => {
-	const sidebar = usePlateStore((state) => state.sidebar)
+	const { store } = usePlateStore()
+	const sidebar = store((state) => state.sidebar)
 	// if (!sidebar || sidebar === "translation") return null
 	const showSidebar = sidebar && sidebar !== 'translation'
 	return (

@@ -6,12 +6,7 @@ import React, { useCallback, useEffect } from 'react'
 import { rephraseMethods } from '@/constants/editor-constants'
 import useLaserToolsHook from '@/hooks/mutation/use-lasertool-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useLaserStore, {
-	getLaser,
-	setLaser,
-	setResponseActive,
-	setTriggerRephrase,
-} from '@/store/laser-store'
+import useLaserStore from '@/store/laser-store'
 import { useEditorState } from '@udecode/plate-common/react'
 import { X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -37,12 +32,18 @@ export default function LaserRephrase({
 		laserToolsMutation: { data, isPending, reset, mutate },
 	} = useLaserToolsHook()
 
-	const triggerRephrase = useLaserStore(
+	const {
+		store: laserStore,
+		getLaser,
+		setLaser,
+		setResponseActive,
+		setTriggerRephrase,
+	} = useLaserStore()
+
+	const triggerRephrase = laserStore(
 		useShallow((state) => state.triggerRephrase)
 	)
-	const responseActive = useLaserStore(
-		useShallow((state) => state.responseActive)
-	)
+	const responseActive = laserStore(useShallow((state) => state.responseActive))
 
 	useEffect(() => {
 		setResponseMode(!!data)
@@ -84,7 +85,15 @@ export default function LaserRephrase({
 				},
 			})
 		}
-	}, [data, isPending, getSelectedText, key])
+	}, [
+		data,
+		isPending,
+		getSelectedText,
+		key,
+		setLaser,
+		getLaser,
+		setResponseActive,
+	])
 
 	useEffect(() => {
 		handleRephrase(methodId)
@@ -95,7 +104,7 @@ export default function LaserRephrase({
 			reset()
 			setTriggerRephrase(null)
 		}
-	}, [triggerRephrase, key, reset])
+	}, [triggerRephrase, key, reset, setTriggerRephrase])
 
 	return (
 		<>
@@ -103,7 +112,7 @@ export default function LaserRephrase({
 				<></>
 			) : (
 				<div className="flex items-center gap-1 p-2">
-					<Button size="sm" onClick={onResetLeaf}>
+					<Button variant="ghost" size="sm" onClick={onResetLeaf}>
 						<X size={16} />
 					</Button>
 					<h4>

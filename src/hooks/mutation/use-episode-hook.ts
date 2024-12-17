@@ -14,6 +14,8 @@ import { setFullScreenLoading } from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TComment } from '@udecode/plate-comments'
 
+import useEpisodeId from '@/providers/episode-id-provider'
+
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisodeMergeParams } from '@/types/episode-type'
 
@@ -21,7 +23,8 @@ import { usePageState } from '../use-page-state'
 import useSocket from '../use-socket'
 
 const useEpisodeHook = () => {
-	const { id, episodeId } = useParams()
+	const { id } = useParams()
+	const episodeId = useEpisodeId()
 	const { startTask, getResponse } = useSocket()
 
 	const queryClient = useQueryClient()

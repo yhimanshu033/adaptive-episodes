@@ -9,15 +9,14 @@ import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { ex, exampleReview } from '@/mock-data/aichatbot'
-import useAIStore, {
-	addMessages,
-	clearMessages,
-	popMessage,
-	setAcceptedValue,
-	setPrevValue,
-	setResponseValue,
-	updateMessages,
-} from '@/store/ai-store'
+import useAIStore from '@/store/ai-store' // addMessages,
+
+// clearMessages,
+// popMessage,
+// setAcceptedValue,
+// setPrevValue,
+// setResponseValue,
+// updateMessages,
 import { useGlobalStore } from '@/store/global-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
@@ -57,7 +56,17 @@ const AIChatbot = () => {
 	const { id } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
-	const { messages } = useAIStore()
+	const {
+		store,
+		addMessages,
+		clearMessages,
+		popMessage,
+		setAcceptedValue,
+		setPrevValue,
+		setResponseValue,
+		updateMessages,
+	} = useAIStore()
+	const { messages } = store()
 	const { aiChatbotMutation } = useAIChatbotHook()
 	const { aiChatbotMutationTest } = useAIChatbotHookTest()
 	const { data: aiResponse, isPending, reset } = aiChatbotMutation
@@ -67,27 +76,14 @@ const AIChatbot = () => {
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
 	const { children } = useEditorState()
-	const value = useAIStore((state) => state.acceptedValue)
-	const prevValue = useAIStore((state) => state.prevValue)
+	const value = store((state) => state.acceptedValue)
+	const prevValue = store((state) => state.prevValue)
 	const { api } = useEditorPlugin(CommentsPlugin)
 
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
 
-	const handleBlock = ({ text }: { text: string }) => {
-		addMessages({
-			role: EMessenger.ASSISTANT,
-			content: JSON.stringify([
-				{
-					id: `0`,
-					type: ParagraphPlugin.key,
-					children: [{ text: text }],
-				},
-			]),
-			action: EAction.BLOCK,
-		})
-	}
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
@@ -115,10 +111,23 @@ const AIChatbot = () => {
 		}
 	}
 	useEffect(() => {
+		const handleBlock = ({ text }: { text: string }) => {
+			addMessages({
+				role: EMessenger.ASSISTANT,
+				content: JSON.stringify([
+					{
+						id: `0`,
+						type: ParagraphPlugin.key,
+						children: [{ text: text }],
+					},
+				]),
+				action: EAction.BLOCK,
+			})
+		}
 		if (!isPending && aiResponse) {
 			handleBlock({ text: aiResponse as string })
 		}
-	}, [aiResponse, isPending])
+	}, [aiResponse, isPending, addMessages])
 
 	useEffect(() => {
 		if (messageEndRef.current) {
@@ -143,7 +152,7 @@ const AIChatbot = () => {
 			action: EAction.CHANGES,
 			content: 'Added changes from StoryChat',
 		})
-	}, [aiResponseTest])
+	}, [aiResponseTest, setResponseValue, setPrevValue, addMessages])
 
 	function handleAccept(i: number, all: boolean = true) {
 		handleAcceptResponse(all)
@@ -216,7 +225,7 @@ const AIChatbot = () => {
 			setPrevValue(null)
 			setAcceptedValue(null)
 		},
-		[value, editor.tf]
+		[value, editor.tf, setAcceptedValue, setPrevValue, setResponseValue]
 	)
 
 	function addReview() {

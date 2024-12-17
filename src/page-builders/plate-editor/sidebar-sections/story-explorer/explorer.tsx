@@ -14,6 +14,7 @@ import { Loader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import useEpisodeId from '@/providers/episode-id-provider'
 import { getText } from '@/lib/utils'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
@@ -27,7 +28,8 @@ export interface RequestState {
 }
 
 const Explorer = ({ start, end }: { end: number; start: number }) => {
-	const { id, episodeId } = useParams()
+	const { id } = useParams()
+	const episodeId = useEpisodeId()
 	const [content, setContent] = useState<PlotExplorerApiResponse['data']>([])
 	const [promptInput, setPromptInput] = useState<string>('')
 	const [isLoading, setLoading] = useState<boolean>(false)

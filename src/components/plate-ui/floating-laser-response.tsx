@@ -1,10 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import useLaserStore, {
-	setActiveLaser,
-	setLaser,
-	setResponseActive,
-	setTriggerRephrase,
-} from '@/store/laser-store'
+import useLaserStore from '@/store/laser-store'
 import usePlateStore from '@/store/plate-store'
 import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { useEditorRef } from '@udecode/plate-common/react'
@@ -18,14 +13,22 @@ import { cn } from '@/lib/utils'
 
 export default function FloatingLaserResponse() {
 	const {
+		setActiveLaser,
+		setResponseActive,
+		setTriggerRephrase,
+		setLaser,
+		store: laserStore,
+	} = useLaserStore()
+	const {
 		editorY,
 		responseActive,
 		active: activeLaser,
 		lasers: allLasers,
-	} = useLaserStore()
+	} = laserStore()
 	const editor = useEditorRef()
 
-	const { sidebar } = usePlateStore()
+	const { store } = usePlateStore()
+	const { sidebar } = store()
 	const minify = !!sidebar
 
 	const laser =
@@ -38,7 +41,7 @@ export default function FloatingLaserResponse() {
 			if (!activeLaser || !laser) return
 			setLaser({ id: activeLaser, laser: { ...laser, response: val } })
 		},
-		[activeLaser, laser]
+		[activeLaser, laser, setLaser]
 	)
 
 	const val = laser?.response || ''
@@ -110,6 +113,7 @@ export default function FloatingLaserResponse() {
 	}
 
 	function handleRejectRephrase() {
+		console.log('reject')
 		onResetLeaf()
 		setActiveLaser(null)
 	}

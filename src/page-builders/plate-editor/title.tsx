@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react'
 
 import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
+import Spinner from '@/components/ui/spinner'
 
 import { EStatus } from '@/types/common'
 
@@ -34,7 +35,11 @@ const Title = () => {
 			<Button variant="ghost" size="icon" onClick={handleClick}>
 				<ArrowLeft size={16} />
 			</Button>
-			<p className="text-xl">{episodeContent?.chapter.seq_number}.</p>
+			{episodeContent ? (
+				<p className="text-xl">{episodeContent?.chapter.seq_number}.</p>
+			) : (
+				<Spinner size={24} />
+			)}
 			<EditableText
 				key={episodeContent?.chapter.chapter_title}
 				text={decodeURIComponent(episodeContent?.chapter.chapter_title || '')}

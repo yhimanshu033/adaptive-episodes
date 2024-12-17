@@ -1,8 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import useLaserStore, {
-	setActiveLaser,
-	setPromptActive,
-} from '@/store/laser-store'
+import useLaserStore from '@/store/laser-store'
 import usePlateStore from '@/store/plate-store'
 import { useEditorRef } from '@udecode/plate-common/react'
 import { TDescendant } from '@udecode/slate'
@@ -15,10 +12,12 @@ import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { cn } from '@/lib/utils'
 
 export default function FloatingPrompt() {
-	const { editorY, screenY, promptActive } = useLaserStore()
+	const { setActiveLaser, setPromptActive, store: laserStore } = useLaserStore()
+	const { editorY, screenY, promptActive } = laserStore()
 	const editor = useEditorRef()
 
-	const { sidebar } = usePlateStore()
+	const { store } = usePlateStore()
+	const { sidebar } = store()
 	const minify = !!sidebar
 
 	const [val, setVal] = React.useState<string>('')
@@ -47,7 +46,7 @@ export default function FloatingPrompt() {
 				)
 			}
 		},
-		[promptActive, val]
+		[promptActive, val, setActiveLaser]
 	)
 
 	const onResetLeaf = useCallback(
@@ -61,7 +60,7 @@ export default function FloatingPrompt() {
 				console.error(error)
 			}
 		},
-		[editor, traverse]
+		[editor, traverse, setPromptActive]
 	)
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps

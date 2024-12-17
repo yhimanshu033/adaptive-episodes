@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import useAIStore from '@/store/ai-store'
-import { setEditorCoords } from '@/store/laser-store'
+import useLaserStore from '@/store/laser-store'
 import useCustomPlateStore from '@/store/plate-store'
-import usePlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import type { PlateContentProps } from '@udecode/plate-common/react'
 import { PlateContent } from '@udecode/plate-common/react'
@@ -67,21 +66,25 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		},
 		ref
 	) => {
-		const scale = useCustomPlateStore((state) => state.scale)
+		const { store } = useCustomPlateStore()
+		const scale = store((state) => state.scale)
 		const mihHeight = 100 / scale
 		const minWidth = 100 / scale
 		const contentRef = useRef<HTMLDivElement>(null)
+		const { setEditorCoords } = useLaserStore()
 
 		useEffect(() => {
 			if (!contentRef.current) return
 			const rect = contentRef.current?.getBoundingClientRect()
 			if (!rect) return
+			console.log(rect)
 			setEditorCoords(rect.x, rect.y)
-		}, [contentRef])
+		}, [contentRef, setEditorCoords])
 
-		const sidebar = usePlateStore((state) => state.sidebar)
-		const responseValue = useAIStore(useShallow((state) => state.responseValue))
-		const prevValue = useAIStore(useShallow((state) => state.prevValue))
+		const sidebar = store((state) => state.sidebar)
+		const { store: AiStore } = useAIStore()
+		const responseValue = AiStore(useShallow((state) => state.responseValue))
+		const prevValue = AiStore(useShallow((state) => state.prevValue))
 
 		return (
 			<div id="editor-container" ref={ref} className="relative size-full">

@@ -13,7 +13,8 @@ const Translation = ({ translatedContent }: { translatedContent: string }) => {
 		id: TRANSLATION_EDITOR_ID,
 	})
 
-	const sidebar = usePlateStore((state) => state.sidebar)
+	const { store } = usePlateStore()
+	const sidebar = store((state) => state.sidebar)
 	const showTranslation = sidebar === 'translation'
 	if (sidebar && !showTranslation) return null
 	return (

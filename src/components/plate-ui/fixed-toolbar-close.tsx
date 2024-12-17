@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import usePlateStore, { setSidebar } from '@/store/plate-store'
+import usePlateStore from '@/store/plate-store'
 import { X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils'
 import { ToolbarButton } from './toolbar'
 
 export function FixedToolbarClose() {
-	const sidebar = usePlateStore((state) => state.sidebar)
+	const { store, setSidebar } = usePlateStore()
+	const sidebar = store((state) => state.sidebar)
 	return (
 		<ToolbarButton
 			tooltip="Close"

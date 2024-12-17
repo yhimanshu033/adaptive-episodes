@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { setSidebar } from '@/store/plate-store'
+import usePlateStore from '@/store/plate-store'
 import {
 	BoldPlugin,
 	ItalicPlugin,
@@ -29,6 +29,8 @@ const FloatingToolbarButtons = () => {
 	const readOnly = useEditorReadOnly()
 	const { props } = useCommentAddButton()
 	const [showRephrase, setShowRephrase] = useState(false)
+
+	const { setSidebar } = usePlateStore()
 
 	if (readOnly) {
 		return <></>

@@ -1,10 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react'
-import useLaserStore, {
-	getLaser,
-	setActiveLaser,
-	setLaser,
-	setResponseActive,
-} from '@/store/laser-store'
+import useLaserStore from '@/store/laser-store'
 import { cn } from '@udecode/cn'
 import { TDescendant, TText } from '@udecode/plate-common'
 import {
@@ -39,6 +34,14 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	const areaRef = useRef<HTMLDivElement>(null)
 	const btnRef = useRef<HTMLButtonElement>(null)
 
+	const {
+		getLaser,
+		setActiveLaser,
+		setLaser,
+		setResponseActive,
+		store: laserStore,
+	} = useLaserStore()
+
 	useEffect(() => {
 		if (!key || !divRef?.current) return
 		let laser = getLaser(key)
@@ -52,10 +55,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			},
 			id: key,
 		})
-	}, [divRef, key])
+	}, [divRef, key, setLaser, getLaser])
 
-	const { active: activeLaser } = useLaserStore()
-
+	const { active: activeLaser } = laserStore()
 	const getSelectedText = useCallback(() => {
 		if (!key) return { text: leaf.text, prevtext: '', nexttext: '' }
 		const { text } = leaf
@@ -110,7 +112,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 
 	const resetActive = useCallback(() => {
 		setActiveLaser(null)
-	}, [])
+	}, [setActiveLaser])
 
 	useEffect(() => {
 		if (!key) return
@@ -127,7 +129,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			},
 			id: key,
 		})
-	}, [key])
+	}, [key, setLaser, getLaser])
 
 	const handleBlur = useCallback(
 		(e: React.FocusEvent) => {
@@ -163,7 +165,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			setResponseActive(key)
 		}
 		btnRef.current?.focus()
-	}, [key, responseMode])
+	}, [key, responseMode, setActiveLaser, setResponseActive])
 
 	return (
 		<PlateLeaf
