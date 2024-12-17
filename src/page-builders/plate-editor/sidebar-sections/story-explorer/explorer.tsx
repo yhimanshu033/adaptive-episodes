@@ -77,7 +77,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				ep_from: start,
 				ep_to: end,
 				mode: request.mode,
-				ep_number: episodeId as string,
+				ep_number: String(episodeId),
 				...extractedData,
 				current_ep: getText(children) || ' ',
 				instruction,
