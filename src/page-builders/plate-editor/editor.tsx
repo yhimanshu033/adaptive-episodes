@@ -113,6 +113,7 @@ import { EStatus } from '@/types/common'
 
 import SaveEpisode from './save-episode'
 import Sidebar from './sidebar'
+import SyncMetaData from './sync-metadata'
 import Versions from './versions'
 
 export default function PlateEditor() {
@@ -155,6 +156,7 @@ export default function PlateEditor() {
 								setSelectedStatus,
 							}}
 						/>
+						<SyncMetaData />
 						<SaveEpisode />
 					</div>
 				</div>
