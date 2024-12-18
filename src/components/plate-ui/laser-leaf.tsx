@@ -47,7 +47,6 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		let laser = getLaser(key)
 		laser ??= { response: '', text: '' }
 		const rect = divRef.current?.getBoundingClientRect()
-		console.log(rect)
 		if (!rect) return
 		setLaser({
 			laser: {
