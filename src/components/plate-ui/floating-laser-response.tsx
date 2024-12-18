@@ -131,7 +131,6 @@ export default function FloatingLaserResponse() {
 		setResponseActive(null)
 	}
 
-	console.log(laser, editorRect, episodeId)
 	if (!laser) return null
 
 	return (
