@@ -9,6 +9,7 @@ import { nanoid } from 'nanoid'
 
 import { Button } from '@/components/plate-ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import useEpisodeId from '@/providers/episode-id-provider'
 import { cn } from '@/lib/utils'
 
 export default function FloatingLaserResponse() {
@@ -20,7 +21,6 @@ export default function FloatingLaserResponse() {
 		store: laserStore,
 	} = useLaserStore()
 	const {
-		editorY,
 		responseActive,
 		active: activeLaser,
 		lasers: allLasers,
@@ -41,12 +41,20 @@ export default function FloatingLaserResponse() {
 			if (!activeLaser || !laser) return
 			setLaser({ id: activeLaser, laser: { ...laser, response: val } })
 		},
-		[activeLaser, laser, setLaser]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[activeLaser, laser]
 	)
 
 	const val = laser?.response || ''
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const name = useMemo(nanoid, [responseActive])
+
+	const episodeId = useEpisodeId()
+	const editorRect = useMemo(() => {
+		const elem = document.getElementById(`editor-container-${episodeId}`)
+		return elem?.getBoundingClientRect()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [episodeId, laser])
 
 	const key = responseActive
 
@@ -123,6 +131,7 @@ export default function FloatingLaserResponse() {
 		setResponseActive(null)
 	}
 
+	console.log(laser, editorRect, episodeId)
 	if (!laser) return null
 
 	return (
@@ -132,11 +141,11 @@ export default function FloatingLaserResponse() {
 				setActiveLaser(null)
 			}}
 			className={cn(
-				'absolute z-[9999] flex gap-2 rounded-lg bg-popover p-2',
+				'fixed z-[9999] flex gap-2 rounded-lg bg-popover p-2',
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
-				top: (laser.clientY || 0) - (editorY || 0) - 110,
+				top: (laser.clientY || 0) - (editorRect?.top || 0) + 110,
 				left: 48,
 			}}
 		>

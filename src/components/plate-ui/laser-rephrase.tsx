@@ -47,7 +47,8 @@ export default function LaserRephrase({
 
 	useEffect(() => {
 		setResponseMode(!!data)
-	}, [data, setResponseMode])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [data])
 
 	const handleRephrase = useCallback(
 		(action: string) => {
@@ -85,15 +86,8 @@ export default function LaserRephrase({
 				},
 			})
 		}
-	}, [
-		data,
-		isPending,
-		getSelectedText,
-		key,
-		setLaser,
-		getLaser,
-		setResponseActive,
-	])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [data, isPending, getSelectedText, key])
 
 	useEffect(() => {
 		handleRephrase(methodId)
@@ -104,7 +98,8 @@ export default function LaserRephrase({
 			reset()
 			setTriggerRephrase(null)
 		}
-	}, [triggerRephrase, key, reset, setTriggerRephrase])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [triggerRephrase, key, reset])
 
 	return (
 		<>

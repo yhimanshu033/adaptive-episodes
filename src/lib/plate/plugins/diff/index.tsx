@@ -154,7 +154,8 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 			props.editor.tf.setValue(structuredClone(value))
 			setAcceptedValue(structuredClone(value))
 		},
-		[value, leaf.diff_id, props.editor.tf, setAcceptedValue]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[value, leaf.diff_id, props.editor.tf]
 	)
 
 	const status = leaf.status
@@ -279,7 +280,8 @@ export const useDiffEditor = ({
 
 	useEffect(() => {
 		setAcceptedValue(diffValue)
-	}, [diffValue, setAcceptedValue])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [diffValue])
 
 	const editor = usePlateEditor(
 		{

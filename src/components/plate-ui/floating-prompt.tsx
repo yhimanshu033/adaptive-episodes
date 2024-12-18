@@ -46,7 +46,8 @@ export default function FloatingPrompt() {
 				)
 			}
 		},
-		[promptActive, val, setActiveLaser]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[promptActive, val]
 	)
 
 	const onResetLeaf = useCallback(
@@ -60,6 +61,7 @@ export default function FloatingPrompt() {
 				console.error(error)
 			}
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[editor, traverse, setPromptActive]
 	)
 

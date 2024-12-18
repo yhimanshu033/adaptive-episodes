@@ -36,7 +36,6 @@ import {
 	Plate,
 	PlateLeaf,
 } from '@udecode/plate-common/react'
-import { DndPlugin } from '@udecode/plate-dnd'
 import { DocxPlugin } from '@udecode/plate-docx'
 import {
 	FontBackgroundColorPlugin,
@@ -54,7 +53,7 @@ import { KbdPlugin } from '@udecode/plate-kbd/react'
 import { LineHeightPlugin } from '@udecode/plate-line-height/react'
 import { TodoListPlugin } from '@udecode/plate-list/react'
 import { MarkdownPlugin } from '@udecode/plate-markdown'
-import { ImagePlugin, PlaceholderPlugin } from '@udecode/plate-media/react'
+import { ImagePlugin } from '@udecode/plate-media/react'
 import { NodeIdPlugin } from '@udecode/plate-node-id'
 import { ResetNodePlugin } from '@udecode/plate-reset-node/react'
 import { SelectOnBackspacePlugin } from '@udecode/plate-select'
@@ -93,7 +92,6 @@ import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
 import SuggestionLeaf from '@/components/plate-ui/suggestion-leaf'
-import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
@@ -262,16 +260,16 @@ export const useMyEditor = ({
 					enableUndoOnDelete: true,
 				},
 			}),
-			DndPlugin.configure({
-				options: {
-					enableScroller: true,
-					onDropFiles: ({ dragItem, editor, target }) => {
-						editor
-							.getTransforms(PlaceholderPlugin)
-							.insert.media(dragItem.files, { at: target, nextBlock: false })
-					},
-				},
-			}),
+			// DndPlugin.configure({
+			// 	options: {
+			// 		enableScroller: true,
+			// 		onDropFiles: ({ dragItem, editor, target }) => {
+			// 			editor
+			// 				.getTransforms(PlaceholderPlugin)
+			// 				.insert.media(dragItem.files, { at: target, nextBlock: false })
+			// 		},
+			// 	},
+			// }),
 			ExitBreakPlugin.configure({
 				options: {
 					rules: [
@@ -398,30 +396,27 @@ export const useMyEditor = ({
 			HtmlPlugin,
 		],
 		override: {
-			components: withDraggables(
-				withPlaceholders({
-					[LaserPlugin.key]: LaserLeaf,
-					[FindReplacePlugin.key]: SearchHighlightLeaf,
-					[HorizontalRulePlugin.key]: HrElement,
-					[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
-					[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
-					[HEADING_KEYS.h3]: withProps(HeadingElement, { variant: 'h3' }),
-					[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
-					[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
-					[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
-					[ParagraphPlugin.key]: ParagraphElement,
-					[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
-					[HighlightPlugin.key]: HighlightLeaf,
-					[ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
-					[KbdPlugin.key]: KbdLeaf,
-					[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
-					[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
-					[CommentsPlugin.key]: CommentLeaf,
-					[SuggestionPlugin.key]: SuggestionLeaf,
-					[PromptPlugin.key]: LaserPromptLeaf,
-				}),
-				false
-			),
+			components: withPlaceholders({
+				[LaserPlugin.key]: LaserLeaf,
+				[FindReplacePlugin.key]: SearchHighlightLeaf,
+				[HorizontalRulePlugin.key]: HrElement,
+				[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
+				[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
+				[HEADING_KEYS.h3]: withProps(HeadingElement, { variant: 'h3' }),
+				[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
+				[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
+				[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
+				[ParagraphPlugin.key]: ParagraphElement,
+				[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
+				[HighlightPlugin.key]: HighlightLeaf,
+				[ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
+				[KbdPlugin.key]: KbdLeaf,
+				[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
+				[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
+				[CommentsPlugin.key]: CommentLeaf,
+				[SuggestionPlugin.key]: SuggestionLeaf,
+				[PromptPlugin.key]: LaserPromptLeaf,
+			}),
 		},
 		value:
 			typeof initialValue === 'string'

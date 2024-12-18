@@ -9,6 +9,7 @@ import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
 import { useShallow } from 'zustand/react/shallow'
 
+import useEpisodeId from '@/providers/episode-id-provider'
 import DiffView from '@/lib/plate/plugins/diff'
 
 const editorVariants = cva(
@@ -72,14 +73,15 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const minWidth = 100 / scale
 		const contentRef = useRef<HTMLDivElement>(null)
 		const { setEditorCoords } = useLaserStore()
+		const episodeId = useEpisodeId()
 
 		useEffect(() => {
 			if (!contentRef.current) return
 			const rect = contentRef.current?.getBoundingClientRect()
 			if (!rect) return
-			console.log(rect)
 			setEditorCoords(rect.x, rect.y)
-		}, [contentRef, setEditorCoords])
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [contentRef])
 
 		const sidebar = store((state) => state.sidebar)
 		const { store: AiStore } = useAIStore()
@@ -87,7 +89,11 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const prevValue = AiStore(useShallow((state) => state.prevValue))
 
 		return (
-			<div id="editor-container" ref={ref} className="relative size-full">
+			<div
+				id={`editor-container-${episodeId}`}
+				ref={ref}
+				className="relative size-full"
+			>
 				{sidebar === 'chatbot' && responseValue && prevValue && !isAi ? (
 					<DiffView
 						current={responseValue}

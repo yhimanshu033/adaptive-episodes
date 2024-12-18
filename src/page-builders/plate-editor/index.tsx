@@ -14,6 +14,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { EpisodeIdProvider } from '@/providers/episode-id-provider'
 
 import PlateEditor from './editor'
@@ -38,7 +39,7 @@ const EpisodePlateEditor = () => {
 		<main className="container flex flex-1 animate-fade-in-up flex-col p-4">
 			<DndProvider backend={HTML5Backend}>
 				<div className="space-y-5">
-					{extended.map((episodeId) => (
+					{extended.map((episodeId, idx) => (
 						<EpisodeIdProvider key={episodeId} episodeId={episodeId}>
 							<TooltipProvider
 								disableHoverableContent
@@ -47,6 +48,7 @@ const EpisodePlateEditor = () => {
 							>
 								<PlateEditor />
 							</TooltipProvider>
+							{idx !== extended.length - 1 && <Separator />}
 						</EpisodeIdProvider>
 					))}
 				</div>

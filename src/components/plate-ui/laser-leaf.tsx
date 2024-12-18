@@ -47,6 +47,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		let laser = getLaser(key)
 		laser ??= { response: '', text: '' }
 		const rect = divRef.current?.getBoundingClientRect()
+		console.log(rect)
 		if (!rect) return
 		setLaser({
 			laser: {
@@ -55,7 +56,8 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			},
 			id: key,
 		})
-	}, [divRef, key, setLaser, getLaser])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [divRef, key])
 
 	const { active: activeLaser } = laserStore()
 	const getSelectedText = useCallback(() => {
@@ -129,7 +131,8 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			},
 			id: key,
 		})
-	}, [key, setLaser, getLaser])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [key])
 
 	const handleBlur = useCallback(
 		(e: React.FocusEvent) => {
@@ -165,7 +168,8 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			setResponseActive(key)
 		}
 		btnRef.current?.focus()
-	}, [key, responseMode, setActiveLaser, setResponseActive])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [key, responseMode])
 
 	return (
 		<PlateLeaf

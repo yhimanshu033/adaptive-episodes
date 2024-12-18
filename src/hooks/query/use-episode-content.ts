@@ -26,6 +26,9 @@ export const useEpisodeContent = (selectedStatus?: EStatus, epId?: number) => {
 		queryKey: [epId || episode?.id, 'content'],
 		queryFn: () => getEpisodeContent(epId || episode?.id || 0),
 		enabled: !!episode,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		refetchOnWindowFocus: false,
 	})
 	return { ...query, latestStatus }
 }

@@ -20,13 +20,20 @@ import useAIStore from '@/store/ai-store' // addMessages,
 import { useGlobalStore } from '@/store/global-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
-	ParagraphPlugin,
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
 } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
-import { Check, CheckCheck, Send, StopCircle, Trash2, X } from 'lucide-react'
+import {
+	Check,
+	CheckCheck,
+	Copy,
+	Send,
+	StopCircle,
+	Trash2,
+	X,
+} from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
@@ -48,8 +55,6 @@ import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { cn, convertReviewResponse, getText } from '@/lib/utils'
 
 import { EAction, EMessenger } from '@/types/ai-types'
-
-import AiDnd from './ai-editor'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
@@ -114,25 +119,21 @@ const AIChatbot = () => {
 		const handleBlock = ({ text }: { text: string }) => {
 			addMessages({
 				role: EMessenger.ASSISTANT,
-				content: JSON.stringify([
-					{
-						id: `0`,
-						type: ParagraphPlugin.key,
-						children: [{ text: text }],
-					},
-				]),
+				content: text,
 				action: EAction.BLOCK,
 			})
 		}
 		if (!isPending && aiResponse) {
 			handleBlock({ text: aiResponse as string })
 		}
-	}, [aiResponse, isPending, addMessages])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [aiResponse, isPending])
 
 	useEffect(() => {
 		if (messageEndRef.current) {
 			messageEndRef.current.scrollIntoView({ behavior: 'smooth' })
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [messages])
 
 	useEffect(() => {
@@ -152,7 +153,8 @@ const AIChatbot = () => {
 			action: EAction.CHANGES,
 			content: 'Added changes from StoryChat',
 		})
-	}, [aiResponseTest, setResponseValue, setPrevValue, addMessages])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [aiResponseTest])
 
 	function handleAccept(i: number, all: boolean = true) {
 		handleAcceptResponse(all)
@@ -225,7 +227,8 @@ const AIChatbot = () => {
 			setPrevValue(null)
 			setAcceptedValue(null)
 		},
-		[value, editor.tf, setAcceptedValue, setPrevValue, setResponseValue]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[value, editor.tf]
 	)
 
 	function addReview() {
@@ -288,9 +291,30 @@ const AIChatbot = () => {
 							</div>
 						) : message.role === EMessenger.ASSISTANT &&
 						  message.action === EAction.BLOCK ? (
-							<>
-								<AiDnd id="TEST" val={message.content} />
-							</>
+							<div className="relative max-w-[70%]">
+								<TooltipComponent tooltip={'Copy'}>
+									<Button
+										onClick={() => {
+											void navigator.clipboard.writeText(message.content)
+										}}
+										variant="ghost"
+										className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
+									>
+										<Copy size={12} />
+									</Button>
+								</TooltipComponent>
+								<div
+									dangerouslySetInnerHTML={{
+										__html: message.content.replaceAll('\n', '<br/>'),
+									}}
+									className={cn(
+										'rounded-lg p-3',
+										message.role === EMessenger.ASSISTANT
+											? 'bg-background'
+											: 'bg-primary'
+									)}
+								/>
+							</div>
 						) : (
 							<div
 								dangerouslySetInnerHTML={{

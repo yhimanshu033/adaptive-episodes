@@ -23,7 +23,8 @@ const SaveEpisode = () => {
 
 	useEffect(() => {
 		setCurrentDiffValue(structuredClone(children))
-	}, [children, setCurrentDiffValue])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [children])
 
 	const handleSave = useCallback(() => {
 		const currentChildren = JSON.stringify(children)

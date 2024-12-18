@@ -9,12 +9,19 @@ import useSocket from '../use-socket'
 const useLaserToolsHook = () => {
 	const { startTask, getResponse } = useSocket()
 	async function onRephraseMutation(params: LaserToolsParams) {
+		const resp: LaserToolsApiResponse['data'] = {
+			action: 'rephrase',
+			nexttext: '',
+			prevtext: '',
+			result: 'test',
+			text: 'test',
+		}
+		return resp
 		const taskId = await startTask<LaserToolsParams>({
 			method: 'POST',
 			url: '/aicopilot/lasertools',
 			body: params,
 		})
-
 		const response: LaserToolsApiResponse['data'] = await getResponse(taskId)
 		return response
 	}
