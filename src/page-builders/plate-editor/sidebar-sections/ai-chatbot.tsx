@@ -34,6 +34,7 @@ import {
 	useEditorState,
 } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
+import { Value } from '@udecode/slate'
 import { Check, CheckCheck, Send, StopCircle, Trash2, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -54,7 +55,13 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
-import { cn, convertReviewResponse, getText, maxify, minify } from '@/lib/utils'
+import {
+	cn,
+	convertReviewResponse,
+	getText,
+	minify,
+	replaceMatches,
+} from '@/lib/utils'
 
 import {
 	EAction,
@@ -62,7 +69,6 @@ import {
 	EMessenger,
 	TStoryChatSuggestion,
 } from '@/types/ai-types'
-import { MinifiedValue } from '@/types/common'
 import { IndexedCommentsResponse } from '@/types/editor-types'
 
 import AiDnd from './ai-editor'
@@ -81,7 +87,6 @@ const AIChatbot = () => {
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
 	const { children } = useEditorState()
-	console.log(children)
 	const value = useAIStore((state) => state.acceptedValue)
 	const prevValue = useAIStore((state) => state.prevValue)
 	const requestedAction = useAIStore((state) => state.requestedAction)
@@ -153,10 +158,31 @@ const AIChatbot = () => {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const handleChanges = (aiResponse: MinifiedValue) => {
-		setResponseValue(structuredClone(children))
-		setPrevValue(structuredClone(maxify(aiResponse, children)))
+	const handleSFX = (resp: string) => {
+		console.log(resp)
+		const matches = resp.match(/((\[.*\])*\n+)+/g)
+		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
+		if (!matches || !hasSFX) {
+			addMessages({
+				role: EMessenger.ASSISTANT,
+				action: EAction.BLOCK,
+				content: JSON.stringify([
+					{
+						id: `0`,
+						type: ParagraphPlugin.key,
+						children: [{ text: 'Oops! no SFX generated' }],
+					},
+				]),
+			})
+			return
+		}
+		const responseValue = structuredClone(children)
+		handleChanges(replaceMatches(/\n{2,}/g, matches, responseValue))
+	}
+
+	const handleChanges = (aiResponse: Value) => {
+		setResponseValue(structuredClone(aiResponse))
+		setPrevValue(structuredClone(children))
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			action: EAction.CHANGES,
@@ -262,17 +288,11 @@ const AIChatbot = () => {
 
 	useEffect(() => {
 		if (!isPending && aiResponse) {
-			console.log(requestedAction, aiResponse)
 			if (requestedAction === EChatMode.REVIEW) {
 				addReview(aiResponse as IndexedCommentsResponse[])
-			}
-			// else if (
-			// 	requestedAction === EChatMode.VOICE ||
-			// 	requestedAction === EChatMode.SFX
-			// ) {
-			// 	handleChanges(aiResponse as MinifiedValue)
-			// }
-			else {
+			} else if (requestedAction === EChatMode.SFX) {
+				handleSFX(aiResponse as string)
+			} else {
 				handleBlock({ text: aiResponse as string })
 			}
 			setRequestedAction(null)

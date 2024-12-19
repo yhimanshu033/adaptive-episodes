@@ -116,6 +116,39 @@ export const maxify = (minified: MinifiedValue, children: Value): Value => {
 	}))
 }
 
+export const replaceMatches = (
+	regex: RegExp,
+	matches: RegExpMatchArray,
+	children: Value
+): Value => {
+	const modify = (nodes: TDescendant[]): TDescendant[] => {
+		return nodes.map((node) => {
+			if ('text' in node) {
+				const text = (node.text as string).replace(
+					regex,
+					(match) => matches.shift() || match
+				)
+				return {
+					...node,
+					text,
+				}
+			} else if ('children' in node) {
+				return {
+					...node,
+					children: modify(children),
+				}
+			}
+			return node
+		})
+	}
+	const result = children.map((child) => ({
+		...child,
+		children: modify(child.children),
+	}))
+	console.log(result)
+	return result
+}
+
 export function replaceNthInsensitive(
 	str: string,
 	search: string,

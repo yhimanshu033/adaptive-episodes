@@ -30,7 +30,6 @@ const useAIChatbotHook = () => {
 			...params.aiChatbotData,
 			...extractedData,
 		})
-
 		const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
 			method: 'POST',
 			url: '/aicopilot/chatbot',
