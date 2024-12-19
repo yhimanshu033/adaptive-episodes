@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
 
 export default function FloatingPrompt() {
 	const { setActiveLaser, setPromptActive, store: laserStore } = useLaserStore()
-	const { editorY, screenY, promptActive } = laserStore()
+	const { screenY, promptActive } = laserStore()
 	const editor = useEditorRef()
 
 	const { store } = usePlateStore()
@@ -77,12 +77,12 @@ export default function FloatingPrompt() {
 				onResetLeaf()
 			}}
 			className={cn(
-				'absolute z-[9999] flex gap-2 rounded-lg bg-popover',
+				'fixed z-[9999] flex gap-2 rounded-lg bg-popover',
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
-				top: (screenY || 0) - (editorY || 0) + 20,
-				left: 48,
+				top: (screenY || 0) + 16,
+				left: 64,
 			}}
 		>
 			<Button
@@ -97,6 +97,7 @@ export default function FloatingPrompt() {
 			</Button>
 			<Textarea
 				autoFocus
+				placeholder="Enter prompt here..."
 				name={name}
 				autoComplete="off"
 				value={val}

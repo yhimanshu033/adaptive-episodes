@@ -12,6 +12,9 @@ export const useEpisodeInfo = (epId?: number) => {
 	const query = useQuery({
 		queryKey: ['info', epId || episodeId, id],
 		queryFn: () => getEpisodeDetails(parseInt(id), epId || episodeId),
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		refetchOnWindowFocus: false,
 	})
 
 	return query

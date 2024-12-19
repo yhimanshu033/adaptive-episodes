@@ -36,9 +36,9 @@ const EpisodePlateEditor = () => {
 		)
 	}
 	return (
-		<main className="container flex flex-1 animate-fade-in-up flex-col p-4">
+		<main className="container flex flex-1 flex-col p-4">
 			<DndProvider backend={HTML5Backend}>
-				<div className="space-y-5">
+				<div className="relative space-y-5">
 					{extended.map((episodeId, idx) => (
 						<EpisodeIdProvider key={episodeId} episodeId={episodeId}>
 							<TooltipProvider
@@ -54,7 +54,7 @@ const EpisodePlateEditor = () => {
 				</div>
 			</DndProvider>
 			{content && (
-				<div className="mt-5 flex items-center justify-center gap-2">
+				<div className="mt-5 flex animate-fade-in-up items-center justify-center gap-2">
 					<Button
 						variant="outline"
 						size="icon"

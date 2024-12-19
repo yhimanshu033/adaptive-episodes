@@ -9,7 +9,6 @@ import { nanoid } from 'nanoid'
 
 import { Button } from '@/components/plate-ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import useEpisodeId from '@/providers/episode-id-provider'
 import { cn } from '@/lib/utils'
 
 export default function FloatingLaserResponse() {
@@ -48,13 +47,6 @@ export default function FloatingLaserResponse() {
 	const val = laser?.response || ''
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const name = useMemo(nanoid, [responseActive])
-
-	const episodeId = useEpisodeId()
-	const editorRect = useMemo(() => {
-		const elem = document.getElementById(`editor-container-${episodeId}`)
-		return elem?.getBoundingClientRect()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [episodeId, laser])
 
 	const key = responseActive
 
@@ -144,8 +136,8 @@ export default function FloatingLaserResponse() {
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
-				top: (laser.clientY || 0) - (editorRect?.top || 0) + 110,
-				left: 48,
+				top: (laser.clientY || 0) - 16,
+				left: 64,
 			}}
 		>
 			<Button

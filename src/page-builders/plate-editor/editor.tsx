@@ -92,7 +92,6 @@ import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
 import SuggestionLeaf from '@/components/plate-ui/suggestion-leaf'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
@@ -123,7 +122,7 @@ export default function PlateEditor() {
 
 	return (
 		<Plate editor={editor}>
-			<div className="flex items-center justify-between">
+			<div className="flex animate-fade-in-up items-center justify-between">
 				<Title />
 				<div className="flex items-center gap-2">
 					<Versions
@@ -139,7 +138,7 @@ export default function PlateEditor() {
 			<div
 				ref={containerRef}
 				className={cn(
-					'relative mt-4 rounded border bg-background-editor shadow-editor',
+					'relative mt-4 animate-fade-in-up rounded border bg-background-editor shadow-editor',
 					// Block selection
 					'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 				)}
@@ -147,8 +146,8 @@ export default function PlateEditor() {
 				<FixedToolbar>
 					<FixedToolbarButtons {...{ selectedStatus, latestStatus }} />
 				</FixedToolbar>
-				<div className="flex h-[78vh] w-full">
-					<ScrollArea className="w-full flex-1 bg-background">
+				<div className="~h-[78vh] flex size-full">
+					<div className="w-full flex-1 bg-background">
 						<div className="flex h-full">
 							<div className="flex w-full">
 								<Editor
@@ -167,8 +166,8 @@ export default function PlateEditor() {
 							</div>
 							<Translation translatedContent={content.translation_text} />
 						</div>
-						<ScrollBar orientation="horizontal" />
-					</ScrollArea>
+						{/* <ScrollBar orientation="horizontal" /> */}
+					</div>
 					<Sidebar />
 				</div>
 			</div>

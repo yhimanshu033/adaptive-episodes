@@ -120,7 +120,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 								variant,
 							}),
 							className,
-							'absolute h-fit origin-top-left'
+							'~absolute h-fit origin-top-left'
 						)}
 						ref={contentRef}
 						readOnly={disabled ?? readOnly}
