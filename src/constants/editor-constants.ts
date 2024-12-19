@@ -1,4 +1,4 @@
-import { EAction, TStoryChatSuggestion } from '@/types/ai-types'
+import { EChatMode, TStoryChatSuggestion } from '@/types/ai-types'
 
 export const rephraseMethods = [
 	{ id: 'shortenmore', method: '🤏 Shorten' },
@@ -11,28 +11,37 @@ export const rephraseMethods = [
 export const storyChatSuggestions: Array<TStoryChatSuggestion> = [
 	{
 		value: 'Add Music / Sound FX 🎶',
-		action: EAction.CHANGES,
+		action: EChatMode.SFX,
 	},
 	{
 		value: 'Voice Pass 🎙️',
-		action: EAction.CHANGES,
+		action: EChatMode.VOICE,
 	},
 	{
 		value: 'Review ✅',
-		action: EAction.REVIEW,
+		action: EChatMode.REVIEW,
 	},
 	{
 		value: 'More...',
-		action: EAction.ADD,
+		action: EChatMode.EXTEND,
 	},
 ]
 
-export const moreChatSuggestions: Array<{ action: EAction; value: string }> = [
-	{
-		value: 'Fix Formatting 📄',
-		action: EAction.CHANGES,
-	},
-]
+export const moreChatSuggestions: Array<{ action: EChatMode; value: string }> =
+	[
+		{
+			value: 'Localization Check',
+			action: EChatMode.LOCCHECK,
+		},
+		{
+			value: 'Character Context',
+			action: EChatMode.CHARCONTEXT,
+		},
+		{
+			value: 'Plot Alternatives',
+			action: EChatMode.PLOT,
+		},
+	]
 
 export enum SuggestionActions {
 	ACCEPT = 'accept',

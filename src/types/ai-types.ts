@@ -28,7 +28,7 @@ export interface LaserToolsApiResponse {
 export interface AIChatBotParams {
 	aiChatbotData: {
 		beatsheets_array?: string[]
-		chat_mode?: 'review' | 'pass'
+		chat_mode?: EChatMode
 		context?: string
 		ep_number?: string
 		ep_text?: string
@@ -68,8 +68,19 @@ export enum EAction {
 	REVIEW = 'review',
 }
 
+export enum EChatMode {
+	BLOCK = 'block',
+	CHARCONTEXT = 'character-context',
+	EXTEND = 'extend',
+	LOCCHECK = 'loc-check',
+	PLOT = 'plot-alt',
+	REVIEW = 'review',
+	SFX = 'sfx',
+	VOICE = 'voice',
+}
+
 export type TStoryChatSuggestion = {
-	action: EAction
+	action: EChatMode
 	value: string
 }
 
@@ -87,20 +98,20 @@ export interface AIStoreType {
 	acceptedValue: Value | null
 	messages: TMessage[]
 	prevValue: Value | null
-	requestedAction: EAction | null
+	requestedAction: EChatMode | null
 	responseValue: Value | null
 }
 
 export interface PlotExplorerParams {
 	action: string
-	beatsheet_array?: Array<string>
-	context?: string
+	beatsheet_array: Array<string>
+	context: string
 	current_ep?: string
 	ep_from: number
 	ep_number: string
 	ep_to: number
 	instruction?: string
-	logline_array?: Array<string>
+	loglines_array: Array<string>
 	mode: string
 	scene_array?: Array<string>
 }

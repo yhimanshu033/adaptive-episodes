@@ -8,6 +8,10 @@ import {
 	moreChatSuggestions,
 	storyChatSuggestions,
 } from '@/constants/editor-constants'
+import {
+	COPILOT_LOGO_URL,
+	FALLBACK_USER_URL,
+} from '@/constants/global-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
@@ -33,6 +37,7 @@ import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
 import { Check, CheckCheck, Send, StopCircle, Trash2, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
+import { Loader } from '@/components/loader'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -49,9 +54,15 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
-import { cn, convertReviewResponse, getText, minify } from '@/lib/utils'
+import { cn, convertReviewResponse, getText, maxify, minify } from '@/lib/utils'
 
-import { EAction, EMessenger, TStoryChatSuggestion } from '@/types/ai-types'
+import {
+	EAction,
+	EChatMode,
+	EMessenger,
+	TStoryChatSuggestion,
+} from '@/types/ai-types'
+import { MinifiedValue } from '@/types/common'
 import { IndexedCommentsResponse } from '@/types/editor-types'
 
 import AiDnd from './ai-editor'
@@ -70,6 +81,7 @@ const AIChatbot = () => {
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
 	const { children } = useEditorState()
+	console.log(children)
 	const value = useAIStore((state) => state.acceptedValue)
 	const prevValue = useAIStore((state) => state.prevValue)
 	const requestedAction = useAIStore((state) => state.requestedAction)
@@ -110,11 +122,11 @@ const AIChatbot = () => {
 		})
 		addMessages({ role: EMessenger.USER, content: input })
 		setInput('')
-		setRequestedAction(EAction.BLOCK)
+		setRequestedAction(EChatMode.BLOCK)
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
-		if (suggestion.action === EAction.ADD) {
+		if (suggestion.action === EChatMode.EXTEND) {
 			setSuggestions((prev) => [...prev.slice(0, -1), ...moreChatSuggestions])
 			return
 		}
@@ -128,7 +140,7 @@ const AIChatbot = () => {
 				ep_number: episodeContent?.chapter.seq_number?.toString(),
 				ep_text: episodeContent?.text as string,
 				ep_text_json: minify(children),
-				chat_mode: 'pass',
+				chat_mode: suggestion.action,
 			},
 		})
 		setRequestedAction(suggestion.action)
@@ -139,6 +151,17 @@ const AIChatbot = () => {
 			e.preventDefault()
 			handleSendMessage(e)
 		}
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const handleChanges = (aiResponse: MinifiedValue) => {
+		setResponseValue(structuredClone(children))
+		setPrevValue(structuredClone(maxify(aiResponse, children)))
+		addMessages({
+			role: EMessenger.ASSISTANT,
+			action: EAction.CHANGES,
+			content: 'Added changes from StoryChat',
+		})
 	}
 
 	function handleAccept(i: number, all: boolean = true) {
@@ -240,10 +263,18 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!isPending && aiResponse) {
 			console.log(requestedAction, aiResponse)
-			if (requestedAction === EAction.BLOCK)
-				handleBlock({ text: aiResponse as string })
-			else if (requestedAction === EAction.REVIEW)
+			if (requestedAction === EChatMode.REVIEW) {
 				addReview(aiResponse as IndexedCommentsResponse[])
+			}
+			// else if (
+			// 	requestedAction === EChatMode.VOICE ||
+			// 	requestedAction === EChatMode.SFX
+			// ) {
+			// 	handleChanges(aiResponse as MinifiedValue)
+			// }
+			else {
+				handleBlock({ text: aiResponse as string })
+			}
 			setRequestedAction(null)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -251,7 +282,9 @@ const AIChatbot = () => {
 
 	useEffect(() => {
 		if (messageEndRef.current) {
-			messageEndRef.current.scrollIntoView({ behavior: 'smooth' })
+			messageEndRef.current.scrollIntoView({
+				behavior: 'smooth',
+			})
 		}
 	}, [messages])
 
@@ -262,17 +295,6 @@ const AIChatbot = () => {
 			textareaRef.current.style.height = `${Math.min(scrollHeight, 150)}px`
 		}
 	}, [input])
-
-	// useEffect(() => {
-	// 	if (!aiResponseTest) return
-	// 	setResponseValue(structuredClone(ex.current))
-	// 	setPrevValue(structuredClone(ex.previous))
-	// 	addMessages({
-	// 		role: EMessenger.ASSISTANT,
-	// 		action: EAction.CHANGES,
-	// 		content: 'Added changes from StoryChat',
-	// 	})
-	// }, [aiResponseTest])
 
 	return (
 		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
@@ -285,7 +307,7 @@ const AIChatbot = () => {
 					>
 						{message.role === EMessenger.ASSISTANT && (
 							<Avatar className="mr-2">
-								<AvatarImage src="/pocket-copilot-logo.webp" alt="AI" />
+								<AvatarImage src={COPILOT_LOGO_URL} alt="AI" />
 								<AvatarFallback>AI</AvatarFallback>
 							</Avatar>
 						)}
@@ -332,7 +354,7 @@ const AIChatbot = () => {
 						{message.role === EMessenger.USER && (
 							<Avatar className="ml-2">
 								<AvatarImage
-									src={userData?.user?.image || '/placeholder-user.webp'}
+									src={userData?.user?.image || FALLBACK_USER_URL}
 									alt="User"
 								/>
 								<AvatarFallback>U</AvatarFallback>
@@ -340,6 +362,17 @@ const AIChatbot = () => {
 						)}
 					</div>
 				))}
+
+				{isPending && (
+					<div className="mb-4 flex items-center justify-start">
+						<Avatar className="mr-2">
+							<AvatarImage src={COPILOT_LOGO_URL} alt="AI" />
+							<AvatarFallback>AI</AvatarFallback>
+						</Avatar>
+						<Loader />
+					</div>
+				)}
+
 				<div ref={messageEndRef} />
 			</ScrollArea>
 			<ScrollArea className="overflow-x-auto pb-2 *:*:flex">
@@ -352,7 +385,7 @@ const AIChatbot = () => {
 						onClick={() => {
 							handleSuggestion(suggestion)
 						}}
-						className="mr-2"
+						className="mb-1 mr-2"
 						disabled={!!changesPending || isPending}
 					>
 						{suggestion.value}

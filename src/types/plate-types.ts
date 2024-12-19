@@ -6,4 +6,5 @@ export type PlateStoreData = {
 	resolved: boolean
 	scale: number
 	sidebar: 'comments' | 'chatbot' | 'outline' | 'far' | 'translation' | null
+	viewMode: boolean
 }

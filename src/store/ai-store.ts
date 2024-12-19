@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
-import { AIStoreType, EAction, TMessage } from '@/types/ai-types'
+import { AIStoreType, EChatMode, TMessage } from '@/types/ai-types'
 
 const initialState: AIStoreType = {
 	messages: aiInitialMessage,
@@ -49,7 +49,7 @@ export const setAcceptedValue = (value: AIStoreType['acceptedValue']) => {
 	useAIStore.setState({ acceptedValue: value })
 }
 
-export const setRequestedAction = (requestedAction: EAction | null) => {
+export const setRequestedAction = (requestedAction: EChatMode | null) => {
 	useAIStore.setState({ requestedAction })
 }
 

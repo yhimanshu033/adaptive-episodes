@@ -10,6 +10,7 @@ const initialState: PlateStoreData = {
 	scale: 1,
 	activeDiffId: null,
 	currentDiffValue: null,
+	viewMode: false,
 }
 
 const usePlateStore = create(devtools(immer(() => initialState)))
@@ -43,6 +44,10 @@ export const setCurrentDiffValue = (
 	currentDiffValue: PlateStoreData['currentDiffValue']
 ) => {
 	usePlateStore.setState({ currentDiffValue })
+}
+
+export const setViewMode = (viewMode: boolean) => {
+	usePlateStore.setState({ viewMode })
 }
 
 export default usePlateStore

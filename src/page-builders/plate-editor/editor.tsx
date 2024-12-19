@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
 import { useGlobalStore } from '@/store/global-store'
+import useCustomPlateStore, { setViewMode } from '@/store/plate-store'
 import { cn, withProps } from '@udecode/cn'
 import { AlignPlugin } from '@udecode/plate-alignment/react'
 import { AutoformatPlugin } from '@udecode/plate-autoformat/react'
@@ -119,6 +120,8 @@ export default function PlateEditor() {
 	const [selectedStatus, setSelectedStatus] = useState<EStatus | undefined>()
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content, latestStatus } = useEpisodeContent(selectedStatus)
+	const sidebar = useCustomPlateStore((state) => state.sidebar)
+	const isChildEpisode = !!content?.chapter.is_deleted
 
 	const router = useRouter()
 	const { id } = useParams()
@@ -135,6 +138,10 @@ export default function PlateEditor() {
 		)
 	}
 
+	useEffect(() => {
+		setViewMode(sidebar === 'far' || isChildEpisode)
+	}, [isChildEpisode, sidebar])
+
 	if (!content || !latestStatus)
 		return (
 			<div className="flex flex-1 items-center justify-center">
@@ -150,6 +157,7 @@ export default function PlateEditor() {
 					<div className="flex items-center gap-2">
 						<Versions
 							{...{
+								isChildEpisode,
 								latestStatus,
 								selectedStatus,
 								setSelectedStatus,
@@ -167,7 +175,7 @@ export default function PlateEditor() {
 					)}
 				>
 					<FixedToolbar>
-						<FixedToolbarButtons {...{ selectedStatus, latestStatus }} />
+						<FixedToolbarButtons />
 					</FixedToolbar>
 					<div className="flex h-[78vh] w-full">
 						<ScrollArea className="w-full flex-1 bg-background">

@@ -10,6 +10,7 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 import { BASE_STATUS, EStatus, MinifiedValue } from '@/types/common'
+import { TGetMetadataResponse } from '@/types/content-types'
 import { IndexedCommentsResponse, ReviewComment } from '@/types/editor-types'
 import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
 
@@ -295,4 +296,29 @@ export function convertReviewResponse(
 	}))
 
 	return { value, comments }
+}
+
+export const extractFromMetadata = (
+	metadata: TGetMetadataResponse | null,
+	start: number
+) => {
+	const loglines_array: string[] = []
+	const beatsheets_array: string[] = []
+	let context: string = ''
+	let current = start + 1
+
+	if (metadata?.data) {
+		const metadataEntries = Object.values(metadata?.data)
+
+		if (start) {
+			context = metadataEntries[0].context
+		}
+
+		for (const data of Object.values(metadata.data).slice(start ? 1 : 0)) {
+			loglines_array.push(`Ep${current} ${data.loglines}`)
+			beatsheets_array.push(`Ep${current} ${data.beatsheet}`)
+			current++
+		}
+	}
+	return { loglines_array, beatsheets_array, context }
 }
