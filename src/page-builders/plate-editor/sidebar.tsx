@@ -23,11 +23,11 @@ const Sidebar = () => {
 	return (
 		<div
 			className={cn(
-				'sticky top-11 h-fit w-full',
+				'sticky top-11 h-fit w-full border-b',
 				!showSidebar ? 'max-w-0' : 'max-w-[45vw]'
 			)}
 		>
-			<ScrollArea className="relative size-full flex-1 transition-all duration-200">
+			<ScrollArea className="relative size-full h-[calc(100svh_-_44px)] flex-1 transition-all duration-200">
 				{sidebar && renderSidebar[sidebar]}
 			</ScrollArea>
 		</div>

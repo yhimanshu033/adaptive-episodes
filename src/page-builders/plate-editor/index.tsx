@@ -29,6 +29,8 @@ const EpisodePlateEditor = () => {
 		extended[extended.length - 1]
 	)
 
+	console.log({ content, e: extended[extended.length - 1] })
+
 	const handleEpisodeChange = (episode: number | null) => {
 		if (!episode) return
 		router.push(
