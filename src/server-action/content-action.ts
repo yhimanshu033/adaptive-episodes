@@ -32,6 +32,7 @@ export const saveContent = async ({
 	projectId: number
 	text: string
 } & TPatchEpisodeBody) => {
+	console.log('Request body', data)
 	const responseData = await fetchAPI<
 		TPatchEpisodeBody,
 		TPatchEpisodeUrlParams,
@@ -47,6 +48,5 @@ export const saveContent = async ({
 			episodeId,
 		},
 	})
-
 	return responseData.data
 }

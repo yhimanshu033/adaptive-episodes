@@ -43,10 +43,12 @@ const useEpisodeHook = () => {
 			chapterId,
 			chapter_title,
 			comments,
+			prevProps,
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
 			comments?: TComment[]
+			prevProps?: Record<string, unknown>
 			status: EStatus | typeof BASE_STATUS
 			text: string
 		}) => {
@@ -57,6 +59,7 @@ const useEpisodeHook = () => {
 				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
 				chapter_title,
 				props: {
+					...prevProps,
 					comments,
 				},
 			})
