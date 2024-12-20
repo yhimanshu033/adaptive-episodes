@@ -4,10 +4,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { DiffStatus } from '@/constants/ai-constants'
-import {
-	moreChatSuggestions,
-	storyChatSuggestions,
-} from '@/constants/editor-constants'
+import { storyChatSuggestions } from '@/constants/editor-constants'
 import {
 	COPILOT_LOGO_URL,
 	FALLBACK_USER_URL,
@@ -75,7 +72,6 @@ import AiDnd from './ai-editor'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
-	const [suggestions, setSuggestions] = useState(storyChatSuggestions)
 	const { id } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -131,10 +127,6 @@ const AIChatbot = () => {
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
-		if (suggestion.action === EChatMode.EXTEND) {
-			setSuggestions((prev) => [...prev.slice(0, -1), ...moreChatSuggestions])
-			return
-		}
 		addMessages({ role: EMessenger.USER, content: suggestion.value })
 		aiChatbotMutation.mutate({
 			episodeNumber: episodeContent?.chapter.seq_number || 0,
@@ -266,6 +258,7 @@ const AIChatbot = () => {
 
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
 		const resp = convertReviewResponse(reviewResponse, children)
+		console.log(resp)
 		resp.comments.forEach((comment) => {
 			api.comment.addComment({
 				value: [{ type: 'p', children: [{ text: comment.text }] }],
@@ -289,6 +282,7 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!isPending && aiResponse) {
 			if (requestedAction === EChatMode.REVIEW) {
+				console.log('comments', aiResponse)
 				addReview(aiResponse as IndexedCommentsResponse[])
 			} else if (requestedAction === EChatMode.SFX) {
 				handleSFX(aiResponse as string)
@@ -397,7 +391,7 @@ const AIChatbot = () => {
 			</ScrollArea>
 			<ScrollArea className="overflow-x-auto pb-2 *:*:flex">
 				<ScrollBar orientation="horizontal" />
-				{suggestions.map((suggestion, index) => (
+				{storyChatSuggestions.map((suggestion, index) => (
 					<Button
 						key={index}
 						variant="outline"

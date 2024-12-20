@@ -124,10 +124,10 @@ export const replaceMatches = (
 	const modify = (nodes: TDescendant[]): TDescendant[] => {
 		return nodes.map((node) => {
 			if ('text' in node) {
-				const text = (node.text as string).replace(
-					regex,
-					(match) => matches.shift() || match
-				)
+				const text = (node.text as string).replace(regex, (match) => {
+					const sfx = matches.shift()?.toUpperCase()
+					return sfx || match
+				})
 				return {
 					...node,
 					text,

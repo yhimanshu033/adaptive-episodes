@@ -10,7 +10,7 @@ export const rephraseMethods = [
 
 export const storyChatSuggestions: Array<TStoryChatSuggestion> = [
 	{
-		value: 'Add Music / Sound FX 🎶',
+		value: 'Music / SFX 🎶',
 		action: EChatMode.SFX,
 	},
 	{
@@ -22,26 +22,10 @@ export const storyChatSuggestions: Array<TStoryChatSuggestion> = [
 		action: EChatMode.REVIEW,
 	},
 	{
-		value: 'More...',
-		action: EChatMode.EXTEND,
+		value: 'Quick Prompts 💬',
+		action: EChatMode.PROMPTS,
 	},
 ]
-
-export const moreChatSuggestions: Array<{ action: EChatMode; value: string }> =
-	[
-		{
-			value: 'Localization Check',
-			action: EChatMode.LOCCHECK,
-		},
-		{
-			value: 'Character Context',
-			action: EChatMode.CHARCONTEXT,
-		},
-		{
-			value: 'Plot Alternatives',
-			action: EChatMode.PLOT,
-		},
-	]
 
 export enum SuggestionActions {
 	ACCEPT = 'accept',

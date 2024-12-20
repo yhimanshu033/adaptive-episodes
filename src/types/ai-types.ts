@@ -70,10 +70,7 @@ export enum EAction {
 
 export enum EChatMode {
 	BLOCK = 'block',
-	CHARCONTEXT = 'character-context',
-	EXTEND = 'extend',
-	LOCCHECK = 'loc-check',
-	PLOT = 'plot-alt',
+	PROMPTS = 'prompts',
 	REVIEW = 'review',
 	SFX = 'sfx',
 	VOICE = 'voice',
