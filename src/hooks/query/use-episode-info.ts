@@ -6,12 +6,12 @@ import { useQuery } from '@tanstack/react-query'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 
-export const useEpisodeInfo = (epId?: number) => {
+export const useEpisodeInfo = () => {
 	const episodeId = useEpisodeId()
 	const { id }: { id: string } = useParams()
 	const query = useQuery({
-		queryKey: ['info', epId || episodeId, id],
-		queryFn: () => getEpisodeDetails(parseInt(id), epId || episodeId),
+		queryKey: ['info', episodeId, id],
+		queryFn: () => getEpisodeDetails(parseInt(id), episodeId),
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,

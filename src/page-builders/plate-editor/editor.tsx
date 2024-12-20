@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
@@ -92,21 +92,20 @@ import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
 import SuggestionLeaf from '@/components/plate-ui/suggestion-leaf'
+import { useEpisodeContext } from '@/providers/episode-id-provider'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { getRecord, jsonify } from '@/lib/utils'
-
-import { EStatus } from '@/types/common'
 
 import SaveEpisode from './save-episode'
 import Sidebar from './sidebar'
 import Versions from './versions'
 
 export default function PlateEditor() {
-	const [selectedStatus, setSelectedStatus] = useState<EStatus | undefined>()
+	const { selectedStatus, setSelectedStatus } = useEpisodeContext()
 	const containerRef = useRef<HTMLDivElement>(null)
-	const { data: content, latestStatus } = useEpisodeContent(selectedStatus)
+	const { data: content, latestStatus } = useEpisodeContent()
 
 	const editor = useMyEditor({
 		content: content?.text || '',

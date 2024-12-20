@@ -14,6 +14,7 @@ import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
 import { AIStoreType } from '@/types/ai-types'
+import { EStatus } from '@/types/common'
 import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
@@ -40,7 +41,9 @@ const initialLaserState: LaserStoreType = {
 
 type EpisodeIdContextType = {
 	episodeId: number
+	selectedStatus: EStatus | undefined
 	setEpisodeId: Dispatch<SetStateAction<number>>
+	setSelectedStatus: Dispatch<SetStateAction<EStatus | undefined>>
 	useAiStoreContext: UseBoundStore<StoreApi<AIStoreType>>
 	useLaserContext: UseBoundStore<StoreApi<LaserStoreType>>
 	usePlateStoreContext: UseBoundStore<StoreApi<PlateStoreData>>
@@ -49,6 +52,8 @@ type EpisodeIdContextType = {
 const EpisodeIdContext = createContext<EpisodeIdContextType>({
 	episodeId: 0,
 	setEpisodeId: () => {},
+	selectedStatus: undefined,
+	setSelectedStatus: () => {},
 	usePlateStoreContext: create(() => initialState),
 	useAiStoreContext: create(() => initialAiState),
 	useLaserContext: create(() => initialLaserState),
@@ -63,6 +68,8 @@ export function EpisodeIdProvider({
 }) {
 	const [episodeId, setEpisodeId] = useState<number>(defaultEpisodeId)
 
+	const [selectedStatus, setSelectedStatus] = useState<EStatus | undefined>()
+
 	const usePlateStoreContext = create(devtools(immer(() => initialState)))
 
 	const useAiStoreContext = create(devtools(immer(() => initialAiState)))
@@ -76,6 +83,8 @@ export function EpisodeIdProvider({
 			value={{
 				episodeId,
 				setEpisodeId,
+				selectedStatus,
+				setSelectedStatus,
 				usePlateStoreContext,
 				useAiStoreContext,
 				useLaserContext,
