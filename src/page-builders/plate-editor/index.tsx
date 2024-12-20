@@ -1,9 +1,9 @@
 'use client'
 
-import React, { memo } from 'react'
+import React, { memo, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { useEditorExtendState } from '@/hooks/use-editor-extend-state'
+import { extendStore } from '@/hooks/use-editor-extend-state'
 import {
 	CircleArrowLeft,
 	CircleArrowRight,
@@ -22,7 +22,7 @@ import PlateEditor from './editor'
 const ControlButtons = () => {
 	const router = useRouter()
 	const { id } = useParams()
-	const { setExtended } = useEditorExtendState()
+	const { setExtended, extended } = extendStore()
 
 	const { data: content } = useEpisodeContent()
 
@@ -53,10 +53,7 @@ const ControlButtons = () => {
 				</Button>
 				<Button
 					onClick={() =>
-						void setExtended((prev) => [
-							...prev,
-							Number(content?.next_parent_id),
-						])
+						void setExtended([...extended, Number(content?.next_parent_id)])
 					}
 					size="icon"
 					variant="ghost"
@@ -100,7 +97,14 @@ const EpisodeSplit = memo(({ extended }: { extended: number[] }) =>
 EpisodeSplit.displayName = 'EpisodeSplit'
 
 const EpisodePlateEditor = () => {
-	const { extended } = useEditorExtendState()
+	const { extended, setExtended } = extendStore()
+	const { episodeId } = useParams()
+
+	useEffect(() => {
+		setExtended([Number(episodeId)])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [episodeId])
+
 	return (
 		<main className="container flex flex-1 flex-col p-4">
 			<DndProvider backend={HTML5Backend}>

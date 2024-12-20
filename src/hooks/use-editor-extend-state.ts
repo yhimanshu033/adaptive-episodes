@@ -1,12 +1,9 @@
-import { useParams } from 'next/navigation'
-import { parseAsArrayOf, parseAsInteger, useQueryState } from 'nuqs'
+import { create } from 'zustand'
 
-export const useEditorExtendState = () => {
-	const { episodeId }: { episodeId: string } = useParams()
-	const [extended, setExtended] = useQueryState<number[]>('extend', {
-		defaultValue: [Number(episodeId)],
-		parse: (val) => parseAsArrayOf(parseAsInteger).parse(val),
-		clearOnDefault: true,
-	})
-	return { extended, setExtended }
-}
+export const extendStore = create<{
+	extended: number[]
+	setExtended: (value: number[]) => void
+}>((set) => ({
+	extended: [],
+	setExtended: (value) => set({ extended: value }),
+}))
