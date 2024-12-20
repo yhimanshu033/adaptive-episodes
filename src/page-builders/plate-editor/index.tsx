@@ -26,6 +26,8 @@ const ControlButtons = () => {
 
 	const { data: content } = useEpisodeContent()
 
+	console.log({ content, e: extended[extended.length - 1] })
+
 	const handleEpisodeChange = (episode: number | null) => {
 		if (!episode) return
 		router.push(`/projects/${String(id)}/${episode}/editor`)
