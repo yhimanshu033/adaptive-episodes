@@ -15,7 +15,12 @@ const SyncMetaData = () => {
 	}
 
 	return (
-		<Button variant="outline" className="gap-2" onClick={handleSync}>
+		<Button
+			variant="outline"
+			className="gap-2"
+			onClick={handleSync}
+			title="Click here to update story details with the AI so it can better assist you"
+		>
 			AI Sync
 			<RefreshCw
 				size={16}
