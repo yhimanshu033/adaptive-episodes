@@ -9,14 +9,7 @@ import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { ex, exampleReview } from '@/mock-data/aichatbot'
-import useAIStore from '@/store/ai-store' // addMessages,
-
-// clearMessages,
-// popMessage,
-// setAcceptedValue,
-// setPrevValue,
-// setResponseValue,
-// updateMessages,
+import useAIStore from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
