@@ -12,7 +12,7 @@ import { TLocalizeResponse, TLocalizeUpdateRequest } from '@/types/ai-types'
 import { TNoParams } from '@/types/common'
 
 const useLocalizeHook = () => {
-	const { id } = useParams()
+	const { id, episodeId } = useParams()
 	const { children } = useEditorState()
 	const { startTask, getResponse } = useSocket()
 	const onLocalize = async () => {
@@ -29,7 +29,7 @@ const useLocalizeHook = () => {
 	}
 
 	const localizeQuery = useQuery({
-		queryKey: ['localize', id],
+		queryKey: ['localize', id, episodeId],
 		queryFn: onLocalize,
 	})
 	return localizeQuery
