@@ -44,6 +44,7 @@ const SaveEpisode = () => {
 				chapterId,
 				text,
 				comments: allComments,
+				prevProps: data?.chapter.props,
 			})
 		}
 	}, [
@@ -51,6 +52,7 @@ const SaveEpisode = () => {
 		allComments,
 		data?.chapter.status,
 		data?.chapter.parent,
+		data?.chapter.props,
 		saveEpisodeMutation,
 	])
 

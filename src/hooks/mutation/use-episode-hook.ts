@@ -46,10 +46,12 @@ const useEpisodeHook = () => {
 			chapterId,
 			chapter_title,
 			comments,
+			prevProps,
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
 			comments?: TComment[]
+			prevProps?: Record<string, unknown>
 			status: EStatus | typeof BASE_STATUS
 			text: string
 		}) => {
@@ -60,6 +62,7 @@ const useEpisodeHook = () => {
 				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
 				chapter_title,
 				props: {
+					...prevProps,
 					comments,
 				},
 			})
@@ -94,6 +97,17 @@ const useEpisodeHook = () => {
 		})
 	}
 
+	const onMetadataSync = async (chapterId: number) => {
+		const taskId = await startTask({
+			method: 'PATCH',
+			url: '/chapters/:chapterId/sync_metadata',
+			urlParams: {
+				chapterId,
+			},
+		})
+		return getResponse(taskId)
+	}
+
 	const saveEpisodeMutation = useMutation({
 		mutationKey: [EpisodeActions.UPDATE, id, episodeId],
 		mutationFn: onSaveEpisode,
@@ -123,6 +137,11 @@ const useEpisodeHook = () => {
 		onSuccess,
 	})
 
+	const metadataSyncMutation = useMutation({
+		mutationKey: [EpisodeActions.METATDATA, id],
+		mutationFn: onMetadataSync,
+	})
+
 	useEffect(() => {
 		setFullScreenLoading(
 			(saveEpisodeMutation.isPending && !episodeId) ||
@@ -146,6 +165,7 @@ const useEpisodeHook = () => {
 		episodeUnmergeMutation,
 		episodeInventMutation,
 		episodeDeleteMutation,
+		metadataSyncMutation,
 	}
 }
 
