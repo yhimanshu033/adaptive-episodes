@@ -88,8 +88,6 @@ const AIChatbot = () => {
 	const requestedAction = useAIStore((state) => state.requestedAction)
 	const { api } = useEditorPlugin(CommentsPlugin)
 
-	console.log({ children })
-
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
@@ -153,7 +151,6 @@ const AIChatbot = () => {
 	}
 
 	const handleSFX = (resp: string) => {
-		console.log(resp)
 		const matches = resp.match(/((\[.*\])*\n+)+/g)
 		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
 		if (!matches || !hasSFX) {
@@ -260,7 +257,6 @@ const AIChatbot = () => {
 
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
 		const resp = convertReviewResponse(reviewResponse, children)
-		console.log(resp)
 		resp.comments.forEach((comment) => {
 			api.comment.addComment({
 				value: [{ type: 'p', children: [{ text: comment.text }] }],
@@ -284,8 +280,7 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!isPending && aiResponse) {
 			if (requestedAction === EChatMode.REVIEW) {
-				console.log('comments', aiResponse)
-				addReview(aiResponse as IndexedCommentsResponse[])
+				addReview(JSON.parse(aiResponse as string) as IndexedCommentsResponse[])
 			} else if (requestedAction === EChatMode.SFX) {
 				handleSFX(aiResponse as string)
 			} else {

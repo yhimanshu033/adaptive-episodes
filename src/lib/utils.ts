@@ -145,7 +145,6 @@ export const replaceMatches = (
 		...child,
 		children: modify(child.children),
 	}))
-	console.log(result)
 	return result
 }
 
@@ -280,93 +279,10 @@ export function getRecord(comments: TComment[]) {
 	return records
 }
 
-/*
-make a copy of children
-
-iterate over response
-	for the block in location of id
-		split it into
-
-
-
-10-25 30-42
-0-10 10-25 25-30 30-42 42-50
-*/
-
-// export function convertReviewResponse(
-//   response: IndexedCommentsResponse[],
-//   children: Value
-// ) {
-//   console.log({ response, children })
-//   const comments: ReviewComment[] = []
-
-//   const responseMap = new Map(response.map((item) => [item.id, item]))
-
-//   const applyComment = (
-//     nodes: TDescendant[],
-//     path: number[]
-//   ): TDescendant[] => {
-//     return nodes.flatMap((node, index) => {
-//       const currentPath = [...path, index]
-
-//       if ('text' in node) {
-//         const nodeId = currentPath.join('_')
-//         const matchingValue = responseMap.get(nodeId)
-
-//         if (matchingValue) {
-//           const { start, end } = matchingValue.path
-//           const { text } = node as { text: string }
-
-//           const segments: TText[] = []
-
-//           if (start > 0) {
-//             segments.push({ text: text.slice(0, start) })
-//           }
-
-//           const commentSegment = {
-//             text: text.slice(start, end),
-//             comment: true,
-//           } as TText
-//           const id = nanoid()
-//           const commentKey = `comment_${id}`
-//           commentSegment[commentKey] = true
-//           comments.push({ id, text: matchingValue.comment })
-//           segments.push(commentSegment)
-
-//           if (end < text.length) {
-//             segments.push({ text: text.slice(end) })
-//           }
-
-//           return segments
-//         }
-
-//         return [node]
-//       } else if ('children' in node) {
-//         return [
-//           {
-//             ...node,
-//             children: applyComment(node.children, currentPath),
-//           },
-//         ]
-//       }
-
-//       return [node]
-//     })
-//   }
-
-//   const value = children.map((child, index) => ({
-//     ...child,
-//     children: applyComment(child.children, [index]),
-//   }))
-
-//   return { value, comments }
-// }
-
 export function convertReviewResponse(
 	response: IndexedCommentsResponse[],
 	children: Value
 ) {
-	console.log({ response, children })
 	const comments: ReviewComment[] = []
 
 	const applyComment = (
@@ -379,7 +295,6 @@ export function convertReviewResponse(
 			if ('text' in node) {
 				const nodeId = currentPath.join('_')
 				const matchingValues = response.filter((item) => item.id === nodeId)
-				console.log({ node, nodeId, matchingValues })
 
 				if (matchingValues.length > 0) {
 					const { text } = node as { text: string }
@@ -389,12 +304,10 @@ export function convertReviewResponse(
 					for (const matchingValue of matchingValues) {
 						const { start, end } = matchingValue.path
 
-						// Add the segment before the comment
 						if (lastIndex < start) {
 							segments.push({ text: text.slice(lastIndex, start) })
 						}
 
-						// Add the comment segment
 						const commentSegment = {
 							text: text.slice(start, end),
 							comment: true,
@@ -407,11 +320,9 @@ export function convertReviewResponse(
 
 						segments.push(commentSegment)
 
-						// Update the lastIndex to the end of this comment
 						lastIndex = end
 					}
 
-					// Add the segment after the last comment
 					if (lastIndex < text.length) {
 						segments.push({ text: text.slice(lastIndex) })
 					}
@@ -419,7 +330,6 @@ export function convertReviewResponse(
 					return segments
 				}
 
-				// If no matching values, return the original node
 				return [node]
 			} else if ('children' in node) {
 				return [
@@ -438,8 +348,6 @@ export function convertReviewResponse(
 		...child,
 		children: applyComment(child.children, [index]),
 	}))
-
-	console.log({ value, comments })
 
 	return { value, comments }
 }
