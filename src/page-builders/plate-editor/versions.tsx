@@ -83,9 +83,11 @@ const Versions = ({
 		}
 	}
 	useEffect(() => {
-		if (latestStatus && selectedStatus && sidebar !== 'far') {
-			setViewMode(selectedIndex < latestIndex + Number(isChildEpisode))
-		}
+		setViewMode(
+			sidebar === 'far' ||
+				isChildEpisode ||
+				selectedIndex < latestIndex + Number(isChildEpisode)
+		)
 	}, [
 		isChildEpisode,
 		latestIndex,

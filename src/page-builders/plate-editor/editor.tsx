@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
 import { useGlobalStore } from '@/store/global-store'
-import useCustomPlateStore, { setViewMode } from '@/store/plate-store'
 import { cn, withProps } from '@udecode/cn'
 import { AlignPlugin } from '@udecode/plate-alignment/react'
 import { AutoformatPlugin } from '@udecode/plate-autoformat/react'
@@ -120,7 +119,6 @@ export default function PlateEditor() {
 	const [selectedStatus, setSelectedStatus] = useState<EStatus | undefined>()
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content, latestStatus } = useEpisodeContent(selectedStatus)
-	const sidebar = useCustomPlateStore((state) => state.sidebar)
 	const isChildEpisode = !!content?.chapter.is_deleted
 
 	const router = useRouter()
@@ -137,10 +135,6 @@ export default function PlateEditor() {
 			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}/${episode}/editor`
 		)
 	}
-
-	useEffect(() => {
-		setViewMode(sidebar === 'far' || isChildEpisode)
-	}, [isChildEpisode, sidebar])
 
 	if (!content || !latestStatus)
 		return (
