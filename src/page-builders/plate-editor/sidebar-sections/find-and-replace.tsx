@@ -42,7 +42,11 @@ import { Toggle } from '@/components/ui/toggle'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn, replaceNthInsensitive } from '@/lib/utils'
 
-import { TLocalizeArrayItem } from '@/types/ai-types'
+import {
+	TLocalizeCharacterArrayItem,
+	TLocalizeConceptArrayItem,
+	TLocalizePlaceArrayItem,
+} from '@/types/ai-types'
 
 const formSchema = z.object({
 	original: z.string(),
@@ -298,9 +302,20 @@ export default function FindAndReplace() {
 		editor.tf.setValue(updatedChildren)
 	}
 
-	function handleSuggestionClick(suggestion: TLocalizeArrayItem) {
+	function handleSuggestionClick(
+		suggestion:
+			| TLocalizeCharacterArrayItem
+			| TLocalizeConceptArrayItem
+			| TLocalizePlaceArrayItem
+	) {
+		const replace =
+			'localized_name' in suggestion
+				? suggestion.localized_name
+				: 'localized_concept' in suggestion
+					? suggestion.localized_concept
+					: suggestion.localized_place
 		setOptions({ search: suggestion.name })
-		setOptions({ replace: suggestion.localized_name })
+		setOptions({ replace })
 		setOptions({ replaceEnabled: true })
 		const updatedChildren = structuredClone(children)
 		editor.tf.setValue(updatedChildren)
