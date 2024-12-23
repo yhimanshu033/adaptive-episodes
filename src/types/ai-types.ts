@@ -112,20 +112,38 @@ export interface TAiChatbotResponse {
 	message: string
 }
 
-export type TLocalizeObject = {
+export type TLocalizeCharacterObject = {
 	localized_name: string
 	reason?: string
 }
 
-export type TLocalizeArrayItem = TLocalizeObject & { name: string }
+export type TLocalizePlaceObject = {
+	localized_place: string
+	reason?: string
+}
 
-export type LocalizeRecord = Record<string, TLocalizeObject>
+export type TLocalizeConceptObject = {
+	localized_concept: string
+	reason?: string
+}
+
+export type TLocalizeCharacterArrayItem = TLocalizeCharacterObject & {
+	name: string
+}
+export type TLocalizePlaceArrayItem = TLocalizePlaceObject & { name: string }
+export type TLocalizeConceptArrayItem = TLocalizeConceptObject & {
+	name: string
+}
+
+export type LocalizeCharacterRecord = Record<string, TLocalizeCharacterObject>
+export type LocalizePlaceRecord = Record<string, TLocalizePlaceObject>
+export type LocalizeConceptRecord = Record<string, TLocalizeConceptObject>
 
 export interface TLocalizeResponse {
 	result: {
-		characters: LocalizeRecord
-		concepts: LocalizeRecord
-		places: LocalizeRecord
+		characters: LocalizeCharacterRecord
+		concepts: LocalizePlaceRecord
+		places: LocalizeConceptRecord
 	}
 	task_id: string
 }
