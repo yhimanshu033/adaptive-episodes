@@ -260,16 +260,6 @@ export const useMyEditor = ({
 					enableUndoOnDelete: true,
 				},
 			}),
-			// DndPlugin.configure({
-			// 	options: {
-			// 		enableScroller: true,
-			// 		onDropFiles: ({ dragItem, editor, target }) => {
-			// 			editor
-			// 				.getTransforms(PlaceholderPlugin)
-			// 				.insert.media(dragItem.files, { at: target, nextBlock: false })
-			// 		},
-			// 	},
-			// }),
 			ExitBreakPlugin.configure({
 				options: {
 					rules: [

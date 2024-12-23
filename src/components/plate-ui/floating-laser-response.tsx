@@ -113,7 +113,6 @@ export default function FloatingLaserResponse() {
 	}
 
 	function handleRejectRephrase() {
-		console.log('reject')
 		onResetLeaf()
 		setActiveLaser(null)
 	}

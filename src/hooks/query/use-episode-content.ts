@@ -32,7 +32,6 @@ export const useEpisodeContent = () => {
 			latestStatus || 'BASE',
 		],
 		queryFn: () => getEpisodeContent(episode?.id || episodeId),
-		// enabled: !!episode,
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,

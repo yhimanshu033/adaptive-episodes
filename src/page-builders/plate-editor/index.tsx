@@ -1,6 +1,6 @@
 'use client'
 
-import React, { memo, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { extendStore } from '@/hooks/use-editor-extend-state'
@@ -65,26 +65,28 @@ const ControlButtons = () => {
 	)
 }
 
-const EditorChild = memo(
-	({ episodeId, isLast }: { episodeId: number; isLast: boolean }) => {
-		return (
-			<EpisodeIdProvider key={episodeId} episodeId={episodeId}>
-				<TooltipProvider
-					disableHoverableContent
-					delayDuration={500}
-					skipDelayDuration={0}
-				>
-					<PlateEditor />
-				</TooltipProvider>
-				{isLast ? <ControlButtons /> : <Separator />}
-			</EpisodeIdProvider>
-		)
-	}
-)
+const EditorChild = ({
+	episodeId,
+	isLast,
+}: {
+	episodeId: number
+	isLast: boolean
+}) => {
+	return (
+		<EpisodeIdProvider key={episodeId} episodeId={episodeId}>
+			<TooltipProvider
+				disableHoverableContent
+				delayDuration={500}
+				skipDelayDuration={0}
+			>
+				<PlateEditor />
+			</TooltipProvider>
+			{isLast ? <ControlButtons /> : <Separator />}
+		</EpisodeIdProvider>
+	)
+}
 
-EditorChild.displayName = 'EditorChild'
-
-const EpisodeSplit = memo(({ extended }: { extended: number[] }) =>
+const EpisodeSplit = ({ extended }: { extended: number[] }) =>
 	extended.map((episodeId, idx) => (
 		<EditorChild
 			key={episodeId}
@@ -92,9 +94,6 @@ const EpisodeSplit = memo(({ extended }: { extended: number[] }) =>
 			isLast={idx === extended.length - 1}
 		/>
 	))
-)
-
-EpisodeSplit.displayName = 'EpisodeSplit'
 
 const EpisodePlateEditor = () => {
 	const { extended, setExtended } = extendStore()
