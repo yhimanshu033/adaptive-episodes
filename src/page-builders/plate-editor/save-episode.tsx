@@ -7,7 +7,7 @@ import { useEditorReadOnly, useEditorState } from '@udecode/plate-common/react'
 import { LoaderCircle, Save } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-import { clearLasers, cn } from '@/lib/utils'
+import { clearComments, clearLasers, cn } from '@/lib/utils'
 
 import { BASE_STATUS } from '@/types/common'
 
@@ -34,7 +34,8 @@ const SaveEpisode = () => {
 			savedRef.current = currentChildren
 			savedCommentsRef.current = currentComments
 			const clearedLaser = clearLasers(children)
-			const text = JSON.stringify(clearedLaser)
+			const clearedComments = clearComments(clearedLaser)
+			const text = JSON.stringify(clearedComments)
 			const status = data?.chapter.status || BASE_STATUS
 			const chapterId = data?.chapter.parent
 			saveEpisodeMutation.mutate({

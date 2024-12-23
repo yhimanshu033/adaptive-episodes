@@ -88,6 +88,8 @@ const AIChatbot = () => {
 	const requestedAction = useAIStore((state) => state.requestedAction)
 	const { api } = useEditorPlugin(CommentsPlugin)
 
+	console.log({ children })
+
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
