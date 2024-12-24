@@ -3,7 +3,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { DiffStatus } from '@/constants/ai-constants'
+import { DiffStatus, quickPrompts } from '@/constants/ai-constants'
 import { storyChatSuggestions } from '@/constants/editor-constants'
 import {
 	COPILOT_LOGO_URL,
@@ -55,6 +55,7 @@ import { TooltipComponent } from '@/components/ui/tooltip-component'
 import {
 	cn,
 	convertReviewResponse,
+	getRandomElement,
 	getText,
 	minify,
 	replaceMatches,
@@ -126,6 +127,10 @@ const AIChatbot = () => {
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
 		if (suggestion.action === EChatMode.LOCALIZE) {
 			setSidebar('far')
+			return
+		}
+		if (suggestion.action === EChatMode.PROMPTS) {
+			setInput(getRandomElement(quickPrompts))
 			return
 		}
 		addMessages({ role: EMessenger.USER, content: suggestion.value })

@@ -376,3 +376,7 @@ export const extractFromMetadata = (
 	}
 	return { loglines_array, beatsheets_array, context }
 }
+
+export const getRandomElement = <T>(arr: T[]): T => {
+	return arr[Math.floor(Math.random() * arr.length)]
+}
