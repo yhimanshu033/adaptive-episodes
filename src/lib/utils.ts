@@ -262,14 +262,18 @@ export function clearLasers(ogVal: Value): Value {
 export function clearComments(ogVal: Value): Value {
 	const val = structuredClone(ogVal)
 	const traverse = (node: TDescendant) => {
-		const keys = Object.keys(node).filter((key) => key.startsWith('comment'))
-		if (keys.length) {
-			keys.forEach((key) => {
+		let hasComments = false
+		for (const key in node) {
+			if (key.startsWith('comment')) {
 				delete node[key]
-			})
+				hasComments = true
+			}
+		}
+
+		if (hasComments) {
 			delete node.laser
 		} else if ('children' in node) {
-			;(node.children as TDescendant[]).forEach(traverse)
+			void (node.children as TDescendant[]).forEach(traverse)
 		}
 	}
 	val.forEach(traverse)
@@ -333,43 +337,38 @@ export function convertReviewResponse(
 
 			if ('text' in node) {
 				const nodeId = currentPath.join('_')
-				const matchingValues = response.filter((item) => item.id === nodeId)
+				const { text } = node as { text: string }
+				const segments: TText[] = []
+				let lastIndex = 0
 
-				if (matchingValues.length > 0) {
-					const { text } = node as { text: string }
-					const segments: TText[] = []
-					let lastIndex = 0
+				for (const matchingValue of response) {
+					if (matchingValue.id !== nodeId) continue
+					const { start, end } = matchingValue.path
 
-					for (const matchingValue of matchingValues) {
-						const { start, end } = matchingValue.path
-
-						if (lastIndex < start) {
-							segments.push({ text: text.slice(lastIndex, start) })
-						}
-
-						const commentSegment = {
-							text: text.slice(start, end),
-							comment: true,
-						} as TText
-
-						const id = nanoid()
-						const commentKey = `comment_${id}`
-						commentSegment[commentKey] = true
-						comments.push({ id, text: matchingValue.comment })
-
-						segments.push(commentSegment)
-
-						lastIndex = end
+					if (lastIndex < start) {
+						segments.push({ text: text.slice(lastIndex, start) })
 					}
 
-					if (lastIndex < text.length) {
-						segments.push({ text: text.slice(lastIndex) })
-					}
+					const commentSegment = {
+						text: text.slice(start, end),
+						comment: true,
+					} as TText
 
-					return segments
+					const id = nanoid()
+					const commentKey = `comment_${id}`
+					commentSegment[commentKey] = true
+					comments.push({ id, text: matchingValue.comment })
+
+					segments.push(commentSegment)
+
+					lastIndex = end
 				}
 
-				return [node]
+				if (lastIndex < text.length) {
+					segments.push({ text: text.slice(lastIndex) })
+				}
+
+				return segments.length ? segments : [node]
 			} else if ('children' in node) {
 				return [
 					{
