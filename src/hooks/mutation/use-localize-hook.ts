@@ -5,6 +5,7 @@ import useSocket from '@/hooks/use-socket'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEditorState } from '@udecode/plate-common/react'
 
+import useEpisodeId from '@/providers/episode-id-provider'
 import { fetchAPI } from '@/lib/fetch-api'
 import { getText } from '@/lib/utils'
 
@@ -12,7 +13,8 @@ import { TLocalizeResponse, TLocalizeUpdateRequest } from '@/types/ai-types'
 import { TNoParams } from '@/types/common'
 
 const useLocalizeHook = () => {
-	const { id, episodeId } = useParams()
+	const { id } = useParams()
+	const episodeId = useEpisodeId()
 	const { children } = useEditorState()
 	const { startTask, getResponse } = useSocket()
 	const onLocalize = async () => {

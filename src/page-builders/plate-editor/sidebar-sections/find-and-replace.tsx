@@ -440,43 +440,55 @@ export default function FindAndReplace() {
 							// replaceEnabled ? '~h-[30vh]' : '~h-[37vh]'
 						)}
 					>
-						<h4 className="text-lg font-semibold">Characters</h4>
-						<div className="flex flex-wrap gap-2 pt-1">
-							{characters.map((character, index) => (
-								<Button
-									onClick={() => handleSuggestionClick(character)}
-									key={index}
-									variant="outline"
-								>
-									{character.name}
-								</Button>
-							))}
-						</div>
-						<h4 className="pt-2 text-lg font-semibold">Places</h4>
-						<div className="flex flex-wrap gap-2 pt-1">
-							{places.map((place, index) => (
-								<Button
-									onClick={() => handleSuggestionClick(place)}
-									key={index}
-									variant="outline"
-								>
-									{place.name}
-								</Button>
-							))}
-						</div>
-						<h4 className="pt-2 text-lg font-semibold">Concepts</h4>
-						<div className="flex flex-wrap gap-2 pt-1">
-							{concepts.map((concept, index) => (
-								<Button
-									onClick={() => handleSuggestionClick(concept)}
-									key={index}
-									variant="outline"
-								>
-									{concept.name}
-								</Button>
-							))}
-						</div>
-						{data?.objects && (
+						{!!characters.length && (
+							<>
+								<h4 className="text-lg font-semibold">Characters</h4>
+								<div className="flex flex-wrap gap-2 pt-1">
+									{characters.map((character, index) => (
+										<Button
+											onClick={() => handleSuggestionClick(character)}
+											key={index}
+											variant="outline"
+										>
+											{character.name}
+										</Button>
+									))}
+								</div>
+							</>
+						)}
+						{!!places.length && (
+							<>
+								<h4 className="pt-2 text-lg font-semibold">Places</h4>
+								<div className="flex flex-wrap gap-2 pt-1">
+									{places.map((place, index) => (
+										<Button
+											onClick={() => handleSuggestionClick(place)}
+											key={index}
+											variant="outline"
+										>
+											{place.name}
+										</Button>
+									))}
+								</div>
+							</>
+						)}
+						{!!concepts.length && (
+							<>
+								<h4 className="pt-2 text-lg font-semibold">Concepts</h4>
+								<div className="flex flex-wrap gap-2 pt-1">
+									{concepts.map((concept, index) => (
+										<Button
+											onClick={() => handleSuggestionClick(concept)}
+											key={index}
+											variant="outline"
+										>
+											{concept.name}
+										</Button>
+									))}
+								</div>
+							</>
+						)}
+						{!!objects.length && (
 							<>
 								<h4 className="pt-2 text-lg font-semibold">Objects</h4>
 								<div className="flex flex-wrap gap-2 pt-1">
