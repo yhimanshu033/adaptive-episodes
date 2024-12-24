@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
 import useComments from '@/hooks/plate/use-comments'
-import usePlateStore, { setResolved } from '@/store/plate-store'
+import usePlateStore from '@/store/plate-store'
 import { BaseCommentsPlugin } from '@udecode/plate-comments'
 import {
 	CommentProvider,
@@ -93,7 +93,8 @@ export default function CommentSidebar() {
 	const resolvedComments = [...sortedComments].filter(
 		(comment) => comment.isResolved
 	)
-	const showResolved = usePlateStore((state) => state.resolved)
+	const { store, setResolved } = usePlateStore()
+	const showResolved = store((state) => state.resolved)
 	const comments = showResolved ? resolvedComments : unresolvedComments
 	return (
 		<div className="relative">

@@ -132,24 +132,59 @@ export interface TAiChatbotResponse {
 	message: string
 }
 
-export type TLocalizeObject = {
+export type TLocalizeCharacterObject = {
 	localized_name: string
 	reason?: string
 }
 
-export type TLocalizeArrayItem = TLocalizeObject & { name: string }
+export type TLocalizePlaceObject = {
+	localized_place: string
+	reason?: string
+}
 
-export type LocalizeRecord = Record<string, TLocalizeObject>
+export type TLocalizeObjectObject = {
+	localized_object: string
+	reason?: string
+}
+
+export type TLocalizeConceptObject = {
+	localized_concept: string
+	reason?: string
+}
+
+export type TLocalizeCharacterArrayItem = TLocalizeCharacterObject & {
+	name: string
+}
+export type TLocalizePlaceArrayItem = TLocalizePlaceObject & { name: string }
+export type TLocalizeConceptArrayItem = TLocalizeConceptObject & {
+	name: string
+}
+
+export type TLocalizeObjectArrayItem = TLocalizeObjectObject & {
+	name: string
+}
+
+export type LocalizeCharacterRecord = Record<string, TLocalizeCharacterObject>
+export type LocalizePlaceRecord = Record<string, TLocalizePlaceObject>
+export type LocalizeConceptRecord = Record<string, TLocalizeConceptObject>
+export type LocalizeObjectRecord = Record<string, TLocalizeObjectObject>
 
 export interface TLocalizeResponse {
 	result: {
-		characters: LocalizeRecord
-		concepts: LocalizeRecord
-		places: LocalizeRecord
+		characters: LocalizeCharacterRecord
+		concepts: LocalizePlaceRecord
+		objects?: LocalizeObjectRecord
+		places: LocalizeConceptRecord
 	}
 	task_id: string
 }
 
 export interface TLocalizeUpdateRequest {
 	ls_mapping: Record<string, { localized_name: string; type: string }>
+}
+
+export type Laser = {
+	clientY?: number
+	response: string
+	text: string
 }

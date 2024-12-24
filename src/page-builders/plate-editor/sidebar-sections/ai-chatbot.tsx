@@ -12,17 +12,9 @@ import {
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
-import useAIStore, {
-	addMessages,
-	clearMessages,
-	popMessage,
-	setAcceptedValue,
-	setPrevValue,
-	setRequestedAction,
-	setResponseValue,
-	updateMessages,
-} from '@/store/ai-store'
+import useAIStore from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
+import usePlateStore from '@/store/plate-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
 	ParagraphPlugin,
@@ -32,7 +24,15 @@ import {
 } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
 import { Value } from '@udecode/slate'
-import { Check, CheckCheck, Send, StopCircle, Trash2, X } from 'lucide-react'
+import {
+	Check,
+	CheckCheck,
+	Copy,
+	Send,
+	StopCircle,
+	Trash2,
+	X,
+} from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Loader } from '@/components/loader'
@@ -68,14 +68,24 @@ import {
 } from '@/types/ai-types'
 import { IndexedCommentsResponse } from '@/types/editor-types'
 
-import AiDnd from './ai-editor'
-
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
 	const { id } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
-	const { messages } = useAIStore()
+	const {
+		store,
+		addMessages,
+		clearMessages,
+		popMessage,
+		setAcceptedValue,
+		setPrevValue,
+		setResponseValue,
+		updateMessages,
+		setRequestedAction,
+	} = useAIStore()
+	const { setSidebar } = usePlateStore()
+	const { messages } = store()
 	const { aiChatbotMutation } = useAIChatbotHook()
 	const { data: aiResponse, isPending, reset } = aiChatbotMutation
 	const userData = useGlobalStore(useShallow((state) => state.userData))
@@ -83,28 +93,15 @@ const AIChatbot = () => {
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
 	const { children } = useEditorState()
-	const value = useAIStore((state) => state.acceptedValue)
-	const prevValue = useAIStore((state) => state.prevValue)
-	const requestedAction = useAIStore((state) => state.requestedAction)
+	const requestedAction = store((state) => state.requestedAction)
+	const value = store((state) => state.acceptedValue)
+	const prevValue = store((state) => state.prevValue)
 	const { api } = useEditorPlugin(CommentsPlugin)
 
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
 
-	const handleBlock = ({ text }: { text: string }) => {
-		addMessages({
-			role: EMessenger.ASSISTANT,
-			content: JSON.stringify([
-				{
-					id: `0`,
-					type: ParagraphPlugin.key,
-					children: [{ text: text }],
-				},
-			]),
-			action: EAction.BLOCK,
-		})
-	}
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
@@ -128,6 +125,7 @@ const AIChatbot = () => {
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
 		if (suggestion.action === EChatMode.LOCALIZE) {
+			setSidebar('far')
 			return
 		}
 		addMessages({ role: EMessenger.USER, content: suggestion.value })
@@ -151,6 +149,14 @@ const AIChatbot = () => {
 			e.preventDefault()
 			handleSendMessage(e)
 		}
+	}
+
+	const handleBlock = ({ text }: { text: string }) => {
+		addMessages({
+			role: EMessenger.ASSISTANT,
+			content: text,
+			action: EAction.BLOCK,
+		})
 	}
 
 	const handleSFX = (resp: string) => {
@@ -255,6 +261,7 @@ const AIChatbot = () => {
 			setPrevValue(null)
 			setAcceptedValue(null)
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[value, editor.tf]
 	)
 
@@ -349,9 +356,30 @@ const AIChatbot = () => {
 							</div>
 						) : message.role === EMessenger.ASSISTANT &&
 						  message.action === EAction.BLOCK ? (
-							<>
-								<AiDnd id="TEST" val={message.content} />
-							</>
+							<div className="relative max-w-[70%]">
+								<TooltipComponent tooltip={'Copy'}>
+									<Button
+										onClick={() => {
+											void navigator.clipboard.writeText(message.content)
+										}}
+										variant="ghost"
+										className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
+									>
+										<Copy size={12} />
+									</Button>
+								</TooltipComponent>
+								<div
+									dangerouslySetInnerHTML={{
+										__html: message.content.replaceAll('\n', '<br/>'),
+									}}
+									className={cn(
+										'rounded-lg p-3',
+										message.role === EMessenger.ASSISTANT
+											? 'bg-background'
+											: 'bg-primary'
+									)}
+								/>
+							</div>
 						) : (
 							<div
 								dangerouslySetInnerHTML={{

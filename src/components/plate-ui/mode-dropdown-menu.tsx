@@ -32,7 +32,8 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	const openState = useOpenState()
 	const { setOption, getOption } = useEditorPlugin(SuggestionPlugin)
 
-	const viewMode = useCustomPlateStore((state) => state.viewMode)
+	const { store } = useCustomPlateStore()
+	const viewMode = store((state) => state.viewMode)
 
 	useEffect(() => {
 		setReadOnly(viewMode)

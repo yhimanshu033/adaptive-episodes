@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import React, { useRef, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import React, { useRef } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
@@ -37,7 +36,6 @@ import {
 	Plate,
 	PlateLeaf,
 } from '@udecode/plate-common/react'
-import { DndPlugin } from '@udecode/plate-dnd'
 import { DocxPlugin } from '@udecode/plate-docx'
 import {
 	FontBackgroundColorPlugin,
@@ -55,7 +53,7 @@ import { KbdPlugin } from '@udecode/plate-kbd/react'
 import { LineHeightPlugin } from '@udecode/plate-line-height/react'
 import { TodoListPlugin } from '@udecode/plate-list/react'
 import { MarkdownPlugin } from '@udecode/plate-markdown'
-import { ImagePlugin, PlaceholderPlugin } from '@udecode/plate-media/react'
+import { ImagePlugin } from '@udecode/plate-media/react'
 import { NodeIdPlugin } from '@udecode/plate-node-id'
 import { ResetNodePlugin } from '@udecode/plate-reset-node/react'
 import { SelectOnBackspacePlugin } from '@udecode/plate-select'
@@ -65,13 +63,6 @@ import {
 	TableCellPlugin,
 } from '@udecode/plate-table/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
-import {
-	CircleArrowLeft,
-	CircleArrowRight,
-	SeparatorHorizontal,
-} from 'lucide-react'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Loader } from '@/components/loader'
@@ -101,128 +92,90 @@ import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
 import SuggestionLeaf from '@/components/plate-ui/suggestion-leaf'
-import { withDraggables } from '@/components/plate-ui/with-draggables'
-import { Button } from '@/components/ui/button'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { useEpisodeContext } from '@/providers/episode-id-provider'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { getRecord, jsonify } from '@/lib/utils'
 
-import { EStatus } from '@/types/common'
-
 import SaveEpisode from './save-episode'
 import Sidebar from './sidebar'
+import SyncMetaData from './sync-metadata'
 import Versions from './versions'
 
 export default function PlateEditor() {
-	const [selectedStatus, setSelectedStatus] = useState<EStatus | undefined>()
+	const { selectedStatus, setSelectedStatus } = useEpisodeContext()
 	const containerRef = useRef<HTMLDivElement>(null)
-	const { data: content, latestStatus } = useEpisodeContent(selectedStatus)
+	const { data: content, latestStatus } = useEpisodeContent()
 	const isChildEpisode = !!content?.chapter.is_deleted
-
-	const router = useRouter()
-	const { id } = useParams()
-
 	const editor = useMyEditor({
 		content: content?.text || '',
 		comments: content?.chapter.props?.comments,
 	})
 
-	const handleEpisodeChange = (episode: number | null) => {
-		if (!episode) return
-		router.push(
-			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}/${episode}/editor`
-		)
-	}
-
 	if (!content || !latestStatus)
 		return (
-			<div className="flex flex-1 items-center justify-center">
+			<div className="flex min-h-[80vh] flex-1 items-center justify-center">
 				<Loader />
 			</div>
 		)
 
 	return (
-		<DndProvider backend={HTML5Backend}>
-			<Plate editor={editor}>
-				<div className="flex items-center justify-between">
-					<Title />
-					<div className="flex items-center gap-2">
-						<Versions
-							{...{
-								isChildEpisode,
-								latestStatus,
-								selectedStatus,
-								setSelectedStatus,
-							}}
-						/>
-						<SaveEpisode />
-					</div>
+		<Plate editor={editor}>
+			<div className="flex animate-fade-in-up items-center justify-between">
+				<Title />
+				<div className="flex items-center gap-2">
+					<Versions
+						{...{
+							isChildEpisode,
+							latestStatus,
+							selectedStatus,
+							setSelectedStatus,
+						}}
+					/>
+					<SyncMetaData />
+					<SaveEpisode />
 				</div>
-				<div
-					ref={containerRef}
-					className={cn(
-						'relative mt-4 rounded border bg-background-editor shadow-editor',
-						// Block selection
-						'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
-					)}
-				>
-					<FixedToolbar>
-						<FixedToolbarButtons />
-					</FixedToolbar>
-					<div className="flex h-[78vh] w-full">
-						<ScrollArea className="w-full flex-1 bg-background">
-							<div className="flex h-full">
-								<div className="flex w-full">
-									<Editor
-										className="size-full rounded-none px-12 py-5"
-										autoFocus
-										focusRing={false}
-										variant="ghost"
-										size="md"
-									/>
+			</div>
+			<div
+				ref={containerRef}
+				className={cn(
+					'relative mt-4 animate-fade-in-up rounded border bg-background-editor shadow-editor',
+					// Block selection
+					'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
+				)}
+			>
+				<FixedToolbar>
+					<FixedToolbarButtons />
+				</FixedToolbar>
+				<div className="~h-[78vh] flex size-full">
+					<div className="w-full flex-1 bg-background">
+						<div className="flex h-full">
+							<div className="flex w-full">
+								<Editor
+									className="size-full rounded-none px-12 py-5"
+									autoFocus
+									focusRing={false}
+									variant="ghost"
+									size="md"
+								/>
 
-									<FloatingToolbar>
-										<FloatingToolbarButtons />
-									</FloatingToolbar>
+								<FloatingToolbar>
+									<FloatingToolbarButtons />
+								</FloatingToolbar>
 
-									<CursorOverlay containerRef={containerRef} />
-								</div>
-								<Translation translatedContent={content.translation_text} />
+								<CursorOverlay containerRef={containerRef} />
 							</div>
-							<ScrollBar orientation="horizontal" />
-						</ScrollArea>
-						<Sidebar />
+							<Translation translatedContent={content.translation_text} />
+						</div>
+						{/* <ScrollBar orientation="horizontal" /> */}
 					</div>
+					<Sidebar />
 				</div>
-
-				<div className="mt-5 flex items-center justify-center gap-2">
-					<Button
-						variant="outline"
-						size="icon"
-						className="rounded-full"
-						disabled={!content.previous_parent_id}
-						onClick={() => handleEpisodeChange(content.previous_parent_id)}
-					>
-						<CircleArrowLeft />
-					</Button>
-					<Button
-						disabled={!content.next_parent_id}
-						className="rounded-full"
-						size="icon"
-						onClick={() => handleEpisodeChange(content.next_parent_id)}
-					>
-						<CircleArrowRight />
-					</Button>
-					<Button size="icon" variant="ghost">
-						<SeparatorHorizontal />
-					</Button>
-				</div>
-				<FloatingPrompt />
-				<FloatingLaserResponse />
-			</Plate>
-		</DndProvider>
+			</div>
+			<FloatingPrompt />
+			<FloatingLaserResponse />
+		</Plate>
 	)
 }
 
@@ -306,16 +259,6 @@ export const useMyEditor = ({
 				options: {
 					rules: autoformatRules,
 					enableUndoOnDelete: true,
-				},
-			}),
-			DndPlugin.configure({
-				options: {
-					enableScroller: true,
-					onDropFiles: ({ dragItem, editor, target }) => {
-						editor
-							.getTransforms(PlaceholderPlugin)
-							.insert.media(dragItem.files, { at: target, nextBlock: false })
-					},
 				},
 			}),
 			ExitBreakPlugin.configure({
@@ -444,30 +387,27 @@ export const useMyEditor = ({
 			HtmlPlugin,
 		],
 		override: {
-			components: withDraggables(
-				withPlaceholders({
-					[LaserPlugin.key]: LaserLeaf,
-					[FindReplacePlugin.key]: SearchHighlightLeaf,
-					[HorizontalRulePlugin.key]: HrElement,
-					[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
-					[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
-					[HEADING_KEYS.h3]: withProps(HeadingElement, { variant: 'h3' }),
-					[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
-					[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
-					[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
-					[ParagraphPlugin.key]: ParagraphElement,
-					[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
-					[HighlightPlugin.key]: HighlightLeaf,
-					[ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
-					[KbdPlugin.key]: KbdLeaf,
-					[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
-					[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
-					[CommentsPlugin.key]: CommentLeaf,
-					[SuggestionPlugin.key]: SuggestionLeaf,
-					[PromptPlugin.key]: LaserPromptLeaf,
-				}),
-				false
-			),
+			components: withPlaceholders({
+				[LaserPlugin.key]: LaserLeaf,
+				[FindReplacePlugin.key]: SearchHighlightLeaf,
+				[HorizontalRulePlugin.key]: HrElement,
+				[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
+				[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
+				[HEADING_KEYS.h3]: withProps(HeadingElement, { variant: 'h3' }),
+				[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
+				[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
+				[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
+				[ParagraphPlugin.key]: ParagraphElement,
+				[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
+				[HighlightPlugin.key]: HighlightLeaf,
+				[ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
+				[KbdPlugin.key]: KbdLeaf,
+				[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
+				[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
+				[CommentsPlugin.key]: CommentLeaf,
+				[SuggestionPlugin.key]: SuggestionLeaf,
+				[PromptPlugin.key]: LaserPromptLeaf,
+			}),
 		},
 		value:
 			typeof initialValue === 'string'

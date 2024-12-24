@@ -1,5 +1,7 @@
 import { Value } from '@udecode/plate-common'
 
+import { Laser } from './ai-types'
+
 export type PlateStoreData = {
 	activeDiffId: string | null
 	currentDiffValue: Value | null
@@ -7,4 +9,15 @@ export type PlateStoreData = {
 	scale: number
 	sidebar: 'comments' | 'chatbot' | 'outline' | 'far' | 'translation' | null
 	viewMode: boolean
+}
+
+export type LaserStoreType = {
+	active: string | null
+	editorX?: number
+	editorY?: number
+	lasers: Record<string, Laser>
+	promptActive: string | null
+	responseActive: string | null
+	screenY?: number
+	triggerRephrase?: string | null
 }

@@ -1,56 +1,62 @@
 import { aiInitialMessage } from '@/constants/ai-constants'
-import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
-import { immer } from 'zustand/middleware/immer'
 
-import { AIStoreType, EChatMode, TMessage } from '@/types/ai-types'
+import { useEpisodeContext } from '@/providers/episode-id-provider'
 
-const initialState: AIStoreType = {
-	messages: aiInitialMessage,
-	responseValue: null,
-	prevValue: null,
-	acceptedValue: null,
-	requestedAction: null,
-}
+import { AIStoreType, TMessage } from '@/types/ai-types'
 
-const useAIStore = create(devtools(immer(() => initialState)))
+function useAIStore() {
+	const { useAiStoreContext } = useEpisodeContext()
+	const addMessages = (message: TMessage) => {
+		useAiStoreContext.setState((state) => {
+			return { messages: [...state.messages, message] }
+		})
+	}
 
-export const addMessages = (message: TMessage) => {
-	useAIStore.setState((state) => {
-		state.messages.push(message)
-	})
-}
+	const updateMessages = (message: TMessage, index: number) => {
+		useAiStoreContext.setState((state) => {
+			return {
+				messages: state.messages.map((msg, i) => (i === index ? message : msg)),
+			}
+		})
+	}
 
-export const updateMessages = (message: TMessage, index: number) => {
-	useAIStore.setState((state) => {
-		state.messages[index] = message
-	})
-}
+	const popMessage = () => {
+		useAiStoreContext.setState((state) => {
+			return { messages: state.messages.slice(0, -1) }
+		})
+	}
 
-export const popMessage = () => {
-	useAIStore.setState((state) => {
-		state.messages.pop()
-	})
-}
+	const clearMessages = () => {
+		useAiStoreContext.setState({ messages: aiInitialMessage })
+	}
 
-export const clearMessages = () => {
-	useAIStore.setState({ messages: aiInitialMessage })
-}
+	const setResponseValue = (value: AIStoreType['responseValue']) => {
+		useAiStoreContext.setState({ responseValue: value })
+	}
 
-export const setResponseValue = (value: AIStoreType['responseValue']) => {
-	useAIStore.setState({ responseValue: value })
-}
+	const setPrevValue = (value: AIStoreType['prevValue']) => {
+		useAiStoreContext.setState({ prevValue: value })
+	}
 
-export const setPrevValue = (value: AIStoreType['prevValue']) => {
-	useAIStore.setState({ prevValue: value })
-}
+	const setAcceptedValue = (value: AIStoreType['acceptedValue']) => {
+		useAiStoreContext.setState({ acceptedValue: value })
+	}
 
-export const setAcceptedValue = (value: AIStoreType['acceptedValue']) => {
-	useAIStore.setState({ acceptedValue: value })
-}
+	const setRequestedAction = (action: AIStoreType['requestedAction']) => {
+		useAiStoreContext.setState({ requestedAction: action })
+	}
 
-export const setRequestedAction = (requestedAction: EChatMode | null) => {
-	useAIStore.setState({ requestedAction })
+	return {
+		store: useAiStoreContext,
+		addMessages,
+		updateMessages,
+		popMessage,
+		clearMessages,
+		setResponseValue,
+		setPrevValue,
+		setAcceptedValue,
+		setRequestedAction,
+	}
 }
 
 export default useAIStore

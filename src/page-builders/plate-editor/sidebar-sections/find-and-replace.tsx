@@ -42,7 +42,12 @@ import { Toggle } from '@/components/ui/toggle'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn, replaceNthInsensitive } from '@/lib/utils'
 
-import { TLocalizeArrayItem } from '@/types/ai-types'
+import {
+	TLocalizeCharacterArrayItem,
+	TLocalizeConceptArrayItem,
+	TLocalizeObjectArrayItem,
+	TLocalizePlaceArrayItem,
+} from '@/types/ai-types'
 
 const formSchema = z.object({
 	original: z.string(),
@@ -298,9 +303,23 @@ export default function FindAndReplace() {
 		editor.tf.setValue(updatedChildren)
 	}
 
-	function handleSuggestionClick(suggestion: TLocalizeArrayItem) {
+	function handleSuggestionClick(
+		suggestion:
+			| TLocalizeCharacterArrayItem
+			| TLocalizeConceptArrayItem
+			| TLocalizePlaceArrayItem
+			| TLocalizeObjectArrayItem
+	) {
+		const replace =
+			'localized_name' in suggestion
+				? suggestion.localized_name
+				: 'localized_concept' in suggestion
+					? suggestion.localized_concept
+					: 'localized_object' in suggestion
+						? suggestion.localized_object
+						: suggestion.localized_place
 		setOptions({ search: suggestion.name })
-		setOptions({ replace: suggestion.localized_name })
+		setOptions({ replace })
 		setOptions({ replaceEnabled: true })
 		const updatedChildren = structuredClone(children)
 		editor.tf.setValue(updatedChildren)
@@ -332,6 +351,18 @@ export default function FindAndReplace() {
 				? Object.keys(data.concepts).map((key) => {
 						return { ...data.concepts[key], name: key }
 					})
+				: [],
+		[data]
+	)
+
+	const objects = useMemo(
+		() =>
+			data?.objects
+				? Object.keys(data.objects)
+						.map((key) => {
+							return data.objects && { ...data.objects[key], name: key }
+						})
+						.filter((item) => !!item)
 				: [],
 		[data]
 	)
@@ -445,6 +476,22 @@ export default function FindAndReplace() {
 								</Button>
 							))}
 						</div>
+						{data?.objects && (
+							<>
+								<h4 className="pt-2 text-lg font-semibold">Objects</h4>
+								<div className="flex flex-wrap gap-2 pt-1">
+									{objects.map((object, index) => (
+										<Button
+											onClick={() => handleSuggestionClick(object)}
+											key={index}
+											variant="outline"
+										>
+											{object.name}
+										</Button>
+									))}
+								</div>
+							</>
+						)}
 					</div>
 					<Button onClick={() => void refetch()} className="w-fit self-end">
 						Scan the Episode

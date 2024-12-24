@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
-import useCustomPlateStore, { setViewMode } from '@/store/plate-store'
+import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { Eye } from 'lucide-react'
 
@@ -44,7 +44,8 @@ const Versions = ({
 	const queryClient = useQueryClient()
 
 	const { saveEpisodeMutation } = useEpisodeHook()
-	const sidebar = useCustomPlateStore((state) => state.sidebar)
+	const { store, setViewMode } = useCustomPlateStore()
+	const sidebar = store((state) => state.sidebar)
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
@@ -88,6 +89,7 @@ const Versions = ({
 				isChildEpisode ||
 				selectedIndex < latestIndex + Number(isChildEpisode)
 		)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		isChildEpisode,
 		latestIndex,

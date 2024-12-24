@@ -1,5 +1,5 @@
 import React from 'react'
-import usePlateStore, { setScale } from '@/store/plate-store'
+import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { collapseSelection } from '@udecode/plate-common'
 import { focusEditor, useEditorRef } from '@udecode/plate-common/react'
@@ -18,7 +18,8 @@ import { ToolbarButton } from './toolbar'
 const items = [0.5, 0.75, 1, 1.25, 1.5, 2]
 
 export function ZoomDropdownMenu(props: DropdownMenuProps) {
-	const scale = usePlateStore((state) => state.scale)
+	const { store, setScale } = usePlateStore()
+	const scale = store((state) => state.scale)
 	const editor = useEditorRef()
 	const openState = useOpenState()
 
