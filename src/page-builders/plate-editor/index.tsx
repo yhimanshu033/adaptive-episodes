@@ -52,6 +52,7 @@ const ControlButtons = () => {
 					<CircleArrowRight />
 				</Button>
 				<Button
+					disabled={!content.next_parent_id}
 					onClick={() =>
 						void setExtended([...extended, Number(content?.next_parent_id)])
 					}
