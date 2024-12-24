@@ -25,6 +25,10 @@ export const storyChatSuggestions: Array<TStoryChatSuggestion> = [
 		value: 'Quick Prompts 💬',
 		action: EChatMode.PROMPTS,
 	},
+	{
+		value: 'Localise 🌍',
+		action: EChatMode.LOCALIZE,
+	},
 ]
 
 export enum SuggestionActions {

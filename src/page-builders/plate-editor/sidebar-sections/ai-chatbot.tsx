@@ -127,6 +127,9 @@ const AIChatbot = () => {
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
+		if (suggestion.action === EChatMode.LOCALIZE) {
+			return
+		}
 		addMessages({ role: EMessenger.USER, content: suggestion.value })
 		aiChatbotMutation.mutate({
 			episodeNumber: episodeContent?.chapter.seq_number || 0,

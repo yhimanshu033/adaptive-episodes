@@ -70,6 +70,7 @@ export enum EAction {
 
 export enum EChatMode {
 	BLOCK = 'block',
+	LOCALIZE = 'localize',
 	PROMPTS = 'prompts',
 	REVIEW = 'review',
 	SFX = 'sfx',
