@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { TComment } from '@udecode/plate-comments'
 import {
 	nanoid,
@@ -10,6 +11,7 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 import { BASE_STATUS, EStatus, MinifiedValue } from '@/types/common'
+import { TGetMetadataResponse } from '@/types/content-types'
 import { IndexedCommentsResponse, ReviewComment } from '@/types/editor-types'
 import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
 
@@ -115,6 +117,76 @@ export const maxify = (minified: MinifiedValue, children: Value): Value => {
 	}))
 }
 
+export const replaceMatches = (
+	regex: RegExp,
+	matches: RegExpMatchArray,
+	children: Value
+): Value => {
+	const modify = (nodes: TDescendant[]): TDescendant[] => {
+		const newState: TDescendant[] = []
+
+		if (matches[0].startsWith('[!')) {
+			newState.push({
+				text: matches[0].toUpperCase().replaceAll('!', ''),
+				bold: true,
+			})
+			matches.shift()
+		}
+
+		nodes.map((node) => {
+			if ('text' in node) {
+				const fragments = (node.text as string).split(regex)
+
+				let wasSFX = false
+
+				for (const [index, fragment] of fragments.entries()) {
+					if (regex.test(fragment)) {
+						if (matches.length && matches[0].includes('[!')) {
+							newState.push({
+								...node,
+								text: matches[0].toUpperCase().replaceAll('!', ''),
+								bold: true,
+							})
+							wasSFX = true
+						} else if (newState.length) {
+							newState[newState.length - 1].text += fragment
+						} else {
+							newState.push({
+								...node,
+								text: fragment,
+							})
+							wasSFX = false
+						}
+						matches.shift()
+					} else {
+						if (wasSFX || !index || !newState.length) {
+							newState.push({
+								...node,
+								text: fragment,
+							})
+							wasSFX = false
+						} else {
+							newState[newState.length - 1].text += fragment
+						}
+					}
+				}
+			} else if ('children' in node) {
+				newState.push({
+					...node,
+					children: modify(children),
+				})
+			}
+		})
+
+		return newState
+	}
+	const result = children.map((child) => ({
+		...child,
+		children: modify(child.children),
+	}))
+	return result
+}
+
 export function replaceNthInsensitive(
 	str: string,
 	search: string,
@@ -187,6 +259,27 @@ export function clearLasers(ogVal: Value): Value {
 	return val
 }
 
+export function clearComments(ogVal: Value): Value {
+	const val = structuredClone(ogVal)
+	const traverse = (node: TDescendant) => {
+		let hasComments = false
+		for (const key in node) {
+			if (key.startsWith('comment')) {
+				delete node[key]
+				hasComments = true
+			}
+		}
+
+		if (hasComments) {
+			delete node.laser
+		} else if ('children' in node) {
+			void (node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+	val.forEach(traverse)
+	return val
+}
+
 export function mergeElementNodes(ogVal: TElement): TElement {
 	const val = structuredClone(ogVal)
 	const merged: TDescendant[] = []
@@ -235,8 +328,6 @@ export function convertReviewResponse(
 ) {
 	const comments: ReviewComment[] = []
 
-	const responseMap = new Map(response.map((item) => [item.id, item]))
-
 	const applyComment = (
 		nodes: TDescendant[],
 		path: number[]
@@ -246,36 +337,38 @@ export function convertReviewResponse(
 
 			if ('text' in node) {
 				const nodeId = currentPath.join('_')
-				const matchingValue = responseMap.get(nodeId)
+				const { text } = node as { text: string }
+				const segments: TText[] = []
+				let lastIndex = 0
 
-				if (matchingValue) {
+				for (const matchingValue of response) {
+					if (matchingValue.id !== nodeId) continue
 					const { start, end } = matchingValue.path
-					const { text } = node as { text: string }
 
-					const segments: TText[] = []
-
-					if (start > 0) {
-						segments.push({ text: text.slice(0, start) })
+					if (lastIndex < start) {
+						segments.push({ text: text.slice(lastIndex, start) })
 					}
 
 					const commentSegment = {
 						text: text.slice(start, end),
 						comment: true,
 					} as TText
+
 					const id = nanoid()
 					const commentKey = `comment_${id}`
 					commentSegment[commentKey] = true
 					comments.push({ id, text: matchingValue.comment })
+
 					segments.push(commentSegment)
 
-					if (end < text.length) {
-						segments.push({ text: text.slice(end) })
-					}
-
-					return segments
+					lastIndex = end
 				}
 
-				return [node]
+				if (lastIndex < text.length) {
+					segments.push({ text: text.slice(lastIndex) })
+				}
+
+				return segments.length ? segments : [node]
 			} else if ('children' in node) {
 				return [
 					{
@@ -295,4 +388,31 @@ export function convertReviewResponse(
 	}))
 
 	return { value, comments }
+}
+
+export const extractFromMetadata = (
+	metadata: TGetMetadataResponse | null,
+	start: number
+) => {
+	const loglines_array: string[] = []
+	const beatsheets_array: string[] = []
+	let context: string = ''
+
+	if (metadata?.data) {
+		const metadataEntries = Object.values(metadata?.data)
+
+		if (start) {
+			context = metadataEntries[0].context
+		}
+
+		for (const data of Object.values(metadata.data).slice(start ? 1 : 0)) {
+			loglines_array.push(`Ep ${data.loglines}`)
+			beatsheets_array.push(`Ep ${data.beatsheet}`)
+		}
+	}
+	return { loglines_array, beatsheets_array, context }
+}
+
+export const getRandomElement = <T>(arr: T[]): T => {
+	return arr[Math.floor(Math.random() * arr.length)]
 }

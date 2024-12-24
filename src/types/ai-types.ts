@@ -1,5 +1,7 @@
 import { Value } from '@udecode/plate-common'
 
+import { MinifiedValue } from './common'
+
 export interface LaserToolsParams {
 	action: string
 	context?: string
@@ -26,9 +28,11 @@ export interface LaserToolsApiResponse {
 export interface AIChatBotParams {
 	aiChatbotData: {
 		beatsheets_array?: string[]
+		chat_mode?: EChatMode
 		context?: string
 		ep_number?: string
 		ep_text?: string
+		ep_text_json?: MinifiedValue
 		highlighted_text?: string
 		loglines_array?: string[]
 		messages: {
@@ -56,11 +60,26 @@ export enum EMessenger {
 }
 export enum EAction {
 	ACCEPT = 'accept',
+	ADD = 'add',
 	BLOCK = 'block',
 	CHANGES = 'changes',
 	MESSAGE = 'message',
 	REJECT = 'reject',
 	REVIEW = 'review',
+}
+
+export enum EChatMode {
+	BLOCK = 'block',
+	LOCALIZE = 'localize',
+	PROMPTS = 'prompts',
+	REVIEW = 'review',
+	SFX = 'sfx',
+	VOICE = 'voice',
+}
+
+export type TStoryChatSuggestion = {
+	action: EChatMode
+	value: string
 }
 
 export type TMessage =
@@ -77,19 +96,20 @@ export interface AIStoreType {
 	acceptedValue: Value | null
 	messages: TMessage[]
 	prevValue: Value | null
+	requestedAction: EChatMode | null
 	responseValue: Value | null
 }
 
 export interface PlotExplorerParams {
 	action: string
-	beatsheet_array?: Array<string>
-	context?: string
+	beatsheet_array: Array<string>
+	context: string
 	current_ep?: string
 	ep_from: number
 	ep_number: string
 	ep_to: number
 	instruction?: string
-	logline_array?: Array<string>
+	loglines_array: Array<string>
 	mode: string
 	scene_array?: Array<string>
 }

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
-import { usePlateStore } from '@udecode/plate-common/react'
 import { Eye } from 'lucide-react'
 
 import {
@@ -28,27 +28,33 @@ import Spinner from '@/components/ui/spinner'
 import { BASE_STATUS, EStatus } from '@/types/common'
 
 const Versions = ({
+	isChildEpisode,
 	latestStatus,
 	selectedStatus,
 	setSelectedStatus,
 }: {
+	isChildEpisode: boolean
 	latestStatus: EStatus | typeof BASE_STATUS
 	selectedStatus: EStatus | undefined
 	setSelectedStatus: React.Dispatch<React.SetStateAction<EStatus | undefined>>
 }) => {
 	const currentSelection = useRef<EStatus>()
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
-	const setReadOnly = usePlateStore().set.readOnly()
 
 	const queryClient = useQueryClient()
 
 	const { saveEpisodeMutation } = useEpisodeHook()
+	const { store, setViewMode } = useCustomPlateStore()
+	const sidebar = store((state) => state.sidebar)
 
-	const latestIndex =
-		latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0
-	const selectedIndex = selectedStatus
-		? statuses.indexOf(selectedStatus)
-		: latestIndex
+	const latestIndex = useMemo(
+		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
+		[latestStatus]
+	)
+	const selectedIndex = useMemo(
+		() => (selectedStatus ? statuses.indexOf(selectedStatus) : latestIndex),
+		[latestIndex, selectedStatus]
+	)
 
 	const handleSelect = (value: EStatus) => {
 		const currentIndex = statuses.indexOf(value)
@@ -77,12 +83,21 @@ const Versions = ({
 			})
 		}
 	}
-
 	useEffect(() => {
-		if (latestStatus && selectedStatus) {
-			setReadOnly(selectedIndex < latestIndex)
-		}
-	}, [latestIndex, latestStatus, selectedIndex, selectedStatus, setReadOnly])
+		setViewMode(
+			sidebar === 'far' ||
+				isChildEpisode ||
+				selectedIndex < latestIndex + Number(isChildEpisode)
+		)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [
+		isChildEpisode,
+		latestIndex,
+		latestStatus,
+		selectedIndex,
+		selectedStatus,
+		sidebar,
+	])
 
 	if (saveEpisodeMutation.isPending) return <Spinner size={24} />
 
@@ -98,12 +113,14 @@ const Versions = ({
 				<SelectContent>
 					{statuses.map((status, index) => (
 						<SelectItem
-							disabled={index > latestIndex + 1}
+							disabled={index > latestIndex + Number(!isChildEpisode)}
 							key={index}
 							value={status}
 						>
 							{status}
-							{index < latestIndex && <Eye className="ml-2 inline" size={16} />}
+							{index < latestIndex + Number(isChildEpisode) && (
+								<Eye className="ml-2 inline" size={16} />
+							)}
 						</SelectItem>
 					))}
 				</SelectContent>

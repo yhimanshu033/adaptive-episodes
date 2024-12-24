@@ -1,9 +1,34 @@
+import { EChatMode, TStoryChatSuggestion } from '@/types/ai-types'
+
 export const rephraseMethods = [
 	{ id: 'shortenmore', method: '🤏 Shorten' },
 	{ id: 'expand', method: '🤲 Expand' },
 	{ id: 'stylize', method: '🎨 Stylize' },
 	{ id: 'dialog', method: '🗣️ Dialog' },
 	{ id: 'custom', method: '💬 Prompt' },
+]
+
+export const storyChatSuggestions: Array<TStoryChatSuggestion> = [
+	{
+		value: 'Music / SFX 🎶',
+		action: EChatMode.SFX,
+	},
+	{
+		value: 'Voice Pass 🎙️',
+		action: EChatMode.VOICE,
+	},
+	{
+		value: 'Review ✅',
+		action: EChatMode.REVIEW,
+	},
+	{
+		value: 'Quick Prompts 💬',
+		action: EChatMode.PROMPTS,
+	},
+	{
+		value: 'Localise 🌍',
+		action: EChatMode.LOCALIZE,
+	},
 ]
 
 export enum SuggestionActions {

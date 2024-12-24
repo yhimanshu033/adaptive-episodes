@@ -107,7 +107,7 @@ export default function PlateEditor() {
 	const { selectedStatus, setSelectedStatus } = useEpisodeContext()
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content, latestStatus } = useEpisodeContent()
-
+	const isChildEpisode = !!content?.chapter.is_deleted
 	const editor = useMyEditor({
 		content: content?.text || '',
 		comments: content?.chapter.props?.comments,
@@ -127,6 +127,7 @@ export default function PlateEditor() {
 				<div className="flex items-center gap-2">
 					<Versions
 						{...{
+							isChildEpisode,
 							latestStatus,
 							selectedStatus,
 							setSelectedStatus,
@@ -145,7 +146,7 @@ export default function PlateEditor() {
 				)}
 			>
 				<FixedToolbar>
-					<FixedToolbarButtons {...{ selectedStatus, latestStatus }} />
+					<FixedToolbarButtons />
 				</FixedToolbar>
 				<div className="~h-[78vh] flex size-full">
 					<div className="w-full flex-1 bg-background">

@@ -23,6 +23,7 @@ const initialState: PlateStoreData = {
 	scale: 1,
 	activeDiffId: null,
 	currentDiffValue: null,
+	viewMode: false,
 }
 
 const initialAiState: AIStoreType = {
@@ -30,6 +31,7 @@ const initialAiState: AIStoreType = {
 	responseValue: null,
 	prevValue: null,
 	acceptedValue: null,
+	requestedAction: null,
 }
 
 const initialLaserState: LaserStoreType = {

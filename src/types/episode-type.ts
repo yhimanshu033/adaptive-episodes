@@ -34,6 +34,7 @@ export type TEpisode = {
 	create_time: string
 	file_url: string
 	id: number
+	is_deleted: boolean
 	latest_version: number
 	parent: number | null
 	project: number
@@ -46,6 +47,7 @@ export type TEpisode = {
 	seq_number: number
 	status: EStatus | typeof BASE_STATUS
 	translation_url: string | null
+	type: string
 	update_time: string
 	word_count: number
 }

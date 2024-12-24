@@ -24,3 +24,12 @@ export enum LocalizationType {
 	PERSON = 'character',
 	PLACE = 'place',
 }
+
+export const quickPrompts = [
+	'Give me the summary of the episode',
+	'Give me the background of character',
+	'What is the setting of the episode?',
+	'How does the episode end?',
+	'Give me the conflict of the episode',
+	'Give me the resolution of the episode',
+]

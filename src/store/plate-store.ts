@@ -31,6 +31,10 @@ export function usePlateStore() {
 		usePlateStoreContext.setState({ currentDiffValue })
 	}
 
+	const setViewMode = (viewMode: boolean) => {
+		usePlateStoreContext.setState({ viewMode })
+	}
+
 	return {
 		store: usePlateStoreContext,
 		setSidebar,
@@ -38,6 +42,7 @@ export function usePlateStore() {
 		setScale,
 		setActiveDiffId,
 		setCurrentDiffValue,
+		setViewMode,
 	}
 }
 

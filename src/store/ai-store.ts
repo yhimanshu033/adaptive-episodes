@@ -42,6 +42,10 @@ function useAIStore() {
 		useAiStoreContext.setState({ acceptedValue: value })
 	}
 
+	const setRequestedAction = (action: AIStoreType['requestedAction']) => {
+		useAiStoreContext.setState({ requestedAction: action })
+	}
+
 	return {
 		store: useAiStoreContext,
 		addMessages,
@@ -51,6 +55,8 @@ function useAIStore() {
 		setResponseValue,
 		setPrevValue,
 		setAcceptedValue,
+		setRequestedAction,
 	}
 }
+
 export default useAIStore

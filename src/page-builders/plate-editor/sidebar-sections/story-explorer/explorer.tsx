@@ -4,7 +4,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { categories, defaultMode } from '@/constants/story-explorer-constants'
-import { extractFromMetadata } from '@/hooks/mutation/use-aichatbot-hook'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useEditorState } from '@udecode/plate-common/react'
@@ -15,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import useEpisodeId from '@/providers/episode-id-provider'
-import { getText } from '@/lib/utils'
+import { extractFromMetadata, getText } from '@/lib/utils'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
 
@@ -65,19 +64,21 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		if (action === 'summary') {
 			const metadataEntries = Object.values(metadata?.data || {})
 			setContent(
-				metadataEntries.map((data, index) => ({
+				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => ({
 					title: `Episode ${index + start}`,
 					content: data.summary,
 				}))
 			)
 		} else {
-			const extractedData = extractFromMetadata(metadata, start - 1)
+			const { beatsheets_array: beatsheet_array, ...extractedData } =
+				extractFromMetadata(metadata, start - 1)
 			const result = await mutateAsync({
 				action,
 				ep_from: start,
 				ep_to: end,
 				mode: request.mode,
 				ep_number: String(episodeId),
+				beatsheet_array,
 				...extractedData,
 				current_ep: getText(children) || ' ',
 				instruction,
