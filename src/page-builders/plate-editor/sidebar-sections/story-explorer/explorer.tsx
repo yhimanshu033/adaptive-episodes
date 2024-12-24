@@ -64,7 +64,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		if (action === 'summary') {
 			const metadataEntries = Object.values(metadata?.data || {})
 			setContent(
-				metadataEntries.map((data, index) => ({
+				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => ({
 					title: `Episode ${index + start}`,
 					content: data.summary,
 				}))
