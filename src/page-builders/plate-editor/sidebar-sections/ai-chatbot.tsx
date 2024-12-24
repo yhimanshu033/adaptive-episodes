@@ -248,7 +248,7 @@ const AIChatbot = () => {
 	return (
 		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
 			<h1 className="mb-4 text-2xl font-bold">StoryChat</h1>
-			<ScrollArea className="mb-4 h-[55vh] flex-1 rounded-md border px-4 *:py-4">
+			<ScrollArea className="mb-4 h-[70vh] flex-1 rounded-md border px-4 *:py-4">
 				{messages.map((message, index) => (
 					<div
 						key={index}
