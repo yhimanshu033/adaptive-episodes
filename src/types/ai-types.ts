@@ -122,6 +122,11 @@ export type TLocalizePlaceObject = {
 	reason?: string
 }
 
+export type TLocalizeObjectObject = {
+	localized_object: string
+	reason?: string
+}
+
 export type TLocalizeConceptObject = {
 	localized_concept: string
 	reason?: string
@@ -135,14 +140,20 @@ export type TLocalizeConceptArrayItem = TLocalizeConceptObject & {
 	name: string
 }
 
+export type TLocalizeObjectArrayItem = TLocalizeObjectObject & {
+	name: string
+}
+
 export type LocalizeCharacterRecord = Record<string, TLocalizeCharacterObject>
 export type LocalizePlaceRecord = Record<string, TLocalizePlaceObject>
 export type LocalizeConceptRecord = Record<string, TLocalizeConceptObject>
+export type LocalizeObjectRecord = Record<string, TLocalizeObjectObject>
 
 export interface TLocalizeResponse {
 	result: {
 		characters: LocalizeCharacterRecord
 		concepts: LocalizePlaceRecord
+		objects?: LocalizeObjectRecord
 		places: LocalizeConceptRecord
 	}
 	task_id: string
