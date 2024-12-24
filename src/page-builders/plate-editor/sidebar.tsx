@@ -17,18 +17,20 @@ const renderSidebar: Record<string, React.ReactNode> = {
 }
 
 const Sidebar = () => {
-	const sidebar = usePlateStore((state) => state.sidebar)
-	// if (!sidebar || sidebar === "translation") return null
+	const { store } = usePlateStore()
+	const sidebar = store((state) => state.sidebar)
 	const showSidebar = sidebar && sidebar !== 'translation'
 	return (
-		<ScrollArea
+		<div
 			className={cn(
-				'relative h-full flex-1 transition-all duration-200',
+				'sticky top-11 h-fit w-full border-b',
 				!showSidebar ? 'max-w-0' : 'max-w-[45vw]'
 			)}
 		>
-			{sidebar && renderSidebar[sidebar]}
-		</ScrollArea>
+			<ScrollArea className="relative size-full h-[calc(100svh_-_44px)] flex-1 transition-all duration-200">
+				{sidebar && renderSidebar[sidebar]}
+			</ScrollArea>
+		</div>
 	)
 }
 

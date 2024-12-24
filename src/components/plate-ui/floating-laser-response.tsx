@@ -1,10 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import useLaserStore, {
-	setActiveLaser,
-	setLaser,
-	setResponseActive,
-	setTriggerRephrase,
-} from '@/store/laser-store'
+import useLaserStore from '@/store/laser-store'
 import usePlateStore from '@/store/plate-store'
 import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { useEditorRef } from '@udecode/plate-common/react'
@@ -18,14 +13,21 @@ import { cn } from '@/lib/utils'
 
 export default function FloatingLaserResponse() {
 	const {
-		editorY,
+		setActiveLaser,
+		setResponseActive,
+		setTriggerRephrase,
+		setLaser,
+		store: laserStore,
+	} = useLaserStore()
+	const {
 		responseActive,
 		active: activeLaser,
 		lasers: allLasers,
-	} = useLaserStore()
+	} = laserStore()
 	const editor = useEditorRef()
 
-	const { sidebar } = usePlateStore()
+	const { store } = usePlateStore()
+	const { sidebar } = store()
 	const minify = !!sidebar
 
 	const laser =
@@ -38,6 +40,7 @@ export default function FloatingLaserResponse() {
 			if (!activeLaser || !laser) return
 			setLaser({ id: activeLaser, laser: { ...laser, response: val } })
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[activeLaser, laser]
 	)
 
@@ -128,12 +131,12 @@ export default function FloatingLaserResponse() {
 				setActiveLaser(null)
 			}}
 			className={cn(
-				'absolute z-[9999] flex gap-2 rounded-lg bg-popover p-2',
+				'fixed z-[9999] flex gap-2 rounded-lg bg-popover p-2',
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
-				top: (laser.clientY || 0) - (editorY || 0) - 110,
-				left: 48,
+				top: (laser.clientY || 0) - 16,
+				left: 64,
 			}}
 		>
 			<Button

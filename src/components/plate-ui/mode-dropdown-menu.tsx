@@ -32,7 +32,8 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	const openState = useOpenState()
 	const { setOption, getOption } = useEditorPlugin(SuggestionPlugin)
 
-	const sidebar = useCustomPlateStore((state) => state.sidebar)
+	const { store } = useCustomPlateStore()
+	const sidebar = store((state) => state.sidebar)
 
 	useEffect(() => {
 		if (sidebar === 'far') {

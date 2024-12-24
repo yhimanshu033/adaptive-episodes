@@ -2,7 +2,7 @@
 
 import React from 'react'
 import useComments from '@/hooks/plate/use-comments'
-import usePlateStore, { setSidebar } from '@/store/plate-store'
+import usePlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import type { TCommentText } from '@udecode/plate-comments'
 import {
@@ -18,7 +18,8 @@ export function CommentLeaf({
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { children, leaf, nodeProps } = props
 	const { isCommented, set } = useComments()
-	const sidebar = usePlateStore((state) => state.sidebar)
+	const { store, setSidebar } = usePlateStore()
+	const sidebar = store((state) => state.sidebar)
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
 

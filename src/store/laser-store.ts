@@ -1,65 +1,55 @@
-import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
-import { immer } from 'zustand/middleware/immer'
+import { useEpisodeContext } from '@/providers/episode-id-provider'
 
-type Laser = {
-	clientY?: number
-	response: string
-	text: string
-}
-type LaserStoreType = {
-	active: string | null
-	editorX?: number
-	editorY?: number
-	lasers: Record<string, Laser>
-	promptActive: string | null
-	responseActive: string | null
-	screenY?: number
-	triggerRephrase?: string | null
-}
+import { Laser } from '@/types/ai-types'
 
-const initialState: LaserStoreType = {
-	lasers: {},
-	promptActive: null,
-	active: null,
-	responseActive: null,
-}
+function useLaserStore() {
+	const { useLaserContext } = useEpisodeContext()
 
-const useLaserStore = create(
-	devtools(immer<LaserStoreType>(() => initialState))
-)
+	const setLaser = (laser: { id: string; laser: Laser }) => {
+		useLaserContext.setState((state) => {
+			return { lasers: { ...state.lasers, [laser.id]: laser.laser } }
+		})
+	}
 
-export const setLaser = (laser: { id: string; laser: Laser }) => {
-	useLaserStore.setState((state) => {
-		state.lasers[laser.id] = laser.laser
-	})
-}
+	const setActiveLaser = (id: string | null) => {
+		useLaserContext.setState({ active: id })
+	}
 
-export const setActiveLaser = (id: string | null) => {
-	useLaserStore.setState({ active: id })
-}
+	const setPromptActive = (value: string | null) => {
+		useLaserContext.setState({ promptActive: value })
+	}
 
-export const setPromptActive = (value: string | null) => {
-	useLaserStore.setState({ promptActive: value })
-}
+	const getLaser = (id: string) => {
+		return useLaserContext.getState().lasers[id]
+	}
 
-export const getLaser = (id: string) => {
-	return useLaserStore.getState().lasers[id]
-}
+	const setEditorCoords = (x: number, y: number) => {
+		useLaserContext.setState({ editorX: x, editorY: y })
+	}
 
-export const setEditorCoords = (x: number, y: number) => {
-	useLaserStore.setState({ editorX: x, editorY: y })
-}
+	const setTriggerRephrase = (value: string | null) => {
+		useLaserContext.setState({ triggerRephrase: value })
+	}
 
-export const setTriggerRephrase = (value: string | null) => {
-	useLaserStore.setState({ triggerRephrase: value })
+	const setScreenY = (screenY: number) => {
+		useLaserContext.setState({ screenY })
+	}
+
+	const setResponseActive = (responseActive: string | null) => {
+		useLaserContext.setState({ responseActive })
+	}
+
+	return {
+		store: useLaserContext,
+		setLaser,
+		setActiveLaser,
+		setPromptActive,
+		getLaser,
+		setEditorCoords,
+		setTriggerRephrase,
+		setScreenY,
+		setResponseActive,
+	}
 }
 
-export const setScreenY = (screenY: number) => {
-	useLaserStore.setState({ screenY })
-}
-
-export const setResponseActive = (responseActive: string | null) => {
-	useLaserStore.setState({ responseActive })
-}
 export default useLaserStore

@@ -20,7 +20,8 @@ export const SearchHighlightLeaf = ({
 }: PlateLeafProps) => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { children, leaf } = props
-	const sidebar = usePlateStore((state) => state.sidebar)
+	const { store } = usePlateStore()
+	const sidebar = store((state) => state.sidebar)
 	const { useOption, setOption } = useEditorPlugin(FindReplacePlugin)
 	const replaceWith = useOption('replace')
 	const replaceEnabled = useOption('replaceEnabled')

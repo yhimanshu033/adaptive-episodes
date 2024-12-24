@@ -1,10 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { rephraseMethods } from '@/constants/editor-constants'
-import {
-	setActiveLaser,
-	setPromptActive,
-	setScreenY,
-} from '@/store/laser-store'
+import useLaserStore from '@/store/laser-store'
 import { useEditorRef } from '@udecode/plate-common/react'
 import { ArrowLeft } from 'lucide-react'
 import { nanoid } from 'nanoid'
@@ -20,6 +16,7 @@ export default function FloatingLaserBtns({
 }) {
 	const editor = useEditorRef()
 	const [clicked, setClicked] = React.useState(false)
+	const { setActiveLaser, setPromptActive, setScreenY } = useLaserStore()
 	return (
 		!clicked && (
 			<div className="flex items-center">

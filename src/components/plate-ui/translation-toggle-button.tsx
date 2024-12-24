@@ -1,11 +1,12 @@
 import React from 'react'
-import usePlateStore, { setSidebar } from '@/store/plate-store'
+import usePlateStore from '@/store/plate-store'
 import { Book } from 'lucide-react'
 
 import { ToolbarButton } from './toolbar'
 
 export default function TranslationToggleButton() {
-	const sidebar = usePlateStore((state) => state.sidebar)
+	const { store, setSidebar } = usePlateStore()
+	const sidebar = store((state) => state.sidebar)
 	const onTranslation = () => {
 		setSidebar('translation', true)
 	}

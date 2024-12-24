@@ -162,3 +162,9 @@ export interface TLocalizeResponse {
 export interface TLocalizeUpdateRequest {
 	ls_mapping: Record<string, { localized_name: string; type: string }>
 }
+
+export type Laser = {
+	clientY?: number
+	response: string
+	text: string
+}
