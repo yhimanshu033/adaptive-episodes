@@ -165,7 +165,7 @@ const AIChatbot = () => {
 	}
 
 	const handleSFX = (resp: string) => {
-		const matches = resp.match(/((\[.*\])*\n+)+/g)
+		const matches = resp.match(/((\[!.*\])*\n+)+/g)
 		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
 		if (!matches || !hasSFX) {
 			addMessages({
@@ -182,7 +182,7 @@ const AIChatbot = () => {
 			return
 		}
 		const responseValue = structuredClone(children)
-		handleChanges(replaceMatches(/\n{2,}/g, matches, responseValue))
+		handleChanges(replaceMatches(/(\n{2,})/g, matches, responseValue))
 	}
 
 	const handleChanges = (aiResponse: Value) => {

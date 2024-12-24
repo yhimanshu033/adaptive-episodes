@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { TComment } from '@udecode/plate-comments'
 import {
 	nanoid,
@@ -122,24 +123,62 @@ export const replaceMatches = (
 	children: Value
 ): Value => {
 	const modify = (nodes: TDescendant[]): TDescendant[] => {
-		return nodes.map((node) => {
+		const newState: TDescendant[] = []
+
+		if (matches[0].startsWith('[!')) {
+			newState.push({
+				text: matches[0].toUpperCase().replaceAll('!', ''),
+				bold: true,
+			})
+			matches.shift()
+		}
+
+		nodes.map((node) => {
 			if ('text' in node) {
-				const text = (node.text as string).replace(regex, (match) => {
-					const sfx = matches.shift()?.toUpperCase()
-					return sfx || match
-				})
-				return {
-					...node,
-					text,
+				const fragments = (node.text as string).split(regex)
+
+				let wasSFX = false
+
+				for (const [index, fragment] of fragments.entries()) {
+					if (regex.test(fragment)) {
+						if (matches.length && matches[0].includes('[!')) {
+							newState.push({
+								...node,
+								text: matches[0].toUpperCase().replaceAll('!', ''),
+								bold: true,
+							})
+							wasSFX = true
+						} else if (newState.length) {
+							newState[newState.length - 1].text += fragment
+						} else {
+							newState.push({
+								...node,
+								text: fragment,
+							})
+							wasSFX = false
+						}
+						matches.shift()
+					} else {
+						if (wasSFX || !index || !newState.length) {
+							newState.push({
+								...node,
+								text: fragment,
+							})
+							wasSFX = false
+						} else {
+							newState[newState.length - 1].text += fragment
+						}
+					}
 				}
 			} else if ('children' in node) {
-				return {
+				newState.push({
 					...node,
 					children: modify(children),
-				}
+				})
 			}
-			return node
 		})
+
+		return newState
 	}
 	const result = children.map((child) => ({
 		...child,
@@ -359,7 +398,6 @@ export const extractFromMetadata = (
 	const loglines_array: string[] = []
 	const beatsheets_array: string[] = []
 	let context: string = ''
-	let current = start + 1
 
 	if (metadata?.data) {
 		const metadataEntries = Object.values(metadata?.data)
@@ -369,9 +407,8 @@ export const extractFromMetadata = (
 		}
 
 		for (const data of Object.values(metadata.data).slice(start ? 1 : 0)) {
-			loglines_array.push(`Ep${current} ${data.loglines}`)
-			beatsheets_array.push(`Ep${current} ${data.beatsheet}`)
-			current++
+			loglines_array.push(`Ep ${data.loglines}`)
+			beatsheets_array.push(`Ep ${data.beatsheet}`)
 		}
 	}
 	return { loglines_array, beatsheets_array, context }

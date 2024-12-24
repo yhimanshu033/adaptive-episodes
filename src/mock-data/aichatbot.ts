@@ -89,3 +89,133 @@ export const exampleReview: IndexedCommentsResponse[] = [
 		},
 	},
 ]
+
+export const sfx = `EP 1 - Awakened
+
+EP 1 - Erwacht
+
+[!AMBIENT: BUSY HOSPITAL EMERGENCY ROOM]
+[!SFX: HURRIED FOOTSTEPS]
+
+"Ich muss zu Mia Wagner", keuchte Jazz, als sie den Empfang des Krankenhauses erreichte.
+
+Der gelangweilte Angestellte am Anmeldeschalter musterte sie kritisch und überprüfte dann seinen Computer. "Wagner? Sie befindet sich noch im Operationssaal. Du kannst dich aber gerne in den Wartebereich setzen."
+
+"Wie schwer ist sie verletzt?", fragte Jazz mit zitternder Stimme und kämpfte gegen aufsteigende Tränen an.
+
+"Bist du mit ihr verwandt?", erkundigte sich der Pfleger. Dann betrachtete er sie prüfend. "Und benötigst du selbst medizinische Hilfe?" Er deutete auf die Blutflecken auf Jazz' Oberteil.
+
+"Nein, mir geht es gut. Ich glaube nicht, dass es mein eigenes Blut ist", murmelte sie.
+
+[!SFX: APPROACHING FOOTSTEPS]
+
+"Jazz!", rief Max, der auf sie zutrat. Er umarmte sie herzlich. "Wir sitzen dort drüben, komm mit."
+
+Sie drehte sich um und folgte Max. "Wie geht es Mia?"
+
+"Den Umständen entsprechend. Eine Arterie in ihrem Oberschenkel wurde getroffen. Sie hat einen erheblichen Blutverlust erlitten."
+
+[!MUSIC: SOMBER UNDERTONE]
+
+Jazz wurde bleich, während sie Mias Bruder weiter folgte. Sie quälte sich mit Schuldgefühlen. Warum hatte sie Mia überhaupt in die Kirche gehen lassen? "Weiß man schon, wer geschossen hat?"
+
+"Man vermutet ein Attentat. Die genauen Umstände sind noch unklar. Morrell hat ja bekanntlich nicht nur Freunde. Jemand hat von oben durch das Fenster des Kirchturms geschossen, woraufhin sich Simones Leibwächter angegriffen fühlten und ebenfalls das Feuer eröffneten."
+
+"Willst du wirklich so viel Aufregung in deinen letzten fünf Minuten?", fragte er gelassen. Ein leichtes Lächeln umspielte seine Lippen. Es wirkte nicht freundlich, sondern eher wie sadistische Vorfreude.
+
+[!MUSIC: TENSE SUSPENSE]
+
+"Verdammt seist du, Katze", krächzte Simone. "Morrell hat dich bezahlt, nicht wahr?"
+
+Er ließ sich an ihrem Bett nieder. "Normalerweise spreche ich nicht über meine Aufträge. Aber für eine so alte Bekannte mache ich eine Ausnahme. Ja, Morrell hat mich angeheuert. Er wollte dich, deine Weißkragen und Jazz auf der Hochzeit beseitigen."
+
+"Ich ahnte es." Simone lachte bitter. "Das war der einzige Grund, warum er diese lästige Frau heiraten wollte."
+
+[!AMBIENT: QUIET HOSPITAL WAITING ROOM]
+[!SFX: DISTANT HOSPITAL ANNOUNCEMENTS]
+
+Jazz saß angespannt im Wartezimmer mit Mias Familie. "Die können uns doch nicht stundenlang ohne Neuigkeiten hier sitzen lassen", beschwerte sich Ben. "Wir geben den Patienten doch auch immer kurze Zwischenberichte. Besonders bei kritischen Fällen wie jetzt bei Mia."
+[!AMBIENT: HOSPITAL WAITING ROOM]
+
+Max strich seinem Vater mitfühlend über den Rücken. "Ich frage gerne nach."
+
+In diesem Moment betrat ein junger Arzt den Wartebereich. "Wagner?"
+
+[!SFX: FOOTSTEPS APPROACHING]
+
+Ben sprang sofort auf. "Ja, das sind wir. Wie geht es Mia?" Seine Gedanken überschlugen sich. Was würde er tun, wenn er seine Tochter verlöre?
+
+[!AMBIENT: BUSY HOSPITAL RECEPTION]
+[!SFX: HOSPITAL PA SYSTEM]
+
+"Es tut mir sehr leid... Ich muss zu Mia Wagner", keuchte Jazz, als sie den Empfang des Krankenhauses erreichte.
+
+Der gelangweilte Angestellte am Anmeldeschalter musterte sie kritisch und überprüfte dann seinen Computer. "Wagner? Sie befindet sich noch im Operationssaal. Du kannst dich aber gerne in den Wartebereich setzen."
+
+"Wie schwer ist sie verletzt?", fragte Jazz mit zitternder Stimme und kämpfte gegen aufsteigende Tränen an.
+
+"Bist du mit ihr verwandt?", erkundigte sich der Pfleger. Dann betrachtete er sie prüfend. "Und benötigst du selbst medizinische Hilfe?" Er deutete auf die Blutflecken auf Jazz' Oberteil.
+
+"Nein, mir geht es gut. Ich glaube nicht, dass es mein eigenes Blut ist", murmelte sie.
+
+[!SFX: FOOTSTEPS APPROACHING]
+
+"Jazz!", rief Max, der auf sie zutrat. Er umarmte sie herzlich. "Wir sitzen dort drüben, komm mit."
+
+Sie drehte sich um und folgte Max. "Wie geht es Mia?"
+
+"Den Umständen entsprechend. Eine Arterie in ihrem Oberschenkel wurde getroffen. Sie hat einen erheblichen Blutverlust erlitten."
+
+Jazz wurde bleich, während sie Mias Bruder weiter folgte. Sie quälte sich mit Schuldgefühlen. "Weiß man schon, wer geschossen hat?"
+
+"Man vermutet ein Attentat. Die genauen Umstände sind noch unklar. Morrell hat ja bekanntlich nicht nur Freunde. Jemand hat von oben durch das Fenster des Kirchturms geschossen, woraufhin sich Simones Leibwächter angegriffen fühlten und ebenfalls das Feuer eröffneten."
+
+"Hat Simone überlebt?", fragte Jazz besorgt. Nach so einem Vorfall würde sie die ganze Hochzeit sicher als Anschlag interpretieren und möglicherweise Rache an Mia und Morrell üben wollen.
+
+[!AMBIENT: HOSPITAL ROOM]
+[!SFX: HEART MONITOR BEEPING]
+
+Simone lag schwer geschwächt in ihrem Krankenhausbett. Sie hatte eine Bluttransfusion erhalten und atmete schwer, als sie bemerkte, dass jemand ihr Zimmer betrat. Elf Schusswunden zierten ihren Körper, und sie hatte beinahe einen Liter Blut verloren.
+
+[!SFX: DOOR OPENING]
+
+Mit letzter Kraft wandte sie den Kopf leicht zur Seite. Ihre Augen weiteten sich: "Katze?" Natürlich kannte Simone den berüchtigtsten Auftragskiller Europas. Doch sie hatte ihn nicht engagiert.
+
+[!MUSIC: SUSPENSE]
+
+Sie wusste, was sein Besuch bedeutete. Verzweifelt versuchte sie, den Notfallknopf zu erreichen, doch Katze hielt ihre Hand fest, bevor sie ihn drücken konnte.
+
+[!SFX: STRUGGLE SOUNDS]
+[!MUSIC: OMINOUS]
+"Willst du wirklich so viel Aufregung in deinen letzten fünf Minuten?", fragte er gelassen. Ein leichtes Lächeln umspielte seine Lippen. Es wirkte nicht freundlich, sondern eher wie sadistische Vorfreude.
+
+[!SFX: LABORED BREATHING]
+"Verdammt seist du, Katze", krächzte Simone. "Morrell hat dich bezahlt, nicht wahr?"
+
+Er ließ sich an ihrem Bett nieder. "Normalerweise spreche ich nicht über meine Aufträge. Aber für eine so alte Bekannte mache ich eine Ausnahme. Ja, Morrell hat mich angeheuert. Er wollte dich, deine Weißkragen und Jazz auf der Hochzeit beseitigen."
+
+"Ich ahnte es." Simone lachte bitter. "Das war der einzige Grund, warum er diese lästige Frau heiraten wollte."
+
+[!AMBIENT: WAITING ROOM, HOSPITAL]
+[!SFX: MUFFLED CONVERSATIONS, FOOTSTEPS]
+Jazz saß angespannt im Wartezimmer mit Mias Familie. "Die können uns doch nicht stundenlang ohne Neuigkeiten hier sitzen lassen", beschwerte sich Ben. "Wir geben den Patienten doch auch immer kurze Zwischenberichte. Besonders bei kritischen Fällen wie jetzt bei Mia." Max strich seinem Vater mitfühlend über den Rücken. "Ich frage gerne nach."
+
+[!SFX: DOOR OPENING]
+In diesem Moment betrat ein junger Arzt den Wartebereich. "Wagner?"
+
+[!SFX: CHAIR SCRAPING]
+Ben sprang sofort auf. "Ja, das sind wir. Wie geht es Mia?" Seine Gedanken überschlugen sich. Was würde er tun, wenn er seine Tochter verlöre?
+
+[!MUSIC: SOMBER]
+"Es tut mir sehr leid", sagte der Arzt. "Die Operation ist schon seit einiger Zeit beendet, aber Ihre Tochter scheint nicht aufzuwachen. Wir hoffen sehr, dass sie nicht ins Koma fällt, sondern bald zu sich kommt. Sie können sie aber gerne sehen."
+
+[!AMBIENT: HOSPITAL ROOM]
+[!SFX: HEART MONITOR BEEPING]
+Jazz folgte den Wagner-Falkenbergs ins Zimmer. Als sie Mia erblickte, konnte sie sich nicht zurückhalten und eilte an ihr Bett. Sofort ergriff sie ihre Hand und küsste sie. "Mia, wir sind alle hier. Bitte wach auf!"
+
+"Sie hat viel Blut verloren", sagte Ben. "Ihr ganzer Körper steht wahrscheinlich noch unter zu großem Schock." Er musste sich zusammenreißen, um nicht zusammenzubrechen. Obwohl es nicht seine Schuld war, lastete es schwer auf ihm, dass es seine Mutter gewesen war, die Z großgezogen hatte. Ohne sie wäre Simone nie eine Bandenführerin geworden. Max hatte als Kind so viel wegen Z gelitten, und nun war seine Tochter nicht nur von dem Kult entführt, sondern auch lebensgefährlich verletzt worden.
+
+"Wird sie bald aufwachen?", fragte Emma besorgt.
+
+[!MUSIC: TENSE]
+Ben schwieg. Er wollte seine Familie nicht beunruhigen, aber wenn er ehrlich zu sich selbst war, war er sich nicht sicher, ob seine Tochter die Nacht überleben würde. Würde er doch noch ein Kind an den Kult verlieren?`
