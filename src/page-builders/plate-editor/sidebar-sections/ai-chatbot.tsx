@@ -55,6 +55,7 @@ import { TooltipComponent } from '@/components/ui/tooltip-component'
 import {
 	cn,
 	convertReviewResponse,
+	extractBetweenTags,
 	getRandomElement,
 	getText,
 	minify,
@@ -365,7 +366,9 @@ const AIChatbot = () => {
 								<TooltipComponent tooltip={'Copy'}>
 									<Button
 										onClick={() => {
-											void navigator.clipboard.writeText(message.content)
+											void navigator.clipboard.writeText(
+												extractBetweenTags(message.content, 'answer')
+											)
 										}}
 										variant="ghost"
 										className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"

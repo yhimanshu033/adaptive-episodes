@@ -171,10 +171,10 @@ export type LocalizeObjectRecord = Record<string, TLocalizeObjectObject>
 
 export interface TLocalizeResponse {
 	result: {
-		characters: LocalizeCharacterRecord
-		concepts: LocalizePlaceRecord
+		characters?: LocalizeCharacterRecord
+		concepts?: LocalizePlaceRecord
 		objects?: LocalizeObjectRecord
-		places: LocalizeConceptRecord
+		places?: LocalizeConceptRecord
 	}
 	task_id: string
 }

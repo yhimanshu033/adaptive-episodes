@@ -416,3 +416,17 @@ export const extractFromMetadata = (
 export const getRandomElement = <T>(arr: T[]): T => {
 	return arr[Math.floor(Math.random() * arr.length)]
 }
+
+export function extractBetweenTags(input: string, tagName: string): string {
+	const openingTag = `<${tagName}>`
+	const closingTag = `</${tagName}>`
+
+	const startIndex = input.indexOf(openingTag)
+	const endIndex = input.indexOf(closingTag)
+
+	if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) {
+		return input
+	}
+
+	return input.substring(startIndex + openingTag.length, endIndex)
+}

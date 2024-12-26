@@ -115,21 +115,26 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		setActiveLaser(null)
 	}, [setActiveLaser])
 
-	useEffect(() => {
+	function updateLaser() {
 		if (!key) return
 		let laser = getLaser(key)
 		const rect = areaRef.current?.getBoundingClientRect()
-		laser ??= {
-			response: '',
-			text: '',
-			clientY: rect ? rect.top - rect.height : 0,
-		}
+		laser = laser
+			? { ...laser, clientY: rect ? rect.top - rect.height : 0 }
+			: {
+					response: '',
+					text: '',
+					clientY: rect ? rect.top - rect.height : 0,
+				}
 		setLaser({
 			laser: {
 				...laser,
 			},
 			id: key,
 		})
+	}
+	useEffect(() => {
+		updateLaser()
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [key])
 
@@ -186,6 +191,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 				ref={btnRef}
 				onFocus={() => {
 					if (!key) return
+					updateLaser()
 					setActiveLaser(key)
 				}}
 				onBlur={handleBlur}

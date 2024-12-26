@@ -327,30 +327,36 @@ export default function FindAndReplace() {
 
 	const characters = useMemo(
 		() =>
-			data
-				? Object.keys(data.characters).map((key) => {
-						return { ...data.characters[key], name: key }
-					})
+			data?.characters
+				? Object.keys(data.characters)
+						.map((key) => {
+							return data?.characters && { ...data.characters[key], name: key }
+						})
+						.filter((item) => !!item)
 				: [],
 		[data]
 	)
 
 	const places = useMemo(
 		() =>
-			data
-				? Object.keys(data.places).map((key) => {
-						return { ...data.places[key], name: key }
-					})
+			data?.places
+				? Object.keys(data.places)
+						.map((key) => {
+							return data?.places && { ...data.places[key], name: key }
+						})
+						.filter((item) => !!item)
 				: [],
 		[data]
 	)
 
 	const concepts = useMemo(
 		() =>
-			data
-				? Object.keys(data.concepts).map((key) => {
-						return { ...data.concepts[key], name: key }
-					})
+			data?.concepts
+				? Object.keys(data?.concepts)
+						.map((key) => {
+							return data?.concepts && { ...data.concepts[key], name: key }
+						})
+						.filter((item) => !!item)
 				: [],
 		[data]
 	)
