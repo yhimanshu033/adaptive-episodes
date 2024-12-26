@@ -270,7 +270,6 @@ export const useDiffEditor = ({
 		if (!previous || !current) return []
 		return computeDiff(structuredClone(previous), structuredClone(current), {
 			isInline: editor.isInline,
-			lineBreakChar: '¶',
 			getInsertProps,
 			getDeleteProps,
 			getUpdateProps,
