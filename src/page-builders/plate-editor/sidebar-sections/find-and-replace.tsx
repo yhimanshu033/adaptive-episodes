@@ -327,49 +327,49 @@ export default function FindAndReplace() {
 
 	const characters = useMemo(
 		() =>
-			data?.characters
-				? Object.keys(data.characters)
-						.map((key) => {
-							return data?.characters && { ...data.characters[key], name: key }
-						})
-						.filter((item) => !!item)
-				: [],
+			Object.keys(data?.characters || {}).reduce((acc, key) => {
+				const obj = data?.characters?.[key]
+				if (obj) {
+					acc.push({ ...obj, name: key })
+				}
+				return acc
+			}, [] as Array<TLocalizeCharacterArrayItem>),
 		[data]
 	)
 
 	const places = useMemo(
 		() =>
-			data?.places
-				? Object.keys(data.places)
-						.map((key) => {
-							return data?.places && { ...data.places[key], name: key }
-						})
-						.filter((item) => !!item)
-				: [],
+			Object.keys(data?.places || {}).reduce((acc, key) => {
+				const obj = data?.places?.[key]
+				if (obj) {
+					acc.push({ ...obj, name: key })
+				}
+				return acc
+			}, [] as Array<TLocalizePlaceArrayItem>),
 		[data]
 	)
 
 	const concepts = useMemo(
 		() =>
-			data?.concepts
-				? Object.keys(data?.concepts)
-						.map((key) => {
-							return data?.concepts && { ...data.concepts[key], name: key }
-						})
-						.filter((item) => !!item)
-				: [],
+			Object.keys(data?.concepts || {}).reduce((acc, key) => {
+				const obj = data?.concepts?.[key]
+				if (obj) {
+					acc.push({ ...obj, name: key })
+				}
+				return acc
+			}, [] as Array<TLocalizeConceptArrayItem>),
 		[data]
 	)
 
 	const objects = useMemo(
 		() =>
-			data?.objects
-				? Object.keys(data.objects)
-						.map((key) => {
-							return data.objects && { ...data.objects[key], name: key }
-						})
-						.filter((item) => !!item)
-				: [],
+			Object.keys(data?.objects || {}).reduce((acc, key) => {
+				const obj = data?.objects?.[key]
+				if (obj) {
+					acc.push({ ...obj, name: key })
+				}
+				return acc
+			}, [] as Array<TLocalizeObjectArrayItem>),
 		[data]
 	)
 
