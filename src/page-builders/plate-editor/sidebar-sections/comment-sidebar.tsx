@@ -51,6 +51,9 @@ function CommentComponent({
 				role="button"
 				onMouseDown={() => {
 					setActiveComment(comment)
+					const elem = document.getElementById('comment-leaf-' + comment.id)
+					if (!elem) return
+					elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
 				}}
 				className={cn('p-4 hover:bg-[rgba(255,255,255,0.01)]', {
 					'border-b border-b-yellow-600 bg-[rgba(255,255,255,0.01)]':
@@ -106,7 +109,7 @@ export default function CommentSidebar() {
 				)}
 			</div>
 			<Button
-				className="op absolute left-2 top-1 z-50"
+				className="absolute left-2 top-1 z-50"
 				variant={showResolved ? 'default' : 'outline'}
 				size="icon"
 				onClick={() => setResolved(true, true)}

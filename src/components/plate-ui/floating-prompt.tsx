@@ -81,7 +81,7 @@ export default function FloatingPrompt() {
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
-				top: (screenY || 0) + 16,
+				top: Math.min(screenY || 0, 650) + 16,
 				left: 64,
 			}}
 		>

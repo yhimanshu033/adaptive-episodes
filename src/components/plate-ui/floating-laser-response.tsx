@@ -135,7 +135,7 @@ export default function FloatingLaserResponse() {
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
-				top: (laser.clientY || 0) - 16,
+				top: Math.min(laser.clientY || 0, 580) + 24,
 				left: 64,
 			}}
 		>
