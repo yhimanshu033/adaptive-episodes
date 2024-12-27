@@ -442,7 +442,11 @@ const AIChatbot = () => {
 							handleSuggestion(suggestion)
 						}}
 						className="mb-1 mr-2"
-						disabled={!!changesPending || isPending}
+						disabled={
+							!!changesPending ||
+							isPending ||
+							suggestion.action === EChatMode.VOICE
+						}
 					>
 						{suggestion.value}
 					</Button>
