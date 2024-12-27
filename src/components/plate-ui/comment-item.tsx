@@ -19,14 +19,8 @@ type PlateCommentProps = {
 }
 
 function CommentItemContent() {
-	const {
-		comment,
-		commentText,
-		editingValue,
-		isMyComment,
-		isReplyComment,
-		user,
-	} = useCommentItemContentState()
+	const { comment, commentText, editingValue, isReplyComment, user } =
+		useCommentItemContentState()
 
 	return (
 		<div>
@@ -39,13 +33,13 @@ function CommentItemContent() {
 					{formatDistance(comment.createdAt, Date.now())} ago
 				</div>
 
-				{isMyComment && (
+				{
 					<div className="absolute -right-0.5 -top-0.5 flex space-x-1">
 						{isReplyComment ? null : <CommentResolveButton />}
 
 						<CommentMoreDropdown />
 					</div>
-				)}
+				}
 			</div>
 
 			<div className="mb-4 pl-7 pt-0.5">

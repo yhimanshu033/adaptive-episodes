@@ -58,6 +58,7 @@ import {
 	extractBetweenTags,
 	getRandomElement,
 	getText,
+	maxify,
 	minify,
 	replaceMatches,
 } from '@/lib/utils'
@@ -68,6 +69,7 @@ import {
 	EMessenger,
 	TStoryChatSuggestion,
 } from '@/types/ai-types'
+import { MinifiedValue } from '@/types/common'
 import { IndexedCommentsResponse } from '@/types/editor-types'
 
 const AIChatbot = () => {
@@ -299,6 +301,10 @@ const AIChatbot = () => {
 				addReview(JSON.parse(aiResponse as string) as IndexedCommentsResponse[])
 			} else if (requestedAction === EChatMode.SFX) {
 				handleSFX(aiResponse as string)
+			} else if (requestedAction === EChatMode.VOICE) {
+				handleChanges(
+					maxify(JSON.parse(aiResponse as string) as MinifiedValue, children)
+				)
 			} else {
 				handleBlock({ text: aiResponse as string })
 			}
@@ -436,7 +442,11 @@ const AIChatbot = () => {
 							handleSuggestion(suggestion)
 						}}
 						className="mb-1 mr-2"
-						disabled={!!changesPending || isPending}
+						disabled={
+							!!changesPending ||
+							isPending ||
+							suggestion.action === EChatMode.VOICE
+						}
 					>
 						{suggestion.value}
 					</Button>
