@@ -3,7 +3,15 @@
 
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { categories, defaultMode } from '@/constants/story-explorer-constants'
+import {
+	categories,
+	CharacterAction,
+	currentlyDisabled,
+	defaultMode,
+	ExplorerModeId,
+	PlotAction,
+	WorldAction,
+} from '@/constants/story-explorer-constants'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useEditorState } from '@udecode/plate-common/react'
@@ -14,15 +22,19 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import useEpisodeId from '@/providers/episode-id-provider'
-import { extractFromMetadata, getText } from '@/lib/utils'
+import {
+	extractFromMetadata,
+	extractScenesFromBeatsheet,
+	getText,
+} from '@/lib/utils'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
 
 import Content from './content'
 
 export interface RequestState {
-	action: string
-	mode: 'plot' | 'character' | 'world'
+	action: PlotAction | CharacterAction | WorldAction | ''
+	mode: ExplorerModeId
 	name: string
 }
 
@@ -50,7 +62,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	}
 
 	const handleRequest = async (
-		action: string,
+		action: RequestState['action'],
 		name: string,
 		instruction: string = ''
 	) => {
@@ -61,13 +73,27 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 			Math.max(start - 1, 1),
 			end
 		)
-		if (action === 'summary') {
-			const metadataEntries = Object.values(metadata?.data || {})
+		const metadataEntries = Object.values(metadata?.data || {})
+		if (action === PlotAction.Summary) {
 			setContent(
 				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => ({
-					title: `Episode ${index + start}`,
-					content: data.summary,
+					title: `${index + start}. ${data.chapter_title || ''}`,
+					content: [
+						{
+							title: data.loglines,
+							content: `Summary:\n\n${data.summary}`,
+						},
+					],
 				}))
+			)
+		} else if (action === PlotAction.Scenes) {
+			setContent(
+				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => {
+					return {
+						title: `${index + start}. ${data.chapter_title || ''}`,
+						content: extractScenesFromBeatsheet(data.beatsheet),
+					}
+				})
 			)
 		} else {
 			const { beatsheets_array: beatsheet_array, ...extractedData } =
@@ -129,6 +155,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										variant="outline"
 										className="w-48"
 										onClick={() => handleRequest(id, name)}
+										disabled={id === currentlyDisabled}
 									>
 										{name}
 									</Button>
@@ -150,7 +177,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 											<Send
 												className="size-4"
 												onClick={() =>
-													handleRequest('custom', promptInput, promptInput)
+													handleRequest('', promptInput, promptInput)
 												}
 											/>
 										</Button>

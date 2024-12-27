@@ -16,10 +16,10 @@ const SyncMetaData = () => {
 
 	return (
 		<Button
+			tooltip="Click here to update story details with the AI so it can better assist you"
 			variant="outline"
 			className="gap-2"
 			onClick={handleSync}
-			title="Click here to update story details with the AI so it can better assist you"
 		>
 			AI Sync
 			<RefreshCw

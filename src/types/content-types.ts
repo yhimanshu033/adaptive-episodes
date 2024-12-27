@@ -1,5 +1,6 @@
 export type TMetadata = {
 	beatsheet: string
+	chapter_title?: string
 	context: string
 	loglines: string
 	summary: string

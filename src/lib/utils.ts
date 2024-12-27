@@ -430,3 +430,38 @@ export function extractBetweenTags(input: string, tagName: string): string {
 
 	return input.substring(startIndex + openingTag.length, endIndex)
 }
+
+export const extractScenesFromBeatsheet = (beatsheet: string) => {
+	const sceneStart = beatsheet.match(
+		/Szenen\s*\(Version 2\)\s*:|Szenen\s+Breakdown\s*:/
+	)
+
+	if (!sceneStart) {
+		return []
+	}
+
+	const sceneSection = beatsheet
+		.slice(beatsheet.indexOf(sceneStart[0]) + sceneStart[0].length)
+		.trim()
+
+	const nextSectionIndex = sceneSection.search(/(?:Plot\s+Progressions)/)
+
+	const trimmedSceneSection =
+		nextSectionIndex !== -1
+			? sceneSection.slice(0, nextSectionIndex).trim()
+			: sceneSection
+
+	const sceneRegex =
+		/(?:(?:^(INT|EXT|SCENE)\s-\s([^\n]+)[\n\s]+([\s\S]*?))|(?:^\[([^\]]+)\]\s*([\s\S]*?)))(?=^(?:INT|EXT|SCENE|SCENE|\[)|$)/gm
+	const scenes: { content: string; title: string }[] = []
+	let match
+
+	while ((match = sceneRegex.exec(trimmedSceneSection)) !== null) {
+		const title = match[4]?.trim() || `${match[1]} - ${match[2]}`?.trim() || ''
+		const content = match[5]?.trim() || match[3]?.trim() || ''
+
+		scenes.push({ title, content })
+	}
+
+	return scenes
+}

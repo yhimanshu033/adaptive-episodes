@@ -11,6 +11,8 @@ import { ThemeProvider } from 'next-themes'
 import NextTopLoader from 'nextjs-toploader'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
+import { TooltipProvider } from '@/components/plate-ui/tooltip'
+
 const AppProvider = ({
 	session,
 	children,
@@ -43,9 +45,15 @@ const AppProvider = ({
 							enableSystem
 							disableTransitionOnChange
 						>
-							<NextTopLoader />
-							{children}
-							<ReactQueryDevtools />
+							<TooltipProvider
+								disableHoverableContent
+								delayDuration={500}
+								skipDelayDuration={0}
+							>
+								<NextTopLoader />
+								{children}
+								<ReactQueryDevtools />
+							</TooltipProvider>
 						</ThemeProvider>
 					</QueryClientProvider>
 				</SocketProvider>

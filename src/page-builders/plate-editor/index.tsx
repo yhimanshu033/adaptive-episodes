@@ -12,7 +12,6 @@ import {
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
-import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { EpisodeIdProvider } from '@/providers/episode-id-provider'
@@ -35,6 +34,7 @@ const ControlButtons = () => {
 		content && (
 			<div className="mt-5 flex animate-fade-in-up items-center justify-center gap-2">
 				<Button
+					tooltip="Previous Episode"
 					variant="outline"
 					size="icon"
 					className="rounded-full"
@@ -44,6 +44,7 @@ const ControlButtons = () => {
 					<CircleArrowLeft />
 				</Button>
 				<Button
+					tooltip="Next Episode"
 					disabled={!content.next_parent_id}
 					className="rounded-full"
 					size="icon"
@@ -52,6 +53,7 @@ const ControlButtons = () => {
 					<CircleArrowRight />
 				</Button>
 				<Button
+					tooltip="Episode Extension"
 					disabled={!content.next_parent_id}
 					onClick={() =>
 						void setExtended([...extended, Number(content?.next_parent_id)])
@@ -75,13 +77,7 @@ const EditorChild = ({
 }) => {
 	return (
 		<EpisodeIdProvider key={episodeId} episodeId={episodeId}>
-			<TooltipProvider
-				disableHoverableContent
-				delayDuration={500}
-				skipDelayDuration={0}
-			>
-				<PlateEditor />
-			</TooltipProvider>
+			<PlateEditor />
 			{isLast ? <ControlButtons /> : <Separator />}
 		</EpisodeIdProvider>
 	)
