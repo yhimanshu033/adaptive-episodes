@@ -19,7 +19,8 @@ const Title = () => {
 	const readOnly = useEditorReadOnly()
 
 	const handleClick = () => {
-		router.push(`/projects/${String(id)}`)
+		const page = Math.ceil(Number(episodeContent?.chapter.seq_number || 1) / 10)
+		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
 	}
 
 	const updateChapterTitle = (chapter_title: string) => {
