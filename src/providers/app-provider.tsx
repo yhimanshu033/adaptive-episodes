@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { SocketProvider } from '@/hooks/use-socket'
+import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
 import { updateUserData } from '@/store/global-store'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -36,18 +37,20 @@ const AppProvider = ({
 		<SessionProvider session={session}>
 			<NuqsAdapter>
 				<SocketProvider>
-					<QueryClientProvider client={queryClient}>
-						<ThemeProvider
-							attribute="class"
-							defaultTheme="dark"
-							enableSystem
-							disableTransitionOnChange
-						>
-							<NextTopLoader />
-							{children}
-							<ReactQueryDevtools />
-						</ThemeProvider>
-					</QueryClientProvider>
+					<SocketStreamingProvider>
+						<QueryClientProvider client={queryClient}>
+							<ThemeProvider
+								attribute="class"
+								defaultTheme="dark"
+								enableSystem
+								disableTransitionOnChange
+							>
+								<NextTopLoader />
+								{children}
+								<ReactQueryDevtools />
+							</ThemeProvider>
+						</QueryClientProvider>
+					</SocketStreamingProvider>
 				</SocketProvider>
 			</NuqsAdapter>
 		</SessionProvider>
