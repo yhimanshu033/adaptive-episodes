@@ -1,7 +1,8 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import { EpisodeActions } from '@/constants/episodes-constants'
 import { saveContent } from '@/server-action/content-action'
 import {
 	deleteEpisode,
@@ -9,21 +10,27 @@ import {
 	unmergeEpisodes,
 } from '@/server-action/episode-action'
 import { useEpisodeStore } from '@/store/episode-store'
+import { setFullScreenLoading } from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TComment } from '@udecode/plate-comments'
+
+import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisodeMergeParams } from '@/types/episode-type'
 
+import { usePageState } from '../use-page-state'
 import useSocket from '../use-socket'
 
 const useEpisodeHook = () => {
-	const { id, episodeId } = useParams()
+	const { id } = useParams()
+	const episodeId = useEpisodeId()
 	const { startTask, getResponse } = useSocket()
 
 	const queryClient = useQueryClient()
 
-	const { currentPage, episodeSearch } = useEpisodeStore()
+	const { episodeSearch } = useEpisodeStore()
+	const { currentPage } = usePageState()
 
 	const onSuccess = async () => {
 		await queryClient.invalidateQueries({
@@ -39,10 +46,12 @@ const useEpisodeHook = () => {
 			chapterId,
 			chapter_title,
 			comments,
+			prevProps,
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
 			comments?: TComment[]
+			prevProps?: Record<string, unknown>
 			status: EStatus | typeof BASE_STATUS
 			text: string
 		}) => {
@@ -53,6 +62,7 @@ const useEpisodeHook = () => {
 				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
 				chapter_title,
 				props: {
+					...prevProps,
 					comments,
 				},
 			})
@@ -87,34 +97,67 @@ const useEpisodeHook = () => {
 		})
 	}
 
+	const onMetadataSync = async (chapterId: number) => {
+		const taskId = await startTask({
+			method: 'PATCH',
+			url: '/chapters/:chapterId/sync_metadata',
+			urlParams: {
+				chapterId,
+			},
+		})
+		return getResponse(taskId)
+	}
+
 	const saveEpisodeMutation = useMutation({
-		mutationKey: ['save', id, episodeId],
+		mutationKey: [EpisodeActions.UPDATE, id, episodeId],
 		mutationFn: onSaveEpisode,
 	})
 
 	const episodesMergeMutation = useMutation({
-		mutationKey: ['merge', id],
+		mutationKey: [EpisodeActions.MERGE, id],
 		mutationFn: onEpisodeMerge,
 		onSuccess,
 	})
 
 	const episodeUnmergeMutation = useMutation({
-		mutationKey: ['unmerge', id],
+		mutationKey: [EpisodeActions.UNMERGE, id],
 		mutationFn: unmergeEpisodes,
 		onSuccess,
 	})
 
 	const episodeInventMutation = useMutation({
-		mutationKey: ['invent', id],
+		mutationKey: [EpisodeActions.INVENT, id],
 		mutationFn: onEpisodeInvent,
 		onSuccess,
 	})
 
 	const episodeDeleteMutation = useMutation({
-		mutationKey: ['delete', id],
+		mutationKey: [EpisodeActions.DELETE, id],
 		mutationFn: deleteEpisode,
 		onSuccess,
 	})
+
+	const metadataSyncMutation = useMutation({
+		mutationKey: [EpisodeActions.METATDATA, id],
+		mutationFn: onMetadataSync,
+	})
+
+	useEffect(() => {
+		setFullScreenLoading(
+			(saveEpisodeMutation.isPending && !episodeId) ||
+				episodesMergeMutation.isPending ||
+				episodeUnmergeMutation.isPending ||
+				episodeInventMutation.isPending ||
+				episodeDeleteMutation.isPending
+		)
+	}, [
+		episodeDeleteMutation.isPending,
+		episodeId,
+		episodeInventMutation.isPending,
+		episodeUnmergeMutation.isPending,
+		episodesMergeMutation.isPending,
+		saveEpisodeMutation.isPending,
+	])
 
 	return {
 		saveEpisodeMutation,
@@ -122,6 +165,7 @@ const useEpisodeHook = () => {
 		episodeUnmergeMutation,
 		episodeInventMutation,
 		episodeDeleteMutation,
+		metadataSyncMutation,
 	}
 }
 

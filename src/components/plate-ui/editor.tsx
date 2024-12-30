@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import useAIStore from '@/store/ai-store'
-import { setEditorCoords } from '@/store/laser-store'
+import useLaserStore from '@/store/laser-store'
 import useCustomPlateStore from '@/store/plate-store'
-import usePlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import type { PlateContentProps } from '@udecode/plate-common/react'
 import { PlateContent } from '@udecode/plate-common/react'
@@ -10,6 +9,7 @@ import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
 import { useShallow } from 'zustand/react/shallow'
 
+import useEpisodeId from '@/providers/episode-id-provider'
 import DiffView from '@/lib/plate/plugins/diff'
 
 const editorVariants = cva(
@@ -50,7 +50,7 @@ const editorVariants = cva(
 )
 
 export type EditorProps = PlateContentProps &
-	VariantProps<typeof editorVariants>
+	VariantProps<typeof editorVariants> & { isAi?: boolean }
 
 const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 	(
@@ -62,29 +62,39 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			readOnly,
 			size,
 			variant,
+			isAi,
 			...props
 		},
 		ref
 	) => {
-		const scale = useCustomPlateStore((state) => state.scale)
-		const marginLeft = scale < 1 ? (1 - scale) * 50 : 0
+		const { store } = useCustomPlateStore()
+		const scale = store((state) => state.scale)
 		const mihHeight = 100 / scale
+		const minWidth = 100 / scale
 		const contentRef = useRef<HTMLDivElement>(null)
+		const { setEditorCoords } = useLaserStore()
+		const episodeId = useEpisodeId()
 
 		useEffect(() => {
 			if (!contentRef.current) return
 			const rect = contentRef.current?.getBoundingClientRect()
 			if (!rect) return
 			setEditorCoords(rect.x, rect.y)
+			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [contentRef])
 
-		const sidebar = usePlateStore((state) => state.sidebar)
-		const responseValue = useAIStore(useShallow((state) => state.responseValue))
-		const prevValue = useAIStore(useShallow((state) => state.prevValue))
+		const sidebar = store((state) => state.sidebar)
+		const { store: AiStore } = useAIStore()
+		const responseValue = AiStore(useShallow((state) => state.responseValue))
+		const prevValue = AiStore(useShallow((state) => state.prevValue))
 
 		return (
-			<div ref={ref} className="relative w-full">
-				{sidebar === 'chatbot' && responseValue && prevValue ? (
+			<div
+				id={`editor-container-${episodeId}`}
+				ref={ref}
+				className="relative size-full"
+			>
+				{sidebar === 'chatbot' && responseValue && prevValue && !isAi ? (
 					<DiffView
 						current={responseValue}
 						previous={prevValue}
@@ -110,7 +120,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 								variant,
 							}),
 							className,
-							'absolute h-fit origin-top-left'
+							'~absolute h-fit origin-top-left'
 						)}
 						ref={contentRef}
 						readOnly={disabled ?? readOnly}
@@ -119,11 +129,20 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						disableDefaultStyles
 						style={{
 							transform: `scale(${scale})`,
-							marginLeft: `${marginLeft}%`,
 							minHeight: `${mihHeight}%`,
+							width: `${minWidth}%`,
 							...props.style,
 						}}
 						{...props}
+					/>
+				)}
+				{isAi && (
+					<div
+						id="test"
+						style={{
+							height: contentRef.current?.clientHeight,
+							width: contentRef?.current?.clientWidth,
+						}}
 					/>
 				)}
 			</div>

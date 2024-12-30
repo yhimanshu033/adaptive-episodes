@@ -1,10 +1,23 @@
+import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EStatus } from './common'
 
 export type EpisodeStoreState = {
+	alertInfo: {
+		action?: EpisodeActions
+		description: string
+	} | null
+	currentInventIndex: number | null
 	currentPage: number
+	deleteEpisodeId: number | null
 	episodeSearch: string
+	isDialogOpen: boolean
+	isInventOpen: boolean
+	selectedEpisodes: {
+		episodes: TEpisode[]
+		status: EStatus | typeof BASE_STATUS
+	} | null
 }
 
 type TEpisodeProps = {
@@ -21,6 +34,7 @@ export type TEpisode = {
 	create_time: string
 	file_url: string
 	id: number
+	is_deleted: boolean
 	latest_version: number
 	parent: number | null
 	project: number
@@ -34,6 +48,7 @@ export type TEpisode = {
 	seq_number: number
 	status: EStatus | typeof BASE_STATUS
 	translation_url: string | null
+	type: string
 	update_time: string
 	word_count: number
 }
@@ -84,6 +99,9 @@ export type TGetEpisodeDetailsQueryParams = {
 
 export type TEpisodeInventForm = {
 	title: string
+}
+export type TEpisodeSearchForm = {
+	input: string
 }
 
 export type TEpisodeMergeParams = {

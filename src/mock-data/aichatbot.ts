@@ -61,7 +61,7 @@ export const exampleReview: IndexedCommentsResponse[] = [
 		id: '0_0',
 		path: {
 			start: 5,
-			end: 8,
+			end: 13,
 		},
 	},
 	{
@@ -89,3 +89,136 @@ export const exampleReview: IndexedCommentsResponse[] = [
 		},
 	},
 ]
+
+export const sfx = `EP 1 - Awakened
+
+EP 1 - Erwacht
+
+[!AMBIENT: BUSY HOSPITAL EMERGENCY ROOM]
+[!SFX: HURRIED FOOTSTEPS]
+
+"Ich muss zu Mia Wagner", keuchte Jazz, als sie den Empfang des Krankenhauses erreichte.
+
+Der gelangweilte Angestellte am Anmeldeschalter musterte sie kritisch und überprüfte dann seinen Computer. "Wagner? Sie befindet sich noch im Operationssaal. Du kannst dich aber gerne in den Wartebereich setzen."
+
+"Wie schwer ist sie verletzt?", fragte Jazz mit zitternder Stimme und kämpfte gegen aufsteigende Tränen an.
+
+"Bist du mit ihr verwandt?", erkundigte sich der Pfleger. Dann betrachtete er sie prüfend. "Und benötigst du selbst medizinische Hilfe?" Er deutete auf die Blutflecken auf Jazz' Oberteil.
+
+"Nein, mir geht es gut. Ich glaube nicht, dass es mein eigenes Blut ist", murmelte sie.
+
+[!SFX: APPROACHING FOOTSTEPS]
+
+"Jazz!", rief Max, der auf sie zutrat. Er umarmte sie herzlich. "Wir sitzen dort drüben, komm mit."
+
+Sie drehte sich um und folgte Max. "Wie geht es Mia?"
+
+"Den Umständen entsprechend. Eine Arterie in ihrem Oberschenkel wurde getroffen. Sie hat einen erheblichen Blutverlust erlitten."
+
+[!MUSIC: SOMBER UNDERTONE]
+
+Jazz wurde bleich, während sie Mias Bruder weiter folgte. Sie quälte sich mit Schuldgefühlen. Warum hatte sie Mia überhaupt in die Kirche gehen lassen? "Weiß man schon, wer geschossen hat?"
+
+"Man vermutet ein Attentat. Die genauen Umstände sind noch unklar. Morrell hat ja bekanntlich nicht nur Freunde. Jemand hat von oben durch das Fenster des Kirchturms geschossen, woraufhin sich Simones Leibwächter angegriffen fühlten und ebenfalls das Feuer eröffneten."
+
+"Willst du wirklich so viel Aufregung in deinen letzten fünf Minuten?", fragte er gelassen. Ein leichtes Lächeln umspielte seine Lippen. Es wirkte nicht freundlich, sondern eher wie sadistische Vorfreude.
+
+[!MUSIC: TENSE SUSPENSE]
+
+"Verdammt seist du, Katze", krächzte Simone. "Morrell hat dich bezahlt, nicht wahr?"
+
+Er ließ sich an ihrem Bett nieder. "Normalerweise spreche ich nicht über meine Aufträge. Aber für eine so alte Bekannte mache ich eine Ausnahme. Ja, Morrell hat mich angeheuert. Er wollte dich, deine Weißkragen und Jazz auf der Hochzeit beseitigen."
+
+"Ich ahnte es." Simone lachte bitter. "Das war der einzige Grund, warum er diese lästige Frau heiraten wollte."
+
+[!AMBIENT: QUIET HOSPITAL WAITING ROOM]
+[!SFX: DISTANT HOSPITAL ANNOUNCEMENTS]
+
+Jazz saß angespannt im Wartezimmer mit Mias Familie. "Die können uns doch nicht stundenlang ohne Neuigkeiten hier sitzen lassen", beschwerte sich Ben. "Wir geben den Patienten doch auch immer kurze Zwischenberichte. Besonders bei kritischen Fällen wie jetzt bei Mia."
+[!AMBIENT: HOSPITAL WAITING ROOM]
+
+Max strich seinem Vater mitfühlend über den Rücken. "Ich frage gerne nach."
+
+In diesem Moment betrat ein junger Arzt den Wartebereich. "Wagner?"
+
+[!SFX: FOOTSTEPS APPROACHING]
+
+Ben sprang sofort auf. "Ja, das sind wir. Wie geht es Mia?" Seine Gedanken überschlugen sich. Was würde er tun, wenn er seine Tochter verlöre?
+
+[!AMBIENT: BUSY HOSPITAL RECEPTION]
+[!SFX: HOSPITAL PA SYSTEM]
+
+"Es tut mir sehr leid... Ich muss zu Mia Wagner", keuchte Jazz, als sie den Empfang des Krankenhauses erreichte.
+
+Der gelangweilte Angestellte am Anmeldeschalter musterte sie kritisch und überprüfte dann seinen Computer. "Wagner? Sie befindet sich noch im Operationssaal. Du kannst dich aber gerne in den Wartebereich setzen."
+
+"Wie schwer ist sie verletzt?", fragte Jazz mit zitternder Stimme und kämpfte gegen aufsteigende Tränen an.
+
+"Bist du mit ihr verwandt?", erkundigte sich der Pfleger. Dann betrachtete er sie prüfend. "Und benötigst du selbst medizinische Hilfe?" Er deutete auf die Blutflecken auf Jazz' Oberteil.
+
+"Nein, mir geht es gut. Ich glaube nicht, dass es mein eigenes Blut ist", murmelte sie.
+
+[!SFX: FOOTSTEPS APPROACHING]
+
+"Jazz!", rief Max, der auf sie zutrat. Er umarmte sie herzlich. "Wir sitzen dort drüben, komm mit."
+
+Sie drehte sich um und folgte Max. "Wie geht es Mia?"
+
+"Den Umständen entsprechend. Eine Arterie in ihrem Oberschenkel wurde getroffen. Sie hat einen erheblichen Blutverlust erlitten."
+
+Jazz wurde bleich, während sie Mias Bruder weiter folgte. Sie quälte sich mit Schuldgefühlen. "Weiß man schon, wer geschossen hat?"
+
+"Man vermutet ein Attentat. Die genauen Umstände sind noch unklar. Morrell hat ja bekanntlich nicht nur Freunde. Jemand hat von oben durch das Fenster des Kirchturms geschossen, woraufhin sich Simones Leibwächter angegriffen fühlten und ebenfalls das Feuer eröffneten."
+
+"Hat Simone überlebt?", fragte Jazz besorgt. Nach so einem Vorfall würde sie die ganze Hochzeit sicher als Anschlag interpretieren und möglicherweise Rache an Mia und Morrell üben wollen.
+
+[!AMBIENT: HOSPITAL ROOM]
+[!SFX: HEART MONITOR BEEPING]
+
+Simone lag schwer geschwächt in ihrem Krankenhausbett. Sie hatte eine Bluttransfusion erhalten und atmete schwer, als sie bemerkte, dass jemand ihr Zimmer betrat. Elf Schusswunden zierten ihren Körper, und sie hatte beinahe einen Liter Blut verloren.
+
+[!SFX: DOOR OPENING]
+
+Mit letzter Kraft wandte sie den Kopf leicht zur Seite. Ihre Augen weiteten sich: "Katze?" Natürlich kannte Simone den berüchtigtsten Auftragskiller Europas. Doch sie hatte ihn nicht engagiert.
+
+[!MUSIC: SUSPENSE]
+
+Sie wusste, was sein Besuch bedeutete. Verzweifelt versuchte sie, den Notfallknopf zu erreichen, doch Katze hielt ihre Hand fest, bevor sie ihn drücken konnte.
+
+[!SFX: STRUGGLE SOUNDS]
+[!MUSIC: OMINOUS]
+"Willst du wirklich so viel Aufregung in deinen letzten fünf Minuten?", fragte er gelassen. Ein leichtes Lächeln umspielte seine Lippen. Es wirkte nicht freundlich, sondern eher wie sadistische Vorfreude.
+
+[!SFX: LABORED BREATHING]
+"Verdammt seist du, Katze", krächzte Simone. "Morrell hat dich bezahlt, nicht wahr?"
+
+Er ließ sich an ihrem Bett nieder. "Normalerweise spreche ich nicht über meine Aufträge. Aber für eine so alte Bekannte mache ich eine Ausnahme. Ja, Morrell hat mich angeheuert. Er wollte dich, deine Weißkragen und Jazz auf der Hochzeit beseitigen."
+
+"Ich ahnte es." Simone lachte bitter. "Das war der einzige Grund, warum er diese lästige Frau heiraten wollte."
+
+[!AMBIENT: WAITING ROOM, HOSPITAL]
+[!SFX: MUFFLED CONVERSATIONS, FOOTSTEPS]
+Jazz saß angespannt im Wartezimmer mit Mias Familie. "Die können uns doch nicht stundenlang ohne Neuigkeiten hier sitzen lassen", beschwerte sich Ben. "Wir geben den Patienten doch auch immer kurze Zwischenberichte. Besonders bei kritischen Fällen wie jetzt bei Mia." Max strich seinem Vater mitfühlend über den Rücken. "Ich frage gerne nach."
+
+[!SFX: DOOR OPENING]
+In diesem Moment betrat ein junger Arzt den Wartebereich. "Wagner?"
+
+[!SFX: CHAIR SCRAPING]
+Ben sprang sofort auf. "Ja, das sind wir. Wie geht es Mia?" Seine Gedanken überschlugen sich. Was würde er tun, wenn er seine Tochter verlöre?
+
+[!MUSIC: SOMBER]
+"Es tut mir sehr leid", sagte der Arzt. "Die Operation ist schon seit einiger Zeit beendet, aber Ihre Tochter scheint nicht aufzuwachen. Wir hoffen sehr, dass sie nicht ins Koma fällt, sondern bald zu sich kommt. Sie können sie aber gerne sehen."
+
+[!AMBIENT: HOSPITAL ROOM]
+[!SFX: HEART MONITOR BEEPING]
+Jazz folgte den Wagner-Falkenbergs ins Zimmer. Als sie Mia erblickte, konnte sie sich nicht zurückhalten und eilte an ihr Bett. Sofort ergriff sie ihre Hand und küsste sie. "Mia, wir sind alle hier. Bitte wach auf!"
+
+"Sie hat viel Blut verloren", sagte Ben. "Ihr ganzer Körper steht wahrscheinlich noch unter zu großem Schock." Er musste sich zusammenreißen, um nicht zusammenzubrechen. Obwohl es nicht seine Schuld war, lastete es schwer auf ihm, dass es seine Mutter gewesen war, die Z großgezogen hatte. Ohne sie wäre Simone nie eine Bandenführerin geworden. Max hatte als Kind so viel wegen Z gelitten, und nun war seine Tochter nicht nur von dem Kult entführt, sondern auch lebensgefährlich verletzt worden.
+
+"Wird sie bald aufwachen?", fragte Emma besorgt.
+
+[!MUSIC: TENSE]
+Ben schwieg. Er wollte seine Familie nicht beunruhigen, aber wenn er ehrlich zu sich selbst war, war er sich nicht sicher, ob seine Tochter die Nacht überleben würde. Würde er doch noch ein Kind an den Kult verlieren?`
+
+export const voicePass =
+	'[{"id": "0_0", "text": "\\"Stolperort. Die Schikanen geh\\u00f6rten f\\u00fcr ihn zum Alltag, doch sie schmerzten ihn noch immer genauso wie am ersten Tag. Er konnte den Drang nach Vergeltung nicht unterdr\\u00fccken. Er verlangsamte seinen Schritt und hielt inne. Mit einer flie\\u00dfenden Bewegung schob er seine Brille zur\\u00fcck auf den Nasenr\\u00fccken. Schon auf den ersten Blick erkannte man, dass er ein neues Paar ben\\u00f6tigte - die starken Gebrauchsspuren waren un\\u00fcbersehbar. Die Brille sa\\u00df schief auf seinem Gesicht, und sogar die B\\u00fcgel waren notd\\u00fcrftig mit Klebeband umwickelt. Er drehte sich um und zeigte prompt seinen Mittelfinger als Antwort auf die Beleidigung: \\"Ich wette, du kannst nicht einmal z\\u00e4hlen, wie viele Finger ich dir zeige!\\" Als der Junge die Provokation vernahm, ballte er die F\\u00e4uste und st\\u00fcrmte auf Quinn zu. \\"Du Level-1-Abschaum! Wann begreifst du endlich, dass du nicht in diese Welt geh\\u00f6rst?\\" Der Junge f\\u00fchrte beide H\\u00e4nde zusammen, und zwischen ihnen begann sich eine gr\\u00fcne Lichtkugel zu formen. Als er nur noch wenige Meter von Quinn entfernt war, stie\\u00df er seine H\\u00e4nde nach vorn, und ein gr\\u00fcner Strahl schoss aus seinen Handfl\\u00e4chen. Quinn sah keine Fluchtm\\u00f6glichkeit, und der Lichtstrahl war zu schnell, um ihm auszuweichen. Er wusste, dass er die Z\\u00e4hne zusammenbei\\u00dfen und den Schmerz ertragen musste. Als das Licht ihn traf, hob es seinen K\\u00f6rper in die Luft und schleuderte ihn r\\u00fccklings gegen die Wand am Ende des Korridors. \\"Was geht hier vor?\\", fragte ein Sch\\u00fcler aus der Menge. \\"Pr\\u00fcgeln die sich etwa am letzten Schultag?\\" Binnen Sekunden bildete sich eine Menschentraube, neugierig, was der Aufruhr zu bedeuten hatte. Eine der Sch\\u00fclerinnen eilte zu dem besch\\u00e4digten Teil der Wand, um nach dem Wohlergehen des angegriffenen Sch\\u00fclers zu sehen. Als sich der Staub legte, kam Quinns leicht gelocktes schwarzes Haar langsam zum Vorschein. Nachdem sich der Rauch schlie\\u00dflich verzogen hatte, erkannte die Sch\\u00fclerin endlich, wer es war. Sie wich augenblicklich zur\\u00fcck und ging weiter ihres Weges, als w\\u00e4re nichts geschehen. In dem Moment, als die Sch\\u00fclerin zu ihren Freunden zur\\u00fcckkehrte, sah er, wie sie \\u00fcber sie lachten.\\""}, {"id": "0_1", "text": "\\"Ich fasse es nicht, dass du versucht hast, ihm zu helfen.\\""}, {"id": "0_2", "text": "\\"Ich habe nicht gesehen, wer es war\\", erwiderte das M\\u00e4dchen mit ger\\u00f6teten Wangen. Daraufhin erhob sich Quinn und hob seine Brille auf, die zu Boden gefallen war. Zu seinem Entsetzen war eines der Scharniere erneut abgebrochen. Anstatt das abgenutzte Paar zu tragen, lie\\u00df er es an seiner Hand baumeln."}, {"id": "0_3", "text": "\\"Verdammt. Nicht schon wieder...\\""}, {"id": "0_4", "text": "Es war Quinns letzter Schultag, daher hatte er gehofft, dass niemand etwas gegen ihn unternehmen w\\u00fcrde. Er hatte die Nase voll von ihrem Verhalten, aber er war auch nicht der Typ, der es einfach hinnahm. Er hatte Mitsch\\u00fcler gesehen, die den Kopf eingezogen und die Schikanen ertragen hatten. Allerdings war deren Behandlung weitaus schlimmer als das, was er erlebte. Er machte sich nicht die M\\u00fche, wie die anderen Sch\\u00fcler in der Schule zu bleiben. Er hob seine kaputte Brille auf und verlie\\u00df das Geb\\u00e4ude. Im Vorbeigehen sah er, wie die Sch\\u00fcler in ihren Gruppen miteinander redeten. Einige lachten, w\\u00e4hrend andere Tr\\u00e4nen in den Augen hatten und dachten, es sei das letzte Mal, dass sie sich jemals wiedersehen w\\u00fcrden. Quinn geh\\u00f6rte jedoch nicht dazu und wollte es auch nicht. Die Cliquen w\\u00fcrden ihn ohnehin nicht willkommen hei\\u00dfen. Er war und blieb der Au\\u00dfenseiter. Als er endlich zu Hause ankam, machte er sich unverz\\u00fcglich an die Arbeit. Seine Einzimmerwohnung bot gerade genug Platz f\\u00fcr ein schmales Bett und einen Schreibtisch, was ihm v\\u00f6llig ausreichte. An der Wand hing ein Fernseher, den Quinn jedoch lediglich als Ger\\u00e4uschkulisse nutzte, ohne dem Programm wirkliche Aufmerksamkeit zu schenken. Die Regierung stellte ihm die Wohnung zur Verf\\u00fcgung, da er als Sechzehnj\\u00e4hriger keine lebenden Verwandten mehr hatte. Auf seinem Bett lag ein einzelner Koffer, in dem all seine Habseligkeiten ordentlich verstaut waren. Zielstrebig ging er zu einem Schrank und zog eine Schublade auf, in der sich ein einziges Buch befand. Es war ein gro\\u00dfer und schwerer Foliant, gebunden und etwa ein halbes Kilogramm schwer. Der Einband hatte die Farbe von hellem Blut. In der Mitte prangten die einsamen Vorderseiten eines oberen und unteren Kieferknochens, beide in einem sumpfigen Braunton gehalten. Der Oberkiefer wies vier separate Rei\\u00dfz\\u00e4hne auf, w\\u00e4hrend der Unterkiefer zwei scharfe Z\\u00e4hne an den \\u00e4u\\u00dferen Enden und f\\u00fcnf gleichm\\u00e4\\u00dfig verteilte Z\\u00e4hne darunter besa\\u00df. \\"Lass es uns heute erneut versuchen\\", murmelte Quinn, als er das Buch anhob und auf den Schreibtisch legte. Rasch holte er aus seiner Tasche ein kleines Reagenzglas, das zur H\\u00e4lfte mit einer farblosen Fl\\u00fcssigkeit gef\\u00fcllt war. \\"Test Nummer 112, Salzs\\u00e4ure. Mal sehen, wie es diesmal l\\u00e4uft.\\" Dann begann er behutsam, die Fl\\u00fcssigkeit aus dem Reagenzglas auf das Buch zu tr\\u00e4ufeln. \\"Bisher keine Reaktion erkennbar.\\" Er fuhr fort, den gesamten Inhalt des Reagenzglases \\u00fcber das Buch zu gie\\u00dfen, doch am Ende seines Experiments zeigte sich keinerlei Ver\\u00e4nderung. Sorgf\\u00e4ltig untersuchte er das Buch und notierte die Ergebnisse in seinem Notizbuch. Er suchte akribisch nach m\\u00f6glichen Sch\\u00e4den, doch das Buch sah aus wie eh und je. \\"Wieder ein Fehlschlag.\\""}, {"id": "0_5", "text": "\\"Warum \\u00f6ffnest du dich nicht? Weshalb besa\\u00dfen Mum und Dad \\u00fcberhaupt dieses merkw\\u00fcrdige Ding?\\""}, {"id": "0_6", "text": "Einhundertzw\\u00f6lf Mal - Das war die Anzahl der verschiedenen Methoden, mit denen Quinn versucht hatte, das Buch zu \\u00f6ffnen. Es \\u00f6ffnete sich nicht nur nicht, es schien auch, als sei es v\\u00f6llig unverw\\u00fcstbar. Er hatte sogar versucht, es zu verbrennen, zu zerschneiden und zu schmelzen, doch nichts hatte gegen das scheinbar unzerst\\u00f6rbare Buch auch nur den geringsten Effekt gezeigt. Auf seinem Bett liegend schaltete er den Fernseher zu seinem einzigen Zweck ein: um Hintergrundger\\u00e4usche zu erzeugen. Er achtete nie wirklich darauf, was gesendet wurde. Der Klang anderer Stimmen lie\\u00df ihn sich lediglich weniger einsam f\\u00fchlen. Beim Einschalten zeigte der Bildschirm eine laufende Nachrichtensendung. \\"Der Friedensvertrag mit der Dalki-Rasse besteht nun seit f\\u00fcnf Jahren, doch Regierungsvertreter warnen, dass die Spannungen erneut zunehmen. Wir m\\u00fcssen uns m\\u00f6glicherweise auf einen weiteren Krieg vorbereiten...\\" Die Erw\\u00e4hnung von Krieg war seit jenem schicksalhaften Tag vor drei\\u00dfig Jahren allgegenw\\u00e4rtig im Fernsehen. Die Menschheit hatte unerwarteten Besuch von den sogenannten Dalki erhalten. Sie besa\\u00dfen den K\\u00f6rperbau von Menschen, abgesehen von ihrer mit Schuppen \\u00fcbers\\u00e4ten Haut und dem Vorhandensein von Schw\\u00e4nzen, die denen von Drachen glichen. Ohne erkennbaren Grund f\\u00fcr ihr pl\\u00f6tzliches Erscheinen forderten sie umgehend, dass die Menschheit ihre Ressourcen aush\\u00e4ndigt und sich als Sklaven zur Verf\\u00fcgung stellt. Nat\\u00fcrlich beschlossen die Menschen, sich zu wehren, mussten jedoch rasch feststellen, dass ihre moderne Technologie gegen die Eindringlinge wirkungslos war. Kugeln vermochten deren Haut nicht zu durchdringen, und was Panzer betraf - nun, die Dalki verf\\u00fcgten \\u00fcber Luftschiffe. Jeder Einzelne, ungeachtet des Geschlechts, wurde aufgerufen, f\\u00fcr den Planeten zu k\\u00e4mpfen, und dazu geh\\u00f6rten auch Quinns Eltern. Der Krieg zog sich \\u00fcber Jahre hin, sodass er aufwuchs, ohne je das Antlitz seiner Eltern gesehen zu haben. Als die Menschheit kurz vor der Niederlage stand, trat eine auserw\\u00e4hlte Gruppe von Menschen hervor - Individuen mit au\\u00dfergew\\u00f6hnlichen F\\u00e4higkeiten. Sie begannen, ihr Wissen dar\\u00fcber zu teilen, wie sie solche Kr\\u00e4fte erlangt hatten, in der Hoffnung, das Blatt im Krieg zu wenden. Gl\\u00fccklicherweise zeigte ihre Strategie Wirkung. Dennoch blieben die Dalki eine m\\u00e4chtige Bedrohung, und eine scheinbar endlose Pattsituation f\\u00fchrte vor f\\u00fcnf Jahren zur Unterzeichnung des Friedensvertrags. Doch die menschliche Gier obsiegte, und anstatt diese Kr\\u00e4fte mit allen zu teilen, beschlossen die hochrangigen Regierungsbeamten, sie f\\u00fcr sich zu behalten. Nur jene mit finanziellen Mitteln konnten die m\\u00e4chtigeren F\\u00e4higkeiten erlernen, w\\u00e4hrend der Rest der Bev\\u00f6lkerung mit den \\u00dcberbleibseln vorlieb nehmen musste. Es war eine notwendige Ma\\u00dfnahme. Armut hatte die Welt im Griff, doch nun besa\\u00dfen die Menschen Kr\\u00e4fte und nutzten sie unkontrolliert, anders als zuvor. Quinn erhielt nichts, als seine Eltern starben. Die Regierung erkl\\u00e4rte sich bereit, f\\u00fcr seinen Lebensunterhalt aufzukommen, solange er die Schule besuchte, doch das war alles. Als seine Eltern verstarben und er zehn Jahre alt war, erschien ein Agent an seiner T\\u00fcrschwelle und \\u00fcberreichte ihm ein Buch. Man teilte ihm mit, es sei das Einzige, was seine Eltern besessen h\\u00e4tten - etwas, das sie bei ihrem Tod weitergegeben hatten. \\"Warum ist die Welt nur so ungerecht?\\", murmelte er und haderte mit seinem Schicksal. Er erhob sich von seinem Bett und schlenderte zu seinem Schreibtisch. Er nahm seine leicht besch\\u00e4digte Brille und beschloss, sie zu reparieren. Er bemerkte, dass eines der Gl\\u00e4ser etwas verrutscht war, und versuchte, es zur\\u00fcck in den Rahmen zu dr\\u00fccken. \\"Komm schon! Geh endlich rein!\\", rief er, w\\u00e4hrend er versuchte, die Brille mit Gewalt zu reparieren. Die aufgestaute Frustration spiegelte sich in seinem Gesicht wider, als er w\\u00fctend mit dem Glas rang. Ungl\\u00fccklicherweise zerbrach das Glas pl\\u00f6tzlich in St\\u00fccke, und einer der Plastiksplitter f\\u00fcgte ihm sogar einen tiefen Schnitt am Daumen zu. Er schrie auf und trat gegen den Tisch."}, {"id": "0_7", "text": "\\"Warum hasst mich die Welt?\\""}, {"id": "0_8", "text": "\\"Ich fasse es nicht, dass du versucht hast, ihm zu helfen.\\""}, {"id": "0_9", "text": "\\"Ich habe nicht gesehen, wer es war\\", erwiderte das M\\u00e4dchen mit ger\\u00f6teten Wangen. Quinn erhob sich und hob seine zu Boden gefallene Brille auf. Zu seinem Entsetzen war eines der Scharniere erneut abgebrochen. Anstatt das abgenutzte Paar zu tragen, lie\\u00df er es an seiner Hand baumeln. \\"Verdammt. Nicht schon wieder...\\" An seinem letzten Schultag hatte Quinn gehofft, dass niemand etwas gegen ihn unternehmen w\\u00fcrde. Er hatte die Nase voll von ihrem Verhalten, war aber auch nicht der Typ, der es einfach hinnahm. Er hatte Mitsch\\u00fcler beobachtet, die den Kopf eingezogen und die Schikanen ertragen hatten. Deren Behandlung war allerdings weitaus schlimmer als das, was er erlebte. Er blieb nicht wie die anderen Sch\\u00fcler in der Schule. Er nahm seine kaputte Brille und verlie\\u00df das Geb\\u00e4ude. Im Vorbeigehen sah er, wie die Sch\\u00fcler in ihren Gruppen miteinander redeten. Einige lachten, w\\u00e4hrend andere Tr\\u00e4nen in den Augen hatten und dachten, es sei das letzte Mal, dass sie sich jemals wiedersehen w\\u00fcrden. Quinn geh\\u00f6rte jedoch nicht dazu und wollte es auch nicht. Die Cliquen w\\u00fcrden ihn ohnehin nicht willkommen hei\\u00dfen. Er war und blieb der Au\\u00dfenseiter. Zu Hause angekommen, machte er sich unverz\\u00fcglich an die Arbeit. Seine Einzimmerwohnung bot gerade genug Platz f\\u00fcr ein schmales Bett und einen Schreibtisch, was ihm v\\u00f6llig ausreichte. An der Wand hing ein Fernseher, den Quinn jedoch lediglich als Ger\\u00e4uschkulisse nutzte, ohne dem Programm wirkliche Aufmerksamkeit zu schenken. Die Regierung stellte ihm die Wohnung zur Verf\\u00fcgung, da er als Sechzehnj\\u00e4hriger keine lebenden Verwandten mehr hatte. Auf seinem Bett lag ein einzelner Koffer, in dem er all seine Habseligkeiten ordentlich verstaut hatte. Zielstrebig ging er zu einem Schrank und zog eine Schublade auf, in der sich ein einziges Buch befand. Es war ein gro\\u00dfer und schwerer Foliant, gebunden und etwa ein halbes Kilogramm schwer. Der Einband hatte die Farbe von hellem Blut. In der Mitte prangten die einsamen Vorderseiten eines oberen und unteren Kieferknochens, beide in einem sumpfigen Braunton gehalten. Der Oberkiefer wies vier separate Rei\\u00dfz\\u00e4hne auf, w\\u00e4hrend der Unterkiefer zwei scharfe Z\\u00e4hne an den \\u00e4u\\u00dferen Enden und f\\u00fcnf gleichm\\u00e4\\u00dfig verteilte Z\\u00e4hne darunter besa\\u00df. \\"Lass es uns heute erneut versuchen\\", murmelte Quinn, als er das Buch anhob und auf den Schreibtisch legte. Rasch holte er aus seiner Tasche ein kleines Reagenzglas, das zur H\\u00e4lfte mit einer farblosen Fl\\u00fcssigkeit gef\\u00fcllt war. \\"Test Nummer 112, Salzs\\u00e4ure. Mal sehen, wie es diesmal l\\u00e4uft.\\" Dann begann er behutsam, die Fl\\u00fcssigkeit aus dem Reagenzglas auf das Buch zu tr\\u00e4ufeln. \\"Bisher keine Reaktion erkennbar.\\" Er fuhr fort, den gesamten Inhalt des Reagenzglases \\u00fcber das Buch zu gie\\u00dfen, doch am Ende seines Experiments zeigte sich keinerlei Ver\\u00e4nderung. Sorgf\\u00e4ltig untersuchte er das Buch und notierte die Ergebnisse in seinem Notizbuch. Er suchte akribisch nach m\\u00f6glichen Sch\\u00e4den, doch das Buch sah aus wie eh und je. \\"Wieder ein Fehlschlag. Warum \\u00f6ffnest du dich nicht? Weshalb besa\\u00dfen Mum und Dad \\u00fcberhaupt dieses merkw\\u00fcrdige Ding?\\" Einhundertzw\\u00f6lf Mal - Das war die Anzahl der verschiedenen Methoden, mit denen Quinn versucht hatte, das Buch zu \\u00f6ffnen. Es \\u00f6ffnete sich nicht nur nicht, es schien auch, als sei es v\\u00f6llig unverw\\u00fcstbar. Er hatte sogar versucht, es zu verbrennen, zu zerschneiden und zu schmelzen, doch nichts hatte gegen das scheinbar unzerst\\u00f6rbare Buch auch nur den geringsten Effekt gezeigt. Auf seinem Bett liegend schaltete er den Fernseher zu seinem einzigen Zweck ein: um Hintergrundger\\u00e4usche zu erzeugen. Er achtete nie wirklich darauf, was gesendet wurde. Der Klang anderer Stimmen lie\\u00df ihn sich lediglich weniger einsam f\\u00fchlen. Beim Einschalten zeigte der Bildschirm eine laufende Nachrichtensendung."}, {"id": "0_10", "text": "\\"Der Friedensvertrag mit der Dalki-Rasse besteht nun seit f\\u00fcnf Jahren, doch Regierungsvertreter warnen, dass die Spannungen erneut zunehmen. Wir m\\u00fcssen uns m\\u00f6glicherweise auf einen weiteren Krieg vorbereiten...\\""}, {"id": "0_11", "text": "Die Erw\\u00e4hnung von Krieg war seit jenem schicksalhaften Tag vor drei\\u00dfig Jahren allgegenw\\u00e4rtig im Fernsehen. Die Menschheit hatte unerwarteten Besuch von den sogenannten Dalki erhalten. Sie besa\\u00dfen den K\\u00f6rperbau von Menschen, abgesehen von ihrer mit Schuppen \\u00fcbers\\u00e4ten Haut und dem Vorhandensein von Schw\\u00e4nzen, die denen von Drachen glichen. Ohne erkennbaren Grund f\\u00fcr ihr pl\\u00f6tzliches Erscheinen forderten sie umgehend, dass die Menschheit ihre Ressourcen aush\\u00e4ndigt und sich als Sklaven zur Verf\\u00fcgung stellt. Nat\\u00fcrlich beschlossen die Menschen, sich zu wehren, mussten jedoch rasch feststellen, dass ihre moderne Technologie gegen die Eindringlinge wirkungslos war. Kugeln vermochten deren Haut nicht zu durchdringen, und was Panzer betraf - nun, die Dalki verf\\u00fcgten \\u00fcber Luftschiffe. Jeder Einzelne, ungeachtet des Geschlechts, wurde aufgerufen, f\\u00fcr den Planeten zu k\\u00e4mpfen, und dazu geh\\u00f6rten auch Quinns Eltern. Der Krieg zog sich \\u00fcber Jahre hin, sodass er aufwuchs, ohne je das Antlitz seiner Eltern gesehen zu haben. Als die Menschheit kurz vor der Niederlage stand, trat eine auserw\\u00e4hlte Gruppe von Menschen hervor - Individuen mit au\\u00dfergew\\u00f6hnlichen F\\u00e4higkeiten. Sie begannen, ihr Wissen dar\\u00fcber zu teilen, wie sie solche Kr\\u00e4fte erlangt hatten, in der Hoffnung, das Blatt im Krieg zu wenden. Gl\\u00fccklicherweise zeigte ihre Strategie Wirkung. Dennoch blieben die Dalki eine m\\u00e4chtige Bedrohung, und eine scheinbar endlose Pattsituation f\\u00fchrte vor f\\u00fcnf Jahren zur Unterzeichnung des Friedensvertrags. Doch die menschliche Gier obsiegte, und anstatt diese Kr\\u00e4fte mit allen zu teilen, beschlossen die hochrangigen Regierungsbeamten, sie f\\u00fcr sich zu behalten. Nur jene mit finanziellen Mitteln konnten die m\\u00e4chtigeren F\\u00e4higkeiten erlernen, w\\u00e4hrend der Rest der Bev\\u00f6lkerung mit den \\u00dcberbleibseln vorlieb nehmen musste. Es war eine notwendige Ma\\u00dfnahme. Armut hatte die Welt im Griff, doch nun besa\\u00dfen die Menschen Kr\\u00e4fte und nutzten sie unkontrolliert, anders als zuvor. Quinn erhielt nichts, als seine Eltern starben. Die Regierung erkl\\u00e4rte sich bereit, f\\u00fcr seinen Lebensunterhalt aufzukommen, solange er die Schule besuchte, doch das war alles. Als seine Eltern verstarben und er zehn Jahre alt war, erschien ein Agent an seiner T\\u00fcrschwelle und \\u00fcberreichte ihm ein Buch. Man teilte ihm mit, es sei das Einzige, was seine Eltern besessen h\\u00e4tten - etwas, das sie bei ihrem Tod weitergegeben hatten. \\"Warum ist die Welt nur so ungerecht?\\", murmelte er und haderte mit seinem Schicksal. Er erhob sich von seinem Bett und schlenderte zu seinem Schreibtisch. Er nahm seine leicht besch\\u00e4digte Brille und beschloss, sie zu reparieren. Er bemerkte, dass eines der Gl\\u00e4ser etwas verrutscht war, und versuchte, es zur\\u00fcck in den Rahmen zu dr\\u00fccken. \\"Komm schon! Geh endlich rein!\\", rief er, w\\u00e4hrend er versuchte, die Brille mit Gewalt zu reparieren. Die aufgestaute Frustration spiegelte sich in seinem Gesicht wider, als er w\\u00fctend mit dem Glas rang. Ungl\\u00fccklicherweise zerbrach das Glas pl\\u00f6tzlich in St\\u00fccke, und einer der Plastiksplitter f\\u00fcgte ihm sogar einen tiefen Schnitt am Daumen zu. Er schrie auf und trat gegen den Tisch."}, {"id": "0_12", "text": "\\"Warum hasst mich die Welt?\\""}, {"id": "0_13", "text": "Nach einer Weile beruhigte er sich und begann, die kleinen Glasscherben aufzusammeln. Dabei bemerkte er, dass ein St\\u00fcck auf seinem Buch gelandet war. Als Quinn das Glasst\\u00fcck entfernte, fiel ein Tropfen Blut von seinem Daumen auf das Buch. Das Objekt in der Mitte des Buches begann zu leuchten, und pl\\u00f6tzlich erhob sich das Buch in die Luft, bis es auf Augenh\\u00f6he mit Quinn schwebte. Quinn wich erschrocken zur\\u00fcck. Das Leuchten des Buches lie\\u00df sein Zimmer mit dem kleinen Bett in der Ecke und dem einsamen Stuhl daneben noch karger erscheinen. \\"Was zum Teufel geht hier vor?\\" Das Buch begann, ein blendendes Licht auszustrahlen, w\\u00e4hrend es unkontrolliert zitterte. Wenige Sekunden sp\\u00e4ter \\u00f6ffnete es sich endlich, Seite um Seite wurde umgebl\\u00e4ttert. Quinn konnte seinen Blick nicht von dem leuchtenden Buch abwenden - es war, als bef\\u00e4nde er sich in einer tiefen Trance. Die Worte, die auf den Seiten des Buches geschrieben standen, waren in keiner Sprache, die er je zuvor gesehen hatte. Dennoch sp\\u00fcrte er aus irgendeinem Grund, dass er sie verstehen konnte. Als das Buch seine letzte Seite erreichte, begann es zu verschwinden und verwandelte sich allm\\u00e4hlich in Staub. Gleichzeitig f\\u00fchlte sich sein K\\u00f6rper pl\\u00f6tzlich kraftlos. Quinns Sicht begann zu verschwimmen, und seine Augen fielen zu. Doch kurz bevor er das Bewusstsein verlor, vernahm er eine einzige Botschaft. <Herzlichen Gl\\u00fcckwunsch, dir wurde das Va.... gew\\u00e4hrt> Unf\\u00e4hig, lange genug bei Bewusstsein zu bleiben, um die letzten Worte zu h\\u00f6ren, sank Quinn schlie\\u00dflich in die Bewusstlosigkeit."}]'

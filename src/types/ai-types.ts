@@ -1,4 +1,13 @@
+import {
+	CharacterAction,
+	ExplorerMode,
+	ExplorerModeId,
+	PlotAction,
+	WorldAction,
+} from '@/constants/story-explorer-constants'
 import { Value } from '@udecode/plate-common'
+
+import { MinifiedValue } from './common'
 
 export interface LaserToolsParams {
 	action: string
@@ -26,9 +35,11 @@ export interface LaserToolsApiResponse {
 export interface AIChatBotParams {
 	aiChatbotData: {
 		beatsheets_array?: string[]
+		chat_mode?: EChatMode
 		context?: string
 		ep_number?: string
 		ep_text?: string
+		ep_text_json?: MinifiedValue
 		highlighted_text?: string
 		loglines_array?: string[]
 		messages: {
@@ -56,10 +67,26 @@ export enum EMessenger {
 }
 export enum EAction {
 	ACCEPT = 'accept',
+	ADD = 'add',
+	BLOCK = 'block',
 	CHANGES = 'changes',
 	MESSAGE = 'message',
 	REJECT = 'reject',
 	REVIEW = 'review',
+}
+
+export enum EChatMode {
+	BLOCK = 'block',
+	LOCALIZE = 'localize',
+	PROMPTS = 'prompts',
+	REVIEW = 'review',
+	SFX = 'sfx',
+	VOICE = 'voice',
+}
+
+export type TStoryChatSuggestion = {
+	action: EChatMode
+	value: string
 }
 
 export type TMessage =
@@ -76,19 +103,20 @@ export interface AIStoreType {
 	acceptedValue: Value | null
 	messages: TMessage[]
 	prevValue: Value | null
+	requestedAction: EChatMode | null
 	responseValue: Value | null
 }
 
 export interface PlotExplorerParams {
 	action: string
-	beatsheet_array?: Array<string>
-	context?: string
+	beatsheet_array: Array<string>
+	context: string
 	current_ep?: string
 	ep_from: number
 	ep_number: string
 	ep_to: number
 	instruction?: string
-	logline_array?: Array<string>
+	loglines_array: Array<string>
 	mode: string
 	scene_array?: Array<string>
 }
@@ -97,6 +125,15 @@ export interface ExplorerType {
 	content: string | ExplorerType[]
 	title: string
 }
+
+export type ExplorerCategories = Array<{
+	action: Array<{
+		id: PlotAction | CharacterAction | WorldAction
+		name: string
+	}>
+	id: ExplorerModeId
+	mode: ExplorerMode
+}>
 
 export interface PlotExplorerApiResponse {
 	data: ExplorerType[]
@@ -111,20 +148,59 @@ export interface TAiChatbotResponse {
 	message: string
 }
 
-export type TLocalizeObject = {
+export type TLocalizeCharacterObject = {
 	localized_name: string
-	reason: string
+	reason?: string
 }
 
-export type TLocalizeArrayItem = TLocalizeObject & { name: string }
+export type TLocalizePlaceObject = {
+	localized_place: string
+	reason?: string
+}
 
-export type LocalizeRecord = Record<string, TLocalizeObject>
+export type TLocalizeObjectObject = {
+	localized_object: string
+	reason?: string
+}
+
+export type TLocalizeConceptObject = {
+	localized_concept: string
+	reason?: string
+}
+
+export type TLocalizeCharacterArrayItem = TLocalizeCharacterObject & {
+	name: string
+}
+export type TLocalizePlaceArrayItem = TLocalizePlaceObject & { name: string }
+export type TLocalizeConceptArrayItem = TLocalizeConceptObject & {
+	name: string
+}
+
+export type TLocalizeObjectArrayItem = TLocalizeObjectObject & {
+	name: string
+}
+
+export type LocalizeCharacterRecord = Record<string, TLocalizeCharacterObject>
+export type LocalizePlaceRecord = Record<string, TLocalizePlaceObject>
+export type LocalizeConceptRecord = Record<string, TLocalizeConceptObject>
+export type LocalizeObjectRecord = Record<string, TLocalizeObjectObject>
 
 export interface TLocalizeResponse {
 	result: {
-		characters: LocalizeRecord
-		concepts: LocalizeRecord
-		places: LocalizeRecord
+		characters?: LocalizeCharacterRecord
+		concepts?: LocalizeConceptRecord
+		objects?: LocalizeObjectRecord
+		places?: LocalizePlaceRecord
 	}
 	task_id: string
+}
+
+export interface TLocalizeUpdateRequest {
+	ls_mapping: Record<string, { localized_name: string; type: string }>
+}
+
+export type Laser = {
+	clientY?: number
+	response: string
+	text: string
 }

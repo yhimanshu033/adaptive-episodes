@@ -19,7 +19,7 @@ import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 import { TNoParams } from '@/types/common'
 
 export const useSocketUtil = () => {
-	const socketUrl = process.env.NEXT_PUBLIC_SOCKET_BASE_URL || ''
+	const socketUrl = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 	const [socket] = useState(() =>
 		io(socketUrl, {
 			autoConnect: false,

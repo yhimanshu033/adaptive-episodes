@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import useLocalizeHook from '@/hooks/mutation/use-localize-hook'
+import { LocalizationType } from '@/constants/ai-constants'
+import useLocalizeHook, {
+	useLocalizeMutation,
+} from '@/hooks/mutation/use-localize-hook'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
 	useEditorPlugin,
 	useEditorRef,
@@ -14,16 +18,157 @@ import {
 	ReplaceAllIcon,
 	ReplaceIcon,
 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
 import { Toggle } from '@/components/ui/toggle'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn, replaceNthInsensitive } from '@/lib/utils'
 
-import { TLocalizeArrayItem } from '@/types/ai-types'
+import {
+	TLocalizeCharacterArrayItem,
+	TLocalizeConceptArrayItem,
+	TLocalizeObjectArrayItem,
+	TLocalizePlaceArrayItem,
+} from '@/types/ai-types'
+
+const formSchema = z.object({
+	original: z.string(),
+	replace_with: z.string(),
+	type: z.string(),
+})
+
+const types: (keyof typeof LocalizationType)[] = ['PERSON', 'PLACE', 'CONCEPT']
+
+function AddForm() {
+	const { mutate, isPending } = useLocalizeMutation()
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			original: '',
+			replace_with: '',
+			type: types[0],
+		},
+	})
+
+	function onSubmit(values: z.infer<typeof formSchema>) {
+		try {
+			mutate({
+				ls_mapping: {
+					[values.original]: {
+						type: LocalizationType[
+							values.type as keyof typeof LocalizationType
+						],
+						localized_name: values.replace_with,
+					},
+				},
+			})
+		} catch (error) {
+			console.error('Form submission error', error)
+		}
+	}
+
+	return (
+		<Form {...form}>
+			<form
+				onSubmit={(e) => {
+					void form.handleSubmit(onSubmit)(e)
+				}}
+				className="space-y-4 pb-6"
+			>
+				<div className="flex w-full items-center justify-between">
+					<h2 className="text-lg font-bold">Add to sheet</h2>
+					<FormField
+						control={form.control}
+						name="type"
+						render={({ field }) => (
+							<FormItem>
+								<Select
+									onValueChange={field.onChange}
+									defaultValue={field.value}
+								>
+									<FormControl>
+										<SelectTrigger>
+											<SelectValue placeholder="Select a type" />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>
+										{types.map((type, idx) => (
+											<SelectItem key={idx} value={type}>
+												{type}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+				<div className="grid grid-cols-[4fr_4fr_1fr] gap-4">
+					<FormField
+						control={form.control}
+						name="original"
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										placeholder="Original"
+										type="text"
+										className="flex-1 rounded border border-gray-300 p-2"
+										{...field}
+									/>
+								</FormControl>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="replace_with"
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										placeholder="Replace with"
+										type="text"
+										className="flex-1 rounded border border-gray-300 p-2"
+										{...field}
+									/>
+								</FormControl>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<Button disabled={isPending} type="submit">
+						Submit
+					</Button>
+				</div>
+			</form>
+		</Form>
+	)
+}
 
 export default function FindAndReplace() {
 	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
@@ -158,9 +303,23 @@ export default function FindAndReplace() {
 		editor.tf.setValue(updatedChildren)
 	}
 
-	function handleSuggestionClick(suggestion: TLocalizeArrayItem) {
+	function handleSuggestionClick(
+		suggestion:
+			| TLocalizeCharacterArrayItem
+			| TLocalizeConceptArrayItem
+			| TLocalizePlaceArrayItem
+			| TLocalizeObjectArrayItem
+	) {
+		const replace =
+			'localized_name' in suggestion
+				? suggestion.localized_name
+				: 'localized_concept' in suggestion
+					? suggestion.localized_concept
+					: 'localized_object' in suggestion
+						? suggestion.localized_object
+						: suggestion.localized_place
 		setOptions({ search: suggestion.name })
-		setOptions({ replace: suggestion.localized_name })
+		setOptions({ replace })
 		setOptions({ replaceEnabled: true })
 		const updatedChildren = structuredClone(children)
 		editor.tf.setValue(updatedChildren)
@@ -168,36 +327,54 @@ export default function FindAndReplace() {
 
 	const characters = useMemo(
 		() =>
-			data
-				? Object.keys(data.characters).map((key) => {
-						return { ...data.characters[key], name: key }
-					})
-				: [],
+			Object.keys(data?.characters || {}).reduce((acc, key) => {
+				const obj = data?.characters?.[key]
+				if (obj) {
+					acc.push({ ...obj, name: key })
+				}
+				return acc
+			}, [] as Array<TLocalizeCharacterArrayItem>),
 		[data]
 	)
 
 	const places = useMemo(
 		() =>
-			data
-				? Object.keys(data.places).map((key) => {
-						return { ...data.places[key], name: key }
-					})
-				: [],
+			Object.keys(data?.places || {}).reduce((acc, key) => {
+				const obj = data?.places?.[key]
+				if (obj) {
+					acc.push({ ...obj, name: key })
+				}
+				return acc
+			}, [] as Array<TLocalizePlaceArrayItem>),
 		[data]
 	)
 
 	const concepts = useMemo(
 		() =>
-			data
-				? Object.keys(data.concepts).map((key) => {
-						return { ...data.concepts[key], name: key }
-					})
-				: [],
+			Object.keys(data?.concepts || {}).reduce((acc, key) => {
+				const obj = data?.concepts?.[key]
+				if (obj) {
+					acc.push({ ...obj, name: key })
+				}
+				return acc
+			}, [] as Array<TLocalizeConceptArrayItem>),
+		[data]
+	)
+
+	const objects = useMemo(
+		() =>
+			Object.keys(data?.objects || {}).reduce((acc, key) => {
+				const obj = data?.objects?.[key]
+				if (obj) {
+					acc.push({ ...obj, name: key })
+				}
+				return acc
+			}, [] as Array<TLocalizeObjectArrayItem>),
 		[data]
 	)
 
 	return (
-		<div className="flex h-[58vh] flex-col gap-4 p-4">
+		<div className="flex h-full flex-col gap-4 p-4">
 			<h2 className="text-2xl font-bold">Localization</h2>
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
 				<Toggle onClick={toggleReplace} aria-label="Toggle replace">
@@ -263,54 +440,84 @@ export default function FindAndReplace() {
 				</div>
 			) : (
 				<>
-					<ScrollArea
+					<div
 						className={cn(
-							'flex h-full flex-col overflow-y-auto',
-							replaceEnabled ? '~h-[30vh]' : '~h-[37vh]'
+							'flex h-full flex-col'
+							// replaceEnabled ? '~h-[30vh]' : '~h-[37vh]'
 						)}
 					>
-						<h4 className="text-lg font-semibold">Characters</h4>
-						<div className="flex flex-wrap gap-2 pt-1">
-							{characters.map((character, index) => (
-								<Button
-									onClick={() => handleSuggestionClick(character)}
-									key={index}
-									variant="outline"
-								>
-									{character.name}
-								</Button>
-							))}
-						</div>
-						<h4 className="pt-2 text-lg font-semibold">Places</h4>
-						<div className="flex flex-wrap gap-2 pt-1">
-							{places.map((place, index) => (
-								<Button
-									onClick={() => handleSuggestionClick(place)}
-									key={index}
-									variant="outline"
-								>
-									{place.name}
-								</Button>
-							))}
-						</div>
-						<h4 className="pt-2 text-lg font-semibold">Concepts</h4>
-						<div className="flex flex-wrap gap-2 pt-1">
-							{concepts.map((concept, index) => (
-								<Button
-									onClick={() => handleSuggestionClick(concept)}
-									key={index}
-									variant="outline"
-								>
-									{concept.name}
-								</Button>
-							))}
-						</div>
-					</ScrollArea>
+						{!!characters.length && (
+							<>
+								<h4 className="text-lg font-semibold">Characters</h4>
+								<div className="flex flex-wrap gap-2 pt-1">
+									{characters.map((character, index) => (
+										<Button
+											onClick={() => handleSuggestionClick(character)}
+											key={index}
+											variant="outline"
+										>
+											{character.name}
+										</Button>
+									))}
+								</div>
+							</>
+						)}
+						{!!places.length && (
+							<>
+								<h4 className="pt-2 text-lg font-semibold">Places</h4>
+								<div className="flex flex-wrap gap-2 pt-1">
+									{places.map((place, index) => (
+										<Button
+											onClick={() => handleSuggestionClick(place)}
+											key={index}
+											variant="outline"
+										>
+											{place.name}
+										</Button>
+									))}
+								</div>
+							</>
+						)}
+						{!!concepts.length && (
+							<>
+								<h4 className="pt-2 text-lg font-semibold">Concepts</h4>
+								<div className="flex flex-wrap gap-2 pt-1">
+									{concepts.map((concept, index) => (
+										<Button
+											onClick={() => handleSuggestionClick(concept)}
+											key={index}
+											variant="outline"
+										>
+											{concept.name}
+										</Button>
+									))}
+								</div>
+							</>
+						)}
+						{!!objects.length && (
+							<>
+								<h4 className="pt-2 text-lg font-semibold">Objects</h4>
+								<div className="flex flex-wrap gap-2 pt-1">
+									{objects.map((object, index) => (
+										<Button
+											onClick={() => handleSuggestionClick(object)}
+											key={index}
+											variant="outline"
+										>
+											{object.name}
+										</Button>
+									))}
+								</div>
+							</>
+						)}
+					</div>
 					<Button onClick={() => void refetch()} className="w-fit self-end">
 						Scan the Episode
 					</Button>
 				</>
 			)}
+			<hr />
+			<AddForm />
 		</div>
 	)
 }

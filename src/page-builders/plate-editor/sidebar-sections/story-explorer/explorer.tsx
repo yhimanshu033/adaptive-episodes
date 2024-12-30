@@ -3,8 +3,15 @@
 
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { categories, defaultMode } from '@/constants/story-explorer-constants'
-import { extractFromMetadata } from '@/hooks/mutation/use-aichatbot-hook'
+import {
+	categories,
+	CharacterAction,
+	currentlyDisabled,
+	defaultMode,
+	ExplorerModeId,
+	PlotAction,
+	WorldAction,
+} from '@/constants/story-explorer-constants'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useEditorState } from '@udecode/plate-common/react'
@@ -14,20 +21,26 @@ import { Loader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { getText } from '@/lib/utils'
+import useEpisodeId from '@/providers/episode-id-provider'
+import {
+	extractFromMetadata,
+	extractScenesFromBeatsheet,
+	getText,
+} from '@/lib/utils'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
 
 import Content from './content'
 
 export interface RequestState {
-	action: string
-	mode: 'plot' | 'character' | 'world'
+	action: PlotAction | CharacterAction | WorldAction | ''
+	mode: ExplorerModeId
 	name: string
 }
 
 const Explorer = ({ start, end }: { end: number; start: number }) => {
-	const { id, episodeId } = useParams()
+	const { id } = useParams()
+	const episodeId = useEpisodeId()
 	const [content, setContent] = useState<PlotExplorerApiResponse['data']>([])
 	const [promptInput, setPromptInput] = useState<string>('')
 	const [isLoading, setLoading] = useState<boolean>(false)
@@ -49,7 +62,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	}
 
 	const handleRequest = async (
-		action: string,
+		action: RequestState['action'],
 		name: string,
 		instruction: string = ''
 	) => {
@@ -60,22 +73,38 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 			Math.max(start - 1, 1),
 			end
 		)
-		if (action === 'summary') {
-			const metadataEntries = Object.values(metadata?.data || {})
+		const metadataEntries = Object.values(metadata?.data || {})
+		if (action === PlotAction.Summary) {
 			setContent(
-				metadataEntries.map((data, index) => ({
-					title: `Episode ${index + start}`,
-					content: data.loglines,
+				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => ({
+					title: `${index + start}. ${data.chapter_title || ''}`,
+					content: [
+						{
+							title: data.loglines,
+							content: `Summary:\n\n${data.summary}`,
+						},
+					],
 				}))
 			)
+		} else if (action === PlotAction.Scenes) {
+			setContent(
+				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => {
+					return {
+						title: `${index + start}. ${data.chapter_title || ''}`,
+						content: extractScenesFromBeatsheet(data.beatsheet),
+					}
+				})
+			)
 		} else {
-			const extractedData = extractFromMetadata(metadata, start - 1)
+			const { beatsheets_array: beatsheet_array, ...extractedData } =
+				extractFromMetadata(metadata, start - 1)
 			const result = await mutateAsync({
 				action,
 				ep_from: start,
 				ep_to: end,
 				mode: request.mode,
-				ep_number: episodeId as string,
+				ep_number: String(episodeId),
+				beatsheet_array,
 				...extractedData,
 				current_ep: getText(children) || ' ',
 				instruction,
@@ -126,6 +155,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										variant="outline"
 										className="w-48"
 										onClick={() => handleRequest(id, name)}
+										disabled={id === currentlyDisabled}
 									>
 										{name}
 									</Button>
@@ -147,7 +177,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 											<Send
 												className="size-4"
 												onClick={() =>
-													handleRequest('custom', promptInput, promptInput)
+													handleRequest('', promptInput, promptInput)
 												}
 											/>
 										</Button>

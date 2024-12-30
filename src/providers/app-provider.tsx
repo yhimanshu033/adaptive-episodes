@@ -9,6 +9,9 @@ import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import NextTopLoader from 'nextjs-toploader'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
+
+import { TooltipProvider } from '@/components/plate-ui/tooltip'
 
 const AppProvider = ({
 	session,
@@ -33,20 +36,28 @@ const AppProvider = ({
 
 	return (
 		<SessionProvider session={session}>
-			<SocketProvider>
-				<QueryClientProvider client={queryClient}>
-					<ThemeProvider
-						attribute="class"
-						defaultTheme="dark"
-						enableSystem
-						disableTransitionOnChange
-					>
-						<NextTopLoader />
-						{children}
-						<ReactQueryDevtools />
-					</ThemeProvider>
-				</QueryClientProvider>
-			</SocketProvider>
+			<NuqsAdapter>
+				<SocketProvider>
+					<QueryClientProvider client={queryClient}>
+						<ThemeProvider
+							attribute="class"
+							defaultTheme="dark"
+							enableSystem
+							disableTransitionOnChange
+						>
+							<TooltipProvider
+								disableHoverableContent
+								delayDuration={500}
+								skipDelayDuration={0}
+							>
+								<NextTopLoader />
+								{children}
+								<ReactQueryDevtools />
+							</TooltipProvider>
+						</ThemeProvider>
+					</QueryClientProvider>
+				</SocketProvider>
+			</NuqsAdapter>
 		</SessionProvider>
 	)
 }

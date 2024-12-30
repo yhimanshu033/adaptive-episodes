@@ -1,44 +1,62 @@
 import { aiInitialMessage } from '@/constants/ai-constants'
-import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
-import { immer } from 'zustand/middleware/immer'
+
+import { useEpisodeContext } from '@/providers/episode-id-provider'
 
 import { AIStoreType, TMessage } from '@/types/ai-types'
 
-const initialState: AIStoreType = {
-	messages: aiInitialMessage,
-	responseValue: null,
-	prevValue: null,
-	acceptedValue: null,
+function useAIStore() {
+	const { useAiStoreContext } = useEpisodeContext()
+	const addMessages = (message: TMessage) => {
+		useAiStoreContext.setState((state) => {
+			return { messages: [...state.messages, message] }
+		})
+	}
+
+	const updateMessages = (message: TMessage, index: number) => {
+		useAiStoreContext.setState((state) => {
+			return {
+				messages: state.messages.map((msg, i) => (i === index ? message : msg)),
+			}
+		})
+	}
+
+	const popMessage = () => {
+		useAiStoreContext.setState((state) => {
+			return { messages: state.messages.slice(0, -1) }
+		})
+	}
+
+	const clearMessages = () => {
+		useAiStoreContext.setState({ messages: aiInitialMessage })
+	}
+
+	const setResponseValue = (value: AIStoreType['responseValue']) => {
+		useAiStoreContext.setState({ responseValue: value })
+	}
+
+	const setPrevValue = (value: AIStoreType['prevValue']) => {
+		useAiStoreContext.setState({ prevValue: value })
+	}
+
+	const setAcceptedValue = (value: AIStoreType['acceptedValue']) => {
+		useAiStoreContext.setState({ acceptedValue: value })
+	}
+
+	const setRequestedAction = (action: AIStoreType['requestedAction']) => {
+		useAiStoreContext.setState({ requestedAction: action })
+	}
+
+	return {
+		store: useAiStoreContext,
+		addMessages,
+		updateMessages,
+		popMessage,
+		clearMessages,
+		setResponseValue,
+		setPrevValue,
+		setAcceptedValue,
+		setRequestedAction,
+	}
 }
 
-const useAIStore = create(devtools(immer(() => initialState)))
-
-export const addMessages = (message: TMessage) => {
-	useAIStore.setState((state) => {
-		state.messages.push(message)
-	})
-}
-
-export const updateMessages = (message: TMessage, index: number) => {
-	useAIStore.setState((state) => {
-		state.messages[index] = message
-	})
-}
-
-export const clearMessages = () => {
-	useAIStore.setState({ messages: aiInitialMessage })
-}
-
-export const setResponseValue = (value: AIStoreType['responseValue']) => {
-	useAIStore.setState({ responseValue: value })
-}
-
-export const setPrevValue = (value: AIStoreType['prevValue']) => {
-	useAIStore.setState({ prevValue: value })
-}
-
-export const setAcceptedValue = (value: AIStoreType['acceptedValue']) => {
-	useAIStore.setState({ acceptedValue: value })
-}
 export default useAIStore

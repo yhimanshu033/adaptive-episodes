@@ -4,8 +4,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import React, { useCallback, useEffect } from 'react'
 import { AiDiffOperation, DiffStatus } from '@/constants/ai-constants'
-import { setAcceptedValue } from '@/store/ai-store'
-import usePlateStore, { setActiveDiffId } from '@/store/plate-store'
+import useAIStore from '@/store/ai-store'
+import usePlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import { BoldPlugin, ItalicPlugin } from '@udecode/plate-basic-marks/react'
 import { SoftBreakPlugin } from '@udecode/plate-break/react'
@@ -126,6 +126,7 @@ export const DiffPlugin = toPlatePlugin(
 )
 
 function DiffLeaf({ children, ...props }: PlateLeafProps) {
+	const { setAcceptedValue } = useAIStore()
 	const diffOperation = props.leaf.diffOperation as DiffOperation
 	const Component = {
 		[AiDiffOperation.DELETE]: 'del',
@@ -135,7 +136,8 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	const leaf: any = props.leaf
 
 	const value = structuredClone(props.editor.children)
-	const activeDiffId = usePlateStore((state) => state.activeDiffId)
+	const { store, setActiveDiffId } = usePlateStore()
+	const activeDiffId = store((state) => state.activeDiffId)
 
 	const handleStatusChange = useCallback(
 		(status: DiffStatus) => {
@@ -152,6 +154,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 			props.editor.tf.setValue(structuredClone(value))
 			setAcceptedValue(structuredClone(value))
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[value, leaf.diff_id, props.editor.tf]
 	)
 
@@ -180,7 +183,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 					}
 				>
 					{isActive && (
-						<div className="absolute bottom-0 flex translate-y-full gap-2 rounded-md p-1">
+						<div className="absolute bottom-0 z-50 flex translate-y-full gap-2 rounded-md p-1">
 							<Button
 								variant="outline"
 								size="sm"
@@ -267,15 +270,16 @@ export const useDiffEditor = ({
 		if (!previous || !current) return []
 		return computeDiff(structuredClone(previous), structuredClone(current), {
 			isInline: editor.isInline,
-			lineBreakChar: '¶',
 			getInsertProps,
 			getDeleteProps,
 			getUpdateProps,
 		}) as Value
 	}, [previous, current, plugins])
+	const { setAcceptedValue } = useAIStore()
 
 	useEffect(() => {
 		setAcceptedValue(diffValue)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [diffValue])
 
 	const editor = usePlateEditor(

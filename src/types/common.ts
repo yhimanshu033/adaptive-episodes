@@ -7,6 +7,7 @@ export type LucideComponent = ForwardRefExoticComponent<
 >
 
 export interface GlobalStoreState {
+	isFullScreenLoading: boolean
 	userData: Session | null
 }
 

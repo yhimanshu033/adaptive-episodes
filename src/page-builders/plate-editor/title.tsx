@@ -1,5 +1,6 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { episodeLimit } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
@@ -7,18 +8,22 @@ import { ArrowLeft } from 'lucide-react'
 
 import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
+import Spinner from '@/components/ui/spinner'
+
+import { EStatus } from '@/types/common'
 
 const Title = () => {
 	const router = useRouter()
 	const { id } = useParams()
-	const { data: episodeContent } = useEpisodeContent()
+	const { data: episodeContent, latestStatus } = useEpisodeContent()
 	const { saveEpisodeMutation } = useEpisodeHook()
 	const readOnly = useEditorReadOnly()
 
 	const handleClick = () => {
-		router.replace(
-			`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${id as string}`
+		const page = Math.ceil(
+			Number(episodeContent?.chapter.seq_number || 1) / episodeLimit
 		)
+		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
 	}
 
 	const updateChapterTitle = (chapter_title: string) => {
@@ -26,6 +31,7 @@ const Title = () => {
 		saveEpisodeMutation.mutate({
 			chapter_title,
 			text: episodeContent?.text || '',
+			status: latestStatus || EStatus.FIRST_DRAFT,
 		})
 	}
 
@@ -34,7 +40,11 @@ const Title = () => {
 			<Button variant="ghost" size="icon" onClick={handleClick}>
 				<ArrowLeft size={16} />
 			</Button>
-			<p className="text-xl">{episodeContent?.chapter.seq_number}.</p>
+			{episodeContent ? (
+				<p className="text-xl">{episodeContent?.chapter.seq_number}.</p>
+			) : (
+				<Spinner size={24} />
+			)}
 			<EditableText
 				key={episodeContent?.chapter.chapter_title}
 				text={decodeURIComponent(episodeContent?.chapter.chapter_title || '')}

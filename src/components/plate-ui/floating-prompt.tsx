@@ -1,8 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import useLaserStore, {
-	setActiveLaser,
-	setPromptActive,
-} from '@/store/laser-store'
+import useLaserStore from '@/store/laser-store'
 import usePlateStore from '@/store/plate-store'
 import { useEditorRef } from '@udecode/plate-common/react'
 import { TDescendant } from '@udecode/slate'
@@ -15,11 +12,13 @@ import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { cn } from '@/lib/utils'
 
 export default function FloatingPrompt() {
-	const { editorY, screenY, promptActive } = useLaserStore()
+	const { setActiveLaser, setPromptActive, store: laserStore } = useLaserStore()
+	const { screenY, promptActive } = laserStore()
 	const editor = useEditorRef()
 
-	const { isTranslationOpen, sidebar } = usePlateStore()
-	const minify = sidebar || isTranslationOpen
+	const { store } = usePlateStore()
+	const { sidebar } = store()
+	const minify = !!sidebar
 
 	const [val, setVal] = React.useState<string>('')
 
@@ -47,6 +46,7 @@ export default function FloatingPrompt() {
 				)
 			}
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[promptActive, val]
 	)
 
@@ -61,7 +61,8 @@ export default function FloatingPrompt() {
 				console.error(error)
 			}
 		},
-		[editor, traverse]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[editor, traverse, setPromptActive]
 	)
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,12 +77,12 @@ export default function FloatingPrompt() {
 				onResetLeaf()
 			}}
 			className={cn(
-				'absolute z-[9999] flex gap-2 rounded-lg bg-popover',
+				'fixed z-[9999] flex gap-2 rounded-lg bg-popover',
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
-				top: (screenY || 0) - (editorY || 0) + 20,
-				left: 48,
+				top: Math.min(screenY || 0, 650) + 16,
+				left: 64,
 			}}
 		>
 			<Button
@@ -96,6 +97,7 @@ export default function FloatingPrompt() {
 			</Button>
 			<Textarea
 				autoFocus
+				placeholder="Enter prompt here..."
 				name={name}
 				autoComplete="off"
 				value={val}

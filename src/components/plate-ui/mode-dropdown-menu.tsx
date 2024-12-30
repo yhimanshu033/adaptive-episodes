@@ -32,16 +32,12 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	const openState = useOpenState()
 	const { setOption, getOption } = useEditorPlugin(SuggestionPlugin)
 
-	const sidebar = useCustomPlateStore((state) => state.sidebar)
+	const { store } = useCustomPlateStore()
+	const viewMode = store((state) => state.viewMode)
 
 	useEffect(() => {
-		if (sidebar === 'far') {
-			setReadOnly(true)
-		}
-		if (!sidebar) {
-			setReadOnly(false)
-		}
-	}, [sidebar, setReadOnly])
+		setReadOnly(viewMode)
+	}, [viewMode, setReadOnly])
 
 	const value = readOnly
 		? EditorModes.viewing
@@ -97,14 +93,14 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 					}}
 				>
 					<DropdownMenuRadioItem
-						disabled={sidebar === 'far'}
+						disabled={viewMode}
 						value={EditorModes.editing}
 					>
 						{item.editing}
 					</DropdownMenuRadioItem>
 
 					<DropdownMenuRadioItem
-						disabled={sidebar === 'far'}
+						disabled={viewMode}
 						value={EditorModes.suggesting}
 					>
 						{item.suggesting}

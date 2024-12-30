@@ -3,31 +3,39 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { DiffStatus } from '@/constants/ai-constants'
+import { DiffStatus, quickPrompts } from '@/constants/ai-constants'
+import { storyChatSuggestions } from '@/constants/editor-constants'
+import {
+	COPILOT_LOGO_URL,
+	FALLBACK_USER_URL,
+} from '@/constants/global-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
-import useAIChatbotHookTest from '@/hooks/mutation/use-aichatbot-repl-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
-import { ex, exampleReview } from '@/mock-data/aichatbot'
-import useAIStore, {
-	addMessages,
-	clearMessages,
-	setAcceptedValue,
-	setPrevValue,
-	setResponseValue,
-	updateMessages,
-} from '@/store/ai-store'
+import useAIStore from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
+import usePlateStore from '@/store/plate-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
+	ParagraphPlugin,
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
 } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
-import { Check, CheckCheck, LoaderCircle, Send, Trash2, X } from 'lucide-react'
+import { Value } from '@udecode/slate'
+import {
+	Check,
+	CheckCheck,
+	Copy,
+	Send,
+	StopCircle,
+	Trash2,
+	X,
+} from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
+import { Loader } from '@/components/loader'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -44,27 +52,54 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
-import { cn, convertReviewResponse, getText } from '@/lib/utils'
+import {
+	cn,
+	convertReviewResponse,
+	extractBetweenTags,
+	getRandomElement,
+	getText,
+	maxify,
+	minify,
+	replaceMatches,
+} from '@/lib/utils'
 
-import { EAction, EMessenger } from '@/types/ai-types'
+import {
+	EAction,
+	EChatMode,
+	EMessenger,
+	TStoryChatSuggestion,
+} from '@/types/ai-types'
+import { MinifiedValue } from '@/types/common'
+import { IndexedCommentsResponse } from '@/types/editor-types'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
 	const { id } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
-	const { messages } = useAIStore()
+	const {
+		store,
+		addMessages,
+		clearMessages,
+		popMessage,
+		setAcceptedValue,
+		setPrevValue,
+		setResponseValue,
+		updateMessages,
+		setRequestedAction,
+	} = useAIStore()
+	const { setSidebar } = usePlateStore()
+	const { messages } = store()
 	const { aiChatbotMutation } = useAIChatbotHook()
-	const { aiChatbotMutationTest } = useAIChatbotHookTest()
-	const { data: aiResponse, isPending } = aiChatbotMutation
-	const { data: aiResponseTest } = aiChatbotMutationTest
+	const { data: aiResponse, isPending, reset } = aiChatbotMutation
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
 	const { children } = useEditorState()
-	const value = useAIStore((state) => state.acceptedValue)
-	const prevValue = useAIStore((state) => state.prevValue)
+	const requestedAction = store((state) => state.requestedAction)
+	const value = store((state) => state.acceptedValue)
+	const prevValue = store((state) => state.prevValue)
 	const { api } = useEditorPlugin(CommentsPlugin)
 
 	const episodesCount = useMemo(() => {
@@ -74,8 +109,6 @@ const AIChatbot = () => {
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
-		addMessages({ role: EMessenger.USER, content: input })
-		setInput('')
 		aiChatbotMutation.mutate({
 			episodeNumber: episodeContent?.chapter.seq_number || 0,
 			episodesCount,
@@ -89,6 +122,34 @@ const AIChatbot = () => {
 				ep_text: getText(children),
 			},
 		})
+		addMessages({ role: EMessenger.USER, content: input })
+		setInput('')
+		setRequestedAction(EChatMode.BLOCK)
+	}
+
+	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
+		if (suggestion.action === EChatMode.LOCALIZE) {
+			setSidebar('far')
+			return
+		}
+		if (suggestion.action === EChatMode.PROMPTS) {
+			setInput(getRandomElement(quickPrompts))
+			return
+		}
+		addMessages({ role: EMessenger.USER, content: suggestion.value })
+		aiChatbotMutation.mutate({
+			episodeNumber: episodeContent?.chapter.seq_number || 0,
+			episodesCount,
+			aiChatbotData: {
+				messages,
+				user_message: suggestion.value,
+				ep_number: episodeContent?.chapter.seq_number?.toString(),
+				ep_text: episodeContent?.text as string,
+				ep_text_json: minify(children),
+				chat_mode: suggestion.action,
+			},
+		})
+		setRequestedAction(suggestion.action)
 	}
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -97,40 +158,45 @@ const AIChatbot = () => {
 			handleSendMessage(e)
 		}
 	}
-	useEffect(() => {
-		if (!isPending && aiResponse) {
+
+	const handleBlock = ({ text }: { text: string }) => {
+		addMessages({
+			role: EMessenger.ASSISTANT,
+			content: text,
+			action: EAction.BLOCK,
+		})
+	}
+
+	const handleSFX = (resp: string) => {
+		const matches = resp.match(/((\[!.*\])*\n+)+/g)
+		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
+		if (!matches || !hasSFX) {
 			addMessages({
 				role: EMessenger.ASSISTANT,
-				content: aiResponse as string,
-				action: EAction.MESSAGE,
+				action: EAction.BLOCK,
+				content: JSON.stringify([
+					{
+						id: `0`,
+						type: ParagraphPlugin.key,
+						children: [{ text: 'Oops! no SFX generated' }],
+					},
+				]),
 			})
+			return
 		}
-	}, [aiResponse, isPending])
+		const responseValue = structuredClone(children)
+		handleChanges(replaceMatches(/(\n{2,})/g, matches, responseValue))
+	}
 
-	useEffect(() => {
-		if (messageEndRef.current) {
-			messageEndRef.current.scrollIntoView({ behavior: 'smooth' })
-		}
-	}, [messages])
-
-	useEffect(() => {
-		if (textareaRef.current) {
-			textareaRef.current.style.height = '40px'
-			const scrollHeight = textareaRef.current.scrollHeight
-			textareaRef.current.style.height = `${Math.min(scrollHeight, 150)}px`
-		}
-	}, [input])
-
-	useEffect(() => {
-		if (!aiResponseTest) return
-		setResponseValue(structuredClone(ex.current))
-		setPrevValue(structuredClone(ex.previous))
+	const handleChanges = (aiResponse: Value) => {
+		setResponseValue(structuredClone(aiResponse))
+		setPrevValue(structuredClone(children))
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			action: EAction.CHANGES,
-			content: 'Added changes from chatbot',
+			content: 'Added changes from StoryChat',
 		})
-	}, [aiResponseTest])
+	}
 
 	function handleAccept(i: number, all: boolean = true) {
 		handleAcceptResponse(all)
@@ -138,7 +204,7 @@ const AIChatbot = () => {
 			{
 				role: EMessenger.ASSISTANT,
 				action: EAction.ACCEPT,
-				content: 'Accepted changes from chatbot',
+				content: 'Accepted changes from StoryChat',
 			},
 			i
 		)
@@ -149,13 +215,12 @@ const AIChatbot = () => {
 			{
 				role: EMessenger.ASSISTANT,
 				action: EAction.REJECT,
-				content: 'Rejected changes from chatbot',
+				content: 'Rejected changes from StoryChat',
 			},
 			i
 		)
 		setResponseValue(null)
 		setPrevValue(null)
-		if (prevValue) editor.tf.setValue(structuredClone(prevValue))
 	}
 
 	const handleAcceptResponse = useCallback(
@@ -204,11 +269,12 @@ const AIChatbot = () => {
 			setPrevValue(null)
 			setAcceptedValue(null)
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[value, editor.tf]
 	)
 
-	function addReview() {
-		const resp = convertReviewResponse(exampleReview, children)
+	function addReview(reviewResponse: IndexedCommentsResponse[]) {
+		const resp = convertReviewResponse(reviewResponse, children)
 		resp.comments.forEach((comment) => {
 			api.comment.addComment({
 				value: [{ type: 'p', children: [{ text: comment.text }] }],
@@ -221,17 +287,52 @@ const AIChatbot = () => {
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			action: EAction.REVIEW,
-			content: 'Added review in comments',
+			content: reviewResponse.length
+				? 'StoryChat added review in comments'
+				: 'No reviews from StoryChat',
 		})
 	}
 
-	const suggestions = ['Add Music / Sound FX 🎶', 'Voice Pass 🎙️', 'Review ✅']
 	const changesPending = prevValue && value
 
+	useEffect(() => {
+		if (!isPending && aiResponse) {
+			if (requestedAction === EChatMode.REVIEW) {
+				addReview(JSON.parse(aiResponse as string) as IndexedCommentsResponse[])
+			} else if (requestedAction === EChatMode.SFX) {
+				handleSFX(aiResponse as string)
+			} else if (requestedAction === EChatMode.VOICE) {
+				handleChanges(
+					maxify(JSON.parse(aiResponse as string) as MinifiedValue, children)
+				)
+			} else {
+				handleBlock({ text: aiResponse as string })
+			}
+			setRequestedAction(null)
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [aiResponse, isPending])
+
+	useEffect(() => {
+		if (messageEndRef.current) {
+			messageEndRef.current.scrollIntoView({
+				behavior: 'smooth',
+			})
+		}
+	}, [messages])
+
+	useEffect(() => {
+		if (textareaRef.current) {
+			textareaRef.current.style.height = '40px'
+			const scrollHeight = textareaRef.current.scrollHeight
+			textareaRef.current.style.height = `${Math.min(scrollHeight, 150)}px`
+		}
+	}, [input])
+
 	return (
-		<div className="mx-auto flex h-full max-w-2xl flex-col p-4">
+		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
 			<h1 className="mb-4 text-2xl font-bold">StoryChat</h1>
-			<ScrollArea className="mb-4 flex-1 rounded-md border p-4">
+			<ScrollArea className="mb-4 h-[70vh] flex-1 rounded-md border px-4 *:py-4">
 				{messages.map((message, index) => (
 					<div
 						key={index}
@@ -239,7 +340,7 @@ const AIChatbot = () => {
 					>
 						{message.role === EMessenger.ASSISTANT && (
 							<Avatar className="mr-2">
-								<AvatarImage src="/pocket-copilot-logo.webp" alt="AI" />
+								<AvatarImage src={COPILOT_LOGO_URL} alt="AI" />
 								<AvatarFallback>AI</AvatarFallback>
 							</Avatar>
 						)}
@@ -265,6 +366,34 @@ const AIChatbot = () => {
 									</Button>
 								</TooltipComponent>
 							</div>
+						) : message.role === EMessenger.ASSISTANT &&
+						  message.action === EAction.BLOCK ? (
+							<div className="relative max-w-[70%]">
+								<TooltipComponent tooltip={'Copy'}>
+									<Button
+										onClick={() => {
+											void navigator.clipboard.writeText(
+												extractBetweenTags(message.content, 'answer')
+											)
+										}}
+										variant="ghost"
+										className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
+									>
+										<Copy size={12} />
+									</Button>
+								</TooltipComponent>
+								<div
+									dangerouslySetInnerHTML={{
+										__html: message.content.replaceAll('\n', '<br/>'),
+									}}
+									className={cn(
+										'rounded-lg p-3',
+										message.role === EMessenger.ASSISTANT
+											? 'bg-background'
+											: 'bg-primary'
+									)}
+								/>
+							</div>
 						) : (
 							<div
 								dangerouslySetInnerHTML={{
@@ -281,7 +410,7 @@ const AIChatbot = () => {
 						{message.role === EMessenger.USER && (
 							<Avatar className="ml-2">
 								<AvatarImage
-									src={userData?.user?.image || '/placeholder-user.webp'}
+									src={userData?.user?.image || FALLBACK_USER_URL}
 									alt="User"
 								/>
 								<AvatarFallback>U</AvatarFallback>
@@ -289,36 +418,37 @@ const AIChatbot = () => {
 						)}
 					</div>
 				))}
+
+				{isPending && (
+					<div className="mb-4 flex items-center justify-start">
+						<Avatar className="mr-2">
+							<AvatarImage src={COPILOT_LOGO_URL} alt="AI" />
+							<AvatarFallback>AI</AvatarFallback>
+						</Avatar>
+						<Loader />
+					</div>
+				)}
+
 				<div ref={messageEndRef} />
 			</ScrollArea>
 			<ScrollArea className="overflow-x-auto pb-2 *:*:flex">
 				<ScrollBar orientation="horizontal" />
-				{suggestions.map((suggestion, index) => (
+				{storyChatSuggestions.map((suggestion, index) => (
 					<Button
 						key={index}
 						variant="outline"
 						size="sm"
 						onClick={() => {
-							addMessages({ role: EMessenger.USER, content: suggestion })
-							if (index === 2) {
-								addReview()
-								return
-							}
-							aiChatbotMutationTest.mutate({
-								episodeNumber: episodeContent?.chapter.seq_number || 0,
-								episodesCount,
-								aiChatbotData: {
-									messages,
-									user_message: suggestion,
-									ep_number: episodeContent?.chapter.seq_number?.toString(),
-									ep_text: episodeContent?.text as string,
-								},
-							})
+							handleSuggestion(suggestion)
 						}}
-						className="mr-2"
-						disabled={!!changesPending}
+						className="mb-1 mr-2"
+						disabled={
+							!!changesPending ||
+							isPending ||
+							suggestion.action === EChatMode.VOICE
+						}
 					>
-						{suggestion}
+						{suggestion.value}
 					</Button>
 				))}
 			</ScrollArea>
@@ -337,18 +467,23 @@ const AIChatbot = () => {
 						className="min-h-[40px] grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
 						style={{ height: '40px' }}
 					/>
-					<Button
-						variant="ghost"
-						size="icon"
-						type="submit"
-						disabled={isPending}
-					>
-						{isPending ? (
-							<LoaderCircle className="animate-spin" size={16} />
-						) : (
+					{isPending ? (
+						<Button
+							variant="ghost"
+							size="icon"
+							type="button"
+							onClick={() => {
+								popMessage()
+								reset()
+							}}
+						>
+							<StopCircle size={16} />
+						</Button>
+					) : (
+						<Button variant="ghost" size="icon" type="submit">
 							<Send size={16} />
-						)}
-					</Button>
+						</Button>
+					)}
 				</form>
 				<AlertDialog>
 					<AlertDialogTrigger asChild>
