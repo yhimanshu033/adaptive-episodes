@@ -13,6 +13,18 @@ import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
 
 import { RequestState } from './explorer'
 
+const preProcessData = (data: ExplorerType): ExplorerType => {
+	if (typeof data.content === 'string') {
+		const regex = /^\s*(?:Name:(.*)| (Episode.*))$/m
+		const match = data.content.match(regex)
+		const title = match?.[1].trim() || match?.[2].trim() || data.title
+		const content = data.content.replace(regex, '').trim()
+
+		return { ...data, title, content }
+	}
+	return data
+}
+
 const renderContent = (
 	content: string | ExplorerType[],
 	preContent?: string
@@ -39,15 +51,24 @@ const renderContent = (
 					/>
 				)}
 				<Accordion type="single" collapsible className="w-full">
-					{content.map((item, index) => (
-						<AccordionItem
-							key={`${item.title}${index}`}
-							value={`${item.title}${index}`}
-						>
-							<AccordionTrigger>{item.title}</AccordionTrigger>
-							<AccordionContent>{renderContent(item.content)}</AccordionContent>
-						</AccordionItem>
-					))}
+					{content.map((item, index) => {
+						const {
+							title,
+							content: subContent,
+							preContent,
+						} = preProcessData(item)
+						return (
+							<AccordionItem
+								key={`${title}${index}`}
+								value={`${title}${index}`}
+							>
+								<AccordionTrigger>{title}</AccordionTrigger>
+								<AccordionContent>
+									{renderContent(subContent, preContent)}
+								</AccordionContent>
+							</AccordionItem>
+						)
+					})}
 				</Accordion>
 			</>
 		)
@@ -80,17 +101,17 @@ const Content = ({
 				</Button>
 			</div>
 			<Accordion type="single" collapsible className="w-full">
-				{explorerData.map((data, index) => (
-					<AccordionItem
-						key={`${data.title}${index}`}
-						value={`${data.title}${index}`}
-					>
-						<AccordionTrigger>{data.title}</AccordionTrigger>
-						<AccordionContent>
-							{renderContent(data.content, data.preContent)}
-						</AccordionContent>
-					</AccordionItem>
-				))}
+				{explorerData.map((data, index) => {
+					const { title, content, preContent } = preProcessData(data)
+					return (
+						<AccordionItem key={`${title}${index}`} value={`${title}${index}`}>
+							<AccordionTrigger>{`${index + 1}. ${title}`}</AccordionTrigger>
+							<AccordionContent>
+								{renderContent(content, preContent)}
+							</AccordionContent>
+						</AccordionItem>
+					)
+				})}
 			</Accordion>
 		</>
 	)
