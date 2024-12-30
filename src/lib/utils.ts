@@ -447,12 +447,12 @@ export const extractScenesFromBeatsheet = (beatsheet: string) => {
 	const nextSectionIndex = sceneSection.search(/(?:Plot\s+Progressions)/)
 
 	const trimmedSceneSection =
-		nextSectionIndex !== -1
+		(nextSectionIndex !== -1
 			? sceneSection.slice(0, nextSectionIndex).trim()
-			: sceneSection
+			: sceneSection) + '\n['
 
 	const sceneRegex =
-		/(?:(?:^(INT|EXT|SCENE)\s-\s([^\n]+)[\n\s]+([\s\S]*?))|(?:^\[([^\]]+)\]\s*([\s\S]*?)))(?=^(?:INT|EXT|SCENE|SCENE|\[)|$)/gm
+		/(?:(?:^(INT|EXT|SCENE)\s-\s([^\n]+)[\n\s]+([\s\S]*?))|(?:^\[([^\]]+)\]\s*([\s\S]*?)))(?=^(?:INT|EXT|SCENE|SCENE|\[))/gm
 	const scenes: { content: string; title: string }[] = []
 	let match
 
