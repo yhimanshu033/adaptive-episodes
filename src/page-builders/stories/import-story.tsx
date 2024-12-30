@@ -1,193 +1,279 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useState } from 'react'
-import { useToast } from '@/hooks/use-toast'
-import { ImageIcon, Loader2, Upload } from 'lucide-react'
+import React, { useRef, useState } from 'react'
+import Image from 'next/image'
+import {
+	StoryImportFormSchema,
+	useStoryImportFormResolver,
+} from '@/hooks/form-resolvers/story-import-resolver'
+import { ImageIcon, Upload, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 
-interface ImportStoryProps {
-	onSuccess?: () => void
-}
-
-export function ImportStory({ onSuccess }: ImportStoryProps) {
+export function ImportStory() {
 	const [isDragging, setIsDragging] = useState(false)
-	const [isUploading, setIsUploading] = useState(false)
-	const [storyTitle, setStoryTitle] = useState('')
-	const [storyAuthor, setStoryAuthor] = useState('')
-	const [storyImage, setStoryImage] = useState<File | null>(null)
-	const { toast } = useToast()
+	const [imageSrc, setImageSrc] = useState<string | null>(null)
+	const imageInputRef = useRef<HTMLInputElement | null>(null)
+	const storyInputRef = useRef<HTMLInputElement | null>(null)
 
-	const handleDragOver = (e: React.DragEvent) => {
+	const form = useStoryImportFormResolver()
+
+	const handleDiscardImage = (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
 		e.preventDefault()
-		setIsDragging(true)
+		if (imageInputRef.current) {
+			imageInputRef.current.value = ''
+		}
+		form.resetField('image')
+		setImageSrc(null)
 	}
 
-	const handleDragLeave = (e: React.DragEvent) => {
+	const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault()
+		e.stopPropagation()
+		setIsDragging(e.type === 'dragenter' || e.type === 'dragover')
+	}
+
+	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault()
+		e.stopPropagation()
 		setIsDragging(false)
-	}
 
-	const handleDrop = async (e: React.DragEvent) => {
-		e.preventDefault()
-		setIsDragging(false)
-		setIsUploading(true)
-
-		const files = Array.from(e.dataTransfer.files)
-
-		try {
-			await new Promise((resolve) => setTimeout(resolve, 2000))
-			toast({
-				title: 'Success',
-				description: `Imported ${files.length} stories successfully`,
-			})
-			onSuccess?.()
-		} catch (error) {
-			const { message } = error as Error
-			toast({
-				variant: 'destructive',
-				title: 'Error',
-				description: message || 'Failed to import stories. Please try again.',
-			})
-		} finally {
-			setIsUploading(false)
+		const file = e.dataTransfer.files[0]
+		if (file) {
+			form.setValue('story', file)
 		}
 	}
 
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
-			setStoryImage(e.target.files[0])
-		}
-	}
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault()
-		setIsUploading(true)
-
-		try {
-			await new Promise((resolve) => setTimeout(resolve, 2000))
-			toast({
-				title: 'Success',
-				description: 'Story imported successfully',
-			})
-			onSuccess?.()
-		} catch (error) {
-			const { message } = error as Error
-			toast({
-				variant: 'destructive',
-				title: 'Error',
-				description: message || 'Failed to import story. Please try again.',
-			})
-		} finally {
-			setIsUploading(false)
-		}
+	const onSubmit = (data: StoryImportFormSchema) => {
+		console.log('submit', data)
 	}
 
 	return (
-		<Card className="w-full py-2">
+		<Card className="py-2">
 			<CardContent>
-				<form onSubmit={handleSubmit} className="space-y-4">
-					<div>
-						<Label htmlFor="title">Story Title</Label>
-						<Input
-							id="title"
-							value={storyTitle}
-							onChange={(e) => setStoryTitle(e.target.value)}
-							required
-						/>
-					</div>
-					<div>
-						<Label htmlFor="author">Author</Label>
-						<Input
-							id="author"
-							value={storyAuthor}
-							onChange={(e) => setStoryAuthor(e.target.value)}
-							required
-						/>
-					</div>
-					<div>
-						<Label htmlFor="image">Story Image (Optional)</Label>
-						<div className="flex items-center space-x-2">
-							<Input
-								id="image"
-								type="file"
-								accept="image/*"
-								onChange={handleImageChange}
-								className="hidden"
-							/>
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => document.getElementById('image')?.click()}
-							>
-								<ImageIcon className="mr-2 size-4" />
-								{storyImage ? 'Change Image' : 'Upload Image'}
-							</Button>
-							{storyImage && (
-								<span className="text-sm text-muted-foreground">
-									{storyImage.name}
-								</span>
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+						<FormField
+							control={form.control}
+							name="title"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor="title">
+										Story Title<sup>*</sup>
+									</FormLabel>
+									<FormControl>
+										<Input
+											placeholder="Enter story title"
+											id="title"
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
 							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="author"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor="author">Author</FormLabel>
+									<FormControl>
+										<Input
+											placeholder="Enter Author name"
+											id="author"
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormItem>
+							<FormLabel htmlFor="ep_start">
+								Episode Range<sup>*</sup>
+							</FormLabel>
+						</FormItem>
+						<div className="flex items-center gap-2">
+							<FormField
+								control={form.control}
+								name="ep_start"
+								render={({ field }) => (
+									<FormItem className="flex-1">
+										<FormControl>
+											<Input
+												type="number"
+												placeholder="Episode Start"
+												id="ep_start"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="ep_end"
+								render={({ field }) => (
+									<FormItem className="flex-1">
+										<FormControl>
+											<Input
+												type="number"
+												placeholder="Episode End"
+												id="ep_end"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 						</div>
-					</div>
-					<div
-						className={`mt-6 flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed p-8 transition-colors duration-200 ${isDragging ? 'border-primary bg-primary/10' : 'border-border'} `}
-						onDragOver={handleDragOver}
-						onDragLeave={handleDragLeave}
-						onDrop={handleDrop}
-					>
-						{isUploading ? (
-							<div className="flex flex-col items-center gap-3">
-								<Loader2 className="size-8 animate-spin text-primary" />
-								<p className="text-sm text-muted-foreground">
-									Importing story...
-								</p>
-							</div>
-						) : (
-							<>
-								<Upload className="size-8 text-muted-foreground" />
-								<div className="text-center">
-									<p className="text-sm text-muted-foreground">
-										Drag and drop your story files here, or
-									</p>
-									<Button
-										type="button"
-										variant="link"
-										className="mt-2"
-										onClick={() =>
-											document.getElementById('file-upload')?.click()
-										}
-									>
-										choose files to upload
-									</Button>
-									<input
-										id="file-upload"
-										type="file"
-										multiple
-										className="hidden"
-										onChange={(e) => {
-											if (e.target.files?.length) {
-												setIsUploading(true)
-												// Handle file upload here
-												setTimeout(() => {
-													setIsUploading(false)
-													onSuccess?.()
-												}, 2000)
-											}
-										}}
-									/>
-								</div>
-							</>
-						)}
-					</div>
-					<Button type="submit" disabled={isUploading}>
-						{isUploading ? 'Importing...' : 'Import Story'}
-					</Button>
-				</form>
+						<FormField
+							control={form.control}
+							name="image"
+							render={({ field }) => (
+								<FormItem className="flex items-center justify-between">
+									<div className="flex flex-col gap-4">
+										<FormLabel htmlFor="image">
+											Story Image (Optional)
+										</FormLabel>
+										<FormControl>
+											<Input
+												id="image"
+												type="file"
+												onChange={(e) => {
+													if (e.target.files?.length) {
+														const file = e.target.files[0]
+														form.setValue('image', file)
+														const imageURL = URL.createObjectURL(file)
+														console.log(imageURL)
+														setImageSrc(imageURL)
+													}
+												}}
+												accept="image/*"
+												ref={imageInputRef}
+												className="hidden"
+											/>
+										</FormControl>
+										<Button
+											type="button"
+											variant="outline"
+											onClick={() => imageInputRef.current?.click()}
+										>
+											<ImageIcon className="mr-2 size-4" />
+											{field.value ? 'Change Image' : 'Upload Image'}
+										</Button>
+										<FormMessage />
+									</div>
+									{
+										<div className="group relative aspect-square w-20">
+											{imageSrc ? (
+												<>
+													<Image
+														src={imageSrc}
+														alt="Story Thumbnail"
+														layout="fill"
+														objectFit="cover"
+														className="overflow-hidden rounded-md"
+													/>
+													<Button
+														asChild
+														variant="ghost"
+														size="icon"
+														className="absolute right-0 top-0 m-1 hidden -translate-y-1/2 translate-x-1/2 rounded-full bg-primary shadow group-hover:block"
+														onClick={handleDiscardImage}
+													>
+														<X className="size-4" />
+													</Button>
+												</>
+											) : (
+												<div className="flex size-full items-center justify-center rounded-md border-2 border-dashed">
+													<ImageIcon className="size-8 text-muted-foreground" />
+												</div>
+											)}
+										</div>
+									}
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="story"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor="story">
+										Upload Story Files<sup>*</sup>
+									</FormLabel>
+									<FormControl>
+										<div
+											className={`mt-6 flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed p-8 transition-colors duration-200 ${
+												isDragging
+													? 'border-primary bg-primary/10'
+													: 'border-border'
+											}`}
+											onDragOver={handleDrag}
+											onDragLeave={handleDrag}
+											onDrop={handleDrop}
+										>
+											<>
+												<Upload className="size-8 text-muted-foreground" />
+												<div className="break-words text-center">
+													<p className="break-all text-sm text-muted-foreground">
+														{field.value
+															? field.value.name
+															: 'Drag and drop your story file here'}
+													</p>
+													<Button
+														variant="link"
+														className="mt-2"
+														onClick={() => storyInputRef.current?.click()}
+													>
+														{field.value
+															? 'Change file'
+															: 'Choose file to upload'}
+													</Button>
+													<Input
+														id="story"
+														type="file"
+														accept=".docx"
+														ref={storyInputRef}
+														className="hidden"
+														onChange={(e) => {
+															console.log(e.target.files)
+															if (e.target.files?.length) {
+																const file = e.target.files[0]
+																field.onChange(file)
+															}
+														}}
+													/>
+												</div>
+											</>
+										</div>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<Button type="submit">{'Import Story'}</Button>
+					</form>
+				</Form>
 			</CardContent>
 		</Card>
 	)

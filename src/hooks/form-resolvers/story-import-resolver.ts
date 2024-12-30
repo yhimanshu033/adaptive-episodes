@@ -1,0 +1,59 @@
+import {
+	ACCEPTED_DOCX_TYPES,
+	ACCEPTED_IMAGE_TYPES,
+	MAX_DOCX_FILE_SIZE,
+	MAX_IMAGE_FILE_SIZE,
+} from '@/constants/story-constants'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+export const storyImportFormSchema = z.object({
+	title: z.string(),
+	author: z.string().optional(),
+	ep_start: z.preprocess(
+		(val) => Number(val),
+		z.number().min(1, { message: 'Enter number >=1' })
+	),
+	ep_end: z.preprocess(
+		(val) => Number(val),
+		z.number().min(1, { message: 'Enter number >=1' })
+	),
+	image: z
+		.instanceof(File)
+		.optional()
+		.refine(
+			(file) => !file || file.size <= MAX_IMAGE_FILE_SIZE,
+			`Max image size is 5MB.`
+		)
+		.refine(
+			(file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type),
+			'Only .jpg, .jpeg, .png and .webp formats are supported.'
+		),
+	story: z
+		.instanceof(File)
+		.refine(
+			(file) => file && file.size <= MAX_DOCX_FILE_SIZE,
+			`Max document size is 10MB.`
+		)
+		.refine(
+			(file) => file && ACCEPTED_DOCX_TYPES.includes(file.type),
+			'Only .docx format is supported.'
+		),
+})
+
+export type StoryImportFormSchema = z.infer<typeof storyImportFormSchema>
+
+export const useStoryImportFormResolver = () =>
+	useForm<StoryImportFormSchema>({
+		resolver: zodResolver(storyImportFormSchema),
+		mode: 'onChange',
+		defaultValues: {
+			title: '',
+			author: '',
+			ep_start: 1,
+			ep_end: 1,
+			image: undefined,
+			story: undefined,
+		},
+	})
