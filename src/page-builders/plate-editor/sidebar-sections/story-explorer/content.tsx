@@ -13,7 +13,10 @@ import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
 
 import { RequestState } from './explorer'
 
-const renderContent = (content: string | ExplorerType[]): JSX.Element => {
+const renderContent = (
+	content: string | ExplorerType[],
+	preContent?: string
+): JSX.Element => {
 	if (content === '' || !content.length) return <p>Content not found 😢</p>
 	if (typeof content === 'string') {
 		return (
@@ -27,17 +30,26 @@ const renderContent = (content: string | ExplorerType[]): JSX.Element => {
 
 	if (Array.isArray(content)) {
 		return (
-			<Accordion type="single" collapsible className="w-full">
-				{content.map((item, index) => (
-					<AccordionItem
-						key={`${item.title}${index}`}
-						value={`${item.title}${index}`}
-					>
-						<AccordionTrigger>{item.title}</AccordionTrigger>
-						<AccordionContent>{renderContent(item.content)}</AccordionContent>
-					</AccordionItem>
-				))}
-			</Accordion>
+			<>
+				{preContent && (
+					<div
+						dangerouslySetInnerHTML={{
+							__html: preContent.replace(/\n/, '<br/>'),
+						}}
+					/>
+				)}
+				<Accordion type="single" collapsible className="w-full">
+					{content.map((item, index) => (
+						<AccordionItem
+							key={`${item.title}${index}`}
+							value={`${item.title}${index}`}
+						>
+							<AccordionTrigger>{item.title}</AccordionTrigger>
+							<AccordionContent>{renderContent(item.content)}</AccordionContent>
+						</AccordionItem>
+					))}
+				</Accordion>
+			</>
 		)
 	}
 
@@ -74,7 +86,9 @@ const Content = ({
 						value={`${data.title}${index}`}
 					>
 						<AccordionTrigger>{data.title}</AccordionTrigger>
-						<AccordionContent>{renderContent(data.content)}</AccordionContent>
+						<AccordionContent>
+							{renderContent(data.content, data.preContent)}
+						</AccordionContent>
 					</AccordionItem>
 				))}
 			</Accordion>

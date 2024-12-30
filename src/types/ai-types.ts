@@ -123,6 +123,7 @@ export interface PlotExplorerParams {
 
 export interface ExplorerType {
 	content: string | ExplorerType[]
+	preContent?: string
 	title: string
 }
 
