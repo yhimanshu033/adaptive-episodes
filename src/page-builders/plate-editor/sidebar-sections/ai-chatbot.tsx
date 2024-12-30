@@ -373,7 +373,10 @@ const AIChatbot = () => {
 									<Button
 										onClick={() => {
 											void navigator.clipboard.writeText(
-												extractBetweenTags(message.content, 'text')
+												extractBetweenTags(
+													extractBetweenTags(message.content, 'answer'),
+													'text'
+												)
 											)
 										}}
 										variant="ghost"
