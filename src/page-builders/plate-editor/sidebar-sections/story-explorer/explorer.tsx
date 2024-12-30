@@ -78,10 +78,11 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 			setContent(
 				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => ({
 					title: `${index + start}. ${data.chapter_title || ''}`,
+					preContent: `Logline:\n${data.loglines}`,
 					content: [
 						{
-							title: data.loglines,
-							content: `Summary:\n\n${data.summary}`,
+							title: 'Read Summary',
+							content: data.summary,
 						},
 					],
 				}))
