@@ -1,5 +1,6 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { episodeLimit } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
@@ -19,7 +20,10 @@ const Title = () => {
 	const readOnly = useEditorReadOnly()
 
 	const handleClick = () => {
-		router.push(`/projects/${String(id)}`)
+		const page = Math.ceil(
+			Number(episodeContent?.chapter.seq_number || 1) / episodeLimit
+		)
+		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
 	}
 
 	const updateChapterTitle = (chapter_title: string) => {

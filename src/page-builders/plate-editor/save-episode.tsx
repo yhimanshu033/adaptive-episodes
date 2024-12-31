@@ -94,7 +94,12 @@ const SaveEpisode = () => {
 					<LoaderCircle className="animate-spin" size={16} />
 				</div>
 			) : (
-				<Button disabled={isSaved} size="icon" onClick={handleSave}>
+				<Button
+					tooltip="Save Episode"
+					disabled={isSaved}
+					size="icon"
+					onClick={handleSave}
+				>
 					<Save size={16} />
 				</Button>
 			)}

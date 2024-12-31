@@ -1,36 +1,67 @@
-export const categories: Array<{
-	action: Array<{ id: string; name: string }>
-	id: 'plot' | 'character' | 'world'
-	mode: string
-}> = [
+import { ExplorerCategories } from '@/types/ai-types'
+
+export enum ExplorerMode {
+	Character = 'Character',
+	Plot = 'Plot',
+	World = 'World',
+}
+
+export enum ExplorerModeId {
+	Character = 'character',
+	Plot = 'plot',
+	World = 'world',
+}
+
+export enum PlotAction {
+	Arcs = 'arcs',
+	Scenes = 'scenes',
+	StorySim = 'storysim',
+	Summary = 'summary',
+}
+
+export enum CharacterAction {
+	Arcs = 'arcs',
+	Bios = 'bios',
+	Relationships = 'relationships',
+}
+
+export enum WorldAction {
+	Locations = 'locations',
+	Props = 'props',
+	Rules = 'rules',
+}
+
+export const categories: ExplorerCategories = [
 	{
-		mode: 'Plot',
-		id: 'plot',
+		mode: ExplorerMode.Plot,
+		id: ExplorerModeId.Plot,
 		action: [
-			{ id: 'summary', name: 'Summaries' },
-			{ id: 'scenes', name: 'Scenes' },
-			{ id: 'arcs', name: 'Arcs' },
-			{ id: 'storysim', name: 'StorySim' },
+			{ id: PlotAction.Summary, name: 'Summaries' },
+			{ id: PlotAction.Scenes, name: 'Scenes' },
+			{ id: PlotAction.Arcs, name: 'Arcs' },
+			{ id: PlotAction.StorySim, name: 'StorySim' },
 		],
 	},
 	{
-		mode: 'Character',
-		id: 'character',
+		mode: ExplorerMode.Character,
+		id: ExplorerModeId.Character,
 		action: [
-			{ id: 'bios', name: 'Bios' },
-			{ id: 'relationships', name: 'Relationships' },
-			{ id: 'arcs', name: 'Arcs' },
+			{ id: CharacterAction.Bios, name: 'Bios' },
+			{ id: CharacterAction.Relationships, name: 'Relationships' },
+			{ id: CharacterAction.Arcs, name: 'Arcs' },
 		],
 	},
 	{
-		mode: 'World',
-		id: 'world',
+		mode: ExplorerMode.World,
+		id: ExplorerModeId.World,
 		action: [
-			{ id: 'locations', name: 'Locations' },
-			{ id: 'props', name: 'Props' },
-			{ id: 'rules', name: 'Rules' },
+			{ id: WorldAction.Locations, name: 'Locations' },
+			{ id: WorldAction.Props, name: 'Props' },
+			{ id: WorldAction.Rules, name: 'Rules' },
 		],
 	},
 ]
 
-export const defaultMode = 'plot'
+export const currentlyDisabled = PlotAction.StorySim
+
+export const defaultMode = ExplorerModeId.Plot

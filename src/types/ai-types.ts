@@ -1,3 +1,10 @@
+import {
+	CharacterAction,
+	ExplorerMode,
+	ExplorerModeId,
+	PlotAction,
+	WorldAction,
+} from '@/constants/story-explorer-constants'
 import { Value } from '@udecode/plate-common'
 
 import { MinifiedValue } from './common'
@@ -116,8 +123,18 @@ export interface PlotExplorerParams {
 
 export interface ExplorerType {
 	content: string | ExplorerType[]
+	preContent?: string
 	title: string
 }
+
+export type ExplorerCategories = Array<{
+	action: Array<{
+		id: PlotAction | CharacterAction | WorldAction
+		name: string
+	}>
+	id: ExplorerModeId
+	mode: ExplorerMode
+}>
 
 export interface PlotExplorerApiResponse {
 	data: ExplorerType[]
