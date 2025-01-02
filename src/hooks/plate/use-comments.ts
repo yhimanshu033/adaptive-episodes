@@ -14,7 +14,10 @@ import { TCustomComment } from '@/types/editor-types'
 export default function useComments() {
 	const { useOption, setOptions } = useEditorPlugin(CommentsPlugin)
 	const editor = useEditorRef()
-	const allComments: TComment[] = Object.values(useOption('comments'))
+	const commentsOption = useOption('comments')
+	const allComments: TComment[] = commentsOption
+		? Object.values(commentsOption)
+		: []
 	const activeCommentId = useOption('activeCommentId')
 
 	const replies = allComments.filter((elm) => !!elm.parentId)

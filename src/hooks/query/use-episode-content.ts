@@ -25,18 +25,19 @@ export const useEpisodeContent = () => {
 	const { episode, latestStatus } = data
 		? getSelectedEpisode(data, selectedStatus)
 		: { episode: undefined, latestStatus: undefined }
+	const queryKey = [
+		episode ? episode.id : episodeId,
+		'content',
+		latestStatus || 'BASE',
+	]
 	const query = useQuery({
-		queryKey: [
-			episode ? episode.id : episodeId,
-			'content',
-			latestStatus || 'BASE',
-		],
+		queryKey,
 		queryFn: () => getEpisodeContent(episode?.id || episodeId),
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
 	})
-	return { ...query, latestStatus }
+	return { ...query, latestStatus, queryKey }
 }
 
 export default useEpisodeContent

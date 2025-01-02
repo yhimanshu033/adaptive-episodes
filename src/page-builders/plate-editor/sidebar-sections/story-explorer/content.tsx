@@ -105,7 +105,7 @@ const Content = ({
 					const { title, content, preContent } = preProcessData(data)
 					return (
 						<AccordionItem key={`${title}${index}`} value={`${title}${index}`}>
-							<AccordionTrigger>{`${index + 1}. ${title}`}</AccordionTrigger>
+							<AccordionTrigger>{title}</AccordionTrigger>
 							<AccordionContent>
 								{renderContent(content, preContent)}
 							</AccordionContent>
