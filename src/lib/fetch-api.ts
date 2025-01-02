@@ -83,15 +83,16 @@ export async function fetchAPI<
 	}
 
 	try {
+		const isFormData = body instanceof FormData
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {
-				'Content-Type': 'application/json',
+				...(isFormData ? {} : { 'Content-Type': 'application/json' }),
 				'API-Key': API_KEY,
 				...headers,
 			},
 			...(method !== 'GET' && method !== 'DELETE'
-				? { body: JSON.stringify(body) }
+				? { body: isFormData ? body : JSON.stringify(body) }
 				: {}),
 			next: {
 				revalidate: 0,

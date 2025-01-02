@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
+import useStoryStore, { setFormOpen } from '@/store/story-store'
 import { Plus } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -10,13 +11,14 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 import { ImportStory } from './import-story'
 
 const ImportStoryCard = () => {
-	const [isOpen, setIsOpen] = useState(false)
+	const isFormOpen = useStoryStore((state) => state.isFormOpen)
 	return (
-		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+		<Dialog open={isFormOpen} onOpenChange={setFormOpen}>
 			<DialogTrigger asChild>
 				<Card className="w-64 cursor-pointer border-dashed bg-transparent">
 					<Button variant="ghost" asChild>
@@ -26,11 +28,14 @@ const ImportStoryCard = () => {
 					</Button>
 				</Card>
 			</DialogTrigger>
+
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
 					<DialogTitle>Import Story</DialogTitle>
 				</DialogHeader>
-				<ImportStory />
+				<ScrollArea className="max-h-[80vh]">
+					<ImportStory />
+				</ScrollArea>
 			</DialogContent>
 		</Dialog>
 	)

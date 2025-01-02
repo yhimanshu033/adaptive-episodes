@@ -9,6 +9,7 @@ import useSocket from '../use-socket'
 const usePlotOutlineHook = () => {
 	const { startTask, getResponse } = useSocket()
 	async function getPlotOutline(params: PlotExplorerParams) {
+		console.log(params)
 		const taskId = await startTask({
 			method: 'POST',
 			url: '/aicopilot/explorer',

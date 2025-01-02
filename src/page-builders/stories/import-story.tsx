@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import {
 	StoryImportFormSchema,
 	useStoryImportFormResolver,
 } from '@/hooks/form-resolvers/story-import-resolver'
+import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
+import { useToast } from '@/hooks/use-toast'
+import { setFormOpen } from '@/store/story-store'
 import { ImageIcon, Upload, X } from 'lucide-react'
 
+import { FullScreenLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -27,7 +31,11 @@ export function ImportStory() {
 	const imageInputRef = useRef<HTMLInputElement | null>(null)
 	const storyInputRef = useRef<HTMLInputElement | null>(null)
 
+	const { storyUploadMutation } = useStoryUploadHook()
+
 	const form = useStoryImportFormResolver()
+
+	const { toast } = useToast()
 
 	const handleDiscardImage = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -36,7 +44,7 @@ export function ImportStory() {
 		if (imageInputRef.current) {
 			imageInputRef.current.value = ''
 		}
-		form.resetField('image')
+		form.resetField('image_file')
 		setImageSrc(null)
 	}
 
@@ -53,17 +61,31 @@ export function ImportStory() {
 
 		const file = e.dataTransfer.files[0]
 		if (file) {
-			form.setValue('story', file)
+			form.setValue('story_file', file)
 		}
 	}
 
 	const onSubmit = (data: StoryImportFormSchema) => {
-		console.log('submit', data)
+		storyUploadMutation.mutate(data)
 	}
 
+	useEffect(() => {
+		if (storyUploadMutation.isSuccess) {
+			form.reset()
+			setImageSrc(null)
+			setFormOpen(false)
+			toast({
+				title: 'Story uploaded successfully',
+				description: 'Wait for a while to process the story',
+				className: 'bg-primary text-foreground',
+			})
+		}
+	}, [form, storyUploadMutation.isSuccess, toast])
+
 	return (
-		<Card className="py-2">
+		<Card className="overflow-y-auto py-2">
 			<CardContent>
+				{storyUploadMutation.isPending && <FullScreenLoader />}
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 						<FormField
@@ -112,7 +134,7 @@ export function ImportStory() {
 						<div className="flex items-center gap-2">
 							<FormField
 								control={form.control}
-								name="ep_start"
+								name="start_ep"
 								render={({ field }) => (
 									<FormItem className="flex-1">
 										<FormControl>
@@ -129,7 +151,7 @@ export function ImportStory() {
 							/>
 							<FormField
 								control={form.control}
-								name="ep_end"
+								name="end_ep"
 								render={({ field }) => (
 									<FormItem className="flex-1">
 										<FormControl>
@@ -147,7 +169,7 @@ export function ImportStory() {
 						</div>
 						<FormField
 							control={form.control}
-							name="image"
+							name="image_file"
 							render={({ field }) => (
 								<FormItem className="flex items-center justify-between">
 									<div className="flex flex-col gap-4">
@@ -161,7 +183,7 @@ export function ImportStory() {
 												onChange={(e) => {
 													if (e.target.files?.length) {
 														const file = e.target.files[0]
-														form.setValue('image', file)
+														form.setValue('image_file', file)
 														const imageURL = URL.createObjectURL(file)
 														console.log(imageURL)
 														setImageSrc(imageURL)
@@ -215,7 +237,7 @@ export function ImportStory() {
 						/>
 						<FormField
 							control={form.control}
-							name="story"
+							name="story_file"
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel htmlFor="story">
@@ -271,7 +293,9 @@ export function ImportStory() {
 								</FormItem>
 							)}
 						/>
-						<Button type="submit">{'Import Story'}</Button>
+						<Button type="submit" disabled={storyUploadMutation.isPending}>
+							{storyUploadMutation.isPending ? 'Uploading' : 'Upload Story'}
+						</Button>
 					</form>
 				</Form>
 			</CardContent>

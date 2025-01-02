@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { BookOpen, User } from 'lucide-react'
 
@@ -19,12 +20,13 @@ const Stories = () => {
 		)
 	return (
 		<section className="container my-6 flex flex-wrap gap-6 self-start">
+			<ImportStoryCard />
 			{stories?.map((story) => (
 				<Card key={story.id} className="w-64 overflow-hidden">
 					<Link href={`/projects/${story.id}`}>
 						<div className="relative aspect-[1/1]">
 							<Image
-								src={story.image}
+								src={story.image || COPILOT_LOGO_URL}
 								alt={`${story.project_title} thumbnail`}
 								layout="fill"
 								objectFit="cover"
@@ -49,7 +51,6 @@ const Stories = () => {
 					</Link>
 				</Card>
 			))}
-			<ImportStoryCard />
 		</section>
 	)
 }

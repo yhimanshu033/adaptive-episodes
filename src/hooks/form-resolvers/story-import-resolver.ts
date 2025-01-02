@@ -11,15 +11,15 @@ import { z } from 'zod'
 export const storyImportFormSchema = z.object({
 	title: z.string(),
 	author: z.string().optional(),
-	ep_start: z.preprocess(
+	start_ep: z.preprocess(
 		(val) => Number(val),
 		z.number().min(1, { message: 'Enter number >=1' })
 	),
-	ep_end: z.preprocess(
+	end_ep: z.preprocess(
 		(val) => Number(val),
 		z.number().min(1, { message: 'Enter number >=1' })
 	),
-	image: z
+	image_file: z
 		.instanceof(File)
 		.optional()
 		.refine(
@@ -30,7 +30,7 @@ export const storyImportFormSchema = z.object({
 			(file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type),
 			'Only .jpg, .jpeg, .png and .webp formats are supported.'
 		),
-	story: z
+	story_file: z
 		.instanceof(File)
 		.refine(
 			(file) => file && file.size <= MAX_DOCX_FILE_SIZE,
@@ -51,9 +51,9 @@ export const useStoryImportFormResolver = () =>
 		defaultValues: {
 			title: '',
 			author: '',
-			ep_start: 1,
-			ep_end: 1,
-			image: undefined,
-			story: undefined,
+			start_ep: 1,
+			end_ep: 1,
+			image_file: undefined,
+			story_file: undefined,
 		},
 	})

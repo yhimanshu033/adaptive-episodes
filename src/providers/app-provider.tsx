@@ -12,6 +12,7 @@ import NextTopLoader from 'nextjs-toploader'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
+import { Toaster } from '@/components/ui/toaster'
 
 const AppProvider = ({
 	session,
@@ -52,6 +53,7 @@ const AppProvider = ({
 							>
 								<NextTopLoader />
 								{children}
+								<Toaster />
 								<ReactQueryDevtools />
 							</TooltipProvider>
 						</ThemeProvider>
