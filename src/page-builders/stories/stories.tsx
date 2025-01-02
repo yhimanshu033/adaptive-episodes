@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { BookOpen, User } from 'lucide-react'
 
@@ -22,7 +23,7 @@ const Stories = () => {
 					<Link href={`/projects/${story.id}`}>
 						<div className="relative aspect-[1/1]">
 							<Image
-								src={story.image}
+								src={story.image || COPILOT_LOGO_URL}
 								alt={`${story.project_title} thumbnail`}
 								layout="fill"
 								objectFit="cover"
