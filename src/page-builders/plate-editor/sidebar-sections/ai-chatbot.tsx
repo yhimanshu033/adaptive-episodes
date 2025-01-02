@@ -319,7 +319,6 @@ const AIChatbot = () => {
 		if (!responses[sfxStreaming]) return
 		const text = getText(children)
 		const resp = mergeStrings(responses[sfxStreaming].join(''), text)
-		// handleSFX(mergeStrings(responses[sfxStreaming].join("\n"), text))
 
 		const matches = resp.match(/((\[!.*\])*\n+)+/g)
 		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
@@ -351,15 +350,6 @@ const AIChatbot = () => {
 		const parsedResponse = parse(
 			jsonrepair(responses[reviewStreaming].join(''))
 		) as IndexedCommentsResponse[]
-		// const parsedResponse = responses[reviewStreaming].map((p) => {
-		// 	try {
-		// 		const parsedP = JSON.parse(jsonrepair(p))
-		// 		return parsedP
-		// 	} catch (error) {
-		// 		console.log({ error, p })
-		// 		return null
-		// 	}
-		// }).filter(Boolean)
 		addReview(parsedResponse)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reviewStreaming, responses[reviewStreaming], taskEnded[reviewStreaming]])
@@ -458,7 +448,6 @@ const AIChatbot = () => {
 									)}
 									<div
 										dangerouslySetInnerHTML={{
-											// __html: (responses[message.taskId] || []).map((t) => ("<span>" + t.replaceAll('\n', '<br/>') + "</span>")).join(''),
 											__html: (responses[message.taskId] || [])
 												.join('')
 												.replaceAll('\n', '<br/>'),
