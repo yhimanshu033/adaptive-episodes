@@ -18,13 +18,14 @@ import { useGlobalStore } from '@/store/global-store'
 import usePlateStore from '@/store/plate-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
-	ParagraphPlugin,
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
 } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
 import { Value } from '@udecode/slate'
+import { parse } from 'best-effort-json-parser'
+import { jsonrepair } from 'jsonrepair'
 import {
 	Check,
 	CheckCheck,
@@ -61,6 +62,7 @@ import {
 	getRandomElement,
 	getText,
 	maxify,
+	mergeStrings,
 	minify,
 	replaceMatches,
 } from '@/lib/utils'
@@ -76,6 +78,9 @@ import { IndexedCommentsResponse } from '@/types/editor-types'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
+	const [sfxStreaming, setSfxStreaming] = useState<string>('')
+	const [reviewStreaming, setReviewStreaming] = useState<string>('')
+	const [reviewedChildren, setReviewedChildren] = useState<Value>()
 	const { id } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -171,28 +176,6 @@ const AIChatbot = () => {
 		})
 	}
 
-	const handleSFX = (resp: string) => {
-		const matches = resp.match(/((\[!.*\])*\n+)+/g)
-		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
-		if (!matches || !hasSFX) {
-			addMessages({
-				taskId: nanoid(),
-				role: EMessenger.ASSISTANT,
-				action: EAction.BLOCK,
-				content: JSON.stringify([
-					{
-						id: `0`,
-						type: ParagraphPlugin.key,
-						children: [{ text: 'Oops! no SFX generated' }],
-					},
-				]),
-			})
-			return
-		}
-		const responseValue = structuredClone(children)
-		handleChanges(replaceMatches(/(\n{2,})/g, matches, responseValue))
-	}
-
 	const handleChanges = (aiResponse: Value) => {
 		setResponseValue(structuredClone(aiResponse))
 		setPrevValue(structuredClone(children))
@@ -259,7 +242,8 @@ const AIChatbot = () => {
 							delete child.diffOperation
 							if (
 								(accepted && type !== 'delete') ||
-								(!accepted && type === 'delete')
+								(!accepted && type === 'delete') ||
+								(child.text && (child.text as string).match(/^\n+$/))
 							) {
 								add = true
 							} else {
@@ -282,6 +266,8 @@ const AIChatbot = () => {
 	)
 
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
+		const children = reviewedChildren
+		if (!children) return
 		const resp = convertReviewResponse(reviewResponse, children)
 		resp.comments.forEach((comment) => {
 			api.comment.addComment({
@@ -292,14 +278,6 @@ const AIChatbot = () => {
 			})
 		})
 		editor.tf.setValue(resp.value)
-		addMessages({
-			role: EMessenger.ASSISTANT,
-			action: EAction.REVIEW,
-			content: reviewResponse.length
-				? 'StoryChat added review in comments'
-				: 'No reviews from StoryChat',
-			taskId: nanoid(),
-		})
 	}
 
 	const changesPending = prevValue && value
@@ -307,9 +285,22 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!isPending && aiResponse) {
 			if (requestedAction === EChatMode.REVIEW) {
-				addReview(JSON.parse(aiResponse) as IndexedCommentsResponse[])
+				setReviewedChildren(children)
+				setReviewStreaming(aiResponse)
+				addMessages({
+					taskId: aiResponse,
+					role: EMessenger.ASSISTANT,
+					action: EAction.REVIEW,
+					content: 'Adding Review...',
+				})
 			} else if (requestedAction === EChatMode.SFX) {
-				handleSFX(aiResponse)
+				setSfxStreaming(aiResponse)
+				addMessages({
+					taskId: aiResponse,
+					role: EMessenger.ASSISTANT,
+					action: EAction.CHANGES,
+					content: 'Adding SFX...',
+				})
 			} else if (requestedAction === EChatMode.VOICE) {
 				handleChanges(maxify(JSON.parse(aiResponse) as MinifiedValue, children))
 			} else {
@@ -319,6 +310,59 @@ const AIChatbot = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [aiResponse, isPending])
+
+	useEffect(() => {
+		if (!sfxStreaming) return
+		if (taskEnded[sfxStreaming]) {
+			setSfxStreaming('')
+		}
+		if (!responses[sfxStreaming]) return
+		const text = getText(children)
+		const resp = mergeStrings(responses[sfxStreaming].join(''), text)
+		// handleSFX(mergeStrings(responses[sfxStreaming].join("\n"), text))
+
+		const matches = resp.match(/((\[!.*\])*\n+)+/g)
+		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
+		if (!matches || !hasSFX) {
+			return
+		}
+		const responseValue = structuredClone(children)
+		const val = replaceMatches(/(\n{1,})/g, matches, responseValue)
+		setResponseValue(structuredClone(val))
+		setPrevValue(structuredClone(children))
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sfxStreaming, responses[sfxStreaming], taskEnded[sfxStreaming]])
+
+	useEffect(() => {
+		if (!reviewStreaming) return
+		if (taskEnded[reviewStreaming]) {
+			setReviewStreaming('')
+			addMessages({
+				role: EMessenger.ASSISTANT,
+				action: EAction.REVIEW,
+				content:
+					responses[reviewStreaming].length > 2
+						? 'StoryChat added review in comments'
+						: 'No reviews from StoryChat',
+				taskId: nanoid(),
+			})
+		}
+		if (!responses[reviewStreaming]) return
+		const parsedResponse = parse(
+			jsonrepair(responses[reviewStreaming].join(''))
+		) as IndexedCommentsResponse[]
+		// const parsedResponse = responses[reviewStreaming].map((p) => {
+		// 	try {
+		// 		const parsedP = JSON.parse(jsonrepair(p))
+		// 		return parsedP
+		// 	} catch (error) {
+		// 		console.log({ error, p })
+		// 		return null
+		// 	}
+		// }).filter(Boolean)
+		addReview(parsedResponse)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [reviewStreaming, responses[reviewStreaming], taskEnded[reviewStreaming]])
 
 	useEffect(() => {
 		if (messageEndRef.current) {
@@ -353,26 +397,43 @@ const AIChatbot = () => {
 						)}
 						{message.role === EMessenger.ASSISTANT &&
 						message.action === EAction.CHANGES ? (
-							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
-								<TooltipComponent tooltip={'Done'}>
-									<Button onClick={() => handleAccept(index, false)}>
-										<Check />
-									</Button>
-								</TooltipComponent>
-								<TooltipComponent tooltip={'Accept All'}>
-									<Button
-										variant="outline"
-										onClick={() => handleAccept(index, true)}
-									>
-										<CheckCheck />
-									</Button>
-								</TooltipComponent>
-								<TooltipComponent tooltip={'Reject All'}>
-									<Button variant="outline" onClick={() => handleReject(index)}>
-										<X />
-									</Button>
-								</TooltipComponent>
-							</div>
+							taskEnded[message.taskId] ? (
+								<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
+									<TooltipComponent tooltip={'Done'}>
+										<Button onClick={() => handleAccept(index, false)}>
+											<Check />
+										</Button>
+									</TooltipComponent>
+									<TooltipComponent tooltip={'Accept All'}>
+										<Button
+											variant="outline"
+											onClick={() => handleAccept(index, true)}
+										>
+											<CheckCheck />
+										</Button>
+									</TooltipComponent>
+									<TooltipComponent tooltip={'Reject All'}>
+										<Button
+											variant="outline"
+											onClick={() => handleReject(index)}
+										>
+											<X />
+										</Button>
+									</TooltipComponent>
+								</div>
+							) : (
+								<div
+									dangerouslySetInnerHTML={{
+										__html: message.content,
+									}}
+									className={cn(
+										'max-w-[70%] rounded-lg p-3',
+										message.role === EMessenger.ASSISTANT
+											? 'bg-background'
+											: 'bg-primary'
+									)}
+								/>
+							)
 						) : message.role === EMessenger.ASSISTANT &&
 						  message.action === EAction.BLOCK ? (
 							(responses[message.taskId] || []).length ? (
@@ -413,7 +474,7 @@ const AIChatbot = () => {
 							) : (
 								<div
 									dangerouslySetInnerHTML={{
-										__html: 'Typing...',
+										__html: 'Thinking...',
 									}}
 									className={cn(
 										'max-w-[70%] rounded-lg p-3',
