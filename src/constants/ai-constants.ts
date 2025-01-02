@@ -5,6 +5,7 @@ export const aiInitialMessage: TMessage[] = [
 		role: EMessenger.ASSISTANT,
 		content: 'Wie kann ich dir heute beim Überarbeiten helfen?',
 		action: EAction.MESSAGE,
+		taskId: '1',
 	},
 ]
 export enum AiDiffOperation {
@@ -24,7 +25,10 @@ export enum LocalizationType {
 	PERSON = 'character',
 	PLACE = 'place',
 }
-
+export enum ESocketStatus {
+	COMPLETED = 'completed',
+	STARTED = 'started',
+}
 export const quickPrompts = [
 	`Analyze this episode's beats and suggest where dramatic tension drops or needs escalation.`,
 	'Review the dialogue scenes and suggest character-revealing inner thoughts, more theatrical exchanges, and heightened emotional stakes.',

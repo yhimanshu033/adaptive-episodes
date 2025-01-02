@@ -12,6 +12,7 @@ import {
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
 import usePlateStore from '@/store/plate-store'
@@ -33,6 +34,7 @@ import {
 	Trash2,
 	X,
 } from 'lucide-react'
+import { nanoid } from 'nanoid'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Loader } from '@/components/loader'
@@ -92,6 +94,7 @@ const AIChatbot = () => {
 	const { messages } = store()
 	const { aiChatbotMutation } = useAIChatbotHook()
 	const { data: aiResponse, isPending, reset } = aiChatbotMutation
+	const { responses, taskEnded } = useSocketStreaming()
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
@@ -159,11 +162,12 @@ const AIChatbot = () => {
 		}
 	}
 
-	const handleBlock = ({ text }: { text: string }) => {
+	const handleBlock = ({ text, taskId }: { taskId: string; text: string }) => {
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			content: text,
 			action: EAction.BLOCK,
+			taskId,
 		})
 	}
 
@@ -172,6 +176,7 @@ const AIChatbot = () => {
 		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
 		if (!matches || !hasSFX) {
 			addMessages({
+				taskId: nanoid(),
 				role: EMessenger.ASSISTANT,
 				action: EAction.BLOCK,
 				content: JSON.stringify([
@@ -192,6 +197,7 @@ const AIChatbot = () => {
 		setResponseValue(structuredClone(aiResponse))
 		setPrevValue(structuredClone(children))
 		addMessages({
+			taskId: nanoid(),
 			role: EMessenger.ASSISTANT,
 			action: EAction.CHANGES,
 			content: 'Added changes from StoryChat',
@@ -202,6 +208,7 @@ const AIChatbot = () => {
 		handleAcceptResponse(all)
 		updateMessages(
 			{
+				taskId: nanoid(),
 				role: EMessenger.ASSISTANT,
 				action: EAction.ACCEPT,
 				content: 'Accepted changes from StoryChat',
@@ -213,6 +220,7 @@ const AIChatbot = () => {
 	function handleReject(i: number) {
 		updateMessages(
 			{
+				taskId: nanoid(),
 				role: EMessenger.ASSISTANT,
 				action: EAction.REJECT,
 				content: 'Rejected changes from StoryChat',
@@ -290,6 +298,7 @@ const AIChatbot = () => {
 			content: reviewResponse.length
 				? 'StoryChat added review in comments'
 				: 'No reviews from StoryChat',
+			taskId: nanoid(),
 		})
 	}
 
@@ -298,15 +307,13 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!isPending && aiResponse) {
 			if (requestedAction === EChatMode.REVIEW) {
-				addReview(JSON.parse(aiResponse as string) as IndexedCommentsResponse[])
+				addReview(JSON.parse(aiResponse) as IndexedCommentsResponse[])
 			} else if (requestedAction === EChatMode.SFX) {
-				handleSFX(aiResponse as string)
+				handleSFX(aiResponse)
 			} else if (requestedAction === EChatMode.VOICE) {
-				handleChanges(
-					maxify(JSON.parse(aiResponse as string) as MinifiedValue, children)
-				)
+				handleChanges(maxify(JSON.parse(aiResponse) as MinifiedValue, children))
 			} else {
-				handleBlock({ text: aiResponse as string })
+				handleBlock({ text: '', taskId: aiResponse })
 			}
 			setRequestedAction(null)
 		}
@@ -368,35 +375,54 @@ const AIChatbot = () => {
 							</div>
 						) : message.role === EMessenger.ASSISTANT &&
 						  message.action === EAction.BLOCK ? (
-							<div className="relative max-w-[70%]">
-								<TooltipComponent tooltip={'Copy'}>
-									<Button
-										onClick={() => {
-											void navigator.clipboard.writeText(
-												extractBetweenTags(
-													extractBetweenTags(message.content, 'answer'),
-													'text'
-												)
-											)
+							(responses[message.taskId] || []).length ? (
+								<div className="relative max-w-[70%]">
+									{taskEnded[message.taskId] && (
+										<TooltipComponent tooltip={'Copy'}>
+											<Button
+												onClick={() => {
+													void navigator.clipboard.writeText(
+														extractBetweenTags(
+															extractBetweenTags(message.content, 'answer'),
+															'text'
+														)
+													)
+												}}
+												variant="ghost"
+												className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
+											>
+												<Copy size={12} />
+											</Button>
+										</TooltipComponent>
+									)}
+									<div
+										dangerouslySetInnerHTML={{
+											// __html: (responses[message.taskId] || []).map((t) => ("<span>" + t.replaceAll('\n', '<br/>') + "</span>")).join(''),
+											__html: (responses[message.taskId] || [])
+												.join('')
+												.replaceAll('\n', '<br/>'),
 										}}
-										variant="ghost"
-										className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
-									>
-										<Copy size={12} />
-									</Button>
-								</TooltipComponent>
+										className={cn(
+											'rounded-lg p-3 *:animate-in',
+											message.role === EMessenger.ASSISTANT
+												? 'bg-background'
+												: 'bg-primary'
+										)}
+									/>
+								</div>
+							) : (
 								<div
 									dangerouslySetInnerHTML={{
-										__html: message.content.replaceAll('\n', '<br/>'),
+										__html: 'Typing...',
 									}}
 									className={cn(
-										'rounded-lg p-3',
+										'max-w-[70%] rounded-lg p-3',
 										message.role === EMessenger.ASSISTANT
 											? 'bg-background'
 											: 'bg-primary'
 									)}
 								/>
-							</div>
+							)
 						) : (
 							<div
 								dangerouslySetInnerHTML={{
