@@ -12,18 +12,20 @@ import {
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
 import usePlateStore from '@/store/plate-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
-	ParagraphPlugin,
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
 } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
 import { Value } from '@udecode/slate'
+import { parse } from 'best-effort-json-parser'
+import { jsonrepair } from 'jsonrepair'
 import {
 	Check,
 	CheckCheck,
@@ -33,6 +35,7 @@ import {
 	Trash2,
 	X,
 } from 'lucide-react'
+import { nanoid } from 'nanoid'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Loader } from '@/components/loader'
@@ -59,6 +62,7 @@ import {
 	getRandomElement,
 	getText,
 	maxify,
+	mergeStrings,
 	minify,
 	replaceMatches,
 } from '@/lib/utils'
@@ -74,6 +78,9 @@ import { IndexedCommentsResponse } from '@/types/editor-types'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
+	const [sfxStreaming, setSfxStreaming] = useState<string>('')
+	const [reviewStreaming, setReviewStreaming] = useState<string>('')
+	const [reviewedChildren, setReviewedChildren] = useState<Value>()
 	const { id } = useParams()
 	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -92,6 +99,7 @@ const AIChatbot = () => {
 	const { messages } = store()
 	const { aiChatbotMutation } = useAIChatbotHook()
 	const { data: aiResponse, isPending, reset } = aiChatbotMutation
+	const { responses, taskEnded } = useSocketStreaming()
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
@@ -159,39 +167,20 @@ const AIChatbot = () => {
 		}
 	}
 
-	const handleBlock = ({ text }: { text: string }) => {
+	const handleBlock = ({ text, taskId }: { taskId: string; text: string }) => {
 		addMessages({
 			role: EMessenger.ASSISTANT,
 			content: text,
 			action: EAction.BLOCK,
+			taskId,
 		})
-	}
-
-	const handleSFX = (resp: string) => {
-		const matches = resp.match(/((\[!.*\])*\n+)+/g)
-		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
-		if (!matches || !hasSFX) {
-			addMessages({
-				role: EMessenger.ASSISTANT,
-				action: EAction.BLOCK,
-				content: JSON.stringify([
-					{
-						id: `0`,
-						type: ParagraphPlugin.key,
-						children: [{ text: 'Oops! no SFX generated' }],
-					},
-				]),
-			})
-			return
-		}
-		const responseValue = structuredClone(children)
-		handleChanges(replaceMatches(/(\n{2,})/g, matches, responseValue))
 	}
 
 	const handleChanges = (aiResponse: Value) => {
 		setResponseValue(structuredClone(aiResponse))
 		setPrevValue(structuredClone(children))
 		addMessages({
+			taskId: nanoid(),
 			role: EMessenger.ASSISTANT,
 			action: EAction.CHANGES,
 			content: 'Added changes from StoryChat',
@@ -202,6 +191,7 @@ const AIChatbot = () => {
 		handleAcceptResponse(all)
 		updateMessages(
 			{
+				taskId: nanoid(),
 				role: EMessenger.ASSISTANT,
 				action: EAction.ACCEPT,
 				content: 'Accepted changes from StoryChat',
@@ -213,6 +203,7 @@ const AIChatbot = () => {
 	function handleReject(i: number) {
 		updateMessages(
 			{
+				taskId: nanoid(),
 				role: EMessenger.ASSISTANT,
 				action: EAction.REJECT,
 				content: 'Rejected changes from StoryChat',
@@ -251,7 +242,8 @@ const AIChatbot = () => {
 							delete child.diffOperation
 							if (
 								(accepted && type !== 'delete') ||
-								(!accepted && type === 'delete')
+								(!accepted && type === 'delete') ||
+								(child.text && (child.text as string).match(/^\n+$/))
 							) {
 								add = true
 							} else {
@@ -274,6 +266,8 @@ const AIChatbot = () => {
 	)
 
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
+		const children = reviewedChildren
+		if (!children) return
 		const resp = convertReviewResponse(reviewResponse, children)
 		resp.comments.forEach((comment) => {
 			api.comment.addComment({
@@ -284,13 +278,6 @@ const AIChatbot = () => {
 			})
 		})
 		editor.tf.setValue(resp.value)
-		addMessages({
-			role: EMessenger.ASSISTANT,
-			action: EAction.REVIEW,
-			content: reviewResponse.length
-				? 'StoryChat added review in comments'
-				: 'No reviews from StoryChat',
-		})
 	}
 
 	const changesPending = prevValue && value
@@ -298,20 +285,74 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!isPending && aiResponse) {
 			if (requestedAction === EChatMode.REVIEW) {
-				addReview(JSON.parse(aiResponse as string) as IndexedCommentsResponse[])
+				setReviewedChildren(children)
+				setReviewStreaming(aiResponse)
+				addMessages({
+					taskId: aiResponse,
+					role: EMessenger.ASSISTANT,
+					action: EAction.REVIEW,
+					content: 'Adding Review...',
+				})
 			} else if (requestedAction === EChatMode.SFX) {
-				handleSFX(aiResponse as string)
+				setSfxStreaming(aiResponse)
+				addMessages({
+					taskId: aiResponse,
+					role: EMessenger.ASSISTANT,
+					action: EAction.CHANGES,
+					content: 'Adding SFX...',
+				})
 			} else if (requestedAction === EChatMode.VOICE) {
-				handleChanges(
-					maxify(JSON.parse(aiResponse as string) as MinifiedValue, children)
-				)
+				handleChanges(maxify(JSON.parse(aiResponse) as MinifiedValue, children))
 			} else {
-				handleBlock({ text: aiResponse as string })
+				handleBlock({ text: '', taskId: aiResponse })
 			}
 			setRequestedAction(null)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [aiResponse, isPending])
+
+	useEffect(() => {
+		if (!sfxStreaming) return
+		if (taskEnded[sfxStreaming]) {
+			setSfxStreaming('')
+		}
+		if (!responses[sfxStreaming]) return
+		const text = getText(children)
+		const resp = mergeStrings(responses[sfxStreaming].join(''), text)
+
+		const matches = resp.match(/((\[!.*\])*\n+)+/g)
+		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
+		if (!matches || !hasSFX) {
+			return
+		}
+		const responseValue = structuredClone(children)
+		const val = replaceMatches(/(\n{1,})/g, matches, responseValue)
+		setResponseValue(structuredClone(val))
+		setPrevValue(structuredClone(children))
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sfxStreaming, responses[sfxStreaming], taskEnded[sfxStreaming]])
+
+	useEffect(() => {
+		if (!reviewStreaming) return
+		if (taskEnded[reviewStreaming]) {
+			setReviewStreaming('')
+			addMessages({
+				role: EMessenger.ASSISTANT,
+				action: EAction.REVIEW,
+				content:
+					responses[reviewStreaming].length > 2
+						? 'StoryChat added review in comments'
+						: 'No reviews from StoryChat',
+				taskId: nanoid(),
+			})
+		}
+		if (!responses[reviewStreaming]) return
+		const parsedResponse = parse(
+			jsonrepair(responses[reviewStreaming].join(''))
+		) as IndexedCommentsResponse[]
+		addReview(parsedResponse)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [reviewStreaming, responses[reviewStreaming], taskEnded[reviewStreaming]])
 
 	useEffect(() => {
 		if (messageEndRef.current) {
@@ -346,57 +387,92 @@ const AIChatbot = () => {
 						)}
 						{message.role === EMessenger.ASSISTANT &&
 						message.action === EAction.CHANGES ? (
-							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
-								<TooltipComponent tooltip={'Done'}>
-									<Button onClick={() => handleAccept(index, false)}>
-										<Check />
-									</Button>
-								</TooltipComponent>
-								<TooltipComponent tooltip={'Accept All'}>
-									<Button
-										variant="outline"
-										onClick={() => handleAccept(index, true)}
-									>
-										<CheckCheck />
-									</Button>
-								</TooltipComponent>
-								<TooltipComponent tooltip={'Reject All'}>
-									<Button variant="outline" onClick={() => handleReject(index)}>
-										<X />
-									</Button>
-								</TooltipComponent>
-							</div>
-						) : message.role === EMessenger.ASSISTANT &&
-						  message.action === EAction.BLOCK ? (
-							<div className="relative max-w-[70%]">
-								<TooltipComponent tooltip={'Copy'}>
-									<Button
-										onClick={() => {
-											void navigator.clipboard.writeText(
-												extractBetweenTags(
-													extractBetweenTags(message.content, 'answer'),
-													'text'
-												)
-											)
-										}}
-										variant="ghost"
-										className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
-									>
-										<Copy size={12} />
-									</Button>
-								</TooltipComponent>
+							taskEnded[message.taskId] ? (
+								<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
+									<TooltipComponent tooltip={'Done'}>
+										<Button onClick={() => handleAccept(index, false)}>
+											<Check />
+										</Button>
+									</TooltipComponent>
+									<TooltipComponent tooltip={'Accept All'}>
+										<Button
+											variant="outline"
+											onClick={() => handleAccept(index, true)}
+										>
+											<CheckCheck />
+										</Button>
+									</TooltipComponent>
+									<TooltipComponent tooltip={'Reject All'}>
+										<Button
+											variant="outline"
+											onClick={() => handleReject(index)}
+										>
+											<X />
+										</Button>
+									</TooltipComponent>
+								</div>
+							) : (
 								<div
 									dangerouslySetInnerHTML={{
-										__html: message.content.replaceAll('\n', '<br/>'),
+										__html: message.content,
 									}}
 									className={cn(
-										'rounded-lg p-3',
+										'max-w-[70%] rounded-lg p-3',
 										message.role === EMessenger.ASSISTANT
 											? 'bg-background'
 											: 'bg-primary'
 									)}
 								/>
-							</div>
+							)
+						) : message.role === EMessenger.ASSISTANT &&
+						  message.action === EAction.BLOCK ? (
+							(responses[message.taskId] || []).length ? (
+								<div className="relative max-w-[70%]">
+									{taskEnded[message.taskId] && (
+										<TooltipComponent tooltip={'Copy'}>
+											<Button
+												onClick={() => {
+													void navigator.clipboard.writeText(
+														extractBetweenTags(
+															extractBetweenTags(message.content, 'answer'),
+															'text'
+														)
+													)
+												}}
+												variant="ghost"
+												className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
+											>
+												<Copy size={12} />
+											</Button>
+										</TooltipComponent>
+									)}
+									<div
+										dangerouslySetInnerHTML={{
+											__html: (responses[message.taskId] || [])
+												.join('')
+												.replaceAll('\n', '<br/>'),
+										}}
+										className={cn(
+											'rounded-lg p-3 *:animate-in',
+											message.role === EMessenger.ASSISTANT
+												? 'bg-background'
+												: 'bg-primary'
+										)}
+									/>
+								</div>
+							) : (
+								<div
+									dangerouslySetInnerHTML={{
+										__html: 'Thinking...',
+									}}
+									className={cn(
+										'max-w-[70%] rounded-lg p-3',
+										message.role === EMessenger.ASSISTANT
+											? 'bg-background'
+											: 'bg-primary'
+									)}
+								/>
+							)
 						) : (
 							<div
 								dangerouslySetInnerHTML={{

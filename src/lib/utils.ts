@@ -324,7 +324,7 @@ export function getRecord(comments?: TComment[]) {
 }
 
 export function convertReviewResponse(
-	response: IndexedCommentsResponse[],
+	response: Partial<IndexedCommentsResponse>[],
 	children: Value
 ) {
 	const comments: ReviewComment[] = []
@@ -343,7 +343,7 @@ export function convertReviewResponse(
 				let lastIndex = 0
 
 				for (const matchingValue of response) {
-					if (matchingValue.id !== nodeId) continue
+					if (matchingValue.id !== nodeId || !matchingValue.path) continue
 					const { start, end } = matchingValue.path
 
 					if (lastIndex < start) {
@@ -358,7 +358,7 @@ export function convertReviewResponse(
 					const id = nanoid()
 					const commentKey = `comment_${id}`
 					commentSegment[commentKey] = true
-					comments.push({ id, text: matchingValue.comment })
+					comments.push({ id, text: matchingValue.comment || '' })
 
 					segments.push(commentSegment)
 
@@ -465,4 +465,35 @@ export const extractScenesFromBeatsheet = (beatsheet: string) => {
 	}
 
 	return scenes
+}
+
+export function mergeStrings(s1: string, s2: string): string {
+	const s1Lines = s1.split('\n')
+	const s2Lines = s2.split('\n')
+
+	let mergeIndex = s1Lines.length - 1
+	while (mergeIndex >= 0 && !s1Lines[mergeIndex].trim()) {
+		mergeIndex--
+	}
+
+	const merged = [
+		...s1Lines.slice(0, mergeIndex + 1),
+		...s2Lines.slice(mergeIndex + 1),
+	]
+
+	return merged.join('\n')
+}
+
+export function sanitizeJsonString(badJson: string) {
+	return (
+		badJson
+			// Escape backslashes
+			.replace(/\\/g, '\\\\')
+			// Escape double quotes
+			.replace(/(?<!\\)"/g, '\\"')
+			// Handle newlines
+			.replace(/\n/g, '\\n')
+			// Handle tabs
+			.replace(/\t/g, '\\t')
+	)
 }

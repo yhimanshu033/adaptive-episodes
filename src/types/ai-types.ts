@@ -98,6 +98,7 @@ export type TMessage =
 			action: EAction
 			content: string
 			role: EMessenger.ASSISTANT
+			taskId: string
 	  }
 export interface AIStoreType {
 	acceptedValue: Value | null

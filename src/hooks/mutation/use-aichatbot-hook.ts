@@ -1,7 +1,6 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import useSocket from '@/hooks/use-socket'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useMutation } from '@tanstack/react-query'
 
@@ -10,9 +9,11 @@ import { extractFromMetadata } from '@/lib/utils'
 
 import { AIChatBotParams } from '@/types/ai-types'
 
+import useSocketStreaming from '../use-socket-streaming'
+
 const useAIChatbotHook = () => {
 	const { id } = useParams()
-	const { startTask, getResponse } = useSocket()
+	const { startTask } = useSocketStreaming()
 
 	const onAiChatbotMutation = async (params: AIChatBotParams) => {
 		const [start, end] = getMetaDataRange(
@@ -34,8 +35,7 @@ const useAIChatbotHook = () => {
 				...extractedData,
 			},
 		})
-		const resp = await getResponse(taskId)
-		return resp
+		return taskId
 	}
 
 	const aiChatbotMutation = useMutation({
