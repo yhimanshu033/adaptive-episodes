@@ -348,19 +348,24 @@ export function convertReviewResponse(
 
 			if ('text' in node) {
 				const nodeId = currentPath.join('_')
-				const { text } = node as { text: string }
+				const { text, ...rest } = node as TText
 				const segments: TText[] = []
 				let lastIndex = 0
 
+				const idPathMap = new Set<string>()
 				for (const matchingValue of response) {
 					if (matchingValue.id !== nodeId || !matchingValue.path) continue
 					const { start, end } = matchingValue.path
 
+					if (idPathMap.has(`${matchingValue.id}-${start}-${end}`)) continue
+					idPathMap.add(`${matchingValue.id}-${start}-${end}`)
+
 					if (lastIndex < start) {
-						segments.push({ text: text.slice(lastIndex, start) })
+						segments.push({ ...rest, text: text.slice(lastIndex, start) })
 					}
 
 					const commentSegment = {
+						...rest,
 						text: text.slice(start, end),
 						comment: true,
 					} as TText
@@ -376,7 +381,7 @@ export function convertReviewResponse(
 				}
 
 				if (lastIndex < text.length) {
-					segments.push({ text: text.slice(lastIndex) })
+					segments.push({ ...rest, text: text.slice(lastIndex) })
 				}
 
 				return segments.length ? segments : [node]

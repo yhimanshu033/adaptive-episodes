@@ -274,7 +274,12 @@ const AIChatbot = () => {
 		const resp = convertReviewResponse(reviewResponse, children)
 		resp.comments.forEach((comment) => {
 			api.comment.addComment({
-				value: [{ type: 'p', children: [{ text: comment.text }] }],
+				value: [
+					{
+						type: 'p',
+						children: [{ text: comment.text.replace(/(?<=\S)-|•/g, '\n-') }],
+					},
+				],
 				id: comment.id,
 				userId: 'COPILOT-AI',
 				createdAt: Date.now(),

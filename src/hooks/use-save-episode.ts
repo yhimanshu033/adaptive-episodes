@@ -13,6 +13,7 @@ import { BASE_STATUS } from '@/types/common'
 
 const useSaveEpisode = () => {
 	const { children } = useEditorState()
+	console.log({ children })
 	const { allComments } = useComments()
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
@@ -20,11 +21,6 @@ const useSaveEpisode = () => {
 	const { data } = useEpisodeContent()
 	const readOnly = useEditorReadOnly()
 	const { setCurrentDiffValue } = usePlateStore()
-
-	useEffect(() => {
-		setCurrentDiffValue(structuredClone(children))
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [children])
 
 	const handleSave = useCallback(() => {
 		const currentChildren = JSON.stringify(children)
@@ -56,11 +52,6 @@ const useSaveEpisode = () => {
 		saveEpisodeMutation,
 	])
 
-	useEffect(() => {
-		const intervalId = setInterval(handleSave, 10000)
-		return () => clearInterval(intervalId)
-	}, [handleSave])
-
 	const isSaved = useMemo(() => {
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(allComments)
@@ -69,6 +60,16 @@ const useSaveEpisode = () => {
 			savedCommentsRef.current === currentComments
 		)
 	}, [children, allComments])
+
+	useEffect(() => {
+		setCurrentDiffValue(structuredClone(children))
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [children])
+
+	useEffect(() => {
+		const intervalId = setInterval(handleSave, 10000)
+		return () => clearInterval(intervalId)
+	}, [handleSave])
 
 	useEffect(() => {
 		const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -85,7 +86,9 @@ const useSaveEpisode = () => {
 	}, [isSaved])
 
 	useEffect(() => {
-		handleSave()
+		if (savedCommentsRef.current !== JSON.stringify(allComments)) {
+			handleSave()
+		}
 	}, [allComments, handleSave])
 
 	return {
