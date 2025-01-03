@@ -65,6 +65,7 @@ import {
 	getText,
 	maxify,
 	minify,
+	parsSFX,
 } from '@/lib/utils'
 
 import {
@@ -339,13 +340,12 @@ const AIChatbot = () => {
 			setSfxStreaming('')
 		}
 		if (!responses[sfxStreaming]) return
-		try {
-			// console.log({ s: (responses[sfxStreaming].join('')) })
-			// console.log({ json: JSON.parse(responses[sfxStreaming].join('')) })
-			let parsedResponse = parse(
-				jsonrepair(responses[sfxStreaming].join(''))
-			) as IndexedSFXResponse
 
+		try {
+			let parsedResponse = parsSFX<IndexedSFXResponse>(
+				responses[sfxStreaming].join('')
+			)
+			if (!parsedResponse) return
 			parsedResponse = parsedResponse
 				.filter((item) => {
 					const keys = Object.keys(item)
@@ -356,7 +356,6 @@ const AIChatbot = () => {
 						: null
 				})
 				.filter(Boolean)
-			// console.log({ parsedResponse })
 			if (!parsedResponse.length) return
 			const responseValue = addSFX(
 				parsedResponse,

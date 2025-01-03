@@ -7,7 +7,9 @@ import {
 	TText,
 	Value,
 } from '@udecode/plate-common'
+import { parse } from 'best-effort-json-parser'
 import { clsx, type ClassValue } from 'clsx'
+import { jsonrepair } from 'jsonrepair'
 import { twMerge } from 'tailwind-merge'
 
 import { BASE_STATUS, EStatus, MinifiedValue } from '@/types/common'
@@ -579,4 +581,19 @@ export function addSFX(
 		...child,
 		children: applyText(child.children, [index]),
 	}))
+}
+
+export function parsSFX<T>(input: string) {
+	try {
+		return parse(input) as T
+	} catch (e) {
+		console.log(e)
+		try {
+			const repaired = jsonrepair(input)
+			return parse(repaired) as T
+		} catch (e) {
+			console.log(e)
+			return null
+		}
+	}
 }
