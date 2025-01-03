@@ -280,6 +280,20 @@ const AIChatbot = () => {
 		editor.tf.setValue(resp.value)
 	}
 
+	function removeReview() {
+		if (!reviewStreaming) return
+		const reviewResponse = parse(
+			jsonrepair(responses[reviewStreaming].join(''))
+		) as IndexedCommentsResponse[]
+		const children = reviewedChildren
+		if (!children) return
+		const resp = convertReviewResponse(reviewResponse, children)
+		resp.comments.forEach((comment) => {
+			api.comment.removeComment(comment.id)
+		})
+		editor.tf.setValue(children)
+	}
+
 	const changesPending = prevValue && value
 
 	useEffect(() => {
@@ -318,6 +332,7 @@ const AIChatbot = () => {
 		}
 		if (!responses[sfxStreaming]) return
 		const text = getText(children)
+
 		const resp = mergeStrings(responses[sfxStreaming].join(''), text)
 
 		const matches = resp.match(/((\[!.*\])*\n+)+/g)
@@ -347,10 +362,14 @@ const AIChatbot = () => {
 			})
 		}
 		if (!responses[reviewStreaming]) return
-		const parsedResponse = parse(
-			jsonrepair(responses[reviewStreaming].join(''))
-		) as IndexedCommentsResponse[]
-		addReview(parsedResponse)
+		try {
+			const parsedResponse = parse(
+				jsonrepair(responses[reviewStreaming].join(''))
+			) as IndexedCommentsResponse[]
+			addReview(parsedResponse)
+		} catch (error) {
+			console.error(error)
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reviewStreaming, responses[reviewStreaming], taskEnded[reviewStreaming]])
 
@@ -369,6 +388,18 @@ const AIChatbot = () => {
 			textareaRef.current.style.height = `${Math.min(scrollHeight, 150)}px`
 		}
 	}, [input])
+
+	const lastMessage = useMemo(() => messages[messages.length - 1], [messages])
+	const disabled = !!(
+		isPending ||
+		(sfxStreaming && !taskEnded[sfxStreaming]) ||
+		(reviewStreaming && !taskEnded[reviewStreaming]) ||
+		(lastMessage &&
+			lastMessage.role === EMessenger.ASSISTANT &&
+			lastMessage.action === EAction.BLOCK &&
+			lastMessage.taskId &&
+			!taskEnded[lastMessage.taskId])
+	)
 
 	return (
 		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
@@ -539,14 +570,14 @@ const AIChatbot = () => {
 					<Textarea
 						ref={textareaRef}
 						placeholder="Type your message..."
-						disabled={isPending}
+						disabled={disabled}
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onKeyDown={handleKeyDown}
 						className="min-h-[40px] grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
 						style={{ height: '40px' }}
 					/>
-					{isPending ? (
+					{disabled ? (
 						<Button
 							variant="ghost"
 							size="icon"
@@ -554,6 +585,11 @@ const AIChatbot = () => {
 							onClick={() => {
 								popMessage()
 								reset()
+								setResponseValue(null)
+								setAcceptedValue(null)
+								removeReview()
+								setSfxStreaming('')
+								setReviewStreaming('')
 							}}
 						>
 							<StopCircle size={16} />

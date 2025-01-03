@@ -22,6 +22,7 @@ export enum DiffStatus {
 
 export enum LocalizationType {
 	CONCEPT = 'concept',
+	OBJECT = 'object',
 	PERSON = 'character',
 	PLACE = 'place',
 }
