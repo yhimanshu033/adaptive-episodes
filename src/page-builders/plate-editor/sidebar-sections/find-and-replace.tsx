@@ -55,7 +55,12 @@ const formSchema = z.object({
 	type: z.string(),
 })
 
-const types: (keyof typeof LocalizationType)[] = ['PERSON', 'PLACE', 'CONCEPT']
+const types: (keyof typeof LocalizationType)[] = [
+	'PERSON',
+	'PLACE',
+	'CONCEPT',
+	'OBJECT',
+]
 
 function AddForm() {
 	const { mutate, isPending } = useLocalizeMutation()

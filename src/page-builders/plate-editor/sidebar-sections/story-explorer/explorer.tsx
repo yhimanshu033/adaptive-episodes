@@ -13,8 +13,11 @@ import {
 	WorldAction,
 } from '@/constants/story-explorer-constants'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useEditorState } from '@udecode/plate-common/react'
+import { parse } from 'best-effort-json-parser'
+import { jsonrepair } from 'jsonrepair'
 import { Send } from 'lucide-react'
 
 import { Loader } from '@/components/loader'
@@ -41,8 +44,11 @@ export interface RequestState {
 const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
-	const [content, setContent] = useState<PlotExplorerApiResponse['data']>([])
+	const [content, setContent] = useState<
+		PlotExplorerApiResponse['data'] | undefined
+	>([])
 	const [promptInput, setPromptInput] = useState<string>('')
+	const [taskId, setTaskId] = useState<string>('')
 	const [isLoading, setLoading] = useState<boolean>(false)
 	const [request, setRequest] = useState<RequestState>({
 		mode: defaultMode,
@@ -53,6 +59,8 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const {
 		plotlineMutation: { mutateAsync, reset },
 	} = usePlotOutlineHook()
+
+	const { responses, taskEnded } = useSocketStreaming()
 
 	const handleTabChange = (mode: RequestState['mode']) => {
 		if (request.mode === mode) return
@@ -110,10 +118,31 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				current_ep: getText(children) || ' ',
 				instruction,
 			})
-			if (result) setContent(result as PlotExplorerApiResponse['data'])
+			if (result) {
+				setTaskId(result)
+			}
 		}
 		setLoading(false)
 	}
+
+	useEffect(() => {
+		if (!taskId) return
+		if (taskEnded[taskId]) {
+			setTaskId('')
+			return
+		}
+		if (responses[taskId]) {
+			const jsonStr = responses[taskId].join('')
+			try {
+				const data = parse(
+					jsonrepair(jsonStr)
+				) as PlotExplorerApiResponse['data']
+				setContent(data)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+	}, [taskId, responses[taskId], taskEnded[taskId]])
 
 	useEffect(() => {
 		if (request.action && request.name && start && end) {
@@ -138,11 +167,11 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				</TabsList>
 				{categories.map(({ id, action }, idx) => (
 					<TabsContent value={id} key={idx} className="mt-6">
-						{isLoading ? (
+						{isLoading || (taskId && !taskEnded[taskId] && !content?.length) ? (
 							<div className="mt-5 flex w-full justify-center">
 								<Loader />
 							</div>
-						) : request.action && content.length ? (
+						) : request.action && content?.length ? (
 							<Content
 								header={request.name}
 								explorerData={content}
