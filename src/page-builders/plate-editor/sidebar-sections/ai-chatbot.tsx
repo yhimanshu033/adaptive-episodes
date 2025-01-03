@@ -18,6 +18,7 @@ import { useGlobalStore } from '@/store/global-store'
 import usePlateStore from '@/store/plate-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
+	ParagraphPlugin,
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
@@ -334,9 +335,12 @@ const AIChatbot = () => {
 		}
 		if (!responses[sfxStreaming]) return
 		try {
+			// console.log({ s: (responses[sfxStreaming].join('')) })
+			// console.log({ json: JSON.parse(responses[sfxStreaming].join('')) })
 			let parsedResponse = parse(
 				jsonrepair(responses[sfxStreaming].join(''))
 			) as IndexedSFXResponse
+
 			parsedResponse = parsedResponse
 				.filter((item) => {
 					const keys = Object.keys(item)
@@ -347,8 +351,13 @@ const AIChatbot = () => {
 						: null
 				})
 				.filter(Boolean)
+			// console.log({ parsedResponse })
 			if (!parsedResponse.length) return
-			const responseValue = addSFX(parsedResponse, children)
+			const responseValue = addSFX(
+				parsedResponse,
+				children,
+				ParagraphPlugin.key
+			)
 			setResponseValue(structuredClone(responseValue))
 			setPrevValue(structuredClone(children))
 		} catch (error) {

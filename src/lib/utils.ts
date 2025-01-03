@@ -7,7 +7,6 @@ import {
 	TText,
 	Value,
 } from '@udecode/plate-common'
-import { ParagraphPlugin } from '@udecode/plate-core/react'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -509,7 +508,11 @@ export function sanitizeJsonString(badJson: string) {
 	)
 }
 
-export function addSFX(sfx: IndexedSFXResponse, children: Value): Value {
+export function addSFX(
+	sfx: IndexedSFXResponse,
+	children: Value,
+	key: string
+): Value {
 	const applyText = (nodes: TDescendant[], path: number[]): TDescendant[] => {
 		return nodes.flatMap((node, index) => {
 			const currentPath = [...path, index]
@@ -541,7 +544,7 @@ export function addSFX(sfx: IndexedSFXResponse, children: Value): Value {
 					}
 
 					segments.push({
-						type: ParagraphPlugin.key,
+						type: key,
 						text: `\n${matchingValue.sfx}\n`,
 						bold: true,
 					})
