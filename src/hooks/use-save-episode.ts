@@ -13,7 +13,6 @@ import { BASE_STATUS } from '@/types/common'
 
 const useSaveEpisode = () => {
 	const { children } = useEditorState()
-	console.log({ children })
 	const { allComments } = useComments()
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))

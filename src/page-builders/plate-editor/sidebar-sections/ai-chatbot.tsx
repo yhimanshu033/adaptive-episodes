@@ -276,7 +276,7 @@ const AIChatbot = () => {
 			api.comment.addComment({
 				value: [
 					{
-						type: 'p',
+						type: ParagraphPlugin.key,
 						children: [{ text: comment.text.replace(/(?<=\S)-|•/g, '\n-') }],
 					},
 				],
