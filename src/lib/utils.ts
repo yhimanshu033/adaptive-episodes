@@ -336,6 +336,12 @@ export function convertReviewResponse(
 		return nodes.flatMap((node, index) => {
 			const currentPath = [...path, index]
 
+			const keys = Object.keys(node)
+
+			if (keys.find((key) => key.includes('comment_'))) {
+				return [node]
+			}
+
 			if ('text' in node) {
 				const nodeId = currentPath.join('_')
 				const { text } = node as { text: string }

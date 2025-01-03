@@ -281,7 +281,7 @@ const AIChatbot = () => {
 	}
 
 	function removeReview() {
-		if (!reviewStreaming) return
+		if (!reviewStreaming || !responses[reviewStreaming]) return
 		const reviewResponse = parse(
 			jsonrepair(responses[reviewStreaming].join(''))
 		) as IndexedCommentsResponse[]
@@ -354,10 +354,7 @@ const AIChatbot = () => {
 			addMessages({
 				role: EMessenger.ASSISTANT,
 				action: EAction.REVIEW,
-				content:
-					responses[reviewStreaming].length > 2
-						? 'StoryChat added review in comments'
-						: 'No reviews from StoryChat',
+				content: 'StoryChat added review in comments',
 				taskId: nanoid(),
 			})
 		}
