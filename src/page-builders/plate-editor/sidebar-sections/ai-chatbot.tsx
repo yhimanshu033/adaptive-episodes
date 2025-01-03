@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
@@ -271,7 +275,12 @@ const AIChatbot = () => {
 		const resp = convertReviewResponse(reviewResponse, children)
 		resp.comments.forEach((comment) => {
 			api.comment.addComment({
-				value: [{ type: 'p', children: [{ text: comment.text }] }],
+				value: [
+					{
+						type: 'p',
+						children: [{ text: comment.text.replace(/(?<=\s|\S)-/g, '\n-') }],
+					},
+				],
 				id: comment.id,
 				userId: 'COPILOT-AI',
 				createdAt: Date.now(),
