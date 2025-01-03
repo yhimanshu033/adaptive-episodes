@@ -29,3 +29,11 @@ export interface ReviewComment {
 	id: string
 	text: string
 }
+
+export interface IndexedSFXResponseItem {
+	id: string
+	match_string: string
+	sfx: string
+}
+
+export type IndexedSFXResponse = Array<IndexedSFXResponseItem>

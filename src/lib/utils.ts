@@ -7,12 +7,17 @@ import {
 	TText,
 	Value,
 } from '@udecode/plate-common'
+import { ParagraphPlugin } from '@udecode/plate-core/react'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 import { BASE_STATUS, EStatus, MinifiedValue } from '@/types/common'
 import { TGetMetadataResponse } from '@/types/content-types'
-import { IndexedCommentsResponse, ReviewComment } from '@/types/editor-types'
+import {
+	IndexedCommentsResponse,
+	IndexedSFXResponse,
+	ReviewComment,
+} from '@/types/editor-types'
 import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
 
 export function cn(...inputs: ClassValue[]) {
@@ -502,4 +507,68 @@ export function sanitizeJsonString(badJson: string) {
 			// Handle tabs
 			.replace(/\t/g, '\\t')
 	)
+}
+
+export function addSFX(sfx: IndexedSFXResponse, children: Value): Value {
+	const applyText = (nodes: TDescendant[], path: number[]): TDescendant[] => {
+		return nodes.flatMap((node, index) => {
+			const currentPath = [...path, index]
+
+			if ('text' in node) {
+				const matchingValues = sfx.filter(
+					(item) => item.id === currentPath.join('_')
+				)
+
+				if (matchingValues.length === 0) {
+					return [node]
+				}
+
+				const segments: TDescendant[] = []
+				let currentIndex = 0
+				const text = node.text as string
+
+				matchingValues.forEach((matchingValue) => {
+					const matchIndex = text.indexOf(
+						matchingValue.match_string,
+						currentIndex
+					)
+
+					if (matchIndex > currentIndex) {
+						segments.push({
+							...node,
+							text: text.slice(currentIndex, matchIndex),
+						})
+					}
+
+					segments.push({
+						type: ParagraphPlugin.key,
+						text: `\n${matchingValue.sfx}\n`,
+						bold: true,
+					})
+
+					currentIndex = matchIndex
+				})
+
+				if (currentIndex < text.length) {
+					segments.push({ ...node, text: text.slice(currentIndex) })
+				}
+
+				return segments
+			} else if ('children' in node) {
+				return [
+					{
+						...node,
+						children: applyText(node.children, currentPath),
+					},
+				]
+			}
+
+			return [node]
+		})
+	}
+
+	return children.map((child, index) => ({
+		...child,
+		children: applyText(child.children, [index]),
+	}))
 }

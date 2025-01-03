@@ -56,15 +56,14 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
 import {
+	addSFX,
 	cn,
 	convertReviewResponse,
 	extractBetweenTags,
 	getRandomElement,
 	getText,
 	maxify,
-	mergeStrings,
 	minify,
-	replaceMatches,
 } from '@/lib/utils'
 
 import {
@@ -74,7 +73,10 @@ import {
 	TStoryChatSuggestion,
 } from '@/types/ai-types'
 import { MinifiedValue } from '@/types/common'
-import { IndexedCommentsResponse } from '@/types/editor-types'
+import {
+	IndexedCommentsResponse,
+	IndexedSFXResponse,
+} from '@/types/editor-types'
 
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
@@ -331,19 +333,27 @@ const AIChatbot = () => {
 			setSfxStreaming('')
 		}
 		if (!responses[sfxStreaming]) return
-		const text = getText(children)
-
-		const resp = mergeStrings(responses[sfxStreaming].join(''), text)
-
-		const matches = resp.match(/((\[!.*\])*\n+)+/g)
-		const hasSFX = matches?.some((match) => /\[.*\]/.test(match)) || false
-		if (!matches || !hasSFX) {
-			return
+		try {
+			let parsedResponse = parse(
+				jsonrepair(responses[sfxStreaming].join(''))
+			) as IndexedSFXResponse
+			parsedResponse = parsedResponse
+				.filter((item) => {
+					const keys = Object.keys(item)
+					return keys.includes('match_string') &&
+						keys.includes('sfx') &&
+						keys.includes('id')
+						? item
+						: null
+				})
+				.filter(Boolean)
+			if (!parsedResponse.length) return
+			const responseValue = addSFX(parsedResponse, children)
+			setResponseValue(structuredClone(responseValue))
+			setPrevValue(structuredClone(children))
+		} catch (error) {
+			console.log(error)
 		}
-		const responseValue = structuredClone(children)
-		const val = replaceMatches(/(\n{1,})/g, matches, responseValue)
-		setResponseValue(structuredClone(val))
-		setPrevValue(structuredClone(children))
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [sfxStreaming, responses[sfxStreaming], taskEnded[sfxStreaming]])
 
