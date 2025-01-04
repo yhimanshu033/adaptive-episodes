@@ -619,7 +619,7 @@ export function addSFX(
 	}))
 }
 
-export function parsSFX<T>(input: string) {
+export function parseOptimistically<T>(input: string) {
 	try {
 		return parse(input) as T
 	} catch (e) {
