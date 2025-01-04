@@ -319,7 +319,7 @@ export function mergeValue(ogVal: Value): Value {
 }
 
 export function getRecord(comments?: TComment[]) {
-	if (!comments) return undefined
+	if (!comments) return {}
 	const records: Record<string, TComment> = comments.reduce(
 		(prev, curr) => {
 			return { ...prev, [curr.id]: curr }
