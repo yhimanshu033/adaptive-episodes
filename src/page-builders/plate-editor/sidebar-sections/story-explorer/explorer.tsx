@@ -194,6 +194,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 								<div className="mt-8 flex items-center justify-center">
 									<div className="relative w-64">
 										<Input
+											disabled
 											type="text"
 											placeholder="Custom Prompt..."
 											className="w-full"
@@ -201,6 +202,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 											onChange={(e) => setPromptInput(e.target.value)}
 										/>
 										<Button
+											disabled
 											size="icon"
 											variant="ghost"
 											className="absolute right-1 top-1/2 -translate-y-1/2"

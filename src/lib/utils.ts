@@ -571,6 +571,9 @@ export function addSFX(
 				const text = node.text as string
 
 				matchingValues.forEach((matchingValue) => {
+					if (!text.includes(matchingValue.match_string)) {
+						return
+					}
 					const matchIndex = text.indexOf(
 						matchingValue.match_string,
 						currentIndex
