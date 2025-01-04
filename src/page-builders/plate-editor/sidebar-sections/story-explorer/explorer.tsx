@@ -119,6 +119,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				instruction,
 			})
 			if (result) {
+				setContent([])
 				setTaskId(result)
 			}
 		}
