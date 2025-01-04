@@ -585,12 +585,12 @@ export function addSFX(
 							text: text.slice(currentIndex, matchIndex),
 						})
 					}
-
-					segments.push({
-						type: key,
-						text: `\n${matchingValue.sfx}\n`,
-						bold: true,
-					})
+					if (matchingValue.sfx)
+						segments.push({
+							type: key,
+							text: `\n${matchingValue.sfx.replace('[!', '[')}\n`,
+							bold: true,
+						})
 
 					currentIndex = matchIndex
 				})
