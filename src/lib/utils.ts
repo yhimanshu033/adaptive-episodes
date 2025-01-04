@@ -353,12 +353,35 @@ export function convertReviewResponse(
 				const { text, ...rest } = node as TText
 				const segments: TText[] = []
 				let lastIndex = 0
-
+				const sortedMatchingValues = response
+					.filter((item) => item.id === nodeId && !!item.path)
+					.sort((a, b) => {
+						if (!a.path || !b.path) return 0
+						if (a.path.start !== b.path.start) {
+							return a.path.start - b.path.start
+						}
+						return a.path.end - b.path.end
+					})
 				const idPathMap = new Set<string>()
-				for (const matchingValue of response) {
-					if (matchingValue.id !== nodeId || !matchingValue.path) continue
-					const { start, end } = matchingValue.path
+				const matchingValues: Partial<IndexedCommentsResponse>[] = []
+				let lastAcceptedEnd = -Infinity
 
+				for (const comment of sortedMatchingValues) {
+					if (!comment.path) continue
+					if (comment.path.start >= lastAcceptedEnd) {
+						matchingValues.push(comment)
+						lastAcceptedEnd = comment.path.end
+					}
+				}
+
+				for (const matchingValue of matchingValues) {
+					if (
+						!matchingValue.path ||
+						matchingValue.path.end === -1 ||
+						matchingValue.path.start === -1
+					)
+						continue
+					const { start, end } = matchingValue.path
 					if (idPathMap.has(`${matchingValue.id}-${start}-${end}`)) continue
 					idPathMap.add(`${matchingValue.id}-${start}-${end}`)
 
@@ -385,7 +408,6 @@ export function convertReviewResponse(
 				if (lastIndex < text.length) {
 					segments.push({ ...rest, text: text.slice(lastIndex) })
 				}
-
 				return segments.length ? segments : [node]
 			} else if ('children' in node) {
 				return [
@@ -404,7 +426,6 @@ export function convertReviewResponse(
 		...child,
 		children: applyComment(child.children, [index]),
 	}))
-
 	return { value, comments }
 }
 
