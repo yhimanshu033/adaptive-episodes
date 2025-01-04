@@ -84,6 +84,10 @@ import {
 	IndexedSFXResponse,
 } from '@/types/editor-types'
 
+function extract(str: string) {
+	return extractBetweenTags(extractBetweenTags(str, 'answer'), 'text')
+}
+
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
 	const [sfxStreaming, setSfxStreaming] = useState<string>('')
@@ -483,24 +487,25 @@ const AIChatbot = () => {
 						  message.action === EAction.BLOCK ? (
 							(responses[message.taskId] || []).length ? (
 								<div className="relative max-w-[70%]">
-									{taskEnded[message.taskId] && (
-										<TooltipComponent tooltip={'Copy'}>
-											<Button
-												onClick={() => {
-													void navigator.clipboard.writeText(
-														extractBetweenTags(
-															extractBetweenTags(message.content, 'answer'),
-															'text'
+									{taskEnded[message.taskId] &&
+										!!extract((responses[message.taskId] || []).join('')).trim()
+											.length && (
+											<TooltipComponent tooltip={'Copy'}>
+												<Button
+													onClick={() => {
+														void navigator.clipboard.writeText(
+															extract(
+																(responses[message.taskId] || []).join('')
+															)
 														)
-													)
-												}}
-												variant="ghost"
-												className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
-											>
-												<Copy size={12} />
-											</Button>
-										</TooltipComponent>
-									)}
+													}}
+													variant="ghost"
+													className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
+												>
+													<Copy size={12} />
+												</Button>
+											</TooltipComponent>
+										)}
 									<div
 										dangerouslySetInnerHTML={{
 											__html: (responses[message.taskId] || [])
