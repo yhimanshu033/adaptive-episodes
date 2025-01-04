@@ -439,14 +439,26 @@ export function extractBetweenTags(input: string, tagName: string): string {
 	const openingTag = `<${tagName}>`
 	const closingTag = `</${tagName}>`
 
-	const startIndex = input.indexOf(openingTag)
-	const endIndex = input.indexOf(closingTag)
+	let result = ''
+	let startIndex = input.indexOf(openingTag)
 
-	if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) {
-		return input
+	while (startIndex !== -1) {
+		const endIndex = input.indexOf(closingTag, startIndex)
+		if (endIndex === -1) {
+			break
+		}
+
+		const content = input
+			.substring(startIndex + openingTag.length, endIndex)
+			.trim()
+		if (content) {
+			result += (result ? '\n' : '') + content
+		}
+
+		startIndex = input.indexOf(openingTag, endIndex + closingTag.length)
 	}
 
-	return input.substring(startIndex + openingTag.length, endIndex)
+	return result
 }
 
 export const extractScenesFromBeatsheet = (beatsheet: string) => {

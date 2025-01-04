@@ -88,13 +88,248 @@ function extract(str: string) {
 	return extractBetweenTags(extractBetweenTags(str, 'answer'), 'text')
 }
 
+function MessagesList({ isPending }: { isPending: boolean }) {
+	const {
+		store,
+		updateMessages,
+		setPrevValue,
+		setResponseValue,
+		setAcceptedValue,
+	} = useAIStore()
+	const { messages } = store()
+	const { responses, taskEnded } = useSocketStreaming()
+	const userData = useGlobalStore(useShallow((state) => state.userData))
+	const value = store((state) => state.acceptedValue)
+	const editor = useEditorRef()
+	const messageEndRef = useRef<HTMLDivElement>(null)
+
+	function handleAccept(i: number, all: boolean = true) {
+		handleAcceptResponse(all)
+		updateMessages(
+			{
+				taskId: nanoid(),
+				role: EMessenger.ASSISTANT,
+				action: EAction.ACCEPT,
+				content: 'Accepted changes from StoryChat',
+			},
+			i
+		)
+	}
+
+	function handleReject(i: number) {
+		updateMessages(
+			{
+				taskId: nanoid(),
+				role: EMessenger.ASSISTANT,
+				action: EAction.REJECT,
+				content: 'Rejected changes from StoryChat',
+			},
+			i
+		)
+		setResponseValue(null)
+		setPrevValue(null)
+	}
+
+	const handleAcceptResponse = useCallback(
+		(all: boolean = true) => {
+			if (!value) return
+			const newValue = structuredClone(value)
+			const currVal = newValue.map((node) => ({
+				...node,
+				children: node.children
+					.map((child) => {
+						let add = true
+						if ('diff' in child && child.diff_id) {
+							const accepted = all
+								? child.status === DiffStatus.ACCEPTED ||
+									child.status === DiffStatus.PENDING
+								: child.status === DiffStatus.ACCEPTED
+							const type = (child.diffOperation as DiffOperation).type
+							if (type === 'update') {
+								Object.keys(
+									(child.diffOperation as DiffUpdate)?.newProperties
+								).forEach((key) => {
+									delete child[key]
+								})
+							}
+							delete child.diff
+							delete child.diff_id
+							delete child.status
+							delete child.diffOperation
+							if (
+								(accepted && type !== 'delete') ||
+								(!accepted && type === 'delete') ||
+								(child.text && (child.text as string).match(/^\n+$/))
+							) {
+								add = true
+							} else {
+								add = false
+							}
+						}
+						if (add) {
+							return child
+						}
+					})
+					.filter((child) => !!child),
+			}))
+			editor.tf.setValue(currVal)
+			setResponseValue(null)
+			setPrevValue(null)
+			setAcceptedValue(null)
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[value, editor.tf]
+	)
+	useEffect(() => {
+		if (messageEndRef.current) {
+			messageEndRef.current.scrollIntoView({
+				behavior: 'smooth',
+			})
+		}
+	}, [messages])
+
+	return (
+		<ScrollArea className="mb-4 h-[70vh] flex-1 rounded-md border px-4 *:py-4">
+			{messages.map((message, index) => (
+				<div
+					key={index}
+					className={`mb-4 flex items-start ${message.role === EMessenger.ASSISTANT ? 'justify-start' : 'justify-end'}`}
+				>
+					{message.role === EMessenger.ASSISTANT && (
+						<Avatar className="mr-2">
+							<AvatarImage src={COPILOT_LOGO_URL} alt="AI" />
+							<AvatarFallback>AI</AvatarFallback>
+						</Avatar>
+					)}
+					{message.role === EMessenger.ASSISTANT &&
+					message.action === EAction.CHANGES ? (
+						taskEnded[message.taskId] ? (
+							<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
+								<TooltipComponent tooltip={'Done'}>
+									<Button onClick={() => handleAccept(index, false)}>
+										<Check />
+									</Button>
+								</TooltipComponent>
+								<TooltipComponent tooltip={'Accept All'}>
+									<Button
+										variant="outline"
+										onClick={() => handleAccept(index, true)}
+									>
+										<CheckCheck />
+									</Button>
+								</TooltipComponent>
+								<TooltipComponent tooltip={'Reject All'}>
+									<Button variant="outline" onClick={() => handleReject(index)}>
+										<X />
+									</Button>
+								</TooltipComponent>
+							</div>
+						) : (
+							<div
+								dangerouslySetInnerHTML={{
+									__html: message.content,
+								}}
+								className={cn(
+									'max-w-[70%] rounded-lg p-3',
+									message.role === EMessenger.ASSISTANT
+										? 'bg-background'
+										: 'bg-primary'
+								)}
+							/>
+						)
+					) : message.role === EMessenger.ASSISTANT &&
+					  message.action === EAction.BLOCK ? (
+						(responses[message.taskId] || []).length ? (
+							<div className="relative max-w-[70%]">
+								{taskEnded[message.taskId] &&
+									!!extract((responses[message.taskId] || []).join('')).trim()
+										.length && (
+										<TooltipComponent tooltip={'Copy'}>
+											<Button
+												onClick={() => {
+													void navigator.clipboard.writeText(
+														extract((responses[message.taskId] || []).join(''))
+													)
+												}}
+												variant="ghost"
+												className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
+											>
+												<Copy size={12} />
+											</Button>
+										</TooltipComponent>
+									)}
+								<div
+									dangerouslySetInnerHTML={{
+										__html: (responses[message.taskId] || [])
+											.join('')
+											.replaceAll('\n', '<br/>'),
+									}}
+									className={cn(
+										'rounded-lg p-3 *:animate-in',
+										message.role === EMessenger.ASSISTANT
+											? 'bg-background'
+											: 'bg-primary'
+									)}
+								/>
+							</div>
+						) : (
+							<div
+								dangerouslySetInnerHTML={{
+									__html: 'Thinking...',
+								}}
+								className={cn(
+									'max-w-[70%] rounded-lg p-3',
+									message.role === EMessenger.ASSISTANT
+										? 'bg-background'
+										: 'bg-primary'
+								)}
+							/>
+						)
+					) : (
+						<div
+							dangerouslySetInnerHTML={{
+								__html: message.content.replaceAll('\n', '<br/>'),
+							}}
+							className={cn(
+								'max-w-[70%] rounded-lg p-3',
+								message.role === EMessenger.ASSISTANT
+									? 'bg-background'
+									: 'bg-primary'
+							)}
+						/>
+					)}
+					{message.role === EMessenger.USER && (
+						<Avatar className="ml-2">
+							<AvatarImage
+								src={userData?.user?.image || FALLBACK_USER_URL}
+								alt="User"
+							/>
+							<AvatarFallback>U</AvatarFallback>
+						</Avatar>
+					)}
+				</div>
+			))}
+
+			{isPending && (
+				<div className="mb-4 flex items-center justify-start">
+					<Avatar className="mr-2">
+						<AvatarImage src={COPILOT_LOGO_URL} alt="AI" />
+						<AvatarFallback>AI</AvatarFallback>
+					</Avatar>
+					<Loader />
+				</div>
+			)}
+
+			<div ref={messageEndRef} />
+		</ScrollArea>
+	)
+}
 const AIChatbot = () => {
 	const [input, setInput] = useState('')
 	const [sfxStreaming, setSfxStreaming] = useState<string>('')
 	const [reviewStreaming, setReviewStreaming] = useState<string>('')
 	const [reviewedChildren, setReviewedChildren] = useState<Value>()
 	const { id } = useParams()
-	const messageEndRef = useRef<HTMLDivElement>(null)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const {
 		store,
@@ -104,7 +339,6 @@ const AIChatbot = () => {
 		setAcceptedValue,
 		setPrevValue,
 		setResponseValue,
-		updateMessages,
 		setRequestedAction,
 	} = useAIStore()
 	const { setSidebar } = usePlateStore()
@@ -112,7 +346,6 @@ const AIChatbot = () => {
 	const { aiChatbotMutation } = useAIChatbotHook()
 	const { data: aiResponse, isPending, reset } = aiChatbotMutation
 	const { responses, taskEnded } = useSocketStreaming()
-	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
 	const editor = useEditorRef()
@@ -198,84 +431,6 @@ const AIChatbot = () => {
 			content: 'Added changes from StoryChat',
 		})
 	}
-
-	function handleAccept(i: number, all: boolean = true) {
-		handleAcceptResponse(all)
-		updateMessages(
-			{
-				taskId: nanoid(),
-				role: EMessenger.ASSISTANT,
-				action: EAction.ACCEPT,
-				content: 'Accepted changes from StoryChat',
-			},
-			i
-		)
-	}
-
-	function handleReject(i: number) {
-		updateMessages(
-			{
-				taskId: nanoid(),
-				role: EMessenger.ASSISTANT,
-				action: EAction.REJECT,
-				content: 'Rejected changes from StoryChat',
-			},
-			i
-		)
-		setResponseValue(null)
-		setPrevValue(null)
-	}
-
-	const handleAcceptResponse = useCallback(
-		(all: boolean = true) => {
-			if (!value) return
-			const newValue = structuredClone(value)
-			const currVal = newValue.map((node) => ({
-				...node,
-				children: node.children
-					.map((child) => {
-						let add = true
-						if ('diff' in child && child.diff_id) {
-							const accepted = all
-								? child.status === DiffStatus.ACCEPTED ||
-									child.status === DiffStatus.PENDING
-								: child.status === DiffStatus.ACCEPTED
-							const type = (child.diffOperation as DiffOperation).type
-							if (type === 'update') {
-								Object.keys(
-									(child.diffOperation as DiffUpdate)?.newProperties
-								).forEach((key) => {
-									delete child[key]
-								})
-							}
-							delete child.diff
-							delete child.diff_id
-							delete child.status
-							delete child.diffOperation
-							if (
-								(accepted && type !== 'delete') ||
-								(!accepted && type === 'delete') ||
-								(child.text && (child.text as string).match(/^\n+$/))
-							) {
-								add = true
-							} else {
-								add = false
-							}
-						}
-						if (add) {
-							return child
-						}
-					})
-					.filter((child) => !!child),
-			}))
-			editor.tf.setValue(currVal)
-			setResponseValue(null)
-			setPrevValue(null)
-			setAcceptedValue(null)
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[value, editor.tf]
-	)
 
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
 		const children = reviewedChildren
@@ -402,14 +557,6 @@ const AIChatbot = () => {
 	}, [reviewStreaming, responses[reviewStreaming], taskEnded[reviewStreaming]])
 
 	useEffect(() => {
-		if (messageEndRef.current) {
-			messageEndRef.current.scrollIntoView({
-				behavior: 'smooth',
-			})
-		}
-	}, [messages])
-
-	useEffect(() => {
 		if (textareaRef.current) {
 			textareaRef.current.style.height = '40px'
 			const scrollHeight = textareaRef.current.scrollHeight
@@ -432,144 +579,7 @@ const AIChatbot = () => {
 	return (
 		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
 			<h1 className="mb-4 text-2xl font-bold">StoryChat</h1>
-			<ScrollArea className="mb-4 h-[70vh] flex-1 rounded-md border px-4 *:py-4">
-				{messages.map((message, index) => (
-					<div
-						key={index}
-						className={`mb-4 flex items-start ${message.role === EMessenger.ASSISTANT ? 'justify-start' : 'justify-end'}`}
-					>
-						{message.role === EMessenger.ASSISTANT && (
-							<Avatar className="mr-2">
-								<AvatarImage src={COPILOT_LOGO_URL} alt="AI" />
-								<AvatarFallback>AI</AvatarFallback>
-							</Avatar>
-						)}
-						{message.role === EMessenger.ASSISTANT &&
-						message.action === EAction.CHANGES ? (
-							taskEnded[message.taskId] ? (
-								<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
-									<TooltipComponent tooltip={'Done'}>
-										<Button onClick={() => handleAccept(index, false)}>
-											<Check />
-										</Button>
-									</TooltipComponent>
-									<TooltipComponent tooltip={'Accept All'}>
-										<Button
-											variant="outline"
-											onClick={() => handleAccept(index, true)}
-										>
-											<CheckCheck />
-										</Button>
-									</TooltipComponent>
-									<TooltipComponent tooltip={'Reject All'}>
-										<Button
-											variant="outline"
-											onClick={() => handleReject(index)}
-										>
-											<X />
-										</Button>
-									</TooltipComponent>
-								</div>
-							) : (
-								<div
-									dangerouslySetInnerHTML={{
-										__html: message.content,
-									}}
-									className={cn(
-										'max-w-[70%] rounded-lg p-3',
-										message.role === EMessenger.ASSISTANT
-											? 'bg-background'
-											: 'bg-primary'
-									)}
-								/>
-							)
-						) : message.role === EMessenger.ASSISTANT &&
-						  message.action === EAction.BLOCK ? (
-							(responses[message.taskId] || []).length ? (
-								<div className="relative max-w-[70%]">
-									{taskEnded[message.taskId] &&
-										!!extract((responses[message.taskId] || []).join('')).trim()
-											.length && (
-											<TooltipComponent tooltip={'Copy'}>
-												<Button
-													onClick={() => {
-														void navigator.clipboard.writeText(
-															extract(
-																(responses[message.taskId] || []).join('')
-															)
-														)
-													}}
-													variant="ghost"
-													className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
-												>
-													<Copy size={12} />
-												</Button>
-											</TooltipComponent>
-										)}
-									<div
-										dangerouslySetInnerHTML={{
-											__html: (responses[message.taskId] || [])
-												.join('')
-												.replaceAll('\n', '<br/>'),
-										}}
-										className={cn(
-											'rounded-lg p-3 *:animate-in',
-											message.role === EMessenger.ASSISTANT
-												? 'bg-background'
-												: 'bg-primary'
-										)}
-									/>
-								</div>
-							) : (
-								<div
-									dangerouslySetInnerHTML={{
-										__html: 'Thinking...',
-									}}
-									className={cn(
-										'max-w-[70%] rounded-lg p-3',
-										message.role === EMessenger.ASSISTANT
-											? 'bg-background'
-											: 'bg-primary'
-									)}
-								/>
-							)
-						) : (
-							<div
-								dangerouslySetInnerHTML={{
-									__html: message.content.replaceAll('\n', '<br/>'),
-								}}
-								className={cn(
-									'max-w-[70%] rounded-lg p-3',
-									message.role === EMessenger.ASSISTANT
-										? 'bg-background'
-										: 'bg-primary'
-								)}
-							/>
-						)}
-						{message.role === EMessenger.USER && (
-							<Avatar className="ml-2">
-								<AvatarImage
-									src={userData?.user?.image || FALLBACK_USER_URL}
-									alt="User"
-								/>
-								<AvatarFallback>U</AvatarFallback>
-							</Avatar>
-						)}
-					</div>
-				))}
-
-				{isPending && (
-					<div className="mb-4 flex items-center justify-start">
-						<Avatar className="mr-2">
-							<AvatarImage src={COPILOT_LOGO_URL} alt="AI" />
-							<AvatarFallback>AI</AvatarFallback>
-						</Avatar>
-						<Loader />
-					</div>
-				)}
-
-				<div ref={messageEndRef} />
-			</ScrollArea>
+			<MessagesList isPending={isPending} />
 			<ScrollArea className="overflow-x-auto pb-2 *:*:flex">
 				<ScrollBar orientation="horizontal" />
 				{storyChatSuggestions.map((suggestion, index) => (
