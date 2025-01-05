@@ -138,9 +138,8 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				arrayStartIndex !== -1 ? jsonStr.substring(arrayStartIndex) : '[]'
 			try {
 				const data =
-					parseOptimistically<PlotExplorerApiResponse['data']>(
-						cleanedJsonStr
-					) || []
+					parseOptimistically<PlotExplorerApiResponse['data']>(cleanedJsonStr)
+				if (!data) return
 				setContent(data)
 			} catch (error) {
 				console.log(error)
