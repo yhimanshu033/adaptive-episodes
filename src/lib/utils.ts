@@ -319,7 +319,7 @@ export function mergeValue(ogVal: Value): Value {
 }
 
 export function getRecord(comments?: TComment[]) {
-	if (!comments) return undefined
+	if (!comments) return {}
 	const records: Record<string, TComment> = comments.reduce(
 		(prev, curr) => {
 			return { ...prev, [curr.id]: curr }
@@ -571,6 +571,9 @@ export function addSFX(
 				const text = node.text as string
 
 				matchingValues.forEach((matchingValue) => {
+					if (!text.includes(matchingValue.match_string)) {
+						return
+					}
 					const matchIndex = text.indexOf(
 						matchingValue.match_string,
 						currentIndex
@@ -582,12 +585,12 @@ export function addSFX(
 							text: text.slice(currentIndex, matchIndex),
 						})
 					}
-
-					segments.push({
-						type: key,
-						text: `\n${matchingValue.sfx}\n`,
-						bold: true,
-					})
+					if (matchingValue.sfx)
+						segments.push({
+							type: key,
+							text: `\n${matchingValue.sfx.replace('[!', '[')}\n`,
+							bold: true,
+						})
 
 					currentIndex = matchIndex
 				})
@@ -616,7 +619,7 @@ export function addSFX(
 	}))
 }
 
-export function parsSFX<T>(input: string) {
+export function parseOptimistically<T>(input: string) {
 	try {
 		return parse(input) as T
 	} catch (e) {

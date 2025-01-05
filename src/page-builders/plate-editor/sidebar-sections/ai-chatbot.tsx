@@ -20,6 +20,7 @@ import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import { useGlobalStore } from '@/store/global-store'
 import usePlateStore from '@/store/plate-store'
+import { TComment } from '@udecode/plate-comments'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
 	ParagraphPlugin,
@@ -29,6 +30,7 @@ import {
 } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
 import { Value } from '@udecode/slate'
+import { WithPartial } from '@udecode/utils'
 import { parse } from 'best-effort-json-parser'
 import { jsonrepair } from 'jsonrepair'
 import {
@@ -69,7 +71,7 @@ import {
 	getText,
 	maxify,
 	minify,
-	parsSFX,
+	parseOptimistically,
 } from '@/lib/utils'
 
 import {
@@ -390,7 +392,7 @@ const AIChatbot = () => {
 	const requestedAction = store((state) => state.requestedAction)
 	const value = store((state) => state.acceptedValue)
 	const prevValue = store((state) => state.prevValue)
-	const { api } = useEditorPlugin(CommentsPlugin)
+	const { api, setOptions } = useEditorPlugin(CommentsPlugin)
 
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
@@ -415,6 +417,24 @@ const AIChatbot = () => {
 		addMessages({ role: EMessenger.USER, content: input })
 		setInput('')
 		setRequestedAction(EChatMode.BLOCK)
+	}
+
+	const addComment = (value: TComment) => {
+		const id = value.id ?? nanoid()
+		const newComment: WithPartial<TComment, 'userId'> = {
+			...value,
+		}
+
+		if (newComment.userId) {
+			setOptions((draft) => {
+				if (!draft.comments) {
+					draft.comments = {}
+				}
+				draft.comments[id] = newComment as TComment
+			})
+		}
+
+		return newComment
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
@@ -473,12 +493,21 @@ const AIChatbot = () => {
 		const children = reviewedChildren
 		if (!children) return
 		const resp = convertReviewResponse(reviewResponse, children)
+		if (!resp.comments.length) return
 		resp.comments.forEach((comment) => {
-			api.comment.addComment({
+			if (!comment?.id || !comment?.text) return
+			addComment({
 				value: [
 					{
 						type: ParagraphPlugin.key,
-						children: [{ text: comment.text.replace(/(?<=\S)-|•/g, '\n-') }],
+						children: [
+							{
+								text: comment.text
+									.trim()
+									.replace(/(?<=.)[-•]/g, '\n-')
+									.replace('</comment_format> <comment_format>', ''),
+							},
+						],
 					},
 				],
 				id: comment.id,
@@ -542,7 +571,7 @@ const AIChatbot = () => {
 		if (!responses[sfxStreaming]) return
 
 		try {
-			let parsedResponse = parsSFX<IndexedSFXResponse>(
+			let parsedResponse = parseOptimistically<IndexedSFXResponse>(
 				responses[sfxStreaming].join('')
 			)
 			if (!parsedResponse) return
@@ -583,9 +612,10 @@ const AIChatbot = () => {
 		}
 		if (!responses[reviewStreaming]) return
 		try {
-			const parsedResponse = parse(
-				jsonrepair(responses[reviewStreaming].join(''))
-			) as IndexedCommentsResponse[]
+			const parsedResponse = parseOptimistically<IndexedCommentsResponse[]>(
+				responses[reviewStreaming].join('')
+			)
+			if (!parsedResponse) return
 			addReview(parsedResponse)
 		} catch (error) {
 			console.error(error)

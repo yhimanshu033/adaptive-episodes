@@ -16,8 +16,6 @@ import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useEditorState } from '@udecode/plate-common/react'
-import { parse } from 'best-effort-json-parser'
-import { jsonrepair } from 'jsonrepair'
 import { Send } from 'lucide-react'
 
 import { Loader } from '@/components/loader'
@@ -29,6 +27,7 @@ import {
 	extractFromMetadata,
 	extractScenesFromBeatsheet,
 	getText,
+	parseOptimistically,
 } from '@/lib/utils'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
@@ -134,10 +133,13 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		}
 		if (responses[taskId]) {
 			const jsonStr = responses[taskId].join('')
+			const arrayStartIndex = jsonStr.indexOf('[')
+			const cleanedJsonStr =
+				arrayStartIndex !== -1 ? jsonStr.substring(arrayStartIndex) : '[]'
 			try {
-				const data = parse(
-					jsonrepair(jsonStr)
-				) as PlotExplorerApiResponse['data']
+				const data =
+					parseOptimistically<PlotExplorerApiResponse['data']>(cleanedJsonStr)
+				if (!data) return
 				setContent(data)
 			} catch (error) {
 				console.log(error)
@@ -194,6 +196,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 								<div className="mt-8 flex items-center justify-center">
 									<div className="relative w-64">
 										<Input
+											disabled
 											type="text"
 											placeholder="Custom Prompt..."
 											className="w-full"
@@ -201,6 +204,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 											onChange={(e) => setPromptInput(e.target.value)}
 										/>
 										<Button
+											disabled
 											size="icon"
 											variant="ghost"
 											className="absolute right-1 top-1/2 -translate-y-1/2"
