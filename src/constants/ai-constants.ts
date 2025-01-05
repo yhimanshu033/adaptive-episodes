@@ -1,4 +1,9 @@
-import { EAction, EMessenger, TMessage } from '@/types/ai-types'
+import {
+	EAction,
+	EMessenger,
+	TLocalizeResponse,
+	TMessage,
+} from '@/types/ai-types'
 
 export const aiInitialMessage: TMessage[] = [
 	{
@@ -26,10 +31,37 @@ export enum LocalizationType {
 	PERSON = 'character',
 	PLACE = 'place',
 }
+
+export const localizationTypes: (keyof typeof LocalizationType)[] = [
+	'PERSON',
+	'PLACE',
+	'CONCEPT',
+	'OBJECT',
+]
+
+export const typeToKey: Record<
+	keyof typeof LocalizationType,
+	keyof TLocalizeResponse['result']
+> = {
+	CONCEPT: 'concepts',
+	OBJECT: 'objects',
+	PERSON: 'characters',
+	PLACE: 'places',
+}
+
+export const typeToLocalizedKey: Record<keyof typeof LocalizationType, string> =
+	{
+		CONCEPT: 'localized_concept',
+		OBJECT: 'localized_object',
+		PERSON: 'localized_name',
+		PLACE: 'localized_place',
+	}
+
 export enum ESocketStatus {
 	COMPLETED = 'completed',
 	STARTED = 'started',
 }
+
 export const quickPrompts = [
 	'Analysiere die dramaturgischen Beats dieser Episode und zeige auf, wo die dramatische Spannung nachlässt oder gesteigert werden sollte.',
 	'Überprüfe die Dialogszenen und mache Vorschläge zu “character-revealing inner thoughts, more theatrical exchanges, and heightened emotional stakes"',
