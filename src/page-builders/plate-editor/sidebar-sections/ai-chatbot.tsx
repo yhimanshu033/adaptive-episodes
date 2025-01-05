@@ -500,7 +500,13 @@ const AIChatbot = () => {
 				value: [
 					{
 						type: ParagraphPlugin.key,
-						children: [{ text: comment.text.replace(/(?<=\S)-|•/g, '\n-') }],
+						children: [
+							{
+								text: comment.text
+									.replace(/(?<=\S)-|•/g, '\n-')
+									.replace('</comment_format> <comment_format>', ''),
+							},
+						],
 					},
 				],
 				id: comment.id,
