@@ -52,7 +52,7 @@ const Stories = () => {
 							</p>
 							<Badge
 								className={cn(
-									'mt-2',
+									'mt-2 hover:bg-transparent',
 									story.status === EImportStatus.IMPORTING
 										? 'bg-yellow-100 text-yellow-800'
 										: 'bg-green-100 text-green-800'
