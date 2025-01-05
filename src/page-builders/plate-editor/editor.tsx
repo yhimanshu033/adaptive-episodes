@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { extendStore } from '@/hooks/use-editor-extend-state'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
 import { useGlobalStore } from '@/store/global-store'
+import { useQueryClient } from '@tanstack/react-query'
 import { cn, withProps } from '@udecode/cn'
 import { AlignPlugin } from '@udecode/plate-alignment/react'
 import { AutoformatPlugin } from '@udecode/plate-autoformat/react'
@@ -105,13 +107,24 @@ import Versions from './versions'
 
 export default function PlateEditor() {
 	const { selectedStatus, setSelectedStatus } = useEpisodeContext()
+	const queryClient = useQueryClient()
 	const containerRef = useRef<HTMLDivElement>(null)
-	const { data: content, latestStatus } = useEpisodeContent()
+	const { data: content, latestStatus, queryKey } = useEpisodeContent()
 	const isChildEpisode = !!content?.chapter.is_deleted
 	const editor = useMyEditor({
 		content: content?.text || '',
 		comments: content?.chapter.props?.comments,
 	})
+
+	const { extended } = extendStore()
+
+	useEffect(() => {
+		const invalidate = async () => {
+			await queryClient.invalidateQueries({ queryKey })
+		}
+		void invalidate()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [extended])
 
 	if (!content || !latestStatus)
 		return (
@@ -362,7 +375,7 @@ export const useMyEditor = ({
 							avatarUrl: '/pocket-copilot-logo.webp',
 						},
 					},
-					comments: comments ? getRecord(comments) : {},
+					comments: getRecord(comments),
 					myUserId: '1',
 				},
 			}),

@@ -13,6 +13,7 @@ import {
 	WorldAction,
 } from '@/constants/story-explorer-constants'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useEditorState } from '@udecode/plate-common/react'
 import { Send } from 'lucide-react'
@@ -26,6 +27,7 @@ import {
 	extractFromMetadata,
 	extractScenesFromBeatsheet,
 	getText,
+	parseOptimistically,
 } from '@/lib/utils'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
@@ -41,8 +43,11 @@ export interface RequestState {
 const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
-	const [content, setContent] = useState<PlotExplorerApiResponse['data']>([])
+	const [content, setContent] = useState<
+		PlotExplorerApiResponse['data'] | undefined
+	>([])
 	const [promptInput, setPromptInput] = useState<string>('')
+	const [taskId, setTaskId] = useState<string>('')
 	const [isLoading, setLoading] = useState<boolean>(false)
 	const [request, setRequest] = useState<RequestState>({
 		mode: defaultMode,
@@ -53,6 +58,8 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const {
 		plotlineMutation: { mutateAsync, reset },
 	} = usePlotOutlineHook()
+
+	const { responses, taskEnded } = useSocketStreaming()
 
 	const handleTabChange = (mode: RequestState['mode']) => {
 		if (request.mode === mode) return
@@ -76,12 +83,12 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		const metadataEntries = Object.values(metadata?.data || {})
 		if (action === PlotAction.Summary) {
 			setContent(
-				metadataEntries.slice(start > 1 ? 1 : 0).map((data) => ({
-					title: `${data.chapter_title || ''}`,
-					preContent: `Logline:\n${data.loglines.replace(/\d+:/, '')}`,
+				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => ({
+					title: `${index + start}. ${data.chapter_title || ''}`,
+					preContent: `Synopsis:\n${data.loglines.replace(/\d+:/, '')}`,
 					content: [
 						{
-							title: 'Read Summary',
+							title: 'Summary',
 							content: data.summary,
 						},
 					],
@@ -110,10 +117,35 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				current_ep: getText(children) || ' ',
 				instruction,
 			})
-			if (result) setContent(result as PlotExplorerApiResponse['data'])
+			if (result) {
+				setContent([])
+				setTaskId(result)
+			}
 		}
 		setLoading(false)
 	}
+
+	useEffect(() => {
+		if (!taskId) return
+		if (taskEnded[taskId]) {
+			setTaskId('')
+			return
+		}
+		if (responses[taskId]) {
+			const jsonStr = responses[taskId].join('')
+			const arrayStartIndex = jsonStr.indexOf('[')
+			const cleanedJsonStr =
+				arrayStartIndex !== -1 ? jsonStr.substring(arrayStartIndex) : '[]'
+			try {
+				const data =
+					parseOptimistically<PlotExplorerApiResponse['data']>(cleanedJsonStr)
+				if (!data) return
+				setContent(data)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+	}, [taskId, responses[taskId], taskEnded[taskId]])
 
 	useEffect(() => {
 		if (request.action && request.name && start && end) {
@@ -138,11 +170,11 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				</TabsList>
 				{categories.map(({ id, action }, idx) => (
 					<TabsContent value={id} key={idx} className="mt-6">
-						{isLoading ? (
+						{isLoading || (taskId && !taskEnded[taskId] && !content?.length) ? (
 							<div className="mt-5 flex w-full justify-center">
 								<Loader />
 							</div>
-						) : request.action && content.length ? (
+						) : request.action && content?.length ? (
 							<Content
 								header={request.name}
 								explorerData={content}
@@ -164,6 +196,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 								<div className="mt-8 flex items-center justify-center">
 									<div className="relative w-64">
 										<Input
+											disabled
 											type="text"
 											placeholder="Custom Prompt..."
 											className="w-full"
@@ -171,6 +204,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 											onChange={(e) => setPromptInput(e.target.value)}
 										/>
 										<Button
+											disabled
 											size="icon"
 											variant="ghost"
 											className="absolute right-1 top-1/2 -translate-y-1/2"

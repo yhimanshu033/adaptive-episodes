@@ -7,12 +7,18 @@ import {
 	TText,
 	Value,
 } from '@udecode/plate-common'
+import { parse } from 'best-effort-json-parser'
 import { clsx, type ClassValue } from 'clsx'
+import { jsonrepair } from 'jsonrepair'
 import { twMerge } from 'tailwind-merge'
 
 import { BASE_STATUS, EStatus, MinifiedValue } from '@/types/common'
 import { TGetMetadataResponse } from '@/types/content-types'
-import { IndexedCommentsResponse, ReviewComment } from '@/types/editor-types'
+import {
+	IndexedCommentsResponse,
+	IndexedSFXResponse,
+	ReviewComment,
+} from '@/types/editor-types'
 import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
 
 export function cn(...inputs: ClassValue[]) {
@@ -312,7 +318,8 @@ export function mergeValue(ogVal: Value): Value {
 	return merged
 }
 
-export function getRecord(comments: TComment[]) {
+export function getRecord(comments?: TComment[]) {
+	if (!comments) return {}
 	const records: Record<string, TComment> = comments.reduce(
 		(prev, curr) => {
 			return { ...prev, [curr.id]: curr }
@@ -323,7 +330,7 @@ export function getRecord(comments: TComment[]) {
 }
 
 export function convertReviewResponse(
-	response: IndexedCommentsResponse[],
+	response: Partial<IndexedCommentsResponse>[],
 	children: Value
 ) {
 	const comments: ReviewComment[] = []
@@ -335,21 +342,55 @@ export function convertReviewResponse(
 		return nodes.flatMap((node, index) => {
 			const currentPath = [...path, index]
 
+			const keys = Object.keys(node)
+
+			if (keys.find((key) => key.includes('comment_'))) {
+				return [node]
+			}
+
 			if ('text' in node) {
 				const nodeId = currentPath.join('_')
-				const { text } = node as { text: string }
+				const { text, ...rest } = node as TText
 				const segments: TText[] = []
 				let lastIndex = 0
+				const sortedMatchingValues = response
+					.filter((item) => item.id === nodeId && !!item.path)
+					.sort((a, b) => {
+						if (!a.path || !b.path) return 0
+						if (a.path.start !== b.path.start) {
+							return a.path.start - b.path.start
+						}
+						return a.path.end - b.path.end
+					})
+				const idPathMap = new Set<string>()
+				const matchingValues: Partial<IndexedCommentsResponse>[] = []
+				let lastAcceptedEnd = -Infinity
 
-				for (const matchingValue of response) {
-					if (matchingValue.id !== nodeId) continue
+				for (const comment of sortedMatchingValues) {
+					if (!comment.path) continue
+					if (comment.path.start >= lastAcceptedEnd) {
+						matchingValues.push(comment)
+						lastAcceptedEnd = comment.path.end
+					}
+				}
+
+				for (const matchingValue of matchingValues) {
+					if (
+						!matchingValue.path ||
+						matchingValue.path.end === -1 ||
+						matchingValue.path.start === -1
+					)
+						continue
 					const { start, end } = matchingValue.path
+					if (idPathMap.has(`${matchingValue.id}-${start}-${end}`)) continue
+					idPathMap.add(`${matchingValue.id}-${start}-${end}`)
 
 					if (lastIndex < start) {
-						segments.push({ text: text.slice(lastIndex, start) })
+						segments.push({ ...rest, text: text.slice(lastIndex, start) })
 					}
 
 					const commentSegment = {
+						...rest,
 						text: text.slice(start, end),
 						comment: true,
 					} as TText
@@ -357,7 +398,7 @@ export function convertReviewResponse(
 					const id = nanoid()
 					const commentKey = `comment_${id}`
 					commentSegment[commentKey] = true
-					comments.push({ id, text: matchingValue.comment })
+					comments.push({ id, text: matchingValue.comment || '' })
 
 					segments.push(commentSegment)
 
@@ -365,9 +406,8 @@ export function convertReviewResponse(
 				}
 
 				if (lastIndex < text.length) {
-					segments.push({ text: text.slice(lastIndex) })
+					segments.push({ ...rest, text: text.slice(lastIndex) })
 				}
-
 				return segments.length ? segments : [node]
 			} else if ('children' in node) {
 				return [
@@ -386,7 +426,6 @@ export function convertReviewResponse(
 		...child,
 		children: applyComment(child.children, [index]),
 	}))
-
 	return { value, comments }
 }
 
@@ -421,14 +460,26 @@ export function extractBetweenTags(input: string, tagName: string): string {
 	const openingTag = `<${tagName}>`
 	const closingTag = `</${tagName}>`
 
-	const startIndex = input.indexOf(openingTag)
-	const endIndex = input.indexOf(closingTag)
+	let result = ''
+	let startIndex = input.indexOf(openingTag)
 
-	if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) {
-		return input
+	while (startIndex !== -1) {
+		const endIndex = input.indexOf(closingTag, startIndex)
+		if (endIndex === -1) {
+			break
+		}
+
+		const content = input
+			.substring(startIndex + openingTag.length, endIndex)
+			.trim()
+		if (content) {
+			result += (result ? '\n' : '') + content
+		}
+
+		startIndex = input.indexOf(openingTag, endIndex + closingTag.length)
 	}
 
-	return input.substring(startIndex + openingTag.length, endIndex)
+	return result
 }
 
 export const extractScenesFromBeatsheet = (beatsheet: string) => {
@@ -464,4 +515,121 @@ export const extractScenesFromBeatsheet = (beatsheet: string) => {
 	}
 
 	return scenes
+}
+
+export function mergeStrings(s1: string, s2: string): string {
+	const s1Lines = s1.split('\n')
+	const s2Lines = s2.split('\n')
+
+	let mergeIndex = s1Lines.length - 1
+	while (mergeIndex >= 0 && !s1Lines[mergeIndex].trim()) {
+		mergeIndex--
+	}
+
+	const merged = [
+		...s1Lines.slice(0, mergeIndex + 1),
+		...s2Lines.slice(mergeIndex + 1),
+	]
+
+	return merged.join('\n')
+}
+
+export function sanitizeJsonString(badJson: string) {
+	return (
+		badJson
+			// Escape backslashes
+			.replace(/\\/g, '\\\\')
+			// Escape double quotes
+			.replace(/(?<!\\)"/g, '\\"')
+			// Handle newlines
+			.replace(/\n/g, '\\n')
+			// Handle tabs
+			.replace(/\t/g, '\\t')
+	)
+}
+
+export function addSFX(
+	sfx: IndexedSFXResponse,
+	children: Value,
+	key: string
+): Value {
+	const applyText = (nodes: TDescendant[], path: number[]): TDescendant[] => {
+		return nodes.flatMap((node, index) => {
+			const currentPath = [...path, index]
+
+			if ('text' in node) {
+				const matchingValues = sfx.filter(
+					(item) => item.id === currentPath.join('_')
+				)
+
+				if (matchingValues.length === 0) {
+					return [node]
+				}
+
+				const segments: TDescendant[] = []
+				let currentIndex = 0
+				const text = node.text as string
+
+				matchingValues.forEach((matchingValue) => {
+					if (!text.includes(matchingValue.match_string)) {
+						return
+					}
+					const matchIndex = text.indexOf(
+						matchingValue.match_string,
+						currentIndex
+					)
+
+					if (matchIndex > currentIndex) {
+						segments.push({
+							...node,
+							text: text.slice(currentIndex, matchIndex),
+						})
+					}
+					if (matchingValue.sfx)
+						segments.push({
+							type: key,
+							text: `\n${matchingValue.sfx.replace('[!', '[')}\n`,
+							bold: true,
+						})
+
+					currentIndex = matchIndex
+				})
+
+				if (currentIndex < text.length) {
+					segments.push({ ...node, text: text.slice(currentIndex) })
+				}
+
+				return segments
+			} else if ('children' in node) {
+				return [
+					{
+						...node,
+						children: applyText(node.children, currentPath),
+					},
+				]
+			}
+
+			return [node]
+		})
+	}
+
+	return children.map((child, index) => ({
+		...child,
+		children: applyText(child.children, [index]),
+	}))
+}
+
+export function parseOptimistically<T>(input: string) {
+	try {
+		return parse(input) as T
+	} catch (e) {
+		console.log(e)
+		try {
+			const repaired = jsonrepair(input)
+			return parse(repaired) as T
+		} catch (e) {
+			console.log(e)
+			return null
+		}
+	}
 }

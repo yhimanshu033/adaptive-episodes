@@ -15,9 +15,9 @@ import { RequestState } from './explorer'
 
 const preProcessData = (data: ExplorerType): ExplorerType => {
 	if (typeof data.content === 'string') {
-		const regex = /^\s*(?:Name:(.*)| (Episode.*))$/m
+		const regex = /^\s*(?:Name:(.*)|(Episode\s*.*))$/m
 		const match = data.content.match(regex)
-		const title = match?.[1].trim() || match?.[2].trim() || data.title
+		const title = match?.[1]?.trim() || match?.[2]?.trim() || data?.title
 		const content = data.content.replace(regex, '').trim()
 
 		return { ...data, title, content }
@@ -29,7 +29,7 @@ const renderContent = (
 	content: string | ExplorerType[],
 	preContent?: string
 ): JSX.Element => {
-	if (content === '' || !content.length) return <p>Content not found 😢</p>
+	if (content === '' || !content?.length) return <p>Content not found 😢</p>
 	if (typeof content === 'string') {
 		return (
 			<div
@@ -105,7 +105,7 @@ const Content = ({
 					const { title, content, preContent } = preProcessData(data)
 					return (
 						<AccordionItem key={`${title}${index}`} value={`${title}${index}`}>
-							<AccordionTrigger>{`${index + 1}. ${title}`}</AccordionTrigger>
+							<AccordionTrigger>{title}</AccordionTrigger>
 							<AccordionContent>
 								{renderContent(content, preContent)}
 							</AccordionContent>

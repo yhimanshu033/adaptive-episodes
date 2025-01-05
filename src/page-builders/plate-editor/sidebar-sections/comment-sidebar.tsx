@@ -102,11 +102,11 @@ export default function CommentSidebar() {
 	return (
 		<div className="relative">
 			<div className="pb-8 pt-4">
-				{!comments.length && (!myUserId || !activeCommentId) && (
-					<h1 className="w-full text-center">
-						No {showResolved ? 'resolved' : 'unresolved'} comments
-					</h1>
-				)}
+				<h1 className="w-full text-center">
+					{!comments.length && (!myUserId || !activeCommentId)
+						? `No ${showResolved ? 'resolved' : 'unresolved'} comments`
+						: `${showResolved ? resolvedComments.length : unresolvedComments.length} ${showResolved ? 'resolved' : 'unresolved'} comments`}
+				</h1>
 			</div>
 			<Button
 				className="absolute left-2 top-1 z-50"
