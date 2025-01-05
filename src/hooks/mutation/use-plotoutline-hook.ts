@@ -9,6 +9,7 @@ import useSocketStreaming from '../use-socket-streaming'
 const usePlotOutlineHook = () => {
 	const { startTask } = useSocketStreaming()
 	async function getPlotOutline(params: PlotExplorerParams) {
+		console.log('request body', params)
 		const taskId = await startTask({
 			method: 'POST',
 			url: '/aicopilot/explorer',

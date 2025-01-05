@@ -15,7 +15,7 @@ import { RequestState } from './explorer'
 
 const preProcessData = (data: ExplorerType): ExplorerType => {
 	if (typeof data.content === 'string') {
-		const regex = /^\s*(?:Name:(.*)| (Episode.*))$/m
+		const regex = /^\s*(?:Name:(.*)|(Episode\s*.*))$/m
 		const match = data.content.match(regex)
 		const title = match?.[1]?.trim() || match?.[2]?.trim() || data?.title
 		const content = data.content.replace(regex, '').trim()

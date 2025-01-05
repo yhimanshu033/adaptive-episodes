@@ -134,9 +134,12 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		}
 		if (responses[taskId]) {
 			const jsonStr = responses[taskId].join('')
+			const arrayStartIndex = jsonStr.indexOf('[')
+			const cleanedJsonStr =
+				arrayStartIndex !== -1 ? jsonStr.substring(arrayStartIndex) : '[]'
 			try {
 				const data = parse(
-					jsonrepair(jsonStr)
+					jsonrepair(cleanedJsonStr)
 				) as PlotExplorerApiResponse['data']
 				setContent(data)
 			} catch (error) {

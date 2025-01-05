@@ -503,7 +503,8 @@ const AIChatbot = () => {
 						children: [
 							{
 								text: comment.text
-									.replace(/(?<=\S)-|•/g, '\n-')
+									.trim()
+									.replace(/(?<=.)[-•]/g, '\n-')
 									.replace('</comment_format> <comment_format>', ''),
 							},
 						],
