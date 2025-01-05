@@ -55,6 +55,7 @@ const AppProvider = ({
 								>
 									<NextTopLoader />
 									{children}
+									<Toaster />
 									<ReactQueryDevtools />
 								</TooltipProvider>
 							</ThemeProvider>
