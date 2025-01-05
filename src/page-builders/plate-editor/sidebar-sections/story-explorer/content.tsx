@@ -29,7 +29,8 @@ const renderContent = (
 	content: string | ExplorerType[],
 	preContent?: string
 ): JSX.Element => {
-	if (content === '' || !content?.length) return <p>Content not found 😢</p>
+	if (!content || content === '' || !content?.length)
+		return <p>Content not found 😢</p>
 	if (typeof content === 'string') {
 		return (
 			<div

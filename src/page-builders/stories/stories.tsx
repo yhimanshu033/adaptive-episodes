@@ -2,11 +2,14 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
+import { EImportStatus } from '@/constants/story-constants'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { BookOpen, User } from 'lucide-react'
 
 import { Loader } from '@/components/loader'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 
 import ImportStoryCard from './import-story-card'
 
@@ -47,6 +50,16 @@ const Stories = () => {
 								<BookOpen className="mr-2 size-4" />
 								<span>{story.episode_count} episodes</span>
 							</p>
+							<Badge
+								className={cn(
+									'mt-2',
+									story.status === EImportStatus.IMPORTING
+										? 'bg-yellow-100 text-yellow-800'
+										: 'bg-green-100 text-green-800'
+								)}
+							>
+								{story.status}
+							</Badge>
 						</CardContent>
 					</Link>
 				</Card>
