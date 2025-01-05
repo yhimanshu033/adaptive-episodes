@@ -19,12 +19,12 @@ const Stories = () => {
 			</div>
 		)
 	return (
-		<section className="container my-6 flex flex-wrap gap-6 self-start">
+		<section className="container my-6 grid grid-cols-1 justify-items-center gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 			<ImportStoryCard />
 			{stories?.map((story) => (
 				<Card key={story.id} className="w-64 overflow-hidden">
 					<Link href={`/projects/${story.id}`}>
-						<div className="relative aspect-[1/1]">
+						<div className="relative aspect-square">
 							<Image
 								src={story.image || COPILOT_LOGO_URL}
 								alt={`${story.project_title} thumbnail`}

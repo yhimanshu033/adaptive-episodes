@@ -9,3 +9,8 @@ export const MAX_DOCX_FILE_SIZE = 10000000
 export const ACCEPTED_DOCX_TYPES = [
 	'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ]
+
+export enum EImportStatus {
+	IMPORTED = 'IMPORTED',
+	IMPORTING = 'IMPORTING',
+}

@@ -12,30 +12,29 @@ const useStoryUploadHook = () => {
 	const { startTask } = useSocket()
 	const queryClient = useQueryClient()
 
-	const onSuccess = async () => {
-		await queryClient.invalidateQueries({
-			queryKey: ['stories'],
-			type: 'all',
-		})
+	const onSuccess = () => {
+		// eslint-disable-next-line @typescript-eslint/no-misused-promises
+		setTimeout(async () => {
+			await queryClient.invalidateQueries({
+				queryKey: ['stories'],
+				type: 'all',
+			})
+		}, 3000)
 	}
 
 	async function storyUpload(params: StoryImportFormSchema) {
-		const { story_file, image_file, ...rest } = params
+		const { story_file, image_file, author, ...rest } = params
 
-		console.log('Params', params)
 		const [project_url, image] = await Promise.all([
 			uploadFile(story_file),
-			image_file && uploadFile(image_file),
+			image_file ? uploadFile(image_file) : Promise.resolve(null),
 		])
 		const payload = {
 			...rest,
-			project_url: project_url?.url || '',
-			image: image?.url || '',
+			project_url: project_url?.url ?? null,
+			image: image?.url ?? null,
+			author: author ?? null,
 		}
-
-		console.log('response body', {
-			task_data: { ...payload },
-		})
 
 		const taskId = await startTask<StoryUploadParams>({
 			method: 'POST',
@@ -44,8 +43,7 @@ const useStoryUploadHook = () => {
 				task_data: { ...payload },
 			},
 		})
-		console.log('taskId', taskId)
-		return taskId
+		return Promise.resolve(taskId)
 	}
 	const storyUploadMutation = useMutation({
 		mutationKey: ['storyUpload'],

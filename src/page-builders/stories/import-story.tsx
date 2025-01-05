@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Image from 'next/image'
 import {
 	StoryImportFormSchema,
@@ -66,21 +66,19 @@ export function ImportStory() {
 	}
 
 	const onSubmit = (data: StoryImportFormSchema) => {
-		storyUploadMutation.mutate(data)
+		storyUploadMutation.mutate(data, {
+			onSuccess: () => {
+				form.reset()
+				setImageSrc(null)
+				setFormOpen(false)
+				toast({
+					title: 'Story uploaded successfully',
+					description: 'Please wait while the server processes the story.',
+					className: 'bg-primary text-foreground top-0 mx-auto',
+				})
+			},
+		})
 	}
-
-	useEffect(() => {
-		if (storyUploadMutation.isSuccess) {
-			form.reset()
-			setImageSrc(null)
-			setFormOpen(false)
-			toast({
-				title: 'Story uploaded successfully',
-				description: 'Wait for a while to process the story',
-				className: 'bg-primary text-foreground',
-			})
-		}
-	}, [form, storyUploadMutation.isSuccess, toast])
 
 	return (
 		<Card className="overflow-y-auto py-2">
@@ -185,7 +183,6 @@ export function ImportStory() {
 														const file = e.target.files[0]
 														form.setValue('image_file', file)
 														const imageURL = URL.createObjectURL(file)
-														console.log(imageURL)
 														setImageSrc(imageURL)
 													}
 												}}
@@ -278,7 +275,6 @@ export function ImportStory() {
 														ref={storyInputRef}
 														className="hidden"
 														onChange={(e) => {
-															console.log(e.target.files)
 															if (e.target.files?.length) {
 																const file = e.target.files[0]
 																field.onChange(file)

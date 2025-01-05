@@ -50,7 +50,7 @@ export const useStoryImportFormResolver = () =>
 		mode: 'onChange',
 		defaultValues: {
 			title: '',
-			author: '',
+			author: undefined,
 			start_ep: 1,
 			end_ep: 1,
 			image_file: undefined,
