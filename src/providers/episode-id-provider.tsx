@@ -9,6 +9,7 @@ import React, {
 	useState,
 } from 'react'
 import { aiInitialMessage } from '@/constants/ai-constants'
+import { ExplorerModeId } from '@/constants/story-explorer-constants'
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -32,6 +33,12 @@ const initialAiState: AIStoreType = {
 	prevValue: null,
 	acceptedValue: null,
 	requestedAction: null,
+	activeExplorerMode: ExplorerModeId.Plot,
+	activeExplorerActions: {
+		[ExplorerModeId.Character]: null,
+		[ExplorerModeId.Plot]: null,
+		[ExplorerModeId.World]: null,
+	},
 }
 
 const initialLaserState: LaserStoreType = {
