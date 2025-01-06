@@ -430,7 +430,7 @@ export function convertReviewResponse(
 }
 
 export const extractFromMetadata = (
-	metadata: TGetMetadataResponse | null,
+	metadata: TGetMetadataResponse | null | undefined,
 	start: number
 ) => {
 	const loglines_array: string[] = []

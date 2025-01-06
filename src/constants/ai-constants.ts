@@ -68,4 +68,5 @@ export const quickPrompts = [
 	'Identifiziere Momente, in denen Konflikte zwischen den Charakteren intensiviert werden könnten, und schlage Möglichkeiten vor, ihre Dynamik dramatischer zu gestalten, ohne die Kernhandlung zu ändern.',
 	'Zeichne die emotionale Entwicklung des Protagonisten in dieser Episode nach und verstärke seine Reaktionen, wobei der Fokus auf äußeren Hindernissen statt auf inneren Schwächen liegt.',
 	'Überprüfe den Anfang/das Ende dieser Episode und schlageMöglichkeiten vor, einen spannenderen Hook oder Cliffhanger zu schaffen, der sofort Spannung aufbaut.',
+	'Bitte schreibe die gesamte Episode um, ergänze mehr farbenfrohe Beschreibungen hinzu und behalte dabei das Tempo bei. \nFüge während der gesamten Szene an den entsprechenden Momenten Hinweise für Musik und Soundeffekte ein – aber auf Englisch in diesem Format:  \nSFX:  \nMUSIC:  \n\nRewrite Guidelines:  \nDazu folgst du diesen Grundregeln:  \n- Direkte Rede immer in Du-Form und jede Figur mit ihrer eigenen Umgangssprache.  \n- Schreibe im Aktiv.  \n- Verbessere die Lesbarkeit des Textes durch gute Grammatik.  \n- Vermeide Partizipien.',
 ]

@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
 import {
 	categories,
 	CharacterAction,
@@ -14,7 +13,6 @@ import {
 } from '@/constants/story-explorer-constants'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
-import { getMetadata } from '@/server-action/metadata-action'
 import { useEditorState } from '@udecode/plate-common/react'
 import { Send } from 'lucide-react'
 
@@ -41,7 +39,6 @@ export interface RequestState {
 }
 
 const Explorer = ({ start, end }: { end: number; start: number }) => {
-	const { id } = useParams()
 	const episodeId = useEpisodeId()
 	const [content, setContent] = useState<
 		PlotExplorerApiResponse['data'] | undefined
@@ -57,7 +54,9 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const { children } = useEditorState()
 	const {
 		plotlineMutation: { mutateAsync, reset },
-	} = usePlotOutlineHook()
+		metadata,
+		isMetadataLoading,
+	} = usePlotOutlineHook({ start, end })
 
 	const { responses, taskEnded } = useSocketStreaming()
 
@@ -75,17 +74,13 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	) => {
 		setLoading(true)
 		setRequest({ ...request, action, name })
-		const { data: metadata } = await getMetadata(
-			Number(id),
-			Math.max(start - 1, 1),
-			end
-		)
 		const metadataEntries = Object.values(metadata?.data || {})
+		setContent([])
 		if (action === PlotAction.Summary) {
 			setContent(
 				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => ({
 					title: `${index + start}. ${data.chapter_title || ''}`,
-					preContent: `Synopsis:\n${data.loglines.replace(/\d+:/, '')}`,
+					preContent: `Synopsis:\n${data.loglines?.replace(/\d+:/, '') || ''}`,
 					content: [
 						{
 							title: 'Summary',
@@ -94,6 +89,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 					],
 				}))
 			)
+			setTaskId('')
 		} else if (action === PlotAction.Scenes) {
 			setContent(
 				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => {
@@ -103,6 +99,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 					}
 				})
 			)
+			setTaskId('')
 		} else {
 			const { beatsheets_array: beatsheet_array, ...extractedData } =
 				extractFromMetadata(metadata, start - 1)
@@ -118,7 +115,6 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				instruction,
 			})
 			if (result) {
-				setContent([])
 				setTaskId(result)
 			}
 		}
@@ -127,10 +123,6 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 
 	useEffect(() => {
 		if (!taskId) return
-		if (taskEnded[taskId]) {
-			setTaskId('')
-			return
-		}
 		if (responses[taskId]) {
 			const jsonStr = responses[taskId].join('')
 			const arrayStartIndex = jsonStr.indexOf('[')
@@ -144,6 +136,10 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 			} catch (error) {
 				console.log(error)
 			}
+		}
+		if (taskEnded[taskId]) {
+			setTaskId('')
+			return
 		}
 	}, [taskId, responses[taskId], taskEnded[taskId]])
 
@@ -170,7 +166,9 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				</TabsList>
 				{categories.map(({ id, action }, idx) => (
 					<TabsContent value={id} key={idx} className="mt-6">
-						{isLoading || (taskId && !taskEnded[taskId] && !content?.length) ? (
+						{isLoading ||
+						isMetadataLoading ||
+						(taskId && !taskEnded[taskId] && !content?.length) ? (
 							<div className="mt-5 flex w-full justify-center">
 								<Loader />
 							</div>

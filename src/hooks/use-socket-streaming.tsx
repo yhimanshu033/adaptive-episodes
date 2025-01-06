@@ -59,6 +59,7 @@ export const SocketStreamingProvider = ({
 	const [responses, setResponses] = useState<Record<string, string[]>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
 	const [taskEnded, setTaskEnded] = useState<Record<string, boolean>>({})
+	const [fetchedData, setFetchedData] = useState<Record<string, string>>({})
 
 	useEffect(() => {
 		socket.connect()
@@ -114,8 +115,12 @@ export const SocketStreamingProvider = ({
 				onResponse?: (data: ResponseDataT) => void
 			}
 		) => {
+			const key = JSON.stringify(params)
+			if (fetchedData[key]) {
+				return fetchedData[key]
+			}
 			const taskId = nanoid()
-
+			setFetchedData((prev) => ({ ...prev, [key]: taskId }))
 			if (params.onResponse) {
 				taskCallbacksRef.current[taskId] = params.onResponse
 			}
@@ -128,11 +133,18 @@ export const SocketStreamingProvider = ({
 			>({
 				...params,
 				query: { task_id: taskId, ...(params.query as QueryParamsT) },
+				onError: () => {
+					setFetchedData((prev) => {
+						const updatedData = { ...prev }
+						delete updatedData[key]
+						return updatedData
+					})
+				},
 			})
 
 			return taskId
 		},
-		[]
+		[fetchedData]
 	)
 
 	const getStreamedResponse = useCallback(
