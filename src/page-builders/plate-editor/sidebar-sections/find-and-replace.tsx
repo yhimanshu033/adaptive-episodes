@@ -51,6 +51,7 @@ import {
 } from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
 import { Toggle } from '@/components/ui/toggle'
+import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn, replaceNthInsensitive } from '@/lib/utils'
 
@@ -127,24 +128,25 @@ function AddForm({
 						name="type"
 						render={({ field }) => (
 							<FormItem>
-								<Select
-									onValueChange={field.onChange}
-									defaultValue={field.value}
-								>
-									<FormControl>
-										<SelectTrigger>
-											<SelectValue placeholder="Select a type" />
-										</SelectTrigger>
-									</FormControl>
-									<SelectContent>
-										{localizationTypes.map((type, idx) => (
-											<SelectItem key={idx} value={type}>
-												{type}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-
+								<TooltipComponent tooltip="Change Type">
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+									>
+										<FormControl>
+											<SelectTrigger>
+												<SelectValue placeholder="Select a type" />
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											{localizationTypes.map((type, idx) => (
+												<SelectItem key={idx} value={type}>
+													{type}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</TooltipComponent>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -411,11 +413,14 @@ export default function FindAndReplace() {
 		<div className="flex h-full flex-col gap-4 p-4">
 			<h2 className="text-2xl font-bold">Localization</h2>
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
-				<Toggle onClick={toggleReplace} aria-label="Toggle replace">
-					<ChevronRight
-						className={cn('transition-all', replaceEnabled && 'rotate-90')}
-					/>
-				</Toggle>
+				<TooltipComponent tooltip="Enable Replace">
+					<Toggle onClick={toggleReplace} aria-label="Toggle replace">
+						<ChevronRight
+							className={cn('transition-all', replaceEnabled && 'rotate-90')}
+						/>
+					</Toggle>
+				</TooltipComponent>
+
 				<div className="relative">
 					<Input
 						value={search}
@@ -424,19 +429,36 @@ export default function FindAndReplace() {
 						placeholder="Find"
 						className="flex-1 rounded border border-gray-300 p-2"
 					/>
-					<Toggle
-						onClick={toggleCaseSensitive}
-						aria-label="Toggle case-sensitivity"
-						className="absolute inset-y-0 right-0 my-auto scale-75"
+					<TooltipComponent
+						tooltip={
+							caseSensitive ? 'Make Case Insensitive' : 'Make Case Sensitive'
+						}
 					>
-						<CaseSensitive />
-					</Toggle>
+						<Toggle
+							onClick={toggleCaseSensitive}
+							aria-label="Toggle case-sensitivity"
+							className={cn(
+								'absolute inset-y-0 right-0 my-auto scale-75',
+								caseSensitive && 'border'
+							)}
+						>
+							<CaseSensitive />
+						</Toggle>
+					</TooltipComponent>
 				</div>
 				<div className="flex gap-2">
-					<Button onClick={handlePrev} disabled={ptr < 1}>
+					<Button
+						tooltip="Select Previous Node"
+						onClick={handlePrev}
+						disabled={ptr < 1}
+					>
 						<ChevronUp />
 					</Button>
-					<Button onClick={handleNext} disabled={ptr === records.length - 1}>
+					<Button
+						tooltip="Select Next Node"
+						onClick={handleNext}
+						disabled={ptr === records.length - 1}
+					>
 						<ChevronDown />
 					</Button>
 				</div>
@@ -450,10 +472,18 @@ export default function FindAndReplace() {
 							className="col-start-2 flex-1 rounded border border-gray-300 p-2"
 						/>
 						<div className="flex gap-2">
-							<Button title="replace" onClick={onReplace}>
+							<Button
+								tooltip="Replace Current Selection"
+								title="replace"
+								onClick={onReplace}
+							>
 								<ReplaceIcon />{' '}
 							</Button>
-							<Button title="replace all" onClick={onReplaceAll}>
+							<Button
+								tooltip="Replace All"
+								title="replace all"
+								onClick={onReplaceAll}
+							>
 								<ReplaceAllIcon />{' '}
 							</Button>
 						</div>

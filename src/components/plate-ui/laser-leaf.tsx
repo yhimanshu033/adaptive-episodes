@@ -181,8 +181,8 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			{...props}
 			onClick={handleClick}
 			className={cn(
-				'relative border-b-2 border-b-primary/40',
-				'bg-primary/40',
+				'relative border-b-2 border-b-blue-500/70',
+				'bg-blue-500/40',
 				className
 			)}
 		>

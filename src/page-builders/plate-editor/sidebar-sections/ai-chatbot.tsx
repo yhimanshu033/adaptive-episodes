@@ -688,6 +688,7 @@ const AIChatbot = () => {
 							variant="ghost"
 							size="icon"
 							type="button"
+							tooltip="Cancel Request"
 							onClick={() => {
 								popMessage()
 								reset()
@@ -701,14 +702,19 @@ const AIChatbot = () => {
 							<StopCircle size={16} />
 						</Button>
 					) : (
-						<Button variant="ghost" size="icon" type="submit">
+						<Button
+							tooltip="Send Message"
+							variant="ghost"
+							size="icon"
+							type="submit"
+						>
 							<Send size={16} />
 						</Button>
 					)}
 				</form>
 				<AlertDialog>
 					<AlertDialogTrigger asChild>
-						<Button variant="ghost" size="icon">
+						<Button tooltip="Clear Chat" variant="ghost" size="icon">
 							<Trash2 size={16} />
 						</Button>
 					</AlertDialogTrigger>
