@@ -10,7 +10,6 @@ import FindAndReplace from './sidebar-sections/find-and-replace'
 import StoryExplorer from './sidebar-sections/story-explorer'
 
 const renderSidebar: Record<string, React.ReactNode> = {
-	chatbot: <AiChatbot />,
 	comments: <CommentSidebar />,
 	outline: <StoryExplorer />,
 	far: <FindAndReplace />,
@@ -28,6 +27,9 @@ const Sidebar = () => {
 			)}
 		>
 			<ScrollArea className="relative size-full h-[calc(100svh_-_44px)] flex-1 transition-all duration-200">
+				<div className={cn(sidebar !== 'chatbot' && 'hidden')}>
+					<AiChatbot />
+				</div>
 				{sidebar && renderSidebar[sidebar]}
 			</ScrollArea>
 		</div>
