@@ -102,6 +102,12 @@ export type TMessage =
 	  }
 export interface AIStoreType {
 	acceptedValue: Value | null
+	activeExplorerActions: {
+		[ExplorerModeId.Plot]: PlotAction | string | null
+		[ExplorerModeId.Character]: CharacterAction | string | null
+		[ExplorerModeId.World]: WorldAction | string | null
+	}
+	activeExplorerMode: ExplorerModeId
 	messages: TMessage[]
 	prevValue: Value | null
 	requestedAction: EChatMode | null
@@ -128,11 +134,10 @@ export interface ExplorerType {
 	title: string
 }
 
+export type ExplorerActionType = PlotAction | CharacterAction | WorldAction
+
 export type ExplorerCategories = Array<{
-	action: Array<{
-		id: PlotAction | CharacterAction | WorldAction
-		name: string
-	}>
+	action: Array<ExplorerActionType>
 	id: ExplorerModeId
 	mode: ExplorerMode
 }>

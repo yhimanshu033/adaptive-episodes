@@ -36,31 +36,39 @@ export const categories: ExplorerCategories = [
 		mode: ExplorerMode.Plot,
 		id: ExplorerModeId.Plot,
 		action: [
-			{ id: PlotAction.Summary, name: 'Summaries' },
-			{ id: PlotAction.Scenes, name: 'Scenes' },
-			{ id: PlotAction.Arcs, name: 'Arcs' },
-			{ id: PlotAction.StorySim, name: 'StorySim' },
+			PlotAction.Summary,
+			PlotAction.Scenes,
+			PlotAction.Arcs,
+			PlotAction.StorySim,
 		],
 	},
 	{
 		mode: ExplorerMode.Character,
 		id: ExplorerModeId.Character,
 		action: [
-			{ id: CharacterAction.Bios, name: 'Bios' },
-			{ id: CharacterAction.Relationships, name: 'Relationships' },
-			{ id: CharacterAction.Arcs, name: 'Arcs' },
+			CharacterAction.Bios,
+			CharacterAction.Relationships,
+			CharacterAction.Arcs,
 		],
 	},
 	{
 		mode: ExplorerMode.World,
 		id: ExplorerModeId.World,
-		action: [
-			{ id: WorldAction.Locations, name: 'Locations' },
-			{ id: WorldAction.Props, name: 'Props' },
-			{ id: WorldAction.Rules, name: 'Rules' },
-		],
+		action: [WorldAction.Locations, WorldAction.Props, WorldAction.Rules],
 	},
 ]
+
+export const categoryNames = {
+	[PlotAction.Summary]: 'Summaries',
+	[PlotAction.Scenes]: 'Scenes',
+	[PlotAction.Arcs]: 'Arcs',
+	[PlotAction.StorySim]: 'StorySim',
+	[CharacterAction.Bios]: 'Bios',
+	[CharacterAction.Relationships]: 'Relationships',
+	[WorldAction.Locations]: 'Locations',
+	[WorldAction.Props]: 'Props',
+	[WorldAction.Rules]: 'Rules',
+}
 
 export const currentlyDisabled = PlotAction.StorySim
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import useAIStore from '@/store/ai-store'
 import { ArrowLeft } from 'lucide-react'
 
 import {
@@ -10,8 +11,6 @@ import {
 import { Button } from '@/components/ui/button'
 
 import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
-
-import { RequestState } from './explorer'
 
 const preProcessData = (data: ExplorerType): ExplorerType => {
 	if (typeof data.content === 'string') {
@@ -81,12 +80,13 @@ const renderContent = (
 const Content = ({
 	header,
 	explorerData,
-	setRequest,
+	// setRequest,
 }: {
-	explorerData: PlotExplorerApiResponse['data']
+	explorerData?: PlotExplorerApiResponse['data']
 	header: string
-	setRequest: React.Dispatch<React.SetStateAction<RequestState>>
 }) => {
+	const { store, setActiveExplorerActions } = useAIStore()
+	const activeExplorerMode = store((state) => state.activeExplorerMode)
 	return (
 		<>
 			<div className="mb-4 flex items-center justify-between">
@@ -95,14 +95,14 @@ const Content = ({
 					variant="outline"
 					size="icon"
 					onClick={() => {
-						setRequest((prev) => ({ ...prev, action: '', name: '' }))
+						setActiveExplorerActions(activeExplorerMode, null)
 					}}
 				>
 					<ArrowLeft size={16} />
 				</Button>
 			</div>
 			<Accordion type="single" collapsible className="w-full">
-				{explorerData.map((data, index) => {
+				{explorerData?.map((data, index) => {
 					const { title, content, preContent } = preProcessData(data)
 					return (
 						<AccordionItem key={`${title}${index}`} value={`${title}${index}`}>
