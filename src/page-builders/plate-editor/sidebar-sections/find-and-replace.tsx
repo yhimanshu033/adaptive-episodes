@@ -1,5 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { LocalizationType } from '@/constants/ai-constants'
+import React, {
+	Dispatch,
+	SetStateAction,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react'
+import {
+	LocalizationType,
+	localizationTypes,
+	typeToKey,
+	typeToLocalizedKey,
+} from '@/constants/ai-constants'
 import useLocalizeHook, {
 	useLocalizeMutation,
 } from '@/hooks/mutation/use-localize-hook'
@@ -47,6 +59,7 @@ import {
 	TLocalizeConceptArrayItem,
 	TLocalizeObjectArrayItem,
 	TLocalizePlaceArrayItem,
+	TLocalizeResponse,
 } from '@/types/ai-types'
 
 const formSchema = z.object({
@@ -55,26 +68,34 @@ const formSchema = z.object({
 	type: z.string(),
 })
 
-const types: (keyof typeof LocalizationType)[] = [
-	'PERSON',
-	'PLACE',
-	'CONCEPT',
-	'OBJECT',
-]
-
-function AddForm() {
+function AddForm({
+	setData,
+}: {
+	setData: Dispatch<SetStateAction<TLocalizeResponse['result'] | undefined>>
+}) {
 	const { mutate, isPending } = useLocalizeMutation()
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			original: '',
 			replace_with: '',
-			type: types[0],
+			type: localizationTypes[0],
 		},
 	})
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
+			setData((prev) => ({
+				...(prev || {}),
+				[typeToKey[values.type as keyof typeof LocalizationType]]: {
+					...(prev?.[typeToKey[values.type as keyof typeof LocalizationType]] ||
+						{}),
+					[values.original]: {
+						[typeToLocalizedKey[values.type as keyof typeof LocalizationType]]:
+							values.replace_with,
+					},
+				},
+			}))
 			mutate({
 				ls_mapping: {
 					[values.original]: {
@@ -85,6 +106,7 @@ function AddForm() {
 					},
 				},
 			})
+			form.reset()
 		} catch (error) {
 			console.error('Form submission error', error)
 		}
@@ -115,7 +137,7 @@ function AddForm() {
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
-										{types.map((type, idx) => (
+										{localizationTypes.map((type, idx) => (
 											<SelectItem key={idx} value={type}>
 												{type}
 											</SelectItem>
@@ -183,7 +205,14 @@ export default function FindAndReplace() {
 	const replaceEnabled = useOption('replaceEnabled')
 	const caseSensitive = useOption('caseSensitive')
 	const [ptr, setPtr] = useState(0)
-	const { data, refetch, isFetching } = useLocalizeHook()
+	const { data: fetchedData, refetch, isFetching } = useLocalizeHook()
+	const [data, setData] = useState<TLocalizeResponse['result'] | undefined>(
+		fetchedData
+	)
+
+	useEffect(() => {
+		setData(fetchedData)
+	}, [fetchedData])
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
@@ -522,7 +551,7 @@ export default function FindAndReplace() {
 				</>
 			)}
 			<hr />
-			<AddForm />
+			<AddForm setData={setData} />
 		</div>
 	)
 }
