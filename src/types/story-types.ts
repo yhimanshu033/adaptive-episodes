@@ -1,3 +1,9 @@
+import { EImportStatus } from '@/constants/story-constants'
+
+export type TStoryStoreState = {
+	isFormOpen: boolean
+}
+
 export type TGetStoriesResponse = Array<TStory>
 
 export type TStory = {
@@ -8,6 +14,18 @@ export type TStory = {
 	image: string
 	project_title: string
 	props: Record<string, unknown>
+	status: EImportStatus
 	update_time: string
 	user: number | null
+}
+
+export type StoryUploadParams = {
+	task_data: {
+		author: string | null
+		end_ep: number
+		image: string | null
+		project_url: string | null
+		start_ep: number
+		title: string
+	}
 }

@@ -40,6 +40,7 @@ export type TEpisode = {
 	project: number
 	props?: Record<string, unknown> & {
 		comments?: TComment[]
+		creation_timestamp?: number
 		llm_memories?: TEpisodeProps
 		merged_chapter_ids?: number[]
 		original_chapters?: TEpisode[]
