@@ -49,7 +49,7 @@ export const useStoryImportFormResolver = () =>
 		resolver: zodResolver(storyImportFormSchema),
 		mode: 'onChange',
 		defaultValues: {
-			title: '',
+			title: undefined,
 			author: undefined,
 			start_ep: 1,
 			end_ep: 1,
