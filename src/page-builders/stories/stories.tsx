@@ -4,11 +4,12 @@ import Link from 'next/link'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import { EImportStatus } from '@/constants/story-constants'
 import { useStoriesData } from '@/hooks/query/use-story-data'
-import { BookOpen, User } from 'lucide-react'
+import { BookOpen, Clock, User } from 'lucide-react'
 
 import { Loader } from '@/components/loader'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { formatDate } from '@/lib/format-date'
 import { cn } from '@/lib/utils'
 
 import ImportStoryCard from './import-story-card'
@@ -38,21 +39,25 @@ const Stories = () => {
 								unoptimized
 							/>
 						</div>
-						<CardContent className="p-4">
-							<h3 className="mb-1 line-clamp-1 text-lg font-bold">
+						<CardContent className="space-y-2 p-4">
+							<h3 className="line-clamp-1 text-lg font-bold">
 								{story.project_title}
 							</h3>
-							<p className="mb-2 flex items-center text-sm">
+							<p className="flex items-center text-sm">
 								<User className="mr-1 size-3" />
 								{story.author ?? 'Anonymous'}
 							</p>
 							<p className="flex items-center text-sm">
-								<BookOpen className="mr-2 size-4" />
+								<BookOpen className="mr-1 size-3" />
 								<span>{story.episode_count} episodes</span>
+							</p>
+							<p className="flex items-center text-sm text-muted-foreground">
+								<Clock className="mr-1 size-3" />
+								<span>{formatDate(story.update_time)}</span>
 							</p>
 							<Badge
 								className={cn(
-									'mt-2 hover:bg-transparent',
+									'ßhover:bg-transparent',
 									story.status === EImportStatus.IMPORTING
 										? 'bg-yellow-100 text-yellow-800'
 										: 'bg-green-100 text-green-800'
