@@ -441,7 +441,7 @@ export const extractFromMetadata = (
 		const metadataEntries = Object.values(metadata?.data)
 
 		if (start) {
-			context = metadataEntries[0].context
+			context = metadataEntries[0]?.context ?? ''
 		}
 
 		for (const data of Object.values(metadata.data).slice(start ? 1 : 0)) {
@@ -503,7 +503,7 @@ export const extractScenesFromBeatsheet = (beatsheet: string) => {
 			: sceneSection) + '\n['
 
 	const sceneRegex =
-		/(?:(?:^(INT|EXT|SCENE)\s-\s([^\n]+)[\n\s]+([\s\S]*?))|(?:^\[([^\]]+)\]\s*([\s\S]*?)))(?=^(?:INT|EXT|SCENE|SCENE|\[))/gm
+		/(?:(?:^(INT|EXT|INT\/EXT|SCENE)\s*-\s*([^\n]+)[\n\s]+([\s\S]*?))|(?:\[([^\]]+)\]\s*([\s\S]*?)))(?=^(?:INT|EXT|SCENE|SCENE)|\s*\[)/gm
 	const scenes: { content: string; title: string }[] = []
 	let match
 
@@ -513,7 +513,6 @@ export const extractScenesFromBeatsheet = (beatsheet: string) => {
 
 		scenes.push({ title, content })
 	}
-
 	return scenes
 }
 
