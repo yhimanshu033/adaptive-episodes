@@ -27,13 +27,14 @@ import {
 	ChevronDown,
 	ChevronRight,
 	ChevronUp,
+	Download,
 	ReplaceAllIcon,
 	ReplaceIcon,
 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
 	Form,
 	FormControl,
@@ -575,9 +576,16 @@ export default function FindAndReplace() {
 							</>
 						)}
 					</div>
-					<Button onClick={() => void refetch()} className="w-fit self-end">
-						Scan the Episode
-					</Button>
+					<div className="flex items-center justify-end gap-2">
+						<Button onClick={() => void refetch()} className="w-fit self-end">
+							Scan the Episode
+						</Button>
+						<TooltipComponent tooltip="Download Localization sheet">
+							<a className={cn(buttonVariants(), 'w-fit self-end')}>
+								<Download />
+							</a>
+						</TooltipComponent>
+					</div>
 				</>
 			)}
 			<hr />
