@@ -1,18 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 
 import React, { useEffect, useState } from 'react'
 import {
 	categories,
-	CharacterAction,
+	categoryNames,
 	currentlyDisabled,
-	defaultMode,
 	ExplorerModeId,
 	PlotAction,
-	WorldAction,
 } from '@/constants/story-explorer-constants'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import useAIStore from '@/store/ai-store'
 import { useEditorState } from '@udecode/plate-common/react'
 import { Send } from 'lucide-react'
 
@@ -28,29 +28,24 @@ import {
 	parseOptimistically,
 } from '@/lib/utils'
 
-import { PlotExplorerApiResponse } from '@/types/ai-types'
+import { ExplorerActionType, PlotExplorerApiResponse } from '@/types/ai-types'
 
 import Content from './content'
 
-export interface RequestState {
-	action: PlotAction | CharacterAction | WorldAction | ''
-	mode: ExplorerModeId
-	name: string
-}
-
 const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const episodeId = useEpisodeId()
+	const { store, setActiveExplorerMode, setActiveExplorerActions } =
+		useAIStore()
+	const activeExplorerMode = store((state) => state.activeExplorerMode)
+	const activeExplorerActions = store((state) => state.activeExplorerActions)
+	const currentAction = activeExplorerActions[activeExplorerMode]
 	const [content, setContent] = useState<
 		PlotExplorerApiResponse['data'] | undefined
 	>([])
 	const [promptInput, setPromptInput] = useState<string>('')
 	const [taskId, setTaskId] = useState<string>('')
 	const [isLoading, setLoading] = useState<boolean>(false)
-	const [request, setRequest] = useState<RequestState>({
-		mode: defaultMode,
-		action: '',
-		name: '',
-	})
+
 	const { children } = useEditorState()
 	const {
 		plotlineMutation: { mutateAsync, reset },
@@ -60,20 +55,19 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 
 	const { responses, taskEnded } = useSocketStreaming()
 
-	const handleTabChange = (mode: RequestState['mode']) => {
-		if (request.mode === mode) return
+	const handleTabChange = (mode: ExplorerModeId) => {
+		if (mode === activeExplorerMode) return
 		reset()
-		setRequest({ mode, action: '', name: '' })
-		setLoading(false)
+		setActiveExplorerMode(mode)
 	}
 
 	const handleRequest = async (
-		action: RequestState['action'],
-		name: string,
+		action: ExplorerActionType | string | null,
 		instruction: string = ''
 	) => {
+		if (!action) return
 		setLoading(true)
-		setRequest({ ...request, action, name })
+		setActiveExplorerActions(activeExplorerMode, action)
 		const metadataEntries = Object.values(metadata?.data || {})
 		setContent([])
 		if (action === PlotAction.Summary) {
@@ -104,10 +98,10 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 			const { beatsheets_array: beatsheet_array, ...extractedData } =
 				extractFromMetadata(metadata, start - 1)
 			const result = await mutateAsync({
-				action,
+				action: action ?? '',
 				ep_from: start,
 				ep_to: end,
-				mode: request.mode,
+				mode: activeExplorerMode,
 				ep_number: String(episodeId),
 				beatsheet_array,
 				...extractedData,
@@ -144,14 +138,14 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	}, [taskId, responses[taskId], taskEnded[taskId]])
 
 	useEffect(() => {
-		if (request.action && request.name && start && end) {
-			void handleRequest(request.action, request.name)
+		if (currentAction && start && end) {
+			void handleRequest(currentAction)
 		}
-	}, [start, end])
+	}, [start, end, currentAction])
 
 	return (
 		<div>
-			<Tabs defaultValue={defaultMode}>
+			<Tabs defaultValue={activeExplorerMode}>
 				<TabsList className="grid w-full grid-cols-3 bg-background">
 					{categories.map(({ mode, id }, idx) => (
 						<TabsTrigger
@@ -172,23 +166,25 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 							<div className="mt-5 flex w-full justify-center">
 								<Loader />
 							</div>
-						) : request.action && content?.length ? (
+						) : currentAction ? (
 							<Content
-								header={request.name}
+								header={
+									categoryNames[currentAction as keyof typeof categoryNames] ??
+									currentAction
+								}
 								explorerData={content}
-								setRequest={setRequest}
 							/>
 						) : (
 							<div className="flex flex-col items-center space-y-3">
-								{action.map(({ name, id }, idx) => (
+								{action.map((id, idx) => (
 									<Button
 										key={idx}
 										variant="outline"
 										className="w-48"
-										onClick={() => handleRequest(id, name)}
+										onClick={() => handleRequest(id)}
 										disabled={id === currentlyDisabled}
 									>
-										{name}
+										{categoryNames[id]}
 									</Button>
 								))}
 								<div className="mt-8 flex items-center justify-center">
@@ -209,9 +205,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										>
 											<Send
 												className="size-4"
-												onClick={() =>
-													handleRequest('', promptInput, promptInput)
-												}
+												onClick={() => handleRequest(promptInput, promptInput)}
 											/>
 										</Button>
 									</div>

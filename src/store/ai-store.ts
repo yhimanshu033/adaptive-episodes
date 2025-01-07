@@ -1,8 +1,9 @@
 import { aiInitialMessage } from '@/constants/ai-constants'
+import { ExplorerModeId } from '@/constants/story-explorer-constants'
 
 import { useEpisodeContext } from '@/providers/episode-id-provider'
 
-import { AIStoreType, TMessage } from '@/types/ai-types'
+import { AIStoreType, ExplorerActionType, TMessage } from '@/types/ai-types'
 
 function useAIStore() {
 	const { useAiStoreContext } = useEpisodeContext()
@@ -46,6 +47,19 @@ function useAIStore() {
 		useAiStoreContext.setState({ requestedAction: action })
 	}
 
+	const setActiveExplorerMode = (mode: AIStoreType['activeExplorerMode']) => {
+		useAiStoreContext.setState({ activeExplorerMode: mode })
+	}
+
+	const setActiveExplorerActions = (
+		mode: ExplorerModeId,
+		action: ExplorerActionType | string | null
+	) => {
+		useAiStoreContext.setState((state) => ({
+			activeExplorerActions: { ...state.activeExplorerActions, [mode]: action },
+		}))
+	}
+
 	return {
 		store: useAiStoreContext,
 		addMessages,
@@ -56,6 +70,8 @@ function useAIStore() {
 		setPrevValue,
 		setAcceptedValue,
 		setRequestedAction,
+		setActiveExplorerMode,
+		setActiveExplorerActions,
 	}
 }
 
