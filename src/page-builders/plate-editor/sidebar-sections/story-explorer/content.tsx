@@ -13,16 +13,19 @@ import { Button } from '@/components/ui/button'
 
 import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
 
-const preProcessData = (data: ExplorerType): ExplorerType => {
-	if (typeof data.content === 'string') {
-		const regex = /^\s*(?:Name:(.*)|(Episode\s*.*))$/m
-		const match = data.content.match(regex)
-		const title = match?.[1]?.trim() || match?.[2]?.trim() || data?.title
-		const content = data.content.replace(regex, '').trim()
-
-		return { ...data, title, content }
+const preProcessData = (data: ExplorerType): ExplorerType[] => {
+	const regex = /^\s*(?:Name:(.*)|(Episode\s*.*))$/m
+	if (typeof data.content === 'string' && regex.test(data.content)) {
+		return data.content.split(/\n{2,}/).map((block) => {
+			const match = block.match(regex)
+			const title = match?.[1]?.trim() || match?.[2]?.trim() || data?.title
+			const content = block
+				.replace(/^\s*(?:Name:(.*)|(Episode\s*.*))$/m, '')
+				.trim()
+			return { title, content }
+		})
 	}
-	return data
+	return [data]
 }
 
 const renderContent = (
@@ -53,21 +56,19 @@ const renderContent = (
 				)}
 				<Accordion type="single" collapsible className="w-full">
 					{content.map((item, index) => {
-						const {
-							title,
-							content: subContent,
-							preContent,
-						} = preProcessData(item)
-						return (
-							<AccordionItem
-								key={`${title}${index}`}
-								value={`${title}${index}`}
-							>
-								<AccordionTrigger>{title}</AccordionTrigger>
-								<AccordionContent>
-									{renderContent(subContent, preContent)}
-								</AccordionContent>
-							</AccordionItem>
+						const processedData = preProcessData(item)
+						return processedData.map(
+							({ title, content: subContent, preContent }, subIndex) => (
+								<AccordionItem
+									key={`${title}${index}-${subIndex}`}
+									value={`${title}${index}-${subIndex}`}
+								>
+									<AccordionTrigger>{title}</AccordionTrigger>
+									<AccordionContent>
+										{renderContent(subContent, preContent)}
+									</AccordionContent>
+								</AccordionItem>
+							)
 						)
 					})}
 				</Accordion>
@@ -103,15 +104,20 @@ const Content = ({
 				</Button>
 			</div>
 			<Accordion type="single" collapsible className="w-full">
-				{explorerData?.map((data, index) => {
-					const { title, content, preContent } = preProcessData(data)
-					return (
-						<AccordionItem key={`${title}${index}`} value={`${title}${index}`}>
-							<AccordionTrigger>{title}</AccordionTrigger>
-							<AccordionContent>
-								{renderContent(content, preContent)}
-							</AccordionContent>
-						</AccordionItem>
+				{explorerData.map((data, index) => {
+					const processedData = preProcessData(data)
+					return processedData.map(
+						({ title, content, preContent }, subIndex) => (
+							<AccordionItem
+								key={`${title}${index}-${subIndex}`}
+								value={`${title}${index}-${subIndex}`}
+							>
+								<AccordionTrigger>{title}</AccordionTrigger>
+								<AccordionContent>
+									{renderContent(content, preContent)}
+								</AccordionContent>
+							</AccordionItem>
+						)
 					)
 				})}
 			</Accordion>
