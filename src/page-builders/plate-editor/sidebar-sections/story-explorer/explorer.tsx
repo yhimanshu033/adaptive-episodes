@@ -116,7 +116,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	}
 
 	useEffect(() => {
-		if (!taskId) return
+		if (!taskId || isLoading) return
 		if (responses[taskId]) {
 			const jsonStr = responses[taskId].join('')
 			const arrayStartIndex = jsonStr.indexOf('[')
@@ -135,7 +135,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 			setTaskId('')
 			return
 		}
-	}, [taskId, responses[taskId], taskEnded[taskId]])
+	}, [taskId, responses[taskId], taskEnded[taskId], isLoading])
 
 	useEffect(() => {
 		if (currentAction && start && end) {
@@ -160,9 +160,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				</TabsList>
 				{categories.map(({ id, action }, idx) => (
 					<TabsContent value={id} key={idx} className="mt-6">
-						{isLoading ||
-						isMetadataLoading ||
-						(taskId && !taskEnded[taskId] && !content?.length) ? (
+						{isMetadataLoading ? (
 							<div className="mt-5 flex w-full justify-center">
 								<Loader />
 							</div>

@@ -2,6 +2,7 @@ import React from 'react'
 import useAIStore from '@/store/ai-store'
 import { ArrowLeft } from 'lucide-react'
 
+import { Loader } from '@/components/loader'
 import {
 	Accordion,
 	AccordionContent,
@@ -87,7 +88,7 @@ const Content = ({
 }) => {
 	const { store, setActiveExplorerActions } = useAIStore()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
-	return (
+	return explorerData?.length ? (
 		<>
 			<div className="mb-4 flex items-center justify-between">
 				<h1 className="text-xl font-bold">{header}</h1>
@@ -115,6 +116,10 @@ const Content = ({
 				})}
 			</Accordion>
 		</>
+	) : (
+		<div className="mt-5 flex w-full justify-center">
+			<Loader />
+		</div>
 	)
 }
 
