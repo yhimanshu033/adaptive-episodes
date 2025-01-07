@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -219,7 +220,6 @@ function MessagesList({ isPending }: { isPending: boolean }) {
 			setPrevValue(null)
 			setAcceptedValue(null)
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[value, editor.tf]
 	)
 	useEffect(() => {
@@ -304,13 +304,23 @@ function MessagesList({ isPending }: { isPending: boolean }) {
 								</TooltipComponent>
 							)}
 						<div
+							onClick={() => {
+								void navigator.clipboard.writeText(
+									extract((responses[message.taskId] || []).join(''))
+								)
+							}}
 							dangerouslySetInnerHTML={{
 								__html: (responses[message.taskId] || [])
 									.join('')
-									.replaceAll('\n', '<br/>'),
+									.replaceAll('\n', '<br/>')
+									.replace(
+										/<text>/g,
+										"<span class='bg-background-editor rounded-md'>"
+									)
+									.replace(/<\/text>/g, '</span>'),
 							}}
 							className={cn(
-								'rounded-lg p-3 *:animate-in',
+								'rounded-lg p-3 transition-transform *:animate-in active:scale-[0.995]',
 								message.role === EMessenger.ASSISTANT
 									? 'bg-background'
 									: 'bg-primary'
@@ -367,7 +377,7 @@ const AIChatbot = () => {
 	const [input, setInput] = useState('')
 	const [sfxStreaming, setSfxStreaming] = useState<string>('')
 	const [reviewStreaming, setReviewStreaming] = useState<string>('')
-	const [reviewedChildren, setReviewedChildren] = useState<Value>()
+	const [originalChildren, setOriginalChildren] = useState<Value>()
 	const { id } = useParams()
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const {
@@ -379,6 +389,7 @@ const AIChatbot = () => {
 		setPrevValue,
 		setResponseValue,
 		setRequestedAction,
+		updateMessages,
 	} = useAIStore()
 	const { setSidebar } = usePlateStore()
 	const { messages } = store()
@@ -490,7 +501,7 @@ const AIChatbot = () => {
 	}
 
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
-		const children = reviewedChildren
+		const children = originalChildren
 		if (!children) return
 		const resp = convertReviewResponse(reviewResponse, children)
 		if (!resp.comments.length) return
@@ -523,7 +534,7 @@ const AIChatbot = () => {
 		const reviewResponse = parse(
 			jsonrepair(responses[reviewStreaming].join(''))
 		) as IndexedCommentsResponse[]
-		const children = reviewedChildren
+		const children = originalChildren
 		if (!children) return
 		const resp = convertReviewResponse(reviewResponse, children)
 		resp.comments.forEach((comment) => {
@@ -537,7 +548,7 @@ const AIChatbot = () => {
 	useEffect(() => {
 		if (!isPending && aiResponse) {
 			if (requestedAction === EChatMode.REVIEW) {
-				setReviewedChildren(children)
+				setOriginalChildren(children)
 				setReviewStreaming(aiResponse)
 				addMessages({
 					taskId: aiResponse,
@@ -546,6 +557,7 @@ const AIChatbot = () => {
 					content: 'Adding Review...',
 				})
 			} else if (requestedAction === EChatMode.SFX) {
+				setOriginalChildren(children)
 				setSfxStreaming(aiResponse)
 				addMessages({
 					taskId: aiResponse,
@@ -560,13 +572,13 @@ const AIChatbot = () => {
 			}
 			setRequestedAction(null)
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [aiResponse, isPending])
 
 	useEffect(() => {
-		if (!sfxStreaming) return
+		if (!sfxStreaming || !originalChildren) return
 		if (taskEnded[sfxStreaming]) {
 			setSfxStreaming('')
+			setOriginalChildren(undefined)
 		}
 		if (!responses[sfxStreaming]) return
 
@@ -588,7 +600,7 @@ const AIChatbot = () => {
 			if (!parsedResponse.length) return
 			const responseValue = addSFX(
 				parsedResponse,
-				children,
+				originalChildren,
 				ParagraphPlugin.key
 			)
 			setResponseValue(structuredClone(responseValue))
@@ -596,19 +608,27 @@ const AIChatbot = () => {
 		} catch (error) {
 			console.log(error)
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [sfxStreaming, responses[sfxStreaming], taskEnded[sfxStreaming]])
+	}, [
+		sfxStreaming,
+		responses[sfxStreaming],
+		taskEnded[sfxStreaming],
+		originalChildren,
+	])
 
 	useEffect(() => {
-		if (!reviewStreaming) return
+		if (!reviewStreaming || !originalChildren) return
 		if (taskEnded[reviewStreaming]) {
 			setReviewStreaming('')
-			addMessages({
-				role: EMessenger.ASSISTANT,
-				action: EAction.REVIEW,
-				content: 'StoryChat added review in comments',
-				taskId: nanoid(),
-			})
+			updateMessages(
+				{
+					role: EMessenger.ASSISTANT,
+					action: EAction.REVIEW,
+					content: 'StoryChat added review in comments',
+					taskId: nanoid(),
+				},
+				messages.length - 1
+			)
+			setOriginalChildren(undefined)
 		}
 		if (!responses[reviewStreaming]) return
 		try {
@@ -620,8 +640,12 @@ const AIChatbot = () => {
 		} catch (error) {
 			console.error(error)
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [reviewStreaming, responses[reviewStreaming], taskEnded[reviewStreaming]])
+	}, [
+		reviewStreaming,
+		responses[reviewStreaming],
+		taskEnded[reviewStreaming],
+		originalChildren,
+	])
 
 	useEffect(() => {
 		if (textareaRef.current) {
@@ -660,6 +684,7 @@ const AIChatbot = () => {
 						className="mb-1 mr-2"
 						disabled={
 							!!changesPending ||
+							disabled ||
 							isPending ||
 							suggestion.action === EChatMode.VOICE
 						}
