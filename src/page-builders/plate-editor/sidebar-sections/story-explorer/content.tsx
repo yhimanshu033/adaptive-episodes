@@ -82,14 +82,15 @@ const renderContent = (
 const Content = ({
 	header,
 	explorerData,
-	// setRequest,
+	isLoading,
 }: {
 	explorerData?: PlotExplorerApiResponse['data']
 	header: string
+	isLoading: boolean
 }) => {
 	const { store, setActiveExplorerActions } = useAIStore()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
-	return explorerData?.length ? (
+	return (
 		<>
 			<div className="mb-4 flex items-center justify-between">
 				<h1 className="text-xl font-bold">{header}</h1>
@@ -103,29 +104,31 @@ const Content = ({
 					<ArrowLeft size={16} />
 				</Button>
 			</div>
-			<Accordion type="single" collapsible className="w-full">
-				{explorerData.map((data, index) => {
-					const processedData = preProcessData(data)
-					return processedData.map(
-						({ title, content, preContent }, subIndex) => (
-							<AccordionItem
-								key={`${title}${index}-${subIndex}`}
-								value={`${title}${index}-${subIndex}`}
-							>
-								<AccordionTrigger>{title}</AccordionTrigger>
-								<AccordionContent>
-									{renderContent(content, preContent)}
-								</AccordionContent>
-							</AccordionItem>
+			{explorerData?.length && !isLoading ? (
+				<Accordion type="single" collapsible className="w-full">
+					{explorerData.map((data, index) => {
+						const processedData = preProcessData(data)
+						return processedData.map(
+							({ title, content, preContent }, subIndex) => (
+								<AccordionItem
+									key={`${title}${index}-${subIndex}`}
+									value={`${title}${index}-${subIndex}`}
+								>
+									<AccordionTrigger>{title}</AccordionTrigger>
+									<AccordionContent>
+										{renderContent(content, preContent)}
+									</AccordionContent>
+								</AccordionItem>
+							)
 						)
-					)
-				})}
-			</Accordion>
+					})}
+				</Accordion>
+			) : (
+				<div className="mt-5 flex w-full justify-center">
+					<Loader />
+				</div>
+			)}
 		</>
-	) : (
-		<div className="mt-5 flex w-full justify-center">
-			<Loader />
-		</div>
 	)
 }
 

@@ -332,7 +332,7 @@ function MessagesList({ isPending }: { isPending: boolean }) {
 			return (
 				<div
 					dangerouslySetInnerHTML={{
-						__html: 'Thinking...',
+						__html: 'Denke nach...',
 					}}
 					className={cn(
 						'max-w-[70%] rounded-lg p-3',
@@ -554,7 +554,7 @@ const AIChatbot = () => {
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.REVIEW,
-					content: 'Adding Review...',
+					content: 'Erstelle Review...',
 				})
 			} else if (requestedAction === EChatMode.SFX) {
 				setOriginalChildren(children)
@@ -563,7 +563,7 @@ const AIChatbot = () => {
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.CHANGES,
-					content: 'Adding SFX...',
+					content: 'Erstelle MUSIC/SFX/AMBIENT Tags...',
 				})
 			} else if (requestedAction === EChatMode.VOICE) {
 				handleChanges(maxify(JSON.parse(aiResponse) as MinifiedValue, children))
@@ -700,7 +700,7 @@ const AIChatbot = () => {
 				>
 					<Textarea
 						ref={textareaRef}
-						placeholder="Type your message..."
+						placeholder="Geben Sie Ihre Nachricht ein..."
 						disabled={disabled}
 						value={input}
 						onChange={(e) => setInput(e.target.value)}

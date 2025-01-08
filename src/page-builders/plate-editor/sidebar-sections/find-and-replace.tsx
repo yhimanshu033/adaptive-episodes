@@ -499,8 +499,9 @@ export default function FindAndReplace() {
 			)}
 
 			{isFetching ? (
-				<div className="flex items-center justify-center py-12">
+				<div className="flex flex-col items-center justify-center space-y-2 py-12">
 					<Spinner size={64} />
+					<p>Finding localized name suggestions—please wait.</p>
 				</div>
 			) : (
 				<>

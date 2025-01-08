@@ -23,15 +23,14 @@ export function CommentLeaf({
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
 
-	const active =
-		isCommented(state.lastCommentId) ||
-		(sidebar === 'comments' && state.isActive)
+	const commented = isCommented(state.lastCommentId)
+	const isActive = sidebar === 'comments' && state.isActive
 
-	if (!state.commentCount || !active) return <>{children}</>
+	if (!state.commentCount || !commented) return <>{children}</>
 
 	let aboveChildren = <>{children}</>
 
-	if (!active) {
+	if (!isActive) {
 		for (let i = 1; i < state.commentCount; i++) {
 			aboveChildren = <span className="bg-primary/20">{aboveChildren}</span>
 		}
@@ -43,7 +42,7 @@ export function CommentLeaf({
 			{...props}
 			className={cn(
 				'border-b-2 border-b-primary/40',
-				active ? 'bg-primary/40' : 'bg-primary/20',
+				isActive ? 'bg-primary/40' : 'bg-primary/20',
 				className
 			)}
 			nodeProps={{
