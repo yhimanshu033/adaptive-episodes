@@ -126,7 +126,6 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				const data =
 					parseOptimistically<PlotExplorerApiResponse['data']>(cleanedJsonStr)
 				if (!data) return
-				console.log({ data })
 				setContent(data)
 			} catch (error) {
 				console.log(error)
