@@ -10,6 +10,7 @@ import { ArrowLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
+import AuthorTitle from './author'
 import EpisodesTable from './episodes-table'
 
 export default function EpisodeListPage() {
@@ -32,7 +33,10 @@ export default function EpisodeListPage() {
 						loading="lazy"
 						unoptimized
 					/>
-					<h1 className="text-3xl font-bold">{storyData?.project_title}</h1>
+					<div>
+						<h1 className="text-3xl font-bold">{storyData?.project_title}</h1>
+						<AuthorTitle />
+					</div>
 				</div>
 				<Button variant="outline" size="sm" asChild>
 					<Link href="/projects">

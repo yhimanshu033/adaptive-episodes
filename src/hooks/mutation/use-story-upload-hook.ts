@@ -1,8 +1,12 @@
 'use client'
 
+import { useParams } from 'next/navigation'
 import { uploadFile } from '@/server-action/file-upload'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { fetchAPI } from '@/lib/fetch-api'
+
+import { TNoParams } from '@/types/common'
 import { StoryUploadParams } from '@/types/story-types'
 
 import { StoryImportFormSchema } from '../form-resolvers/story-import-resolver'
@@ -11,7 +15,7 @@ import useSocket from '../use-socket'
 const useStoryUploadHook = () => {
 	const { startTask } = useSocket()
 	const queryClient = useQueryClient()
-
+	const { id } = useParams()
 	const onSuccess = () => {
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		setTimeout(async () => {
@@ -50,6 +54,19 @@ const useStoryUploadHook = () => {
 		mutationFn: storyUpload,
 		onSuccess,
 	})
-	return { storyUploadMutation }
+	async function storyUpdate({ author }: { author: string }) {
+		const resp = await fetchAPI<TNoParams, TNoParams, { author: string }>({
+			method: 'PATCH',
+			url: `/project/${String(id)}/`,
+			body: { author },
+		})
+		return resp.data
+	}
+	const storyUpdateMutation = useMutation({
+		mutationKey: ['storyUpdate'],
+		mutationFn: storyUpdate,
+		onSuccess,
+	})
+	return { storyUploadMutation, storyUpdateMutation }
 }
 export default useStoryUploadHook

@@ -11,6 +11,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
+import { nanoid } from 'nanoid'
 import { io } from 'socket.io-client'
 
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
@@ -58,8 +59,7 @@ export const useSocketUtil = () => {
 				onResponse?: (data: ResponseDataT) => void
 			}
 		) => {
-			// const taskId = nanoid()
-			const taskId = 'story-upload-test'
+			const taskId = nanoid()
 
 			if (params.onResponse) {
 				taskCallbacksRef.current[taskId] = params.onResponse

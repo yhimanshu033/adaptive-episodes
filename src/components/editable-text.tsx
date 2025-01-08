@@ -16,9 +16,11 @@ const EditableText = ({
 	inputClass,
 	isEditable,
 	textClass,
+	btnClass,
 	rootClass,
 	icon: Icon,
 }: {
+	btnClass?: string
 	icon?: LucideComponent
 	inputClass?: string
 	isEditable?: boolean
@@ -70,10 +72,20 @@ const EditableText = ({
 							autoFocus
 							className={cn('mr-2', inputClass)}
 						/>
-						<Button type="submit" variant="ghost" size="icon">
+						<Button
+							type="submit"
+							variant="ghost"
+							size="icon"
+							className={btnClass}
+						>
 							<Check size={16} />
 						</Button>
-						<Button variant="ghost" size="icon" onClick={handleCross}>
+						<Button
+							variant="ghost"
+							size="icon"
+							onClick={handleCross}
+							className={btnClass}
+						>
 							<X size={16} />
 						</Button>
 					</div>
