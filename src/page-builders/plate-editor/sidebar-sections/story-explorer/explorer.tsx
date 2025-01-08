@@ -16,7 +16,6 @@ import useAIStore from '@/store/ai-store'
 import { useEditorState } from '@udecode/plate-common/react'
 import { Send } from 'lucide-react'
 
-import { Loader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -69,6 +68,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		setLoading(true)
 		setActiveExplorerActions(activeExplorerMode, action)
 		const metadataEntries = Object.values(metadata?.data || {})
+
 		setContent([])
 		if (action === PlotAction.Summary) {
 			setContent(
@@ -98,7 +98,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 			const { beatsheets_array: beatsheet_array, ...extractedData } =
 				extractFromMetadata(metadata, start - 1)
 			const result = await mutateAsync({
-				action: action ?? '',
+				action,
 				ep_from: start,
 				ep_to: end,
 				mode: activeExplorerMode,
@@ -138,10 +138,10 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	}, [taskId, responses[taskId], taskEnded[taskId], isLoading])
 
 	useEffect(() => {
-		if (currentAction && start && end) {
+		if (!isMetadataLoading && currentAction && start && end) {
 			void handleRequest(currentAction)
 		}
-	}, [start, end, currentAction])
+	}, [start, end, currentAction, isMetadataLoading])
 
 	return (
 		<div>
@@ -160,17 +160,14 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				</TabsList>
 				{categories.map(({ id, action }, idx) => (
 					<TabsContent value={id} key={idx} className="mt-6">
-						{isMetadataLoading ? (
-							<div className="mt-5 flex w-full justify-center">
-								<Loader />
-							</div>
-						) : currentAction ? (
+						{currentAction ? (
 							<Content
 								header={
 									categoryNames[currentAction as keyof typeof categoryNames] ??
 									currentAction
 								}
 								explorerData={content}
+								isLoading={isMetadataLoading}
 							/>
 						) : (
 							<div className="flex flex-col items-center space-y-3">
