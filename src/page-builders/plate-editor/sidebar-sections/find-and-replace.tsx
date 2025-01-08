@@ -13,6 +13,7 @@ import {
 	typeToLocalizedKey,
 } from '@/constants/ai-constants'
 import useLocalizeHook, {
+	useLocalizeDownloadMutation,
 	useLocalizeMutation,
 } from '@/hooks/mutation/use-localize-hook'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -34,7 +35,7 @@ import {
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import {
 	Form,
 	FormControl,
@@ -203,12 +204,36 @@ function AddForm({
 export default function FindAndReplace() {
 	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
 
+	function downloadFile(url: string, filename: string) {
+		fetch(url)
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok')
+				}
+				return response.blob()
+			})
+			.then((blob) => {
+				const link = document.createElement('a')
+				const objectURL = URL.createObjectURL(blob)
+				link.href = objectURL
+				link.download = filename
+				document.body.appendChild(link)
+				link.click()
+				document.body.removeChild(link)
+				URL.revokeObjectURL(objectURL)
+			})
+			.catch((error) => {
+				console.error('There was a problem with the download operation:', error)
+			})
+	}
+
 	const search = useOption('search') || ''
 	const replace = useOption('replace') || ''
 	const replaceEnabled = useOption('replaceEnabled')
 	const caseSensitive = useOption('caseSensitive')
 	const [ptr, setPtr] = useState(0)
 	const { data: fetchedData, refetch, isFetching } = useLocalizeHook()
+	const { isPending, mutateAsync } = useLocalizeDownloadMutation()
 	const [data, setData] = useState<TLocalizeResponse['result'] | undefined>(
 		fetchedData
 	)
@@ -410,6 +435,11 @@ export default function FindAndReplace() {
 		[data]
 	)
 
+	async function handleDownload() {
+		const url = await mutateAsync()
+		if (!url?.csv_sheet_url) return
+		downloadFile(url.csv_sheet_url, `LOC_sheet.csv`)
+	}
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
 			<h2 className="text-2xl font-bold">Localization</h2>
@@ -581,9 +611,12 @@ export default function FindAndReplace() {
 							Scan the Episode
 						</Button>
 						<TooltipComponent tooltip="Download Localization sheet">
-							<a className={cn(buttonVariants(), 'w-fit self-end')}>
-								<Download />
-							</a>
+							<Button
+								onClick={() => void handleDownload()}
+								className="w-fit self-end"
+							>
+								{isPending ? <Spinner size={24} /> : <Download />}
+							</Button>
 						</TooltipComponent>
 					</div>
 				</>

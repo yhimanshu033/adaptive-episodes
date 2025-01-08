@@ -6,11 +6,15 @@ import {
 	PlateLeaf,
 	PlateLeafProps,
 	useEditorRef,
+	// useEditorState,
 } from '@udecode/plate-common/react'
 
 import { TLaserLeafChildren } from '@/lib/plate/types/block'
 
 import LaserRephrase from './laser-rephrase'
+
+// import { clearLaserNode, findKeyNode } from '@/lib/utils'
+// import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 
 function getLaserKey(elem: TText) {
 	return Object.keys(elem).find((key) => key.startsWith('laser-id-'))
@@ -33,6 +37,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	const divRef = useRef<HTMLDivElement>(null)
 	const areaRef = useRef<HTMLDivElement>(null)
 	const btnRef = useRef<HTMLButtonElement>(null)
+	// const { children: editorChildren } = useEditorState()
 
 	const {
 		getLaser,
@@ -57,6 +62,15 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		})
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [divRef, key])
+
+	// useEffect(() => {
+	// 	if (!key) return
+	// 	const node = findKeyNode(editor.children, key)
+	// 	if (!node || !Object.keys(node).filter((k) => k !== key && k !== LaserPlugin.key && k !== "text").length) return;
+	// 	const value = clearLaserNode(editorChildren, key, LaserPlugin.key)
+	// 	if (!value) return
+	// 	editor.tf.setValue(value)
+	// }, [key, editorChildren]);
 
 	const { active: activeLaser } = laserStore()
 	const getSelectedText = useCallback(() => {

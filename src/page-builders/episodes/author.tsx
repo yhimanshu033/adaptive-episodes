@@ -21,7 +21,7 @@ const AuthorTitle = () => {
 
 	return (
 		<div className="flex items-center gap-0.5 pl-1 text-xs">
-			by
+			{storyData?.author ? 'by' : ''}
 			<EditableText
 				key={storyData?.author}
 				text={storyData?.author || ''}

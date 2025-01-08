@@ -53,3 +53,18 @@ export const useLocalizeMutation = () => {
 	})
 	return mutation
 }
+
+export const useLocalizeDownloadMutation = () => {
+	const { id } = useParams()
+	const mutation = useMutation({
+		mutationKey: ['localize-sheet-download'],
+		mutationFn: async () => {
+			const res = await fetchAPI<{ csv_sheet_url: string }>({
+				method: 'GET',
+				url: `/project/${String(id)}/get-ls-sheet-url/`,
+			})
+			return res.data
+		},
+	})
+	return mutation
+}

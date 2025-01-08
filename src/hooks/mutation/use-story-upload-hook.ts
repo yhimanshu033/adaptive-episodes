@@ -57,7 +57,7 @@ const useStoryUploadHook = () => {
 	async function storyUpdate({ author }: { author: string }) {
 		const resp = await fetchAPI<TNoParams, TNoParams, { author: string }>({
 			method: 'PATCH',
-			url: `/project/${String(id)}`,
+			url: `/project/${String(id)}/`,
 			body: { author },
 		})
 		return resp.data

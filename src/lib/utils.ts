@@ -632,3 +632,43 @@ export function parseOptimistically<T>(input: string) {
 		}
 	}
 }
+
+export function findKeyNode(ogVal: Value, key: string) {
+	const val = structuredClone(ogVal)
+	const traverse = (node: TDescendant) => {
+		const keys = Object.keys(node)
+		if (keys.includes(key)) {
+			return node
+		}
+		if ('children' in node) {
+			void (node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+	for (const child of val) {
+		const found = traverse(child)
+		if (found) {
+			return found
+		}
+	}
+}
+
+export function clearLaserNode(ogVal: Value, key: string, pluginKey: string) {
+	const val = structuredClone(ogVal)
+	const traverse = (node: TDescendant) => {
+		const keys = Object.keys(node)
+		if (keys.includes(key) && keys.includes(pluginKey)) {
+			const filteredKeys = keys.filter(
+				(item) => item !== key && item !== pluginKey && item !== 'text'
+			)
+			if (!filteredKeys.length) return
+			for (const anyKey of filteredKeys) {
+				delete node[anyKey]
+			}
+		}
+		if ('children' in node) {
+			void (node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+	val.forEach(traverse)
+	return val
+}
