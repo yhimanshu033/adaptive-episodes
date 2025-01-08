@@ -141,7 +141,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		if (!isMetadataLoading && currentAction && start && end) {
 			void handleRequest(currentAction)
 		}
-	}, [start, end, currentAction, isMetadataLoading])
+	}, [start, end, currentAction, activeExplorerMode, isMetadataLoading])
 
 	return (
 		<div>
