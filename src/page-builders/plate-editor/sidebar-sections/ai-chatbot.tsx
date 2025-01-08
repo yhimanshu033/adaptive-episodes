@@ -706,7 +706,6 @@ const AIChatbot = () => {
 						onChange={(e) => setInput(e.target.value)}
 						onKeyDown={handleKeyDown}
 						className="grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-						// style={{ height: '40px' }}
 					/>
 					{disabled ? (
 						<Button
