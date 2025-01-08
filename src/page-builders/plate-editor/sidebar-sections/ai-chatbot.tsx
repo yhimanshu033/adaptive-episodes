@@ -579,6 +579,7 @@ const AIChatbot = () => {
 		if (taskEnded[sfxStreaming]) {
 			setSfxStreaming('')
 			setOriginalChildren(undefined)
+			return
 		}
 		if (!responses[sfxStreaming]) return
 
@@ -629,6 +630,7 @@ const AIChatbot = () => {
 				messages.length - 1
 			)
 			setOriginalChildren(undefined)
+			return
 		}
 		if (!responses[reviewStreaming]) return
 		try {
