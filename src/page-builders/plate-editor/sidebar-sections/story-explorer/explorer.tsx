@@ -126,6 +126,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 				const data =
 					parseOptimistically<PlotExplorerApiResponse['data']>(cleanedJsonStr)
 				if (!data) return
+				console.log({ data })
 				setContent(data)
 			} catch (error) {
 				console.log(error)
@@ -141,7 +142,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		if (!isMetadataLoading && currentAction && start && end) {
 			void handleRequest(currentAction)
 		}
-	}, [start, end, currentAction, isMetadataLoading])
+	}, [start, end, currentAction, activeExplorerMode, isMetadataLoading])
 
 	return (
 		<div>

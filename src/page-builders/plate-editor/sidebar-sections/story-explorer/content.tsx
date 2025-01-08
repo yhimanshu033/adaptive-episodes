@@ -14,9 +14,10 @@ import { Button } from '@/components/ui/button'
 import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
 
 const preProcessData = (data: ExplorerType): ExplorerType[] => {
+	const splittingRegex = /^\s*(?=(?:Name:|Episode).*)/m
 	const regex = /^\s*(?:Name:(.*)|(Episode\s*.*))$/m
 	if (typeof data.content === 'string' && regex.test(data.content)) {
-		return data.content.split(/\n{2,}/).map((block) => {
+		return data.content.split(splittingRegex).map((block) => {
 			const match = block.match(regex)
 			const title = match?.[1]?.trim() || match?.[2]?.trim() || data?.title
 			const content = block
