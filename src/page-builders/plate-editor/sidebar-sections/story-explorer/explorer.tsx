@@ -139,7 +139,6 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 
 	useEffect(() => {
 		if (!isMetadataLoading && currentAction && start && end) {
-			console.log('Calling handleRequest')
 			void handleRequest(currentAction)
 		}
 	}, [start, end, currentAction, isMetadataLoading])
