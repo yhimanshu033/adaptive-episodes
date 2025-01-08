@@ -357,7 +357,7 @@ function MessagesList({ isPending }: { isPending: boolean }) {
 	}
 
 	return (
-		<ScrollArea className="mb-4 h-[70vh] flex-1 rounded-md border px-4 *:py-4">
+		<ScrollArea className="mb-4 flex-[1_1_auto] rounded-md border px-4 *:py-4">
 			{messages.map((message, index) => (
 				<div
 					key={index}
@@ -668,10 +668,10 @@ const AIChatbot = () => {
 	)
 
 	return (
-		<div className="mx-auto max-w-2xl flex-1 flex-col p-4">
-			<h1 className="mb-4 text-2xl font-bold">StoryChat</h1>
+		<div className="mx-auto flex h-[93vh] max-w-2xl flex-col text-clip px-4 pt-4">
+			<h1 className="mb-4 flex-[0_0_auto] text-2xl font-bold">StoryChat</h1>
 			<MessagesList isPending={isPending} />
-			<ScrollArea className="overflow-x-auto pb-2 *:*:flex">
+			<ScrollArea className="flex-[0_0_auto] overflow-x-auto pb-2 *:*:flex">
 				<ScrollBar orientation="horizontal" />
 				{storyChatSuggestions.map((suggestion, index) => (
 					<Button
@@ -693,7 +693,7 @@ const AIChatbot = () => {
 					</Button>
 				))}
 			</ScrollArea>
-			<div className="flex items-end gap-1">
+			<div className="flex flex-[0_0_auto] items-end gap-1">
 				<form
 					onSubmit={handleSendMessage}
 					className="flex flex-1 items-end space-x-2 rounded-md border bg-background"
@@ -705,8 +705,8 @@ const AIChatbot = () => {
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onKeyDown={handleKeyDown}
-						className="min-h-[40px] grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-						style={{ height: '40px' }}
+						className="grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+						// style={{ height: '40px' }}
 					/>
 					{disabled ? (
 						<Button

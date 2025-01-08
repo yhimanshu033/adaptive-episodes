@@ -44,8 +44,7 @@ const Versions = ({
 	const queryClient = useQueryClient()
 
 	const { saveEpisodeMutation } = useEpisodeHook()
-	const { store, setViewMode } = useCustomPlateStore()
-	const sidebar = store((state) => state.sidebar)
+	const { setViewMode } = useCustomPlateStore()
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
@@ -85,19 +84,10 @@ const Versions = ({
 	}
 	useEffect(() => {
 		setViewMode(
-			sidebar === 'far' ||
-				isChildEpisode ||
-				selectedIndex < latestIndex + Number(isChildEpisode)
+			isChildEpisode || selectedIndex < latestIndex + Number(isChildEpisode)
 		)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [
-		isChildEpisode,
-		latestIndex,
-		latestStatus,
-		selectedIndex,
-		selectedStatus,
-		sidebar,
-	])
+	}, [isChildEpisode, latestIndex, latestStatus, selectedIndex, selectedStatus])
 
 	if (saveEpisodeMutation.isPending) return <Spinner size={24} />
 

@@ -5,17 +5,18 @@ export const FEATURES_LIST = [
 		icon: BookOpen,
 		title: 'Explore Stories',
 		content:
-			'Dive into a world of AI-assisted stories created by the community.',
+			"Find Pocket FM's most successful stories, generate translations, and organize all drafts & versions in one place.",
 	},
 	{
 		icon: PlusCircle,
 		title: 'Start Writing',
-		content: 'Begin your own story with the help of our AI writing assistant.',
+		content:
+			'Write, adapt, receive feedback, and finalize your episodes for production.',
 	},
 	{
 		icon: Sparkles,
 		title: 'AI Collaboration',
 		content:
-			"Get intelligent suggestions to enhance your storytelling and overcome writer's block.",
+			"Enjoy a full suite of AI tools to enhance your storytelling and overcome writer's block.",
 	},
 ]
