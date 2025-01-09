@@ -4,6 +4,7 @@ import { statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
+import { useEditorPlugin } from '@udecode/plate-common/react'
 import { Eye } from 'lucide-react'
 
 import {
@@ -24,6 +25,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
+import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 
@@ -44,6 +46,8 @@ const Versions = ({
 	const queryClient = useQueryClient()
 
 	const { saveEpisodeMutation } = useEpisodeHook()
+	const { useOption } = useEditorPlugin(FindReplacePlugin)
+	const replaceEnabled = useOption('replaceEnabled')
 	const { setViewMode } = useCustomPlateStore()
 
 	const latestIndex = useMemo(
@@ -64,6 +68,10 @@ const Versions = ({
 			setSelectedStatus(value)
 		}
 	}
+
+	useEffect(() => {
+		setViewMode(!!replaceEnabled)
+	}, [replaceEnabled, setViewMode])
 
 	const handleConfirm = async () => {
 		if (currentSelection.current) {
