@@ -52,6 +52,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
+import { Textarea } from '@/components/ui/textarea'
 import { Toggle } from '@/components/ui/toggle'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
@@ -69,6 +70,7 @@ const formSchema = z.object({
 	original: z.string(),
 	replace_with: z.string(),
 	type: z.string(),
+	description: z.string(),
 })
 
 function AddForm({
@@ -83,6 +85,7 @@ function AddForm({
 			original: '',
 			replace_with: '',
 			type: localizationTypes[0],
+			description: '',
 		},
 	})
 
@@ -106,6 +109,7 @@ function AddForm({
 							values.type as keyof typeof LocalizationType
 						],
 						localized_name: values.replace_with,
+						description: values.description,
 					},
 				},
 			})
@@ -154,7 +158,7 @@ function AddForm({
 						)}
 					/>
 				</div>
-				<div className="grid grid-cols-[4fr_4fr_1fr] gap-4">
+				<div className="grid grid-cols-[4fr_4fr] gap-4">
 					<FormField
 						control={form.control}
 						name="original"
@@ -192,6 +196,23 @@ function AddForm({
 							</FormItem>
 						)}
 					/>
+				</div>
+				<FormField
+					control={form.control}
+					name="description"
+					render={({ field }) => (
+						<FormItem>
+							<FormControl>
+								<Textarea
+									placeholder="Description"
+									className="flex-1 rounded border border-gray-300 p-2"
+									{...field}
+								/>
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<div className="flex justify-end">
 					<Button disabled={isPending} type="submit">
 						Submit
 					</Button>
@@ -237,6 +258,8 @@ export default function FindAndReplace() {
 	const [data, setData] = useState<TLocalizeResponse['result'] | undefined>(
 		fetchedData
 	)
+
+	console.log({ data })
 
 	useEffect(() => {
 		setData(fetchedData)
