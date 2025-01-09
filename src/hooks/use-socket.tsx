@@ -18,7 +18,27 @@ import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
 
-export const useSocketUtil = () => {
+type TSocketContext = {
+	getResponse: <T>(taskId: string) => Promise<T>
+	startTask: <
+		BodyParamsT = TNoParams,
+		ResponseDataT = TNoParams,
+		UrlParamsT = TNoParams,
+		QueryParamsT = TNoParams,
+	>(
+		params: FetchRequestParams<
+			ResponseDataT,
+			UrlParamsT,
+			BodyParamsT,
+			QueryParamsT
+		> & {
+			onResponse?: (data: ResponseDataT) => void
+		}
+	) => Promise<string>
+}
+const SocketContext = createContext<TSocketContext | undefined>(undefined)
+
+export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 	const socketUrl = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 	const [socket] = useState(() =>
 		io(socketUrl, {
@@ -27,6 +47,7 @@ export const useSocketUtil = () => {
 	)
 	const responsesRef = useRef<Record<string, any>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
+	const [fetchedData, setFetchedData] = useState<Record<string, string>>({})
 
 	useEffect(() => {
 		socket.connect()
@@ -59,8 +80,12 @@ export const useSocketUtil = () => {
 				onResponse?: (data: ResponseDataT) => void
 			}
 		) => {
+			const key = JSON.stringify(params)
+			if (fetchedData[key]) {
+				return fetchedData[key]
+			}
 			const taskId = nanoid()
-
+			setFetchedData((prev) => ({ ...prev, [key]: taskId }))
 			if (params.onResponse) {
 				taskCallbacksRef.current[taskId] = params.onResponse
 			}
@@ -77,7 +102,7 @@ export const useSocketUtil = () => {
 
 			return taskId
 		},
-		[]
+		[fetchedData]
 	)
 
 	const getResponse = useCallback(<T,>(taskId: string) => {
@@ -99,14 +124,8 @@ export const useSocketUtil = () => {
 		})
 	}, [])
 
-	return { startTask, getResponse }
-}
-
-const SocketContext = createContext<typeof useSocketUtil | undefined>(undefined)
-
-export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 	return (
-		<SocketContext.Provider value={useSocketUtil}>
+		<SocketContext.Provider value={{ startTask, getResponse }}>
 			{children}
 		</SocketContext.Provider>
 	)
@@ -117,7 +136,7 @@ const useSocket = () => {
 	if (!context) {
 		throw new Error('useSocket must be used within a SocketProvider')
 	}
-	return context()
+	return context
 }
 
 export default useSocket

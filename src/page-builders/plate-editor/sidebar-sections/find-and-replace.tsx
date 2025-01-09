@@ -292,7 +292,7 @@ export default function FindAndReplace() {
 		if (elem) {
 			elem.scrollIntoView({ behavior: 'smooth', block: 'center' })
 		}
-	}, [ptr, children, records, setOptions])
+	}, [ptr, records, setOptions])
 
 	useEffect(() => {
 		setPtr(0)
