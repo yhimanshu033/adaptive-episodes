@@ -33,7 +33,6 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	const divRef = useRef<HTMLDivElement>(null)
 	const areaRef = useRef<HTMLDivElement>(null)
 	const btnRef = useRef<HTMLButtonElement>(null)
-
 	const {
 		getLaser,
 		setActiveLaser,

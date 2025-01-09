@@ -10,6 +10,7 @@ import {
 import { parse } from 'best-effort-json-parser'
 import { clsx, type ClassValue } from 'clsx'
 import { jsonrepair } from 'jsonrepair'
+import type { Range } from 'slate'
 import { twMerge } from 'tailwind-merge'
 
 import { BASE_STATUS, EStatus, MinifiedValue } from '@/types/common'
@@ -671,4 +672,167 @@ export function clearLaserNode(ogVal: Value, key: string, pluginKey: string) {
 	}
 	val.forEach(traverse)
 	return val
+}
+
+export function mergeBlocks(
+	ogVal: Value,
+	path: Range,
+	keys: string[] = []
+): Value {
+	const { anchor, focus } = path
+	const value = structuredClone(ogVal)
+
+	const isAnchorBeforeFocus =
+		anchor.path[0] < focus.path[0] ||
+		(anchor.path[0] === focus.path[0] && anchor.path[1] < focus.path[1]) ||
+		(anchor.path[0] === focus.path[0] &&
+			anchor.path[1] === focus.path[1] &&
+			anchor.offset <= focus.offset)
+
+	const start = isAnchorBeforeFocus ? anchor : focus
+	const end = isAnchorBeforeFocus ? focus : anchor
+
+	const startParentIndex = start.path[0]
+	const startChildIndex = start.path[1]
+	const endParentIndex = end.path[0]
+	const endChildIndex = end.path[1]
+
+	// Input validation
+	if (startParentIndex >= value.length || endParentIndex >= value.length) {
+		throw new Error('Invalid path: Parent index out of bounds')
+	}
+
+	const startParent = value[startParentIndex]
+	const endParent = value[endParentIndex]
+
+	if (
+		startChildIndex >= startParent.children.length ||
+		endChildIndex >= endParent.children.length
+	) {
+		throw new Error('Invalid path: Child index out of bounds')
+	}
+
+	if (startParentIndex === endParentIndex) {
+		const childrenToMerge = startParent.children.slice(
+			startChildIndex,
+			endChildIndex + 1
+		)
+
+		if (childrenToMerge.some((child) => !('text' in child))) {
+			throw new Error('Cannot merge non-text TDescendants')
+		}
+
+		const firstChild = childrenToMerge[0] as TText
+		const lastChild = childrenToMerge[childrenToMerge.length - 1] as TText
+
+		const beforeText: TText = {
+			...firstChild,
+			text: firstChild.text.slice(0, start.offset),
+		}
+
+		const mergedText =
+			childrenToMerge.length === 1
+				? String(childrenToMerge[0].text).slice(start.offset, end.offset)
+				: childrenToMerge
+						.map((child, index) => {
+							const text = (child as TText).text
+							if (index === 0) return text.slice(start.offset)
+							if (index === childrenToMerge.length - 1)
+								return text.slice(0, end.offset)
+							return text
+						})
+						.join('')
+
+		const middleText: TText = {
+			...firstChild,
+			text: mergedText,
+		}
+
+		for (const key of keys) {
+			middleText[key] = true
+		}
+
+		const afterText: TText = {
+			...lastChild,
+			text: lastChild.text.slice(end.offset),
+		}
+
+		const newChildren = [
+			...(beforeText.text ? [beforeText] : []),
+			middleText,
+			...(afterText.text ? [afterText] : []),
+		]
+
+		startParent.children.splice(
+			startChildIndex,
+			endChildIndex - startChildIndex + 1,
+			...newChildren
+		)
+		return value
+	}
+
+	const startChildrenToMerge = startParent.children.slice(
+		startChildIndex,
+		startParent.children.length
+	)
+	const endChildrenToMerge = endParent.children.slice(0, endChildIndex + 1)
+
+	const middleParents = value.slice(startParentIndex + 1, endParentIndex)
+	const middleChildrenToMerge = middleParents.flatMap(
+		(parent) => parent.children
+	)
+
+	const allChildren = [
+		...startChildrenToMerge,
+		...middleChildrenToMerge,
+		...endChildrenToMerge,
+	]
+	if (allChildren.some((child) => !('text' in child))) {
+		throw new Error('Cannot merge non-text TDescendants')
+	}
+
+	const firstChild = startChildrenToMerge[0] as TText
+	const lastChild = endChildrenToMerge[endChildrenToMerge.length - 1] as TText
+
+	const beforeText: TText = {
+		...firstChild,
+		text: firstChild.text.slice(0, start.offset),
+	}
+
+	const mergedText = [
+		String(startChildrenToMerge[0].text).slice(start.offset),
+		...startChildrenToMerge.slice(1).map((child) => (child as TText).text),
+		...middleChildrenToMerge.map((child) => (child as TText).text),
+		...endChildrenToMerge.slice(0, -1).map((child) => (child as TText).text),
+		String(endChildrenToMerge[endChildrenToMerge.length - 1].text).slice(
+			0,
+			end.offset
+		),
+	].join('')
+
+	const middleText: TText = {
+		...firstChild,
+		text: mergedText,
+	}
+
+	for (const key of keys) {
+		middleText[key] = true
+	}
+
+	const afterText: TText = {
+		...lastChild,
+		text: lastChild.text.slice(end.offset),
+	}
+
+	startParent.children.splice(
+		startChildIndex,
+		startParent.children.length - startChildIndex,
+		...(beforeText.text ? [beforeText] : []),
+		middleText,
+		...(afterText.text ? [afterText] : [])
+	)
+
+	value.splice(startParentIndex + 1, endParentIndex - startParentIndex)
+
+	return value
 }
