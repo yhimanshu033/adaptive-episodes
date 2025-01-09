@@ -836,3 +836,10 @@ export function mergeBlocks(
 
 	return value
 }
+
+export function trim(str: string, length: number = 100) {
+	if (str.length <= length) {
+		return str
+	}
+	return str.slice(0, length) + '...'
+}
