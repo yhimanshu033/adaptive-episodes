@@ -11,10 +11,12 @@ import { StoryUploadParams } from '@/types/story-types'
 
 import { StoryImportFormSchema } from '../form-resolvers/story-import-resolver'
 import useSocket from '../use-socket'
+import { useToast } from '../use-toast'
 
 const useStoryUploadHook = () => {
 	const { startTask } = useSocket()
 	const queryClient = useQueryClient()
+	const { toast } = useToast()
 	const { id } = useParams()
 	const onSuccess = () => {
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -26,28 +28,41 @@ const useStoryUploadHook = () => {
 		}, 3000)
 	}
 
-	async function storyUpload(params: StoryImportFormSchema) {
-		const { story_file, image_file, author, ...rest } = params
-
-		const [project_url, image] = await Promise.all([
-			uploadFile(story_file),
-			image_file ? uploadFile(image_file) : Promise.resolve(null),
-		])
-		const payload = {
-			...rest,
-			project_url: project_url?.url ?? null,
-			image: image?.url ?? null,
-			author: author ?? null,
-		}
-
-		const taskId = await startTask<StoryUploadParams>({
-			method: 'POST',
-			url: '/project/upload/',
-			body: {
-				task_data: { ...payload },
-			},
+	const onError = (error: Error) => {
+		toast({
+			title: "Error: couldn't able upload story",
+			description: error.message,
+			variant: 'destructive',
 		})
-		return Promise.resolve(taskId)
+	}
+
+	async function storyUpload(params: StoryImportFormSchema) {
+		try {
+			const { story_file, image_file, author, ...rest } = params
+
+			const [project_url, image] = await Promise.all([
+				uploadFile(story_file),
+				image_file ? uploadFile(image_file) : Promise.resolve(null),
+			])
+			const payload = {
+				...rest,
+				project_url: project_url?.url ?? null,
+				image: image?.url ?? null,
+				author: author ?? null,
+			}
+
+			const taskId = await startTask<StoryUploadParams>({
+				method: 'POST',
+				url: '/project/upload/',
+				body: {
+					task_data: { ...payload },
+				},
+			})
+			return Promise.resolve(taskId)
+		} catch (e) {
+			console.log(e)
+			throw e as Error
+		}
 	}
 	const storyUploadMutation = useMutation({
 		mutationKey: ['storyUpload'],
@@ -66,6 +81,7 @@ const useStoryUploadHook = () => {
 		mutationKey: ['storyUpdate'],
 		mutationFn: storyUpdate,
 		onSuccess,
+		onError,
 	})
 	return { storyUploadMutation, storyUpdateMutation }
 }
