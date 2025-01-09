@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useParams } from 'next/navigation'
 import { statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useCustomPlateStore from '@/store/plate-store'
@@ -40,6 +41,7 @@ const Versions = ({
 	selectedStatus: EStatus | undefined
 	setSelectedStatus: React.Dispatch<React.SetStateAction<EStatus | undefined>>
 }) => {
+	const { id } = useParams()
 	const currentSelection = useRef<EStatus>()
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -81,11 +83,7 @@ const Versions = ({
 			})
 			await queryClient.invalidateQueries({ queryKey: ['info'], type: 'all' })
 			await queryClient.invalidateQueries({
-				queryKey: ['content'],
-				type: 'all',
-			})
-			await queryClient.invalidateQueries({
-				queryKey: ['episodes'],
+				queryKey: [Number(id), 'episodes'],
 				type: 'all',
 			})
 		}
