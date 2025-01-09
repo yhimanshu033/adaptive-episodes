@@ -21,7 +21,8 @@ const Hero = () => {
 				Welcome to Pocket CoPilot
 			</h1>
 			<p className="max-w-[700px] text-center text-xl font-light opacity-80 md:text-2xl">
-				Write & localize amazing audio stories with your creative AI assistant
+				Write, review, & localize Pocket FM&apos;s successful audio stories with
+				a creative AI assistant.
 			</p>
 			<Link
 				className={cn(buttonVariants({ size: 'lg' }), 'mt-3 text-lg')}
