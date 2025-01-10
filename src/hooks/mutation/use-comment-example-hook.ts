@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { getMetadata } from '@/server-action/metadata-action'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useCommentItemContentState } from '@udecode/plate-comments/react'
 import { useEditorState } from '@udecode/plate-common/react'
 
@@ -26,17 +26,18 @@ export default function useCommentExampleHook() {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
 
+	const [start, end] = getMetaDataRange(
+		episodeContent?.chapter.seq_number || 0,
+		episodesCount
+	)
+	const { data: metadata } = useQuery({
+		queryKey: ['metadata', id, start, end],
+		queryFn: () => getMetadata(Number(id), Math.max(start - 1, 1), end),
+	})
+
 	const commentExampleMutation = async () => {
-		const [start, end] = getMetaDataRange(
-			episodeContent?.chapter.seq_number || 0,
-			episodesCount
-		)
-		const { data: metadata } = await getMetadata(
-			Number(id),
-			Math.max(start, 1),
-			end
-		)
-		const extractedData = extractFromMetadata(metadata, start)
+		if (!metadata?.data) return ''
+		const extractedData = extractFromMetadata(metadata.data, start)
 
 		const taskId = await startTask<CommentExampleParams>({
 			method: 'POST',
