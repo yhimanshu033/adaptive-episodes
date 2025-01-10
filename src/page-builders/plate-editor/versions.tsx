@@ -26,6 +26,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
+import { useEpisodeContext } from '@/providers/episode-id-provider'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
@@ -51,6 +52,8 @@ const Versions = ({
 	const { useOption } = useEditorPlugin(FindReplacePlugin)
 	const replaceEnabled = useOption('replaceEnabled')
 	const { setViewMode } = useCustomPlateStore()
+	const { usePlateStoreContext } = useEpisodeContext()
+	const { sidebar } = usePlateStoreContext()
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
@@ -72,8 +75,9 @@ const Versions = ({
 	}
 
 	useEffect(() => {
-		setViewMode(!!replaceEnabled)
-	}, [replaceEnabled, setViewMode])
+		setViewMode(sidebar === 'far' && !!replaceEnabled)
+		// eslint-disable-next-line  react-hooks/exhaustive-deps
+	}, [replaceEnabled, sidebar])
 
 	const handleConfirm = async () => {
 		if (currentSelection.current) {
