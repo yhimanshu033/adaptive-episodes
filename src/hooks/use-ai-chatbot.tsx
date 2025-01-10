@@ -232,7 +232,8 @@ export function ChatbotProvider({
 							{
 								text: comment.text
 									.trim()
-									.replace(/(?<=.)[-•]/g, '\n-')
+									.replaceAll('•', '-')
+									.replace(/(?<=\s)-/g, '\n-')
 									.replace('</comment_format> <comment_format>', ''),
 							},
 						],

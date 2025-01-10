@@ -36,7 +36,10 @@ const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const { episodeSearch } = useEpisodeStore()
 	const { currentPage } = usePageState()
-	const { data } = useEpisodesData(episodeSearch, currentPage)
+	const { data, isLoading: isEpisodesLoading } = useEpisodesData(
+		episodeSearch,
+		currentPage
+	)
 	const tableData = useMemo(() => data?.results?.data ?? [], [data])
 	const { table, columnSize } = useCreateTable(tableData)
 
@@ -81,7 +84,13 @@ const EpisodesTable = () => {
 						))}
 					</TableHeader>
 					<TableBody>
-						{table.getRowModel().rows?.length ? (
+						{isEpisodesLoading ? (
+							<TableRow className="hover:bg-transparent">
+								<TableCell colSpan={columnSize + 1}>
+									<SkeletonBuilder count={5} className="h-8" />
+								</TableCell>
+							</TableRow>
+						) : table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row, rowIndex) => (
 								<React.Fragment key={row.id}>
 									<TableRow className={cn({ selected: row.getIsSelected() })}>
@@ -121,9 +130,9 @@ const EpisodesTable = () => {
 								</React.Fragment>
 							))
 						) : (
-							<TableRow className="hover:bg-transparent">
+							<TableRow className="p-5 text-center">
 								<TableCell colSpan={columnSize + 1}>
-									<SkeletonBuilder count={5} className="h-8" />
+									<p className="text-gray-500">No Episodes found</p>
 								</TableCell>
 							</TableRow>
 						)}
