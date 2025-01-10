@@ -211,3 +211,11 @@ export type Laser = {
 	response: string
 	text: string
 }
+
+export interface CommentExampleParams {
+	beatsheet?: string[]
+	comment: string
+	context?: string
+	ep_text?: string
+	highlighted_text?: string
+}

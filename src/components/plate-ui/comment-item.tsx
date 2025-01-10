@@ -1,6 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
+import { AI_REVIEW_ID } from '@/constants/ai-constants'
+import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import {
 	CommentProvider,
 	CommentsPlugin,
@@ -22,6 +25,16 @@ function CommentItemContent() {
 	const { comment, commentText, editingValue, isReplyComment, user } =
 		useCommentItemContentState()
 
+	const { responses } = useSocketStreaming()
+	const { mutate, data } = useCommentExampleHook()
+
+	const exampleData = useMemo(() => {
+		if (user?.id !== AI_REVIEW_ID || !data) {
+			return null
+		}
+		return responses[data].join('')
+	}, [data, responses, user])
+
 	return (
 		<div>
 			<div className="relative flex items-center gap-2">
@@ -33,13 +46,11 @@ function CommentItemContent() {
 					{formatDistance(comment.createdAt, Date.now())} ago
 				</div>
 
-				{
-					<div className="absolute -right-0.5 -top-0.5 flex space-x-1">
-						{isReplyComment ? null : <CommentResolveButton />}
+				<div className="absolute -right-0.5 -top-0.5 flex space-x-1">
+					{isReplyComment ? null : <CommentResolveButton />}
 
-						<CommentMoreDropdown />
-					</div>
-				}
+					<CommentMoreDropdown onExample={() => mutate()} />
+				</div>
 			</div>
 
 			<div className="mb-4 pl-7 pt-0.5">
@@ -49,6 +60,12 @@ function CommentItemContent() {
 					<div className="whitespace-pre-wrap text-sm">{commentText}</div>
 				)}
 			</div>
+			{exampleData && (
+				<div className="flex flex-col gap-2 p-2">
+					<h2 className="font-semibold">Example:</h2>
+					<p>{exampleData}</p>
+				</div>
+			)}
 		</div>
 	)
 }

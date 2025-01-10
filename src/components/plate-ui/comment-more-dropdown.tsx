@@ -1,12 +1,14 @@
 'use client'
 
 import React from 'react'
+import { AI_REVIEW_ID } from '@/constants/ai-constants'
 import { cn } from '@udecode/cn'
 import {
 	useCommentDeleteButton,
 	useCommentDeleteButtonState,
 	useCommentEditButton,
 	useCommentEditButtonState,
+	useCommentItemContentState,
 } from '@udecode/plate-comments/react'
 
 import { Icons } from '@/components/icons'
@@ -19,12 +21,12 @@ import {
 	DropdownMenuTrigger,
 } from './dropdown-menu'
 
-export function CommentMoreDropdown() {
+export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 	const editButtonState = useCommentEditButtonState()
 	const { props: editProps } = useCommentEditButton(editButtonState)
 	const deleteButtonState = useCommentDeleteButtonState()
 	const { props: deleteProps } = useCommentDeleteButton(deleteButtonState)
-
+	const { user } = useCommentItemContentState()
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
@@ -35,6 +37,9 @@ export function CommentMoreDropdown() {
 			<DropdownMenuContent>
 				<DropdownMenuItem {...editProps}>Edit comment</DropdownMenuItem>
 				<DropdownMenuItem {...deleteProps}>Delete comment</DropdownMenuItem>
+				{user?.id === AI_REVIEW_ID && (
+					<DropdownMenuItem onClick={onExample}>Show Example</DropdownMenuItem>
+				)}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)
