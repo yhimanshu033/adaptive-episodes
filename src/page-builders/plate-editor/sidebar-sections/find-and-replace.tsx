@@ -259,8 +259,6 @@ export default function FindAndReplace() {
 		fetchedData
 	)
 
-	console.log({ data })
-
 	useEffect(() => {
 		setData(fetchedData)
 	}, [fetchedData])
