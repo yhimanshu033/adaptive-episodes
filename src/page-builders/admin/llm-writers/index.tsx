@@ -91,7 +91,7 @@ export default function WritersRoom() {
 									<CardContent className="p-4 pt-0">
 										<div className="rounded-lg">
 											<img
-												src="/map_plot.png"
+												src="/map_plot.webp"
 												className="aspect-square w-full max-w-[200px] rounded border bg-white"
 												alt="map plot image"
 											/>
