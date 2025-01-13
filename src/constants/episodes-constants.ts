@@ -17,3 +17,5 @@ export enum EpisodeActions {
 }
 
 export const episodeLimit = 10
+
+export const SIDEBAR_DISABLED = ['4008']
