@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useParams } from 'next/navigation'
 import { statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
+import { useEditorPlugin } from '@udecode/plate-common/react'
 import { Eye } from 'lucide-react'
 
 import {
@@ -24,6 +26,8 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
+import { useEpisodeContext } from '@/providers/episode-id-provider'
+import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 
@@ -38,13 +42,18 @@ const Versions = ({
 	selectedStatus: EStatus | undefined
 	setSelectedStatus: React.Dispatch<React.SetStateAction<EStatus | undefined>>
 }) => {
+	const { id } = useParams()
 	const currentSelection = useRef<EStatus>()
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 
 	const queryClient = useQueryClient()
 
 	const { saveEpisodeMutation } = useEpisodeHook()
+	const { useOption } = useEditorPlugin(FindReplacePlugin)
+	const replaceEnabled = useOption('replaceEnabled')
 	const { setViewMode } = useCustomPlateStore()
+	const { usePlateStoreContext } = useEpisodeContext()
+	const { sidebar } = usePlateStoreContext()
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
@@ -65,6 +74,11 @@ const Versions = ({
 		}
 	}
 
+	useEffect(() => {
+		setViewMode(sidebar === 'far' && !!replaceEnabled)
+		// eslint-disable-next-line  react-hooks/exhaustive-deps
+	}, [replaceEnabled, sidebar])
+
 	const handleConfirm = async () => {
 		if (currentSelection.current) {
 			await saveEpisodeMutation.mutateAsync({
@@ -73,11 +87,7 @@ const Versions = ({
 			})
 			await queryClient.invalidateQueries({ queryKey: ['info'], type: 'all' })
 			await queryClient.invalidateQueries({
-				queryKey: ['content'],
-				type: 'all',
-			})
-			await queryClient.invalidateQueries({
-				queryKey: ['episodes'],
+				queryKey: [Number(id), 'episodes'],
 				type: 'all',
 			})
 		}
