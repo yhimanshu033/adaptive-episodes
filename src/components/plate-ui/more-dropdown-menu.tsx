@@ -1,4 +1,5 @@
 import React from 'react'
+import useDisableTools from '@/hooks/use-disable-tools'
 import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { useEditorState } from '@udecode/plate-common/react'
@@ -19,6 +20,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 	const { setSidebar } = usePlateStore()
 	const openState = useOpenState()
 	const { children } = useEditorState()
+	const { isDisabled } = useDisableTools()
 	const text = getText(children)
 	const words = text
 		.split(/\s+/)
@@ -36,6 +38,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 				align="start"
 			>
 				<DropdownMenuItem
+					disabled={isDisabled}
 					onSelect={() => {
 						setSidebar('far', true)
 					}}
@@ -44,6 +47,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 					Localization
 				</DropdownMenuItem>
 				<DropdownMenuItem
+					disabled={isDisabled}
 					onSelect={() => {
 						setSidebar('outline', true)
 					}}
