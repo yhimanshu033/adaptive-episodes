@@ -3,9 +3,10 @@
 
 import React, { useEffect, useState } from 'react'
 import { useStoriesData } from '@/hooks/query/use-story-data'
-import { StoryGrid } from '@/page-builders/admin/llm-writer/story-grid'
+import { StoryGrid } from '@/page-builders/admin/llm-writers/story-grid'
 import { ArrowRight, UserCircle2 } from 'lucide-react'
 
+import BackButton from '@/components/back-button'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -39,9 +40,10 @@ export default function WritersRoom() {
 
 	return (
 		<div className="container mx-auto space-y-6 p-6">
-			<h1 className="text-3xl font-bold tracking-tight">
-				Copilot - LLM Writers Room
-			</h1>
+			<div className="flex gap-6">
+				<BackButton />
+				<h1 className="text-3xl font-bold tracking-tight">LLM Writers Room</h1>
+			</div>
 
 			<div className="grid gap-6 md:grid-cols-2">
 				<div className="space-y-6">

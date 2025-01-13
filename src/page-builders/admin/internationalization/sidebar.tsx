@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
+import AIChatbot from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot'
 import { createPlateEditor, Plate } from '@udecode/plate-common/react'
 import { Bot } from 'lucide-react'
 
 import { Button } from '@/components/plate-ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-
-import AIChatbot from '../plate-editor/sidebar-sections/ai-chatbot'
 
 const Sidebar = () => {
 	const [isOpen, setOpen] = useState(false)

@@ -9,6 +9,7 @@ import {
 	stories,
 	storyID,
 } from '@/mock-data/internationalization'
+import ImportStoryCard from '@/page-builders/stories/import-story-card'
 import { BookOpen, Clock, User } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
@@ -20,8 +21,6 @@ import {
 	SelectTrigger,
 } from '@/components/ui/select'
 import { formatDate } from '@/lib/format-date'
-
-import ImportStoryCard from '../stories/import-story-card'
 
 const Stories = () => {
 	const [activeVersions, setVersions] = useState(() =>
