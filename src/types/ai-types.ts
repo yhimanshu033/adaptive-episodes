@@ -217,9 +217,8 @@ export type Laser = {
 
 export interface CommentExampleParams {
 	comment: string
-	commented_text?: string
 	context?: string
-	ep_text?: string
+	highlighted_text?: string
 	next_paragraphs?: string
 	prev_paragraphs?: string
 }

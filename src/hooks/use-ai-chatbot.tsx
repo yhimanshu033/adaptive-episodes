@@ -155,13 +155,11 @@ export function ChatbotProvider({
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
-		console.log({ suggestion })
 		if (suggestion.action === EChatMode.LOCALIZE) {
 			setSidebar('far')
 			return
 		}
 		if (suggestion.action === EChatMode.PROMPTS) {
-			console.log(suggestion.value)
 			setInput(suggestion.value)
 			return
 		}

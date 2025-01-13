@@ -1,6 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
-import { useCommentItemContentState } from '@udecode/plate-comments/react'
-import { useEditorState } from '@udecode/plate-common/react'
+import {
+	CommentsPlugin,
+	useCommentItemContentState,
+} from '@udecode/plate-comments/react'
+import {
+	ParagraphPlugin,
+	useEditorPlugin,
+	useEditorState,
+} from '@udecode/plate-common/react'
 
 import { getCommentNode, getText } from '@/lib/utils'
 
@@ -14,8 +21,8 @@ export default function useCommentExampleHook() {
 	const { startTask } = useSocketStreaming()
 	const { data: episodeContent } = useEpisodeContent()
 	const { children } = useEditorState()
+	const { api } = useEditorPlugin(CommentsPlugin)
 
-	console.log({ e: episodeContent?.chapter })
 	const commentExampleMutation = async () => {
 		const { beforeText, afterText, text } = getCommentNode(
 			children,
@@ -27,36 +34,38 @@ export default function useCommentExampleHook() {
 				? beforeText.split(/\n+/).slice(-3).join('\n')
 				: beforeText
 
-		console.log({
-			a: afterText.split(/\n+/),
-			b: beforeText.split(/\n+/),
-		})
 		const next_paragraphs =
 			afterText.split(/\n+/).length > 2
 				? afterText.split(/\n+/).slice(0, 3).join('\n')
 				: afterText
 
-		console.log({
+		const taskId = await startTask<CommentExampleParams, string[]>({
+			method: 'POST',
+			url: '/aicopilot/review-example',
 			body: {
 				comment: getText(comment.value),
-				ep_text: getText(children),
-				commented_text: text,
+				highlighted_text: text,
 				prev_paragraphs,
 				next_paragraphs,
 				context: episodeContent?.chapter?.props?.llm_memories?.context || '',
 			},
-		})
-		return ''
-		const taskId = await startTask<CommentExampleParams>({
-			method: 'POST',
-			url: '/review/example/',
-			body: {
-				comment: getText(comment.value),
-				ep_text: getText(children),
-				commented_text: text,
-				prev_paragraphs,
-				next_paragraphs,
-				context: episodeContent?.chapter?.props?.llm_memories?.context || '',
+			onResponse: (resp?: string[]) => {
+				if (!resp?.length) return
+				api.comment.addComment({
+					value: [
+						{
+							type: ParagraphPlugin.key,
+							children: [
+								{
+									text: 'Beispiel:\n\n' + resp.join(''),
+								},
+							],
+						},
+					],
+					userId: 'COPILOT-AI',
+					createdAt: Date.now(),
+					parentId: comment.id,
+				})
 			},
 		})
 		return taskId

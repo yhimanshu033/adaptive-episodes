@@ -26,7 +26,7 @@ export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 	const { props: editProps } = useCommentEditButton(editButtonState)
 	const deleteButtonState = useCommentDeleteButtonState()
 	const { props: deleteProps } = useCommentDeleteButton(deleteButtonState)
-	const { user } = useCommentItemContentState()
+	const { user, comment } = useCommentItemContentState()
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
@@ -37,7 +37,7 @@ export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 			<DropdownMenuContent>
 				<DropdownMenuItem {...editProps}>Edit comment</DropdownMenuItem>
 				<DropdownMenuItem {...deleteProps}>Delete comment</DropdownMenuItem>
-				{user?.id === AI_REVIEW_ID && (
+				{user?.id === AI_REVIEW_ID && !comment?.parentId && (
 					<DropdownMenuItem onClick={onExample}>Show Example</DropdownMenuItem>
 				)}
 			</DropdownMenuContent>

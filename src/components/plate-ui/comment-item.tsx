@@ -25,14 +25,14 @@ function CommentItemContent() {
 	const { comment, commentText, editingValue, isReplyComment, user } =
 		useCommentItemContentState()
 
-	const { responses } = useSocketStreaming()
+	const { responses, taskEnded } = useSocketStreaming()
 	const { mutate, data } = useCommentExampleHook()
 
 	const exampleData = useMemo(() => {
 		if (user?.id !== AI_REVIEW_ID || !data) {
 			return null
 		}
-		return responses[data].join('')
+		return responses[data]?.join('') || ''
 	}, [data, responses, user])
 
 	return (
@@ -60,10 +60,15 @@ function CommentItemContent() {
 					<div className="whitespace-pre-wrap text-sm">{commentText}</div>
 				)}
 			</div>
-			{exampleData && (
+			{data && !exampleData && (
 				<div className="flex flex-col gap-2 p-2">
-					<h2 className="font-semibold">Example:</h2>
-					<p>{exampleData}</p>
+					<h2 className="font-semibold">Denke nach...</h2>
+				</div>
+			)}
+			{exampleData && data && !taskEnded[data] && (
+				<div className="flex flex-col gap-2 p-2">
+					<h2 className="text-sm font-semibold">Beispiel:</h2>
+					<p className="text-xs">{exampleData}</p>
 				</div>
 			)}
 		</div>
