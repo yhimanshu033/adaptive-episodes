@@ -85,11 +85,11 @@ export default function WritersRoom() {
 									</DialogContent>
 								</Dialog>
 								<Card>
-									<CardHeader>
-										<CardTitle>Map All Paths</CardTitle>
+									<CardHeader className="p-4 py-3">
+										<CardTitle className="text-xl">Map Alt Paths</CardTitle>
 									</CardHeader>
-									<CardContent>
-										<div className="rounded-lg border bg-slate-50 p-4">
+									<CardContent className="p-4 pt-0">
+										<div className="rounded-lg">
 											<img
 												src="/map_plot.png"
 												className="aspect-square w-full max-w-[200px] rounded border bg-white"
@@ -112,18 +112,6 @@ export default function WritersRoom() {
 							)}
 						</CardContent>
 					</Card>
-
-					{/* Map All Paths */}
-					{/* <Card>
-                        <CardHeader>
-                            <CardTitle>Map All Paths</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="border rounded-lg p-4 bg-slate-50">
-                                <div className="aspect-square w-full max-w-[200px] bg-white rounded border" />
-                            </div>
-                        </CardContent>
-                    </Card> */}
 
 					{/* Define Agents */}
 					<Card>
@@ -222,6 +210,7 @@ export default function WritersRoom() {
 									(variable) => (
 										<Button
 											key={variable}
+											tooltip={variable}
 											variant="outline"
 											className="size-16 rounded-full"
 										>
