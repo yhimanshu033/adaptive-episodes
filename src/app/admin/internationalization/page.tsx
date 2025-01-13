@@ -1,8 +1,6 @@
 import React from 'react'
 import Projects from '@/page-builders/internationalization'
 
-const Page = () => {
+export default function Page() {
 	return <Projects />
 }
-
-export default Page

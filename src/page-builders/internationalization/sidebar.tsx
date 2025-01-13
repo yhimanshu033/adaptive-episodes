@@ -19,7 +19,7 @@ const Sidebar = () => {
 						<Bot size={24} />
 					</Button>
 					{isOpen && (
-						<ScrollArea className="max-h-[70vh]">
+						<ScrollArea className="max-h-screen">
 							<AIChatbot />
 						</ScrollArea>
 					)}
