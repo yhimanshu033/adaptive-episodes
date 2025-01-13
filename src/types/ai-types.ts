@@ -203,7 +203,10 @@ export interface TLocalizeResponse {
 }
 
 export interface TLocalizeUpdateRequest {
-	ls_mapping: Record<string, { localized_name: string; type: string }>
+	ls_mapping: Record<
+		string,
+		{ description: string; localized_name: string; type: string }
+	>
 }
 
 export type Laser = {
