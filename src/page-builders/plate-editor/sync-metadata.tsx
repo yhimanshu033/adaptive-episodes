@@ -19,6 +19,7 @@ const SyncMetaData = () => {
 			tooltip="Click here to update story details with the AI so it can better assist you"
 			variant="outline"
 			className="gap-2"
+			disabled
 			onClick={handleSync}
 		>
 			AI Sync
