@@ -4,9 +4,10 @@
 import React, { useEffect, useState } from 'react'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { StoryGrid } from '@/page-builders/admin/llm-writers/story-grid'
-import { ArrowRight, UserCircle2 } from 'lucide-react'
+import { MoveRight, UserCircle2 } from 'lucide-react'
 
 import BackButton from '@/components/back-button'
+import ImageModal from '@/components/image-modal'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -18,7 +19,6 @@ import {
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import Spinner from '@/components/ui/spinner'
-import { trim } from '@/lib/utils'
 
 import { TStory } from '@/types/story-types'
 
@@ -89,13 +89,18 @@ export default function WritersRoom() {
 										<CardTitle className="text-xl">Map Alt Paths</CardTitle>
 									</CardHeader>
 									<CardContent className="p-4 pt-0">
-										<div className="rounded-lg">
+										<ImageModal
+											src="/map_plot.webp"
+											className="aspect-square w-full max-w-[200px] rounded border bg-white"
+											alt="map plot image"
+										/>
+										{/* <div className="rounded-lg">
 											<img
 												src="/map_plot.webp"
 												className="aspect-square w-full max-w-[200px] rounded border bg-white"
 												alt="map plot image"
 											/>
-										</div>
+										</div> */}
 									</CardContent>
 								</Card>
 							</div>
@@ -120,9 +125,9 @@ export default function WritersRoom() {
 						</CardHeader>
 						<CardContent>
 							<div className="flex items-center justify-around">
-								<div className="space-y-4">
+								<div className="flex flex-col items-center">
 									{/* Showrunner */}
-									<div className="flex items-start gap-4 pl-4">
+									<div className="flex items-start gap-4">
 										<UserCircle2 className="size-10" />
 										<div>
 											<h3 className="font-semibold">Showrunner</h3>
@@ -135,24 +140,38 @@ export default function WritersRoom() {
 
 									{/* Writers */}
 									<div className="grid grid-cols-2 gap-8">
-										{[1, 2].map((writer) => (
-											<div key={writer} className="flex items-start gap-2">
+										<div className="flex flex-col items-center gap-6">
+											<MoveRight size={48} className="rotate-[135deg]" />
+											<div className="flex items-start gap-2">
 												<UserCircle2 className="size-8" />
 												<div>
-													<h4 className="font-medium">Writer {writer}</h4>
+													<h4 className="font-medium">Writer 1</h4>
 													<div className="text-xs text-muted-foreground">
 														<p>Bio:</p>
 														<p>Style:</p>
 													</div>
 												</div>
 											</div>
-										))}
+										</div>
+										<div className="flex flex-col items-center gap-6">
+											<MoveRight size={48} className="rotate-45" />
+											<div className="flex items-start gap-2">
+												<UserCircle2 className="size-8" />
+												<div>
+													<h4 className="font-medium">Writer 1</h4>
+													<div className="text-xs text-muted-foreground">
+														<p>Bio:</p>
+														<p>Style:</p>
+													</div>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div>
 
 								{/* Editor */}
-								<div className="flex items-center justify-end gap-2">
-									<ArrowRight className="size-4" />
+								<div className="flex items-center justify-end gap-6">
+									<MoveRight size={48} />
 									<div className="flex items-start gap-2">
 										<UserCircle2 className="size-8" />
 										<div>
@@ -210,11 +229,10 @@ export default function WritersRoom() {
 									(variable) => (
 										<Button
 											key={variable}
-											tooltip={variable}
 											variant="outline"
-											className="size-16 rounded-full"
+											className="size-24 rounded-full"
 										>
-											{trim(variable, 5)}
+											{variable}
 										</Button>
 									)
 								)}
