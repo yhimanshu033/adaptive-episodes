@@ -158,7 +158,7 @@ export default function WritersRoom() {
 											<div className="flex items-start gap-2">
 												<UserCircle2 className="size-8" />
 												<div>
-													<h4 className="font-medium">Writer 1</h4>
+													<h4 className="font-medium">Writer 2</h4>
 													<div className="text-xs text-muted-foreground">
 														<p>Bio:</p>
 														<p>Style:</p>
