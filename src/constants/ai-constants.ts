@@ -72,3 +72,8 @@ export const quickPrompts = [
 ]
 
 export const AI_REVIEW_ID = 'COPILOT-AI'
+
+export enum ELlmWriterMode {
+	CLONE = 'clone',
+	SPIN_OFF = 'spin-off',
+}
