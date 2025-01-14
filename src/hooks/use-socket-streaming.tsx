@@ -58,6 +58,7 @@ export const SocketStreamingProvider = ({
 	)
 	const [responses, setResponses] = useState<Record<string, string[]>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
+	const responsesRef = useRef<Record<string, string[]>>({})
 	const [taskEnded, setTaskEnded] = useState<Record<string, boolean>>({})
 	const [fetchedData, setFetchedData] = useState<Record<string, string>>({})
 
@@ -74,22 +75,26 @@ export const SocketStreamingProvider = ({
 						setTaskEnded((prev) => ({ ...prev, [task_id]: false }))
 					}
 					if (payload.status === ESocketStatus.COMPLETED) {
+						const callback = taskCallbacksRef.current[task_id]
+						if (callback) {
+							callback(responsesRef.current[task_id])
+						}
 						setTaskEnded((prev) => ({ ...prev, [task_id]: true }))
 					}
 				}
 				if (!responses) {
 					setResponses((prev) => ({ ...prev, [task_id]: [] }))
+					responsesRef.current[task_id] = []
 				}
 				if (!payload.chunk) return
 				setResponses((prev) => ({
 					...prev,
 					[task_id]: [...(prev[task_id] || []), String(payload.chunk)],
 				}))
-
-				const callback = taskCallbacksRef.current[task_id]
-				if (callback) {
-					callback(payload.chunk)
-				}
+				responsesRef.current[task_id] = [
+					...(responsesRef.current[task_id] || []),
+					String(payload.chunk),
+				]
 			}
 		)
 

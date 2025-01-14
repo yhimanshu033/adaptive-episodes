@@ -837,6 +837,24 @@ export function mergeBlocks(
 	return value
 }
 
+export function getCommentNode(val: Value, id: string) {
+	let beforeText = '',
+		text = '',
+		afterText = ''
+	for (const block of val) {
+		for (const child of block.children) {
+			if (child[id]) {
+				text = String(child.text)
+			} else if (text.length) {
+				afterText += String(child.text)
+			} else {
+				beforeText += String(child.text)
+			}
+		}
+	}
+	return { beforeText, text, afterText }
+}
+
 export function trim(str: string, length: number = 100) {
 	if (str.length <= length) {
 		return str
