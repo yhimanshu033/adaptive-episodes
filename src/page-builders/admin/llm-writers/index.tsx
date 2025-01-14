@@ -2,6 +2,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { ELlmWriterMode } from '@/constants/ai-constants'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { StoryGrid } from '@/page-builders/admin/llm-writers/story-grid'
 import { MoveRight, UserCircle2 } from 'lucide-react'
@@ -18,6 +19,15 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
 
 import { TStory } from '@/types/story-types'
@@ -28,6 +38,9 @@ export default function WritersRoom() {
 		data?.[0] || null
 	)
 	const [isModalOpen, setIsModalOpen] = useState(false)
+	const [selectedMode, setSelectedMode] = useState<ELlmWriterMode>(
+		ELlmWriterMode.SPIN_OFF
+	)
 
 	useEffect(() => {
 		if (data) setSelectedStory(data[0])
@@ -49,14 +62,31 @@ export default function WritersRoom() {
 				<div className="space-y-6">
 					{/* Story Selection */}
 					<Card>
-						<CardHeader>
-							<CardTitle>Select Story for Spin-Off</CardTitle>
+						<CardHeader className="flex flex-row items-center justify-between py-2">
+							<CardTitle>Select Story</CardTitle>
+							<Select
+								onValueChange={(val) => setSelectedMode(val as ELlmWriterMode)}
+								value={selectedMode}
+							>
+								<SelectTrigger className="w-[180px]">
+									<SelectValue placeholder="Select a Mode" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										<SelectLabel>Modes</SelectLabel>
+										<SelectItem value={ELlmWriterMode.SPIN_OFF}>
+											Spin-Off
+										</SelectItem>
+										<SelectItem value={ELlmWriterMode.CLONE}>Clone</SelectItem>
+									</SelectGroup>
+								</SelectContent>
+							</Select>
 						</CardHeader>
 						<CardContent>
 							<div className="flex items-center justify-between gap-8">
 								<Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
 									<DialogTrigger asChild>
-										<Button variant="ghost" className="h-auto w-48 p-0">
+										<Button variant="ghost" className="h-auto w-64 p-0">
 											<div className="relative w-full">
 												{selectedStory?.image ? (
 													<img
@@ -85,7 +115,7 @@ export default function WritersRoom() {
 									</DialogContent>
 								</Dialog>
 								<Card>
-									<CardHeader className="p-4 py-3">
+									<CardHeader className="px-4 py-3">
 										<CardTitle className="text-xl">Map Alt Paths</CardTitle>
 									</CardHeader>
 									<CardContent className="p-4 pt-0">
@@ -94,19 +124,12 @@ export default function WritersRoom() {
 											className="aspect-square w-full max-w-[200px] rounded border bg-white"
 											alt="map plot image"
 										/>
-										{/* <div className="rounded-lg">
-											<img
-												src="/map_plot.webp"
-												className="aspect-square w-full max-w-[200px] rounded border bg-white"
-												alt="map plot image"
-											/>
-										</div> */}
 									</CardContent>
 								</Card>
 							</div>
 
 							{selectedStory && (
-								<div className="mt-4">
+								<div className="mt-2">
 									<h3 className="font-semibold">
 										{selectedStory.project_title}
 									</h3>
