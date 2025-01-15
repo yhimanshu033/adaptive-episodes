@@ -30,6 +30,7 @@ import { useEpisodeContext } from '@/providers/episode-id-provider'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
+import { ESidebar } from '@/types/plate-types'
 
 const Versions = ({
 	isChildEpisode,
@@ -75,7 +76,7 @@ const Versions = ({
 	}
 
 	useEffect(() => {
-		setViewMode(sidebar === 'far' && !!replaceEnabled)
+		setViewMode(sidebar === ESidebar.FAR && !!replaceEnabled)
 		// eslint-disable-next-line  react-hooks/exhaustive-deps
 	}, [replaceEnabled, sidebar])
 

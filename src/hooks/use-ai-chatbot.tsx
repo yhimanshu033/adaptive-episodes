@@ -7,6 +7,7 @@ import React, {
 	useState,
 } from 'react'
 import { useParams } from 'next/navigation'
+import { AI_USER_ID } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
@@ -47,6 +48,7 @@ import {
 	IndexedCommentsResponse,
 	IndexedSFXResponse,
 } from '@/types/editor-types'
+import { ESidebar } from '@/types/plate-types'
 
 type TChatbotContext = {
 	cancelRequest: () => void
@@ -156,7 +158,7 @@ export function ChatbotProvider({
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
 		if (suggestion.action === EChatMode.LOCALIZE) {
-			setSidebar('far')
+			setSidebar(ESidebar.FAR)
 			return
 		}
 		if (suggestion.action === EChatMode.PROMPTS) {
@@ -238,7 +240,7 @@ export function ChatbotProvider({
 					},
 				],
 				id: comment.id,
-				userId: 'COPILOT-AI',
+				userId: AI_USER_ID,
 				createdAt: Date.now(),
 			})
 		})

@@ -5,6 +5,8 @@ import usePlateStore from '@/store/plate-store'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
+import { ESidebar } from '@/types/plate-types'
+
 import AiChatbot from './sidebar-sections/ai-chatbot'
 import FindAndReplace from './sidebar-sections/find-and-replace'
 import StoryExplorer from './sidebar-sections/story-explorer'
@@ -19,7 +21,7 @@ const renderSidebar: Record<string, React.ReactNode> = {
 const Sidebar = () => {
 	const { store } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
-	const showSidebar = sidebar && sidebar !== 'translation'
+	const showSidebar = sidebar && sidebar !== ESidebar.TRANSLATION
 	return (
 		<div
 			className={cn(

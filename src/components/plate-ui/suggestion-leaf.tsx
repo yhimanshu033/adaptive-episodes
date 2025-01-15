@@ -12,6 +12,8 @@ import { Check, X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+import { ESidebar } from '@/types/plate-types'
+
 import { Button } from '../ui/button'
 
 export default function SuggestionLeaf({
@@ -44,7 +46,7 @@ export default function SuggestionLeaf({
 			)}
 			onClick={() => {
 				set('activeSuggestionId', leaf.suggestionId || '')
-				setSidebar('comments')
+				setSidebar(ESidebar.COMMENTS)
 			}}
 			nodeProps={{ ...nodeProps }}
 		>

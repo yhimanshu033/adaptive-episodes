@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useMemo } from 'react'
-import { AI_REVIEW_ID } from '@/constants/ai-constants'
+import { AI_USER_ID } from '@/constants/ai-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import {
@@ -29,7 +29,7 @@ function CommentItemContent() {
 	const { mutate, data } = useCommentExampleHook()
 
 	const exampleData = useMemo(() => {
-		if (user?.id !== AI_REVIEW_ID || !data) {
+		if (user?.id !== AI_USER_ID || !data) {
 			return null
 		}
 		return responses[data]?.join('') || ''

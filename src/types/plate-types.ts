@@ -2,12 +2,19 @@ import { Value } from '@udecode/plate-common'
 
 import { Laser } from './ai-types'
 
+export enum ESidebar {
+	CHATBOT = 'chatbot',
+	COMMENTS = 'comments',
+	FAR = 'far',
+	OUTLINE = 'outline',
+	TRANSLATION = 'translation',
+}
 export type PlateStoreData = {
 	activeDiffId: string | null
 	currentDiffValue: Value | null
 	resolved: boolean
 	scale: number
-	sidebar: 'comments' | 'chatbot' | 'outline' | 'far' | 'translation' | null
+	sidebar: ESidebar | null
 	viewMode: boolean
 }
 

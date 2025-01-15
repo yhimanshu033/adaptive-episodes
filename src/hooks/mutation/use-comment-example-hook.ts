@@ -1,3 +1,4 @@
+import { AI_USER_ID } from '@/constants/ai-constants'
 import { useMutation } from '@tanstack/react-query'
 import {
 	CommentsPlugin,
@@ -62,7 +63,7 @@ export default function useCommentExampleHook() {
 							],
 						},
 					],
-					userId: 'COPILOT-AI',
+					userId: AI_USER_ID,
 					createdAt: Date.now(),
 					parentId: comment.id,
 				})

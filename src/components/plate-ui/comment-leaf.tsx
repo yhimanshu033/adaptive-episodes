@@ -11,6 +11,8 @@ import {
 } from '@udecode/plate-comments/react'
 import { PlateLeaf, type PlateLeafProps } from '@udecode/plate-common/react'
 
+import { ESidebar } from '@/types/plate-types'
+
 export function CommentLeaf({
 	className,
 	...props
@@ -24,7 +26,7 @@ export function CommentLeaf({
 	const { props: rootProps } = useCommentLeaf(state)
 
 	const commented = isCommented(state.lastCommentId)
-	const isActive = sidebar === 'comments' && state.isActive
+	const isActive = sidebar === ESidebar.COMMENTS && state.isActive
 
 	if (!state.commentCount || !commented) return <>{children}</>
 
@@ -50,7 +52,7 @@ export function CommentLeaf({
 				...nodeProps,
 			}}
 			onMouseDown={(e) => {
-				setSidebar('comments')
+				setSidebar(ESidebar.COMMENTS)
 				set({ activeCommentId: state.lastCommentId })
 				props.onClick?.(e)
 			}}

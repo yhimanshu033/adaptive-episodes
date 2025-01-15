@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { AI_REVIEW_ID } from '@/constants/ai-constants'
+import { AI_USER_ID } from '@/constants/ai-constants'
 import { cn } from '@udecode/cn'
 import {
 	useCommentDeleteButton,
@@ -37,7 +37,7 @@ export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 			<DropdownMenuContent>
 				<DropdownMenuItem {...editProps}>Edit comment</DropdownMenuItem>
 				<DropdownMenuItem {...deleteProps}>Delete comment</DropdownMenuItem>
-				{user?.id === AI_REVIEW_ID && !comment?.parentId && (
+				{user?.id === AI_USER_ID && !comment?.parentId && (
 					<DropdownMenuItem onClick={onExample}>Show Example</DropdownMenuItem>
 				)}
 			</DropdownMenuContent>

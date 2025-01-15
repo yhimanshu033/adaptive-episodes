@@ -11,6 +11,8 @@ import {
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn } from '@/lib/utils'
 
+import { ESidebar } from '@/types/plate-types'
+
 function isCurrent(arr1: number[], arr2: number[]) {
 	return arr1.every((v, i) => v === arr2[i])
 }
@@ -44,7 +46,7 @@ export const SearchHighlightLeaf = ({
 			return <span className="bg-green-500/60">{children}</span>
 		}
 	}
-	return sidebar === 'far' ? (
+	return sidebar === ESidebar.FAR ? (
 		<PlateLeaf
 			onClick={setCurrent}
 			id={`search-highlight-${id.join('-')}`}

@@ -19,6 +19,8 @@ import { Bot } from 'lucide-react'
 import { Icons, iconVariants } from '@/components/icons'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 
+import { ESidebar } from '@/types/plate-types'
+
 import { ColorDropdownMenu } from './color-dropdown-menu'
 import FloatingLaserBtns from './floating-laser-btns'
 import { MarkToolbarButton } from './mark-toolbar-button'
@@ -79,7 +81,7 @@ const FloatingToolbarButtons = () => {
 					<MarkToolbarButton
 						{...props}
 						onClick={(e) => {
-							setSidebar('comments')
+							setSidebar(ESidebar.COMMENTS)
 							props.onClick(e)
 						}}
 						nodeType={CommentsPlugin.key}

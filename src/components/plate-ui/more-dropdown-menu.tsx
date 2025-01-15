@@ -7,6 +7,8 @@ import { Globe, Search, WholeWordIcon } from 'lucide-react'
 
 import { getText, prettifyNumber } from '@/lib/utils'
 
+import { ESidebar } from '@/types/plate-types'
+
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -40,7 +42,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 				<DropdownMenuItem
 					disabled={isDisabled}
 					onSelect={() => {
-						setSidebar('far', true)
+						setSidebar(ESidebar.FAR, true)
 					}}
 				>
 					<Globe className="mr-2 size-5" />
@@ -49,7 +51,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 				<DropdownMenuItem
 					disabled={isDisabled}
 					onSelect={() => {
-						setSidebar('outline', true)
+						setSidebar(ESidebar.OUTLINE, true)
 					}}
 				>
 					<Search className="mr-2 size-5" />

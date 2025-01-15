@@ -2,6 +2,7 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
+import { AI_USER_ID } from '@/constants/ai-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
 import { extendStore } from '@/hooks/use-editor-extend-state'
@@ -372,8 +373,8 @@ export const useMyEditor = ({
 							name: userData?.user?.name || 'User',
 							avatarUrl: userData?.user?.image || '/placeholder-user.webp',
 						},
-						'COPILOT-AI': {
-							id: 'COPILOT-AI',
+						[AI_USER_ID]: {
+							id: AI_USER_ID,
 							name: 'Copilot AI',
 							avatarUrl: '/pocket-copilot-logo.webp',
 						},
