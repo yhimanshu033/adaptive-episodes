@@ -26,20 +26,6 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
 
-export function getQueryParam(
-	url: string | null | undefined,
-	paramName: string
-): string | undefined {
-	try {
-		if (!url) return undefined
-		const urlObj = new URL(url)
-		return urlObj.searchParams.get(paramName) ?? undefined
-	} catch (error) {
-		console.error('Invalid URL', error)
-		return undefined
-	}
-}
-
 export const getSelectedEpisode = (
 	data: TGetEpisodesResponse,
 	selectedStatus?: EStatus
@@ -124,76 +110,6 @@ export const maxify = (minified: MinifiedValue, children: Value): Value => {
 	}))
 }
 
-export const replaceMatches = (
-	regex: RegExp,
-	matches: RegExpMatchArray,
-	children: Value
-): Value => {
-	const modify = (nodes: TDescendant[]): TDescendant[] => {
-		const newState: TDescendant[] = []
-
-		if (matches[0].startsWith('[!')) {
-			newState.push({
-				text: matches[0].toUpperCase().replaceAll('!', ''),
-				bold: true,
-			})
-			matches.shift()
-		}
-
-		nodes.map((node) => {
-			if ('text' in node) {
-				const fragments = (node.text as string).split(regex)
-
-				let wasSFX = false
-
-				for (const [index, fragment] of fragments.entries()) {
-					if (regex.test(fragment)) {
-						if (matches.length && matches[0].includes('[!')) {
-							newState.push({
-								...node,
-								text: matches[0].toUpperCase().replaceAll('!', ''),
-								bold: true,
-							})
-							wasSFX = true
-						} else if (newState.length) {
-							newState[newState.length - 1].text += fragment
-						} else {
-							newState.push({
-								...node,
-								text: fragment,
-							})
-							wasSFX = false
-						}
-						matches.shift()
-					} else {
-						if (wasSFX || !index || !newState.length) {
-							newState.push({
-								...node,
-								text: fragment,
-							})
-							wasSFX = false
-						} else {
-							newState[newState.length - 1].text += fragment
-						}
-					}
-				}
-			} else if ('children' in node) {
-				newState.push({
-					...node,
-					children: modify(children),
-				})
-			}
-		})
-
-		return newState
-	}
-	const result = children.map((child) => ({
-		...child,
-		children: modify(child.children),
-	}))
-	return result
-}
-
 export function replaceNthInsensitive(
 	str: string,
 	search: string,
@@ -276,7 +192,6 @@ export function clearComments(ogVal: Value): Value {
 				hasComments = true
 			}
 		}
-
 		if (hasComments) {
 			delete node.laser
 		} else if ('children' in node) {
@@ -308,15 +223,6 @@ export function mergeElementNodes(ogVal: TElement): TElement {
 		}
 	})
 	return { ...val, children: merged }
-}
-
-export function mergeValue(ogVal: Value): Value {
-	const val = structuredClone(ogVal)
-	const merged: Value = []
-	val.forEach((node) => {
-		merged.push(mergeElementNodes(node))
-	})
-	return merged
 }
 
 export function getRecord(comments?: TComment[]) {
@@ -453,10 +359,6 @@ export const extractFromMetadata = (
 	return { loglines_array, beatsheets_array, context }
 }
 
-export const getRandomElement = <T>(arr: T[]): T => {
-	return arr[Math.floor(Math.random() * arr.length)]
-}
-
 export function extractBetweenTags(input: string, tagName: string): string {
 	const openingTag = `<${tagName}>`
 	const closingTag = `</${tagName}>`
@@ -515,37 +417,6 @@ export const extractScenesFromBeatsheet = (beatsheet: string) => {
 		scenes.push({ title, content })
 	}
 	return scenes
-}
-
-export function mergeStrings(s1: string, s2: string): string {
-	const s1Lines = s1.split('\n')
-	const s2Lines = s2.split('\n')
-
-	let mergeIndex = s1Lines.length - 1
-	while (mergeIndex >= 0 && !s1Lines[mergeIndex].trim()) {
-		mergeIndex--
-	}
-
-	const merged = [
-		...s1Lines.slice(0, mergeIndex + 1),
-		...s2Lines.slice(mergeIndex + 1),
-	]
-
-	return merged.join('\n')
-}
-
-export function sanitizeJsonString(badJson: string) {
-	return (
-		badJson
-			// Escape backslashes
-			.replace(/\\/g, '\\\\')
-			// Escape double quotes
-			.replace(/(?<!\\)"/g, '\\"')
-			// Handle newlines
-			.replace(/\n/g, '\\n')
-			// Handle tabs
-			.replace(/\t/g, '\\t')
-	)
 }
 
 export function addSFX(
@@ -630,25 +501,6 @@ export function parseOptimistically<T>(input: string) {
 		} catch (e) {
 			console.log(e)
 			return null
-		}
-	}
-}
-
-export function findKeyNode(ogVal: Value, key: string) {
-	const val = structuredClone(ogVal)
-	const traverse = (node: TDescendant) => {
-		const keys = Object.keys(node)
-		if (keys.includes(key)) {
-			return node
-		}
-		if ('children' in node) {
-			void (node.children as TDescendant[]).forEach(traverse)
-		}
-	}
-	for (const child of val) {
-		const found = traverse(child)
-		if (found) {
-			return found
 		}
 	}
 }

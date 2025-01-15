@@ -53,14 +53,6 @@ export interface AIChatBotParams {
 	episodesCount: number
 }
 
-export interface AIChatBotApiResponse {
-	data: {
-		action: string
-		response: string
-	}
-	message: string
-}
-
 export enum EMessenger {
 	ASSISTANT = 'assistant',
 	USER = 'user',
