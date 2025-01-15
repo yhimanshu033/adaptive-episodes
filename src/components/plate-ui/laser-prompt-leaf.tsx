@@ -1,7 +1,7 @@
 import React from 'react'
 import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 export default function LaserPromptLeaf({
 	className,

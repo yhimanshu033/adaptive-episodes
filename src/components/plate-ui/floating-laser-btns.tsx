@@ -9,7 +9,7 @@ import type { Range } from 'slate'
 
 import { Button } from '@/components/ui/button'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
-import { mergeBlocks } from '@/lib/utils'
+import { mergeBlocks } from '@/lib/utils/plate'
 
 export default function FloatingLaserBtns({
 	setShowLaser,

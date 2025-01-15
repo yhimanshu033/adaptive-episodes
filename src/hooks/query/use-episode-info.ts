@@ -9,6 +9,7 @@ import useEpisodeId from '@/providers/episode-id-provider'
 export const useEpisodeInfo = () => {
 	const episodeId = useEpisodeId()
 	const { id }: { id: string } = useParams()
+
 	const query = useQuery({
 		queryKey: ['info', episodeId, id],
 		queryFn: () => getEpisodeDetails(parseInt(id), episodeId),

@@ -13,7 +13,7 @@ import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { CommentItem } from '@/components/plate-ui/comment-item'
 import { CommentReplyItems } from '@/components/plate-ui/comment-reply-items'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 import { TCustomComment } from '@/types/editor-types'
 

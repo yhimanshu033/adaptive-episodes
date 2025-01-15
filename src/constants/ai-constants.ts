@@ -62,7 +62,7 @@ export enum ESocketStatus {
 	STARTED = 'started',
 }
 
-export const quickPrompts = [
+export const QUICK_PROMPTS = [
 	'Analysiere die dramaturgischen Beats dieser Episode und zeige auf, wo die dramatische Spannung nachlässt oder gesteigert werden sollte.',
 	'Überprüfe die Dialogszenen und mache Vorschläge zu “character-revealing inner thoughts, more theatrical exchanges, and heightened emotional stakes"',
 	'Identifiziere Momente, in denen Konflikte zwischen den Charakteren intensiviert werden könnten, und schlage Möglichkeiten vor, ihre Dynamik dramatischer zu gestalten, ohne die Kernhandlung zu ändern.',

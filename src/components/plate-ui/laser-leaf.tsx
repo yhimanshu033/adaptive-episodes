@@ -9,7 +9,8 @@ import {
 } from '@udecode/plate-common/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
-import { TLaserLeafChildren } from '@/lib/plate/types/block'
+
+import { TLaserLeafChildren } from '@/types/plate-types'
 
 function getLaserKey(elem: TText) {
 	return Object.keys(elem).find((key) => key.startsWith('laser-id-'))

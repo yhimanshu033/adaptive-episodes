@@ -9,7 +9,7 @@ import {
 } from '@udecode/plate-common/react'
 
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 

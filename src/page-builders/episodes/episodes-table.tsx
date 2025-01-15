@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useMemo, useState } from 'react'
-import { episodeLimit } from '@/constants/episodes-constants'
+import { EPISODE_LIMIT } from '@/constants/episodes-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import { usePageState } from '@/hooks/use-page-state'
@@ -24,7 +24,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 import ActionAlert from './action-alert'
 import SkeletonBuilder from './episode-skeleton'
@@ -140,7 +140,7 @@ const EpisodesTable = () => {
 				</Table>
 			</ScrollArea>
 			<EpisodesPagination
-				totalPages={data ? Math.ceil(data.count / episodeLimit) : 0}
+				totalPages={data ? Math.ceil(data.count / EPISODE_LIMIT) : 0}
 			/>
 			<ActionAlert />
 			<InventForm />

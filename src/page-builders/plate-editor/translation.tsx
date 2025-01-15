@@ -8,7 +8,7 @@ import {
 } from '@udecode/plate-common/react'
 
 import { Editor } from '@/components/plate-ui/editor'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 

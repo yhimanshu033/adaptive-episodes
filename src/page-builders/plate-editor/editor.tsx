@@ -100,7 +100,7 @@ import { useEpisodeContext } from '@/providers/episode-id-provider'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
-import { getRecord, jsonify } from '@/lib/utils'
+import { getRecord, jsonify } from '@/lib/utils/plate'
 
 import SaveEpisode from './save-episode'
 import Sidebar from './sidebar'

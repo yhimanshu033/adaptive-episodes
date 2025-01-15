@@ -11,7 +11,7 @@ import { TSuggestionText } from '@udecode/plate-suggestion'
 import { Check, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 

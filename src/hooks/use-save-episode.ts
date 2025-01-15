@@ -7,7 +7,7 @@ import useEpisodeContent from '@/hooks/query/use-episode-content'
 import usePlateStore from '@/store/plate-store'
 import { useEditorReadOnly, useEditorState } from '@udecode/plate-common/react'
 
-import { clearLasers } from '@/lib/utils'
+import { clearLasers } from '@/lib/utils/plate'
 
 import { BASE_STATUS } from '@/types/common'
 

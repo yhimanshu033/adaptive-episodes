@@ -12,7 +12,7 @@ import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 import { Icons } from '@/components/icons'
 import { SuggestionAvatar } from '@/components/plate-ui/suggestion-avatar'
 import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 const SuggestionBlock = ({
 	description,

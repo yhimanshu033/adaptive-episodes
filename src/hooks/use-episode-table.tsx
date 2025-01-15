@@ -1,5 +1,5 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { EpisodeActions, episodeLimit } from '@/constants/episodes-constants'
+import { EPISODE_LIMIT, EpisodeActions } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import {
 	setAlertInfo,
@@ -140,7 +140,7 @@ const useEpisodeTable = () => {
 		episodeInventMutation.mutate({
 			chapter_title: data.title,
 			seq_number:
-				(currentInventIndex || 0) + 2 + (currentPage - 1) * episodeLimit,
+				(currentInventIndex || 0) + 2 + (currentPage - 1) * EPISODE_LIMIT,
 		})
 		setIsInventOpen(false)
 	}

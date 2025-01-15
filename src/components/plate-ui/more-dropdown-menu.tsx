@@ -13,7 +13,8 @@ import {
 	useOpenState,
 } from '@/components/plate-ui/dropdown-menu'
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
-import { getText, prettifyNumber } from '@/lib/utils'
+import { prettifyNumber } from '@/lib/utils/helpers'
+import { getText } from '@/lib/utils/plate'
 
 import { ESidebar } from '@/types/plate-types'
 

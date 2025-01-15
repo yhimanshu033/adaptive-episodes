@@ -13,7 +13,7 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
-import { getText } from '@/lib/utils'
+import { getText } from '@/lib/utils/plate'
 
 import { RephraseSelectionProps } from '@/types/editor-types'
 

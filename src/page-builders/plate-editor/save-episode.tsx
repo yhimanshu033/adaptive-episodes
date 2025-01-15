@@ -3,7 +3,7 @@ import useSaveEpisode from '@/hooks/use-save-episode'
 import { LoaderCircle, Save } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 const SaveEpisode = () => {
 	const { handleSave, isSaved, readOnly, isPending } = useSaveEpisode()

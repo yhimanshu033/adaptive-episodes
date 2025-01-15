@@ -12,6 +12,7 @@ import {
 } from '@/constants/story-explorer-constants'
 import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import Content from '@/page-builders/plate-editor/sidebar-sections/story-explorer/content'
 import useAIStore from '@/store/ai-store'
 import { useEditorState } from '@udecode/plate-common/react'
 import { Send } from 'lucide-react'
@@ -23,13 +24,11 @@ import useEpisodeId from '@/providers/episode-id-provider'
 import {
 	extractFromMetadata,
 	extractScenesFromBeatsheet,
-	getText,
-	parseOptimistically,
-} from '@/lib/utils'
+} from '@/lib/utils/ai-chatbot'
+import { parseOptimistically } from '@/lib/utils/helpers'
+import { getText } from '@/lib/utils/plate'
 
 import { ExplorerActionType, PlotExplorerApiResponse } from '@/types/ai-types'
-
-import Content from './content'
 
 const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const episodeId = useEpisodeId()

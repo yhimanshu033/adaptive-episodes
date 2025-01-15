@@ -1,14 +1,5 @@
 import { createZustandStore } from '@udecode/plate-common'
 
-/**
- * Creates an origin store using `zustood`.
- *
- * The purpose of this is to keep track of Lasers and their progress but only
- * storing the key to the lookup in the Element itself. We do it this way
- * because we don't want to modify the Editor value during the Laser or it
- * becomes part of the edit history.
- */
-
 export type Laser = {
 	clientX?: number
 	clientY?: number
@@ -38,7 +29,7 @@ export const createLaserStore = (
 				set.active(id)
 			},
 		}))
-		.extendSelectors((state, get) => ({
+		.extendSelectors((_, get) => ({
 			laser: (id: string): Laser | undefined => {
 				const lasers = get.lasers()
 

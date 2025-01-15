@@ -1,10 +1,9 @@
 'use client'
 
+import useSocket from '@/hooks/use-socket'
 import { useMutation } from '@tanstack/react-query'
 
 import { LaserToolsApiResponse, LaserToolsParams } from '@/types/ai-types'
-
-import useSocket from '../use-socket'
 
 const useLaserToolsHook = () => {
 	const { startTask, getResponse } = useSocket()

@@ -7,7 +7,7 @@ import { useEditorState } from '@udecode/plate-common/react'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import { fetchAPI } from '@/lib/fetch-api'
-import { getText } from '@/lib/utils'
+import { getText } from '@/lib/utils/plate'
 
 import { TLocalizeResponse, TLocalizeUpdateRequest } from '@/types/ai-types'
 import { TNoParams } from '@/types/common'
@@ -16,7 +16,9 @@ const useLocalizeHook = () => {
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
 	const { children } = useEditorState()
+
 	const { startTask, getResponse } = useSocket()
+
 	const onLocalize = async () => {
 		const taskId = await startTask<{ project_id: string; text: string }>({
 			method: 'POST',
@@ -40,6 +42,7 @@ export default useLocalizeHook
 
 export const useLocalizeMutation = () => {
 	const { id } = useParams()
+
 	const mutation = useMutation({
 		mutationKey: ['localize-update'],
 		mutationFn: async (params: TLocalizeUpdateRequest) => {
@@ -51,11 +54,13 @@ export const useLocalizeMutation = () => {
 			return res
 		},
 	})
+
 	return mutation
 }
 
 export const useLocalizeDownloadMutation = () => {
 	const { id } = useParams()
+
 	const mutation = useMutation({
 		mutationKey: ['localize-sheet-download'],
 		mutationFn: async () => {
@@ -66,5 +71,6 @@ export const useLocalizeDownloadMutation = () => {
 			return res.data
 		},
 	})
+
 	return mutation
 }

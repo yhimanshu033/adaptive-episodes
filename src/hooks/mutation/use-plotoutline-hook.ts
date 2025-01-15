@@ -1,12 +1,11 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { PlotExplorerParams } from '@/types/ai-types'
-
-import useSocketStreaming from '../use-socket-streaming'
 
 const usePlotOutlineHook = ({ start, end }: { end: number; start: number }) => {
 	const { startTask } = useSocketStreaming()
@@ -25,10 +24,13 @@ const usePlotOutlineHook = ({ start, end }: { end: number; start: number }) => {
 		})
 		return taskId
 	}
+
 	const plotlineMutation = useMutation({
 		mutationKey: ['plotoutline'],
 		mutationFn: getPlotOutline,
 	})
+
 	return { plotlineMutation, metadata: metadata?.data, isMetadataLoading }
 }
+
 export default usePlotOutlineHook

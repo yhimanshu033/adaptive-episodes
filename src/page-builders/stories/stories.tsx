@@ -10,7 +10,7 @@ import { Loader } from '@/components/loader'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatDate } from '@/lib/format-date'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 import ImportStoryCard from './import-story-card'
 

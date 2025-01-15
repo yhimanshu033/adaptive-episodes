@@ -3,7 +3,7 @@ import CommentSidebar from '@/page-builders/plate-editor/sidebar-sections/commen
 import usePlateStore from '@/store/plate-store'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 

@@ -1,14 +1,14 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useMutation } from '@tanstack/react-query'
 
-import { extractFromMetadata, getMetaDataRange } from '@/lib/utils'
+import { extractFromMetadata } from '@/lib/utils/ai-chatbot'
+import { getMetaDataRange } from '@/lib/utils/helpers'
 
 import { AIChatBotParams } from '@/types/ai-types'
-
-import useSocketStreaming from '../use-socket-streaming'
 
 const useAIChatbotHook = () => {
 	const { id } = useParams()

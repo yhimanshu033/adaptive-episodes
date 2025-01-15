@@ -1,14 +1,13 @@
 'use client'
 
+import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
 import { useQuery } from '@tanstack/react-query'
 
 import useEpisodeId, {
 	useEpisodeContext,
 } from '@/providers/episode-id-provider'
-import { getSelectedEpisode } from '@/lib/utils'
-
-import useEpisodeInfo from './use-episode-info'
+import { getSelectedEpisode } from '@/lib/utils/helpers'
 
 /**
  * Retrieves episode content.
@@ -25,11 +24,13 @@ export const useEpisodeContent = () => {
 	const { episode, latestStatus } = data
 		? getSelectedEpisode(data, selectedStatus)
 		: { episode: undefined, latestStatus: undefined }
+
 	const queryKey = [
 		episode ? episode.id : episodeId,
 		'content',
 		latestStatus || 'BASE',
 	]
+
 	const query = useQuery({
 		queryKey,
 		queryFn: () => getEpisodeContent(episode?.id || episodeId),

@@ -56,7 +56,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Toggle } from '@/components/ui/toggle'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
-import { cn, replaceNthInsensitive } from '@/lib/utils'
+import { replaceNthInsensitive } from '@/lib/utils/ai-chatbot'
+import { cn } from '@/lib/utils/helpers'
 
 import {
 	TLocalizeCharacterArrayItem,

@@ -19,13 +19,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
-import { cn, extractBetweenTags } from '@/lib/utils'
+import { cn, extract } from '@/lib/utils/helpers'
 
 import { EAction, EMessenger, TMessage } from '@/types/ai-types'
-
-function extract(str: string) {
-	return extractBetweenTags(extractBetweenTags(str, 'answer'), 'text')
-}
 
 function AILogo({ message }: { message: TMessage }) {
 	return (
