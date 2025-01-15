@@ -713,3 +713,16 @@ export function trim(str: string, length: number = 100) {
 	}
 	return str.slice(0, length).trim() + '...'
 }
+
+export const getMetaDataRange = (
+	currEpisode: number,
+	totalEpisodes: number
+) => {
+	const range = 10
+	const end = Math.min(Math.max(range, currEpisode + range / 2), totalEpisodes)
+	const start = Math.min(
+		Math.max(1, currEpisode - range / 2 + 1),
+		Math.max(totalEpisodes - range + 1, 1)
+	)
+	return [start - 1, end]
+}

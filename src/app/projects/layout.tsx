@@ -2,14 +2,19 @@
 
 import React from 'react'
 import { useGlobalStore } from '@/store/global-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import Footer from '@/components/footer'
 import Header from '@/components/header'
 import { FullScreenLoader } from '@/components/loader'
 
-const ProjectsLayout = ({ children }: { children: React.ReactNode }) => {
+export default function ProjectsLayout({
+	children,
+}: {
+	children: React.ReactNode
+}) {
 	const isFullScreenLoading = useGlobalStore(
-		(state) => state.isFullScreenLoading
+		useShallow((state) => state.isFullScreenLoading)
 	)
 	return (
 		<div className="flex min-h-screen flex-col">
@@ -20,5 +25,3 @@ const ProjectsLayout = ({ children }: { children: React.ReactNode }) => {
 		</div>
 	)
 }
-
-export default ProjectsLayout

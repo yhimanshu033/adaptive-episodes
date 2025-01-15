@@ -4,8 +4,7 @@ import { useParams } from 'next/navigation'
 import { getMetadata } from '@/server-action/metadata-action'
 import { useMutation } from '@tanstack/react-query'
 
-import getMetaDataRange from '@/lib/get-metadta-range'
-import { extractFromMetadata } from '@/lib/utils'
+import { extractFromMetadata, getMetaDataRange } from '@/lib/utils'
 
 import { AIChatBotParams } from '@/types/ai-types'
 
