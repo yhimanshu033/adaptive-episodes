@@ -1,146 +1,28 @@
-/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-misused-promises */
-
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import {
 	categories,
 	categoryNames,
 	currentlyDisabled,
-	ExplorerModeId,
-	PlotAction,
 } from '@/constants/story-explorer-constants'
-import usePlotOutlineHook from '@/hooks/mutation/use-plotoutline-hook'
-import useSocketStreaming from '@/hooks/use-socket-streaming'
+import useStoryExplorer from '@/hooks/use-story-explorer'
 import Content from '@/page-builders/plate-editor/sidebar-sections/story-explorer/content'
-import useAIStore from '@/store/ai-store'
-import { useEditorState } from '@udecode/plate-common/react'
 import { Send } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import useEpisodeId from '@/providers/episode-id-provider'
-import {
-	extractFromMetadata,
-	extractScenesFromBeatsheet,
-} from '@/lib/utils/ai-chatbot'
-import { parseOptimistically } from '@/lib/utils/helpers'
-import { getText } from '@/lib/utils/plate'
-
-import { ExplorerActionType, PlotExplorerApiResponse } from '@/types/ai-types'
 
 const Explorer = ({ start, end }: { end: number; start: number }) => {
-	const episodeId = useEpisodeId()
-	const { store, setActiveExplorerMode, setActiveExplorerActions } =
-		useAIStore()
-	const activeExplorerMode = store((state) => state.activeExplorerMode)
-	const activeExplorerActions = store((state) => state.activeExplorerActions)
-	const currentAction = activeExplorerActions[activeExplorerMode]
-	const [content, setContent] = useState<
-		PlotExplorerApiResponse['data'] | undefined
-	>([])
-	const [promptInput, setPromptInput] = useState<string>('')
-	const [taskId, setTaskId] = useState<string>('')
-	const [isLoading, setLoading] = useState<boolean>(false)
-
-	const { children } = useEditorState()
 	const {
-		plotlineMutation: { mutateAsync, reset },
-		metadata,
+		activeExplorerMode,
+		handleTabChange,
+		currentAction,
+		content,
+		promptInput,
+		setPromptInput,
+		handleRequest,
 		isMetadataLoading,
-	} = usePlotOutlineHook({ start, end })
-
-	const { responses, taskEnded } = useSocketStreaming()
-
-	const handleTabChange = (mode: ExplorerModeId) => {
-		if (mode === activeExplorerMode) return
-		reset()
-		setActiveExplorerMode(mode)
-	}
-
-	const handleRequest = async (
-		action: ExplorerActionType | string | null,
-		instruction: string = ''
-	) => {
-		if (!action) return
-		setLoading(true)
-		setActiveExplorerActions(activeExplorerMode, action)
-		const metadataEntries = Object.values(metadata?.data || {})
-
-		setContent([])
-		if (action === PlotAction.Summary) {
-			setContent(
-				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => ({
-					title: `${index + start}. ${data.chapter_title || ''}`,
-					preContent: `Synopsis:\n${data?.loglines?.replace(/\d+:/, '') || 'No data found 😢'}`,
-					content: [
-						{
-							title: 'Summary',
-							content: data.summary,
-						},
-					],
-				}))
-			)
-			setTaskId('')
-		} else if (action === PlotAction.Scenes) {
-			setContent(
-				metadataEntries.slice(start > 1 ? 1 : 0).map((data, index) => {
-					return {
-						title: `${index + start}. ${data.chapter_title || ''}`,
-						content: extractScenesFromBeatsheet(data.beatsheet),
-					}
-				})
-			)
-			setTaskId('')
-		} else {
-			const { beatsheets_array: beatsheet_array, ...extractedData } =
-				extractFromMetadata(metadata, start - 1)
-			const result = await mutateAsync({
-				action,
-				ep_from: start,
-				ep_to: end,
-				mode: activeExplorerMode,
-				ep_number: String(episodeId),
-				beatsheet_array,
-				...extractedData,
-				current_ep: getText(children) || ' ',
-				instruction,
-			})
-			if (result) {
-				setTaskId(result)
-			}
-		}
-		setLoading(false)
-	}
-
-	useEffect(() => {
-		if (!taskId || isLoading) return
-		if (responses[taskId]) {
-			const jsonStr = responses[taskId].join('')
-			const arrayStartIndex = jsonStr.indexOf('[')
-			const cleanedJsonStr =
-				arrayStartIndex !== -1 ? jsonStr.substring(arrayStartIndex) : '[]'
-			try {
-				const data =
-					parseOptimistically<PlotExplorerApiResponse['data']>(cleanedJsonStr)
-				if (!data) return
-				setContent(data)
-			} catch (error) {
-				console.log(error)
-			}
-		}
-		if (taskEnded[taskId]) {
-			setTaskId('')
-			return
-		}
-	}, [taskId, responses[taskId], taskEnded[taskId], isLoading])
-
-	useEffect(() => {
-		if (!isMetadataLoading && currentAction && start && end) {
-			void handleRequest(currentAction)
-		}
-	}, [start, end, currentAction, activeExplorerMode, isMetadataLoading])
+	} = useStoryExplorer({ start, end })
 
 	return (
 		<div>
@@ -175,7 +57,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										key={idx}
 										variant="outline"
 										className="w-48"
-										onClick={() => handleRequest(id)}
+										onClick={() => void handleRequest(id)}
 										disabled={id === currentlyDisabled}
 									>
 										{categoryNames[id]}
@@ -199,7 +81,9 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										>
 											<Send
 												className="size-4"
-												onClick={() => handleRequest(promptInput, promptInput)}
+												onClick={() =>
+													void handleRequest(promptInput, promptInput)
+												}
 											/>
 										</Button>
 									</div>

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { setIsInventOpen, useEpisodeStore } from '@/store/episode-store'
@@ -45,7 +44,9 @@ const InventForm = () => {
 
 				<Form {...form}>
 					<form
-						onSubmit={form.handleSubmit((data) => handleAddEpisode(data))}
+						onSubmit={(e) =>
+							void form.handleSubmit((data) => handleAddEpisode(data))(e)
+						}
 						className="space-y-4"
 					>
 						<FormField

@@ -11,7 +11,7 @@ const Hero = () => {
 	return (
 		<section className="container flex flex-1 animate-fade-in-up flex-col items-center justify-center gap-5">
 			<Image
-				src="/CoPilot-logo.gif"
+				src="/assets/copilot-logo.gif"
 				alt="logo_animation"
 				width={300}
 				height={300}

@@ -120,7 +120,7 @@ export default function WritersRoom() {
 									</CardHeader>
 									<CardContent className="p-4 pt-0">
 										<ImageModal
-											src="/map_plot.webp"
+											src="/assets/map_plot.webp"
 											className="aspect-square w-full max-w-[200px] rounded border bg-white"
 											alt="map plot image"
 										/>
