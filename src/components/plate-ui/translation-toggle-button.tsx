@@ -3,9 +3,9 @@ import useDisableTools from '@/hooks/use-disable-tools'
 import usePlateStore from '@/store/plate-store'
 import { Book } from 'lucide-react'
 
-import { ESidebar } from '@/types/plate-types'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
-import { ToolbarButton } from './toolbar'
+import { ESidebar } from '@/types/plate-types'
 
 export default function TranslationToggleButton() {
 	const { store, setSidebar } = usePlateStore()

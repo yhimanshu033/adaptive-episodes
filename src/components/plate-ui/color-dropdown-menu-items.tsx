@@ -8,11 +8,14 @@ import { cn } from '@udecode/cn'
 import { Ban } from 'lucide-react'
 
 import { Icons } from '@/components/icons'
-
-import { buttonVariants } from './button'
-import type { TColor } from './color-dropdown-menu'
-import { DropdownMenuItem } from './dropdown-menu'
-import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip'
+import { buttonVariants } from '@/components/plate-ui/button'
+import type { TColor } from '@/components/plate-ui/color-dropdown-menu'
+import { DropdownMenuItem } from '@/components/plate-ui/dropdown-menu'
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from '@/components/plate-ui/tooltip'
 
 type ColorDropdownMenuItemProps = {
 	isBrightColor: boolean

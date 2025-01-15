@@ -11,12 +11,11 @@ import { useEditorState } from '@udecode/plate-common/react'
 import { X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
+import { Button } from '@/components/ui/button'
+import Spinner from '@/components/ui/spinner'
 import { getText } from '@/lib/utils'
 
 import { RephraseSelectionProps } from '@/types/editor-types'
-
-import { Button } from '../ui/button'
-import Spinner from '../ui/spinner'
 
 export default function LaserRephrase({
 	getSelectedText,

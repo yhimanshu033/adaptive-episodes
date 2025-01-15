@@ -19,12 +19,15 @@ import {
 import { useReadOnly, useSelected } from 'slate-react'
 
 import { Icons } from '@/components/icons'
+import { Button, buttonVariants } from '@/components/plate-ui/button'
+import { CaptionButton } from '@/components/plate-ui/caption'
+import { inputVariants } from '@/components/plate-ui/input'
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/plate-ui/popover'
 import { Separator } from '@/components/ui/separator'
-
-import { Button, buttonVariants } from './button'
-import { CaptionButton } from './caption'
-import { inputVariants } from './input'
-import { Popover, PopoverContent, PopoverTrigger } from './popover'
 
 export interface MediaPopoverProps {
 	children: React.ReactNode

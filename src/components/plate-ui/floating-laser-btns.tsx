@@ -7,10 +7,9 @@ import { ArrowLeft } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import type { Range } from 'slate'
 
+import { Button } from '@/components/ui/button'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { mergeBlocks } from '@/lib/utils'
-
-import { Button } from '../ui/button'
 
 export default function FloatingLaserBtns({
 	setShowLaser,

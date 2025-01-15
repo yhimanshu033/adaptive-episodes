@@ -6,7 +6,7 @@ import {
 	useIndentTodoListElementState,
 } from '@udecode/plate-indent-list/react'
 
-import { Checkbox } from './checkbox'
+import { Checkbox } from '@/components/plate-ui/checkbox'
 
 export const TodoMarker = ({
 	element,

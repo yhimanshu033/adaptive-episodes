@@ -12,14 +12,13 @@ import {
 } from '@udecode/plate-comments/react'
 
 import { Icons } from '@/components/icons'
-import { Button } from '@/components/ui/button'
-
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from './dropdown-menu'
+} from '@/components/plate-ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 
 export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 	const editButtonState = useCommentEditButtonState()

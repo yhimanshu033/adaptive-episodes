@@ -10,11 +10,10 @@ import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
 import { TSuggestionText } from '@udecode/plate-suggestion'
 import { Check, X } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 import { ESidebar } from '@/types/plate-types'
-
-import { Button } from '../ui/button'
 
 export default function SuggestionLeaf({
 	className,

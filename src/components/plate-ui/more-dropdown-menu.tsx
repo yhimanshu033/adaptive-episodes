@@ -5,18 +5,17 @@ import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { useEditorState } from '@udecode/plate-common/react'
 import { Globe, Search, WholeWordIcon } from 'lucide-react'
 
-import { getText, prettifyNumber } from '@/lib/utils'
-
-import { ESidebar } from '@/types/plate-types'
-
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 	useOpenState,
-} from './dropdown-menu'
-import { ToolbarButton } from './toolbar'
+} from '@/components/plate-ui/dropdown-menu'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
+import { getText, prettifyNumber } from '@/lib/utils'
+
+import { ESidebar } from '@/types/plate-types'
 
 export function MoreDropdownMenu(props: DropdownMenuProps) {
 	const { setSidebar } = usePlateStore()

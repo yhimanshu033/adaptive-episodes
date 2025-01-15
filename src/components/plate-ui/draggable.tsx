@@ -20,13 +20,12 @@ import { BlockSelectionPlugin } from '@udecode/plate-selection/react'
 import type { DropTargetMonitor } from 'react-dnd'
 
 import { Icons } from '@/components/icons'
-
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipPortal,
 	TooltipTrigger,
-} from './tooltip'
+} from '@/components/plate-ui/tooltip'
 
 export interface DraggableProps
 	extends PlateElementProps,

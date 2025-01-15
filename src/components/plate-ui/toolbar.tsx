@@ -6,9 +6,8 @@ import { cn, withCn, withRef, withVariants } from '@udecode/cn'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 import { Icons } from '@/components/icons'
+import { withTooltip } from '@/components/plate-ui/tooltip'
 import { Separator } from '@/components/ui/separator'
-
-import { withTooltip } from './tooltip'
 
 export const Toolbar = withCn(
 	ToolbarPrimitive.Root,

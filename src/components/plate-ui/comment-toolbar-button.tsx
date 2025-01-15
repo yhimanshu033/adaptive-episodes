@@ -4,10 +4,9 @@ import React from 'react'
 import usePlateStore from '@/store/plate-store'
 
 import { Icons } from '@/components/icons'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
 import { ESidebar } from '@/types/plate-types'
-
-import { ToolbarButton } from './toolbar'
 
 export function CommentToolbarButton() {
 	const { store, setSidebar } = usePlateStore()

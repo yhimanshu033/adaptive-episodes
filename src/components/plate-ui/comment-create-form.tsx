@@ -9,9 +9,9 @@ import {
 } from '@udecode/plate-comments/react'
 import { useEditorPlugin } from '@udecode/plate-common/react'
 
-import { buttonVariants } from './button'
-import { CommentAvatar } from './comment-avatar'
-import { inputVariants } from './input'
+import { buttonVariants } from '@/components/plate-ui/button'
+import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
+import { inputVariants } from '@/components/plate-ui/input'
 
 export function CommentCreateForm() {
 	const { useOption } = useEditorPlugin(CommentsPlugin)
