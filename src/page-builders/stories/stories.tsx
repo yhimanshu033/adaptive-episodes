@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import { EImportStatus } from '@/constants/story-constants'
 import { useStoriesData } from '@/hooks/query/use-story-data'
+import ImportStoryCard from '@/page-builders/stories/import-story-card'
 import { BookOpen, Clock, User } from 'lucide-react'
 
 import { Loader } from '@/components/loader'
@@ -11,8 +12,6 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatDate } from '@/lib/format-date'
 import { cn } from '@/lib/utils/helpers'
-
-import ImportStoryCard from './import-story-card'
 
 const Stories = () => {
 	const { data: stories, isLoading } = useStoriesData()

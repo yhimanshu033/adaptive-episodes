@@ -1,4 +1,5 @@
 import React from 'react'
+import { ImportStory } from '@/page-builders/stories/import-story'
 import useStoryStore, { setFormOpen } from '@/store/story-store'
 import { Plus } from 'lucide-react'
 
@@ -12,8 +13,6 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
-
-import { ImportStory } from './import-story'
 
 const ImportStoryCard = () => {
 	const isFormOpen = useStoryStore((state) => state.isFormOpen)

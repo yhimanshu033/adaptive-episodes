@@ -3,6 +3,11 @@ import { EPISODE_LIMIT } from '@/constants/episodes-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import { usePageState } from '@/hooks/use-page-state'
+import ActionAlert from '@/page-builders/episodes/action-alert'
+import SkeletonBuilder from '@/page-builders/episodes/episode-skeleton'
+import Filters from '@/page-builders/episodes/filters'
+import InventForm from '@/page-builders/episodes/invent-form'
+import EpisodesPagination from '@/page-builders/episodes/pagination'
 import {
 	setInventIndex,
 	setIsInventOpen,
@@ -21,12 +26,6 @@ import {
 	TableRow,
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils/helpers'
-
-import ActionAlert from './action-alert'
-import SkeletonBuilder from './episode-skeleton'
-import Filters from './filters'
-import InventForm from './invent-form'
-import EpisodesPagination from './pagination'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)

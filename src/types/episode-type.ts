@@ -1,7 +1,7 @@
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
 
-import { BASE_STATUS, EStatus } from './common'
+import { BASE_STATUS, EStatus } from '@/types/common'
 
 export type EpisodeStoreState = {
 	alertInfo: {

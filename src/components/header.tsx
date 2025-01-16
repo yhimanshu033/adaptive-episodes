@@ -4,8 +4,8 @@ import React from 'react'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 
-import Logo from './logo'
-import { ThemeToggle } from './theme-toggle'
+import Logo from '@/components/logo'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const Header = () => {
 	const session = useSession()

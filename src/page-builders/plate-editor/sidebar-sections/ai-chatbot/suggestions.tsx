@@ -1,13 +1,12 @@
 import React from 'react'
 import { storyChatSuggestions } from '@/constants/editor-constants'
 import useAIChatbot from '@/hooks/use-ai-chatbot'
+import { PromptsPopover } from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/prompts-popover'
 
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 
 import { EChatMode } from '@/types/ai-types'
-
-import { PromptsPopover } from './prompts-popover'
 
 export default function Suggestions() {
 	const { disabled, isPending, handleSuggestion, changesPending } =

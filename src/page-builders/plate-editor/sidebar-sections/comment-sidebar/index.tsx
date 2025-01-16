@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import useComments from '@/hooks/plate/use-comments'
+import CommentComponent from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/comment'
 import Suggestions from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
 import usePlateStore from '@/store/plate-store'
 import { BaseCommentsPlugin } from '@udecode/plate-comments'
@@ -10,8 +11,6 @@ import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { Button } from '@/components/ui/button'
 
 import { TCustomComment } from '@/types/editor-types'
-
-import CommentComponent from './comment'
 
 export default function CommentSidebar() {
 	const editor = useEditorRef()

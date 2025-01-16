@@ -2,10 +2,9 @@
 
 import React, { useState } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import Explorer from '@/page-builders/plate-editor/sidebar-sections/story-explorer/explorer'
 
 import { Input } from '@/components/ui/input'
-
-import Explorer from './explorer'
 
 const StoryExplorer = () => {
 	const { data: episodeData } = useEpisodeContent()

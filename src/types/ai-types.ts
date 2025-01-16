@@ -7,7 +7,7 @@ import {
 } from '@/constants/story-explorer-constants'
 import { Value } from '@udecode/plate-common'
 
-import { MinifiedValue } from './common'
+import { MinifiedValue } from '@/types/common'
 
 export interface LaserToolsParams {
 	action: string

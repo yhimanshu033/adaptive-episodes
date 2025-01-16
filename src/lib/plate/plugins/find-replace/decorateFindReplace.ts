@@ -2,7 +2,7 @@ import type { Decorate } from '@udecode/plate-common'
 import { isText } from '@udecode/plate-common'
 import type { Range } from 'slate'
 
-import { type FindReplaceConfig } from './FindReplacePlugin'
+import { type FindReplaceConfig } from '@/lib/plate/plugins/find-replace/FindReplacePlugin'
 
 export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 	entry: [node, path],

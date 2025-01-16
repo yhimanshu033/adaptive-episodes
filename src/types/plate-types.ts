@@ -1,6 +1,6 @@
 import { TDescendant, Value } from '@udecode/plate-common'
 
-import { Laser } from './ai-types'
+import { Laser } from '@/types/ai-types'
 
 export type Selection = {
 	anchor: {

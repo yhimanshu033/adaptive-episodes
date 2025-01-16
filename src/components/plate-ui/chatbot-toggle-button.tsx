@@ -5,9 +5,9 @@ import usePlateStore from '@/store/plate-store'
 import { Bot } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
-import { ESidebar } from '@/types/plate-types'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
-import { ToolbarButton } from './toolbar'
+import { ESidebar } from '@/types/plate-types'
 
 export function ChatbotToolbarButton() {
 	const { store, setSidebar } = usePlateStore()

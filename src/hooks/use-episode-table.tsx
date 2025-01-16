@@ -1,6 +1,7 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { EPISODE_LIMIT, EpisodeActions } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import { usePageState } from '@/hooks/use-page-state'
 import {
 	setAlertInfo,
 	setDeleteEpisodeId,
@@ -15,8 +16,6 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { EStatus } from '@/types/common'
 import { TEpisode, TEpisodeInventForm } from '@/types/episode-type'
-
-import { usePageState } from './use-page-state'
 
 const useEpisodeTable = () => {
 	const { id } = useParams()
