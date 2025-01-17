@@ -6,9 +6,11 @@ import {
 	PlateLeaf,
 	PlateLeafProps,
 	useEditorRef,
+	useEditorState,
 } from '@udecode/plate-common/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
+import { getCommentNode } from '@/lib/utils/plate'
 
 import { TLaserLeafChildren } from '@/types/plate-types'
 
@@ -40,6 +42,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		setResponseActive,
 		store: laserStore,
 	} = useLaserStore()
+	const { children: allChildren } = useEditorState()
 
 	useEffect(() => {
 		if (!key || !divRef?.current) return
@@ -80,10 +83,23 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 					.join('')
 					.split('\n')
 					.shift() || ''
+			if (!prevtext || !nexttext) {
+				const { afterText, beforeText } = getCommentNode(allChildren, key)
+				prevtext = prevtext.length
+					? prevtext
+					: beforeText.split(/\n+/).length > 2
+						? beforeText.split(/\n+/).slice(-3).join('\n')
+						: beforeText
+				nexttext = nexttext.length
+					? nexttext
+					: afterText.split(/\n+/).length > 2
+						? afterText.split(/\n+/).slice(0, 3).join('\n')
+						: afterText
+			}
 		}
 
 		return { text, prevtext, nexttext }
-	}, [key, leaf, children])
+	}, [key, leaf, children, allChildren])
 
 	const traverse = useCallback(
 		(node: TDescendant) => {
