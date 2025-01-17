@@ -1,4 +1,5 @@
 import React from 'react'
+import RenderContent from '@/page-builders/plate-editor/sidebar-sections/story-explorer/render-content'
 import useAIStore from '@/store/ai-store'
 import { ArrowLeft } from 'lucide-react'
 
@@ -10,75 +11,9 @@ import {
 	AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import { preProcessData } from '@/lib/utils/explorer'
 
-import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
-
-const preProcessData = (data: ExplorerType): ExplorerType[] => {
-	const splittingRegex = /^\s*(?=(?:Name:|Episode).*)/m
-	const regex = /^\s*(?:Name:(.*)|(Episode\s*.*))$/m
-	if (typeof data.content === 'string' && regex.test(data.content)) {
-		return data.content.split(splittingRegex).map((block) => {
-			const match = block.match(regex)
-			const title = match?.[1]?.trim() || match?.[2]?.trim() || data?.title
-			const content = block
-				.replace(/^\s*(?:Name:(.*)|(Episode\s*.*))$/m, '')
-				.trim()
-			return { title, content }
-		})
-	}
-	return [data]
-}
-
-const renderContent = (
-	content: string | ExplorerType[],
-	preContent?: string
-): JSX.Element => {
-	if (!content || content === '' || !content?.length)
-		return <p>Content not found 😢</p>
-	if (typeof content === 'string') {
-		return (
-			<div
-				dangerouslySetInnerHTML={{
-					__html: content.replace(/\n/g, '<br/>'),
-				}}
-			/>
-		)
-	}
-
-	if (Array.isArray(content)) {
-		return (
-			<>
-				{preContent && (
-					<div
-						dangerouslySetInnerHTML={{
-							__html: preContent.replace(/\n/, '<br/>'),
-						}}
-					/>
-				)}
-				<Accordion type="single" collapsible className="w-full">
-					{content.map((item, index) => {
-						const processedData = preProcessData(item)
-						return processedData.map(
-							({ title, content: subContent, preContent }, subIndex) => (
-								<AccordionItem
-									key={`${title}${index}-${subIndex}`}
-									value={`${title}${index}-${subIndex}`}
-								>
-									<AccordionTrigger>{title}</AccordionTrigger>
-									<AccordionContent>
-										{renderContent(subContent, preContent)}
-									</AccordionContent>
-								</AccordionItem>
-							)
-						)
-					})}
-				</Accordion>
-			</>
-		)
-	}
-
-	return <div>Invalid content format</div>
-}
+import { PlotExplorerApiResponse } from '@/types/ai-types'
 
 const Content = ({
 	header,
@@ -117,7 +52,7 @@ const Content = ({
 								>
 									<AccordionTrigger>{title}</AccordionTrigger>
 									<AccordionContent>
-										{renderContent(content, preContent)}
+										<RenderContent content={content} preContent={preContent} />
 									</AccordionContent>
 								</AccordionItem>
 							)

@@ -1,7 +1,7 @@
 import { createTPlatePlugin } from '@udecode/plate-common/react'
 import { PluginConfig } from '@udecode/plate-core'
 
-import { createLaserStore } from './store'
+import { createLaserStore } from '@/lib/plate/plugins/laser-plugin/store'
 
 export type LaserPluginT = PluginConfig<
 	'laser',

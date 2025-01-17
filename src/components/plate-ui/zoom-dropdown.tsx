@@ -12,8 +12,8 @@ import {
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 	useOpenState,
-} from './dropdown-menu'
-import { ToolbarButton } from './toolbar'
+} from '@/components/plate-ui/dropdown-menu'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
 const items = [0.5, 0.75, 1, 1.25, 1.5, 2]
 

@@ -16,6 +16,6 @@ export enum EpisodeActions {
 	UPDATE = 'update',
 }
 
-export const episodeLimit = 10
+export const EPISODE_LIMIT = 10
 
 export const SIDEBAR_DISABLED = ['4008']

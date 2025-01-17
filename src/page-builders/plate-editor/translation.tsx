@@ -8,7 +8,9 @@ import {
 } from '@udecode/plate-common/react'
 
 import { Editor } from '@/components/plate-ui/editor'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
+
+import { ESidebar } from '@/types/plate-types'
 
 const Translation = ({ translatedContent }: { translatedContent: string }) => {
 	const editor = createPlateEditor({
@@ -27,7 +29,7 @@ const Translation = ({ translatedContent }: { translatedContent: string }) => {
 
 	const { store } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
-	const showTranslation = sidebar === 'translation'
+	const showTranslation = sidebar === ESidebar.TRANSLATION
 	if (sidebar && !showTranslation) return null
 	return (
 		<div

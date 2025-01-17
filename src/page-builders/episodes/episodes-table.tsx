@@ -1,12 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useMemo, useState } from 'react'
-import { episodeLimit } from '@/constants/episodes-constants'
+import { EPISODE_LIMIT } from '@/constants/episodes-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import { usePageState } from '@/hooks/use-page-state'
+import ActionAlert from '@/page-builders/episodes/action-alert'
+import SkeletonBuilder from '@/page-builders/episodes/episode-skeleton'
+import Filters from '@/page-builders/episodes/filters'
+import InventForm from '@/page-builders/episodes/invent-form'
+import EpisodesPagination from '@/page-builders/episodes/pagination'
 import {
 	setInventIndex,
 	setIsInventOpen,
@@ -24,13 +25,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
-
-import ActionAlert from './action-alert'
-import SkeletonBuilder from './episode-skeleton'
-import Filters from './filters'
-import InventForm from './invent-form'
-import EpisodesPagination from './pagination'
+import { cn } from '@/lib/utils/helpers'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
@@ -140,7 +135,7 @@ const EpisodesTable = () => {
 				</Table>
 			</ScrollArea>
 			<EpisodesPagination
-				totalPages={data ? Math.ceil(data.count / episodeLimit) : 0}
+				totalPages={data ? Math.ceil(data.count / EPISODE_LIMIT) : 0}
 			/>
 			<ActionAlert />
 			<InventForm />

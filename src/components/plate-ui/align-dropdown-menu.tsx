@@ -8,7 +8,6 @@ import {
 } from '@udecode/plate-alignment/react'
 
 import { Icons, iconVariants } from '@/components/icons'
-
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,8 +15,8 @@ import {
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 	useOpenState,
-} from './dropdown-menu'
-import { ToolbarButton } from './toolbar'
+} from '@/components/plate-ui/dropdown-menu'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
 const items = [
 	{

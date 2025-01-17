@@ -7,14 +7,17 @@ import {
 	useColorDropdownMenuState,
 } from '@udecode/plate-font/react'
 
-import { DEFAULT_COLORS, DEFAULT_CUSTOM_COLORS } from './color-constants'
-import { ColorPicker } from './color-picker'
+import {
+	DEFAULT_COLORS,
+	DEFAULT_CUSTOM_COLORS,
+} from '@/components/plate-ui/color-constants'
+import { ColorPicker } from '@/components/plate-ui/color-picker'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuTrigger,
-} from './dropdown-menu'
-import { ToolbarButton } from './toolbar'
+} from '@/components/plate-ui/dropdown-menu'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
 export type TColor = {
 	isBrightColor: boolean

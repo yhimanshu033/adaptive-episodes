@@ -7,7 +7,7 @@ import {
 } from '@/constants/story-explorer-constants'
 import { Value } from '@udecode/plate-common'
 
-import { MinifiedValue } from './common'
+import { MinifiedValue } from '@/types/common'
 
 export interface LaserToolsParams {
 	action: string
@@ -51,14 +51,6 @@ export interface AIChatBotParams {
 	}
 	episodeNumber: number
 	episodesCount: number
-}
-
-export interface AIChatBotApiResponse {
-	data: {
-		action: string
-		response: string
-	}
-	message: string
 }
 
 export enum EMessenger {

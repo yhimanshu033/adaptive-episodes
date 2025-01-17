@@ -1,3 +1,6 @@
+import { AI_USER_ID } from '@/constants/ai-constants'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useMutation } from '@tanstack/react-query'
 import {
 	CommentsPlugin,
@@ -9,12 +12,9 @@ import {
 	useEditorState,
 } from '@udecode/plate-common/react'
 
-import { getCommentNode, getText } from '@/lib/utils'
+import { getCommentNode, getText } from '@/lib/utils/plate'
 
 import { CommentExampleParams } from '@/types/ai-types'
-
-import useEpisodeContent from '../query/use-episode-content'
-import useSocketStreaming from '../use-socket-streaming'
 
 export default function useCommentExampleHook() {
 	const { comment } = useCommentItemContentState()
@@ -62,7 +62,7 @@ export default function useCommentExampleHook() {
 							],
 						},
 					],
-					userId: 'COPILOT-AI',
+					userId: AI_USER_ID,
 					createdAt: Date.now(),
 					parentId: comment.id,
 				})

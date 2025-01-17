@@ -4,7 +4,7 @@ import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { RefreshCw } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 const SyncMetaData = () => {
 	const { episodeId } = useParams()

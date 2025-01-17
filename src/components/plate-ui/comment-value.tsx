@@ -7,8 +7,8 @@ import {
 	CommentEditTextarea,
 } from '@udecode/plate-comments/react'
 
-import { buttonVariants } from './button'
-import { inputVariants } from './input'
+import { buttonVariants } from '@/components/plate-ui/button'
+import { inputVariants } from '@/components/plate-ui/input'
 
 export function CommentValue() {
 	return (

@@ -4,7 +4,11 @@ import React from 'react'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import { useEditorPlugin } from '@udecode/plate-common/react'
 
-import { Avatar, AvatarFallback, AvatarImage } from './avatar'
+import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from '@/components/plate-ui/avatar'
 
 export function CommentAvatar({ userId }: { userId: string | null }) {
 	const { useOption } = useEditorPlugin(CommentsPlugin)

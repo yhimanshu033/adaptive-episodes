@@ -10,9 +10,10 @@ import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
 import { TSuggestionText } from '@udecode/plate-suggestion'
 import { Check, X } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils/helpers'
 
-import { Button } from '../ui/button'
+import { ESidebar } from '@/types/plate-types'
 
 export default function SuggestionLeaf({
 	className,
@@ -44,7 +45,7 @@ export default function SuggestionLeaf({
 			)}
 			onClick={() => {
 				set('activeSuggestionId', leaf.suggestionId || '')
-				setSidebar('comments')
+				setSidebar(ESidebar.COMMENTS)
 			}}
 			nodeProps={{ ...nodeProps }}
 		>

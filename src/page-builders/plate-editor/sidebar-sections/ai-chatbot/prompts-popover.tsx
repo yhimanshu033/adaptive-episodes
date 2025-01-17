@@ -1,5 +1,5 @@
 import React from 'react'
-import { quickPrompts } from '@/constants/ai-constants'
+import { QUICK_PROMPTS } from '@/constants/ai-constants'
 import useAIChatbot from '@/hooks/use-ai-chatbot'
 
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover'
-import { trim } from '@/lib/utils'
+import { trim } from '@/lib/utils/helpers'
 
 import { EChatMode } from '@/types/ai-types'
 
@@ -19,7 +19,7 @@ export function PromptsPopover({ children }: { children: React.ReactNode }) {
 			<PopoverTrigger asChild>{children}</PopoverTrigger>
 			<PopoverContent className="w-[700px]">
 				<div className="flex flex-col gap-2">
-					{quickPrompts.map((suggestion, idx) => (
+					{QUICK_PROMPTS.map((suggestion, idx) => (
 						<Button
 							onClick={() =>
 								handleSuggestion({

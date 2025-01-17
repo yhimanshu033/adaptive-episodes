@@ -15,7 +15,7 @@ import {
 	CardTitle,
 } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { trim } from '@/lib/utils'
+import { trim } from '@/lib/utils/helpers'
 
 export function PromptAnalytics() {
 	return (

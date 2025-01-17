@@ -1,15 +1,11 @@
 import React from 'react'
 import StoryDashboard from '@/page-builders/stories'
 import { getStories } from '@/server-action/story-action'
-import {
-	dehydrate,
-	HydrationBoundary,
-	QueryClient,
-} from '@tanstack/react-query'
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 
-const Page = async () => {
-	const queryClient = new QueryClient()
+import { queryClient } from '@/lib/get-query-client'
 
+export default async function Page() {
 	await queryClient.prefetchQuery({
 		queryKey: ['stories'],
 		queryFn: getStories,
@@ -21,5 +17,3 @@ const Page = async () => {
 		</HydrationBoundary>
 	)
 }
-
-export default Page

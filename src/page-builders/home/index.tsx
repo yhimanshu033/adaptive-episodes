@@ -1,10 +1,9 @@
 import React from 'react'
+import Features from '@/page-builders/home/features'
+import Hero from '@/page-builders/home/hero'
 
 import Footer from '@/components/footer'
 import Header from '@/components/header'
-
-import Features from './features'
-import Hero from './hero'
 
 const Home = () => {
 	return (

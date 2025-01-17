@@ -1,8 +1,7 @@
 'use client'
 
 import React from 'react'
-
-import Stories from './stories'
+import Stories from '@/page-builders/stories/stories'
 
 const StoryDashboard = () => {
 	return (

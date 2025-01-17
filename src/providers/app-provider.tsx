@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { SocketProvider } from '@/hooks/use-socket'
 import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
 import { updateUserData } from '@/store/global-store'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
@@ -14,6 +14,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import { Toaster } from '@/components/ui/toaster'
+import { queryClient } from '@/lib/get-query-client'
 
 const AppProvider = ({
 	session,
@@ -22,16 +23,6 @@ const AppProvider = ({
 	children: React.ReactNode
 	session: Session | null
 }) => {
-	const queryClient = new QueryClient({
-		defaultOptions: {
-			queries: {
-				staleTime: Infinity,
-				refetchOnMount: false,
-				refetchOnWindowFocus: false,
-			},
-		},
-	})
-
 	useEffect(() => {
 		updateUserData(session)
 	}, [session])

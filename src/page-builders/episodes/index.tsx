@@ -6,12 +6,11 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import { useStoriesData } from '@/hooks/query/use-story-data'
+import AuthorTitle from '@/page-builders/episodes/author'
+import EpisodesTable from '@/page-builders/episodes/episodes-table'
 import { ArrowLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-
-import AuthorTitle from './author'
-import EpisodesTable from './episodes-table'
 
 export default function EpisodeListPage() {
 	const { id } = useParams()

@@ -6,7 +6,7 @@ import { useOnClickOutside } from 'usehooks-ts'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 import { LucideComponent } from '@/types/common'
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { useEditorRef } from '@udecode/plate-common/react'
 import { RedoIcon, UndoIcon } from 'lucide-react'
 
-import { ToolbarButton } from './toolbar'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
 export default function UndoRedoButtons() {
 	const editor = useEditorRef()

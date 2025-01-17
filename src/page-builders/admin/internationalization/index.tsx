@@ -1,11 +1,10 @@
 'use client'
 
 import React from 'react'
+import Sidebar from '@/page-builders/admin/internationalization/sidebar'
+import Stories from '@/page-builders/admin/internationalization/stories'
 
 import BackButton from '@/components/back-button'
-
-import Sidebar from './sidebar'
-import Stories from './stories'
 
 const Projects = () => {
 	return (

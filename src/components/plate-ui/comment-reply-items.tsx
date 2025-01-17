@@ -6,7 +6,7 @@ import {
 	useCommentReplies,
 } from '@udecode/plate-comments/react'
 
-import { CommentItem } from './comment-item'
+import { CommentItem } from '@/components/plate-ui/comment-item'
 
 export function CommentReplyItems() {
 	const commentReplies = useCommentReplies(SCOPE_ACTIVE_COMMENT)

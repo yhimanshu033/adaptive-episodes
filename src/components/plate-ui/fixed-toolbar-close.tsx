@@ -4,9 +4,8 @@ import React from 'react'
 import usePlateStore from '@/store/plate-store'
 import { X } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
-
-import { ToolbarButton } from './toolbar'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
+import { cn } from '@/lib/utils/helpers'
 
 export function FixedToolbarClose() {
 	const { store, setSidebar } = usePlateStore()

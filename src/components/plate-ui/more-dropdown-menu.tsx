@@ -5,16 +5,18 @@ import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { useEditorState } from '@udecode/plate-common/react'
 import { Globe, Search, WholeWordIcon } from 'lucide-react'
 
-import { getText, prettifyNumber } from '@/lib/utils'
-
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 	useOpenState,
-} from './dropdown-menu'
-import { ToolbarButton } from './toolbar'
+} from '@/components/plate-ui/dropdown-menu'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
+import { prettifyNumber } from '@/lib/utils/helpers'
+import { getText } from '@/lib/utils/plate'
+
+import { ESidebar } from '@/types/plate-types'
 
 export function MoreDropdownMenu(props: DropdownMenuProps) {
 	const { setSidebar } = usePlateStore()
@@ -40,7 +42,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 				<DropdownMenuItem
 					disabled={isDisabled}
 					onSelect={() => {
-						setSidebar('far', true)
+						setSidebar(ESidebar.FAR, true)
 					}}
 				>
 					<Globe className="mr-2 size-5" />
@@ -49,7 +51,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 				<DropdownMenuItem
 					disabled={isDisabled}
 					onSelect={() => {
-						setSidebar('outline', true)
+						setSidebar(ESidebar.OUTLINE, true)
 					}}
 				>
 					<Search className="mr-2 size-5" />

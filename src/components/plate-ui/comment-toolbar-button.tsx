@@ -4,17 +4,18 @@ import React from 'react'
 import usePlateStore from '@/store/plate-store'
 
 import { Icons } from '@/components/icons'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
-import { ToolbarButton } from './toolbar'
+import { ESidebar } from '@/types/plate-types'
 
 export function CommentToolbarButton() {
 	const { store, setSidebar } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	return (
 		<ToolbarButton
-			variant={sidebar === 'comments' ? 'active' : 'default'}
+			variant={sidebar === ESidebar.COMMENTS ? 'active' : 'default'}
 			tooltip="Comments"
-			onClick={() => setSidebar('comments', true)}
+			onClick={() => setSidebar(ESidebar.COMMENTS, true)}
 		>
 			<Icons.comment />
 		</ToolbarButton>

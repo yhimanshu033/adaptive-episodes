@@ -5,13 +5,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 const Hero = () => {
 	return (
 		<section className="container flex flex-1 animate-fade-in-up flex-col items-center justify-center gap-5">
 			<Image
-				src="/CoPilot-logo.gif"
+				src="/assets/copilot-logo.gif"
 				alt="logo_animation"
 				width={300}
 				height={300}

@@ -1,6 +1,6 @@
 import { withCn } from '@udecode/cn'
 
-import { Toolbar } from './toolbar'
+import { Toolbar } from '@/components/plate-ui/toolbar'
 
 export const FixedToolbar = withCn(
 	Toolbar,

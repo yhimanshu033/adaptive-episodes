@@ -17,13 +17,14 @@ import {
 import { Bot } from 'lucide-react'
 
 import { Icons, iconVariants } from '@/components/icons'
+import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
+import FloatingLaserBtns from '@/components/plate-ui/floating-laser-btns'
+import { MarkToolbarButton } from '@/components/plate-ui/mark-toolbar-button'
+import { ToolbarGroup } from '@/components/plate-ui/toolbar'
+import { TurnIntoDropdownMenu } from '@/components/plate-ui/turn-into-dropdown-menu'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 
-import { ColorDropdownMenu } from './color-dropdown-menu'
-import FloatingLaserBtns from './floating-laser-btns'
-import { MarkToolbarButton } from './mark-toolbar-button'
-import { ToolbarGroup } from './toolbar'
-import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
+import { ESidebar } from '@/types/plate-types'
 
 const FloatingToolbarButtons = () => {
 	const readOnly = useEditorReadOnly()
@@ -79,7 +80,7 @@ const FloatingToolbarButtons = () => {
 					<MarkToolbarButton
 						{...props}
 						onClick={(e) => {
-							setSidebar('comments')
+							setSidebar(ESidebar.COMMENTS)
 							props.onClick(e)
 						}}
 						nodeType={CommentsPlugin.key}

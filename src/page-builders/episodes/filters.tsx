@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { setEpisodeSearch } from '@/store/episode-store'
@@ -38,7 +37,7 @@ const Filters = ({ table }: { table: Table<TEpisode> }) => {
 		<>
 			<Form {...form}>
 				<form
-					onSubmit={form.handleSubmit(handleSearch)}
+					onSubmit={(e) => void form.handleSubmit(handleSearch)(e)}
 					className="mb-2 flex flex-1 items-center gap-2"
 				>
 					<FormField

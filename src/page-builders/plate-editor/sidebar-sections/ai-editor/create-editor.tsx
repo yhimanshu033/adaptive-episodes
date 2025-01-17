@@ -2,6 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
+import {
+	editorPlugins,
+	viewPlugins,
+} from '@/page-builders/plate-editor/sidebar-sections/ai-editor/editor-plugins'
 import { withProps } from '@udecode/cn'
 import {
 	BoldPlugin,
@@ -30,8 +34,6 @@ import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { withDraggables } from '@/components/plate-ui/with-draggables'
-
-import { editorPlugins, viewPlugins } from './editor-plugins'
 
 export const viewComponents = {
 	[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),

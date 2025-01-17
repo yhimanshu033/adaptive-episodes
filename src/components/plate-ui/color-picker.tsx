@@ -3,8 +3,8 @@
 import React from 'react'
 import { cn, withRef } from '@udecode/cn'
 
-import type { TColor } from './color-dropdown-menu'
-import { ColorDropdownMenuItems } from './color-dropdown-menu-items'
+import type { TColor } from '@/components/plate-ui/color-dropdown-menu'
+import { ColorDropdownMenuItems } from '@/components/plate-ui/color-dropdown-menu-items'
 
 export const ColorPickerContent = withRef<
 	'div',

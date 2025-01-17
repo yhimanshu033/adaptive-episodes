@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { episodeLimit } from '@/constants/episodes-constants'
+import { EPISODE_LIMIT } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
@@ -21,7 +21,7 @@ const Title = () => {
 
 	const handleClick = () => {
 		const page = Math.ceil(
-			Number(episodeContent?.chapter.seq_number || 1) / episodeLimit
+			Number(episodeContent?.chapter.seq_number || 1) / EPISODE_LIMIT
 		)
 		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
 	}

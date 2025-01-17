@@ -9,7 +9,7 @@ import { nanoid } from 'nanoid'
 
 import { Button } from '@/components/plate-ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/helpers'
 
 export default function FloatingLaserResponse() {
 	const {

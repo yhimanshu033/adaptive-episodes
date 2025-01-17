@@ -12,6 +12,8 @@ import { useShallow } from 'zustand/react/shallow'
 import useEpisodeId from '@/providers/episode-id-provider'
 import DiffView from '@/lib/plate/plugins/diff'
 
+import { ESidebar } from '@/types/plate-types'
+
 const editorVariants = cva(
 	cn(
 		'relative overflow-x-auto whitespace-pre-wrap break-words',
@@ -94,7 +96,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				ref={ref}
 				className="relative size-full"
 			>
-				{sidebar === 'chatbot' && responseValue && prevValue && !isAi ? (
+				{sidebar === ESidebar.CHATBOT && responseValue && prevValue && !isAi ? (
 					<DiffView
 						current={responseValue}
 						previous={prevValue}

@@ -7,8 +7,7 @@ import {
 } from '@udecode/plate-indent-list/react'
 
 import { Icons } from '@/components/icons'
-
-import { ToolbarButton } from './toolbar'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
 export const IndentListToolbarButton = withRef<
 	typeof ToolbarButton,

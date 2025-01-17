@@ -3,7 +3,11 @@
 import React from 'react'
 import { SuggestionUser } from '@udecode/plate-suggestion'
 
-import { Avatar, AvatarFallback, AvatarImage } from './avatar'
+import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from '@/components/plate-ui/avatar'
 
 export function SuggestionAvatar({ user }: { user: SuggestionUser | null }) {
 	if (!user) return null

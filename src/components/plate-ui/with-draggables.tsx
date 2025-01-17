@@ -27,7 +27,7 @@ import {
 import { TablePlugin } from '@udecode/plate-table/react'
 import { TogglePlugin } from '@udecode/plate-toggle/react'
 
-import { Draggable, type DraggableProps } from './draggable'
+import { Draggable, type DraggableProps } from '@/components/plate-ui/draggable'
 
 export const withDraggable = (
 	Component: FC,

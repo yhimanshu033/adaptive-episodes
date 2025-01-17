@@ -7,6 +7,7 @@ import React, {
 	useState,
 } from 'react'
 import { useParams } from 'next/navigation'
+import { AI_USER_ID } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
@@ -30,11 +31,11 @@ import { nanoid } from 'nanoid'
 import {
 	addSFX,
 	convertReviewResponse,
-	getText,
 	maxify,
 	minify,
-	parseOptimistically,
-} from '@/lib/utils'
+} from '@/lib/utils/ai-chatbot'
+import { parseOptimistically } from '@/lib/utils/helpers'
+import { getText } from '@/lib/utils/plate'
 
 import {
 	EAction,
@@ -47,6 +48,7 @@ import {
 	IndexedCommentsResponse,
 	IndexedSFXResponse,
 } from '@/types/editor-types'
+import { ESidebar } from '@/types/plate-types'
 
 type TChatbotContext = {
 	cancelRequest: () => void
@@ -85,6 +87,7 @@ export function ChatbotProvider({
 	const [sfxStreaming, setSfxStreaming] = useState<string>('')
 	const [reviewStreaming, setReviewStreaming] = useState<string>('')
 	const [originalChildren, setOriginalChildren] = useState<Value>()
+
 	const { id } = useParams()
 	const {
 		store,
@@ -97,19 +100,25 @@ export function ChatbotProvider({
 		setRequestedAction,
 		updateMessages,
 	} = useAIStore()
+
 	const { setSidebar } = usePlateStore()
 	const { messages } = store()
-	const { aiChatbotMutation } = useAIChatbotHook()
-	const { data: aiResponse, isPending, reset } = aiChatbotMutation
-	const { responses, taskEnded } = useSocketStreaming()
-	const { data: episodeContent } = useEpisodeContent()
-	const { data: stories } = useStoriesData()
-	const editor = useEditorRef()
-	const { children } = useEditorState()
 	const requestedAction = store((state) => state.requestedAction)
 	const value = store((state) => state.acceptedValue)
 	const prevValue = store((state) => state.prevValue)
+
+	const { aiChatbotMutation } = useAIChatbotHook()
+	const { data: aiResponse, isPending, reset } = aiChatbotMutation
+	const { responses, taskEnded } = useSocketStreaming()
+
+	const { data: episodeContent } = useEpisodeContent()
+	const { data: stories } = useStoriesData()
+
+	const editor = useEditorRef()
+	const { children } = useEditorState()
 	const { api, setOptions } = useEditorPlugin(CommentsPlugin)
+
+	const changesPending = prevValue && value
 
 	const episodesCount = useMemo(() => {
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
@@ -156,7 +165,7 @@ export function ChatbotProvider({
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
 		if (suggestion.action === EChatMode.LOCALIZE) {
-			setSidebar('far')
+			setSidebar(ESidebar.FAR)
 			return
 		}
 		if (suggestion.action === EChatMode.PROMPTS) {
@@ -238,7 +247,7 @@ export function ChatbotProvider({
 					},
 				],
 				id: comment.id,
-				userId: 'COPILOT-AI',
+				userId: AI_USER_ID,
 				createdAt: Date.now(),
 			})
 		})
@@ -258,8 +267,6 @@ export function ChatbotProvider({
 		})
 		editor.tf.setValue(children)
 	}
-
-	const changesPending = prevValue && value
 
 	useEffect(() => {
 		if (!isPending && aiResponse) {
@@ -402,7 +409,7 @@ export function ChatbotProvider({
 export default function useAIChatbot() {
 	const context = useContext(ChatbotContext)
 	if (!context) {
-		throw new Error('useAIChatbot must be used within AI Chatbot')
+		throw new Error('useAIChatbot must be used within ChatbotProvider')
 	}
 	return context
 }
