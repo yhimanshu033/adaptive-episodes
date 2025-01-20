@@ -1,5 +1,5 @@
 import React from 'react'
-import { statuses } from '@/constants/episodes-constants'
+import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useVersions from '@/hooks/use-versions'
 import { Eye } from 'lucide-react'
 
@@ -68,7 +68,7 @@ const Versions = ({
 							key={index}
 							value={status}
 						>
-							{status}
+							{titleToStatus[status]}
 							{index < latestIndex + Number(isChildEpisode) && (
 								<Eye className="ml-2 inline" size={16} />
 							)}

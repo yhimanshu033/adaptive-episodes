@@ -26,7 +26,6 @@ export default function useVersions({
 	const { id } = useParams()
 	const currentSelection = useRef<EStatus>()
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
-
 	const queryClient = useQueryClient()
 
 	const { saveEpisodeMutation } = useEpisodeHook()
@@ -55,11 +54,6 @@ export default function useVersions({
 		}
 	}
 
-	useEffect(() => {
-		setViewMode(sidebar === ESidebar.FAR && !!replaceEnabled)
-		// eslint-disable-next-line  react-hooks/exhaustive-deps
-	}, [replaceEnabled, sidebar])
-
 	const handleConfirm = async () => {
 		if (currentSelection.current) {
 			await saveEpisodeMutation.mutateAsync({
@@ -73,12 +67,23 @@ export default function useVersions({
 			})
 		}
 	}
+
 	useEffect(() => {
 		setViewMode(
-			isChildEpisode || selectedIndex < latestIndex + Number(isChildEpisode)
+			isChildEpisode ||
+				selectedIndex < latestIndex + Number(isChildEpisode) ||
+				(sidebar === ESidebar.FAR && !!replaceEnabled)
 		)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isChildEpisode, latestIndex, latestStatus, selectedIndex, selectedStatus])
+	}, [
+		isChildEpisode,
+		latestIndex,
+		latestStatus,
+		selectedIndex,
+		selectedStatus,
+		sidebar,
+		replaceEnabled,
+	])
 
 	return {
 		handleConfirm,

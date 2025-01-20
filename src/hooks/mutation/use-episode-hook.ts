@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { usePageState } from '@/hooks/use-page-state'
@@ -25,7 +25,7 @@ const useEpisodeHook = () => {
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
 	const { startTask, getResponse } = useSocket()
-
+	const [updatedStatus, setUpdatedStatus] = useState<boolean>(false)
 	const queryClient = useQueryClient()
 
 	const { episodeSearch } = useEpisodeStore()
@@ -39,7 +39,7 @@ const useEpisodeHook = () => {
 	}
 
 	const onSaveEpisode = useCallback(
-		({
+		async ({
 			text,
 			status,
 			chapterId,
@@ -54,6 +54,15 @@ const useEpisodeHook = () => {
 			status: EStatus | typeof BASE_STATUS
 			text: string
 		}) => {
+			if (status === BASE_STATUS && !updatedStatus) {
+				setUpdatedStatus(true)
+				await saveContent({
+					episodeId: chapterId ?? Number(episodeId),
+					projectId: Number(id),
+					text,
+					status: EStatus.FIRST_DRAFT,
+				})
+			}
 			return saveContent({
 				episodeId: chapterId ?? Number(episodeId),
 				projectId: Number(id),
@@ -66,7 +75,7 @@ const useEpisodeHook = () => {
 				},
 			})
 		},
-		[episodeId, id]
+		[episodeId, id, updatedStatus]
 	)
 
 	const onEpisodeMerge = async (chapter_ids: number[]) => {

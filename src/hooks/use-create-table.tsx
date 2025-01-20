@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { statuses } from '@/constants/episodes-constants'
+import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import {
 	ColumnDef,
@@ -104,7 +104,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						disabled={!isSelected && Object.keys(rowSelection).length > 0}
 					>
 						<SelectTrigger className="w-32">
-							<SelectValue>{latestStatus}</SelectValue>
+							<SelectValue>{titleToStatus[latestStatus]}</SelectValue>
 						</SelectTrigger>
 						<SelectContent>
 							{statuses.map((status, index) => (
@@ -113,7 +113,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 									key={status}
 									value={status}
 								>
-									{status}
+									{titleToStatus[status]}
 								</SelectItem>
 							))}
 						</SelectContent>
