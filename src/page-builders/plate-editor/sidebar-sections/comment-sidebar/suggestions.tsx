@@ -25,9 +25,9 @@ const SuggestionBlock = ({
 
 	let suggestedText: string = ''
 
-	if (description.type === SuggestionTypes.INSERTION) {
+	if (description?.type === SuggestionTypes.INSERTION) {
 		suggestedText = `"${description.insertedText}"`
-	} else if (description.type === SuggestionTypes.DELETION) {
+	} else if (description?.type === SuggestionTypes.DELETION) {
 		suggestedText = `"${description.deletedText}"`
 	} else {
 		suggestedText = `"${description.deletedText}" with "${description.insertedText}"`

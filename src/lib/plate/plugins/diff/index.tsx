@@ -102,15 +102,15 @@ export const DiffPlugin = toPlatePlugin(
 						[AiDiffOperation.DELETE]: 'deletion',
 						[AiDiffOperation.INSERT]: 'insertion',
 						[AiDiffOperation.UPDATE]: 'update',
-					}[diffOperation.type]
+					}[diffOperation?.type]
 
 					const Component = isInline(editor, element) ? 'span' : 'div'
 
 					return (
 						<Component
-							className={diffOperationColors[diffOperation.type]}
+							className={diffOperationColors[diffOperation?.type]}
 							title={
-								diffOperation.type === AiDiffOperation.UPDATE
+								diffOperation?.type === AiDiffOperation.UPDATE
 									? describeUpdate(diffOperation)
 									: undefined
 							}
@@ -132,7 +132,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 		[AiDiffOperation.DELETE]: 'del',
 		[AiDiffOperation.INSERT]: 'ins',
 		[AiDiffOperation.UPDATE]: 'span',
-	}[diffOperation.type] as keyof JSX.IntrinsicElements
+	}[diffOperation?.type] as keyof JSX.IntrinsicElements
 	const leaf: any = props.leaf
 
 	const value = structuredClone(props.editor.children)
@@ -175,9 +175,9 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 		>
 			{leaf.status === DiffStatus.PENDING ? (
 				<Component
-					className={cn(diffOperationColors[diffOperation.type], 'relative')}
+					className={cn(diffOperationColors[diffOperation?.type], 'relative')}
 					title={
-						diffOperation.type === AiDiffOperation.UPDATE
+						diffOperation?.type === AiDiffOperation.UPDATE
 							? describeUpdate(diffOperation)
 							: undefined
 					}

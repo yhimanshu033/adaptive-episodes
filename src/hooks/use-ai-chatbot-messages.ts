@@ -59,12 +59,12 @@ export default function useAiChatbotMessages() {
 				children: node.children
 					.map((child) => {
 						let add = true
-						if ('diff' in child && child.diff_id) {
+						if ('diff' in child && 'diffOperation' in child && child.diff_id) {
 							const accepted = all
 								? child.status === DiffStatus.ACCEPTED ||
 									child.status === DiffStatus.PENDING
 								: child.status === DiffStatus.ACCEPTED
-							const type = (child.diffOperation as DiffOperation).type
+							const type = (child.diffOperation as DiffOperation)?.type
 							if (type === 'update') {
 								Object.keys(
 									(child.diffOperation as DiffUpdate)?.newProperties

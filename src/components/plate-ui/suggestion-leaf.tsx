@@ -31,6 +31,7 @@ export default function SuggestionLeaf({
 	const isActive =
 		activeSuggestionId === leaf.suggestionId &&
 		!(
+			activeSuggestionDescription?.type &&
 			activeSuggestionDescription.type === SuggestionTypes.REPLACEMENT &&
 			leaf.suggestionDeletion
 		)
