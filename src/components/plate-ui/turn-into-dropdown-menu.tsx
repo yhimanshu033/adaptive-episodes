@@ -88,7 +88,7 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 			mode: 'highest',
 		})
 		const nodes = Array.from(codeBlockEntries)
-		if (nodes.length > 0) {
+		if (nodes.length > 0 && nodes[0]?.[0]?.type) {
 			initialNodeType = nodes[0][0].type as string
 			allNodesMatchInitialNodeType = nodes.every(([node]) => {
 				const type: string = (node?.type as string) || ParagraphPlugin.key
