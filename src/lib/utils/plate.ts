@@ -46,9 +46,20 @@ export function getStartAndEnd(selection: Selection) {
 
 export function jsonify(value: string): string | Value {
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const val = JSON.parse(value)
-		return val as Value
+		const val = JSON.parse(value) as Value
+		const nonIdNode = val.find(
+			(node) => !node.id || isNaN(parseInt(node.id as string))
+		)
+		if (nonIdNode) {
+			return val
+		}
+		try {
+			val.sort((a, b) => parseInt(a.id as string) - parseInt(b.id as string))
+			return val
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		} catch (error) {
+			return val
+		}
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	} catch (e) {
 		return value

@@ -4,6 +4,7 @@ import { statuses } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useSaving from '@/hooks/use-saving'
 import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEditorPlugin, useEditorState } from '@udecode/plate-common/react'
@@ -40,6 +41,7 @@ export default function useVersions({
 	const { data } = useEpisodeContent()
 	const { children } = useEditorState()
 	const { allComments } = useComments()
+	const { handleSave, isSaved } = useSaving()
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
@@ -56,6 +58,9 @@ export default function useVersions({
 		if (currentIndex > latestIndex) {
 			setIsDialogOpen(true)
 		} else {
+			if (!isSaved) {
+				handleSave()
+			}
 			setSelectedStatus(value)
 		}
 	}

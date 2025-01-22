@@ -1,5 +1,6 @@
 'use client'
 
+import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/episodes-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
 import { useQuery } from '@tanstack/react-query'
@@ -26,8 +27,8 @@ export const useEpisodeContent = () => {
 		: { episode: undefined, latestStatus: undefined }
 
 	const queryKey = [
+		EPISODE_CONTENT_QUERY_KEY,
 		episode ? episode.id : episodeId,
-		'content',
 		latestStatus || 'BASE',
 	]
 
@@ -37,6 +38,7 @@ export const useEpisodeContent = () => {
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
+		staleTime: 0,
 	})
 	return { ...query, latestStatus, queryKey }
 }
