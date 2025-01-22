@@ -3,6 +3,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { EPISODE_LIMIT } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useSaving from '@/hooks/use-saving'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 import { ArrowLeft } from 'lucide-react'
 
@@ -18,11 +20,17 @@ const Title = () => {
 	const { data: episodeContent, latestStatus } = useEpisodeContent()
 	const { saveEpisodeMutation } = useEpisodeHook()
 	const readOnly = useEditorReadOnly()
+	const { handleSave, isSaved } = useSaving()
+	const queryClient = useQueryClient()
 
-	const handleClick = () => {
+	const handleClick = async () => {
 		const page = Math.ceil(
 			Number(episodeContent?.chapter.seq_number || 1) / EPISODE_LIMIT
 		)
+		await queryClient.refetchQueries({
+			queryKey: [parseInt(String(id)), 'episodes', page],
+		})
+		if (!isSaved) handleSave()
 		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
 	}
 
@@ -37,7 +45,7 @@ const Title = () => {
 
 	return (
 		<div className="flex items-center gap-2">
-			<Button variant="ghost" size="icon" onClick={handleClick}>
+			<Button variant="ghost" size="icon" onClick={() => void handleClick()}>
 				<ArrowLeft size={16} />
 			</Button>
 			{episodeContent ? (
