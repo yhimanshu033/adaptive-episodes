@@ -159,5 +159,6 @@ export default function useStoryExplorer({
 		currentAction,
 		isMetadataLoading,
 		handleRequest,
+		isTaskEnded: taskEnded[taskId],
 	}
 }

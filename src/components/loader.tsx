@@ -1,6 +1,9 @@
 import React from 'react'
+import { LoaderCircle } from 'lucide-react'
 
 import { cn } from '@/lib/utils/helpers'
+
+import { buttonVariants } from './ui/button'
 
 export function Loader({
 	loaderClass,
@@ -65,6 +68,14 @@ export function FullScreenLoader({
 					size={size}
 				/>
 			</div>
+		</div>
+	)
+}
+
+export const IconLoader = () => {
+	return (
+		<div className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}>
+			<LoaderCircle className="animate-spin" size={16} />
 		</div>
 	)
 }

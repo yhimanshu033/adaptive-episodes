@@ -118,3 +118,11 @@ export const getMetaDataRange = (
 	)
 	return [start - 1, end]
 }
+
+export const toPascalCase = (str: string | null) => {
+	if (!str) return ''
+	return str.replace(
+		/\w+/g,
+		(w) => w[0].toUpperCase() + w.slice(1).toLowerCase()
+	)
+}

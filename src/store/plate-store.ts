@@ -35,6 +35,10 @@ export function usePlateStore() {
 		usePlateStoreContext.setState({ viewMode })
 	}
 
+	const setActiveNoteId = (activeNoteId: string | null) => {
+		usePlateStoreContext.setState({ activeNoteId })
+	}
+
 	return {
 		store: usePlateStoreContext,
 		setSidebar,
@@ -43,6 +47,7 @@ export function usePlateStore() {
 		setActiveDiffId,
 		setCurrentDiffValue,
 		setViewMode,
+		setActiveNoteId,
 	}
 }
 
