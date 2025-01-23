@@ -77,3 +77,10 @@ export enum ELlmWriterMode {
 	CLONE = 'clone',
 	SPIN_OFF = 'spin-off',
 }
+
+export const SFX_INFO = {
+	SINGLE_TICK:
+		'Nur ausgewählte SFX-Vorschläge annehmen (Auswahl: entsprechende SFX-Tags anklicken und durch Klick auf den Haken der Auswahl hinzufügen)',
+	DOUBLE_TICK: 'Alle SFX-Vorschläge annehmen',
+	CROSS: 'Vorschläge verwerfen',
+}
