@@ -24,10 +24,21 @@ export default function useSaving() {
 	const { toast } = useToast()
 
 	const handleSave = useCallback(
-		({ note, deleteNoteId }: { deleteNoteId?: string; note?: TNote } = {}) => {
+		({
+			note,
+			deleteNoteId,
+			chapter_title,
+			forced = false,
+		}: {
+			chapter_title?: string
+			deleteNoteId?: string
+			forced?: boolean
+			note?: TNote
+		} = {}) => {
 			const currentChildren = JSON.stringify(children)
 			const currentComments = JSON.stringify(allComments)
 			if (
+				forced ||
 				savedRef.current !== currentChildren ||
 				savedCommentsRef.current !== currentComments ||
 				note ||
@@ -55,6 +66,7 @@ export default function useSaving() {
 						comments: allComments,
 						prevProps: data?.chapter.props,
 						notes,
+						...(chapter_title ? { chapter_title } : {}),
 					},
 					{
 						// eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -96,10 +108,18 @@ export default function useSaving() {
 		async ({
 			note,
 			deleteNoteId,
-		}: { deleteNoteId?: string; note?: TNote } = {}) => {
+			chapter_title,
+			forced = false,
+		}: {
+			chapter_title?: string
+			deleteNoteId?: string
+			forced?: boolean
+			note?: TNote
+		} = {}) => {
 			const currentChildren = JSON.stringify(children)
 			const currentComments = JSON.stringify(allComments)
 			if (
+				forced ||
 				savedRef.current !== currentChildren ||
 				savedCommentsRef.current !== currentComments ||
 				note ||
@@ -127,6 +147,7 @@ export default function useSaving() {
 						comments: allComments,
 						prevProps: data?.chapter.props,
 						notes,
+						...(chapter_title ? { chapter_title } : {}),
 					},
 					{
 						// eslint-disable-next-line @typescript-eslint/no-misused-promises

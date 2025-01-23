@@ -1,7 +1,9 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { EPISODE_LIMIT } from '@/constants/episodes-constants'
-import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import {
+	EPISODE_CONTENT_QUERY_KEY,
+	EPISODE_LIMIT,
+} from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
 import { useQueryClient } from '@tanstack/react-query'
@@ -12,15 +14,12 @@ import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
 
-import { EStatus } from '@/types/common'
-
 const Title = () => {
 	const router = useRouter()
 	const { id } = useParams()
-	const { data: episodeContent, latestStatus } = useEpisodeContent()
-	const { saveEpisodeMutation } = useEpisodeHook()
+	const { data: episodeContent } = useEpisodeContent()
 	const readOnly = useEditorReadOnly()
-	const { handleSave, isSaved } = useSaving()
+	const { handleSave, handleSaveAsync, isSaved } = useSaving()
 	const queryClient = useQueryClient()
 
 	const handleClick = async () => {
@@ -34,12 +33,11 @@ const Title = () => {
 		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
 	}
 
-	const updateChapterTitle = (chapter_title: string) => {
+	const updateChapterTitle = async (chapter_title: string) => {
 		if (episodeContent?.chapter.chapter_title === chapter_title) return
-		saveEpisodeMutation.mutate({
-			chapter_title,
-			text: episodeContent?.text || '',
-			status: latestStatus || EStatus.FIRST_DRAFT,
+		await handleSaveAsync({ chapter_title, forced: true })
+		await queryClient.invalidateQueries({
+			queryKey: [EPISODE_CONTENT_QUERY_KEY],
 		})
 	}
 
@@ -59,7 +57,7 @@ const Title = () => {
 				rootClass="text-xl"
 				inputClass="text-xl"
 				isEditable={!readOnly}
-				onComplete={updateChapterTitle}
+				onComplete={(title) => void updateChapterTitle(title)}
 			/>
 		</div>
 	)

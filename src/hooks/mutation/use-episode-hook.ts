@@ -71,7 +71,7 @@ const useEpisodeHook = () => {
 				projectId: Number(id),
 				text,
 				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
-				chapter_title,
+				...(chapter_title ? { chapter_title } : {}),
 				props: {
 					...prevProps,
 					comments,
