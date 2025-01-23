@@ -1,38 +1,71 @@
 import React from 'react'
-import RenderContent from '@/page-builders/plate-editor/sidebar-sections/story-explorer/render-content'
+import useSaveEpisode from '@/hooks/use-save-episode'
 import useAIStore from '@/store/ai-store'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, FilePlus2 } from 'lucide-react'
+import { nanoid } from 'nanoid'
+import { useShallow } from 'zustand/react/shallow'
 
-import { Loader } from '@/components/loader'
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from '@/components/ui/accordion'
+import { IconLoader, Loader } from '@/components/loader'
+import { StoryAccordion } from '@/components/render-content'
 import { Button } from '@/components/ui/button'
-import { preProcessData } from '@/lib/utils/explorer'
+import { toPascalCase } from '@/lib/utils/helpers'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
+import { TNote } from '@/types/plate-types'
 
 const Content = ({
 	header,
 	explorerData,
 	isLoading,
+	enableNote,
+	start,
+	end,
 }: {
+	enableNote?: boolean
+	end: number
 	explorerData?: PlotExplorerApiResponse['data']
 	header: string
 	isLoading: boolean
+	start: number
 }) => {
 	const { store, setActiveExplorerActions } = useAIStore()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
+	const activeExplorerActions = store(
+		useShallow((state) => state.activeExplorerActions)
+	)
+	const { handleSave, isPending } = useSaveEpisode()
+
+	const addToNote = (explorerData?: PlotExplorerApiResponse['data']) => {
+		const note: TNote = {
+			id: nanoid(),
+			title: `${toPascalCase(activeExplorerMode)} ${toPascalCase(activeExplorerActions[activeExplorerMode])} (Episode ${start} - ${end})`,
+			content: explorerData || '',
+			updateTime: new Date().toString(),
+		}
+		handleSave({ note })
+	}
 	return (
 		<>
-			<div className="mb-4 flex items-center justify-between">
-				<h1 className="text-xl font-bold">{header}</h1>
+			<div className="mb-4 flex items-center justify-between gap-2">
+				<h1 className="flex-1 text-xl font-bold">{header}</h1>
+				{isPending ? (
+					<IconLoader />
+				) : (
+					<Button
+						variant="ghost"
+						size="icon"
+						tooltip="Add to Note"
+						onClick={() => addToNote(explorerData)}
+						disabled={enableNote === false}
+					>
+						<FilePlus2 size={16} />
+					</Button>
+				)}
+
 				<Button
 					variant="outline"
 					size="icon"
+					tooltip="Back"
 					onClick={() => {
 						setActiveExplorerActions(activeExplorerMode, null)
 					}}
@@ -41,24 +74,7 @@ const Content = ({
 				</Button>
 			</div>
 			{explorerData?.length && !isLoading ? (
-				<Accordion type="single" collapsible className="w-full">
-					{explorerData.map((data, index) => {
-						const processedData = preProcessData(data)
-						return processedData.map(
-							({ title, content, preContent }, subIndex) => (
-								<AccordionItem
-									key={`${title}${index}-${subIndex}`}
-									value={`${title}${index}-${subIndex}`}
-								>
-									<AccordionTrigger>{title}</AccordionTrigger>
-									<AccordionContent>
-										<RenderContent content={content} preContent={preContent} />
-									</AccordionContent>
-								</AccordionItem>
-							)
-						)
-					})}
-				</Accordion>
+				<StoryAccordion explorerData={explorerData} />
 			) : (
 				<div className="mt-5 flex w-full justify-center">
 					<Loader />

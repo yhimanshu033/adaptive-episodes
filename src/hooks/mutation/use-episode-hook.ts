@@ -20,6 +20,7 @@ import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisodeMergeParams } from '@/types/episode-type'
+import { TNote } from '@/types/plate-types'
 
 const useEpisodeHook = () => {
 	const { id } = useParams()
@@ -45,11 +46,13 @@ const useEpisodeHook = () => {
 			chapterId,
 			chapter_title,
 			comments,
+			notes,
 			prevProps,
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
 			comments?: TComment[]
+			notes?: TNote[]
 			prevProps?: Record<string, unknown>
 			status: EStatus | typeof BASE_STATUS
 			text: string
@@ -72,6 +75,7 @@ const useEpisodeHook = () => {
 				props: {
 					...prevProps,
 					comments,
+					notes,
 				},
 			})
 		},

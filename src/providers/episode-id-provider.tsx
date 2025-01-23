@@ -25,6 +25,7 @@ const initialState: PlateStoreData = {
 	activeDiffId: null,
 	currentDiffValue: null,
 	viewMode: false,
+	activeNoteId: null,
 }
 
 const initialAiState: AIStoreType = {

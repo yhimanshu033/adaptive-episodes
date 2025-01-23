@@ -1,6 +1,6 @@
 import { TDescendant, Value } from '@udecode/plate-common'
 
-import { Laser } from '@/types/ai-types'
+import { Laser, PlotExplorerApiResponse } from '@/types/ai-types'
 
 export type Selection = {
 	anchor: {
@@ -39,11 +39,13 @@ export enum ESidebar {
 	CHATBOT = 'chatbot',
 	COMMENTS = 'comments',
 	FAR = 'far',
+	NOTES = 'notes',
 	OUTLINE = 'outline',
 	TRANSLATION = 'translation',
 }
 export type PlateStoreData = {
 	activeDiffId: string | null
+	activeNoteId: string | null
 	currentDiffValue: Value | null
 	resolved: boolean
 	scale: number
@@ -60,4 +62,11 @@ export type LaserStoreType = {
 	responseActive: string | null
 	screenY?: number
 	triggerRephrase?: string | null
+}
+
+export type TNote = {
+	content: string | PlotExplorerApiResponse['data']
+	id: string
+	title: string
+	updateTime: string
 }

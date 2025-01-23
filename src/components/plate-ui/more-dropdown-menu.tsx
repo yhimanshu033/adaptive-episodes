@@ -3,7 +3,7 @@ import useDisableTools from '@/hooks/use-disable-tools'
 import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { useEditorState } from '@udecode/plate-common/react'
-import { Globe, Search, WholeWordIcon } from 'lucide-react'
+import { Globe, NotebookPen, Search, WholeWordIcon } from 'lucide-react'
 
 import {
 	DropdownMenu,
@@ -59,11 +59,14 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 					<Search className="mr-2 size-5" />
 					Story Explorer
 				</DropdownMenuItem>
+				<DropdownMenuItem onSelect={() => setSidebar(ESidebar.NOTES, true)}>
+					<NotebookPen className="mr-2 size-5" />
+					Notes
+				</DropdownMenuItem>
 				<DownloadDocxButton />
 				<DropdownMenuItem disabled>
 					<WholeWordIcon className="mr-2 size-5" />
 					Words: {prettifyNumber(words.length)}
-					{/* (⌘+.) */}
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

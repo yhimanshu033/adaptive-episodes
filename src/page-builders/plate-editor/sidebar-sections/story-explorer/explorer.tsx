@@ -22,6 +22,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		setPromptInput,
 		handleRequest,
 		isMetadataLoading,
+		isTaskEnded,
 	} = useStoryExplorer({ start, end })
 
 	return (
@@ -49,6 +50,9 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 								}
 								explorerData={content}
 								isLoading={isMetadataLoading}
+								enableNote={isTaskEnded}
+								start={start}
+								end={end}
 							/>
 						) : (
 							<div className="flex flex-col items-center space-y-3">
