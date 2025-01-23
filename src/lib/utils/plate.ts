@@ -297,7 +297,7 @@ export function mergeBlocks(
 			0,
 			end.offset
 		),
-	].join('')
+	].join('\n')
 
 	const middleText: TText = {
 		...firstChild,
@@ -358,4 +358,57 @@ export function getText(val: Value) {
 		getTextFromNode(node)
 	})
 	return text
+}
+
+export function breakDownValue(ogVal: Value | string): Value {
+	const newVal: Value = []
+
+	if (typeof ogVal === 'string') {
+		const texts = ogVal.split(/\n+/)
+		for (const text of texts) {
+			if (text.trim()) {
+				newVal.push({ type: 'p', children: [{ text }] })
+			}
+		}
+	} else {
+		if (!ogVal.length) return ogVal
+		const val = structuredClone(ogVal)
+
+		for (const block of val) {
+			let isNewBlock = true
+			for (const child of block.children) {
+				const lastBlock = newVal[newVal.length - 1]
+				if ('text' in child) {
+					if (!String(child.text).includes('\n')) {
+						if (lastBlock && lastBlock?.type === block.type && !isNewBlock) {
+							lastBlock.children.push(child)
+						} else {
+							isNewBlock = false
+							newVal.push({ ...block, children: [child] })
+						}
+					} else {
+						const splitText = String(child.text).split(/\n+/)
+						if (lastBlock && lastBlock?.type === block.type && !isNewBlock) {
+							lastBlock.children.push({ ...child, text: splitText[0] })
+						} else {
+							isNewBlock = false
+							newVal.push({
+								...block,
+								children: [{ ...child, text: splitText[0] }],
+							})
+						}
+						for (const text of splitText.slice(1)) {
+							if (text.trim()) {
+								newVal.push({ ...block, children: [{ ...child, text }] })
+							}
+						}
+					}
+				} else {
+					newVal.push(child)
+				}
+			}
+		}
+	}
+
+	return newVal
 }

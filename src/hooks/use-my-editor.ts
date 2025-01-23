@@ -58,10 +58,6 @@ import { NodeIdPlugin } from '@udecode/plate-node-id'
 import { ResetNodePlugin } from '@udecode/plate-reset-node/react'
 import { SelectOnBackspacePlugin } from '@udecode/plate-select'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
-import {
-	TableCellHeaderPlugin,
-	TableCellPlugin,
-} from '@udecode/plate-table/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -84,7 +80,7 @@ import SuggestionLeaf from '@/components/plate-ui/suggestion-leaf'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
-import { getRecord, jsonify } from '@/lib/utils/plate'
+import { breakDownValue, getRecord, jsonify } from '@/lib/utils/plate'
 
 const useMyEditor = ({
 	content,
@@ -97,7 +93,7 @@ const useMyEditor = ({
 }) => {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const initialValue = jsonify(content)
-
+	const value = breakDownValue(initialValue)
 	const editor = createPlateEditor({
 		plugins: [
 			LaserPlugin,
@@ -231,24 +227,7 @@ const useMyEditor = ({
 					},
 				},
 			}),
-			SoftBreakPlugin.configure({
-				options: {
-					rules: [
-						{ hotkey: 'enter' },
-						{
-							hotkey: 'enter',
-							query: {
-								allow: [
-									CodeBlockPlugin.key,
-									BlockquotePlugin.key,
-									TableCellPlugin.key,
-									TableCellHeaderPlugin.key,
-								],
-							},
-						},
-					],
-				},
-			}),
+			SoftBreakPlugin,
 			TrailingBlockPlugin.configure({
 				options: { type: ParagraphPlugin.key },
 			}),
@@ -316,16 +295,7 @@ const useMyEditor = ({
 				[PromptPlugin.key]: LaserPromptLeaf,
 			}),
 		},
-		value:
-			typeof initialValue === 'string'
-				? [
-						{
-							id: `0`,
-							type: ParagraphPlugin.key,
-							children: [{ text: initialValue }],
-						},
-					]
-				: initialValue,
+		value,
 		...(id ? { id } : {}),
 	})
 
