@@ -44,6 +44,7 @@ import { Download } from 'lucide-react'
 
 import { BlockquoteElementStatic } from '@/components/plate-ui/block-quote-element'
 import { CommentLeafStatic } from '@/components/plate-ui/comment-leaf-static'
+import { DropdownMenuItem } from '@/components/plate-ui/dropdown-menu'
 import { EditorStatic } from '@/components/plate-ui/editor-static'
 import { HeadingElementStatic } from '@/components/plate-ui/heading-element-static'
 import { HighlightLeafStatic } from '@/components/plate-ui/highlight-leaf-static'
@@ -51,8 +52,6 @@ import { HrElementStatic } from '@/components/plate-ui/hr-element-static'
 import { KbdLeafStatic } from '@/components/plate-ui/kbd-leaf-static'
 import { ParagraphElementStatic } from '@/components/plate-ui/paragraph-element-static'
 import { downloadFile } from '@/lib/utils/client-helpers'
-
-import { DropdownMenuItem } from './dropdown-menu'
 
 const siteUrl = 'https://platejs.org'
 export default function DownloadDocxButton() {
@@ -136,7 +135,13 @@ export default function DownloadDocxButton() {
 		const editorHtml = await serializeHtml(editorStatic, {
 			components,
 			editorComponent: EditorStatic,
-			props: { style: { padding: '0 calc(50% - 350px)', paddingBottom: '' } },
+			props: {
+				style: {
+					padding: '0 calc(50% - 350px)',
+					paddingBottom: '',
+					lineBreak: 'auto',
+				},
+			},
 		})
 
 		const prismCss = `<link rel="stylesheet" href="${siteUrl}/prism.css">`
@@ -164,10 +169,10 @@ export default function DownloadDocxButton() {
                 --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback';
               }
             </style>
-             <title>Chapter Test</title>
+             <title>Chapter Title</title>
           </head>
           <body>
-          ${editorHtml}
+          ${editorHtml.replace(/<\/div>/g, '</div><br>')}
           </body>
         </html>`
 
