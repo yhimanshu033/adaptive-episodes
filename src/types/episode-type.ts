@@ -147,3 +147,10 @@ export type TEpisodeDeleteResponse = {
 	message: string
 	project_id: number
 }
+
+export type EpisodeIdStoreType = {
+	currentTitle: string
+	episodeId: number
+	notes: TNote[]
+	selectedStatus: EStatus | undefined
+}

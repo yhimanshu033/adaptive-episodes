@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import NoteCard from './note-card'
 import NoteContent from './note-content'
@@ -10,12 +11,12 @@ import NoteContent from './note-content'
 const Notes = () => {
 	const { store } = usePlateStore()
 	const activeNoteId = store((state) => state.activeNoteId)
-	const { data } = useEpisodeContent()
-	const notes = data?.chapter.props?.notes
+	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+	const notes = useEpisodeIdStoreContext(useShallow((state) => state.notes))
 
 	const RenderNotes = () => {
 		if (!notes || !notes.length) {
-			return <p className="text-center">No notes available</p>
+			return <p className="pt-12 text-center">No notes available</p>
 		}
 
 		if (activeNoteId) {
@@ -23,7 +24,7 @@ const Notes = () => {
 		}
 
 		return (
-			<div className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3">
+			<div className="grid grid-cols-1 gap-4">
 				{notes.map((note) => (
 					<NoteCard key={note.id} {...note} />
 				))}
@@ -32,8 +33,7 @@ const Notes = () => {
 	}
 
 	return (
-		<section className="mx-auto max-w-2xl p-4">
-			<h1 className="text-2xl font-bold">Notes</h1>
+		<section className="p-4">
 			<RenderNotes />
 		</section>
 	)

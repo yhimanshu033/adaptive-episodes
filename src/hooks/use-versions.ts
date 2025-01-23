@@ -5,9 +5,11 @@ import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEditorPlugin, useEditorState } from '@udecode/plate-common/react'
+import { useShallow } from 'zustand/react/shallow'
 
 import { useEpisodeContext } from '@/providers/episode-id-provider'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
@@ -18,19 +20,21 @@ import { ESidebar } from '@/types/plate-types'
 
 export default function useVersions({
 	latestStatus,
-	selectedStatus,
 	isChildEpisode,
-	setSelectedStatus,
 }: {
 	isChildEpisode: boolean
 	latestStatus: EStatus | typeof BASE_STATUS
-	selectedStatus: EStatus | undefined
-	setSelectedStatus: React.Dispatch<React.SetStateAction<EStatus | undefined>>
 }) {
 	const { id } = useParams()
 	const currentSelection = useRef<EStatus>()
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const queryClient = useQueryClient()
+
+	const { setSelectedStatus, store: useEpisodeIdStoreContext } =
+		useEpisodeIdStore()
+	const selectedStatus = useEpisodeIdStoreContext(
+		useShallow((s) => s.selectedStatus)
+	)
 
 	const { saveEpisodeMutation } = useEpisodeHook()
 	const { useOption } = useEditorPlugin(FindReplacePlugin)
@@ -55,11 +59,12 @@ export default function useVersions({
 	const handleSelect = (value: EStatus) => {
 		const currentIndex = statuses.indexOf(value)
 		currentSelection.current = value
+		console.log({ isSaved })
 		if (currentIndex > latestIndex) {
 			setIsDialogOpen(true)
 		} else {
 			if (!isSaved) {
-				handleSave()
+				void handleSave()
 			}
 			setSelectedStatus(value)
 		}

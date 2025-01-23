@@ -1,11 +1,9 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import {
-	EPISODE_CONTENT_QUERY_KEY,
-	EPISODE_LIMIT,
-} from '@/constants/episodes-constants'
+import { EPISODE_LIMIT } from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 import { ArrowLeft } from 'lucide-react'
@@ -19,8 +17,9 @@ const Title = () => {
 	const { id } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
 	const readOnly = useEditorReadOnly()
-	const { handleSave, handleSaveAsync, isSaved } = useSaving()
+	const { handleSave, isSaved } = useSaving()
 	const queryClient = useQueryClient()
+	const { setCurrentTitle } = useEpisodeIdStore()
 
 	const handleClick = async () => {
 		const page = Math.ceil(
@@ -29,16 +28,12 @@ const Title = () => {
 		await queryClient.refetchQueries({
 			queryKey: [parseInt(String(id)), 'episodes', page],
 		})
-		if (!isSaved) handleSave()
+		if (!isSaved) void handleSave()
 		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
 	}
 
-	const updateChapterTitle = async (chapter_title: string) => {
-		if (episodeContent?.chapter.chapter_title === chapter_title) return
-		await handleSaveAsync({ chapter_title, forced: true })
-		await queryClient.invalidateQueries({
-			queryKey: [EPISODE_CONTENT_QUERY_KEY],
-		})
+	const updateChapterTitle = (chapter_title: string) => {
+		setCurrentTitle(chapter_title)
 	}
 
 	return (

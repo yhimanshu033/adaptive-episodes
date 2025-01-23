@@ -18,7 +18,7 @@ const NoteContent = ({
 	const { setActiveNoteId } = usePlateStore()
 	const note = notes.find((note) => note.id === activeNoteId)
 	return (
-		<div className="rounded-md p-4 shadow-md">
+		<div className="">
 			<div className="flex">
 				<div className="flex-1">
 					<div className="mb-2 text-2xl font-bold">

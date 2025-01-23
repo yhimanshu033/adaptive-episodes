@@ -1,21 +1,15 @@
 'use client'
 
-import React, {
-	createContext,
-	Dispatch,
-	ReactNode,
-	SetStateAction,
-	useContext,
-	useState,
-} from 'react'
+import React, { createContext, ReactNode, useContext } from 'react'
 import { aiInitialMessage } from '@/constants/ai-constants'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
+import { useShallow } from 'zustand/react/shallow'
 
 import { AIStoreType } from '@/types/ai-types'
-import { EStatus } from '@/types/common'
+import { EpisodeIdStoreType } from '@/types/episode-type'
 import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
@@ -49,21 +43,22 @@ const initialLaserState: LaserStoreType = {
 	responseActive: null,
 }
 
+const initialEpisodeIdState: EpisodeIdStoreType = {
+	episodeId: 0,
+	selectedStatus: undefined,
+	notes: [],
+	currentTitle: '',
+}
+
 type EpisodeIdContextType = {
-	episodeId: number
-	selectedStatus: EStatus | undefined
-	setEpisodeId: Dispatch<SetStateAction<number>>
-	setSelectedStatus: Dispatch<SetStateAction<EStatus | undefined>>
 	useAiStoreContext: UseBoundStore<StoreApi<AIStoreType>>
+	useEpisodeIdStoreContext: UseBoundStore<StoreApi<EpisodeIdStoreType>>
 	useLaserContext: UseBoundStore<StoreApi<LaserStoreType>>
 	usePlateStoreContext: UseBoundStore<StoreApi<PlateStoreData>>
 }
 
 const EpisodeIdContext = createContext<EpisodeIdContextType>({
-	episodeId: 0,
-	setEpisodeId: () => {},
-	selectedStatus: undefined,
-	setSelectedStatus: () => {},
+	useEpisodeIdStoreContext: create(() => initialEpisodeIdState),
 	usePlateStoreContext: create(() => initialState),
 	useAiStoreContext: create(() => initialAiState),
 	useLaserContext: create(() => initialLaserState),
@@ -76,9 +71,11 @@ export function EpisodeIdProvider({
 	children: ReactNode
 	episodeId: number
 }) {
-	const [episodeId, setEpisodeId] = useState<number>(defaultEpisodeId)
-
-	const [selectedStatus, setSelectedStatus] = useState<EStatus | undefined>()
+	const useEpisodeIdStoreContext = create(
+		devtools(
+			immer(() => ({ ...initialEpisodeIdState, episodeId: defaultEpisodeId }))
+		)
+	)
 
 	const usePlateStoreContext = create(devtools(immer(() => initialState)))
 
@@ -91,10 +88,7 @@ export function EpisodeIdProvider({
 	return (
 		<EpisodeIdContext.Provider
 			value={{
-				episodeId,
-				setEpisodeId,
-				selectedStatus,
-				setSelectedStatus,
+				useEpisodeIdStoreContext,
 				usePlateStoreContext,
 				useAiStoreContext,
 				useLaserContext,
@@ -110,7 +104,10 @@ export const useEpisodeContext = () => {
 }
 
 const useEpisodeId = () => {
-	const { episodeId } = useContext(EpisodeIdContext)
+	const { useEpisodeIdStoreContext } = useContext(EpisodeIdContext)
+	const episodeId = useEpisodeIdStoreContext(
+		useShallow((state) => state.episodeId)
+	)
 	return episodeId
 }
 
