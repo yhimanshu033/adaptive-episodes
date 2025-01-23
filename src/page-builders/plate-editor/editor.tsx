@@ -35,6 +35,7 @@ export default function PlateEditor() {
 	const editor = useMyEditor({
 		content: content?.text || '',
 		comments: content?.chapter.props?.comments,
+		id: 'TEST_ID',
 	})
 
 	const { extended } = extendStore()
