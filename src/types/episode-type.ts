@@ -3,6 +3,8 @@ import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 
+import { TNote } from './plate-types'
+
 export type EpisodeStoreState = {
 	alertInfo: {
 		action?: EpisodeActions
@@ -43,6 +45,7 @@ export type TEpisode = {
 		creation_timestamp?: number
 		llm_memories?: TEpisodeProps
 		merged_chapter_ids?: number[]
+		notes?: TNote[]
 		original_chapters?: TEpisode[]
 	}
 	seq_number: number

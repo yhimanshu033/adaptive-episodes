@@ -10,11 +10,14 @@ import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 
+import Notes from './sidebar-sections/notes'
+
 const renderSidebar: Record<string, React.ReactNode> = {
 	comments: <CommentSidebar />,
 	outline: <StoryExplorer />,
 	far: <FindAndReplace />,
 	chatbot: <AiChatbot />,
+	notes: <Notes />,
 }
 
 const Sidebar = () => {

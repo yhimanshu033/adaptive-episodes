@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/accordion'
 import { preProcessData } from '@/lib/utils/explorer'
 
-import { ExplorerType } from '@/types/ai-types'
+import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
 
 export default function RenderContent({
 	content,
@@ -64,4 +64,35 @@ export default function RenderContent({
 			</>
 		)
 	}
+}
+
+export function StoryAccordion({
+	explorerData,
+}: {
+	explorerData: PlotExplorerApiResponse['data'] | string
+}) {
+	return typeof explorerData === 'string' ? (
+		<div
+			dangerouslySetInnerHTML={{
+				__html: explorerData.replace(/\n/g, '<br/>'),
+			}}
+		/>
+	) : (
+		<Accordion type="single" collapsible className="w-full">
+			{explorerData.map((data, index) => {
+				const processedData = preProcessData(data)
+				return processedData.map(({ title, content, preContent }, subIndex) => (
+					<AccordionItem
+						key={`${title}${index}-${subIndex}`}
+						value={`${title}${index}-${subIndex}`}
+					>
+						<AccordionTrigger>{title}</AccordionTrigger>
+						<AccordionContent>
+							<RenderContent content={content} preContent={preContent} />
+						</AccordionContent>
+					</AccordionItem>
+				))
+			})}
+		</Accordion>
+	)
 }
