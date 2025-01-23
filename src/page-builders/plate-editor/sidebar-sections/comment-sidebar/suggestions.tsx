@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
 	SuggestionActions,
 	SuggestionTypes,
@@ -21,7 +21,8 @@ const SuggestionBlock = ({
 }) => {
 	const { useOption } = useEditorPlugin(SuggestionPlugin)
 	const user = useOption('suggestionUserById', description.userId)
-	const { suggestionAction } = useSuggestions()
+	const { suggestionAction, activeSuggestionId } = useSuggestions()
+	const ref = useRef<HTMLDivElement>(null)
 
 	let suggestedText: string = ''
 
@@ -33,8 +34,17 @@ const SuggestionBlock = ({
 		suggestedText = `"${description.deletedText}" with "${description.insertedText}"`
 	}
 
+	useEffect(() => {
+		if (ref.current && description.suggestionId === activeSuggestionId) {
+			ref.current.scrollIntoView({
+				behavior: 'smooth',
+				block: 'nearest',
+			})
+		}
+	}, [activeSuggestionId, description.suggestionId])
+
 	return (
-		<div className="p-2">
+		<div ref={ref} className="p-2">
 			<div className="relative flex items-center gap-2">
 				<SuggestionAvatar user={user} />
 				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
