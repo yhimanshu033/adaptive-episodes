@@ -67,7 +67,6 @@ export default function DownloadDocxButton() {
 			[BaseHorizontalRulePlugin.key]: HrElementStatic,
 			[BaseItalicPlugin.key]: withProps(SlateLeaf, { as: 'em' }),
 			[BaseKbdPlugin.key]: KbdLeafStatic,
-			// [BaseMediaEmbedPlugin.key]: MediaEmbedElementStatic,
 			[BaseParagraphPlugin.key]: ParagraphElementStatic,
 			[BaseStrikethroughPlugin.key]: withProps(SlateLeaf, { as: 'del' }),
 			[BaseSubscriptPlugin.key]: withProps(SlateLeaf, { as: 'sub' }),
