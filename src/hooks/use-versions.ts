@@ -59,7 +59,6 @@ export default function useVersions({
 	const handleSelect = (value: EStatus) => {
 		const currentIndex = statuses.indexOf(value)
 		currentSelection.current = value
-		console.log({ isSaved })
 		if (currentIndex > latestIndex) {
 			setIsDialogOpen(true)
 		} else {

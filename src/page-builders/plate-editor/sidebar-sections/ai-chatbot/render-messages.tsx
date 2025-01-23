@@ -2,6 +2,7 @@ import React from 'react'
 import { SFX_INFO } from '@/constants/ai-constants'
 import useAiChatbotMessages from '@/hooks/use-ai-chatbot-messages'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import { SfxInfoComponent } from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/sfx-info-popover'
 import { Check, CheckCheck, Copy, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -9,8 +10,6 @@ import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { cn, extract } from '@/lib/utils/helpers'
 
 import { EAction, EMessenger, TMessage } from '@/types/ai-types'
-
-import { SfxInfoComponent } from './sfx-info-popover'
 
 export default function RenderMessage({
 	message,

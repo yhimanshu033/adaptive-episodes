@@ -9,16 +9,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { clearLasers } from '@/lib/utils/plate'
 
 import { BASE_STATUS } from '@/types/common'
-
-type TSaveEpisodeParams = {
-	forced?: boolean
-}
-
-export type TSavingContext = {
-	handleSave: (params?: TSaveEpisodeParams) => Promise<void>
-	isPending: boolean
-	isSaved: boolean
-}
+import { TSaveEpisodeParams, TSavingContext } from '@/types/episode-type'
 
 const SavingContext = React.createContext<TSavingContext | undefined>(undefined)
 

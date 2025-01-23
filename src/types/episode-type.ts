@@ -2,8 +2,7 @@ import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
-
-import { TNote } from './plate-types'
+import { TNote } from '@/types/plate-types'
 
 export type EpisodeStoreState = {
 	alertInfo: {
@@ -153,4 +152,14 @@ export type EpisodeIdStoreType = {
 	episodeId: number
 	notes: TNote[]
 	selectedStatus: EStatus | undefined
+}
+
+export type TSaveEpisodeParams = {
+	forced?: boolean
+}
+
+export type TSavingContext = {
+	handleSave: (params?: TSaveEpisodeParams) => Promise<void>
+	isPending: boolean
+	isSaved: boolean
 }
