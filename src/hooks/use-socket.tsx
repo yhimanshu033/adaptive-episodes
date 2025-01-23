@@ -18,6 +18,16 @@ import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
 
+type StartTaskParams<
+	BodyParamsT = TNoParams,
+	ResponseDataT = TNoParams,
+	UrlParamsT = TNoParams,
+	QueryParamsT = TNoParams,
+> = FetchRequestParams<ResponseDataT, UrlParamsT, BodyParamsT, QueryParamsT> & {
+	noCache?: boolean
+	onResponse?: (data: ResponseDataT) => void
+}
+
 type TSocketContext = {
 	getResponse: <T>(taskId: string) => Promise<T>
 	startTask: <
@@ -26,14 +36,12 @@ type TSocketContext = {
 		UrlParamsT = TNoParams,
 		QueryParamsT = TNoParams,
 	>(
-		params: FetchRequestParams<
+		params: StartTaskParams<
+			BodyParamsT,
 			ResponseDataT,
 			UrlParamsT,
-			BodyParamsT,
 			QueryParamsT
-		> & {
-			onResponse?: (data: ResponseDataT) => void
-		}
+		>
 	) => Promise<string>
 }
 const SocketContext = createContext<TSocketContext | undefined>(undefined)
@@ -64,30 +72,29 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	}, [socket])
 
-	const startTask = useCallback(
+	const startTask: TSocketContext['startTask'] = useCallback(
 		async <
 			BodyParamsT = TNoParams,
 			ResponseDataT = TNoParams,
 			UrlParamsT = TNoParams,
 			QueryParamsT = TNoParams,
 		>(
-			params: FetchRequestParams<
+			params: StartTaskParams<
+				BodyParamsT,
 				ResponseDataT,
 				UrlParamsT,
-				BodyParamsT,
 				QueryParamsT
-			> & {
-				onResponse?: (data: ResponseDataT) => void
-			}
+			>
 		) => {
+			const { onResponse, noCache, ...restParams } = params
 			const key = JSON.stringify(params)
-			if (fetchedData[key]) {
+			if (fetchedData[key] && !noCache) {
 				return fetchedData[key]
 			}
 			const taskId = nanoid()
 			setFetchedData((prev) => ({ ...prev, [key]: taskId }))
-			if (params.onResponse) {
-				taskCallbacksRef.current[taskId] = params.onResponse
+			if (onResponse) {
+				taskCallbacksRef.current[taskId] = onResponse
 			}
 
 			await fetchAPI<
@@ -96,7 +103,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 				BodyParamsT,
 				QueryParamsT & { task_id: string }
 			>({
-				...params,
+				...restParams,
 				query: { task_id: taskId, ...(params.query as QueryParamsT) },
 			})
 

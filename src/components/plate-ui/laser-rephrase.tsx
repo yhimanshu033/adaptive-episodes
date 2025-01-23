@@ -95,6 +95,7 @@ export default function LaserRephrase({
 	useEffect(() => {
 		if (triggerRephrase === key) {
 			reset()
+			handleRephrase(methodId)
 			setTriggerRephrase(null)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
