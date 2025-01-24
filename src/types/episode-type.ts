@@ -147,6 +147,10 @@ export type TEpisodeDeleteResponse = {
 	project_id: number
 }
 
+export type TGetDocxFromHtmlBody = {
+	html_content: string
+}
+
 export type EpisodeIdStoreType = {
 	currentTitle: string
 	episodeId: number

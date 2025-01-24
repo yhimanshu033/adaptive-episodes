@@ -38,6 +38,7 @@
     "@tanstack/react-query-devtools": "^5.62.0",
     "@tanstack/react-table": "^8.20.5",
     "@udecode/cn": "^40.2.8",
+    "@udecode/plate": "^43.0.0",
     "@udecode/plate-alignment": "^40.0.0",
     "@udecode/plate-autoformat": "^40.0.0",
     "@udecode/plate-basic-marks": "^40.0.0",

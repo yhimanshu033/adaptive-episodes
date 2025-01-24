@@ -18,6 +18,8 @@ import { getText } from '@/lib/utils/plate'
 
 import { ESidebar } from '@/types/plate-types'
 
+import DownloadDocxButton from './download-docx-button'
+
 export function MoreDropdownMenu(props: DropdownMenuProps) {
 	const { setSidebar } = usePlateStore()
 	const openState = useOpenState()
@@ -61,6 +63,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 					<NotebookPen className="mr-2 size-5" />
 					Notes
 				</DropdownMenuItem>
+				<DownloadDocxButton />
 				<DropdownMenuItem disabled>
 					<WholeWordIcon className="mr-2 size-5" />
 					Words: {prettifyNumber(words.length)}
