@@ -1,9 +1,9 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { EPISODE_LIMIT } from '@/constants/episodes-constants'
-import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 import { ArrowLeft } from 'lucide-react'
@@ -12,16 +12,14 @@ import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
 
-import { EStatus } from '@/types/common'
-
 const Title = () => {
 	const router = useRouter()
 	const { id } = useParams()
-	const { data: episodeContent, latestStatus } = useEpisodeContent()
-	const { saveEpisodeMutation } = useEpisodeHook()
+	const { data: episodeContent } = useEpisodeContent()
 	const readOnly = useEditorReadOnly()
 	const { handleSave, isSaved } = useSaving()
 	const queryClient = useQueryClient()
+	const { setCurrentTitle } = useEpisodeIdStore()
 
 	const handleClick = async () => {
 		const page = Math.ceil(
@@ -30,17 +28,12 @@ const Title = () => {
 		await queryClient.refetchQueries({
 			queryKey: [parseInt(String(id)), 'episodes', page],
 		})
-		if (!isSaved) handleSave()
+		if (!isSaved) void handleSave()
 		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
 	}
 
 	const updateChapterTitle = (chapter_title: string) => {
-		if (episodeContent?.chapter.chapter_title === chapter_title) return
-		saveEpisodeMutation.mutate({
-			chapter_title,
-			text: episodeContent?.text || '',
-			status: latestStatus || EStatus.FIRST_DRAFT,
-		})
+		setCurrentTitle(chapter_title)
 	}
 
 	return (
@@ -59,7 +52,7 @@ const Title = () => {
 				rootClass="text-xl"
 				inputClass="text-xl"
 				isEditable={!readOnly}
-				onComplete={updateChapterTitle}
+				onComplete={(title) => void updateChapterTitle(title)}
 			/>
 		</div>
 	)

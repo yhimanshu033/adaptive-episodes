@@ -5,6 +5,7 @@ import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
 import { extendStore } from '@/hooks/use-editor-extend-state'
 import useMyEditor from '@/hooks/use-my-editor'
+import { SavingContextProvider } from '@/hooks/use-saving'
 import SaveEpisode from '@/page-builders/plate-editor/save-episode'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
@@ -24,10 +25,12 @@ import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response
 import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons'
-import { useEpisodeContext } from '@/providers/episode-id-provider'
+import { Separator } from '@/components/ui/separator'
+import useEpisodeId from '@/providers/episode-id-provider'
+
+import ControlButtons from './split-editor/control-buttons'
 
 export default function PlateEditor() {
-	const { selectedStatus, setSelectedStatus } = useEpisodeContext()
 	const queryClient = useQueryClient()
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content, latestStatus, queryKey } = useEpisodeContent()
@@ -37,8 +40,10 @@ export default function PlateEditor() {
 		comments: content?.chapter.props?.comments,
 		id: 'TEST_ID',
 	})
-
+	const episodeId = useEpisodeId()
 	const { extended } = extendStore()
+
+	const isLast = episodeId === extended[extended.length - 1]
 
 	useEffect(() => {
 		const invalidate = async () => {
@@ -57,60 +62,60 @@ export default function PlateEditor() {
 
 	return (
 		<Plate editor={editor}>
-			<ChatbotProvider>
-				<div className="flex animate-fade-in-up items-center justify-between">
-					<Title />
-					<div className="flex items-center gap-2">
-						<Versions
-							{...{
-								isChildEpisode,
-								latestStatus,
-								selectedStatus,
-								setSelectedStatus,
-							}}
-						/>
-						<SyncMetaData />
-						<SaveEpisode />
-					</div>
-				</div>
-				<div
-					ref={containerRef}
-					className={cn(
-						'relative mt-4 animate-fade-in-up rounded border bg-background-editor shadow-editor',
-						// Block selection
-						'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
-					)}
-				>
-					<FixedToolbar>
-						<FixedToolbarButtons />
-					</FixedToolbar>
-					<div className="~h-[78vh] flex size-full">
-						<div className="w-full flex-1 bg-background">
-							<div className="flex h-full">
-								<div className="flex w-full">
-									<Editor
-										className="size-full rounded-none px-12 py-5"
-										autoFocus
-										focusRing={false}
-										variant="ghost"
-										size="md"
-									/>
-
-									<FloatingToolbar>
-										<FloatingToolbarButtons />
-									</FloatingToolbar>
-
-									<CursorOverlay containerRef={containerRef} />
-								</div>
-								<Translation translatedContent={content.translation_text} />
-							</div>
+			<SavingContextProvider>
+				<ChatbotProvider>
+					<div className="flex animate-fade-in-up items-center justify-between">
+						<Title />
+						<div className="flex items-center gap-2">
+							<Versions
+								isChildEpisode={isChildEpisode}
+								latestStatus={latestStatus}
+							/>
+							<SyncMetaData />
+							<SaveEpisode />
 						</div>
-						<Sidebar />
 					</div>
-				</div>
-				<FloatingPrompt />
-				<FloatingLaserResponse />
-			</ChatbotProvider>
+					<div
+						ref={containerRef}
+						className={cn(
+							'relative mt-4 animate-fade-in-up rounded border bg-background-editor shadow-editor',
+							// Block selection
+							'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
+						)}
+					>
+						<FixedToolbar>
+							<FixedToolbarButtons />
+						</FixedToolbar>
+						<div className="~h-[78vh] flex size-full">
+							<div className="w-full flex-1 bg-background">
+								<div className="flex h-full">
+									<div className="flex w-full">
+										<Editor
+											className="size-full rounded-none px-12 py-5"
+											autoFocus
+											focusRing={false}
+											variant="ghost"
+											size="md"
+										/>
+
+										<FloatingToolbar>
+											<FloatingToolbarButtons />
+										</FloatingToolbar>
+
+										<CursorOverlay containerRef={containerRef} />
+									</div>
+									<Translation translatedContent={content.translation_text} />
+								</div>
+							</div>
+							<Sidebar />
+						</div>
+					</div>
+					{isLast ? <ControlButtons /> : <Separator />}
+
+					<FloatingPrompt />
+					<FloatingLaserResponse />
+				</ChatbotProvider>
+			</SavingContextProvider>
 		</Plate>
 	)
 }

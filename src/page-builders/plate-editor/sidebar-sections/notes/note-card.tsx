@@ -1,5 +1,6 @@
 import React from 'react'
 import useSaveEpisode from '@/hooks/use-save-episode'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { Trash2 } from 'lucide-react'
 
@@ -18,7 +19,8 @@ import { TNote } from '@/types/plate-types'
 
 const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 	const { setActiveNoteId } = usePlateStore()
-	const { handleSave, isPending } = useSaveEpisode()
+	const { isPending } = useSaveEpisode()
+	const { deleteNote } = useEpisodeIdStore()
 	return (
 		<div className="group relative">
 			<Card
@@ -48,7 +50,7 @@ const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 						size="icon"
 						onClick={(e) => {
 							e.stopPropagation()
-							handleSave({ deleteNoteId: id })
+							deleteNote(id)
 						}}
 					>
 						<Trash2 size={16} />

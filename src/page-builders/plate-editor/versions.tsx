@@ -2,6 +2,7 @@ import React from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useVersions from '@/hooks/use-versions'
 import { Eye } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 import {
 	AlertDialog,
@@ -21,20 +22,21 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
+import { useEpisodeContext } from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 
 const Versions = ({
 	isChildEpisode,
 	latestStatus,
-	selectedStatus,
-	setSelectedStatus,
 }: {
 	isChildEpisode: boolean
 	latestStatus: EStatus | typeof BASE_STATUS
-	selectedStatus: EStatus | undefined
-	setSelectedStatus: React.Dispatch<React.SetStateAction<EStatus | undefined>>
 }) => {
+	const { useEpisodeIdStoreContext } = useEpisodeContext()
+	const selectedStatus = useEpisodeIdStoreContext(
+		useShallow((s) => s.selectedStatus)
+	)
 	const {
 		handleConfirm,
 		handleSelect,
@@ -46,8 +48,6 @@ const Versions = ({
 	} = useVersions({
 		isChildEpisode,
 		latestStatus,
-		selectedStatus,
-		setSelectedStatus,
 	})
 
 	if (saveEpisodeMutation.isPending) return <Spinner size={24} />

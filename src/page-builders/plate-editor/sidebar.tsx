@@ -2,6 +2,7 @@ import React from 'react'
 import AiChatbot from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot'
 import CommentSidebar from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar'
 import FindAndReplace from '@/page-builders/plate-editor/sidebar-sections/find-and-replace'
+import Notes from '@/page-builders/plate-editor/sidebar-sections/notes'
 import StoryExplorer from '@/page-builders/plate-editor/sidebar-sections/story-explorer'
 import usePlateStore from '@/store/plate-store'
 
@@ -9,8 +10,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
-
-import Notes from './sidebar-sections/notes'
 
 const renderSidebar: Record<string, React.ReactNode> = {
 	comments: <CommentSidebar />,

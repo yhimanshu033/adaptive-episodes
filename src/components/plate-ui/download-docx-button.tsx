@@ -1,5 +1,6 @@
 import React from 'react'
 import useSocket from '@/hooks/use-socket'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import { withProps } from '@udecode/cn'
 import {
 	BaseParagraphPlugin,
@@ -42,6 +43,7 @@ import { BaseColumnItemPlugin, BaseColumnPlugin } from '@udecode/plate-layout'
 import { BaseLineHeightPlugin } from '@udecode/plate-line-height'
 import { BaseLinkPlugin } from '@udecode/plate-link'
 import { Download } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 import { BlockquoteElementStatic } from '@/components/plate-ui/block-quote-element'
 import { CommentLeafStatic } from '@/components/plate-ui/comment-leaf-static'
@@ -59,8 +61,12 @@ import { TGetDocxFromHtmlBody } from '@/types/episode-type'
 const siteUrl = 'https://platejs.org'
 export default function DownloadDocxButton() {
 	const editor = useEditorState()
-
+	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+	const title = useEpisodeIdStoreContext(
+		useShallow((state) => state.currentTitle)
+	)
 	const { startTask, getResponse } = useSocket()
+	const downloadedContentRef = React.useRef<string | null>(null)
 
 	const exportToHtml = async () => {
 		const components = {
@@ -166,6 +172,7 @@ export default function DownloadDocxButton() {
             ${tailwindCss}
             ${prismCss}
             ${katexCss}
+			<title>${title}</title>
             <style>
               :root {
                 --font-sans: 'Inter', 'Inter Fallback';
@@ -185,10 +192,11 @@ export default function DownloadDocxButton() {
 			body: {
 				html_content: base64String,
 			},
+			noCache: downloadedContentRef.current === html,
 		})
+		downloadedContentRef.current = html
 		const responseUrl = await getResponse(taskId)
-		// const url = `data:text/html;charset=utf-8,${encodeURIComponent(html)}`
-		downloadFile(responseUrl as string, 'chapter.docx')
+		downloadFile(responseUrl as string, `${title}.docx`)
 	}
 
 	return (
