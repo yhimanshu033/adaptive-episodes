@@ -2,6 +2,7 @@ import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { extendStore } from '@/hooks/use-editor-extend-state'
+import useSaving from '@/hooks/use-saving'
 import {
 	CircleArrowLeft,
 	CircleArrowRight,
@@ -16,9 +17,11 @@ export default function ControlButtons() {
 	const { setExtended, extended } = extendStore()
 
 	const { data: content } = useEpisodeContent()
+	const { isSaved, handleSave } = useSaving()
 
 	const handleEpisodeChange = (episode: number | null) => {
 		if (!episode) return
+		if (!isSaved) void handleSave()
 		router.push(`/projects/${String(id)}/${episode}/editor`)
 	}
 
