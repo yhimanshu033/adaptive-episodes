@@ -1,9 +1,8 @@
 import React from 'react'
 import { LoaderCircle } from 'lucide-react'
 
+import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
-
-import { buttonVariants } from './ui/button'
 
 export function Loader({
 	loaderClass,

@@ -1,6 +1,8 @@
 import React from 'react'
 import useSaveEpisode from '@/hooks/use-save-episode'
+import { toast } from '@/hooks/use-toast'
 import useAIStore from '@/store/ai-store'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import { ArrowLeft, FilePlus2 } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { useShallow } from 'zustand/react/shallow'
@@ -29,11 +31,12 @@ const Content = ({
 	start: number
 }) => {
 	const { store, setActiveExplorerActions } = useAIStore()
+	const { addNote } = useEpisodeIdStore()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
 	const activeExplorerActions = store(
 		useShallow((state) => state.activeExplorerActions)
 	)
-	const { handleSave, isPending } = useSaveEpisode()
+	const { isPending } = useSaveEpisode()
 
 	const addToNote = (explorerData?: PlotExplorerApiResponse['data']) => {
 		const note: TNote = {
@@ -42,7 +45,10 @@ const Content = ({
 			content: explorerData || '',
 			updateTime: new Date().toString(),
 		}
-		handleSave({ note })
+		addNote(note)
+		toast({
+			title: 'Added to Note!',
+		})
 	}
 	return (
 		<>

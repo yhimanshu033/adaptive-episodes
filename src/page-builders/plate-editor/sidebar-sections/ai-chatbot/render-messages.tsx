@@ -1,6 +1,8 @@
 import React from 'react'
+import { SFX_INFO } from '@/constants/ai-constants'
 import useAiChatbotMessages from '@/hooks/use-ai-chatbot-messages'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import { SfxInfoComponent } from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/sfx-info-popover'
 import { Check, CheckCheck, Copy, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -24,22 +26,23 @@ export default function RenderMessage({
 	) {
 		if (taskEnded[message.taskId]) {
 			return (
-				<div className="flex max-w-[70%] gap-2 rounded-lg p-3">
-					<TooltipComponent tooltip={'Done'}>
+				<div className="flex max-w-[70%] items-center gap-2 rounded-lg p-3">
+					<TooltipComponent delayDuration={100} tooltip={SFX_INFO.SINGLE_TICK}>
 						<Button onClick={() => handleAccept(index, false)}>
 							<Check />
 						</Button>
 					</TooltipComponent>
-					<TooltipComponent tooltip={'Accept All'}>
+					<TooltipComponent delayDuration={100} tooltip={SFX_INFO.DOUBLE_TICK}>
 						<Button variant="outline" onClick={() => handleAccept(index, true)}>
 							<CheckCheck />
 						</Button>
 					</TooltipComponent>
-					<TooltipComponent tooltip={'Reject All'}>
+					<TooltipComponent delayDuration={100} tooltip={SFX_INFO.CROSS}>
 						<Button variant="outline" onClick={() => handleReject(index)}>
 							<X />
 						</Button>
 					</TooltipComponent>
+					<SfxInfoComponent />
 				</div>
 			)
 		}

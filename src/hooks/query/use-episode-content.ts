@@ -3,11 +3,11 @@
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/episodes-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import { useQuery } from '@tanstack/react-query'
+import { useShallow } from 'zustand/react/shallow'
 
-import useEpisodeId, {
-	useEpisodeContext,
-} from '@/providers/episode-id-provider'
+import useEpisodeId from '@/providers/episode-id-provider'
 import { getSelectedEpisode } from '@/lib/utils/helpers'
 
 /**
@@ -19,7 +19,10 @@ import { getSelectedEpisode } from '@/lib/utils/helpers'
  */
 
 export const useEpisodeContent = () => {
-	const { selectedStatus } = useEpisodeContext()
+	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+	const selectedStatus = useEpisodeIdStoreContext(
+		useShallow((state) => state.selectedStatus)
+	)
 	const { data } = useEpisodeInfo()
 	const episodeId = useEpisodeId()
 	const { episode, latestStatus } = data
