@@ -167,3 +167,5 @@ export type TSavingContext = {
 	isPending: boolean
 	isSaved: boolean
 }
+
+export type DownloadDocxParams = { latestStatus: EStatus | 'BASE' | undefined }

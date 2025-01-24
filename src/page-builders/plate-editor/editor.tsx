@@ -18,6 +18,7 @@ import { Plate } from '@udecode/plate-common/react'
 
 import { Loader } from '@/components/loader'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
+import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import { Editor } from '@/components/plate-ui/editor'
 import { FixedToolbar } from '@/components/plate-ui/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui/fixed-toolbar-buttons'
@@ -67,6 +68,7 @@ export default function PlateEditor() {
 					<div className="flex animate-fade-in-up items-center justify-between">
 						<Title />
 						<div className="flex items-center gap-2">
+							<DownloadDocxButton latestStatus={latestStatus} />
 							<Versions
 								isChildEpisode={isChildEpisode}
 								latestStatus={latestStatus}
