@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { EpisodeActions } from '@/constants/episodes-constants'
+import {
+	EPISODE_LIST_QUERY_KEY,
+	EpisodeActions,
+} from '@/constants/episodes-constants'
 import { usePageState } from '@/hooks/use-page-state'
 import useSocket from '@/hooks/use-socket'
 import { saveContent } from '@/server-action/content-action'
@@ -34,7 +37,13 @@ const useEpisodeHook = () => {
 
 	const onSuccess = async () => {
 		await queryClient.invalidateQueries({
-			queryKey: [Number(id), 'episodes', currentPage, episodeSearch],
+			queryKey: [
+				EPISODE_LIST_QUERY_KEY,
+				Number(id),
+				currentPage,
+				episodeSearch,
+			],
+			exact: true,
 			type: 'all',
 		})
 	}
