@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
 import useSaveEpisode from '@/hooks/use-save-episode'
 import { Save } from 'lucide-react'

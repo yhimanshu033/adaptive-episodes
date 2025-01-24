@@ -25,6 +25,10 @@ import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response
 import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons'
+import { Separator } from '@/components/ui/separator'
+import useEpisodeId from '@/providers/episode-id-provider'
+
+import ControlButtons from './split-editor/control-buttons'
 
 export default function PlateEditor() {
 	const queryClient = useQueryClient()
@@ -35,8 +39,10 @@ export default function PlateEditor() {
 		content: content?.text || '',
 		comments: content?.chapter.props?.comments,
 	})
-
+	const episodeId = useEpisodeId()
 	const { extended } = extendStore()
+
+	const isLast = episodeId === extended[extended.length - 1]
 
 	useEffect(() => {
 		const invalidate = async () => {
@@ -103,6 +109,8 @@ export default function PlateEditor() {
 							<Sidebar />
 						</div>
 					</div>
+					{isLast ? <ControlButtons /> : <Separator />}
+
 					<FloatingPrompt />
 					<FloatingLaserResponse />
 				</ChatbotProvider>
