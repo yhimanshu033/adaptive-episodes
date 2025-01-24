@@ -1,5 +1,9 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { EPISODE_LIMIT, EpisodeActions } from '@/constants/episodes-constants'
+import {
+	EPISODE_LIMIT,
+	EPISODE_LIST_QUERY_KEY,
+	EpisodeActions,
+} from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
 import {
@@ -177,7 +181,13 @@ const useEpisodeTable = () => {
 				})
 			)
 			await queryClient.invalidateQueries({
-				queryKey: [Number(id), 'episodes', currentPage, episodeSearch],
+				queryKey: [
+					EPISODE_LIST_QUERY_KEY,
+					Number(id),
+					currentPage,
+					episodeSearch,
+				],
+				exact: true,
 				type: 'all',
 			})
 		} else if (alertInfo.action === EpisodeActions.DELETE && deleteEpisodeId) {
