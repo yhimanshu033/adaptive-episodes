@@ -1,4 +1,5 @@
 import React from 'react'
+import useSocket from '@/hooks/use-socket'
 import { withProps } from '@udecode/cn'
 import {
 	BaseParagraphPlugin,
@@ -53,9 +54,13 @@ import { KbdLeafStatic } from '@/components/plate-ui/kbd-leaf-static'
 import { ParagraphElementStatic } from '@/components/plate-ui/paragraph-element-static'
 import { downloadFile } from '@/lib/utils/client-helpers'
 
+import { TGetDocxFromHtmlBody } from '@/types/episode-type'
+
 const siteUrl = 'https://platejs.org'
 export default function DownloadDocxButton() {
 	const editor = useEditorState()
+
+	const { startTask, getResponse } = useSocket()
 
 	const exportToHtml = async () => {
 		const components = {
@@ -138,8 +143,6 @@ export default function DownloadDocxButton() {
 			props: {
 				style: {
 					padding: '0 calc(50% - 350px)',
-					paddingBottom: '',
-					lineBreak: 'auto',
 				},
 			},
 		})
@@ -169,15 +172,23 @@ export default function DownloadDocxButton() {
                 --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback';
               }
             </style>
-             <title>Chapter Title</title>
           </head>
           <body>
           ${editorHtml.replace(/<\/div>/g, '</div><br>')}
           </body>
         </html>`
 
-		const url = `data:text/html;charset=utf-8,${encodeURIComponent(html)}`
-		downloadFile(url, 'chapter-test.html')
+		const base64String = btoa(unescape(encodeURIComponent(html)))
+		const taskId = await startTask<TGetDocxFromHtmlBody>({
+			method: 'POST',
+			url: '/project/convert-html-to-docx/',
+			body: {
+				html_content: base64String,
+			},
+		})
+		const responseUrl = await getResponse(taskId)
+		// const url = `data:text/html;charset=utf-8,${encodeURIComponent(html)}`
+		downloadFile(responseUrl as string, 'chapter.docx')
 	}
 
 	return (

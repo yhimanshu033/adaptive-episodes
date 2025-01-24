@@ -147,3 +147,7 @@ export type TEpisodeDeleteResponse = {
 	message: string
 	project_id: number
 }
+
+export type TGetDocxFromHtmlBody = {
+	html_content: string
+}
