@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { statuses } from '@/constants/episodes-constants'
+import {
+	EPISODE_LIST_QUERY_KEY,
+	statuses,
+} from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -89,7 +92,7 @@ export default function useVersions({
 			})
 			await queryClient.invalidateQueries({ queryKey: ['info'], type: 'all' })
 			await queryClient.invalidateQueries({
-				queryKey: [Number(id), 'episodes'],
+				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
 				type: 'all',
 			})
 		}

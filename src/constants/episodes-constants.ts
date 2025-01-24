@@ -28,3 +28,4 @@ export const EPISODE_LIMIT = 10
 export const SIDEBAR_DISABLED = ['4008']
 
 export const EPISODE_CONTENT_QUERY_KEY = 'episode-content'
+export const EPISODE_LIST_QUERY_KEY = 'episodes'

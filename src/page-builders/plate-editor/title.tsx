@@ -1,6 +1,9 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { EPISODE_LIMIT } from '@/constants/episodes-constants'
+import {
+	EPISODE_LIMIT,
+	EPISODE_LIST_QUERY_KEY,
+} from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
 import useEpisodeIdStore from '@/store/episode-id-store'
@@ -25,11 +28,11 @@ const Title = () => {
 		const page = Math.ceil(
 			Number(episodeContent?.chapter.seq_number || 1) / EPISODE_LIMIT
 		)
-		await queryClient.refetchQueries({
-			queryKey: [parseInt(String(id)), 'episodes', page],
-		})
-		if (!isSaved) void handleSave()
+		if (!isSaved) await handleSave()
 		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
+		await queryClient.refetchQueries({
+			queryKey: [EPISODE_LIST_QUERY_KEY],
+		})
 	}
 
 	const updateChapterTitle = (chapter_title: string) => {
