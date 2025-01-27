@@ -21,8 +21,10 @@ const SuggestionBlock = ({
 }) => {
 	const { useOption } = useEditorPlugin(SuggestionPlugin)
 	const user = useOption('suggestionUserById', description.userId)
-	const { suggestionAction, activeSuggestionId } = useSuggestions()
+	const { suggestionAction, activeSuggestionId, set } = useSuggestions()
 	const ref = useRef<HTMLDivElement>(null)
+
+	const isActive = description.suggestionId === activeSuggestionId
 
 	let suggestedText: string = ''
 
@@ -35,16 +37,27 @@ const SuggestionBlock = ({
 	}
 
 	useEffect(() => {
-		if (ref.current && description.suggestionId === activeSuggestionId) {
+		if (ref.current && isActive) {
 			ref.current.scrollIntoView({
 				behavior: 'smooth',
 				block: 'nearest',
 			})
 		}
-	}, [activeSuggestionId, description.suggestionId])
+	}, [isActive])
 
 	return (
-		<div ref={ref} className="p-2">
+		<div
+			ref={ref}
+			className={cn('cursor-pointer p-2', isActive && 'bg-background')}
+			onClick={() => {
+				set('activeSuggestionId', description.suggestionId)
+				const elem = document.getElementById(
+					'suggestion-leaf-' + description.suggestionId
+				)
+				if (!elem) return
+				elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+			}}
+		>
 			<div className="relative flex items-center gap-2">
 				<SuggestionAvatar user={user} />
 				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
