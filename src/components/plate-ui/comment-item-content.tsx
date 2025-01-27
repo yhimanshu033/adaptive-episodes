@@ -4,8 +4,10 @@ import React, { useMemo } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import useAIStore from '@/store/ai-store'
 import { useCommentItemContentState } from '@udecode/plate-comments/react'
 import { formatDistance } from 'date-fns'
+import { useShallow } from 'zustand/react/shallow'
 
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
 import { CommentMoreDropdown } from '@/components/plate-ui/comment-more-dropdown'
@@ -16,15 +18,28 @@ export default function CommentItemContent() {
 	const { comment, commentText, editingValue, isReplyComment, user } =
 		useCommentItemContentState()
 
+	const { store, addActiveCommentExampleMap } = useAIStore()
+	const activeCommentExampleMap = store(
+		useShallow((state) => state.activeCommentExampleMap)
+	)
 	const { responses, taskEnded } = useSocketStreaming()
-	const { mutate, data } = useCommentExampleHook()
+	const { mutateAsync, data } = useCommentExampleHook()
 
+	const key = useMemo(
+		() => data || activeCommentExampleMap[comment.id] || '',
+		[data, activeCommentExampleMap, comment.id]
+	)
 	const exampleData = useMemo(() => {
-		if (user?.id !== AI_USER_ID || !data) {
+		if (user?.id !== AI_USER_ID || !key) {
 			return null
 		}
-		return responses[data]?.join('') || ''
-	}, [data, responses, user])
+		return responses[key]?.join('') || ''
+	}, [key, user, responses])
+
+	async function onExample() {
+		const taskId = await mutateAsync()
+		addActiveCommentExampleMap({ key: comment.id, value: taskId })
+	}
 
 	return (
 		<div>
@@ -40,7 +55,7 @@ export default function CommentItemContent() {
 				<div className="absolute -right-0.5 -top-0.5 flex space-x-1">
 					{isReplyComment ? null : <CommentResolveButton />}
 
-					<CommentMoreDropdown onExample={() => mutate()} />
+					<CommentMoreDropdown onExample={() => void onExample()} />
 				</div>
 			</div>
 
@@ -51,12 +66,12 @@ export default function CommentItemContent() {
 					<div className="whitespace-pre-wrap text-sm">{commentText}</div>
 				)}
 			</div>
-			{data && !exampleData && (
+			{!exampleData && key && (
 				<div className="flex flex-col gap-2 p-2">
 					<h2 className="font-semibold">Denke nach...</h2>
 				</div>
 			)}
-			{exampleData && data && !taskEnded[data] && (
+			{exampleData && !taskEnded[key] && (
 				<div className="flex flex-col gap-2 p-2">
 					<h2 className="text-sm font-semibold">Beispiel:</h2>
 					<p className="text-xs">{exampleData}</p>
