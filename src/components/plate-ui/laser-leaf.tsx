@@ -10,7 +10,7 @@ import {
 } from '@udecode/plate-common/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
-import { getCommentNode } from '@/lib/utils/plate'
+import { breakDownValue, getCommentNode } from '@/lib/utils/plate'
 
 import { TLaserLeafChildren } from '@/types/plate-types'
 
@@ -120,7 +120,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		try {
 			const val = structuredClone(editor.children)
 			val.forEach(traverse)
-			editor.tf.setValue(val)
+			editor.tf.setValue(breakDownValue(val))
 		} catch (error) {
 			console.error(error)
 		}

@@ -6,6 +6,8 @@ import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
 import { nanoid } from 'nanoid'
 import { useShallow } from 'zustand/react/shallow'
 
+import { breakDownValue } from '@/lib/utils/plate'
+
 import { EAction, EMessenger } from '@/types/ai-types'
 
 export default function useAiChatbotMessages() {
@@ -32,24 +34,6 @@ export default function useAiChatbotMessages() {
 			i
 		)
 	}
-
-	const handleReject = useCallback(
-		(i: number) => {
-			updateMessages(
-				{
-					taskId: nanoid(),
-					role: EMessenger.ASSISTANT,
-					action: EAction.REJECT,
-					content: 'Rejected changes from StoryChat',
-				},
-				i
-			)
-			setResponseValue(null)
-			setPrevValue(null)
-		},
-		[setPrevValue, setResponseValue, updateMessages]
-	)
-
 	const handleAcceptResponse = useCallback(
 		(all: boolean = true) => {
 			if (!value) return
@@ -82,17 +66,18 @@ export default function useAiChatbotMessages() {
 								(child.text && (child.text as string).match(/^\n+$/))
 							) {
 								add = true
+								child.text = String(child.text).replace(/\n+/, '') + '\n '
 							} else {
 								add = false
 							}
 						}
 						if (add) {
-							return child
+							return { ...child, text: String(child.text) }
 						}
 					})
 					.filter((child) => !!child),
 			}))
-			editor.tf.setValue(currVal)
+			editor.tf.setValue(breakDownValue(currVal))
 			setResponseValue(null)
 			setPrevValue(null)
 			setAcceptedValue(null)
@@ -103,5 +88,5 @@ export default function useAiChatbotMessages() {
 	const lastMessageId =
 		messages.findLast((m) => m.role === EMessenger.ASSISTANT)?.taskId || ''
 
-	return { handleAccept, handleReject, lastMessageId, messages }
+	return { handleAccept, lastMessageId, messages }
 }

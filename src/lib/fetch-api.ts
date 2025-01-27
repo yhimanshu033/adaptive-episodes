@@ -101,7 +101,6 @@ export async function fetchAPI<
 		})
 
 		const responseData = (await response.json()) as ResponseDataT
-
 		return {
 			success: true,
 			status: response.status,

@@ -12,6 +12,7 @@ import { TElement, TText } from '@udecode/slate'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { replaceNthInsensitive } from '@/lib/utils/ai-chatbot'
 import { downloadFile } from '@/lib/utils/client-helpers'
+import { breakDownValue } from '@/lib/utils/plate'
 
 import {
 	TLocalizeCharacterArrayItem,
@@ -113,7 +114,7 @@ export default function useFindAndReplace() {
 			}
 		}
 		updatedChildren.forEach(processNode)
-		editor.tf.setValue(updatedChildren)
+		editor.tf.setValue(breakDownValue(updatedChildren))
 		setOptions({ search: '', replace: '', replaceEnabled: false })
 	}, [
 		caseSensitive,
@@ -139,7 +140,7 @@ export default function useFindAndReplace() {
 			...node,
 			text,
 		}
-		editor.tf.setValue(updatedChildren)
+		editor.tf.setValue(breakDownValue(updatedChildren))
 	}, [children, editor.tf, ptr, records, replace, search])
 
 	function handlePrev() {
@@ -153,13 +154,13 @@ export default function useFindAndReplace() {
 	function toggleCaseSensitive() {
 		setOptions({ caseSensitive: !caseSensitive })
 		const updatedChildren = structuredClone(children)
-		editor.tf.setValue(updatedChildren)
+		editor.tf.setValue(breakDownValue(updatedChildren))
 	}
 
 	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setOptions({ search: e.target.value })
 		const updatedChildren = structuredClone(children)
-		editor.tf.setValue(updatedChildren)
+		editor.tf.setValue(breakDownValue(updatedChildren))
 	}
 
 	function handleSuggestionClick(
@@ -181,7 +182,7 @@ export default function useFindAndReplace() {
 		setOptions({ replace })
 		setOptions({ replaceEnabled: true })
 		const updatedChildren = structuredClone(children)
-		editor.tf.setValue(updatedChildren)
+		editor.tf.setValue(breakDownValue(updatedChildren))
 	}
 
 	const characters = useMemo(
