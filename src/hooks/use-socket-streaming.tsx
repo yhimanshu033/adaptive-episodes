@@ -36,6 +36,7 @@ type TSocketStreamingContext =
 					BodyParamsT,
 					QueryParamsT
 				> & {
+					noCache?: boolean
 					onResponse?: (data: ResponseDataT) => void
 				}
 			) => Promise<string>
@@ -117,17 +118,19 @@ export const SocketStreamingProvider = ({
 				BodyParamsT,
 				QueryParamsT
 			> & {
+				noCache?: boolean
 				onResponse?: (data: ResponseDataT) => void
 			}
 		) => {
 			const key = JSON.stringify(params)
-			if (fetchedData[key]) {
+			const { noCache, onResponse, ...rest } = params
+			if (fetchedData[key] && !noCache) {
 				return fetchedData[key]
 			}
 			const taskId = nanoid()
 			setFetchedData((prev) => ({ ...prev, [key]: taskId }))
-			if (params.onResponse) {
-				taskCallbacksRef.current[taskId] = params.onResponse
+			if (onResponse) {
+				taskCallbacksRef.current[taskId] = onResponse
 			}
 
 			await fetchAPI<
@@ -136,7 +139,7 @@ export const SocketStreamingProvider = ({
 				BodyParamsT,
 				QueryParamsT & { task_id: string }
 			>({
-				...params,
+				...rest,
 				query: { task_id: taskId, ...(params.query as QueryParamsT) },
 				onError: () => {
 					setFetchedData((prev) => {

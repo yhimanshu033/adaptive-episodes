@@ -60,6 +60,35 @@ function useAIStore() {
 		}))
 	}
 
+	const setActiveCommentExampleMap = (
+		activeCommentExampleMap: AIStoreType['activeCommentExampleMap']
+	) => {
+		useAiStoreContext.setState({ activeCommentExampleMap })
+	}
+
+	const addActiveCommentExampleMap = ({
+		key,
+		value,
+	}: {
+		key: string
+		value: string
+	}) => {
+		useAiStoreContext.setState((state) => ({
+			activeCommentExampleMap: {
+				...state.activeCommentExampleMap,
+				[key]: value,
+			},
+		}))
+	}
+
+	const removeActiveCommentExampleMap = (key: string) => {
+		useAiStoreContext.setState((state) => {
+			const activeCommentExampleMap = { ...state.activeCommentExampleMap }
+			delete activeCommentExampleMap[key]
+			return { activeCommentExampleMap }
+		})
+	}
+
 	return {
 		store: useAiStoreContext,
 		addMessages,
@@ -72,6 +101,9 @@ function useAIStore() {
 		setRequestedAction,
 		setActiveExplorerMode,
 		setActiveExplorerActions,
+		setActiveCommentExampleMap,
+		addActiveCommentExampleMap,
+		removeActiveCommentExampleMap,
 	}
 }
 

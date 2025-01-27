@@ -4,13 +4,18 @@ import useLaserStore from '@/store/laser-store'
 import useCustomPlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import type { PlateContentProps } from '@udecode/plate-common/react'
-import { PlateContent } from '@udecode/plate-common/react'
+import {
+	PlateContent,
+	useEditorRef,
+	useEditorState,
+} from '@udecode/plate-common/react'
 import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import DiffView from '@/lib/plate/plugins/diff'
+import { clearColors } from '@/lib/utils/plate'
 
 import { ESidebar } from '@/types/plate-types'
 
@@ -89,6 +94,21 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { store: AiStore } = useAIStore()
 		const responseValue = AiStore(useShallow((state) => state.responseValue))
 		const prevValue = AiStore(useShallow((state) => state.prevValue))
+		const { children } = useEditorState()
+		const editor = useEditorRef()
+		const isPasted = React.useRef(false)
+
+		useEffect(() => {
+			if (!isPasted.current) return
+
+			isPasted.current = false
+			const clearedColors = clearColors(children)
+			editor.tf.setValue(clearedColors)
+		}, [children, editor.tf])
+
+		function handlePaste() {
+			isPasted.current = true
+		}
 
 		return (
 			<div
@@ -125,6 +145,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 							'~absolute h-fit origin-top-left'
 						)}
 						ref={contentRef}
+						onPaste={handlePaste}
 						readOnly={disabled ?? readOnly}
 						aria-disabled={disabled}
 						data-plate-selectable

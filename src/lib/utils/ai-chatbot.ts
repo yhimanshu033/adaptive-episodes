@@ -268,7 +268,7 @@ export function addSFX(
 					if (matchingValue.sfx)
 						segments.push({
 							type: key,
-							text: `\n${matchingValue.sfx.replace('[!', '[')}\n`,
+							text: `\n${matchingValue.sfx.replace(/\[!/g, '[')}\n`,
 							bold: true,
 						})
 

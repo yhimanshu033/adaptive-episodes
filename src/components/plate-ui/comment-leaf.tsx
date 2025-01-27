@@ -19,16 +19,15 @@ export function CommentLeaf({
 }: PlateLeafProps<TCommentText>) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { children, leaf, nodeProps } = props
-	const { isCommented, set } = useComments()
+	const { set } = useComments()
 	const { store, setSidebar } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
 
-	const commented = isCommented(state.lastCommentId)
 	const isActive = sidebar === ESidebar.COMMENTS && state.isActive
 
-	if (!state.commentCount || !commented) return <>{children}</>
+	if (!state.commentCount) return <>{children}</>
 
 	let aboveChildren = <>{children}</>
 
