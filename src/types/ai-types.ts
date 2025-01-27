@@ -94,6 +94,7 @@ export type TMessage =
 	  }
 export interface AIStoreType {
 	acceptedValue: Value | null
+	activeCommentExampleMap: Record<string, string>
 	activeExplorerActions: {
 		[ExplorerModeId.Plot]: PlotAction | string | null
 		[ExplorerModeId.Character]: CharacterAction | string | null

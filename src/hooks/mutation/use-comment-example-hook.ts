@@ -1,6 +1,7 @@
 import { AI_USER_ID } from '@/constants/ai-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import useAIStore from '@/store/ai-store'
 import { useMutation } from '@tanstack/react-query'
 import {
 	CommentsPlugin,
@@ -23,6 +24,7 @@ export default function useCommentExampleHook() {
 	const { children } = useEditorState()
 	const { api } = useEditorPlugin(CommentsPlugin)
 
+	const { removeActiveCommentExampleMap } = useAIStore()
 	const commentExampleMutation = async () => {
 		const { beforeText, afterText, text } = getCommentNode(
 			children,
@@ -51,6 +53,7 @@ export default function useCommentExampleHook() {
 			},
 			onResponse: (resp?: string[]) => {
 				if (!resp?.length) return
+				removeActiveCommentExampleMap(comment.id)
 				api.comment.addComment({
 					value: [
 						{
@@ -67,6 +70,7 @@ export default function useCommentExampleHook() {
 					parentId: comment.id,
 				})
 			},
+			noCache: true,
 		})
 		return taskId
 	}

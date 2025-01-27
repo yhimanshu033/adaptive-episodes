@@ -34,6 +34,7 @@ const initialAiState: AIStoreType = {
 		[ExplorerModeId.Plot]: null,
 		[ExplorerModeId.World]: null,
 	},
+	activeCommentExampleMap: {},
 }
 
 const initialLaserState: LaserStoreType = {
