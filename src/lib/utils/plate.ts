@@ -420,7 +420,9 @@ export function clearColors(ogVal: Value): Value {
 		if (keys.includes('color')) {
 			if (
 				node['color'] === 'rgb(0, 0, 0)' ||
-				node['color'] === 'rgb(255, 255, 255)'
+				node['color'] === 'rgb(255, 255, 255)' ||
+				node['color'] === '#FFFFFF' ||
+				node['color'] === '#000000'
 			) {
 				delete node.color
 			}
