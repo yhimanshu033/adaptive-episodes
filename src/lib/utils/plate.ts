@@ -412,3 +412,23 @@ export function breakDownValue(ogVal: Value | string): Value {
 
 	return newVal
 }
+
+export function clearColors(ogVal: Value): Value {
+	const val = structuredClone(ogVal)
+	const traverse = (node: TDescendant) => {
+		const keys = Object.keys(node)
+		if (keys.includes('color')) {
+			if (
+				node['color'] === 'rgb(0, 0, 0)' ||
+				node['color'] === 'rgb(255, 255, 255)'
+			) {
+				delete node.color
+			}
+		}
+		if ('children' in node) {
+			void (node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+	val.forEach(traverse)
+	return val
+}
