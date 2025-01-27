@@ -2,7 +2,7 @@ import React from 'react'
 import useDisableTools from '@/hooks/use-disable-tools'
 import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
-import { Globe, NotebookPen, Search } from 'lucide-react'
+import { Globe, Search } from 'lucide-react'
 
 import {
 	DropdownMenu,
@@ -48,10 +48,6 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 				>
 					<Search className="mr-2 size-5" />
 					Story Explorer
-				</DropdownMenuItem>
-				<DropdownMenuItem onSelect={() => setSidebar(ESidebar.NOTES, true)}>
-					<NotebookPen className="mr-2 size-5" />
-					Notes
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

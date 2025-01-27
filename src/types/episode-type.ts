@@ -153,6 +153,7 @@ export type TGetDocxFromHtmlBody = {
 
 export type EpisodeIdStoreType = {
 	currentTitle: string
+	dualViewMode: EDualVIewMode
 	episodeId: number
 	notes: TNote[]
 	selectedStatus: EStatus | undefined
@@ -169,3 +170,23 @@ export type TSavingContext = {
 }
 
 export type DownloadDocxParams = { latestStatus: EStatus | 'BASE' | undefined }
+
+export enum EDualVIewMode {
+	NEXT_EP = 'NEXT_EP',
+	NOTES = 'NOTES',
+	US_TRANSLATION = 'US_TRANSLATION',
+}
+
+export const DUAL_VIEW_MODES: EDualVIewMode[] = [
+	EDualVIewMode.US_TRANSLATION,
+	EDualVIewMode.NEXT_EP,
+	EDualVIewMode.NOTES,
+]
+
+export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
+	[EDualVIewMode.US_TRANSLATION]: 'US Translation',
+	[EDualVIewMode.NEXT_EP]: 'Next Episode',
+	[EDualVIewMode.NOTES]: 'Notes',
+}
+
+export type TranslationProps = { translatedContent: string }

@@ -195,7 +195,7 @@ export const extractFromMetadata = (
 }
 
 export const extractScenesFromBeatsheet = (beatsheet: string) => {
-	const sceneStart = beatsheet.match(
+	const sceneStart = beatsheet?.match(
 		/Szenen\s*\(Version 2\)\s*:|Szenen\s+Breakdown\s*:/
 	)
 

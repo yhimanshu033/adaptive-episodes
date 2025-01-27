@@ -1,22 +1,20 @@
 'use client'
 
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/episodes-constants'
-import useEpisodeInfo from '@/hooks/query/use-episode-info'
+import { useNextEpisodeInfo } from '@/hooks/query/use-next-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useQuery } from '@tanstack/react-query'
 import { useShallow } from 'zustand/react/shallow'
 
-import useEpisodeId from '@/providers/episode-id-provider'
 import { getSelectedEpisode } from '@/lib/utils/helpers'
 
-export const useEpisodeContent = () => {
+export const useNextEpisodeContent = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
-	const { data } = useEpisodeInfo()
-	const episodeId = useEpisodeId()
+	const { data, episodeId } = useNextEpisodeInfo()
 	const { episode, latestStatus } = data
 		? getSelectedEpisode(data, selectedStatus)
 		: { episode: undefined, latestStatus: undefined }
@@ -39,4 +37,4 @@ export const useEpisodeContent = () => {
 	return { ...query, latestStatus, queryKey }
 }
 
-export default useEpisodeContent
+export default useNextEpisodeContent

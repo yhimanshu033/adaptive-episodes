@@ -1,16 +1,17 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
+import { MAIN_EDITOR_ID } from '@/constants/editor-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
 import { extendStore } from '@/hooks/use-editor-extend-state'
 import useMyEditor from '@/hooks/use-my-editor'
 import { SavingContextProvider } from '@/hooks/use-saving'
+import DualView from '@/page-builders/plate-editor/dual-view'
 import SaveEpisode from '@/page-builders/plate-editor/save-episode'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
 import Title from '@/page-builders/plate-editor/title'
-import Translation from '@/page-builders/plate-editor/translation'
 import Versions from '@/page-builders/plate-editor/versions'
 import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@udecode/cn'
@@ -39,7 +40,7 @@ export default function PlateEditor() {
 	const editor = useMyEditor({
 		content: content?.text || '',
 		comments: content?.chapter.props?.comments,
-		id: 'TEST_ID',
+		id: MAIN_EDITOR_ID,
 	})
 	const episodeId = useEpisodeId()
 	const { extended } = extendStore()
@@ -106,7 +107,7 @@ export default function PlateEditor() {
 
 										<CursorOverlay containerRef={containerRef} />
 									</div>
-									<Translation translatedContent={content.translation_text} />
+									<DualView translatedContent={content.translation_text} />
 								</div>
 							</div>
 							<Sidebar />

@@ -41,6 +41,14 @@ function useEpisodeIdStore() {
 		})
 	}
 
+	const setDualViewMode = (
+		dualViewMode: EpisodeIdStoreType['dualViewMode']
+	) => {
+		useEpisodeIdStoreContext.setState(() => {
+			return { dualViewMode }
+		})
+	}
+
 	return {
 		store: useEpisodeIdStoreContext,
 		setSelectedStatus,
@@ -48,6 +56,7 @@ function useEpisodeIdStore() {
 		setNotes,
 		addNote,
 		deleteNote,
+		setDualViewMode,
 	}
 }
 

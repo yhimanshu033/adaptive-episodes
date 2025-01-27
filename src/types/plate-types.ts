@@ -38,10 +38,9 @@ export type TLaserLeafChildren = {
 export enum ESidebar {
 	CHATBOT = 'chatbot',
 	COMMENTS = 'comments',
+	DUAL_VIEW = 'dual-view',
 	FAR = 'far',
-	NOTES = 'notes',
 	OUTLINE = 'outline',
-	TRANSLATION = 'translation',
 }
 export type PlateStoreData = {
 	activeDiffId: string | null

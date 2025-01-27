@@ -82,26 +82,37 @@ import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { breakDownValue, getRecord, jsonify } from '@/lib/utils/plate'
 
+const extraPlugins = [
+	LaserPlugin,
+	PromptPlugin,
+	FindReplacePlugin,
+	HeadingPlugin,
+	HorizontalRulePlugin,
+]
+const extraPluginComponents = {
+	[LaserPlugin.key]: LaserLeaf,
+	[FindReplacePlugin.key]: SearchHighlightLeaf,
+	[PromptPlugin.key]: LaserPromptLeaf,
+	[CommentsPlugin.key]: CommentLeaf,
+	[SuggestionPlugin.key]: SuggestionLeaf,
+}
 const useMyEditor = ({
 	content,
 	id,
 	comments,
+	simplified,
 }: {
 	comments?: TComment[]
 	content: string
 	id?: string
+	simplified?: boolean
 }) => {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const initialValue = jsonify(content)
 	const value = breakDownValue(initialValue)
 	const editor = createPlateEditor({
 		plugins: [
-			LaserPlugin,
-			PromptPlugin,
-			FindReplacePlugin,
-			HeadingPlugin,
-			HorizontalRulePlugin,
-
+			...(simplified ? [] : extraPlugins),
 			// Marks
 			BoldPlugin,
 			ItalicPlugin,
@@ -274,8 +285,7 @@ const useMyEditor = ({
 		],
 		override: {
 			components: withPlaceholders({
-				[LaserPlugin.key]: LaserLeaf,
-				[FindReplacePlugin.key]: SearchHighlightLeaf,
+				...(simplified ? {} : extraPluginComponents),
 				[HorizontalRulePlugin.key]: HrElement,
 				[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
 				[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
@@ -290,9 +300,6 @@ const useMyEditor = ({
 				[KbdPlugin.key]: KbdLeaf,
 				[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
 				[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
-				[CommentsPlugin.key]: CommentLeaf,
-				[SuggestionPlugin.key]: SuggestionLeaf,
-				[PromptPlugin.key]: LaserPromptLeaf,
 			}),
 		},
 		value,

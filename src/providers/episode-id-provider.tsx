@@ -9,7 +9,7 @@ import { immer } from 'zustand/middleware/immer'
 import { useShallow } from 'zustand/react/shallow'
 
 import { AIStoreType } from '@/types/ai-types'
-import { EpisodeIdStoreType } from '@/types/episode-type'
+import { EDualVIewMode, EpisodeIdStoreType } from '@/types/episode-type'
 import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
@@ -49,6 +49,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	selectedStatus: undefined,
 	notes: [],
 	currentTitle: '',
+	dualViewMode: EDualVIewMode.US_TRANSLATION,
 }
 
 type EpisodeIdContextType = {

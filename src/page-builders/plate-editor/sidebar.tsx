@@ -2,7 +2,6 @@ import React from 'react'
 import AiChatbot from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot'
 import CommentSidebar from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar'
 import FindAndReplace from '@/page-builders/plate-editor/sidebar-sections/find-and-replace'
-import Notes from '@/page-builders/plate-editor/sidebar-sections/notes'
 import StoryExplorer from '@/page-builders/plate-editor/sidebar-sections/story-explorer'
 import usePlateStore from '@/store/plate-store'
 
@@ -11,18 +10,18 @@ import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 
-const renderSidebar: Record<string, React.ReactNode> = {
-	comments: <CommentSidebar />,
-	outline: <StoryExplorer />,
-	far: <FindAndReplace />,
-	chatbot: <AiChatbot />,
-	notes: <Notes />,
+const renderSidebar: Record<ESidebar, React.ReactNode> = {
+	[ESidebar.COMMENTS]: <CommentSidebar />,
+	[ESidebar.OUTLINE]: <StoryExplorer />,
+	[ESidebar.FAR]: <FindAndReplace />,
+	[ESidebar.CHATBOT]: <AiChatbot />,
+	[ESidebar.DUAL_VIEW]: null,
 }
 
 const Sidebar = () => {
 	const { store } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
-	const showSidebar = sidebar && sidebar !== ESidebar.TRANSLATION
+	const showSidebar = sidebar && sidebar !== ESidebar.DUAL_VIEW
 	return (
 		<div
 			className={cn(

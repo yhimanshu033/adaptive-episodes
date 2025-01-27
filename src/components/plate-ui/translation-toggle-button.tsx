@@ -12,11 +12,11 @@ export default function TranslationToggleButton() {
 	const sidebar = store((state) => state.sidebar)
 	const { isDisabled } = useDisableTools()
 	const onTranslation = () => {
-		setSidebar(ESidebar.TRANSLATION, true)
+		setSidebar(ESidebar.DUAL_VIEW, true)
 	}
 	return (
 		<ToolbarButton
-			variant={sidebar === ESidebar.TRANSLATION ? 'active' : 'default'}
+			variant={sidebar === ESidebar.DUAL_VIEW ? 'active' : 'default'}
 			tooltip="Dual View"
 			disabled={isDisabled}
 			onClick={onTranslation}
