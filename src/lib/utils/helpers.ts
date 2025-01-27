@@ -126,3 +126,9 @@ export const toPascalCase = (str: string | null) => {
 		(w) => w[0].toUpperCase() + w.slice(1).toLowerCase()
 	)
 }
+
+export function getWords(str: string) {
+	return str
+		.split(/\s+/)
+		.filter((w) => w.trim().length > 0 && /^[^\d\s]+$/.test(w))
+}
