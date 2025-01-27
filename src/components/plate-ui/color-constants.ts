@@ -1,56 +1,6 @@
 export const DEFAULT_COLORS = [
 	{
 		isBrightColor: false,
-		name: 'black',
-		value: '#000000',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 4',
-		value: '#434343',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 3',
-		value: '#666666',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 2',
-		value: '#999999',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 1',
-		value: '#B7B7B7',
-	},
-	{
-		isBrightColor: false,
-		name: 'grey',
-		value: '#CCCCCC',
-	},
-	{
-		isBrightColor: false,
-		name: 'light grey 1',
-		value: '#D9D9D9',
-	},
-	{
-		isBrightColor: true,
-		name: 'light grey 2',
-		value: '#EFEFEF',
-	},
-	{
-		isBrightColor: true,
-		name: 'light grey 3',
-		value: '#F3F3F3',
-	},
-	{
-		isBrightColor: true,
-		name: 'white',
-		value: '#FFFFFF',
-	},
-	{
-		isBrightColor: false,
 		name: 'red berry',
 		value: '#980100',
 	},
