@@ -39,9 +39,11 @@ export default function SuggestionLeaf({
 	return (
 		<PlateLeaf
 			{...props}
+			id={`suggestion-leaf-${leaf.suggestionId}`}
 			className={cn(
-				'relative bg-green-400/50',
+				'relative bg-green-400/20',
 				leaf.suggestionDeletion && 'bg-green-400/20 italic line-through',
+				isActive && 'bg-green-400/50',
 				className
 			)}
 			onClick={() => {
