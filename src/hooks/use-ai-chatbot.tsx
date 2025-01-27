@@ -35,7 +35,7 @@ import {
 	minify,
 } from '@/lib/utils/ai-chatbot'
 import { parseOptimistically } from '@/lib/utils/helpers'
-import { getText } from '@/lib/utils/plate'
+import { breakDownValue, getText } from '@/lib/utils/plate'
 
 import {
 	EAction,
@@ -251,7 +251,7 @@ export function ChatbotProvider({
 				createdAt: Date.now(),
 			})
 		})
-		editor.tf.setValue(resp.value)
+		editor.tf.setValue(breakDownValue(resp.value))
 	}
 
 	function removeReview() {
@@ -265,7 +265,7 @@ export function ChatbotProvider({
 		resp.comments.forEach((comment) => {
 			api.comment.removeComment(comment.id)
 		})
-		editor.tf.setValue(children)
+		editor.tf.setValue(breakDownValue(children))
 	}
 
 	useEffect(() => {

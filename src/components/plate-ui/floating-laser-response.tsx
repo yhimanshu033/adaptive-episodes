@@ -10,6 +10,7 @@ import { nanoid } from 'nanoid'
 import { Button } from '@/components/plate-ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils/helpers'
+import { breakDownValue } from '@/lib/utils/plate'
 
 export default function FloatingLaserResponse() {
 	const {
@@ -73,7 +74,7 @@ export default function FloatingLaserResponse() {
 			try {
 				const val = structuredClone(editor.children)
 				val.forEach((child) => traverseAndReplace(child, text))
-				editor.tf.setValue(val)
+				editor.tf.setValue(breakDownValue(val))
 			} catch (error) {
 				console.error(error)
 			}
@@ -100,7 +101,7 @@ export default function FloatingLaserResponse() {
 		try {
 			const val = structuredClone(editor.children)
 			val.forEach(traverse)
-			editor.tf.setValue(val)
+			editor.tf.setValue(breakDownValue(val))
 		} catch (error) {
 			console.error(error)
 		}

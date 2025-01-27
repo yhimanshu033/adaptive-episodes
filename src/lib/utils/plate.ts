@@ -381,10 +381,10 @@ export function breakDownValue(ogVal: Value | string): Value {
 				if ('text' in child) {
 					if (!String(child.text).includes('\n')) {
 						if (lastBlock && lastBlock?.type === block.type && !isNewBlock) {
-							lastBlock.children.push(child)
+							lastBlock.children.push(child) // added child to lastBlock
 						} else {
 							isNewBlock = false
-							newVal.push({ ...block, children: [child] })
+							newVal.push({ ...block, children: [child] }) // added new block
 						}
 					} else {
 						const splitText = String(child.text).split(/\n+/)
@@ -394,12 +394,12 @@ export function breakDownValue(ogVal: Value | string): Value {
 							isNewBlock = false
 							newVal.push({
 								...block,
-								children: [{ ...child, text: splitText[0] }],
+								children: [{ ...child, text: splitText[0] }], // added first child to lastBlock
 							})
 						}
 						for (const text of splitText.slice(1)) {
-							if (text.trim()) {
-								newVal.push({ ...block, children: [{ ...child, text }] })
+							if (text) {
+								newVal.push({ ...block, children: [{ ...child, text }] }) // added new block
 							}
 						}
 					}
