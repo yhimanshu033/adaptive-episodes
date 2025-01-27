@@ -1,4 +1,10 @@
 import React, { useEffect, useRef } from 'react'
+import {
+	AFTER_PAGE_BREAK_CLASSNAME,
+	EDITOR_FIRST_DIV_CLASSNAME,
+	EDITOR_LAST_DIV_CLASSNAME,
+	LINES,
+} from '@/constants/editor-constants'
 import useAIStore from '@/store/ai-store'
 import useLaserStore from '@/store/laser-store'
 import useCustomPlateStore from '@/store/plate-store'
@@ -82,14 +88,6 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { setEditorCoords } = useLaserStore()
 		const episodeId = useEpisodeId()
 
-		useEffect(() => {
-			if (!contentRef.current) return
-			const rect = contentRef.current?.getBoundingClientRect()
-			if (!rect) return
-			setEditorCoords(rect.x, rect.y)
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [contentRef])
-
 		const sidebar = store((state) => state.sidebar)
 		const { store: AiStore } = useAIStore()
 		const responseValue = AiStore(useShallow((state) => state.responseValue))
@@ -97,6 +95,44 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { children } = useEditorState()
 		const editor = useEditorRef()
 		const isPasted = React.useRef(false)
+
+		useEffect(() => {
+			const editorDiv = contentRef.current
+			if (!editorDiv || readOnly) return
+			const LINE_HEIGHT = 32
+			let height = 0
+			for (let i = 0; i < editorDiv.children.length; i++) {
+				const currHeight = editorDiv.children[i].clientHeight
+				const currentDiv = editorDiv.children[i] as HTMLDivElement
+				if (i === 0) {
+					currentDiv.classList.add(EDITOR_FIRST_DIV_CLASSNAME)
+				} else {
+					currentDiv.classList.remove(EDITOR_FIRST_DIV_CLASSNAME)
+				}
+				if (i === editorDiv.children.length - 1) {
+					currentDiv.classList.add(EDITOR_LAST_DIV_CLASSNAME)
+				} else {
+					currentDiv.classList.remove(EDITOR_LAST_DIV_CLASSNAME)
+				}
+				currentDiv.className += ' px-6 border-r border-l -mx-6'
+				if (height + currHeight > LINE_HEIGHT * LINES) {
+					currentDiv.classList.add(AFTER_PAGE_BREAK_CLASSNAME)
+					height = currHeight
+				} else {
+					height += currHeight
+					currentDiv.classList.remove(AFTER_PAGE_BREAK_CLASSNAME)
+				}
+			}
+		}, [children, contentRef, readOnly])
+
+		useEffect(() => {
+			if (!contentRef.current) return
+			const rect = contentRef.current?.getBoundingClientRect()
+			if (!rect) return
+			setEditorCoords(rect.x, rect.y)
+
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [contentRef])
 
 		useEffect(() => {
 			if (!isPasted.current) return
@@ -142,7 +178,8 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 								variant,
 							}),
 							className,
-							'~absolute h-fit origin-top-left'
+							'h-fit origin-top-left px-6',
+							readOnly ? 'py-5' : 'py-0'
 						)}
 						ref={contentRef}
 						onPaste={handlePaste}

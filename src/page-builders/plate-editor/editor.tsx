@@ -80,7 +80,7 @@ export default function PlateEditor() {
 					<div
 						ref={containerRef}
 						className={cn(
-							'relative mt-4 animate-fade-in-up rounded border bg-background-editor shadow-editor',
+							'relative mt-4 animate-fade-in-up rounded',
 							// Block selection
 							'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 						)}
@@ -93,7 +93,7 @@ export default function PlateEditor() {
 								<div className="flex h-full">
 									<div className="flex w-full">
 										<Editor
-											className="size-full rounded-none px-12 py-5"
+											className="size-full rounded-none py-5"
 											autoFocus
 											focusRing={false}
 											variant="ghost"

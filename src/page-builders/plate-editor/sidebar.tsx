@@ -26,7 +26,7 @@ const Sidebar = () => {
 	return (
 		<div
 			className={cn(
-				'sticky top-11 h-fit w-full max-w-[700px] border-b transition-all',
+				'sticky top-11 h-fit w-full max-w-[700px] border-b bg-background-editor transition-all',
 				!showSidebar ? 'w-0' : 'w-[45vw]'
 			)}
 		>

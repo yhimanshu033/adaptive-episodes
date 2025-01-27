@@ -35,13 +35,13 @@ const Translation = ({ translatedContent }: { translatedContent: string }) => {
 		<div
 			className={cn(
 				'flex w-full transition-all duration-200',
-				!showTranslation ? 'max-w-0' : 'max-w-[45vw]'
+				!showTranslation ? 'max-w-0' : 'max-w-[45vw] pl-5'
 			)}
 		>
 			{showTranslation && (
 				<Plate editor={editor}>
 					<Editor
-						className="rounded-none border-l px-12 py-6"
+						className="rounded-none border px-12 py-6"
 						autoFocus
 						focusRing={false}
 						readOnly
