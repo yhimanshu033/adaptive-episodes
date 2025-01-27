@@ -10,6 +10,7 @@ import { Button } from '@/components/plate-ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { cn } from '@/lib/utils/helpers'
+import { breakDownValue } from '@/lib/utils/plate'
 
 export default function FloatingPrompt() {
 	const { setActiveLaser, setPromptActive, store: laserStore } = useLaserStore()
@@ -55,7 +56,7 @@ export default function FloatingPrompt() {
 			try {
 				const val = structuredClone(editor.children)
 				val.forEach((node) => traverse(node, intoLaser))
-				editor.tf.setValue(val)
+				editor.tf.setValue(breakDownValue(val))
 				setPromptActive(null)
 			} catch (error) {
 				console.error(error)
