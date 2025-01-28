@@ -2,6 +2,7 @@
 
 import React, { createContext, ReactNode, useContext } from 'react'
 import { aiInitialMessage } from '@/constants/ai-constants'
+import { DEFAULT_FONT_FAMILY } from '@/constants/editor-constants'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
@@ -20,6 +21,7 @@ const initialState: PlateStoreData = {
 	currentDiffValue: null,
 	viewMode: false,
 	activeNoteId: null,
+	fontFamily: DEFAULT_FONT_FAMILY,
 }
 
 const initialAiState: AIStoreType = {

@@ -36,6 +36,8 @@ export function SavingContextProvider({
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
 	const savedNotesRef = useRef(JSON.stringify(data?.chapter.props?.notes || []))
 
+	console.log({ children })
+
 	const isSaved = useMemo(() => {
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(allComments)

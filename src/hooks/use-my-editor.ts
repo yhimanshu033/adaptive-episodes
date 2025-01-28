@@ -61,6 +61,7 @@ import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
 import { useShallow } from 'zustand/react/shallow'
 
+import { BlockquoteElement } from '@/components/plate-ui/block-quote-element'
 import { CommentLeaf } from '@/components/plate-ui/comment-leaf'
 import { DragOverCursorPlugin } from '@/components/plate-ui/cursor-overlay'
 import { HeadingElement } from '@/components/plate-ui/heading-element'
@@ -122,7 +123,7 @@ const useMyEditor = ({
 			FontBackgroundColorPlugin,
 			HighlightPlugin,
 			KbdPlugin,
-
+			BlockquotePlugin,
 			// Block Style
 			AlignPlugin.configure({
 				inject: {
@@ -134,7 +135,6 @@ const useMyEditor = ({
 					targetPlugins: [
 						ParagraphPlugin.key,
 						BlockquotePlugin.key,
-						CodeBlockPlugin.key,
 						...HEADING_LEVELS,
 					],
 				},
@@ -144,7 +144,6 @@ const useMyEditor = ({
 					targetPlugins: [
 						ParagraphPlugin.key,
 						BlockquotePlugin.key,
-						CodeBlockPlugin.key,
 						...HEADING_LEVELS,
 					],
 				},
@@ -293,6 +292,7 @@ const useMyEditor = ({
 				[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
 				[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
 				[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
+				[BlockquotePlugin.key]: BlockquoteElement,
 				[ParagraphPlugin.key]: ParagraphElement,
 				[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
 				[HighlightPlugin.key]: HighlightLeaf,

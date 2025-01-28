@@ -80,21 +80,23 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		},
 		ref
 	) => {
-		const { store } = useCustomPlateStore()
-		const scale = store((state) => state.scale)
-		const mihHeight = 100 / scale
-		const minWidth = 100 / scale
-		const contentRef = useRef<HTMLDivElement>(null)
-		const { setEditorCoords } = useLaserStore()
+		const isPasted = React.useRef(false)
+		const editor = useEditorRef()
 		const episodeId = useEpisodeId()
 
+		const { store } = useCustomPlateStore()
+		const scale = store((state) => state.scale)
 		const sidebar = store((state) => state.sidebar)
+		const fontFamily = store(useShallow((state) => state.fontFamily))
+
+		const contentRef = useRef<HTMLDivElement>(null)
+		const { setEditorCoords } = useLaserStore()
+
 		const { store: AiStore } = useAIStore()
 		const responseValue = AiStore(useShallow((state) => state.responseValue))
 		const prevValue = AiStore(useShallow((state) => state.prevValue))
+
 		const { children } = useEditorState()
-		const editor = useEditorRef()
-		const isPasted = React.useRef(false)
 
 		useEffect(() => {
 			const editorDiv = contentRef.current
@@ -123,7 +125,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 					currentDiv.classList.remove(AFTER_PAGE_BREAK_CLASSNAME)
 				}
 			}
-		}, [children, contentRef, readOnly])
+		}, [children, contentRef, readOnly, scale])
 
 		useEffect(() => {
 			if (!contentRef.current) return
@@ -151,6 +153,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				id={`editor-container-${episodeId}`}
 				ref={ref}
 				className="relative size-full"
+				style={{ fontFamily: `var(${fontFamily})` }}
 			>
 				{sidebar === ESidebar.CHATBOT && responseValue && prevValue && !isAi ? (
 					<DiffView
@@ -188,9 +191,8 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						data-plate-selectable
 						disableDefaultStyles
 						style={{
-							transform: `scale(${scale})`,
-							minHeight: `${mihHeight}%`,
-							width: `${minWidth}%`,
+							fontSize: `${16 * scale}px`,
+							lineHeight: `${24 * scale}px`,
 							...props.style,
 						}}
 						{...props}

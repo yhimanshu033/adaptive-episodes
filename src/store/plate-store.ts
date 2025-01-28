@@ -39,6 +39,10 @@ export function usePlateStore() {
 		usePlateStoreContext.setState({ activeNoteId })
 	}
 
+	const setFontFamily = (fontFamily: PlateStoreData['fontFamily']) => {
+		usePlateStoreContext.setState({ fontFamily })
+	}
+
 	return {
 		store: usePlateStoreContext,
 		setSidebar,
@@ -48,6 +52,7 @@ export function usePlateStore() {
 		setCurrentDiffValue,
 		setViewMode,
 		setActiveNoteId,
+		setFontFamily,
 	}
 }
 

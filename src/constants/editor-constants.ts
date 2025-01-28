@@ -66,3 +66,17 @@ export const EDITOR_FIRST_DIV_CLASSNAME = 'editor-first-div'
 export const EDITOR_LAST_DIV_CLASSNAME = 'editor-last-div'
 
 export const TRANSITION_DURATION = 300
+
+export const DEFAULT_FONT_FAMILY = '--font-default'
+export const FONT_RECORD: Record<string, string> = {
+	Default: DEFAULT_FONT_FAMILY,
+	'Times New Roman': '--font-serif',
+	Georgia: '--font-georgia',
+	Arial: '--font-arial',
+	Verdana: '--font-verdana',
+	Tahoma: '--font-tahoma',
+	'Trebuchet MS': '--font-trebuchet',
+	'Courier New': '--font-courier',
+	Consolas: '--font-consolas',
+	Impact: '--font-impact',
+}
