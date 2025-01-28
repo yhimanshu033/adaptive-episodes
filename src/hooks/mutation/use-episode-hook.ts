@@ -100,6 +100,7 @@ const useEpisodeHook = () => {
 				project_id: Number(id),
 				status: EStatus.FIRST_DRAFT,
 			},
+			noCache: true,
 		})
 		return getResponse(taskId)
 	}
