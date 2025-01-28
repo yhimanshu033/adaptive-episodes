@@ -27,6 +27,7 @@ import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response
 import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons'
+import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { Separator } from '@/components/ui/separator'
 import useEpisodeId from '@/providers/episode-id-provider'
 
@@ -89,10 +90,24 @@ export default function PlateEditor() {
 						<FixedToolbar>
 							<FixedToolbarButtons />
 						</FixedToolbar>
-						<div className="~h-[78vh] flex size-full">
-							<div className="w-full flex-1 bg-background">
-								<div className="flex h-full">
-									<div className="flex w-full">
+						<ResizablePanelGroup
+							direction="horizontal"
+							className="flex size-full !overflow-visible"
+						>
+							<ResizablePanel
+								minSize={30}
+								order={1}
+								className="w-full flex-1 bg-background"
+							>
+								<ResizablePanelGroup
+									direction="horizontal"
+									className="flex h-full"
+								>
+									<ResizablePanel
+										minSize={30}
+										order={1}
+										className="flex w-full"
+									>
 										<Editor
 											className="size-full rounded-none py-5"
 											autoFocus
@@ -106,12 +121,12 @@ export default function PlateEditor() {
 										</FloatingToolbar>
 
 										<CursorOverlay containerRef={containerRef} />
-									</div>
+									</ResizablePanel>
 									<DualView translatedContent={content.translation_text} />
-								</div>
-							</div>
+								</ResizablePanelGroup>
+							</ResizablePanel>
 							<Sidebar />
-						</div>
+						</ResizablePanelGroup>
 					</div>
 					{isLast ? <ControlButtons /> : <Separator />}
 

@@ -21,7 +21,7 @@ const StoryExplorer = () => {
 	}
 
 	return (
-		<section className="mx-auto max-w-2xl p-4">
+		<section className="p-4">
 			<div className="mb-4 flex items-center justify-between">
 				<h1 className="text-2xl font-bold">Story Explorer</h1>
 				<div className="flex items-center space-x-2">

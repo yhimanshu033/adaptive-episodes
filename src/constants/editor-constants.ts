@@ -64,3 +64,5 @@ export const BEFORE_PAGE_BREAK_CLASSNAME = 'before-editor-page' // CHECK WITH GL
 
 export const EDITOR_FIRST_DIV_CLASSNAME = 'editor-first-div'
 export const EDITOR_LAST_DIV_CLASSNAME = 'editor-last-div'
+
+export const TRANSITION_DURATION = 300
