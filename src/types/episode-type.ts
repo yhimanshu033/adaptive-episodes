@@ -166,6 +166,8 @@ export type EpisodeIdStoreType = {
 
 export type TSaveEpisodeParams = {
 	forced?: boolean
+	startOverlayLoading?: boolean
+	stopOverlayLoading?: boolean
 }
 
 export type TSavingContext = {

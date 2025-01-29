@@ -3,7 +3,6 @@ import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { extendStore } from '@/hooks/use-editor-extend-state'
 import useSaving from '@/hooks/use-saving'
-import useEpisodeIdStore from '@/store/episode-id-store'
 import { useQueryClient } from '@tanstack/react-query'
 import {
 	CircleArrowLeft,
@@ -21,23 +20,17 @@ export default function ControlButtons() {
 
 	const { data: content, queryKey } = useEpisodeContent()
 	const { isSaved, handleSave } = useSaving()
-	const { setStartOverlayLoading } = useEpisodeIdStore()
 
 	const handleEpisodeChange = async (episode: number | null) => {
 		if (!episode) return
-		if (!isSaved) {
-			setStartOverlayLoading(true)
-			await handleSave()
-		}
+		await handleSave({ startOverlayLoading: true })
 		router.push(`/projects/${String(id)}/${episode}/editor`)
 	}
 
 	const handleEpisodeSplit = async () => {
 		if (!isSaved) {
-			setStartOverlayLoading(true)
-			await handleSave()
+			await handleSave({ startOverlayLoading: true, stopOverlayLoading: true })
 			await queryClient.invalidateQueries({ queryKey })
-			setStartOverlayLoading(false)
 		}
 
 		void setExtended([...extended, Number(content?.next_parent_id)])

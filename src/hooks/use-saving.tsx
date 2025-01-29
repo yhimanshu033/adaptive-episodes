@@ -36,10 +36,12 @@ export function SavingContextProvider({
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
 		setNotes,
+		setStartOverlayLoading,
 	} = useEpisodeIdStore()
 	const currentTitle = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
 	)
+
 	const notes = useEpisodeIdStoreContext(useShallow((state) => state.notes))
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
@@ -66,26 +68,34 @@ export function SavingContextProvider({
 	}, [children, allComments, currentTitle, notes, data?.chapter])
 
 	const handleSave = useCallback(
-		async ({ forced = false }: TSaveEpisodeParams = {}) => {
-			if (forced || !isSaved) {
-				if (!data?.chapter) return
-				savedRef.current = JSON.stringify(children)
-				savedCommentsRef.current = JSON.stringify(allComments)
-				savedTitleRef.current = currentTitle
-				savedNotesRef.current = JSON.stringify(notes)
-				const clearedLaser = clearLasers(children)
-				const text = JSON.stringify(clearedLaser)
-				const status = data?.chapter.status || BASE_STATUS
-				const chapterId = data?.chapter.parent
-				await saveEpisodeMutation.mutateAsync({
-					status,
-					chapterId,
-					text,
-					comments: allComments,
-					prevProps: data?.chapter.props,
-					notes,
-					chapter_title: currentTitle || data?.chapter.chapter_title,
-				})
+		async ({
+			forced = false,
+			startOverlayLoading = false,
+			stopOverlayLoading = false,
+		}: TSaveEpisodeParams = {}) => {
+			if (!data?.chapter || (!forced && isSaved)) return
+			if (startOverlayLoading) {
+				setStartOverlayLoading(true)
+			}
+			savedRef.current = JSON.stringify(children)
+			savedCommentsRef.current = JSON.stringify(allComments)
+			savedTitleRef.current = currentTitle
+			savedNotesRef.current = JSON.stringify(notes)
+			const clearedLaser = clearLasers(children)
+			const text = JSON.stringify(clearedLaser)
+			const status = data?.chapter.status || BASE_STATUS
+			const chapterId = data?.chapter.parent
+			await saveEpisodeMutation.mutateAsync({
+				status,
+				chapterId,
+				text,
+				comments: allComments,
+				prevProps: data?.chapter.props,
+				notes,
+				chapter_title: currentTitle || data?.chapter.chapter_title,
+			})
+			if (stopOverlayLoading) {
+				setStartOverlayLoading(false)
 			}
 		},
 		[
@@ -96,6 +106,7 @@ export function SavingContextProvider({
 			currentTitle,
 			isSaved,
 			notes,
+			setStartOverlayLoading,
 		]
 	)
 
@@ -143,10 +154,9 @@ export function SavingContextProvider({
 		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
 			if (!isSaved) {
 				void handleSave()
-				e.preventDefault()
+				console.log(e)
 			}
 		}
-
 		window.addEventListener('beforeunload', handleBeforeUnload)
 
 		return () => {

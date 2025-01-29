@@ -17,7 +17,6 @@ import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
 
-import Header from '@/components/header'
 import { Loader } from '@/components/loader'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
@@ -47,7 +46,6 @@ export default function PlateEditor() {
 	const { extended } = extendStore()
 
 	const isLast = episodeId === extended[extended.length - 1]
-	const isFirst = episodeId === extended[0]
 
 	useEffect(() => {
 		if (extended.length === 1) return
@@ -69,7 +67,6 @@ export default function PlateEditor() {
 		<Plate editor={editor}>
 			<SavingContextProvider data={content}>
 				<ChatbotProvider>
-					{isFirst && <Header show />}
 					<div className="container p-4">
 						<OverlayLoader />
 						<div className="flex animate-fade-in-up items-center justify-between">
