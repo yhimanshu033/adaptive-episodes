@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useComments from '@/hooks/plate/use-comments'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import {
 	addUnsavedEpisodeParams,
@@ -14,20 +13,25 @@ import { useShallow } from 'zustand/react/shallow'
 import { clearLasers } from '@/lib/utils/plate'
 
 import { BASE_STATUS } from '@/types/common'
-import { TSaveEpisodeParams, TSavingContext } from '@/types/episode-type'
+import {
+	TGetEpisodeResponse,
+	TSaveEpisodeParams,
+	TSavingContext,
+} from '@/types/episode-type'
 
 const SavingContext = React.createContext<TSavingContext | undefined>(undefined)
 
 export function SavingContextProvider({
 	children: nodeChildren,
+	data,
 }: {
 	children: React.ReactNode
+	data: TGetEpisodeResponse
 }) {
 	const { id } = useParams()
 	const { children } = useEditorState()
 	const { allComments } = useComments()
 	const { saveEpisodeMutation } = useEpisodeHook()
-	const { data } = useEpisodeContent()
 	const {
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
@@ -46,13 +50,19 @@ export function SavingContextProvider({
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(allComments)
 		const currentNotes = JSON.stringify(notes)
+		const storedNotes =
+			savedNotesRef.current === JSON.stringify([])
+				? savedNotesRef.current
+				: JSON.stringify(data?.chapter.props?.notes || [])
 		return (
 			savedRef.current === currentChildren &&
 			savedCommentsRef.current === currentComments &&
-			currentTitle === savedTitleRef.current &&
-			currentNotes === savedNotesRef.current
+			(savedTitleRef.current
+				? currentTitle === savedTitleRef.current
+				: currentTitle === data?.chapter?.chapter_title) &&
+			currentNotes === storedNotes
 		)
-	}, [children, allComments, currentTitle, notes])
+	}, [children, allComments, currentTitle, notes, data?.chapter])
 
 	const handleSave = useCallback(
 		async ({ forced = false }: TSaveEpisodeParams = {}) => {
@@ -146,15 +156,15 @@ export function SavingContextProvider({
 	useEffect(() => {
 		if (!data?.chapter) return
 		if (data.chapter.chapter_title) {
-			setCurrentTitle(data.chapter.chapter_title)
 			savedTitleRef.current = data.chapter.chapter_title
+			setCurrentTitle(data.chapter.chapter_title)
 		}
 		if (data.chapter.props?.notes) {
-			setNotes(data.chapter.props.notes)
 			savedNotesRef.current = JSON.stringify(data.chapter.props.notes)
+			setNotes(data.chapter.props.notes)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data?.chapter])
+	}, [data])
 
 	useEffect(() => {
 		if (isSaved) {

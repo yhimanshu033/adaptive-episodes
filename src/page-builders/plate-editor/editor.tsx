@@ -49,6 +49,7 @@ export default function PlateEditor() {
 	const isFirst = episodeId === extended[0]
 
 	useEffect(() => {
+		if (extended.length === 1) return
 		const invalidate = async () => {
 			await queryClient.invalidateQueries({ queryKey })
 		}
@@ -65,7 +66,7 @@ export default function PlateEditor() {
 
 	return (
 		<Plate editor={editor}>
-			<SavingContextProvider>
+			<SavingContextProvider data={content}>
 				<ChatbotProvider>
 					{isFirst && <Header show />}
 					<div className="container p-4">

@@ -41,7 +41,9 @@ export const useEpisodeContent = () => {
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
+		enabled: !!episode,
 		staleTime: 0,
+		gcTime: 0,
 	})
 	return { ...query, latestStatus, queryKey }
 }
