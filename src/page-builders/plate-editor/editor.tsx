@@ -16,6 +16,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
 
+import Header from '@/components/header'
 import { Loader } from '@/components/loader'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
@@ -65,57 +66,59 @@ export default function PlateEditor() {
 		<Plate editor={editor}>
 			<SavingContextProvider>
 				<ChatbotProvider>
-					<div className="flex animate-fade-in-up items-center justify-between">
-						<Title />
-						<div className="flex items-center gap-2">
-							<DownloadDocxButton latestStatus={latestStatus} />
-							<Versions
-								isChildEpisode={isChildEpisode}
-								latestStatus={latestStatus}
-							/>
-							<SyncMetaData />
-							<SaveEpisode />
-						</div>
-					</div>
-					<div
-						ref={containerRef}
-						className={cn(
-							'relative mt-4 animate-fade-in-up rounded border bg-background-editor shadow-editor',
-							// Block selection
-							'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
-						)}
-					>
-						<FixedToolbar>
-							<FixedToolbarButtons />
-						</FixedToolbar>
-						<div className="~h-[78vh] flex size-full">
-							<div className="w-full flex-1 bg-background">
-								<div className="flex h-full">
-									<div className="flex w-full">
-										<Editor
-											className="size-full rounded-none px-12 py-5"
-											autoFocus
-											focusRing={false}
-											variant="ghost"
-											size="md"
-										/>
-
-										<FloatingToolbar>
-											<FloatingToolbarButtons />
-										</FloatingToolbar>
-
-										<CursorOverlay containerRef={containerRef} />
-									</div>
-									<Translation translatedContent={content.translation_text} />
-								</div>
+					<Header show />
+					<div className="container p-4">
+						<div className="flex animate-fade-in-up items-center justify-between">
+							<Title />
+							<div className="flex items-center gap-2">
+								<DownloadDocxButton latestStatus={latestStatus} />
+								<Versions
+									isChildEpisode={isChildEpisode}
+									latestStatus={latestStatus}
+								/>
+								<SyncMetaData />
+								<SaveEpisode />
 							</div>
-							<Sidebar />
 						</div>
-					</div>
-					{isLast ? <ControlButtons /> : <Separator />}
+						<div
+							ref={containerRef}
+							className={cn(
+								'relative mt-4 animate-fade-in-up rounded border bg-background-editor shadow-editor',
+								// Block selection
+								'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
+							)}
+						>
+							<FixedToolbar>
+								<FixedToolbarButtons />
+							</FixedToolbar>
+							<div className="~h-[78vh] flex size-full">
+								<div className="w-full flex-1 bg-background">
+									<div className="flex h-full">
+										<div className="flex w-full">
+											<Editor
+												className="size-full rounded-none px-12 py-5"
+												autoFocus
+												focusRing={false}
+												variant="ghost"
+												size="md"
+											/>
 
-					<FloatingPrompt />
-					<FloatingLaserResponse />
+											<FloatingToolbar>
+												<FloatingToolbarButtons />
+											</FloatingToolbar>
+
+											<CursorOverlay containerRef={containerRef} />
+										</div>
+										<Translation translatedContent={content.translation_text} />
+									</div>
+								</div>
+								<Sidebar />
+							</div>
+						</div>
+						{isLast ? <ControlButtons /> : <Separator />}
+						<FloatingPrompt />
+						<FloatingLaserResponse />
+					</div>
 				</ChatbotProvider>
 			</SavingContextProvider>
 		</Plate>

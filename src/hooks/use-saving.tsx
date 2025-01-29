@@ -92,6 +92,20 @@ export function SavingContextProvider({
 	}, [allComments, handleSave, notes, currentTitle])
 
 	useEffect(() => {
+		const handleBeforeUnload = () => {
+			if (!isSaved) {
+				void handleSave()
+			}
+		}
+
+		window.addEventListener('beforeunload', handleBeforeUnload)
+
+		return () => {
+			window.removeEventListener('beforeunload', handleBeforeUnload)
+		}
+	}, [isSaved, handleSave])
+
+	useEffect(() => {
 		if (!data?.chapter) return
 		if (data.chapter.chapter_title) {
 			setCurrentTitle(data.chapter.chapter_title)

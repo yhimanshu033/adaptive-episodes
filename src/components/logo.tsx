@@ -3,7 +3,18 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 
-const Logo = ({ className }: { className?: string }) => {
+import EditorLogo from '@/components/editor-logo'
+
+const Logo = ({
+	className,
+	isEditorPage,
+}: {
+	className?: string
+	isEditorPage?: boolean
+}) => {
+	if (isEditorPage) {
+		return <EditorLogo className={className} />
+	}
 	return (
 		<Link
 			href="/"

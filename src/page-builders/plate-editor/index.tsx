@@ -17,7 +17,7 @@ const EpisodePlateEditor = () => {
 	}, [episodeId])
 
 	return (
-		<main className="container flex flex-1 flex-col p-4">
+		<main className="flex flex-1 flex-col">
 			<DndProvider backend={HTML5Backend}>
 				<div className="relative space-y-5">
 					{extended.map((episodeId) => (

@@ -23,20 +23,6 @@ const useSaveEpisode = () => {
 		return () => clearInterval(intervalId)
 	}, [handleSave])
 
-	useEffect(() => {
-		const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-			if (!isSaved) {
-				event.preventDefault()
-			}
-		}
-
-		window.addEventListener('beforeunload', handleBeforeUnload)
-
-		return () => {
-			window.removeEventListener('beforeunload', handleBeforeUnload)
-		}
-	}, [isSaved])
-
 	return {
 		handleSave,
 		isSaved,
