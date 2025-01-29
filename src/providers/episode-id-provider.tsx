@@ -49,6 +49,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	selectedStatus: undefined,
 	notes: [],
 	currentTitle: '',
+	startOverlayLoading: false,
 }
 
 type EpisodeIdContextType = {

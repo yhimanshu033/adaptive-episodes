@@ -21,7 +21,6 @@ export default function useUnsavedChecker() {
 			if (unsavedPathname === pathname) return
 			const params = unsavedEpisodeParams[key]
 			if (!params) return
-			//   console.log('Saving unsaved content: ', params) // Uncomment this line for testing
 			void saveContent(params)
 			savedKeys.push(key)
 		})

@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { extendStore } from '@/hooks/use-editor-extend-state'
 import useSaving from '@/hooks/use-saving'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import { useQueryClient } from '@tanstack/react-query'
 import {
 	CircleArrowLeft,
@@ -21,17 +21,23 @@ export default function ControlButtons() {
 
 	const { data: content, queryKey } = useEpisodeContent()
 	const { isSaved, handleSave } = useSaving()
+	const { setStartOverlayLoading } = useEpisodeIdStore()
 
-	const handleEpisodeChange = (episode: number | null) => {
+	const handleEpisodeChange = async (episode: number | null) => {
 		if (!episode) return
-		if (!isSaved) void handleSave()
+		if (!isSaved) {
+			setStartOverlayLoading(true)
+			await handleSave()
+		}
 		router.push(`/projects/${String(id)}/${episode}/editor`)
 	}
 
 	const handleEpisodeSplit = async () => {
 		if (!isSaved) {
+			setStartOverlayLoading(true)
 			await handleSave()
 			await queryClient.invalidateQueries({ queryKey })
+			setStartOverlayLoading(false)
 		}
 
 		void setExtended([...extended, Number(content?.next_parent_id)])
@@ -46,7 +52,7 @@ export default function ControlButtons() {
 					size="icon"
 					className="rounded-full"
 					disabled={!content.previous_parent_id}
-					onClick={() => handleEpisodeChange(content.previous_parent_id)}
+					onClick={() => void handleEpisodeChange(content.previous_parent_id)}
 				>
 					<CircleArrowLeft />
 				</Button>
@@ -55,14 +61,14 @@ export default function ControlButtons() {
 					disabled={!content.next_parent_id}
 					className="rounded-full"
 					size="icon"
-					onClick={() => handleEpisodeChange(content.next_parent_id)}
+					onClick={() => void handleEpisodeChange(content.next_parent_id)}
 				>
 					<CircleArrowRight />
 				</Button>
 				<Button
 					tooltip="Episode Extension"
 					disabled={!content.next_parent_id}
-					onClick={handleEpisodeSplit}
+					onClick={() => void handleEpisodeSplit()}
 					size="icon"
 					variant="ghost"
 				>

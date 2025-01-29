@@ -22,13 +22,16 @@ const Title = () => {
 	const readOnly = useEditorReadOnly()
 	const { handleSave, isSaved } = useSaving()
 	const queryClient = useQueryClient()
-	const { setCurrentTitle } = useEpisodeIdStore()
+	const { setCurrentTitle, setStartOverlayLoading } = useEpisodeIdStore()
 
 	const handleClick = async () => {
 		const page = Math.ceil(
 			Number(episodeContent?.chapter.seq_number || 1) / EPISODE_LIMIT
 		)
-		if (!isSaved) await handleSave()
+		if (!isSaved) {
+			setStartOverlayLoading(true)
+			await handleSave()
+		}
 		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
 		await queryClient.refetchQueries({
 			queryKey: [EPISODE_LIST_QUERY_KEY],

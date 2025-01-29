@@ -3,12 +3,18 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import useSaving from '@/hooks/use-saving'
+import useEpisodeIdStore from '@/store/episode-id-store'
 
 const EditorLogo = ({ className }: { className?: string }) => {
-	const { handleSave } = useSaving()
+	const { handleSave, isSaved } = useSaving()
+	const { setStartOverlayLoading } = useEpisodeIdStore()
+
 	const router = useRouter()
 	const handleClick = async () => {
-		await handleSave()
+		if (!isSaved) {
+			setStartOverlayLoading(true)
+			await handleSave()
+		}
 		router.push('/')
 	}
 	return (

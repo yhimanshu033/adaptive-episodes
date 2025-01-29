@@ -45,6 +45,7 @@ export function SavingContextProvider({
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
 	const savedNotesRef = useRef(JSON.stringify(data?.chapter.props?.notes || []))
+
 	const pathname = usePathname()
 	const isSaved = useMemo(() => {
 		const currentChildren = JSON.stringify(children)
@@ -172,14 +173,17 @@ export function SavingContextProvider({
 		} else {
 			handleSaveGlobalStore()
 		}
+		return () => {
+			handleRemoveGlobalStore()
+		}
 	}, [
 		isSaved,
 		children,
 		allComments,
 		notes,
 		currentTitle,
-		handleSaveGlobalStore,
 		handleRemoveGlobalStore,
+		handleSaveGlobalStore,
 	])
 
 	const value = {

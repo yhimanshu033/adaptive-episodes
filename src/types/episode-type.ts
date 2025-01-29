@@ -161,6 +161,7 @@ export type EpisodeIdStoreType = {
 	episodeId: number
 	notes: TNote[]
 	selectedStatus: EStatus | undefined
+	startOverlayLoading: boolean
 }
 
 export type TSaveEpisodeParams = {

@@ -41,6 +41,13 @@ function useEpisodeIdStore() {
 		})
 	}
 
+	const setStartOverlayLoading = (
+		startOverlayLoading: EpisodeIdStoreType['startOverlayLoading']
+	) => {
+		useEpisodeIdStoreContext.setState(() => {
+			return { startOverlayLoading }
+		})
+	}
 	return {
 		store: useEpisodeIdStoreContext,
 		setSelectedStatus,
@@ -48,6 +55,7 @@ function useEpisodeIdStore() {
 		setNotes,
 		addNote,
 		deleteNote,
+		setStartOverlayLoading,
 	}
 }
 
