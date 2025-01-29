@@ -1,8 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useParams, usePathname } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useEpisodeIdStore from '@/store/episode-id-store'
+import {
+	addUnsavedEpisodeParams,
+	removeUnsavedEpisodeParams,
+} from '@/store/global-store'
 import { useEditorState } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -18,6 +23,7 @@ export function SavingContextProvider({
 }: {
 	children: React.ReactNode
 }) {
+	const { id } = useParams()
 	const { children } = useEditorState()
 	const { allComments } = useComments()
 	const { saveEpisodeMutation } = useEpisodeHook()
@@ -35,7 +41,7 @@ export function SavingContextProvider({
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
 	const savedNotesRef = useRef(JSON.stringify(data?.chapter.props?.notes || []))
-
+	const pathname = usePathname()
 	const isSaved = useMemo(() => {
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(allComments)
@@ -82,6 +88,37 @@ export function SavingContextProvider({
 		]
 	)
 
+	const handleSaveGlobalStore = useCallback(() => {
+		if (!data?.chapter) return
+		savedRef.current = JSON.stringify(children)
+		savedCommentsRef.current = JSON.stringify(allComments)
+		savedTitleRef.current = currentTitle
+		savedNotesRef.current = JSON.stringify(notes)
+		const clearedLaser = clearLasers(children)
+		const text = JSON.stringify(clearedLaser)
+		const status = data?.chapter.status || BASE_STATUS
+		const chapterId = data?.chapter.parent
+
+		addUnsavedEpisodeParams(`${chapterId}_${pathname}`, {
+			projectId: Number(id),
+			status,
+			episodeId: Number(chapterId),
+			text,
+			props: {
+				...data?.chapter.props,
+				comments: allComments,
+				notes,
+			},
+			chapter_title: currentTitle || data?.chapter.chapter_title,
+		})
+	}, [id, children, allComments, data?.chapter, currentTitle, notes, pathname])
+
+	const handleRemoveGlobalStore = useCallback(() => {
+		if (!data?.chapter) return
+		const chapterId = data?.chapter.parent
+		removeUnsavedEpisodeParams(`${chapterId}_${pathname}`)
+	}, [data?.chapter, pathname])
+
 	useEffect(() => {
 		if (
 			savedCommentsRef.current !== JSON.stringify(allComments) ||
@@ -92,9 +129,10 @@ export function SavingContextProvider({
 	}, [allComments, handleSave, notes, currentTitle])
 
 	useEffect(() => {
-		const handleBeforeUnload = () => {
+		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
 			if (!isSaved) {
 				void handleSave()
+				e.preventDefault()
 			}
 		}
 
@@ -117,6 +155,22 @@ export function SavingContextProvider({
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data?.chapter])
+
+	useEffect(() => {
+		if (isSaved) {
+			handleRemoveGlobalStore()
+		} else {
+			handleSaveGlobalStore()
+		}
+	}, [
+		isSaved,
+		children,
+		allComments,
+		notes,
+		currentTitle,
+		handleSaveGlobalStore,
+		handleRemoveGlobalStore,
+	])
 
 	const value = {
 		handleSave,

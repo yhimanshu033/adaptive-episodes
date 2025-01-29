@@ -46,6 +46,7 @@ export default function PlateEditor() {
 	const { extended } = extendStore()
 
 	const isLast = episodeId === extended[extended.length - 1]
+	const isFirst = episodeId === extended[0]
 
 	useEffect(() => {
 		const invalidate = async () => {
@@ -66,7 +67,7 @@ export default function PlateEditor() {
 		<Plate editor={editor}>
 			<SavingContextProvider>
 				<ChatbotProvider>
-					<Header show />
+					{isFirst && <Header show />}
 					<div className="container p-4">
 						<div className="flex animate-fade-in-up items-center justify-between">
 							<Title />
@@ -115,7 +116,7 @@ export default function PlateEditor() {
 								<Sidebar />
 							</div>
 						</div>
-						{isLast ? <ControlButtons /> : <Separator />}
+						{isLast ? <ControlButtons /> : <Separator className="mt-8" />}
 						<FloatingPrompt />
 						<FloatingLaserResponse />
 					</div>

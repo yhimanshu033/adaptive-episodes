@@ -89,6 +89,11 @@ export type TPatchEpisodeBody = {
 	text: string
 } & Partial<TEpisode>
 
+export type SaveEpisodeParams = {
+	episodeId: number
+	projectId: number
+} & TPatchEpisodeBody
+
 export type TPatchEpisodeUrlParams = {
 	episodeId: number
 	projectId: number
