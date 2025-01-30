@@ -16,9 +16,5 @@ export default function LogOutButton() {
 		return <Link href="/auth/signin">Login</Link>
 	}
 
-	return (
-		<div className="cursor-pointer" onClick={handleLogout}>
-			Logout
-		</div>
-	)
+	return <button onClick={handleLogout}>Logout</button>
 }

@@ -6,7 +6,7 @@ import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
 import { extendStore } from '@/hooks/use-editor-extend-state'
 import useMyEditor from '@/hooks/use-my-editor'
 import { SavingContextProvider } from '@/hooks/use-saving'
-import OverlayLoader from '@/page-builders/plate-editor/overlay-loader'
+import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
 import SaveEpisode from '@/page-builders/plate-editor/save-episode'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
@@ -68,7 +68,7 @@ export default function PlateEditor() {
 			<SavingContextProvider data={content}>
 				<ChatbotProvider>
 					<div className="container p-4">
-						<OverlayLoader />
+						<EditorOverlayLoader />
 						<div className="flex animate-fade-in-up items-center justify-between">
 							<Title />
 							<div className="flex items-center gap-2">

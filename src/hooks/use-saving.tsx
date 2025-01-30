@@ -77,25 +77,30 @@ export function SavingContextProvider({
 			if (startOverlayLoading) {
 				setStartOverlayLoading(true)
 			}
-			savedRef.current = JSON.stringify(children)
-			savedCommentsRef.current = JSON.stringify(allComments)
-			savedTitleRef.current = currentTitle
-			savedNotesRef.current = JSON.stringify(notes)
-			const clearedLaser = clearLasers(children)
-			const text = JSON.stringify(clearedLaser)
-			const status = data?.chapter.status || BASE_STATUS
-			const chapterId = data?.chapter.parent
-			await saveEpisodeMutation.mutateAsync({
-				status,
-				chapterId,
-				text,
-				comments: allComments,
-				prevProps: data?.chapter.props,
-				notes,
-				chapter_title: currentTitle || data?.chapter.chapter_title,
-			})
-			if (stopOverlayLoading) {
-				setStartOverlayLoading(false)
+			try {
+				savedRef.current = JSON.stringify(children)
+				savedCommentsRef.current = JSON.stringify(allComments)
+				savedTitleRef.current = currentTitle
+				savedNotesRef.current = JSON.stringify(notes)
+				const clearedLaser = clearLasers(children)
+				const text = JSON.stringify(clearedLaser)
+				const status = data?.chapter.status || BASE_STATUS
+				const chapterId = data?.chapter.parent
+				await saveEpisodeMutation.mutateAsync({
+					status,
+					chapterId,
+					text,
+					comments: allComments,
+					prevProps: data?.chapter.props,
+					notes,
+					chapter_title: currentTitle || data?.chapter.chapter_title,
+				})
+			} catch (error) {
+				console.error(error)
+			} finally {
+				if (stopOverlayLoading) {
+					setStartOverlayLoading(false)
+				}
 			}
 		},
 		[
@@ -151,10 +156,9 @@ export function SavingContextProvider({
 	}, [allComments, handleSave, notes, currentTitle])
 
 	useEffect(() => {
-		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+		const handleBeforeUnload = () => {
 			if (!isSaved) {
 				void handleSave()
-				console.log(e)
 			}
 		}
 		window.addEventListener('beforeunload', handleBeforeUnload)
