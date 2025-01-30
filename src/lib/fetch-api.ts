@@ -18,6 +18,7 @@ export type FetchRequestParams<
 	defaultData?: ResponseDataT
 	headers?: Headers
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
+	noAuth?: boolean
 	onError?: (error: Error) => void
 	query?: QueryParamsT
 	throwOnError?: boolean
@@ -64,6 +65,7 @@ export async function fetchAPI<
 		defaultData,
 		throwOnError,
 		baseUrl,
+		noAuth,
 	} = params
 
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
@@ -90,15 +92,16 @@ export async function fetchAPI<
 
 	try {
 		const isFormData = body instanceof FormData
-		if (!session?.accessToken) {
-			throw new Error('No access token found in session')
+		if (!session?.accessToken && !noAuth) {
+			console.warn('No access token found in session')
 		}
+		const accessToken = session?.accessToken || ''
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {
 				...(isFormData ? {} : { 'Content-Type': 'application/json' }),
 				'API-Key': API_KEY,
-				Authorization: `Bearer ${session.accessToken}`,
+				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
 				...headers,
 			},
 			...(method !== 'GET' && method !== 'DELETE'
