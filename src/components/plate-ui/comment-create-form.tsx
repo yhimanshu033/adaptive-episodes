@@ -21,11 +21,7 @@ export function CommentCreateForm() {
 	const comments = useOption('comments')
 
 	const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement, Element>) => {
-		if (
-			e.target.value === '' &&
-			activeCommentId &&
-			!comments[activeCommentId]
-		) {
+		if (!e.target.value && activeCommentId && !comments[activeCommentId]) {
 			setOption('activeCommentId', null)
 		}
 	}
@@ -36,7 +32,7 @@ export function CommentCreateForm() {
 			<div className="flex grow flex-col items-end gap-2">
 				<CommentNewTextarea
 					autoFocus
-					onBlur={(e) => handleBlur(e)}
+					onBlur={handleBlur}
 					className={inputVariants()}
 				/>
 				<CommentNewSubmitButton
