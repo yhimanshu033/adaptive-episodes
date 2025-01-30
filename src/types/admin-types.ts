@@ -22,8 +22,10 @@ export type LoginBodyParams = {
 }
 
 export type LoginResponse = {
-	access_token: string
-	uid: string
+	data: {
+		access_token: string
+		uid: string
+	}
 }
 
 export type SessionData = Session & {
