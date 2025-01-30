@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -22,15 +21,15 @@ export default function ControlButtons() {
 	const { data: content, queryKey } = useEpisodeContent()
 	const { isSaved, handleSave } = useSaving()
 
-	const handleEpisodeChange = (episode: number | null) => {
+	const handleEpisodeChange = async (episode: number | null) => {
 		if (!episode) return
-		if (!isSaved) void handleSave()
+		await handleSave({ startOverlayLoading: true })
 		router.push(`/projects/${String(id)}/${episode}/editor`)
 	}
 
 	const handleEpisodeSplit = async () => {
 		if (!isSaved) {
-			await handleSave()
+			await handleSave({ startOverlayLoading: true, stopOverlayLoading: true })
 			await queryClient.invalidateQueries({ queryKey })
 		}
 
@@ -46,7 +45,7 @@ export default function ControlButtons() {
 					size="icon"
 					className="rounded-full"
 					disabled={!content.previous_parent_id}
-					onClick={() => handleEpisodeChange(content.previous_parent_id)}
+					onClick={() => void handleEpisodeChange(content.previous_parent_id)}
 				>
 					<CircleArrowLeft />
 				</Button>
@@ -55,14 +54,14 @@ export default function ControlButtons() {
 					disabled={!content.next_parent_id}
 					className="rounded-full"
 					size="icon"
-					onClick={() => handleEpisodeChange(content.next_parent_id)}
+					onClick={() => void handleEpisodeChange(content.next_parent_id)}
 				>
 					<CircleArrowRight />
 				</Button>
 				<Button
 					tooltip="Episode Extension"
 					disabled={!content.next_parent_id}
-					onClick={handleEpisodeSplit}
+					onClick={() => void handleEpisodeSplit()}
 					size="icon"
 					variant="ghost"
 				>

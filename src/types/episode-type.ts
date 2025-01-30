@@ -89,6 +89,11 @@ export type TPatchEpisodeBody = {
 	text: string
 } & Partial<TEpisode>
 
+export type SaveEpisodeParams = {
+	episodeId: number
+	projectId: number
+} & TPatchEpisodeBody
+
 export type TPatchEpisodeUrlParams = {
 	episodeId: number
 	projectId: number
@@ -156,10 +161,13 @@ export type EpisodeIdStoreType = {
 	episodeId: number
 	notes: TNote[]
 	selectedStatus: EStatus | undefined
+	startOverlayLoading: boolean
 }
 
 export type TSaveEpisodeParams = {
 	forced?: boolean
+	startOverlayLoading?: boolean
+	stopOverlayLoading?: boolean
 }
 
 export type TSavingContext = {

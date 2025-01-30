@@ -3,6 +3,7 @@
 import { fetchAPI } from '@/lib/fetch-api'
 
 import {
+	SaveEpisodeParams,
 	TGetEpisodeResponse,
 	TGetEpisodeUrlParams,
 	TPatchEpisodeBody,
@@ -27,11 +28,7 @@ export const saveContent = async ({
 	projectId,
 	episodeId,
 	...data
-}: {
-	episodeId: number
-	projectId: number
-	text: string
-} & TPatchEpisodeBody) => {
+}: SaveEpisodeParams) => {
 	const responseData = await fetchAPI<
 		TPatchEpisodeBody,
 		TPatchEpisodeUrlParams,
