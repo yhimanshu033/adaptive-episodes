@@ -53,6 +53,7 @@ const authOptions = {
 					body: {
 						token: account.id_token,
 					},
+					noAuth: true,
 				})
 				token.uid = resp.data?.data.uid
 				token.accessToken = resp?.data?.data.access_token
