@@ -42,7 +42,7 @@ export function CommentLeaf({
 			id={`comment-leaf-${state.lastCommentId}`}
 			{...props}
 			className={cn(
-				'border-b-2 border-b-primary/40',
+				'border-b-2 border-b-primary/40 hover:bg-primary/40',
 				isActive ? 'bg-primary/40' : 'bg-primary/20',
 				className
 			)}
