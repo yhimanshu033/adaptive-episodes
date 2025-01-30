@@ -4,6 +4,8 @@ import React from 'react'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 
+import { Button } from '@/components/ui/button'
+
 export default function LogOutButton() {
 	const session = useSession()
 	const { data } = session
@@ -16,5 +18,9 @@ export default function LogOutButton() {
 		return <Link href="/auth/signin">Login</Link>
 	}
 
-	return <button onClick={handleLogout}>Logout</button>
+	return (
+		<Button variant="ghost" onClick={handleLogout}>
+			Logout
+		</Button>
+	)
 }
