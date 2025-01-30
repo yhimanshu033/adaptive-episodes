@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { withRef } from '@udecode/cn'
+import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
 	useMarkToolbarButton,
 	useMarkToolbarButtonState,
@@ -18,6 +19,7 @@ export const MarkToolbarButton = withRef<
 >(({ clear, nodeType, ...rest }, ref) => {
 	const state = useMarkToolbarButtonState({ clear, nodeType })
 	const { props } = useMarkToolbarButton(state)
+	const isCommented = props.pressed && nodeType === CommentsPlugin.key
 
-	return <ToolbarButton ref={ref} {...props} {...rest} />
+	return <ToolbarButton disabled={isCommented} ref={ref} {...props} {...rest} />
 })

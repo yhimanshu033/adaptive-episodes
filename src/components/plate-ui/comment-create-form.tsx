@@ -14,15 +14,31 @@ import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
 import { inputVariants } from '@/components/plate-ui/input'
 
 export function CommentCreateForm() {
-	const { useOption } = useEditorPlugin(CommentsPlugin)
+	const { useOption, setOption } = useEditorPlugin(CommentsPlugin)
 
 	const myUserId = useOption('myUserId')
+	const activeCommentId = useOption('activeCommentId')
+	const comments = useOption('comments')
+
+	const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement, Element>) => {
+		if (
+			e.target.value === '' &&
+			activeCommentId &&
+			!comments[activeCommentId]
+		) {
+			setOption('activeCommentId', null)
+		}
+	}
 
 	return (
 		<div className="flex w-full space-x-2 p-2">
 			<CommentAvatar userId={myUserId} />
 			<div className="flex grow flex-col items-end gap-2">
-				<CommentNewTextarea autoFocus className={inputVariants()} />
+				<CommentNewTextarea
+					autoFocus
+					onBlur={(e) => handleBlur(e)}
+					className={inputVariants()}
+				/>
 				<CommentNewSubmitButton
 					className={cn(buttonVariants({ size: 'sm' }), 'w-[90px]')}
 				>
