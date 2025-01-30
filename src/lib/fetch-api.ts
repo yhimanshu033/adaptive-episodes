@@ -84,6 +84,7 @@ export async function fetchAPI<
 
 	try {
 		const isFormData = body instanceof FormData
+		console.dir({ resolvedUrl, body })
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {

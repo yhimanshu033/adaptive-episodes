@@ -11,6 +11,8 @@ const Header = () => {
 	const session = useSession()
 	const { data } = session
 
+	console.log({ data })
+
 	const handleLogout = () => {
 		signOut().catch(() => {})
 	}

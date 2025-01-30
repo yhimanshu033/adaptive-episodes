@@ -1,3 +1,5 @@
+import { Session } from 'next-auth'
+
 export interface Writer {
 	cmsThroughputDay: number
 	cmsThroughputMonth: number
@@ -13,4 +15,18 @@ export interface Writer {
 
 export interface WriterTableProps {
 	writers: Writer[]
+}
+
+export type LoginBodyParams = {
+	token: string
+}
+
+export type LoginResponse = {
+	access_token: string
+	uid: string
+}
+
+export type SessionData = Session & {
+	accessToken: string
+	uid: string
 }
