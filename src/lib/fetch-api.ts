@@ -1,5 +1,10 @@
 'use server'
 
+import { getServerSession } from 'next-auth'
+
+import authOptions from '@/lib/next-auth-options'
+
+import { SessionData } from '@/types/admin-types'
 import { TNoParams } from '@/types/common'
 
 export type FetchRequestParams<
@@ -47,6 +52,7 @@ export async function fetchAPI<
 		QueryParamsT
 	>
 ): Promise<FetchResponseResult<ResponseDataT>> {
+	const session = (await getServerSession(authOptions)) as SessionData
 	const {
 		url,
 		method,
@@ -84,11 +90,15 @@ export async function fetchAPI<
 
 	try {
 		const isFormData = body instanceof FormData
+		if (!session?.accessToken) {
+			throw new Error('No access token found in session')
+		}
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {
 				...(isFormData ? {} : { 'Content-Type': 'application/json' }),
 				'API-Key': API_KEY,
+				Authorization: `Bearer ${session.accessToken}`,
 				...headers,
 			},
 			...(method !== 'GET' && method !== 'DELETE'
