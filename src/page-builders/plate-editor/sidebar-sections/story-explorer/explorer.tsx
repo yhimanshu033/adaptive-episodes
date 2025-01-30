@@ -85,9 +85,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										>
 											<Send
 												className="size-4"
-												onClick={() =>
-													void handleRequest(promptInput, promptInput)
-												}
+												onClick={() => void handleRequest(promptInput)}
 											/>
 										</Button>
 									</div>

@@ -121,6 +121,11 @@ export interface PlotExplorerParams {
 	scene_array?: Array<string>
 }
 
+export interface PlotExplorerQueryResponse {
+	content: PlotExplorerApiResponse['data']
+	taskId: string
+}
+
 export interface ExplorerType {
 	content: string | ExplorerType[]
 	preContent?: string
