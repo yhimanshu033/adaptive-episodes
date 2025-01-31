@@ -8,11 +8,12 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
 const EpisodePlateEditor = () => {
-	const { extended, setExtended } = extendStore()
+	const { extended, setExtended, setEpisodeMap } = extendStore()
 	const { episodeId } = useParams()
 
 	useEffect(() => {
 		setExtended([Number(episodeId)])
+		setEpisodeMap({})
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [episodeId])
 
