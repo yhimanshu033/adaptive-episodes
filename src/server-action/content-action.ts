@@ -15,6 +15,7 @@ export const getEpisodeContent = async (chapterId: number) => {
 		{
 			method: 'GET',
 			url: '/chapter/:chapterId/content/',
+
 			urlParams: {
 				chapterId,
 			},

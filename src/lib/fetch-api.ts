@@ -113,7 +113,12 @@ export async function fetchAPI<
 			mode: 'cors',
 		})
 
+		if (!response.ok || response.status !== 200) {
+			throw new Error('Failed to fetch')
+		}
+
 		const responseData = (await response.json()) as ResponseDataT
+
 		return {
 			success: true,
 			status: response.status,

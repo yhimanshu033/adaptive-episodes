@@ -4,8 +4,10 @@ import useAIStore from '@/store/ai-store'
 import useLaserStore from '@/store/laser-store'
 import useCustomPlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
+import { collapseSelection } from '@udecode/plate-common'
 import type { PlateContentProps } from '@udecode/plate-common/react'
 import {
+	focusEditor,
 	PlateContent,
 	useEditorRef,
 	useEditorState,
@@ -105,8 +107,12 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 
 			isPasted.current = false
 			const clearedColors = clearColors(children)
+			if (JSON.stringify(clearedColors) === JSON.stringify(children)) return
+			const currentTarget = editor.selection?.anchor
 			editor.tf.setValue(clearedColors)
-		}, [children, editor.tf])
+			collapseSelection(editor)
+			focusEditor(editor, currentTarget)
+		}, [children, editor])
 
 		function handlePaste() {
 			isPasted.current = true
@@ -150,6 +156,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						ref={contentRef}
 						onPaste={handlePaste}
 						readOnly={disabled ?? readOnly}
+						autoFocus
 						aria-disabled={disabled}
 						data-plate-selectable
 						disableDefaultStyles

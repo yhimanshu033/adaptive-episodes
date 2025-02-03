@@ -3,14 +3,29 @@
 import React from 'react'
 import useAuth from '@/hooks/use-auth'
 
+import { FullScreenLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 
 const SignInWithGoogle = () => {
 	const { onSignInWithGoogle } = useAuth()
+	const [loading, setIsLoading] = React.useState(false)
+
+	function handleSignIn() {
+		setIsLoading(true)
+		try {
+			onSignInWithGoogle()
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	if (loading) {
+		return <FullScreenLoader />
+	}
 
 	return (
 		<Button
-			onClick={onSignInWithGoogle}
+			onClick={handleSignIn}
 			className="bg-[#4285F4] text-white hover:bg-[#4285F4]/90 focus:ring-[#4285F4]/50 dark:focus:ring-[#4285F4]/55"
 		>
 			<svg
