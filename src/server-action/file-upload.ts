@@ -11,10 +11,6 @@ export const uploadFile = async (file: File) => {
 		method: 'POST',
 		url: '/project/file-upload/',
 		body: formData,
-		onError: (error) => {
-			const { message } = error
-			throw new Error(message || 'Unable to upload file')
-		},
 	})
 
 	return stories.data

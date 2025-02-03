@@ -141,13 +141,6 @@ export const SocketStreamingProvider = ({
 			>({
 				...rest,
 				query: { task_id: taskId, ...(params.query as QueryParamsT) },
-				onError: () => {
-					setFetchedData((prev) => {
-						const updatedData = { ...prev }
-						delete updatedData[key]
-						return updatedData
-					})
-				},
 			})
 
 			return taskId

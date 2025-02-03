@@ -1,5 +1,6 @@
 'use server'
 
+import * as Sentry from '@sentry/nextjs'
 import { getServerSession } from 'next-auth'
 
 import authOptions from '@/lib/next-auth-options'
@@ -19,7 +20,6 @@ export type FetchRequestParams<
 	headers?: Headers
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 	noAuth?: boolean
-	onError?: (error: Error) => void
 	query?: QueryParamsT
 	throwOnError?: boolean
 	url: string
@@ -61,7 +61,6 @@ export async function fetchAPI<
 		query = {},
 		body = {},
 		headers = {},
-		onError,
 		defaultData,
 		throwOnError,
 		baseUrl,
@@ -89,13 +88,13 @@ export async function fetchAPI<
 	if (queryStr) {
 		resolvedUrl += `?${queryStr}`
 	}
+	const accessToken = session?.accessToken || ''
 
 	try {
 		const isFormData = body instanceof FormData
-		if (!session?.accessToken && !noAuth) {
+		if (!accessToken && !noAuth) {
 			console.warn('No access token found in session')
 		}
-		const accessToken = session?.accessToken || ''
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {
@@ -114,7 +113,27 @@ export async function fetchAPI<
 		})
 
 		if (!response.ok || response.status !== 200) {
-			throw new Error('Failed to fetch')
+			Sentry.captureException(
+				JSON.stringify({
+					type: 'API RESPONSE ERROR',
+					data: {
+						url: resolvedUrl,
+						method,
+						body,
+						query,
+						accessToken,
+						headers,
+						responseStatus: response.status,
+						responseStatusText: response.statusText,
+					},
+				})
+			)
+			return {
+				success: false,
+				status: 0,
+				data: defaultData ?? null,
+				error: new Error(response.statusText),
+			}
 		}
 
 		const responseData = (await response.json()) as ResponseDataT
@@ -126,14 +145,24 @@ export async function fetchAPI<
 			error: null,
 		}
 	} catch (error) {
+		Sentry.captureException(
+			JSON.stringify({
+				type: 'API CATCH ERROR',
+				data: {
+					url: resolvedUrl,
+					method,
+					body,
+					accessToken,
+					query,
+					headers,
+					error,
+				},
+			})
+		)
 		const errorInstance = error as Error
 
 		if (throwOnError) {
 			throw errorInstance
-		}
-
-		if (onError) {
-			onError(errorInstance)
 		}
 
 		console.log({ errorInstance })
