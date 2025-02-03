@@ -5,9 +5,8 @@ import FindAndReplace from '@/page-builders/plate-editor/sidebar-sections/find-a
 import Notes from '@/page-builders/plate-editor/sidebar-sections/notes'
 import StoryExplorer from '@/page-builders/plate-editor/sidebar-sections/story-explorer'
 import usePlateStore from '@/store/plate-store'
-import { X } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import CloseSidebar from '@/components/close-sidebar'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils/helpers'
 
@@ -22,7 +21,7 @@ const renderSidebar: Record<string, React.ReactNode> = {
 }
 
 const Sidebar = () => {
-	const { store, setSidebar } = usePlateStore()
+	const { store } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	const showSidebar = sidebar && sidebar !== ESidebar.TRANSLATION
 	return (
@@ -33,17 +32,7 @@ const Sidebar = () => {
 			)}
 		>
 			<ScrollArea className="relative size-full h-[calc(100svh_-_44px)] flex-1 transition-all duration-200">
-				<Button
-					size="icon"
-					variant="ghost"
-					className={cn(
-						'absolute right-2 top-2 z-50 opacity-20 transition-all hover:opacity-100'
-					)}
-					tooltip="Close"
-					onClick={() => setSidebar(null)}
-				>
-					<X />
-				</Button>
+				<CloseSidebar />
 				{sidebar && renderSidebar[sidebar]}
 			</ScrollArea>
 		</div>

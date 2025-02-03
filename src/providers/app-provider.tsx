@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import { PRIMARY_BACKGROUND_COLOR } from '@/constants/global-constants'
 import { SocketProvider } from '@/hooks/use-socket'
 import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
 import { updateUserData } from '@/store/global-store'
@@ -44,7 +45,7 @@ const AppProvider = ({
 									delayDuration={500}
 									skipDelayDuration={0}
 								>
-									<NextTopLoader />
+									<NextTopLoader color={PRIMARY_BACKGROUND_COLOR} />
 									{children}
 									<Toaster />
 									<ReactQueryDevtools />

@@ -7,6 +7,7 @@ import {
 	Plate,
 } from '@udecode/plate-common/react'
 
+import CloseSidebar from '@/components/close-sidebar'
 import { Editor } from '@/components/plate-ui/editor'
 import { cn } from '@/lib/utils/helpers'
 
@@ -34,7 +35,7 @@ const Translation = ({ translatedContent }: { translatedContent: string }) => {
 	return (
 		<div
 			className={cn(
-				'flex w-full transition-all duration-200',
+				'relative flex w-full transition-all duration-200',
 				!showTranslation ? 'max-w-0' : 'max-w-[45vw]'
 			)}
 		>
@@ -48,6 +49,7 @@ const Translation = ({ translatedContent }: { translatedContent: string }) => {
 						variant="ghost"
 						size="md"
 					/>
+					<CloseSidebar />
 				</Plate>
 			)}
 		</div>
