@@ -1,6 +1,8 @@
 import { Dispatch, SetStateAction } from 'react'
 import { TComment, TCommentText } from '@udecode/plate-comments'
 
+import { TGetEpisodeResponse } from '@/types/episode-type'
+
 export type TCustomComment = TComment & { node: TCommentText }
 
 export interface RephraseSelectionProps {
@@ -37,3 +39,8 @@ export interface IndexedSFXResponseItem {
 }
 
 export type IndexedSFXResponse = Array<IndexedSFXResponseItem>
+
+export type EditorExtendedStore = {
+	episodeMap: Record<number, TGetEpisodeResponse>
+	extended: number[]
+}

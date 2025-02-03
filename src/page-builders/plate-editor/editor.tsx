@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
-import { extendStore } from '@/hooks/use-editor-extend-state'
 import useMyEditor from '@/hooks/use-my-editor'
 import { SavingContextProvider } from '@/hooks/use-saving'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
@@ -13,9 +12,11 @@ import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
 import Versions from '@/page-builders/plate-editor/versions'
+import useEditorExtendedStore from '@/store/extended-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Loader } from '@/components/loader'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
@@ -43,7 +44,8 @@ export default function PlateEditor() {
 		id: 'TEST_ID',
 	})
 	const episodeId = useEpisodeId()
-	const { extended } = extendStore()
+	const { store: extendStore } = useEditorExtendedStore()
+	const extended = extendStore(useShallow((state) => state.extended))
 
 	const isLast = episodeId === extended[extended.length - 1]
 
