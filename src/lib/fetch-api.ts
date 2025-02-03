@@ -89,11 +89,21 @@ export async function fetchAPI<
 		resolvedUrl += `?${queryStr}`
 	}
 	const accessToken = session?.accessToken || ''
-
 	try {
 		const isFormData = body instanceof FormData
 		if (!accessToken && !noAuth) {
 			console.warn('No access token found in session')
+			Sentry.captureException(new Error('API ACCESS_TOKEN ERROR'), {
+				extra: {
+					session,
+					url: resolvedUrl,
+					method,
+					body,
+					query,
+					accessToken,
+					headers,
+				},
+			})
 		}
 		const response = await fetch(resolvedUrl, {
 			method,
@@ -113,21 +123,19 @@ export async function fetchAPI<
 		})
 
 		if (!response.ok || response.status !== 200) {
-			Sentry.captureException(
-				JSON.stringify({
-					type: 'API RESPONSE ERROR',
-					data: {
-						url: resolvedUrl,
-						method,
-						body,
-						query,
-						accessToken,
-						headers,
-						responseStatus: response.status,
-						responseStatusText: response.statusText,
-					},
-				})
-			)
+			Sentry.captureException(new Error('API RESPONSE ERROR'), {
+				extra: {
+					url: resolvedUrl,
+					method,
+					body,
+					query,
+					accessToken,
+					headers,
+					responseStatus: response.status,
+					responseStatusText: response.statusText,
+				},
+			})
+
 			return {
 				success: false,
 				status: 0,
@@ -145,20 +153,17 @@ export async function fetchAPI<
 			error: null,
 		}
 	} catch (error) {
-		Sentry.captureException(
-			JSON.stringify({
-				type: 'API CATCH ERROR',
-				data: {
-					url: resolvedUrl,
-					method,
-					body,
-					accessToken,
-					query,
-					headers,
-					error,
-				},
-			})
-		)
+		Sentry.captureException(new Error('API CATCH ERROR'), {
+			extra: {
+				url: resolvedUrl,
+				method,
+				body,
+				accessToken,
+				query,
+				headers,
+				error,
+			},
+		})
 		const errorInstance = error as Error
 
 		if (throwOnError) {
