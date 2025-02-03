@@ -1,0 +1,37 @@
+import useEditorExtendedState from '@/hooks/use-editor-extend-state'
+
+import { EditorExtendedStore } from '@/types/editor-types'
+
+function useEditorExtendedStore() {
+	const { useEpisodeExtendedStoreUtil } = useEditorExtendedState()
+
+	const setExtended = (extended: EditorExtendedStore['extended']) => {
+		useEpisodeExtendedStoreUtil.setState(() => {
+			return { extended }
+		})
+	}
+
+	const setEpisodeMap = (episodeMap: EditorExtendedStore['episodeMap']) => {
+		useEpisodeExtendedStoreUtil.setState(() => {
+			return { episodeMap }
+		})
+	}
+
+	const addEpisodeMap = (
+		id: number,
+		episode: EditorExtendedStore['episodeMap'][number]
+	) => {
+		useEpisodeExtendedStoreUtil.setState((state) => {
+			return { episodeMap: { ...state.episodeMap, [id]: episode } }
+		})
+	}
+
+	return {
+		store: useEpisodeExtendedStoreUtil,
+		setEpisodeMap,
+		setExtended,
+		addEpisodeMap,
+	}
+}
+
+export default useEditorExtendedStore

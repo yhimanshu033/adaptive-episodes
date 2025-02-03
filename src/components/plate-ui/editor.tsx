@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import useSaving from '@/hooks/use-saving'
 import useAIStore from '@/store/ai-store'
 import useLaserStore from '@/store/laser-store'
 import useCustomPlateStore from '@/store/plate-store'
@@ -97,6 +98,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { children } = useEditorState()
 		const editor = useEditorRef()
 		const isPasted = React.useRef(false)
+		const { setForceSave } = useSaving()
 
 		useEffect(() => {
 			if (!isPasted.current) return
@@ -108,6 +110,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 
 		function handlePaste() {
 			isPasted.current = true
+			setForceSave(true)
 		}
 
 		return (
