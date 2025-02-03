@@ -12,6 +12,9 @@ export const getMetadata = async (
 	const metadata = await fetchAPI<TGetMetadataResponse, TMetadataUrlParams>({
 		method: 'GET',
 		url: '/metadata/:projectId/:startSequence/:endSequence',
+		defaultData: {
+			data: {},
+		},
 		urlParams: {
 			projectId,
 			startSequence,

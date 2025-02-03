@@ -1,8 +1,10 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import NextError from 'next/error'
+import Link from 'next/link'
 import * as Sentry from '@sentry/nextjs'
+
+import { buttonVariants } from '@/lib/utils/helpers'
 
 export default function GlobalError({
 	error,
@@ -16,11 +18,14 @@ export default function GlobalError({
 	return (
 		<html>
 			<body>
-				{/* `NextError` is the default Next.js error page component. Its type
-        definition requires a `statusCode` prop. However, since the App Router
-        does not expose status codes for errors, we simply pass 0 to render a
-        generic error message. */}
-				<NextError statusCode={0} />
+				<div className="flex min-h-svh flex-col items-center justify-center gap-6">
+					<h2 className="text-4xl font-semibold">
+						Es ist ein Fehler aufgetreten!
+					</h2>
+					<Link href="/" className={buttonVariants()}>
+						Gehen Sie zur Startseite
+					</Link>
+				</div>
 			</body>
 		</html>
 	)
