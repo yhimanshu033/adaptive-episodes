@@ -89,20 +89,22 @@ export async function fetchAPI<
 		resolvedUrl += `?${queryStr}`
 	}
 	const accessToken = session?.accessToken || ''
+
+	const defaultSentryData: Record<string, string> = {
+		user: JSON.stringify(session?.user),
+		url: resolvedUrl,
+		method,
+		accessToken: accessToken ? 'exists' : "doesn't exist",
+		body: JSON.stringify(body),
+		query: JSON.stringify(query),
+		headers: JSON.stringify(headers),
+	}
 	try {
 		const isFormData = body instanceof FormData
 		if (!accessToken && !noAuth) {
 			console.warn('No access token found in session')
 			Sentry.captureException(new Error('API ACCESS_TOKEN ERROR'), {
-				extra: {
-					session,
-					url: resolvedUrl,
-					method,
-					accessToken,
-					body: JSON.stringify(body),
-					query: JSON.stringify(query),
-					headers: JSON.stringify(headers),
-				},
+				extra: defaultSentryData,
 			})
 		}
 		const response = await fetch(resolvedUrl, {
@@ -125,12 +127,7 @@ export async function fetchAPI<
 		if (!response.ok || response.status !== 200) {
 			Sentry.captureException(new Error('API RESPONSE ERROR'), {
 				extra: {
-					url: resolvedUrl,
-					method,
-					accessToken,
-					body: JSON.stringify(body),
-					query: JSON.stringify(query),
-					headers: JSON.stringify(headers),
+					...defaultSentryData,
 					responseStatus: response.status,
 					responseStatusText: response.statusText,
 				},
@@ -155,12 +152,7 @@ export async function fetchAPI<
 	} catch (error) {
 		Sentry.captureException(new Error('API CATCH ERROR'), {
 			extra: {
-				url: resolvedUrl,
-				method,
-				accessToken,
-				body: JSON.stringify(body),
-				query: JSON.stringify(query),
-				headers: JSON.stringify(headers),
+				...defaultSentryData,
 				error: JSON.stringify(error),
 			},
 		})
