@@ -98,10 +98,10 @@ export async function fetchAPI<
 					session,
 					url: resolvedUrl,
 					method,
-					body,
-					query,
 					accessToken,
-					headers,
+					body: JSON.stringify(body),
+					query: JSON.stringify(query),
+					headers: JSON.stringify(headers),
 				},
 			})
 		}
@@ -127,10 +127,10 @@ export async function fetchAPI<
 				extra: {
 					url: resolvedUrl,
 					method,
-					body,
-					query,
 					accessToken,
-					headers,
+					body: JSON.stringify(body),
+					query: JSON.stringify(query),
+					headers: JSON.stringify(headers),
 					responseStatus: response.status,
 					responseStatusText: response.statusText,
 				},
@@ -157,11 +157,11 @@ export async function fetchAPI<
 			extra: {
 				url: resolvedUrl,
 				method,
-				body,
 				accessToken,
-				query,
-				headers,
-				error,
+				body: JSON.stringify(body),
+				query: JSON.stringify(query),
+				headers: JSON.stringify(headers),
+				error: JSON.stringify(error),
 			},
 		})
 		const errorInstance = error as Error
