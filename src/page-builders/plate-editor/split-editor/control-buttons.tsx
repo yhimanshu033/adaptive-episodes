@@ -1,8 +1,8 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { extendStore } from '@/hooks/use-editor-extend-state'
 import useSaving from '@/hooks/use-saving'
+import useEditorExtendedStore from '@/store/extended-store'
 import { useQueryClient } from '@tanstack/react-query'
 import {
 	CircleArrowLeft,
@@ -16,7 +16,8 @@ export default function ControlButtons() {
 	const router = useRouter()
 	const { id } = useParams()
 	const queryClient = useQueryClient()
-	const { setExtended, extended, episodeMap } = extendStore()
+	const { store: extendStore, setExtended } = useEditorExtendedStore()
+	const { extended, episodeMap } = extendStore()
 
 	const firstEpisode = episodeMap[extended[0]]
 	const lastEpisode = episodeMap[extended[extended.length - 1]]

@@ -174,6 +174,7 @@ export type TSavingContext = {
 	handleSave: (params?: TSaveEpisodeParams) => Promise<void>
 	isPending: boolean
 	isSaved: boolean
+	setForceSave: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export type DownloadDocxParams = { latestStatus: EStatus | 'BASE' | undefined }

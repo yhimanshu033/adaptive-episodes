@@ -47,9 +47,11 @@ export function SavingContextProvider({
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
 	const savedNotesRef = useRef(JSON.stringify(data?.chapter.props?.notes || []))
+	const [forceSave, setForceSave] = React.useState(false)
 
 	const pathname = usePathname()
 	const isSaved = useMemo(() => {
+		if (forceSave) return false
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(allComments)
 		const currentNotes = JSON.stringify(notes)
@@ -65,7 +67,7 @@ export function SavingContextProvider({
 				: currentTitle === data?.chapter?.chapter_title) &&
 			currentNotes === storedNotes
 		)
-	}, [children, allComments, currentTitle, notes, data?.chapter])
+	}, [children, allComments, currentTitle, notes, data?.chapter, forceSave])
 
 	const handleSave = useCallback(
 		async ({
@@ -82,6 +84,7 @@ export function SavingContextProvider({
 				savedCommentsRef.current = JSON.stringify(allComments)
 				savedTitleRef.current = currentTitle
 				savedNotesRef.current = JSON.stringify(notes)
+				setForceSave(false)
 				const clearedLaser = clearLasers(children)
 				const text = JSON.stringify(clearedLaser)
 				const status = data?.chapter.status || BASE_STATUS
@@ -112,6 +115,7 @@ export function SavingContextProvider({
 			isSaved,
 			notes,
 			setStartOverlayLoading,
+			setForceSave,
 		]
 	)
 
@@ -204,6 +208,7 @@ export function SavingContextProvider({
 		handleSave,
 		isSaved,
 		isPending: saveEpisodeMutation.isPending,
+		setForceSave,
 	}
 
 	return (
