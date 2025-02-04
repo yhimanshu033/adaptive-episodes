@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { saveContent } from '@/server-action/content-action'
 import {
@@ -11,21 +11,29 @@ export default function useUnsavedChecker() {
 	const unsavedEpisodeParams = useGlobalStore(
 		useShallow((state) => state.unsavedEpisodeParams)
 	)
-
 	const pathname = usePathname()
 
+	const handleUnsaved = useCallback(
+		async (force?: boolean) => {
+			const savedKeyPromises = Object.keys(unsavedEpisodeParams).map(
+				async (key) => {
+					const unsavedPathname = key.split('_')[1]
+					if (unsavedPathname === pathname && !force) return
+					const params = unsavedEpisodeParams[key]
+					if (!params) return
+					await saveContent(params)
+					return key
+				}
+			)
+			const savedKeys = await Promise.all(savedKeyPromises)
+			savedKeys.forEach((key) => key && removeUnsavedEpisodeParams(key))
+		},
+		[unsavedEpisodeParams, pathname]
+	)
+
 	useEffect(() => {
-		const savedKeys: string[] = []
-		Object.keys(unsavedEpisodeParams).forEach((key) => {
-			const unsavedPathname = key.split('_')[1]
-			if (unsavedPathname === pathname) return
-			const params = unsavedEpisodeParams[key]
-			if (!params) return
-			void saveContent(params)
-			savedKeys.push(key)
-		})
-		savedKeys.forEach((key) => {
-			removeUnsavedEpisodeParams(key)
-		})
-	}, [unsavedEpisodeParams, pathname])
+		void handleUnsaved()
+	}, [handleUnsaved, pathname])
+
+	return { handleUnsaved }
 }

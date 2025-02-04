@@ -156,3 +156,8 @@ export const buttonVariants = cva(
 		},
 	}
 )
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function log(data: any) {
+	if (process.env.NODE_ENV === 'production') return
+	console.dir(data, { depth: null })
+}
