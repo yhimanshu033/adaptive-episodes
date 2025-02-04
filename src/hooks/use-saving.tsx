@@ -53,8 +53,6 @@ export function SavingContextProvider({
 	const savedNotesRef = useRef(JSON.stringify(data?.chapter.props?.notes || []))
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 
-	console.log({ children, allComments })
-
 	const pathname = usePathname()
 	const isSaved = useMemo(() => {
 		if (forceSave) return false
