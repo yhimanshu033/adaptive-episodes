@@ -12,18 +12,23 @@ import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 
-const renderSidebar: Record<string, React.ReactNode> = {
+const renderSidebar: Record<ESidebar, React.ReactNode> = {
 	comments: <CommentSidebar />,
 	outline: <StoryExplorer />,
 	far: <FindAndReplace />,
 	chatbot: <AiChatbot />,
 	notes: <Notes />,
+	translation: null,
+	local_diff: null,
 }
 
 const Sidebar = () => {
 	const { store } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
-	const showSidebar = sidebar && sidebar !== ESidebar.TRANSLATION
+	const showSidebar =
+		sidebar &&
+		sidebar !== ESidebar.TRANSLATION &&
+		sidebar !== ESidebar.LOCAL_DIFF
 	return (
 		<div
 			className={cn(

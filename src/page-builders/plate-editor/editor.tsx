@@ -36,7 +36,12 @@ import ControlButtons from './split-editor/control-buttons'
 export default function PlateEditor() {
 	const queryClient = useQueryClient()
 	const containerRef = useRef<HTMLDivElement>(null)
-	const { data: content, latestStatus, queryKey } = useEpisodeContent()
+	const {
+		data: content,
+		latestStatus,
+		queryKey,
+		imported,
+	} = useEpisodeContent()
 	const isChildEpisode = !!content?.chapter.is_deleted
 	const editor = useMyEditor({
 		content: content?.text || '',
@@ -67,7 +72,7 @@ export default function PlateEditor() {
 
 	return (
 		<Plate editor={editor}>
-			<SavingContextProvider data={content}>
+			<SavingContextProvider data={content} initialForceSave={imported}>
 				<ChatbotProvider>
 					<div className="container p-4">
 						<EditorOverlayLoader />

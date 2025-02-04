@@ -36,6 +36,8 @@ import { Check, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
+import { ESidebar } from '@/types/plate-types'
+
 const diffOperationColors: Record<DiffOperation['type'], string> = {
 	[AiDiffOperation.DELETE]: 'bg-red-500/40',
 	[AiDiffOperation.INSERT]: 'bg-green-500/40',
@@ -137,7 +139,10 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 
 	const value = structuredClone(props.editor.children)
 	const { store, setActiveDiffId } = usePlateStore()
-	const activeDiffId = store((state) => state.activeDiffId)
+	const localDiffValue = store((state) => state.localDiffValue)
+	const sidebar = store((state) => state.sidebar)
+	const isLocalDiff = sidebar === ESidebar.LOCAL_DIFF && !!localDiffValue
+	const activeDiffId = isLocalDiff ? null : store((state) => state.activeDiffId)
 
 	const handleStatusChange = useCallback(
 		(status: DiffStatus) => {
@@ -168,6 +173,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	return (
 		<PlateLeaf
 			onClick={() => {
+				if (isLocalDiff) return
 				setActiveDiffId(leaf.diff_id)
 			}}
 			{...props}

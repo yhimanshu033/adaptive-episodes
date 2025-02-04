@@ -3,6 +3,7 @@
 import React, { createContext, ReactNode, useContext } from 'react'
 import { aiInitialMessage } from '@/constants/ai-constants'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
+import { EpisodeContentProvider } from '@/hooks/query/use-episode-content'
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -10,16 +11,17 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { AIStoreType } from '@/types/ai-types'
 import { EpisodeIdStoreType } from '@/types/episode-type'
-import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
+import { ESidebar, LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
-	sidebar: null,
+	sidebar: ESidebar.LOCAL_DIFF,
 	resolved: false,
 	scale: 1,
 	activeDiffId: null,
 	currentDiffValue: null,
 	viewMode: false,
 	activeNoteId: null,
+	localDiffValue: null,
 }
 
 const initialAiState: AIStoreType = {
@@ -96,7 +98,7 @@ export function EpisodeIdProvider({
 				useLaserContext,
 			}}
 		>
-			{children}
+			<EpisodeContentProvider>{children}</EpisodeContentProvider>
 		</EpisodeIdContext.Provider>
 	)
 }

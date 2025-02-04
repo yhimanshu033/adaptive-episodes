@@ -1,3 +1,7 @@
+import {
+	PRIMARY_KEYS_TO_COMPARE,
+	PROPS_KEYS_TO_COMPARE,
+} from '@/constants/episodes-constants'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
@@ -5,7 +9,12 @@ import { jsonrepair } from 'jsonrepair'
 import { twMerge } from 'tailwind-merge'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
-import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
+import {
+	SaveEpisodeParams,
+	TEpisode,
+	TGetEpisodeResponse,
+	TGetEpisodesResponse,
+} from '@/types/episode-type'
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
@@ -160,4 +169,55 @@ export const buttonVariants = cva(
 export function log(data: any) {
 	if (process.env.NODE_ENV === 'production') return
 	console.dir(data, { depth: null })
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getDifferingKeys(
+	obj1: SaveEpisodeParams,
+	obj2: SaveEpisodeParams
+): string[] {
+	const unmatchedKeys: string[] = []
+	PRIMARY_KEYS_TO_COMPARE.forEach((key) => {
+		if (JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) {
+			unmatchedKeys.push(key)
+		}
+	})
+	PROPS_KEYS_TO_COMPARE.forEach((key) => {
+		if (
+			JSON.stringify(obj1['props']?.[key]) !==
+			JSON.stringify(obj2['props']?.[key])
+		) {
+			unmatchedKeys.push(key)
+		}
+	})
+	return unmatchedKeys
+}
+
+export function getEpisodeQueryResponseFromStoredData({
+	episodeData,
+	oldData,
+}: {
+	episodeData: TGetEpisodeResponse
+	oldData: SaveEpisodeParams
+}): TGetEpisodeResponse {
+	return {
+		...episodeData,
+		text: oldData.text,
+		chapter: {
+			...episodeData.chapter,
+			props: oldData.props,
+			chapter_title: oldData.chapter_title || episodeData.chapter.chapter_title,
+		},
+	}
+}
+
+export function getSavedParamsFromEpisodeData(data: TGetEpisodeResponse) {
+	return {
+		projectId: data.chapter.project,
+		status: data.chapter.status,
+		episodeId: Number(data.chapter.parent || data.chapter.id),
+		text: data.text,
+		props: data.chapter.props,
+		chapter_title: data?.chapter?.chapter_title,
+	}
 }

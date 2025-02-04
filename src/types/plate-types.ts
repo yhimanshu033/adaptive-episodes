@@ -39,6 +39,7 @@ export enum ESidebar {
 	CHATBOT = 'chatbot',
 	COMMENTS = 'comments',
 	FAR = 'far',
+	LOCAL_DIFF = 'local_diff',
 	NOTES = 'notes',
 	OUTLINE = 'outline',
 	TRANSLATION = 'translation',
@@ -47,6 +48,7 @@ export type PlateStoreData = {
 	activeDiffId: string | null
 	activeNoteId: string | null
 	currentDiffValue: Value | null
+	localDiffValue: Value | null
 	resolved: boolean
 	scale: number
 	sidebar: ESidebar | null
