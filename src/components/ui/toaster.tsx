@@ -3,7 +3,6 @@
 
 import React from 'react'
 import { useToast } from '@/hooks/use-toast'
-import useUnsavedChecker from '@/hooks/use-unsaved-checker'
 
 import {
 	Toast,
@@ -16,7 +15,6 @@ import {
 
 export function Toaster() {
 	const { toasts } = useToast()
-	useUnsavedChecker()
 
 	return (
 		<ToastProvider>

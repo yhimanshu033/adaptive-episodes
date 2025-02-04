@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/nextjs'
 import { getServerSession } from 'next-auth'
 
 import authOptions from '@/lib/next-auth-options'
+import { log } from '@/lib/utils/helpers'
 
 import { SessionData } from '@/types/admin-types'
 import { TNoParams } from '@/types/common'
@@ -103,6 +104,12 @@ export async function fetchAPI<
 		const isFormData = body instanceof FormData
 		if (!accessToken && !noAuth) {
 			console.warn('No access token found in session')
+			log({
+				type: 'API ACCESS_TOKEN ERROR',
+				extra: {
+					...defaultSentryData,
+				},
+			})
 			Sentry.captureException(new Error('API ACCESS_TOKEN ERROR'), {
 				extra: defaultSentryData,
 			})
@@ -125,6 +132,14 @@ export async function fetchAPI<
 		})
 
 		if (!response.ok || response.status !== 200) {
+			log({
+				type: 'API RESPONSE ERROR',
+				extra: {
+					...defaultSentryData,
+					responseStatus: response.status,
+					responseStatusText: response.statusText,
+				},
+			})
 			Sentry.captureException(new Error('API RESPONSE ERROR'), {
 				extra: {
 					...defaultSentryData,
@@ -150,6 +165,13 @@ export async function fetchAPI<
 			error: null,
 		}
 	} catch (error) {
+		log({
+			type: 'API CATCH ERROR',
+			extra: {
+				...defaultSentryData,
+				error: JSON.stringify(error),
+			},
+		})
 		Sentry.captureException(new Error('API CATCH ERROR'), {
 			extra: {
 				...defaultSentryData,
