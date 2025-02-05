@@ -36,8 +36,6 @@ import { Check, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
-import { ESidebar } from '@/types/plate-types'
-
 const diffOperationColors: Record<DiffOperation['type'], string> = {
 	[AiDiffOperation.DELETE]: 'bg-red-500/40',
 	[AiDiffOperation.INSERT]: 'bg-green-500/40',
@@ -93,6 +91,9 @@ export const DiffPlugin = toPlatePlugin(
 		node: { isLeaf: true },
 	}),
 	{
+		options: {
+			selectable: false,
+		},
 		render: {
 			aboveNodes:
 				() =>
@@ -127,7 +128,11 @@ export const DiffPlugin = toPlatePlugin(
 	}
 )
 
-function DiffLeaf({ children, ...props }: PlateLeafProps) {
+function DiffLeaf({
+	children,
+	readonly,
+	...props
+}: PlateLeafProps & { readonly?: boolean }) {
 	const { setAcceptedValue } = useAIStore()
 	const diffOperation = props.leaf.diffOperation as DiffOperation
 	const Component = {
@@ -139,10 +144,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 
 	const value = structuredClone(props.editor.children)
 	const { store, setActiveDiffId } = usePlateStore()
-	const localDiffValue = store((state) => state.localDiffValue)
-	const sidebar = store((state) => state.sidebar)
-	const isLocalDiff = sidebar === ESidebar.LOCAL_DIFF && !!localDiffValue
-	const activeDiffId = isLocalDiff ? null : store((state) => state.activeDiffId)
+	const activeDiffId = readonly ? null : store((state) => state.activeDiffId)
 
 	const handleStatusChange = useCallback(
 		(status: DiffStatus) => {
@@ -173,7 +175,7 @@ function DiffLeaf({ children, ...props }: PlateLeafProps) {
 	return (
 		<PlateLeaf
 			onClick={() => {
-				if (isLocalDiff) return
+				if (readonly) return
 				setActiveDiffId(leaf.diff_id)
 			}}
 			{...props}
@@ -220,6 +222,7 @@ export interface DiffViewProps {
 	current: Value | null
 	plugins?: typeof defaultPlugins
 	previous: Value | null
+	readonly?: boolean
 }
 
 export interface DiffProps extends LegacyDiffProps {
@@ -267,6 +270,7 @@ export const useDiffEditor = ({
 	current,
 	previous,
 	plugins = defaultPlugins,
+	readonly = false,
 }: DiffViewProps) => {
 	const diffValue = React.useMemo(() => {
 		const editor = createPlateEditor({
@@ -284,14 +288,22 @@ export const useDiffEditor = ({
 	const { setAcceptedValue } = useAIStore()
 
 	useEffect(() => {
+		if (readonly) return
 		setAcceptedValue(diffValue)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [diffValue])
+	}, [diffValue, readonly])
 
 	const editor = usePlateEditor(
 		{
 			plugins,
 			value: diffValue,
+			override: {
+				components: {
+					[DiffPlugin.key]: (props) => (
+						<DiffLeaf {...props} readonly={readonly} />
+					),
+				},
+			},
 		},
 		[diffValue]
 	)
@@ -304,8 +316,9 @@ export function DiffView({
 	previous,
 	plugins = defaultPlugins,
 	className,
+	readonly,
 }: DiffViewProps) {
-	const editor = useDiffEditor({ current, previous, plugins })
+	const editor = useDiffEditor({ current, previous, plugins, readonly })
 
 	if (!previous || !current) return null
 	return (

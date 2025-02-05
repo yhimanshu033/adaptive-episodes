@@ -1,5 +1,6 @@
 import React from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { useToast } from '@/hooks/use-toast'
 import usePlateStore from '@/store/plate-store'
 import { createPlateEditor, Plate } from '@udecode/plate-common/react'
 import { Check, X } from 'lucide-react'
@@ -21,6 +22,7 @@ export default function LocalDiffSection() {
 	const localDiffValue = useEpisodePlateStore(
 		useShallow((state) => state.localDiffValue)
 	)
+	const { dismiss } = useToast()
 
 	const value = breakDownValue(jsonify(content?.text || ''))
 
@@ -31,11 +33,13 @@ export default function LocalDiffSection() {
 
 	function handleReject() {
 		setImported(true)
+		dismiss()
 	}
 
 	function handleAccept() {
 		setLocalDiffValue(null)
 		setSidebar(null)
+		dismiss()
 	}
 
 	return (
@@ -55,6 +59,7 @@ export default function LocalDiffSection() {
 			<Plate readOnly editor={editor}>
 				<DiffView
 					current={value}
+					readonly
 					previous={localDiffValue}
 					className={cn(
 						editorVariants({
