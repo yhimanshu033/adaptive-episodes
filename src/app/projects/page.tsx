@@ -10,6 +10,7 @@ export default async function Page() {
 	await queryClient.prefetchQuery({
 		queryKey: [STORIES_QUERY_KEY],
 		queryFn: getStories,
+		staleTime: 0,
 	})
 
 	const dehydratedState = dehydrate(queryClient, {
@@ -22,5 +23,3 @@ export default async function Page() {
 		</HydrationBoundary>
 	)
 }
-
-export const revalidate = 300 // 5 minutes

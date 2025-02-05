@@ -32,7 +32,7 @@ export default function LogOutButton() {
 
 	return (
 		<Button
-			tooltip={isLoading ? 'Logging out' : 'Log out'}
+			tooltip={'Log out'}
 			variant="ghost"
 			disabled={isLoading}
 			onClick={() => void handleLogout()}
