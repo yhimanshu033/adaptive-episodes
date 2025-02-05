@@ -1,9 +1,8 @@
 'use client'
 
 import React from 'react'
-import dynamic from 'next/dynamic'
 
-const Stories = dynamic(() => import('@/page-builders/stories/stories'))
+import Stories from './stories'
 
 const StoryDashboard = () => {
 	return (
