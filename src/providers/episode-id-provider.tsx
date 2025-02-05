@@ -11,10 +11,10 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { AIStoreType } from '@/types/ai-types'
 import { EpisodeIdStoreType } from '@/types/episode-type'
-import { ESidebar, LaserStoreType, PlateStoreData } from '@/types/plate-types'
+import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
-	sidebar: ESidebar.LOCAL_DIFF,
+	sidebar: null,
 	resolved: false,
 	scale: 1,
 	activeDiffId: null,
