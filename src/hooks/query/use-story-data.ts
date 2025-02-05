@@ -7,7 +7,6 @@ export const useStoriesData = () => {
 	const query = useQuery({
 		queryKey: ['stories'],
 		queryFn: () => getStories(),
-		staleTime: 0,
 	})
 	return query
 }
