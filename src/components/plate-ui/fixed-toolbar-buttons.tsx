@@ -18,6 +18,7 @@ import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
 import { CommentToolbarButton } from '@/components/plate-ui/comment-toolbar-button'
 import { IndentListToolbarButton } from '@/components/plate-ui/indent-list-toolbar-button'
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
+import LocalChangesDiffButton from '@/components/plate-ui/local-changes-diff-button'
 import { MarkToolbarButton } from '@/components/plate-ui/mark-toolbar-button'
 import { ModeDropdownMenu } from '@/components/plate-ui/mode-dropdown-menu'
 import { MoreDropdownMenu } from '@/components/plate-ui/more-dropdown-menu'
@@ -26,8 +27,6 @@ import TranslationToggleButton from '@/components/plate-ui/translation-toggle-bu
 import { TurnIntoDropdownMenu } from '@/components/plate-ui/turn-into-dropdown-menu'
 import UndoRedoButtons from '@/components/plate-ui/undo-redo-buttons'
 import { ZoomDropdownMenu } from '@/components/plate-ui/zoom-dropdown'
-
-import LocalChangesDiffButton from './local-changes-diff-button'
 
 export function FixedToolbarButtons() {
 	const readOnly = useEditorReadOnly()

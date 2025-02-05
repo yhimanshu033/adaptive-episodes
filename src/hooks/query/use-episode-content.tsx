@@ -21,7 +21,11 @@ import {
 	getSelectedEpisode,
 } from '@/lib/utils/helpers'
 import { getValue } from '@/lib/utils/indexed-db'
-import { breakDownValue, jsonify } from '@/lib/utils/plate'
+import {
+	breakDownValue,
+	isEpisodeContentDifferent,
+	jsonify,
+} from '@/lib/utils/plate'
 
 import { SaveEpisodeParams } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
@@ -72,6 +76,11 @@ export const useEpisodeContentUtil = () => {
 			})
 		}
 		const newData = getSavedParamsFromEpisodeData(resp)
+		const isContentDifferent = isEpisodeContentDifferent(
+			oldData.text,
+			newData.text
+		)
+		if (!isContentDifferent) return resp
 		const diffKeys = getDifferingKeys(oldData, newData)
 		const diffToShow = diffKeys
 			.map((key) => keyToTitle[key as keyof SaveEpisodeParams])

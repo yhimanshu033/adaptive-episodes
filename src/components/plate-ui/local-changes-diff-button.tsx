@@ -18,11 +18,15 @@ export default function LocalChangesDiffButton() {
 		setSidebar(ESidebar.LOCAL_DIFF, true)
 	}
 
+	if (!localDiffValue) {
+		return null
+	}
+
 	return (
 		<ToolbarButton
 			variant={sidebar === ESidebar.LOCAL_DIFF ? 'active' : 'default'}
 			tooltip="Local Changes Diff"
-			disabled={isDisabled || !localDiffValue}
+			disabled={isDisabled}
 			onClick={onDiffClick}
 		>
 			<Diff className="size-4" />
