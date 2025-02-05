@@ -1,5 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any  */
+
+import { IGNORED_DIFF_KEYS } from '@/constants/editor-constants'
 import { TComment } from '@udecode/plate-comments'
 import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
+import { computeDiff } from '@udecode/plate-diff'
 import type { Range } from 'slate'
 
 import { Selection } from '@/types/plate-types'
@@ -433,4 +440,35 @@ export function clearColors(ogVal: Value): Value {
 	}
 	val.forEach(traverse)
 	return val
+}
+
+export function isEpisodeContentDifferent(val1: string, val2: string) {
+	const v1 = breakDownValue(jsonify(val1))
+	const v2 = breakDownValue(jsonify(val2))
+
+	const diffValue = computeDiff(v1, v2) as Value
+
+	const diffLeafs = diffValue
+		.map((elem) => elem.children)
+		.flat()
+		.filter((item) => item.diff)
+
+	const areAllSuggestions = diffLeafs.every((item: any) => {
+		if (item?.diffOperation?.type !== 'update') return false
+		if (item?.diffOperation?.newProperties?.suggestion) {
+			return true
+		}
+		const prevObj = item?.diffOperation?.properties || {}
+		const newObj = item?.diffOperation?.newProperties || {}
+		const allKeys = Object.keys({ ...prevObj, ...newObj })
+		const diffKeys = allKeys.filter(
+			(key) => JSON.stringify(prevObj[key]) !== JSON.stringify(newObj[key])
+		)
+		if (diffKeys.every((key) => IGNORED_DIFF_KEYS.includes(key))) {
+			return true
+		}
+		return false
+	})
+
+	return !areAllSuggestions
 }

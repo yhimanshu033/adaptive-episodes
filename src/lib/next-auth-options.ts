@@ -60,6 +60,10 @@ const authOptions = {
 			}
 			return token
 		},
+
+		authorized({ token }: any) {
+			if (token?.accessToken) return true
+		},
 	},
 	pages: {
 		signIn: '/auth/signin',

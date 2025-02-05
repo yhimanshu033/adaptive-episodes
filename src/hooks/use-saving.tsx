@@ -10,10 +10,12 @@ import {
 import { useEditorState } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
 
+import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers } from '@/lib/utils/plate'
 
 import { BASE_STATUS } from '@/types/common'
 import {
+	SaveEpisodeParams,
 	TGetEpisodeResponse,
 	TSaveEpisodeParams,
 	TSavingContext,
@@ -24,9 +26,11 @@ const SavingContext = React.createContext<TSavingContext | undefined>(undefined)
 export function SavingContextProvider({
 	children: nodeChildren,
 	data,
+	initialForceSave = false,
 }: {
 	children: React.ReactNode
 	data: TGetEpisodeResponse
+	initialForceSave?: boolean
 }) {
 	const { id } = useParams()
 	const { children } = useEditorState()
@@ -47,7 +51,7 @@ export function SavingContextProvider({
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
 	const savedNotesRef = useRef(JSON.stringify(data?.chapter.props?.notes || []))
-	const [forceSave, setForceSave] = React.useState(false)
+	const [forceSave, setForceSave] = React.useState(initialForceSave)
 
 	const pathname = usePathname()
 	const isSaved = useMemo(() => {
@@ -89,6 +93,20 @@ export function SavingContextProvider({
 				const text = JSON.stringify(clearedLaser)
 				const status = data?.chapter.status || BASE_STATUS
 				const chapterId = data?.chapter.parent
+				const dataToSave: SaveEpisodeParams = {
+					projectId: Number(id),
+					status,
+					episodeId: Number(chapterId),
+					text,
+					props: {
+						...data?.chapter.props,
+						comments: allComments,
+						notes,
+					},
+					chapter_title: currentTitle || data?.chapter.chapter_title,
+				}
+				void setValue(`${String(id)}_${String(chapterId)}`, dataToSave)
+
 				await saveEpisodeMutation.mutateAsync({
 					status,
 					chapterId,
@@ -107,6 +125,7 @@ export function SavingContextProvider({
 			}
 		},
 		[
+			id,
 			children,
 			allComments,
 			data?.chapter,
@@ -121,16 +140,12 @@ export function SavingContextProvider({
 
 	const handleSaveGlobalStore = useCallback(() => {
 		if (!data?.chapter) return
-		savedRef.current = JSON.stringify(children)
-		savedCommentsRef.current = JSON.stringify(allComments)
-		savedTitleRef.current = currentTitle
-		savedNotesRef.current = JSON.stringify(notes)
 		const clearedLaser = clearLasers(children)
 		const text = JSON.stringify(clearedLaser)
 		const status = data?.chapter.status || BASE_STATUS
 		const chapterId = data?.chapter.parent
 
-		addUnsavedEpisodeParams(`${chapterId}_${pathname}`, {
+		const dataToSave: SaveEpisodeParams = {
 			projectId: Number(id),
 			status,
 			episodeId: Number(chapterId),
@@ -141,14 +156,18 @@ export function SavingContextProvider({
 				notes,
 			},
 			chapter_title: currentTitle || data?.chapter.chapter_title,
-		})
+		}
+		addUnsavedEpisodeParams(
+			`${String(id)}_${String(chapterId)}_${pathname}`,
+			dataToSave
+		)
 	}, [id, children, allComments, data?.chapter, currentTitle, notes, pathname])
 
 	const handleRemoveGlobalStore = useCallback(() => {
 		if (!data?.chapter) return
 		const chapterId = data?.chapter.parent
-		removeUnsavedEpisodeParams(`${chapterId}_${pathname}`)
-	}, [data?.chapter, pathname])
+		removeUnsavedEpisodeParams(`${String(id)}_${String(chapterId)}_${pathname}`)
+	}, [data?.chapter, pathname, id])
 
 	useEffect(() => {
 		if (

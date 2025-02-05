@@ -7,6 +7,8 @@ import {
 } from '@/store/global-store'
 import { useShallow } from 'zustand/react/shallow'
 
+import { setValue } from '@/lib/utils/indexed-db'
+
 export default function useUnsavedChecker() {
 	const unsavedEpisodeParams = useGlobalStore(
 		useShallow((state) => state.unsavedEpisodeParams)
@@ -17,10 +19,11 @@ export default function useUnsavedChecker() {
 		async (force?: boolean) => {
 			const savedKeyPromises = Object.keys(unsavedEpisodeParams).map(
 				async (key) => {
-					const unsavedPathname = key.split('_')[1]
+					const [projectId, chapterId, unsavedPathname] = key.split('_')
 					if (unsavedPathname === pathname && !force) return
 					const params = unsavedEpisodeParams[key]
 					if (!params) return
+					await setValue(`${projectId}_${chapterId}`, params)
 					await saveContent(params)
 					return key
 				}

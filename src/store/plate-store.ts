@@ -39,6 +39,12 @@ export function usePlateStore() {
 		usePlateStoreContext.setState({ activeNoteId })
 	}
 
+	const setLocalDiffValue = (
+		localDiffValue: PlateStoreData['localDiffValue']
+	) => {
+		usePlateStoreContext.setState({ localDiffValue })
+	}
+
 	return {
 		store: usePlateStoreContext,
 		setSidebar,
@@ -48,6 +54,7 @@ export function usePlateStore() {
 		setCurrentDiffValue,
 		setViewMode,
 		setActiveNoteId,
+		setLocalDiffValue,
 	}
 }
 

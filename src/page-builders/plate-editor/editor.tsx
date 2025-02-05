@@ -8,6 +8,7 @@ import { SavingContextProvider } from '@/hooks/use-saving'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
 import SaveEpisode from '@/page-builders/plate-editor/save-episode'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
+import ControlButtons from '@/page-builders/plate-editor/split-editor/control-buttons'
 import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
 import Title from '@/page-builders/plate-editor/title'
 import Translation from '@/page-builders/plate-editor/translation'
@@ -31,12 +32,15 @@ import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-b
 import { Separator } from '@/components/ui/separator'
 import useEpisodeId from '@/providers/episode-id-provider'
 
-import ControlButtons from './split-editor/control-buttons'
-
 export default function PlateEditor() {
 	const queryClient = useQueryClient()
 	const containerRef = useRef<HTMLDivElement>(null)
-	const { data: content, latestStatus, queryKey } = useEpisodeContent()
+	const {
+		data: content,
+		latestStatus,
+		queryKey,
+		imported,
+	} = useEpisodeContent()
 	const isChildEpisode = !!content?.chapter.is_deleted
 	const editor = useMyEditor({
 		content: content?.text || '',
@@ -67,7 +71,7 @@ export default function PlateEditor() {
 
 	return (
 		<Plate editor={editor}>
-			<SavingContextProvider data={content}>
+			<SavingContextProvider data={content} initialForceSave={imported}>
 				<ChatbotProvider>
 					<div className="container p-4">
 						<EditorOverlayLoader />
