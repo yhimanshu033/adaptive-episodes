@@ -32,25 +32,25 @@ export default function LocalDiffSection() {
 	})
 
 	function handleReject() {
-		setImported(true)
+		setLocalDiffValue(null)
+		setSidebar(null)
 		dismiss()
 	}
 
 	function handleAccept() {
-		setLocalDiffValue(null)
-		setSidebar(null)
+		setImported(true)
 		dismiss()
 	}
 
 	return (
 		<div className="border px-12 py-6">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-semibold">Incoming Changes</h1>
+				<h1 className="text-2xl font-semibold">Local Changes</h1>
 				<div className="flex items-center gap-4">
-					<Button tooltip="Accept Incoming Changes" onClick={handleAccept}>
+					<Button tooltip="Import Local Changes" onClick={handleAccept}>
 						<Check />
 					</Button>
-					<Button tooltip="Reject Incoming Changes" onClick={handleReject}>
+					<Button tooltip="Reject Local Changes" onClick={handleReject}>
 						<X />
 					</Button>
 				</div>
@@ -58,9 +58,9 @@ export default function LocalDiffSection() {
 
 			<Plate readOnly editor={editor}>
 				<DiffView
-					current={value}
+					current={localDiffValue}
 					readonly
-					previous={localDiffValue}
+					previous={value}
 					className={cn(
 						editorVariants({
 							focused: false,

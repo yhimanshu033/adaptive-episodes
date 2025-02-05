@@ -27,6 +27,8 @@ import { TurnIntoDropdownMenu } from '@/components/plate-ui/turn-into-dropdown-m
 import UndoRedoButtons from '@/components/plate-ui/undo-redo-buttons'
 import { ZoomDropdownMenu } from '@/components/plate-ui/zoom-dropdown'
 
+import LocalChangesDiffButton from './local-changes-diff-button'
+
 export function FixedToolbarButtons() {
 	const readOnly = useEditorReadOnly()
 
@@ -92,8 +94,11 @@ export function FixedToolbarButtons() {
 				)}
 
 				<div className="grow" />
-
 				<ToolbarGroup noSeparator>
+					<LocalChangesDiffButton />
+				</ToolbarGroup>
+
+				<ToolbarGroup>
 					<TranslationToggleButton />
 					<ChatbotToolbarButton />
 					<MoreDropdownMenu />
