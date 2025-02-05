@@ -1,11 +1,7 @@
 'use client'
 
 import React from 'react'
-import dynamic from 'next/dynamic'
-
-const Stories = dynamic(() => import('@/page-builders/stories/stories'), {
-	ssr: false,
-})
+import Stories from '@/page-builders/stories/stories'
 
 const StoryDashboard = () => {
 	return (

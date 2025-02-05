@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -31,8 +33,8 @@ const Stories = () => {
 							<Image
 								src={story.image || COPILOT_LOGO_URL}
 								alt={`${story.project_title} thumbnail`}
-								layout="fill"
-								objectFit="cover"
+								fill
+								style={{ objectFit: 'cover' }}
 								className="transition-transform duration-300 hover:scale-105"
 								loading="lazy"
 								unoptimized
