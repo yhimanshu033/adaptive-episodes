@@ -2,7 +2,6 @@
 
 import React, { createContext, useState } from 'react'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/episodes-constants'
-import { keyToTitle } from '@/constants/global-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { toast } from '@/hooks/use-toast'
 import { getEpisodeContent } from '@/server-action/content-action'
@@ -15,7 +14,6 @@ import { useShallow } from 'zustand/react/shallow'
 import { Button } from '@/components/ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
 import {
-	getDifferingKeys,
 	getEpisodeQueryResponseFromStoredData,
 	getSavedParamsFromEpisodeData,
 	getSelectedEpisode,
@@ -27,7 +25,6 @@ import {
 	jsonify,
 } from '@/lib/utils/plate'
 
-import { SaveEpisodeParams } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
 /**
@@ -66,7 +63,7 @@ export const useEpisodeContentUtil = () => {
 		addEpisodeMap(episodeId, resp)
 		const chapterId = String(resp.chapter.parent)
 		const oldData = await getValue(`${resp.chapter.project}_${chapterId}`)
-		if (!oldData || !oldData.props) return resp
+		if (!oldData) return resp
 		if (imported) {
 			setLocalDiffValue(null)
 			setSidebar(null)
@@ -81,13 +78,8 @@ export const useEpisodeContentUtil = () => {
 			newData.text
 		)
 		if (!isContentDifferent) return resp
-		const diffKeys = getDifferingKeys(oldData, newData)
-		const diffToShow = diffKeys
-			.map((key) => keyToTitle[key as keyof SaveEpisodeParams])
-			.filter(Boolean)
-		if (!diffToShow.length) return resp
 		toast({
-			description: `The following fields have been updated for episode ${resp.chapter.seq_number}: ${diffToShow.join(', ')}`,
+			description: `Der Inhalt von Episode ${resp?.chapter?.seq_number || ''} scheint geändert zu sein`,
 			action: (
 				<Button
 					onClick={() => {
@@ -104,7 +96,7 @@ export const useEpisodeContentUtil = () => {
 						setSidebar(ESidebar.LOCAL_DIFF)
 					}}
 				>
-					View Changes
+					Lokal Ansehen
 				</Button>
 			),
 		})

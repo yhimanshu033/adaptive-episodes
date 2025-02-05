@@ -454,6 +454,7 @@ export function isEpisodeContentDifferent(val1: string, val2: string) {
 		.filter((item) => item.diff)
 
 	const areAllSuggestions = diffLeafs.every((item: any) => {
+		if (item?.diffOperation?.type !== 'update') return false
 		if (item?.diffOperation?.newProperties?.suggestion) {
 			return true
 		}
