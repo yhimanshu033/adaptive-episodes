@@ -50,6 +50,7 @@ const useEpisodeHook = () => {
 			comments,
 			notes,
 			prevProps,
+			word_count,
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
@@ -58,6 +59,7 @@ const useEpisodeHook = () => {
 			prevProps?: Record<string, unknown>
 			status: EStatus | typeof BASE_STATUS
 			text: string
+			word_count?: number
 		}) => {
 			if (status === BASE_STATUS && !updatedStatus) {
 				setUpdatedStatus(true)
@@ -74,6 +76,7 @@ const useEpisodeHook = () => {
 				text,
 				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
 				...(chapter_title ? { chapter_title } : {}),
+				word_count,
 				props: {
 					...prevProps,
 					comments,

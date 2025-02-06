@@ -1,6 +1,7 @@
 'use server'
 
 import { fetchAPI } from '@/lib/fetch-api'
+import { getWordCountFromString } from '@/lib/utils/plate'
 
 import {
 	SaveEpisodeParams,
@@ -39,6 +40,7 @@ export const saveContent = async ({
 		url: '/chapter/:projectId/:episodeId/',
 		body: {
 			...data,
+			word_count: data.word_count || getWordCountFromString(data.text),
 		},
 		urlParams: {
 			projectId,

@@ -11,7 +11,7 @@ import { useEditorState } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { setValue } from '@/lib/utils/indexed-db'
-import { clearLasers } from '@/lib/utils/plate'
+import { clearLasers, getWordCount } from '@/lib/utils/plate'
 
 import { BASE_STATUS } from '@/types/common'
 import {
@@ -84,6 +84,7 @@ export function SavingContextProvider({
 				setStartOverlayLoading(true)
 			}
 			try {
+				const word_count = getWordCount(children)
 				savedRef.current = JSON.stringify(children)
 				savedCommentsRef.current = JSON.stringify(allComments)
 				savedTitleRef.current = currentTitle
@@ -98,6 +99,7 @@ export function SavingContextProvider({
 					status,
 					episodeId: Number(chapterId),
 					text,
+					word_count,
 					props: {
 						...data?.chapter.props,
 						comments: allComments,
@@ -111,6 +113,7 @@ export function SavingContextProvider({
 					status,
 					chapterId,
 					text,
+					word_count,
 					comments: allComments,
 					prevProps: data?.chapter.props,
 					notes,

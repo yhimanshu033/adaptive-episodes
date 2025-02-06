@@ -1,5 +1,7 @@
 import { PRIMARY_KEYS_TO_COMPARE } from '@/constants/episodes-constants'
 
+import { ERole } from '@/types/admin-types'
+
 export const COPILOT_LOGO_URL = '/assets/pocket-copilot-logo.webp'
 export const FALLBACK_USER_URL = '/assets/placeholder-user.webp'
 
@@ -20,3 +22,5 @@ export const keyToTitle: Partial<
 	comments: 'Comments',
 	text: 'Content',
 }
+
+export const ROLE_HIERARCHY: ERole[] = [ERole.ADMIN, ERole.LEAD, ERole.WRITER]

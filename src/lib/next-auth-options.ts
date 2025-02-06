@@ -9,6 +9,7 @@ import {
 	LoginBodyParams,
 	LoginResponse,
 	SessionData,
+	UserData,
 } from '@/types/admin-types'
 import { TNoParams } from '@/types/common'
 
@@ -40,6 +41,13 @@ const authOptions = {
 		async session({ session, token }: any) {
 			session.uid = token.uid
 			session.accessToken = token.accessToken
+			const resp = await fetchAPI<{ data: UserData }, TNoParams, TNoParams>({
+				method: 'GET',
+				url: '/user/me',
+			})
+			if (resp.data) {
+				session.user = resp.data
+			}
 			return session as SessionData
 		},
 
@@ -62,7 +70,7 @@ const authOptions = {
 		},
 
 		authorized({ token }: any) {
-			if (token?.accessToken) return true
+			if (token?.accessToken) return true // TODO: add user check here
 		},
 	},
 	pages: {

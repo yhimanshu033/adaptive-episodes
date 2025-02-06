@@ -472,3 +472,13 @@ export function isEpisodeContentDifferent(val1: string, val2: string) {
 
 	return !areAllSuggestions
 }
+export function getWordCount(val: Value) {
+	const text = getText(val)
+	const words = text.split(/\s+/)
+	return words.length
+}
+
+export function getWordCountFromString(ogText: string) {
+	const val = breakDownValue(jsonify(ogText))
+	return getWordCount(val)
+}

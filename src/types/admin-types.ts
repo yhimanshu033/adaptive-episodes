@@ -31,4 +31,27 @@ export type LoginResponse = {
 export type SessionData = Session & {
 	accessToken: string
 	uid: string
+	user?: UserData // TODO: make mandatory once API live
+}
+
+export type UserData = {
+	create_time: string
+	email: string
+	firebase_registration_token: string | null
+	firstname: string | null
+	fullname: string
+	id: number
+	is_verified: boolean
+	lastname: string | null
+	login_type: string | null
+	phone_number: string | null
+	uid: string
+	update_time: string
+	username: string
+}
+
+export enum ERole {
+	ADMIN = 'ADMIN',
+	LEAD = 'LEAD',
+	WRITER = 'WRITER',
 }
