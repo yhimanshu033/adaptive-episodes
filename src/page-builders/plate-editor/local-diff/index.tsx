@@ -10,6 +10,7 @@ import { editorVariants } from '@/components/plate-ui/editor-static'
 import { Button } from '@/components/ui/button'
 import DiffView from '@/lib/plate/plugins/diff'
 import { cn } from '@/lib/utils/helpers'
+import { removeValue } from '@/lib/utils/indexed-db'
 import { breakDownValue, jsonify } from '@/lib/utils/plate'
 
 export default function LocalDiffSection() {
@@ -33,6 +34,7 @@ export default function LocalDiffSection() {
 
 	function handleReject() {
 		setLocalDiffValue(null)
+		void removeValue(`${content?.chapter.project}_${content?.chapter?.parent}`)
 		setSidebar(null)
 		dismiss()
 	}

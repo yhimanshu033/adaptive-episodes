@@ -1,4 +1,7 @@
 import { PRIMARY_KEYS_TO_COMPARE } from '@/constants/episodes-constants'
+import { SuggestionUser } from '@udecode/plate-suggestion'
+
+import { ERole } from '@/types/admin-types'
 
 export const COPILOT_LOGO_URL = '/assets/pocket-copilot-logo.webp'
 export const FALLBACK_USER_URL = '/assets/placeholder-user.webp'
@@ -19,4 +22,19 @@ export const keyToTitle: Partial<
 	chapter_title: 'Chapter Title',
 	comments: 'Comments',
 	text: 'Content',
+}
+
+export const roleToData: Record<ERole, { priority: number; title: string }> = {
+	[ERole.ADMIN]: { title: 'Admin', priority: 0 },
+	[ERole.LEAD]: { title: 'Lead', priority: 1 },
+	[ERole.WRITER]: { title: 'Writer', priority: 2 },
+	[ERole.READER]: { title: '', priority: 3 },
+}
+
+export const DEFAULT_USER: Record<string, SuggestionUser> = {
+	'1': {
+		id: '1',
+		name: 'Anonymous',
+		avatarUrl: FALLBACK_USER_URL,
+	},
 }

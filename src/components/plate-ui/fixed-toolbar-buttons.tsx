@@ -95,9 +95,6 @@ export function FixedToolbarButtons() {
 				<div className="grow" />
 				<ToolbarGroup noSeparator>
 					<LocalChangesDiffButton />
-				</ToolbarGroup>
-
-				<ToolbarGroup>
 					<TranslationToggleButton />
 					<ChatbotToolbarButton />
 					<MoreDropdownMenu />

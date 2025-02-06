@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
-import { IGNORED_DIFF_KEYS } from '@/constants/editor-constants'
 import { TComment } from '@udecode/plate-comments'
 import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
 import { computeDiff } from '@udecode/plate-diff'
@@ -448,27 +447,27 @@ export function isEpisodeContentDifferent(val1: string, val2: string) {
 
 	const diffValue = computeDiff(v1, v2) as Value
 
+	const diffBlocks = diffValue.filter((item) => item.diff)
 	const diffLeafs = diffValue
 		.map((elem) => elem.children)
 		.flat()
 		.filter((item) => item.diff)
 
-	const areAllSuggestions = diffLeafs.every((item: any) => {
-		if (item?.diffOperation?.type !== 'update') return false
-		if (item?.diffOperation?.newProperties?.suggestion) {
-			return true
-		}
-		const prevObj = item?.diffOperation?.properties || {}
-		const newObj = item?.diffOperation?.newProperties || {}
-		const allKeys = Object.keys({ ...prevObj, ...newObj })
-		const diffKeys = allKeys.filter(
-			(key) => JSON.stringify(prevObj[key]) !== JSON.stringify(newObj[key])
-		)
-		if (diffKeys.every((key) => IGNORED_DIFF_KEYS.includes(key))) {
-			return true
-		}
-		return false
-	})
+	const areAnyDeletionsInBlocks = diffBlocks.some(
+		(item: any) => item?.diffOperation?.type === 'delete'
+	)
+	const areAnyDeletionsInLeafs = diffLeafs.some(
+		(item: any) => item?.diffOperation?.type === 'delete'
+	)
+	return areAnyDeletionsInBlocks || areAnyDeletionsInLeafs
+}
+export function getWordCount(val: Value) {
+	const text = getText(val)
+	const words = text.split(/\s+/)
+	return words.length
+}
 
-	return !areAllSuggestions
+export function getWordCountFromString(ogText: string) {
+	const val = breakDownValue(jsonify(ogText))
+	return getWordCount(val)
 }

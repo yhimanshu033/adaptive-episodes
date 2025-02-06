@@ -2,12 +2,14 @@ import {
 	PRIMARY_KEYS_TO_COMPARE,
 	PROPS_KEYS_TO_COMPARE,
 } from '@/constants/episodes-constants'
+import { roleToData } from '@/constants/global-constants'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
 import { jsonrepair } from 'jsonrepair'
 import { twMerge } from 'tailwind-merge'
 
+import { ERole } from '@/types/admin-types'
 import { BASE_STATUS, EStatus } from '@/types/common'
 import {
 	SaveEpisodeParams,
@@ -220,4 +222,15 @@ export function getSavedParamsFromEpisodeData(data: TGetEpisodeResponse) {
 		props: data.chapter.props,
 		chapter_title: data?.chapter?.chapter_title,
 	}
+}
+
+export function isAuthorized({
+	requiredRole,
+	userRole,
+}: {
+	requiredRole: ERole
+	userRole: ERole | null
+}) {
+	if (!userRole || !roleToData[userRole]) return false
+	return roleToData[userRole].priority <= roleToData[requiredRole].priority
 }
