@@ -2,7 +2,7 @@ import {
 	PRIMARY_KEYS_TO_COMPARE,
 	PROPS_KEYS_TO_COMPARE,
 } from '@/constants/episodes-constants'
-import { ROLE_HIERARCHY } from '@/constants/global-constants'
+import { roleToData } from '@/constants/global-constants'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
@@ -231,8 +231,6 @@ export function isAuthorized({
 	requiredRole: ERole
 	userRole: ERole | null
 }) {
-	if (!userRole) return false
-	return (
-		ROLE_HIERARCHY.indexOf(userRole) <= ROLE_HIERARCHY.indexOf(requiredRole)
-	)
+	if (!userRole || !roleToData[userRole]) return false
+	return roleToData[userRole].priority <= roleToData[requiredRole].priority
 }

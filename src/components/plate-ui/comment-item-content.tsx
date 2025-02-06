@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
-import { roleToTitle } from '@/constants/global-constants'
+import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
@@ -51,7 +51,7 @@ export default function CommentItemContent() {
 		addActiveCommentExampleMap({ key: comment.id, value: taskId })
 	}
 
-	const userTitle = roleToTitle[user?.role]
+	const userTitle = roleToData[user?.role]?.title
 
 	return (
 		<div>

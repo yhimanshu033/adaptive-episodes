@@ -24,18 +24,11 @@ export const keyToTitle: Partial<
 	text: 'Content',
 }
 
-export const ROLE_HIERARCHY: ERole[] = [
-	ERole.ADMIN,
-	ERole.LEAD,
-	ERole.WRITER,
-	ERole.READER,
-]
-
-export const roleToTitle: Record<ERole, string> = {
-	[ERole.ADMIN]: 'Admin',
-	[ERole.LEAD]: 'Lead',
-	[ERole.WRITER]: 'Writer',
-	[ERole.READER]: '',
+export const roleToData: Record<ERole, { priority: number; title: string }> = {
+	[ERole.ADMIN]: { title: 'Admin', priority: 0 },
+	[ERole.LEAD]: { title: 'Lead', priority: 1 },
+	[ERole.WRITER]: { title: 'Writer', priority: 2 },
+	[ERole.READER]: { title: '', priority: 3 },
 }
 
 export const DEFAULT_USER: Record<string, SuggestionUser> = {

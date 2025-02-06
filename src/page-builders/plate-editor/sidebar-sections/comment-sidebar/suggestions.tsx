@@ -4,7 +4,7 @@ import {
 	SuggestionTypes,
 	SuggestionTypesMap,
 } from '@/constants/editor-constants'
-import { roleToTitle } from '@/constants/global-constants'
+import { roleToData } from '@/constants/global-constants'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import { useEditorPlugin, useEditorState } from '@udecode/plate-common/react'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
@@ -49,7 +49,7 @@ const SuggestionBlock = ({
 		}
 	}, [isActive])
 
-	const userTitle = roleToTitle[user?.role]
+	const userTitle = roleToData[user?.role]?.title
 
 	if (!user) return null
 
