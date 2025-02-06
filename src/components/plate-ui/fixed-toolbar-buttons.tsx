@@ -16,6 +16,7 @@ import { AlignDropdownMenu } from '@/components/plate-ui/align-dropdown-menu'
 import { ChatbotToolbarButton } from '@/components/plate-ui/chatbot-toggle-button'
 import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
 import { CommentToolbarButton } from '@/components/plate-ui/comment-toolbar-button'
+import { FontDropdownMenu } from '@/components/plate-ui/font-dropdown-menu'
 import { IndentListToolbarButton } from '@/components/plate-ui/indent-list-toolbar-button'
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
 import LocalChangesDiffButton from '@/components/plate-ui/local-changes-diff-button'
@@ -43,6 +44,7 @@ export function FixedToolbarButtons() {
 					<>
 						<ToolbarGroup noSeparator>
 							<TurnIntoDropdownMenu />
+							<FontDropdownMenu />
 						</ToolbarGroup>
 
 						<ToolbarGroup>

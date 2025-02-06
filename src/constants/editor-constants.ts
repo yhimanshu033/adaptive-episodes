@@ -58,3 +58,17 @@ export const MAIN_EDITOR_ID = 'main-editor'
 export const TRANSLATION_EDITOR_ID = 'translation-editor'
 
 export const IGNORED_DIFF_KEYS = ['id']
+
+export const DEFAULT_FONT_FAMILY = '--font-default'
+export const FONT_RECORD: Record<string, string> = {
+	Default: DEFAULT_FONT_FAMILY,
+	'Times New Roman': '--font-serif',
+	Georgia: '--font-georgia',
+	Arial: '--font-arial',
+	Verdana: '--font-verdana',
+	Tahoma: '--font-tahoma',
+	'Trebuchet MS': '--font-trebuchet',
+	'Courier New': '--font-courier',
+	Consolas: '--font-consolas',
+	Impact: '--font-impact',
+}

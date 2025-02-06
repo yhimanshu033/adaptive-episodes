@@ -45,7 +45,7 @@ import { BaseLineHeightPlugin } from '@udecode/plate-line-height'
 import { BaseLinkPlugin } from '@udecode/plate-link'
 import { useShallow } from 'zustand/react/shallow'
 
-import { BlockquoteElementStatic } from '@/components/plate-ui/block-quote-element'
+import { BlockquoteElementStatic } from '@/components/plate-ui/block-quote-element-static'
 import { CommentLeafStatic } from '@/components/plate-ui/comment-leaf-static'
 import { EditorStatic } from '@/components/plate-ui/editor-static'
 import { HeadingElementStatic } from '@/components/plate-ui/heading-element-static'
