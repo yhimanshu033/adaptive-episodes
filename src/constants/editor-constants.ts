@@ -56,3 +56,5 @@ export const EditorModes = {
 
 export const MAIN_EDITOR_ID = 'main-editor'
 export const TRANSLATION_EDITOR_ID = 'translation-editor'
+
+export const IGNORED_DIFF_KEYS = ['id']

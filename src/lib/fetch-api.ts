@@ -18,7 +18,7 @@ export type FetchRequestParams<
 	baseUrl?: string
 	body?: BodyParamsT
 	defaultData?: ResponseDataT
-	headers?: Headers
+	headers?: Record<string, string>
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 	noAuth?: boolean
 	query?: QueryParamsT

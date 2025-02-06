@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import { AI_USER_ID } from '@/constants/ai-constants'
-import {
-	COPILOT_LOGO_URL,
-	FALLBACK_USER_URL,
-} from '@/constants/global-constants'
-import { useGlobalStore } from '@/store/global-store'
 import { withProps } from '@udecode/cn'
 import { AlignPlugin } from '@udecode/plate-alignment/react'
 import { AutoformatPlugin } from '@udecode/plate-autoformat/react'
@@ -59,7 +53,6 @@ import { ResetNodePlugin } from '@udecode/plate-reset-node/react'
 import { SelectOnBackspacePlugin } from '@udecode/plate-select'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
-import { useShallow } from 'zustand/react/shallow'
 
 import { CommentLeaf } from '@/components/plate-ui/comment-leaf'
 import { DragOverCursorPlugin } from '@/components/plate-ui/cursor-overlay'
@@ -77,6 +70,7 @@ import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
 import SuggestionLeaf from '@/components/plate-ui/suggestion-leaf'
+import useProjectId from '@/providers/project-id-provider'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
@@ -91,7 +85,11 @@ const useMyEditor = ({
 	content: string
 	id?: string
 }) => {
-	const userData = useGlobalStore(useShallow((state) => state.userData))
+	const {
+		users,
+		me: { user: userData },
+	} = useProjectId()
+
 	const initialValue = jsonify(content)
 	const value = breakDownValue(initialValue)
 	const editor = createPlateEditor({
@@ -236,32 +234,15 @@ const useMyEditor = ({
 			// Collaboration
 			CommentsPlugin.configure({
 				options: {
-					users: {
-						1: {
-							id: '1',
-							name: userData?.user?.name || 'User',
-							avatarUrl: userData?.user?.image || FALLBACK_USER_URL,
-						},
-						[AI_USER_ID]: {
-							id: AI_USER_ID,
-							name: 'Copilot AI',
-							avatarUrl: COPILOT_LOGO_URL,
-						},
-					},
+					users,
 					comments: getRecord(comments),
-					myUserId: '1',
+					myUserId: String(userData?.user.id),
 				},
 			}),
 			SuggestionPlugin.configure({
 				options: {
-					users: {
-						1: {
-							id: '1',
-							name: userData?.user?.name || 'User',
-							avatarUrl: userData?.user?.image || FALLBACK_USER_URL,
-						},
-					},
-					currentUserId: '1',
+					users,
+					currentUserId: String(userData?.user.id),
 				},
 			}),
 

@@ -8,11 +8,7 @@ import SkeletonBuilder from '@/page-builders/episodes/episode-skeleton'
 import Filters from '@/page-builders/episodes/filters'
 import InventForm from '@/page-builders/episodes/invent-form'
 import EpisodesPagination from '@/page-builders/episodes/pagination'
-import {
-	setInventIndex,
-	setIsInventOpen,
-	useEpisodeStore,
-} from '@/store/episode-store'
+import { useEpisodeStore } from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 
@@ -29,7 +25,9 @@ import { cn } from '@/lib/utils/helpers'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
-	const { episodeSearch } = useEpisodeStore()
+	const { useEpisodeTableStore, setInventIndex, setIsInventOpen } =
+		useEpisodeStore()
+	const { episodeSearch } = useEpisodeTableStore()
 	const { currentPage } = usePageState()
 	const { data, isLoading: isEpisodesLoading } = useEpisodesData(
 		episodeSearch,

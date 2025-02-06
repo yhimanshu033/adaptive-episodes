@@ -1,5 +1,5 @@
 import { EStatus } from '@/types/common'
-import { TGetEpisodesResponse } from '@/types/episode-type'
+import { SaveEpisodeParams, TGetEpisodesResponse } from '@/types/episode-type'
 
 export const statuses: EStatus[] = [
 	EStatus.FIRST_DRAFT,
@@ -40,3 +40,12 @@ export const DEFAULT_EPISODES_DATA: TGetEpisodesResponse = {
 		message: '',
 	},
 }
+
+export const PRIMARY_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
+	'chapter_title',
+	'text',
+] as const
+
+export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
+	'comments',
+] as const

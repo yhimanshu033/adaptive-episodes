@@ -1,5 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any  */
+
 import { TComment } from '@udecode/plate-comments'
 import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
+import { computeDiff } from '@udecode/plate-diff'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
 import type { Range } from 'slate'
 
@@ -435,6 +441,37 @@ export function clearColors(ogVal: Value): Value {
 	}
 	val.forEach(traverse)
 	return val
+}
+
+export function isEpisodeContentDifferent(val1: string, val2: string) {
+	const v1 = breakDownValue(jsonify(val1))
+	const v2 = breakDownValue(jsonify(val2))
+
+	const diffValue = computeDiff(v1, v2) as Value
+
+	const diffBlocks = diffValue.filter((item) => item.diff)
+	const diffLeafs = diffValue
+		.map((elem) => elem.children)
+		.flat()
+		.filter((item) => item.diff)
+
+	const areAnyDeletionsInBlocks = diffBlocks.some(
+		(item: any) => item?.diffOperation?.type === 'delete'
+	)
+	const areAnyDeletionsInLeafs = diffLeafs.some(
+		(item: any) => item?.diffOperation?.type === 'delete'
+	)
+	return areAnyDeletionsInBlocks || areAnyDeletionsInLeafs
+}
+export function getWordCount(val: Value) {
+	const text = getText(val)
+	const words = text.split(/\s+/)
+	return words.length
+}
+
+export function getWordCountFromString(ogText: string) {
+	const val = breakDownValue(jsonify(ogText))
+	return getWordCount(val)
 }
 
 export function sortCommentsAndDescriptions(

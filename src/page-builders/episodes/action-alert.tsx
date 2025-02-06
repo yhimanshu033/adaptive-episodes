@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
-import { setIsDialogOpen, useEpisodeStore } from '@/store/episode-store'
+import { useEpisodeStore } from '@/store/episode-store'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
@@ -16,8 +16,9 @@ import {
 } from '@/components/ui/alert-dialog'
 
 const ActionAlert = () => {
-	const { isDialogOpen } = useEpisodeStore()
-	const alertInfo = useEpisodeStore(useShallow((state) => state.alertInfo))
+	const { useEpisodeTableStore, setIsDialogOpen } = useEpisodeStore()
+	const { isDialogOpen } = useEpisodeTableStore()
+	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 	const { handleConfirm } = useEpisodeTable()
 	return (
 		<AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

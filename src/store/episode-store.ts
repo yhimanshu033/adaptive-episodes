@@ -1,53 +1,54 @@
-import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
-import { immer } from 'zustand/middleware/immer'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 import { EpisodeStoreState } from '@/types/episode-type'
 
-const initialState: EpisodeStoreState = {
-	currentPage: 1,
-	episodeSearch: '',
-	isDialogOpen: false,
-	isInventOpen: false,
-	alertInfo: null,
-	deleteEpisodeId: null,
-	selectedEpisodes: null,
-	currentInventIndex: null,
-}
+export function useEpisodeStore() {
+	const { useEpisodeStoreUtil } = useEpisodeTableContext()
 
-export const useEpisodeStore = create(devtools(immer(() => initialState)))
+	const setCurrentPage = (currentPage: number) => {
+		useEpisodeStoreUtil.setState({ currentPage })
+	}
 
-export const setCurrentPage = (currentPage: number) => {
-	useEpisodeStore.setState({ currentPage })
-}
+	const setEpisodeSearch = (episodeSearch: string) => {
+		useEpisodeStoreUtil.setState(() => ({ episodeSearch }))
+	}
 
-export const setEpisodeSearch = (episodeSearch: string) => {
-	useEpisodeStore.setState(() => ({ episodeSearch }))
-}
+	const setIsDialogOpen = (isDialogOpen: boolean) => {
+		useEpisodeStoreUtil.setState({ isDialogOpen })
+	}
 
-export const setIsDialogOpen = (isDialogOpen: boolean) => {
-	useEpisodeStore.setState({ isDialogOpen })
-}
+	const setIsInventOpen = (isInventOpen: boolean) => {
+		useEpisodeStoreUtil.setState({ isInventOpen })
+	}
 
-export const setIsInventOpen = (isInventOpen: boolean) => {
-	useEpisodeStore.setState({ isInventOpen })
-}
+	const setAlertInfo = (alertInfo: EpisodeStoreState['alertInfo']) => {
+		useEpisodeStoreUtil.setState({ alertInfo })
+	}
 
-export const setAlertInfo = (alertInfo: EpisodeStoreState['alertInfo']) => {
-	useEpisodeStore.setState({ alertInfo })
-}
+	const setSelectedEpisodes = (
+		selectedEpisodes: EpisodeStoreState['selectedEpisodes']
+	) => {
+		useEpisodeStoreUtil.setState({ selectedEpisodes })
+	}
+	const setDeleteEpisodeId = (
+		deleteEpisodeId: EpisodeStoreState['deleteEpisodeId']
+	) => {
+		useEpisodeStoreUtil.setState({ deleteEpisodeId })
+	}
 
-export const setSelectedEpisodes = (
-	selectedEpisodes: EpisodeStoreState['selectedEpisodes']
-) => {
-	useEpisodeStore.setState({ selectedEpisodes })
-}
-export const setDeleteEpisodeId = (
-	deleteEpisodeId: EpisodeStoreState['deleteEpisodeId']
-) => {
-	useEpisodeStore.setState({ deleteEpisodeId })
-}
+	const setInventIndex = (currentInventIndex: number) => {
+		useEpisodeStoreUtil.setState({ currentInventIndex })
+	}
 
-export const setInventIndex = (currentInventIndex: number) => {
-	useEpisodeStore.setState({ currentInventIndex })
+	return {
+		setCurrentPage,
+		setEpisodeSearch,
+		setIsDialogOpen,
+		setIsInventOpen,
+		setAlertInfo,
+		setSelectedEpisodes,
+		setDeleteEpisodeId,
+		setInventIndex,
+		useEpisodeTableStore: useEpisodeStoreUtil,
+	}
 }

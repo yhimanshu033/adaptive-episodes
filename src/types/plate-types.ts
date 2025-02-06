@@ -1,5 +1,8 @@
+import { CommentUser } from '@udecode/plate-comments'
 import { TDescendant, Value } from '@udecode/plate-common'
+import { SuggestionUser } from '@udecode/plate-suggestion'
 
+import { ERole, UserData } from '@/types/admin-types'
 import { Laser, PlotExplorerApiResponse } from '@/types/ai-types'
 
 export type Selection = {
@@ -39,6 +42,7 @@ export enum ESidebar {
 	CHATBOT = 'chatbot',
 	COMMENTS = 'comments',
 	FAR = 'far',
+	LOCAL_DIFF = 'local_diff',
 	NOTES = 'notes',
 	OUTLINE = 'outline',
 	TRANSLATION = 'translation',
@@ -47,6 +51,7 @@ export type PlateStoreData = {
 	activeDiffId: string | null
 	activeNoteId: string | null
 	currentDiffValue: Value | null
+	localDiffValue: Value | null
 	resolved: boolean
 	scale: number
 	sidebar: ESidebar | null
@@ -70,3 +75,7 @@ export type TNote = {
 	title: string
 	updateTime: string
 }
+
+export type PlateUser = SuggestionUser &
+	CommentUser &
+	UserData & { role: ERole }

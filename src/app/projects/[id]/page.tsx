@@ -1,7 +1,12 @@
 import React from 'react'
 import Episodes from '@/page-builders/episodes'
 
+import { EpisodeTableProvider } from '@/providers/episode-table-provider'
+
 export default function Page() {
-	return <Episodes />
+	return (
+		<EpisodeTableProvider>
+			<Episodes />
+		</EpisodeTableProvider>
+	)
 }
-export const revalidate = 0
