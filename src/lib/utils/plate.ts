@@ -519,7 +519,6 @@ export function sortCommentsAndDescriptions(
 		}
 	}
 
-	// Traverse each node in the root list
 	nodes.forEach(traverse)
 
 	return sortedRecords
