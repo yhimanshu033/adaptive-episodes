@@ -84,7 +84,7 @@ const authOptions = {
 		},
 
 		authorized({ token }: any) {
-			if (token?.accessToken) return true // TODO: add user check here
+			if (token?.accessToken && token?.user) return true
 		},
 	},
 	pages: {
