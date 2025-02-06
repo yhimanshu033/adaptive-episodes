@@ -46,6 +46,22 @@
 
 		/* Box Shadow */
 		--box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); /* Light shadow for depth */
+
+		/* editor font styles */
+		--font-serif: 'Times New Roman', Times, serif;
+		--font-georgia: Georgia, serif;
+		/* Sans-Serif Fonts */
+		--font-arial: Arial, Helvetica, sans-serif;
+		--font-verdana: Verdana, Geneva, sans-serif;
+		--font-tahoma: Tahoma, Geneva, sans-serif;
+		--font-trebuchet: 'Trebuchet MS', Helvetica, sans-serif;
+		/* Monospace Fonts */
+		--font-courier: 'Courier New', Courier, monospace;
+		--font-consolas: Consolas, 'Courier New', monospace;
+		/* Display Fonts */
+		--font-impact: Impact, Charcoal, sans-serif;
+		/* Default Font */
+		--font-default: 'Inter', 'Inter Fallback'; /* CHECK WITH LAYOUT.TSX */
 	}
 
 	.dark {

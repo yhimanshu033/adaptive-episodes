@@ -79,6 +79,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 	) => {
 		const { store } = useCustomPlateStore()
 		const scale = store((state) => state.scale)
+		const fontFamily = store(useShallow((state) => state.fontFamily))
 		const mihHeight = 100 / scale
 		const minWidth = 100 / scale
 		const contentRef = useRef<HTMLDivElement>(null)
@@ -124,6 +125,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				id={`editor-container-${episodeId}`}
 				ref={ref}
 				className="relative size-full"
+				style={{ fontFamily: `var(${fontFamily})` }}
 			>
 				{sidebar === ESidebar.CHATBOT && responseValue && prevValue && !isAi ? (
 					<DiffView
