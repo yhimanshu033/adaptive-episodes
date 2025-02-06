@@ -1,22 +1,26 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import useComments from '@/hooks/plate/use-comments'
+import useSuggestions from '@/hooks/plate/use-suggestions'
 import CommentComponent from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/comment'
-import Suggestions from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
+import SuggestionBlock from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
 import usePlateStore from '@/store/plate-store'
 import { BaseCommentsPlugin } from '@udecode/plate-comments'
-import { useEditorRef } from '@udecode/plate-common/react'
+import { useEditorState } from '@udecode/plate-common/react'
 import { CheckCheck } from 'lucide-react'
 
 import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { Button } from '@/components/ui/button'
+import { sortCommentsAndDescriptions } from '@/lib/utils/plate'
 
 import { TCustomComment } from '@/types/editor-types'
 
 export default function CommentSidebar() {
-	const editor = useEditorRef()
+	const editor = useEditorState()
 	const { get, sortedComments, set, activeCommentId, commentExists } =
 		useComments()
 	const myUserId = get('myUserId')
+	const { getAllSuggestionDescriptions } = useSuggestions()
+	const descriptions = getAllSuggestionDescriptions(editor)
 
 	const setActiveComment = useCallback(
 		(comment: TCustomComment) => {
@@ -35,6 +39,12 @@ export default function CommentSidebar() {
 	const { store, setResolved } = usePlateStore()
 	const showResolved = store((state) => state.resolved)
 	const comments = showResolved ? resolvedComments : unresolvedComments
+
+	const commentsAndDescriptions = useMemo(
+		() => sortCommentsAndDescriptions(editor.children, comments, descriptions),
+		[editor.children, comments, descriptions]
+	)
+
 	return (
 		<div className="relative">
 			<div className="pb-8 pt-4">
@@ -52,17 +62,23 @@ export default function CommentSidebar() {
 			>
 				<CheckCheck size={16} />
 			</Button>
-			{comments.map((comment) => (
-				<CommentComponent
-					key={comment.id}
-					setActiveComment={setActiveComment}
-					comment={comment}
-					activeCommentId={activeCommentId}
-					myUserId={myUserId}
-				/>
-			))}
+			{commentsAndDescriptions.map((item, index) => {
+				if (item.type === 'comment') {
+					return (
+						<CommentComponent
+							key={index}
+							setActiveComment={setActiveComment}
+							comment={item.data}
+							activeCommentId={activeCommentId}
+							myUserId={myUserId}
+						/>
+					)
+				} else if (item.type === 'description') {
+					return <SuggestionBlock key={index} description={item.data} />
+				}
+				return null
+			})}
 			{!!myUserId && activeCommentId && !commentExists && <CommentCreateForm />}
-			<Suggestions />
 		</div>
 	)
 }

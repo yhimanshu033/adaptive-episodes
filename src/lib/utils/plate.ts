@@ -1,7 +1,9 @@
 import { TComment } from '@udecode/plate-comments'
 import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
+import { TSuggestionDescription } from '@udecode/plate-suggestion'
 import type { Range } from 'slate'
 
+import { TCustomComment, TReview } from '@/types/editor-types'
 import { Selection } from '@/types/plate-types'
 
 export function isSameBlock(selection: Selection): boolean {
@@ -433,4 +435,54 @@ export function clearColors(ogVal: Value): Value {
 	}
 	val.forEach(traverse)
 	return val
+}
+
+export function sortCommentsAndDescriptions(
+	nodes: Value,
+	comments: TCustomComment[],
+	descriptions: TSuggestionDescription[]
+) {
+	const sortedRecords: Array<TReview> = []
+
+	const visitedIds = new Set<string>([])
+
+	function traverse(node: TDescendant) {
+		if ('text' in node) {
+			if ('comment' in node) {
+				const commentKey = Object.keys(node)
+					.find((key) => key.startsWith('comment_'))
+					?.replace('comment_', '')
+
+				if (commentKey && !visitedIds.has(commentKey)) {
+					const comment = comments.find((comment) => comment.id === commentKey)
+					if (comment) {
+						sortedRecords.push({ data: comment, type: 'comment' })
+					}
+					visitedIds.add(commentKey)
+				}
+			}
+			if ('suggestionId' in node) {
+				const suggestionKey = node.suggestionId as string
+
+				if (!visitedIds.has(suggestionKey)) {
+					const suggestion = descriptions.find(
+						(description) => description.suggestionId === suggestionKey
+					)
+					if (suggestion) {
+						sortedRecords.push({ data: suggestion, type: 'description' })
+					}
+					visitedIds.add(suggestionKey)
+				}
+			}
+		} else if ('children' in node) {
+			node.children.forEach(traverse)
+		}
+	}
+
+	for (const node of nodes) {
+		for (const child of node.children) {
+			traverse(child)
+		}
+	}
+	return sortedRecords
 }

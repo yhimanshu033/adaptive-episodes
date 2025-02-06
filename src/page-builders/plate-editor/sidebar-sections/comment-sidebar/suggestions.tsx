@@ -5,7 +5,7 @@ import {
 	SuggestionTypesMap,
 } from '@/constants/editor-constants'
 import useSuggestions from '@/hooks/plate/use-suggestions'
-import { useEditorPlugin, useEditorState } from '@udecode/plate-common/react'
+import { useEditorPlugin } from '@udecode/plate-common/react'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 
@@ -96,15 +96,4 @@ const SuggestionBlock = ({
 	)
 }
 
-const Suggestions = () => {
-	const editor = useEditorState()
-	const { getAllSuggestionDescriptions } = useSuggestions()
-
-	const descriptions = getAllSuggestionDescriptions(editor)
-
-	return descriptions.map((description) => (
-		<SuggestionBlock key={description.suggestionId} description={description} />
-	))
-}
-
-export default Suggestions
+export default SuggestionBlock
