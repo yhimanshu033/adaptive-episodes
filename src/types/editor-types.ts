@@ -46,6 +46,11 @@ export type EditorExtendedStore = {
 	extended: number[]
 }
 
+export enum EReviewType {
+	COMMENT = 'comment',
+	DESCRIPTION = 'description',
+}
+
 export type TReview =
-	| { data: TCustomComment; type: 'comment' }
-	| { data: TSuggestionDescription; type: 'description' }
+	| { data: TCustomComment; type: EReviewType.COMMENT }
+	| { data: TSuggestionDescription; type: EReviewType.DESCRIPTION }

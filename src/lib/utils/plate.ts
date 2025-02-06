@@ -9,7 +9,7 @@ import { computeDiff } from '@udecode/plate-diff'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
 import type { Range } from 'slate'
 
-import { TCustomComment, TReview } from '@/types/editor-types'
+import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
 import { Selection } from '@/types/plate-types'
 
 export function isSameBlock(selection: Selection): boolean {
@@ -480,46 +480,47 @@ export function sortCommentsAndDescriptions(
 	descriptions: TSuggestionDescription[]
 ) {
 	const sortedRecords: Array<TReview> = []
+	const visitedIds = new Set<string>()
 
-	const visitedIds = new Set<string>([])
+	const commentMap = new Map(comments.map((c) => [c.id, c]))
+	const descriptionMap = new Map(descriptions.map((d) => [d.suggestionId, d]))
 
 	function traverse(node: TDescendant) {
-		if ('text' in node) {
-			if ('comment' in node) {
-				const commentKey = Object.keys(node)
-					.find((key) => key.startsWith('comment_'))
-					?.replace('comment_', '')
+		if ('comment' in node) {
+			const commentKey = Object.keys(node)
+				.find((key) => key.startsWith('comment_'))
+				?.replace('comment_', '')
 
-				if (commentKey && !visitedIds.has(commentKey)) {
-					const comment = comments.find((comment) => comment.id === commentKey)
-					if (comment) {
-						sortedRecords.push({ data: comment, type: 'comment' })
-					}
+			if (commentKey && !visitedIds.has(commentKey)) {
+				const comment = commentMap.get(commentKey)
+				if (comment) {
+					sortedRecords.push({ data: comment, type: EReviewType.COMMENT })
 					visitedIds.add(commentKey)
 				}
 			}
-			if ('suggestionId' in node) {
-				const suggestionKey = node.suggestionId as string
+		}
 
-				if (!visitedIds.has(suggestionKey)) {
-					const suggestion = descriptions.find(
-						(description) => description.suggestionId === suggestionKey
-					)
-					if (suggestion) {
-						sortedRecords.push({ data: suggestion, type: 'description' })
-					}
+		if ('suggestionId' in node) {
+			const suggestionKey = node.suggestionId as string
+			if (!visitedIds.has(suggestionKey)) {
+				const suggestion = descriptionMap.get(suggestionKey)
+				if (suggestion) {
+					sortedRecords.push({
+						data: suggestion,
+						type: EReviewType.DESCRIPTION,
+					})
 					visitedIds.add(suggestionKey)
 				}
 			}
-		} else if ('children' in node) {
-			node.children.forEach(traverse)
+		}
+
+		if ('children' in node) {
+			;(node.children as TDescendant[]).forEach(traverse)
 		}
 	}
 
-	for (const node of nodes) {
-		for (const child of node.children) {
-			traverse(child)
-		}
-	}
+	// Traverse each node in the root list
+	nodes.forEach(traverse)
+
 	return sortedRecords
 }

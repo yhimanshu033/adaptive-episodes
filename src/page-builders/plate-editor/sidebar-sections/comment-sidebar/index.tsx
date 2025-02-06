@@ -12,7 +12,7 @@ import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { Button } from '@/components/ui/button'
 import { sortCommentsAndDescriptions } from '@/lib/utils/plate'
 
-import { TCustomComment } from '@/types/editor-types'
+import { EReviewType, TCustomComment } from '@/types/editor-types'
 
 export default function CommentSidebar() {
 	const editor = useEditorState()
@@ -63,7 +63,7 @@ export default function CommentSidebar() {
 				<CheckCheck size={16} />
 			</Button>
 			{commentsAndDescriptions.map((item, index) => {
-				if (item.type === 'comment') {
+				if (item.type === EReviewType.COMMENT) {
 					return (
 						<CommentComponent
 							key={index}
@@ -73,7 +73,7 @@ export default function CommentSidebar() {
 							myUserId={myUserId}
 						/>
 					)
-				} else if (item.type === 'description') {
+				} else if (item.type === EReviewType.DESCRIPTION) {
 					return <SuggestionBlock key={index} description={item.data} />
 				}
 				return null
