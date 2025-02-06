@@ -6,14 +6,7 @@ import {
 } from '@/constants/episodes-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
-import {
-	setAlertInfo,
-	setDeleteEpisodeId,
-	setIsDialogOpen,
-	setIsInventOpen,
-	setSelectedEpisodes,
-	useEpisodeStore,
-} from '@/store/episode-store'
+import { useEpisodeStore } from '@/store/episode-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { Row, Table } from '@tanstack/react-table'
 import { useShallow } from 'zustand/react/shallow'
@@ -36,12 +29,20 @@ const useEpisodeTable = () => {
 	} = useEpisodeHook()
 
 	const {
+		useEpisodeTableStore,
+		setAlertInfo,
+		setDeleteEpisodeId,
+		setIsDialogOpen,
+		setIsInventOpen,
+		setSelectedEpisodes,
+	} = useEpisodeStore()
+	const {
 		episodeSearch,
 		deleteEpisodeId,
 		selectedEpisodes,
 		currentInventIndex,
-	} = useEpisodeStore()
-	const alertInfo = useEpisodeStore(useShallow((state) => state.alertInfo))
+	} = useEpisodeTableStore()
+	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 
 	const { currentPage } = usePageState()
 
