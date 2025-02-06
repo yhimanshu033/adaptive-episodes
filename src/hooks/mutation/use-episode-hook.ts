@@ -14,7 +14,6 @@ import {
 	inventEpisode,
 	unmergeEpisodes,
 } from '@/server-action/episode-action'
-import { useEpisodeStore } from '@/store/episode-store'
 import { setFullScreenLoading } from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TComment } from '@udecode/plate-comments'
@@ -32,17 +31,11 @@ const useEpisodeHook = () => {
 	const [updatedStatus, setUpdatedStatus] = useState<boolean>(false)
 	const queryClient = useQueryClient()
 
-	const { episodeSearch } = useEpisodeStore()
 	const { currentPage } = usePageState()
 
 	const onSuccess = async () => {
 		await queryClient.invalidateQueries({
-			queryKey: [
-				EPISODE_LIST_QUERY_KEY,
-				Number(id),
-				currentPage,
-				episodeSearch,
-			],
+			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id), currentPage],
 			exact: true,
 			type: 'all',
 		})

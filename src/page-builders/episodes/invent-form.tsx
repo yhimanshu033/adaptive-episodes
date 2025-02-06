@@ -1,6 +1,6 @@
 import React from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
-import { setIsInventOpen, useEpisodeStore } from '@/store/episode-store'
+import { useEpisodeStore } from '@/store/episode-store'
 import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -24,7 +24,8 @@ import { Input } from '@/components/ui/input'
 import { TEpisodeInventForm } from '@/types/episode-type'
 
 const InventForm = () => {
-	const { isInventOpen } = useEpisodeStore()
+	const { useEpisodeTableStore, setIsInventOpen } = useEpisodeStore()
+	const { isInventOpen } = useEpisodeTableStore()
 	const { handleAddEpisode } = useEpisodeTable()
 
 	const form = useForm<TEpisodeInventForm>({

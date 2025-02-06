@@ -1,15 +1,11 @@
 import React from 'react'
-import { useParams } from 'next/navigation'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
-import { useStoriesData } from '@/hooks/query/use-story-data'
 
 import EditableText from '@/components/editable-text'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 const AuthorTitle = () => {
-	const { id } = useParams()
-	const { data } = useStoriesData()
-
-	const storyData = data?.find((story) => story.id === parseInt(id as string))
+	const { initialStoryData: storyData } = useEpisodeTableContext()
 	const { storyUpdateMutation } = useStoryUploadHook()
 
 	const updateAuthor = (author: string) => {

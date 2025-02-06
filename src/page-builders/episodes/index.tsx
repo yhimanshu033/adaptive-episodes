@@ -3,20 +3,16 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
-import { useStoriesData } from '@/hooks/query/use-story-data'
 import AuthorTitle from '@/page-builders/episodes/author'
 import EpisodesTable from '@/page-builders/episodes/episodes-table'
 import { ArrowLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 export default function EpisodeListPage() {
-	const { id } = useParams()
-	const { data } = useStoriesData()
-
-	const storyData = data?.find((story) => story.id === parseInt(id as string))
+	const { initialStoryData: storyData } = useEpisodeTableContext()
 
 	return (
 		<main className="container flex-1 animate-fade-in-up flex-col px-4 py-8">

@@ -1,6 +1,6 @@
 import React from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
-import { setEpisodeSearch } from '@/store/episode-store'
+import { useEpisodeStore } from '@/store/episode-store'
 import { Table } from '@tanstack/react-table'
 import { Merge, Search, Split } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -19,6 +19,7 @@ import { TEpisode, TEpisodeSearchForm } from '@/types/episode-type'
 
 const Filters = ({ table }: { table: Table<TEpisode> }) => {
 	const { handleMerge, handleUnmerge } = useEpisodeTable()
+	const { setEpisodeSearch } = useEpisodeStore()
 
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
