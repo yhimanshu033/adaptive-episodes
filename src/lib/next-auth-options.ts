@@ -41,13 +41,7 @@ const authOptions = {
 		async session({ session, token }: any) {
 			session.uid = token.uid
 			session.accessToken = token.accessToken
-			const resp = await fetchAPI<{ data: UserData }, TNoParams, TNoParams>({
-				method: 'GET',
-				url: '/user/me',
-			})
-			if (resp.data) {
-				session.user = resp.data
-			}
+			session.user = { ...session.user, ...token.user }
 			return session as SessionData
 		},
 
@@ -63,6 +57,26 @@ const authOptions = {
 					},
 					noAuth: true,
 				})
+
+				const userData = await fetchAPI<
+					{ data: UserData },
+					TNoParams,
+					TNoParams
+				>({
+					method: 'GET',
+					url: '/user/me',
+					headers: {
+						Authorization: `Bearer ${resp.data?.data.access_token}`,
+					},
+				})
+				if (userData.data?.data) {
+					token.user = {
+						...userData.data.data,
+						fullname:
+							userData.data.data.fullname ??
+							userData.data.data.firstname + ' ' + userData.data.data.lastname,
+					}
+				}
 				token.uid = resp.data?.data.uid
 				token.accessToken = resp?.data?.data.access_token
 			}

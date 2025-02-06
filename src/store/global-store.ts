@@ -1,8 +1,8 @@
-import { Session } from 'next-auth'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
+import { SessionData } from '@/types/admin-types'
 import { GlobalStoreState } from '@/types/common'
 import { SaveEpisodeParams } from '@/types/episode-type'
 
@@ -14,7 +14,7 @@ const initialState: GlobalStoreState = {
 
 export const useGlobalStore = create(devtools(immer(() => initialState)))
 
-export const updateUserData = (userData: Session | null) => {
+export const updateUserData = (userData: SessionData | null) => {
 	useGlobalStore.setState((state) => ({ ...state, userData }))
 }
 

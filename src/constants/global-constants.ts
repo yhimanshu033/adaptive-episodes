@@ -1,4 +1,5 @@
 import { PRIMARY_KEYS_TO_COMPARE } from '@/constants/episodes-constants'
+import { SuggestionUser } from '@udecode/plate-suggestion'
 
 import { ERole } from '@/types/admin-types'
 
@@ -23,4 +24,24 @@ export const keyToTitle: Partial<
 	text: 'Content',
 }
 
-export const ROLE_HIERARCHY: ERole[] = [ERole.ADMIN, ERole.LEAD, ERole.WRITER]
+export const ROLE_HIERARCHY: ERole[] = [
+	ERole.ADMIN,
+	ERole.LEAD,
+	ERole.WRITER,
+	ERole.READER,
+]
+
+export const roleToTitle: Record<ERole, string> = {
+	[ERole.ADMIN]: 'Admin',
+	[ERole.LEAD]: 'Lead',
+	[ERole.WRITER]: 'Writer',
+	[ERole.READER]: '',
+}
+
+export const DEFAULT_USER: Record<string, SuggestionUser> = {
+	'1': {
+		id: '1',
+		name: 'Anonymous',
+		avatarUrl: FALLBACK_USER_URL,
+	},
+}

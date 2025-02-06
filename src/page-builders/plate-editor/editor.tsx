@@ -106,6 +106,7 @@ export default function PlateEditor() {
 												className="size-full rounded-none px-12 py-5"
 												autoFocus
 												focusRing={false}
+												// disabled={isAuthorized({ requiredRole: ERole.WRITER, userRole: me.role })}
 												variant="ghost"
 												size="md"
 											/>

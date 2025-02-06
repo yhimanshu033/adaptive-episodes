@@ -1,7 +1,7 @@
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
 import { LucideProps } from 'lucide-react'
-import { Session } from 'next-auth'
 
+import { SessionData } from '@/types/admin-types'
 import { SaveEpisodeParams } from '@/types/episode-type'
 
 export type LucideComponent = ForwardRefExoticComponent<
@@ -11,7 +11,7 @@ export type LucideComponent = ForwardRefExoticComponent<
 export interface GlobalStoreState {
 	isFullScreenLoading: boolean
 	unsavedEpisodeParams: Record<string, SaveEpisodeParams>
-	userData: Session | null
+	userData: SessionData | null
 }
 
 export enum EStatus {

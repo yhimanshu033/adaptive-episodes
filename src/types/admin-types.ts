@@ -28,11 +28,11 @@ export type LoginResponse = {
 	}
 }
 
-export type SessionData = Session & {
+export type SessionData = {
 	accessToken: string
 	uid: string
-	user?: UserData // TODO: make mandatory once API live
-}
+	user: UserData
+} & Session
 
 export type UserData = {
 	create_time: string
@@ -53,5 +53,15 @@ export type UserData = {
 export enum ERole {
 	ADMIN = 'ADMIN',
 	LEAD = 'LEAD',
-	WRITER = 'WRITER',
+	READER = 'READER',
+	WRITER = 'WRITER', // ONLY IN FE FOR USERS WHO ARE NOT A PART OF THE PROJECT
+}
+
+export type MemberData = {
+	role: ERole
+	user: UserData
+}
+
+export type TGetMembersResponse = {
+	members: MemberData[]
 }

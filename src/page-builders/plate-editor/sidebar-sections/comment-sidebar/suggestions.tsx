@@ -4,6 +4,7 @@ import {
 	SuggestionTypes,
 	SuggestionTypesMap,
 } from '@/constants/editor-constants'
+import { roleToTitle } from '@/constants/global-constants'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import { useEditorPlugin, useEditorState } from '@udecode/plate-common/react'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
@@ -11,8 +12,11 @@ import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 
 import { Icons } from '@/components/icons'
 import { SuggestionAvatar } from '@/components/plate-ui/suggestion-avatar'
+import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
+
+import { PlateUser } from '@/types/plate-types'
 
 const SuggestionBlock = ({
 	description,
@@ -20,7 +24,7 @@ const SuggestionBlock = ({
 	description: TSuggestionDescription
 }) => {
 	const { useOption } = useEditorPlugin(SuggestionPlugin)
-	const user = useOption('suggestionUserById', description.userId)
+	const user = useOption('suggestionUserById', description.userId) as PlateUser
 	const { suggestionAction, activeSuggestionId, set } = useSuggestions()
 	const ref = useRef<HTMLDivElement>(null)
 
@@ -45,6 +49,10 @@ const SuggestionBlock = ({
 		}
 	}, [isActive])
 
+	const userTitle = roleToTitle[user?.role]
+
+	if (!user) return null
+
 	return (
 		<div
 			ref={ref}
@@ -61,6 +69,7 @@ const SuggestionBlock = ({
 			<div className="relative flex items-center gap-2">
 				<SuggestionAvatar user={user} />
 				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
+				{userTitle && <Badge className="text-xs">{userTitle}</Badge>}
 				<div
 					title="Accept Suggestion"
 					className={cn(

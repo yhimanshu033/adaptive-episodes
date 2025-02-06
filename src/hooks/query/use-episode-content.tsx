@@ -18,7 +18,7 @@ import {
 	getSavedParamsFromEpisodeData,
 	getSelectedEpisode,
 } from '@/lib/utils/helpers'
-import { getValue } from '@/lib/utils/indexed-db'
+import { getValue, removeValue } from '@/lib/utils/indexed-db'
 import {
 	breakDownValue,
 	isEpisodeContentDifferent,
@@ -77,7 +77,10 @@ export const useEpisodeContentUtil = () => {
 			oldData.text,
 			newData.text
 		)
-		if (!isContentDifferent) return resp
+		if (!isContentDifferent) {
+			void removeValue(`${resp.chapter.project}_${chapterId}`)
+			return resp
+		}
 		toast({
 			description: `Der Inhalt von Episode ${resp?.chapter?.seq_number || ''} scheint geändert zu sein`,
 			action: (

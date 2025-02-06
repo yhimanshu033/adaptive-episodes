@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { roleToTitle } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
@@ -13,11 +14,20 @@ import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
 import { CommentMoreDropdown } from '@/components/plate-ui/comment-more-dropdown'
 import { CommentResolveButton } from '@/components/plate-ui/comment-resolve-button'
 import { CommentValue } from '@/components/plate-ui/comment-value'
+import { Badge } from '@/components/ui/badge'
+
+import { PlateUser } from '@/types/plate-types'
 
 export default function CommentItemContent() {
-	const { comment, commentText, editingValue, isReplyComment, user } =
-		useCommentItemContentState()
+	const {
+		comment,
+		commentText,
+		editingValue,
+		isReplyComment,
+		user: defaultUser,
+	} = useCommentItemContentState()
 
+	const user = defaultUser as PlateUser
 	const { store, addActiveCommentExampleMap } = useAIStore()
 	const activeCommentExampleMap = store(
 		useShallow((state) => state.activeCommentExampleMap)
@@ -41,12 +51,15 @@ export default function CommentItemContent() {
 		addActiveCommentExampleMap({ key: comment.id, value: taskId })
 	}
 
+	const userTitle = roleToTitle[user?.role]
+
 	return (
 		<div>
 			<div className="relative flex items-center gap-2">
 				<CommentAvatar userId={comment.userId} />
 
 				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
+				{userTitle && <Badge className="text-xs">{userTitle}</Badge>}
 
 				<div className="text-xs leading-none text-muted-foreground">
 					{formatDistance(comment.createdAt, Date.now())} ago
