@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from 'react'
 import { TComment, TCommentText } from '@udecode/plate-comments'
+import { TSuggestionDescription } from '@udecode/plate-suggestion'
 
 import { TGetEpisodeResponse } from '@/types/episode-type'
 
@@ -44,3 +45,12 @@ export type EditorExtendedStore = {
 	episodeMap: Record<number, TGetEpisodeResponse>
 	extended: number[]
 }
+
+export enum EReviewType {
+	COMMENT = 'comment',
+	DESCRIPTION = 'description',
+}
+
+export type TReview =
+	| { data: TCustomComment; type: EReviewType.COMMENT }
+	| { data: TSuggestionDescription; type: EReviewType.DESCRIPTION }

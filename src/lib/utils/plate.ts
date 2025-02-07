@@ -6,8 +6,10 @@
 import { TComment } from '@udecode/plate-comments'
 import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
 import { computeDiff } from '@udecode/plate-diff'
+import { TSuggestionDescription } from '@udecode/plate-suggestion'
 import type { Range } from 'slate'
 
+import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
 import { Selection } from '@/types/plate-types'
 
 export function isSameBlock(selection: Selection): boolean {
@@ -470,4 +472,54 @@ export function getWordCount(val: Value) {
 export function getWordCountFromString(ogText: string) {
 	const val = breakDownValue(jsonify(ogText))
 	return getWordCount(val)
+}
+
+export function sortCommentsAndDescriptions(
+	nodes: Value,
+	comments: TCustomComment[],
+	descriptions: TSuggestionDescription[]
+) {
+	const sortedRecords: Array<TReview> = []
+	const visitedIds = new Set<string>()
+
+	const commentMap = new Map(comments.map((c) => [c.id, c]))
+	const descriptionMap = new Map(descriptions.map((d) => [d.suggestionId, d]))
+
+	function traverse(node: TDescendant) {
+		if ('comment' in node) {
+			const commentKey = Object.keys(node)
+				.find((key) => key.startsWith('comment_'))
+				?.replace('comment_', '')
+
+			if (commentKey && !visitedIds.has(commentKey)) {
+				const comment = commentMap.get(commentKey)
+				if (comment) {
+					sortedRecords.push({ data: comment, type: EReviewType.COMMENT })
+					visitedIds.add(commentKey)
+				}
+			}
+		}
+
+		if ('suggestionId' in node) {
+			const suggestionKey = node.suggestionId as string
+			if (!visitedIds.has(suggestionKey)) {
+				const suggestion = descriptionMap.get(suggestionKey)
+				if (suggestion) {
+					sortedRecords.push({
+						data: suggestion,
+						type: EReviewType.DESCRIPTION,
+					})
+					visitedIds.add(suggestionKey)
+				}
+			}
+		}
+
+		if ('children' in node) {
+			;(node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+
+	nodes.forEach(traverse)
+
+	return sortedRecords
 }
