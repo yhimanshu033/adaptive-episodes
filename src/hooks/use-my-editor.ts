@@ -54,6 +54,7 @@ import { SelectOnBackspacePlugin } from '@udecode/plate-select'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 import { TrailingBlockPlugin } from '@udecode/plate-trailing-block'
 
+import { BlockquoteElement } from '@/components/plate-ui/block-quote-element'
 import { CommentLeaf } from '@/components/plate-ui/comment-leaf'
 import { DragOverCursorPlugin } from '@/components/plate-ui/cursor-overlay'
 import { HeadingElement } from '@/components/plate-ui/heading-element'
@@ -111,6 +112,7 @@ const useMyEditor = ({
 			KbdPlugin,
 
 			// Block Style
+			BlockquotePlugin,
 			AlignPlugin.configure({
 				inject: {
 					targetPlugins: [ParagraphPlugin.key, ...HEADING_LEVELS],
@@ -266,6 +268,7 @@ const useMyEditor = ({
 				[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
 				[ParagraphPlugin.key]: ParagraphElement,
 				[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
+				[BlockquotePlugin.key]: BlockquoteElement,
 				[HighlightPlugin.key]: HighlightLeaf,
 				[ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
 				[KbdPlugin.key]: KbdLeaf,

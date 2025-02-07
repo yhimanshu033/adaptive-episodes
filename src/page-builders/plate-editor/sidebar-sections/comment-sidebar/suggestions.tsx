@@ -5,6 +5,7 @@ import {
 	SuggestionTypesMap,
 } from '@/constants/editor-constants'
 import { roleToData } from '@/constants/global-constants'
+import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import { useEditorPlugin } from '@udecode/plate-common/react'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
@@ -24,11 +25,14 @@ const SuggestionBlock = ({
 	description: TSuggestionDescription
 }) => {
 	const { useOption } = useEditorPlugin(SuggestionPlugin)
+	const { activeCommentId, set: setCommentOption } = useComments()
 	const user = useOption('suggestionUserById', description.userId) as PlateUser
 	const { suggestionAction, activeSuggestionId, set } = useSuggestions()
 	const ref = useRef<HTMLDivElement>(null)
 
-	const isActive = description.suggestionId === activeSuggestionId
+	const isActive = !activeCommentId
+		? description.suggestionId === activeSuggestionId
+		: null
 
 	let suggestedText: string = ''
 
@@ -56,8 +60,12 @@ const SuggestionBlock = ({
 	return (
 		<div
 			ref={ref}
-			className={cn('cursor-pointer p-2', isActive && 'bg-background')}
+			className={cn(
+				'cursor-pointer p-2',
+				isActive ? 'border-l-2 bg-background/90' : 'hover:bg-background/30'
+			)}
 			onClick={() => {
+				setCommentOption({ activeCommentId: null })
 				set('activeSuggestionId', description.suggestionId)
 				const elem = document.getElementById(
 					'suggestion-leaf-' + description.suggestionId

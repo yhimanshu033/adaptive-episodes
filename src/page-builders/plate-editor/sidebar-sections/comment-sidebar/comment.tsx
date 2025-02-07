@@ -48,10 +48,12 @@ export default function CommentComponent({
 					if (!elem) return
 					elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
 				}}
-				className={cn('p-4 hover:bg-[rgba(255,255,255,0.01)]', {
-					'border-b border-b-yellow-600 bg-[rgba(255,255,255,0.01)]':
-						activeCommentId === comment.id,
-				})}
+				className={cn(
+					'p-4',
+					activeCommentId === comment.id
+						? '~border-b border-l-2 border-b-primary bg-background/90'
+						: 'hover:bg-background/30'
+				)}
 			>
 				<div className="flex items-center gap-1 pb-2 text-xs text-muted-foreground">
 					<ReplyIcon size={8} className="rotate-180" />
