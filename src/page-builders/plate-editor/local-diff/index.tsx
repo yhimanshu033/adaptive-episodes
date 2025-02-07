@@ -45,32 +45,31 @@ export default function LocalDiffSection() {
 	}
 
 	return (
-		<div className="border px-12 py-6">
-			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-semibold">Local Changes</h1>
-				<div className="flex items-center gap-4">
-					<Button tooltip="Import Local Changes" onClick={handleAccept}>
-						<Check />
-					</Button>
-					<Button tooltip="Reject Local Changes" onClick={handleReject}>
-						<X />
-					</Button>
-				</div>
+		<div className="relative grid grid-cols-2 grid-rows-[auto_1fr] border px-12 py-6">
+			<h1 className="text-2xl font-semibold">Local Changes</h1>
+			<div className="sticky right-12 top-16 z-30 flex w-fit gap-4 justify-self-end">
+				<Button tooltip="Import Local Changes" onClick={handleAccept}>
+					<Check />
+				</Button>
+				<Button tooltip="Reject Local Changes" onClick={handleReject}>
+					<X />
+				</Button>
 			</div>
-
-			<Plate readOnly editor={editor}>
-				<DiffView
-					current={localDiffValue}
-					readonly
-					previous={value}
-					className={cn(
-						editorVariants({
-							focused: false,
-						}),
-						'rounded-none border-none bg-background px-0 py-5'
-					)}
-				/>
-			</Plate>
+			<div className="col-span-full">
+				<Plate readOnly editor={editor}>
+					<DiffView
+						current={localDiffValue}
+						readonly
+						previous={value}
+						className={cn(
+							editorVariants({
+								focused: false,
+							}),
+							'rounded-none border-none bg-background px-0 py-5'
+						)}
+					/>
+				</Plate>
+			</div>
 		</div>
 	)
 }
