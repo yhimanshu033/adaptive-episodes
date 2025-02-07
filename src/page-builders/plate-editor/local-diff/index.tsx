@@ -45,17 +45,8 @@ export default function LocalDiffSection() {
 	}
 
 	return (
-		<div className="relative grid grid-cols-2 grid-rows-[auto_1fr] border px-12 py-6">
-			<h1 className="text-2xl font-semibold">Local Changes</h1>
-			<div className="sticky right-12 top-16 z-30 flex w-fit gap-4 justify-self-end">
-				<Button tooltip="Import Local Changes" onClick={handleAccept}>
-					<Check />
-				</Button>
-				<Button tooltip="Reject Local Changes" onClick={handleReject}>
-					<X />
-				</Button>
-			</div>
-			<div className="col-span-full">
+		<div className="relative flex flex-col justify-between border-l">
+			<div className="px-12 py-2">
 				<Plate readOnly editor={editor}>
 					<DiffView
 						current={localDiffValue}
@@ -69,6 +60,17 @@ export default function LocalDiffSection() {
 						)}
 					/>
 				</Plate>
+			</div>
+			<div className="sticky bottom-0 z-50 grid grid-cols-2 grid-rows-[auto_1fr] bg-background/70 px-8 py-6 backdrop-blur-md">
+				<h1 className="text-2xl font-semibold">Local Changes</h1>
+				<div className="flex w-fit gap-4 justify-self-end">
+					<Button tooltip="Import Local Changes" onClick={handleAccept}>
+						<Check />
+					</Button>
+					<Button tooltip="Reject Local Changes" onClick={handleReject}>
+						<X />
+					</Button>
+				</div>
 			</div>
 		</div>
 	)

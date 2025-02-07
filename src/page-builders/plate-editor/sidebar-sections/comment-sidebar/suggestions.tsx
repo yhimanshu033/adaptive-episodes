@@ -77,7 +77,14 @@ const SuggestionBlock = ({
 			<div className="relative flex items-center gap-2">
 				<SuggestionAvatar user={user} />
 				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
-				{userTitle && <Badge className="text-xs">{userTitle}</Badge>}
+				{userTitle && (
+					<Badge
+						variant="outline"
+						className="bg-muted text-xxs leading-none text-muted-foreground"
+					>
+						{userTitle}
+					</Badge>
+				)}
 				<div
 					title="Accept Suggestion"
 					className={cn(
