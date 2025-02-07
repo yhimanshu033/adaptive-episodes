@@ -52,7 +52,7 @@ const Title = () => {
 	}
 
 	return (
-		<div className="flex gap-2">
+		<div className="flex items-center justify-center gap-2">
 			<Button variant="ghost" size="icon" onClick={() => void handleClick()}>
 				<ArrowLeft size={16} />
 			</Button>
@@ -61,7 +61,7 @@ const Title = () => {
 			) : (
 				<Spinner size={24} />
 			)}
-			<div>
+			<div className="flex items-end gap-2">
 				<EditableText
 					key={episodeContent?.chapter.chapter_title}
 					text={decodeURIComponent(episodeContent?.chapter.chapter_title || '')}
@@ -72,7 +72,7 @@ const Title = () => {
 				/>
 				{updatedAt && (
 					<p className="text-xs italic text-foreground/50">
-						Last updated: {updatedAt}
+						(Last updated: {updatedAt})
 					</p>
 				)}
 			</div>

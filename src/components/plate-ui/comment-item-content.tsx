@@ -59,7 +59,14 @@ export default function CommentItemContent() {
 				<CommentAvatar userId={comment.userId} />
 
 				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
-				{userTitle && <Badge className="text-xs">{userTitle}</Badge>}
+				{userTitle && (
+					<Badge
+						variant="outline"
+						className="bg-muted text-xxs leading-none text-muted-foreground"
+					>
+						{userTitle}
+					</Badge>
+				)}
 
 				<div className="text-xs leading-none text-muted-foreground">
 					{formatDistance(comment.createdAt, Date.now())} ago

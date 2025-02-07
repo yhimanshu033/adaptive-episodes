@@ -3,7 +3,7 @@
 import React, { createContext, useState } from 'react'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/episodes-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
-import { toast } from '@/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { getEpisodeContent } from '@/server-action/content-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
@@ -49,6 +49,7 @@ export const useEpisodeContentUtil = () => {
 	const [imported, setImported] = useState(false)
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
+	const { toast, dismiss } = useToast()
 
 	const queryKey = [
 		EPISODE_CONTENT_QUERY_KEY,
@@ -97,6 +98,7 @@ export const useEpisodeContentUtil = () => {
 							)
 						)
 						setSidebar(ESidebar.LOCAL_DIFF)
+						dismiss()
 					}}
 				>
 					Lokal Ansehen
