@@ -19,6 +19,7 @@ import {
 	TSuggestionText,
 } from '@udecode/plate-suggestion'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
+import memoize from 'lodash/memoize'
 
 const useSuggestions = () => {
 	const editor = useEditorRef()
@@ -135,12 +136,15 @@ const useSuggestions = () => {
 		}
 	}
 
-	const isLastLeaf = (leaf: TSuggestionText) => {
-		const nodes = findAllSuggestionNodes(editor).filter(
-			({ node }) => node.suggestionId === leaf.suggestionId
-		)
-		return nodes[nodes.length - 1].node.text === leaf.text
-	}
+	const isLastLeaf = memoize(
+		(leaf: TSuggestionText) => {
+			const nodes = findAllSuggestionNodes(editor).filter(
+				({ node }) => node.suggestionId === leaf.suggestionId
+			)
+			return nodes[nodes.length - 1].node.text === leaf.text
+		},
+		(leaf: TSuggestionText) => `${leaf.suggestionId}-${leaf.text}`
+	)
 
 	return {
 		activeSuggestionId,
