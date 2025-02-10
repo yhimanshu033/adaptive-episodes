@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { extendStore } from '@/hooks/use-editor-extend-state'
 import useSaving from '@/hooks/use-saving'
+import useEditorExtendedStore from '@/store/extended-store'
 import { useQueryClient } from '@tanstack/react-query'
 import {
 	CircleArrowLeft,
@@ -17,20 +16,23 @@ export default function ControlButtons() {
 	const router = useRouter()
 	const { id } = useParams()
 	const queryClient = useQueryClient()
-	const { setExtended, extended } = extendStore()
+	const { store: extendStore, setExtended } = useEditorExtendedStore()
+	const { extended, episodeMap } = extendStore()
 
+	const firstEpisode = episodeMap[extended[0]]
+	const lastEpisode = episodeMap[extended[extended.length - 1]]
 	const { data: content, queryKey } = useEpisodeContent()
 	const { isSaved, handleSave } = useSaving()
 
-	const handleEpisodeChange = (episode: number | null) => {
+	const handleEpisodeChange = async (episode: number | null) => {
 		if (!episode) return
-		if (!isSaved) void handleSave()
+		await handleSave({ startOverlayLoading: true })
 		router.push(`/projects/${String(id)}/${episode}/editor`)
 	}
 
 	const handleEpisodeSplit = async () => {
 		if (!isSaved) {
-			await handleSave()
+			await handleSave({ startOverlayLoading: true, stopOverlayLoading: true })
 			await queryClient.invalidateQueries({ queryKey })
 		}
 
@@ -38,37 +40,37 @@ export default function ControlButtons() {
 	}
 
 	return (
-		content && (
-			<div className="mt-5 flex animate-fade-in-up items-center justify-center gap-2">
-				<Button
-					tooltip="Previous Episode"
-					variant="outline"
-					size="icon"
-					className="rounded-full"
-					disabled={!content.previous_parent_id}
-					onClick={() => handleEpisodeChange(content.previous_parent_id)}
-				>
-					<CircleArrowLeft />
-				</Button>
-				<Button
-					tooltip="Next Episode"
-					disabled={!content.next_parent_id}
-					className="rounded-full"
-					size="icon"
-					onClick={() => handleEpisodeChange(content.next_parent_id)}
-				>
-					<CircleArrowRight />
-				</Button>
-				<Button
-					tooltip="Episode Extension"
-					disabled={!content.next_parent_id}
-					onClick={handleEpisodeSplit}
-					size="icon"
-					variant="ghost"
-				>
-					<SeparatorHorizontal />
-				</Button>
-			</div>
-		)
+		<div className="mt-5 flex animate-fade-in-up items-center justify-center gap-2">
+			<Button
+				tooltip="Previous Episode"
+				variant="outline"
+				size="icon"
+				className="rounded-full"
+				disabled={!firstEpisode?.previous_parent_id}
+				onClick={() =>
+					void handleEpisodeChange(firstEpisode?.previous_parent_id)
+				}
+			>
+				<CircleArrowLeft />
+			</Button>
+			<Button
+				tooltip="Next Episode"
+				disabled={!lastEpisode?.next_parent_id}
+				className="rounded-full"
+				size="icon"
+				onClick={() => void handleEpisodeChange(lastEpisode?.next_parent_id)}
+			>
+				<CircleArrowRight />
+			</Button>
+			<Button
+				tooltip="Episode Extension"
+				disabled={!content?.next_parent_id}
+				onClick={() => void handleEpisodeSplit()}
+				size="icon"
+				variant="ghost"
+			>
+				<SeparatorHorizontal />
+			</Button>
+		</div>
 	)
 }

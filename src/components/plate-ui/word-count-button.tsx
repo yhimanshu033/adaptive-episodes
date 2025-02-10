@@ -3,15 +3,14 @@ import { useEditorState } from '@udecode/plate-common/react'
 import { WholeWordIcon } from 'lucide-react'
 
 import { TooltipComponent } from '@/components/ui/tooltip-component'
-import { getWords, prettifyNumber } from '@/lib/utils/helpers'
-import { getText } from '@/lib/utils/plate'
+import { prettifyNumber } from '@/lib/utils/helpers'
+import { getWordCount } from '@/lib/utils/plate'
 
 export default function WordCountButton() {
 	const { children } = useEditorState()
 	const wordCount = useMemo(() => {
-		const text = getText(children)
-		const words = getWords(text)
-		return prettifyNumber(words.length)
+		const words = getWordCount(children)
+		return prettifyNumber(words)
 	}, [children])
 	return (
 		<TooltipComponent tooltip={`Worte: ${wordCount}`}>

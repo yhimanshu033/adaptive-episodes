@@ -1,5 +1,8 @@
+import { CommentUser } from '@udecode/plate-comments'
 import { TDescendant, Value } from '@udecode/plate-common'
+import { SuggestionUser } from '@udecode/plate-suggestion'
 
+import { ERole, UserData } from '@/types/admin-types'
 import { Laser, PlotExplorerApiResponse } from '@/types/ai-types'
 
 export type Selection = {
@@ -47,6 +50,7 @@ export type PlateStoreData = {
 	activeNoteId: string | null
 	currentDiffValue: Value | null
 	fontFamily: string
+	localDiffValue: Value | null
 	resolved: boolean
 	scale: number
 	sidebar: ESidebar | null
@@ -70,3 +74,7 @@ export type TNote = {
 	title: string
 	updateTime: string
 }
+
+export type PlateUser = SuggestionUser &
+	CommentUser &
+	UserData & { role: ERole }

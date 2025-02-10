@@ -4,6 +4,7 @@ import React, { createContext, ReactNode, useContext } from 'react'
 import { aiInitialMessage } from '@/constants/ai-constants'
 import { DEFAULT_FONT_FAMILY } from '@/constants/editor-constants'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
+import { EpisodeContentProvider } from '@/hooks/query/use-episode-content'
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -22,6 +23,7 @@ const initialState: PlateStoreData = {
 	viewMode: false,
 	activeNoteId: null,
 	fontFamily: DEFAULT_FONT_FAMILY,
+	localDiffValue: null,
 }
 
 const initialAiState: AIStoreType = {
@@ -52,6 +54,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	notes: [],
 	currentTitle: '',
 	dualViewMode: EDualVIewMode.US_TRANSLATION,
+	startOverlayLoading: false,
 }
 
 type EpisodeIdContextType = {
@@ -98,7 +101,7 @@ export function EpisodeIdProvider({
 				useLaserContext,
 			}}
 		>
-			{children}
+			<EpisodeContentProvider>{children}</EpisodeContentProvider>
 		</EpisodeIdContext.Provider>
 	)
 }

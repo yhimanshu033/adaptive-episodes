@@ -80,3 +80,5 @@ export const FONT_RECORD: Record<string, string> = {
 	Consolas: '--font-consolas',
 	Impact: '--font-impact',
 }
+
+export const IGNORED_DIFF_KEYS = ['id']

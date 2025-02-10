@@ -1,5 +1,12 @@
 'use server'
 
+import * as Sentry from '@sentry/nextjs'
+import { getServerSession } from 'next-auth'
+
+import authOptions from '@/lib/next-auth-options'
+import { log } from '@/lib/utils/helpers'
+
+import { SessionData } from '@/types/admin-types'
 import { TNoParams } from '@/types/common'
 
 export type FetchRequestParams<
@@ -11,9 +18,9 @@ export type FetchRequestParams<
 	baseUrl?: string
 	body?: BodyParamsT
 	defaultData?: ResponseDataT
-	headers?: Headers
+	headers?: Record<string, string>
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
-	onError?: (error: Error) => void
+	noAuth?: boolean
 	query?: QueryParamsT
 	throwOnError?: boolean
 	url: string
@@ -47,6 +54,7 @@ export async function fetchAPI<
 		QueryParamsT
 	>
 ): Promise<FetchResponseResult<ResponseDataT>> {
+	const session = (await getServerSession(authOptions)) as SessionData
 	const {
 		url,
 		method,
@@ -54,10 +62,10 @@ export async function fetchAPI<
 		query = {},
 		body = {},
 		headers = {},
-		onError,
 		defaultData,
 		throwOnError,
 		baseUrl,
+		noAuth,
 	} = params
 
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
@@ -81,14 +89,37 @@ export async function fetchAPI<
 	if (queryStr) {
 		resolvedUrl += `?${queryStr}`
 	}
+	const accessToken = session?.accessToken || ''
 
+	const defaultSentryData: Record<string, string> = {
+		user: JSON.stringify(session?.user),
+		url: resolvedUrl,
+		method,
+		accessToken: accessToken ? 'exists' : "doesn't exist",
+		body: JSON.stringify(body),
+		query: JSON.stringify(query),
+		headers: JSON.stringify(headers),
+	}
 	try {
 		const isFormData = body instanceof FormData
+		if (!accessToken && !noAuth) {
+			console.warn('No access token found in session')
+			log({
+				type: 'API ACCESS_TOKEN ERROR',
+				extra: {
+					...defaultSentryData,
+				},
+			})
+			Sentry.captureException(new Error('API ACCESS_TOKEN ERROR'), {
+				extra: defaultSentryData,
+			})
+		}
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {
 				...(isFormData ? {} : { 'Content-Type': 'application/json' }),
 				'API-Key': API_KEY,
+				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
 				...headers,
 			},
 			...(method !== 'GET' && method !== 'DELETE'
@@ -100,7 +131,33 @@ export async function fetchAPI<
 			mode: 'cors',
 		})
 
+		if (!response.ok || response.status !== 200) {
+			log({
+				type: 'API RESPONSE ERROR',
+				extra: {
+					...defaultSentryData,
+					responseStatus: response.status,
+					responseStatusText: response.statusText,
+				},
+			})
+			Sentry.captureException(new Error('API RESPONSE ERROR'), {
+				extra: {
+					...defaultSentryData,
+					responseStatus: response.status,
+					responseStatusText: response.statusText,
+				},
+			})
+
+			return {
+				success: false,
+				status: 0,
+				data: defaultData ?? null,
+				error: new Error(response.statusText),
+			}
+		}
+
 		const responseData = (await response.json()) as ResponseDataT
+
 		return {
 			success: true,
 			status: response.status,
@@ -108,14 +165,23 @@ export async function fetchAPI<
 			error: null,
 		}
 	} catch (error) {
+		log({
+			type: 'API CATCH ERROR',
+			extra: {
+				...defaultSentryData,
+				error: JSON.stringify(error),
+			},
+		})
+		Sentry.captureException(new Error('API CATCH ERROR'), {
+			extra: {
+				...defaultSentryData,
+				error: JSON.stringify(error),
+			},
+		})
 		const errorInstance = error as Error
 
 		if (throwOnError) {
 			throw errorInstance
-		}
-
-		if (onError) {
-			onError(errorInstance)
 		}
 
 		console.log({ errorInstance })

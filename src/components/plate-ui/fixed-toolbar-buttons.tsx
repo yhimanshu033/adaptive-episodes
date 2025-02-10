@@ -15,7 +15,6 @@ import { AlignDropdownMenu } from '@/components/plate-ui/align-dropdown-menu'
 import { ChatbotToolbarButton } from '@/components/plate-ui/chatbot-toggle-button'
 import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
 import { CommentToolbarButton } from '@/components/plate-ui/comment-toolbar-button'
-import { FixedToolbarClose } from '@/components/plate-ui/fixed-toolbar-close'
 import { FontDropdownMenu } from '@/components/plate-ui/font-dropdown-menu'
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
 import { MarkToolbarButton } from '@/components/plate-ui/mark-toolbar-button'
@@ -91,7 +90,6 @@ export function FixedToolbarButtons() {
 				)}
 
 				<div className="grow" />
-
 				<ToolbarGroup noSeparator>
 					<TranslationToggleButton />
 					<ChatbotToolbarButton />
@@ -104,7 +102,6 @@ export function FixedToolbarButtons() {
 
 				<ToolbarGroup>
 					<ModeDropdownMenu />
-					<FixedToolbarClose />
 				</ToolbarGroup>
 			</div>
 		</div>

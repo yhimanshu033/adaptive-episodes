@@ -43,6 +43,12 @@ export function usePlateStore() {
 		usePlateStoreContext.setState({ fontFamily })
 	}
 
+	const setLocalDiffValue = (
+		localDiffValue: PlateStoreData['localDiffValue']
+	) => {
+		usePlateStoreContext.setState({ localDiffValue })
+	}
+
 	return {
 		store: usePlateStoreContext,
 		setSidebar,
@@ -53,6 +59,7 @@ export function usePlateStore() {
 		setViewMode,
 		setActiveNoteId,
 		setFontFamily,
+		setLocalDiffValue,
 	}
 }
 

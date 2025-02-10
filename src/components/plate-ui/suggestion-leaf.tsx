@@ -4,6 +4,7 @@ import {
 	SuggestionActions,
 	SuggestionTypes,
 } from '@/constants/editor-constants'
+import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import usePlateStore from '@/store/plate-store'
 import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
@@ -26,15 +27,17 @@ export default function SuggestionLeaf({
 		suggestionAction,
 		activeSuggestionDescription,
 	} = useSuggestions()
+	const { set: setCommentOptions, activeCommentId } = useComments()
 	const { setSidebar } = usePlateStore()
 
-	const isActive =
-		activeSuggestionId === leaf.suggestionId &&
-		!(
-			activeSuggestionDescription?.type &&
-			activeSuggestionDescription.type === SuggestionTypes.REPLACEMENT &&
-			leaf.suggestionDeletion
-		)
+	const isActive = activeCommentId
+		? false
+		: activeSuggestionId === leaf.suggestionId &&
+			!(
+				activeSuggestionDescription?.type &&
+				activeSuggestionDescription.type === SuggestionTypes.REPLACEMENT &&
+				leaf.suggestionDeletion
+			)
 
 	return (
 		<PlateLeaf
@@ -47,13 +50,14 @@ export default function SuggestionLeaf({
 				className
 			)}
 			onClick={() => {
+				setCommentOptions({ activeCommentId: null })
 				set('activeSuggestionId', leaf.suggestionId || '')
 				setSidebar(ESidebar.COMMENTS)
 			}}
 			nodeProps={{ ...nodeProps }}
 		>
 			{isActive && (
-				<div className="absolute bottom-0 left-0 flex translate-y-full gap-2 p-1">
+				<div className="absolute bottom-0 right-0 z-50 flex translate-x-1/2 translate-y-full gap-2 p-1">
 					<Button
 						variant="outline"
 						size="sm"

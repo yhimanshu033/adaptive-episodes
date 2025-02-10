@@ -7,6 +7,7 @@ import StoryExplorer from '@/page-builders/plate-editor/sidebar-sections/story-e
 import usePlateStore from '@/store/plate-store'
 import { useDebounceValue } from 'usehooks-ts'
 
+import CloseSidebar from '@/components/close-sidebar'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils/helpers'
@@ -58,6 +59,7 @@ const Sidebar = () => {
 			>
 				{sidebarToDisplay && (
 					<ScrollArea className="relative size-full h-[calc(100svh_-_44px)] flex-1 transition-all duration-200">
+						<CloseSidebar />
 						{renderSidebar[sidebarToDisplay]}
 					</ScrollArea>
 				)}

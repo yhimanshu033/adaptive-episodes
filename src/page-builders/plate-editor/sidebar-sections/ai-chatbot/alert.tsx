@@ -16,7 +16,11 @@ import {
 import { Button } from '@/components/ui/button'
 
 export default function ChatClearAlert() {
-	const { clearMessages } = useAIChatbot()
+	const { clearMessages, cancelRequest } = useAIChatbot()
+	function handleDelete() {
+		clearMessages()
+		cancelRequest()
+	}
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
@@ -34,9 +38,7 @@ export default function ChatClearAlert() {
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction onClick={clearMessages}>
-						Continue
-					</AlertDialogAction>
+					<AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

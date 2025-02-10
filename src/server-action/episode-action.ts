@@ -1,5 +1,7 @@
 'use server'
 
+import { DEFAULT_EPISODES_DATA } from '@/constants/episodes-constants'
+
 import { fetchAPI } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
@@ -28,6 +30,7 @@ export const getEpisodes = async (
 	>({
 		method: 'GET',
 		url: '/chapter/',
+		defaultData: DEFAULT_EPISODES_DATA,
 		query: {
 			project_id,
 			page,

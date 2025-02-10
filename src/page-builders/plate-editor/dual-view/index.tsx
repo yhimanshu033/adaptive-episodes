@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { TRANSITION_DURATION } from '@/constants/editor-constants'
 import DualViewSelector from '@/page-builders/plate-editor/dual-view/dual-view-selector'
+import LocalDiffSection from '@/page-builders/plate-editor/dual-view/local-diff'
 import NextEpisode from '@/page-builders/plate-editor/dual-view/next-episode'
 import Notes from '@/page-builders/plate-editor/dual-view/notes'
 import Translation from '@/page-builders/plate-editor/dual-view/translation'
@@ -27,6 +28,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			),
 			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
 			[EDualVIewMode.NOTES]: <Notes />,
+			[EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
 		}),
 		[translatedContent]
 	)

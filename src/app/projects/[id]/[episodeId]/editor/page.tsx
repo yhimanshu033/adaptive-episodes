@@ -1,6 +1,16 @@
 import React from 'react'
+import { EditorExtendedStateProvider } from '@/hooks/use-editor-extend-state'
 import EpisodePlateEditor from '@/page-builders/plate-editor'
 
-export default function Page() {
-	return <EpisodePlateEditor />
+export default async function Page({
+	params,
+}: {
+	params: Promise<{ episodeId: string }>
+}) {
+	const { episodeId } = await params
+	return (
+		<EditorExtendedStateProvider episodeId={Number(episodeId)}>
+			<EpisodePlateEditor />
+		</EditorExtendedStateProvider>
+	)
 }

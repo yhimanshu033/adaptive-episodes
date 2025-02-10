@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
+import { updateEpisode } from '@/server-action/content-action'
 import {
 	ColumnDef,
 	ExpandedState,
@@ -32,6 +33,14 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 	const [expanded, setExpanded] = useState<ExpandedState>({})
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+
+	async function handleSaveWriter(episodeId: number, writer: string) {
+		await updateEpisode({
+			episodeId,
+			projectId: 1,
+			chapter_title: writer,
+		})
+	}
 
 	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
 		useEpisodeTable()
@@ -131,7 +140,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						key={row.original.id}
 						text={row.getValue('writer') || 'Anonymous'}
 						isEditable
-						// onComplete={handleWriterChange.bind(null, row.original.id)}
+						onComplete={(val) => void handleSaveWriter(row.original.id, val)}
 					/>
 				) : (
 					row.getValue('writer') || 'Anonymous'

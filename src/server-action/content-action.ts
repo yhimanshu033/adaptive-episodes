@@ -1,8 +1,11 @@
 'use server'
 
 import { fetchAPI } from '@/lib/fetch-api'
+import { getWordCountFromString } from '@/lib/utils/plate'
 
 import {
+	SaveEpisodeParams,
+	TEpisode,
 	TGetEpisodeResponse,
 	TGetEpisodeUrlParams,
 	TPatchEpisodeBody,
@@ -14,6 +17,7 @@ export const getEpisodeContent = async (chapterId: number) => {
 		{
 			method: 'GET',
 			url: '/chapter/:chapterId/content/',
+
 			urlParams: {
 				chapterId,
 			},
@@ -27,15 +31,37 @@ export const saveContent = async ({
 	projectId,
 	episodeId,
 	...data
-}: {
-	episodeId: number
-	projectId: number
-	text: string
-} & TPatchEpisodeBody) => {
+}: SaveEpisodeParams) => {
+	const word_count =
+		data.word_count || (data.text ? getWordCountFromString(data.text) : 0)
 	const responseData = await fetchAPI<
 		TPatchEpisodeBody,
 		TPatchEpisodeUrlParams,
 		TPatchEpisodeBody
+	>({
+		method: 'PATCH',
+		url: '/chapter/:projectId/:episodeId/',
+		body: {
+			...data,
+			...(word_count ? { word_count } : {}),
+		},
+		urlParams: {
+			projectId,
+			episodeId,
+		},
+	})
+	return responseData.data
+}
+
+export const updateEpisode = async ({
+	projectId,
+	episodeId,
+	...data
+}: TPatchEpisodeUrlParams & Partial<TEpisode>) => {
+	const responseData = await fetchAPI<
+		TPatchEpisodeBody,
+		TPatchEpisodeUrlParams,
+		Partial<TEpisode>
 	>({
 		method: 'PATCH',
 		url: '/chapter/:projectId/:episodeId/',

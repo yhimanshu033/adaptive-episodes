@@ -89,6 +89,11 @@ export type TPatchEpisodeBody = {
 	text: string
 } & Partial<TEpisode>
 
+export type SaveEpisodeParams = {
+	episodeId: number
+	projectId: number
+} & TPatchEpisodeBody
+
 export type TPatchEpisodeUrlParams = {
 	episodeId: number
 	projectId: number
@@ -157,21 +162,26 @@ export type EpisodeIdStoreType = {
 	episodeId: number
 	notes: TNote[]
 	selectedStatus: EStatus | undefined
+	startOverlayLoading: boolean
 }
 
 export type TSaveEpisodeParams = {
 	forced?: boolean
+	startOverlayLoading?: boolean
+	stopOverlayLoading?: boolean
 }
 
 export type TSavingContext = {
 	handleSave: (params?: TSaveEpisodeParams) => Promise<void>
 	isPending: boolean
 	isSaved: boolean
+	setForceSave: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export type DownloadDocxParams = { latestStatus: EStatus | 'BASE' | undefined }
 
 export enum EDualVIewMode {
+	LOCAL_DIFF = 'LOCAL_DIFF',
 	NEXT_EP = 'NEXT_EP',
 	NOTES = 'NOTES',
 	US_TRANSLATION = 'US_TRANSLATION',
@@ -187,6 +197,7 @@ export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
 	[EDualVIewMode.US_TRANSLATION]: 'US Translation',
 	[EDualVIewMode.NEXT_EP]: 'Next Episode',
 	[EDualVIewMode.NOTES]: 'Notes',
+	[EDualVIewMode.LOCAL_DIFF]: 'Local Changes',
 }
 
 export type TranslationProps = { translatedContent: string }

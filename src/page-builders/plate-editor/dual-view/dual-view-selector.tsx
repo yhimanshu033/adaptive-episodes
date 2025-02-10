@@ -1,5 +1,6 @@
 import React from 'react'
 import useEpisodeIdStore from '@/store/episode-id-store'
+import usePlateStore from '@/store/plate-store'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
@@ -22,6 +23,14 @@ export default function DualViewSelector() {
 	const dualViewMode = useEpisodeIdStoreContext(
 		useShallow((state) => state.dualViewMode)
 	)
+	const { store: useEpisodePlateStore } = usePlateStore()
+
+	const localDiffValue = useEpisodePlateStore(
+		useShallow((state) => state.localDiffValue)
+	)
+	const modes = localDiffValue
+		? [...DUAL_VIEW_MODES, EDualVIewMode.LOCAL_DIFF]
+		: DUAL_VIEW_MODES
 	return (
 		<>
 			<Select
@@ -32,7 +41,7 @@ export default function DualViewSelector() {
 					<SelectValue placeholder="Mode" />
 				</SelectTrigger>
 				<SelectContent>
-					{DUAL_VIEW_MODES.map((mode, index) => (
+					{modes.map((mode, index) => (
 						<SelectItem key={index} value={mode}>
 							{MODE_TO_TITLE[mode]}
 						</SelectItem>

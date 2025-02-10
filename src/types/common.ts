@@ -1,6 +1,8 @@
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
 import { LucideProps } from 'lucide-react'
-import { Session } from 'next-auth'
+
+import { SessionData } from '@/types/admin-types'
+import { SaveEpisodeParams } from '@/types/episode-type'
 
 export type LucideComponent = ForwardRefExoticComponent<
 	Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
@@ -8,7 +10,8 @@ export type LucideComponent = ForwardRefExoticComponent<
 
 export interface GlobalStoreState {
 	isFullScreenLoading: boolean
-	userData: Session | null
+	unsavedEpisodeParams: Record<string, SaveEpisodeParams>
+	userData: SessionData | null
 }
 
 export enum EStatus {

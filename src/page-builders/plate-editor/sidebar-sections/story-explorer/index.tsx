@@ -21,8 +21,8 @@ const StoryExplorer = () => {
 	}
 
 	return (
-		<section className="p-4">
-			<div className="mb-4 flex items-center justify-between">
+		<section className="mx-auto max-w-2xl px-4 py-2">
+			<div className="mb-4 flex items-center justify-between pr-8">
 				<h1 className="text-2xl font-bold">Story Explorer</h1>
 				<div className="flex items-center space-x-2">
 					<span className="font-bold">Episode Range:</span>

@@ -29,7 +29,7 @@ export default function useAiChatbotMessages() {
 				taskId: nanoid(),
 				role: EMessenger.ASSISTANT,
 				action: EAction.ACCEPT,
-				content: 'Accepted changes from StoryChat',
+				content: 'Änderungen wurden übernommen.',
 			},
 			i
 		)

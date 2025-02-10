@@ -14,7 +14,6 @@ import {
 	inventEpisode,
 	unmergeEpisodes,
 } from '@/server-action/episode-action'
-import { useEpisodeStore } from '@/store/episode-store'
 import { setFullScreenLoading } from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TComment } from '@udecode/plate-comments'
@@ -32,17 +31,11 @@ const useEpisodeHook = () => {
 	const [updatedStatus, setUpdatedStatus] = useState<boolean>(false)
 	const queryClient = useQueryClient()
 
-	const { episodeSearch } = useEpisodeStore()
 	const { currentPage } = usePageState()
 
 	const onSuccess = async () => {
 		await queryClient.invalidateQueries({
-			queryKey: [
-				EPISODE_LIST_QUERY_KEY,
-				Number(id),
-				currentPage,
-				episodeSearch,
-			],
+			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id), currentPage],
 			exact: true,
 			type: 'all',
 		})
@@ -57,6 +50,7 @@ const useEpisodeHook = () => {
 			comments,
 			notes,
 			prevProps,
+			word_count,
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
@@ -65,6 +59,7 @@ const useEpisodeHook = () => {
 			prevProps?: Record<string, unknown>
 			status: EStatus | typeof BASE_STATUS
 			text: string
+			word_count?: number
 		}) => {
 			if (status === BASE_STATUS && !updatedStatus) {
 				setUpdatedStatus(true)
@@ -81,6 +76,7 @@ const useEpisodeHook = () => {
 				text,
 				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
 				...(chapter_title ? { chapter_title } : {}),
+				word_count,
 				props: {
 					...prevProps,
 					comments,
@@ -100,6 +96,7 @@ const useEpisodeHook = () => {
 				project_id: Number(id),
 				status: EStatus.FIRST_DRAFT,
 			},
+			noCache: true,
 		})
 		return getResponse(taskId)
 	}

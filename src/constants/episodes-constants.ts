@@ -1,4 +1,5 @@
 import { EStatus } from '@/types/common'
+import { SaveEpisodeParams, TGetEpisodesResponse } from '@/types/episode-type'
 
 export const statuses: EStatus[] = [
 	EStatus.FIRST_DRAFT,
@@ -29,3 +30,22 @@ export const SIDEBAR_DISABLED = ['4008']
 
 export const EPISODE_CONTENT_QUERY_KEY = 'episode-content'
 export const EPISODE_LIST_QUERY_KEY = 'episodes'
+
+export const DEFAULT_EPISODES_DATA: TGetEpisodesResponse = {
+	count: 0,
+	next: null,
+	previous: null,
+	results: {
+		data: [],
+		message: '',
+	},
+}
+
+export const PRIMARY_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
+	'chapter_title',
+	'text',
+] as const
+
+export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
+	'comments',
+] as const

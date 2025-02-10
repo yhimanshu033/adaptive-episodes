@@ -15,7 +15,7 @@ export function SuggestionAvatar({ user }: { user: SuggestionUser | null }) {
 	return (
 		<Avatar className="size-5">
 			<AvatarImage alt={user.name} src={user.avatarUrl} />
-			<AvatarFallback>{user.name?.[0]}</AvatarFallback>
+			<AvatarFallback className="text-xs">{user.name?.[0]}</AvatarFallback>
 		</Avatar>
 	)
 }

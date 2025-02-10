@@ -1,25 +1,20 @@
 'use client'
 
-import React, { useEffect } from 'react'
-import { useParams } from 'next/navigation'
-import { extendStore } from '@/hooks/use-editor-extend-state'
+import React from 'react'
 import EditorChild from '@/page-builders/plate-editor/split-editor/editor-child'
+import useEditorExtendedStore from '@/store/extended-store'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { useShallow } from 'zustand/react/shallow'
 
 const EpisodePlateEditor = () => {
-	const { extended, setExtended } = extendStore()
-	const { episodeId } = useParams()
-
-	useEffect(() => {
-		setExtended([Number(episodeId)])
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [episodeId])
+	const { store: extendStore } = useEditorExtendedStore()
+	const extended = extendStore(useShallow((state) => state.extended))
 
 	return (
-		<main className="container flex flex-1 flex-col p-4">
+		<main className="flex flex-1 flex-col">
 			<DndProvider backend={HTML5Backend}>
-				<div className="relative space-y-5">
+				<div className="relative">
 					{extended.map((episodeId) => (
 						<EditorChild key={episodeId} episodeId={episodeId} />
 					))}

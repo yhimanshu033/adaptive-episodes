@@ -44,6 +44,9 @@ const FloatingToolbarButtons = () => {
 	return (
 		<div className="flex">
 			<ToolbarGroup noSeparator>
+				<WordCountButton />
+			</ToolbarGroup>
+			<ToolbarGroup>
 				<TurnIntoDropdownMenu />
 				<MarkToolbarButton nodeType={BoldPlugin.key} tooltip="Bold (⌘+B)">
 					<Icons.bold />
@@ -80,19 +83,19 @@ const FloatingToolbarButtons = () => {
 				>
 					<Bot />
 				</MarkToolbarButton>
-				{!showRephrase && (
-					<MarkToolbarButton
-						{...props}
-						onClick={(e) => {
-							setSidebar(ESidebar.COMMENTS)
-							props.onClick(e)
-						}}
-						nodeType={CommentsPlugin.key}
-						tooltip="Comment (⌘+⇧+M)"
-					>
-						<Icons.commentAdd />
-					</MarkToolbarButton>
-				)}
+			</ToolbarGroup>
+			<ToolbarGroup>
+				<MarkToolbarButton
+					{...props}
+					onClick={(e) => {
+						setSidebar(ESidebar.COMMENTS)
+						props.onClick(e)
+					}}
+					nodeType={CommentsPlugin.key}
+					tooltip="Comment (⌘+⇧+M)"
+				>
+					<Icons.commentAdd />
+				</MarkToolbarButton>
 			</ToolbarGroup>
 		</div>
 	)

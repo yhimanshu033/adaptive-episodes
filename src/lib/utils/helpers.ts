@@ -1,10 +1,22 @@
+import {
+	PRIMARY_KEYS_TO_COMPARE,
+	PROPS_KEYS_TO_COMPARE,
+} from '@/constants/episodes-constants'
+import { roleToData } from '@/constants/global-constants'
 import { parse } from 'best-effort-json-parser'
+import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
 import { jsonrepair } from 'jsonrepair'
 import { twMerge } from 'tailwind-merge'
 
+import { ERole } from '@/types/admin-types'
 import { BASE_STATUS, EStatus } from '@/types/common'
-import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
+import {
+	SaveEpisodeParams,
+	TEpisode,
+	TGetEpisodeResponse,
+	TGetEpisodesResponse,
+} from '@/types/episode-type'
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
@@ -131,4 +143,100 @@ export function getWords(str: string) {
 	return str
 		.split(/\s+/)
 		.filter((w) => w.trim().length > 0 && /^[^\d\s]+$/.test(w))
+}
+
+export const buttonVariants = cva(
+	'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+	{
+		variants: {
+			variant: {
+				default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+				destructive:
+					'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+				outline:
+					'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+				secondary:
+					'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+				ghost: 'hover:bg-accent hover:text-accent-foreground',
+				link: 'text-primary underline-offset-4 hover:underline',
+			},
+			size: {
+				default: 'h-10 px-4 py-2',
+				sm: 'h-9 rounded-md px-3',
+				lg: 'h-11 rounded-md px-8',
+				icon: 'size-10',
+			},
+		},
+		defaultVariants: {
+			variant: 'default',
+			size: 'default',
+		},
+	}
+)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function log(data: any) {
+	if (process.env.NODE_ENV === 'production') return
+	console.dir(data, { depth: null })
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getDifferingKeys(
+	obj1: SaveEpisodeParams,
+	obj2: SaveEpisodeParams
+): string[] {
+	const unmatchedKeys: string[] = []
+	PRIMARY_KEYS_TO_COMPARE.forEach((key) => {
+		if (JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) {
+			unmatchedKeys.push(key)
+		}
+	})
+	PROPS_KEYS_TO_COMPARE.forEach((key) => {
+		if (
+			JSON.stringify(obj1['props']?.[key]) !==
+			JSON.stringify(obj2['props']?.[key])
+		) {
+			unmatchedKeys.push(key)
+		}
+	})
+	return unmatchedKeys
+}
+
+export function getEpisodeQueryResponseFromStoredData({
+	episodeData,
+	oldData,
+}: {
+	episodeData: TGetEpisodeResponse
+	oldData: SaveEpisodeParams
+}): TGetEpisodeResponse {
+	return {
+		...episodeData,
+		text: oldData.text,
+		chapter: {
+			...episodeData.chapter,
+			props: oldData.props,
+			chapter_title: oldData.chapter_title || episodeData.chapter.chapter_title,
+		},
+	}
+}
+
+export function getSavedParamsFromEpisodeData(data: TGetEpisodeResponse) {
+	return {
+		projectId: data.chapter.project,
+		status: data.chapter.status,
+		episodeId: Number(data.chapter.parent || data.chapter.id),
+		text: data.text,
+		props: data.chapter.props,
+		chapter_title: data?.chapter?.chapter_title,
+	}
+}
+
+export function isAuthorized({
+	requiredRole,
+	userRole,
+}: {
+	requiredRole: ERole
+	userRole: ERole | null
+}) {
+	if (!userRole || !roleToData[userRole]) return false
+	return roleToData[userRole].priority <= roleToData[requiredRole].priority
 }
