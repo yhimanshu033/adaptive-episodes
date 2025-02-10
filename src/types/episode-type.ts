@@ -2,6 +2,7 @@ import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
+import { TCustomComment } from '@/types/editor-types'
 import { TNote } from '@/types/plate-types'
 
 export type EpisodeStoreState = {
@@ -160,6 +161,7 @@ export type EpisodeIdStoreType = {
 	currentTitle: string
 	episodeId: number
 	notes: TNote[]
+	resolvedComments: TCustomComment[]
 	selectedStatus: EStatus | undefined
 	startOverlayLoading: boolean
 }

@@ -21,6 +21,7 @@ import { TComment } from '@udecode/plate-comments'
 import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
+import { TCustomComment } from '@/types/editor-types'
 import { TEpisodeMergeParams } from '@/types/episode-type'
 import { TNote } from '@/types/plate-types'
 
@@ -51,12 +52,14 @@ const useEpisodeHook = () => {
 			notes,
 			prevProps,
 			word_count,
+			resolvedComments,
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
 			comments?: TComment[]
 			notes?: TNote[]
 			prevProps?: Record<string, unknown>
+			resolvedComments?: TCustomComment[]
 			status: EStatus | typeof BASE_STATUS
 			text: string
 			word_count?: number
@@ -81,6 +84,7 @@ const useEpisodeHook = () => {
 					...prevProps,
 					comments,
 					notes,
+					resolvedComments,
 				},
 			})
 		},
