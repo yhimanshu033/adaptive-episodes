@@ -51,28 +51,26 @@ export default function LocalDiffSection() {
 
 	return (
 		<div className="relative h-full">
-			<div className="px-6">
-				<div className="sticky top-24 flex w-fit gap-4 justify-self-end">
-					<Button tooltip="Import Local Changes" onClick={handleAccept}>
-						<Check />
-					</Button>
-					<Button tooltip="Reject Local Changes" onClick={handleReject}>
-						<X />
-					</Button>
-				</div>
-				<Plate readOnly editor={editor}>
-					<DiffView
-						current={localDiffValue}
-						readonly
-						previous={editor?.children}
-						className={cn(
-							editorVariants({
-								focused: false,
-							}),
-							'rounded-none border-none bg-background px-0 py-5'
-						)}
-					/>
-				</Plate>
+			<Plate readOnly editor={editor}>
+				<DiffView
+					current={localDiffValue}
+					readonly
+					previous={editor?.children}
+					className={cn(
+						editorVariants({
+							focused: false,
+						}),
+						'rounded-none border-none bg-background px-6 py-5'
+					)}
+				/>
+			</Plate>
+			<div className="sticky bottom-0 z-50 flex w-full justify-end gap-4 bg-background/60 px-6 py-2 backdrop-blur-[1px]">
+				<Button tooltip="Import Local Changes" onClick={handleAccept}>
+					<Check />
+				</Button>
+				<Button tooltip="Reject Local Changes" onClick={handleReject}>
+					<X />
+				</Button>
 			</div>
 		</div>
 	)

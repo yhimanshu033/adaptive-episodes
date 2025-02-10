@@ -67,6 +67,7 @@ import {
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
 import { LaserLeaf } from '@/components/plate-ui/laser-leaf'
 import LaserPromptLeaf from '@/components/plate-ui/laser-prompt-leaf'
+import { ListElement } from '@/components/plate-ui/list-element'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
@@ -131,11 +132,13 @@ const useMyEditor = ({
 			}),
 			IndentPlugin.configure({
 				inject: {
-					targetPlugins: [
-						ParagraphPlugin.key,
-						BlockquotePlugin.key,
-						...HEADING_LEVELS,
-					],
+					nodeProps: {
+						styleKey: 'paddingLeft',
+					},
+				},
+				options: {
+					offset: 48,
+					unit: 'px',
 				},
 			}),
 			IndentListPlugin.configure({
@@ -145,6 +148,9 @@ const useMyEditor = ({
 						BlockquotePlugin.key,
 						...HEADING_LEVELS,
 					],
+				},
+				render: {
+					node: withProps(ListElement, { variant: 'ul' }),
 				},
 				options: {
 					listStyleTypes: {

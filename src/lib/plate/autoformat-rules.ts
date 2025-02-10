@@ -12,7 +12,6 @@ import type {
 } from '@udecode/plate-autoformat'
 import {
 	BoldPlugin,
-	CodePlugin,
 	ItalicPlugin,
 	StrikethroughPlugin,
 	SubscriptPlugin,
@@ -20,7 +19,6 @@ import {
 	UnderlinePlugin,
 } from '@udecode/plate-basic-marks/react'
 import { BlockquotePlugin } from '@udecode/plate-block-quote/react'
-import { insertEmptyCodeBlock } from '@udecode/plate-code-block'
 import {
 	CodeBlockPlugin,
 	CodeLinePlugin,
@@ -28,7 +26,6 @@ import {
 import {
 	getParentNode,
 	insertNodes,
-	isBlock,
 	isElement,
 	isType,
 	setNodes,
@@ -38,20 +35,8 @@ import { ParagraphPlugin } from '@udecode/plate-common/react'
 import { HEADING_KEYS } from '@udecode/plate-heading'
 import { HighlightPlugin } from '@udecode/plate-highlight/react'
 import { HorizontalRulePlugin } from '@udecode/plate-horizontal-rule/react'
-import {
-	INDENT_LIST_KEYS,
-	ListStyleType,
-	toggleIndentList,
-} from '@udecode/plate-indent-list'
+import { ListStyleType, toggleIndentList } from '@udecode/plate-indent-list'
 import { toggleList, unwrapList } from '@udecode/plate-list'
-import type { TTodoListItemElement } from '@udecode/plate-list'
-import {
-	BulletedListPlugin,
-	ListItemPlugin,
-	NumberedListPlugin,
-	TodoListPlugin,
-} from '@udecode/plate-list/react'
-import { openNextToggles, TogglePlugin } from '@udecode/plate-toggle/react'
 
 export const preFormat: AutoformatBlockRule['preFormat'] = (editor) =>
 	unwrapList(editor)
@@ -148,11 +133,6 @@ export const autoformatMarks: AutoformatRule[] = [
 		mode: 'mark',
 		type: HighlightPlugin.key,
 	},
-	{
-		match: '`',
-		mode: 'mark',
-		type: CodePlugin.key,
-	},
 ]
 
 export const autoformatBlocks: AutoformatRule[] = [
@@ -200,25 +180,6 @@ export const autoformatBlocks: AutoformatRule[] = [
 	},
 	{
 		format: (editor) => {
-			insertEmptyCodeBlock(editor, {
-				defaultType: ParagraphPlugin.key,
-				insertNodesOptions: { select: true },
-			})
-		},
-		match: '```',
-		mode: 'block',
-		preFormat,
-		triggerAtBlockStart: false,
-		type: CodeBlockPlugin.key,
-	},
-	{
-		match: '+ ',
-		mode: 'block',
-		preFormat: openNextToggles,
-		type: TogglePlugin.key,
-	},
-	{
-		format: (editor) => {
 			setNodes(editor, { type: HorizontalRulePlugin.key })
 			insertNodes(editor, {
 				children: [{ text: '' }],
@@ -228,42 +189,6 @@ export const autoformatBlocks: AutoformatRule[] = [
 		match: ['---', '—-', '___ '],
 		mode: 'block',
 		type: HorizontalRulePlugin.key,
-	},
-]
-
-export const autoformatLists: AutoformatRule[] = [
-	{
-		format: (editor) => formatList(editor, BulletedListPlugin.key),
-		match: ['* ', '- '],
-		mode: 'block',
-		preFormat,
-		type: ListItemPlugin.key,
-	},
-	{
-		format: (editor) => formatList(editor, NumberedListPlugin.key),
-		match: ['^\\d+\\.$ ', '^\\d+\\)$ '],
-		matchByRegex: true,
-		mode: 'block',
-		preFormat,
-		type: ListItemPlugin.key,
-	},
-	{
-		match: '[] ',
-		mode: 'block',
-		type: TodoListPlugin.key as string | undefined,
-	},
-	{
-		format: (editor) =>
-			setNodes<TTodoListItemElement>(
-				editor,
-				{ checked: true, type: TodoListPlugin.key },
-				{
-					match: (n) => isBlock(editor, n),
-				}
-			),
-		match: '[x] ',
-		mode: 'block',
-		type: TodoListPlugin.key as string | undefined,
 	},
 ]
 
@@ -285,34 +210,6 @@ export const autoformatIndentLists: AutoformatRule[] = [
 			}),
 		match: ['^\\d+\\.$ ', '^\\d+\\)$ '],
 		matchByRegex: true,
-		mode: 'block',
-		type: 'list',
-	},
-	{
-		format: (editor) => {
-			toggleIndentList(editor, {
-				listStyleType: INDENT_LIST_KEYS.todo,
-			})
-			setNodes(editor, {
-				checked: false,
-				listStyleType: INDENT_LIST_KEYS.todo,
-			})
-		},
-		match: ['[] '],
-		mode: 'block',
-		type: 'list',
-	},
-	{
-		format: (editor) => {
-			toggleIndentList(editor, {
-				listStyleType: INDENT_LIST_KEYS.todo,
-			})
-			setNodes(editor, {
-				checked: true,
-				listStyleType: INDENT_LIST_KEYS.todo,
-			})
-		},
-		match: ['[x] '],
 		mode: 'block',
 		type: 'list',
 	},

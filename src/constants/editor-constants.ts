@@ -65,7 +65,9 @@ export const BEFORE_PAGE_BREAK_CLASSNAME = 'before-editor-page' // CHECK WITH GL
 export const EDITOR_FIRST_DIV_CLASSNAME = 'editor-first-div'
 export const EDITOR_LAST_DIV_CLASSNAME = 'editor-last-div'
 
-export const TRANSITION_DURATION = 300
+export const REMAINING_HEIGHT_CLASSNAME = 'remaining-height-padding'
+
+export const TRANSITION_DURATION = 200
 
 export const DEFAULT_FONT_FAMILY = '--font-default'
 export const FONT_RECORD: Record<string, string> = {
@@ -82,3 +84,5 @@ export const FONT_RECORD: Record<string, string> = {
 }
 
 export const IGNORED_DIFF_KEYS = ['id']
+
+export const END_ELEMENT = `<div data-slate-node="element" class="m-0 px-0 py-1 slate-p border-r border-l -mx-6" placeholder="Type a paragraph" data-block-id="test-end-element"><span data-slate-node="text"><span data-slate-leaf="true" class=""><span data-slate-zero-width="n" data-slate-length="0"><br></span></span></span></div>`

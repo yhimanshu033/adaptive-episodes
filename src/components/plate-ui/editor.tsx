@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import {
 	AFTER_PAGE_BREAK_CLASSNAME,
 	EDITOR_FIRST_DIV_CLASSNAME,
-	EDITOR_LAST_DIV_CLASSNAME,
 	LINES,
+	REMAINING_HEIGHT_CLASSNAME,
 } from '@/constants/editor-constants'
 import useSaving from '@/hooks/use-saving'
 import useAIStore from '@/store/ai-store'
@@ -31,7 +31,7 @@ import { ESidebar } from '@/types/plate-types'
 const editorVariants = cva(
 	cn(
 		'relative overflow-x-auto whitespace-pre-wrap break-words',
-		'min-h-[80px] w-full rounded-md bg-background px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
+		'~min-h-[80px] w-full rounded-md bg-background px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
 		'[&_[data-slate-placeholder]]:text-muted-foreground [&_[data-slate-placeholder]]:!opacity-100',
 		'[&_[data-slate-placeholder]]:top-[auto_!important]',
 		'[&_strong]:font-bold'
@@ -91,6 +91,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const scale = store((state) => state.scale)
 		const sidebar = store((state) => state.sidebar)
 		const fontFamily = store(useShallow((state) => state.fontFamily))
+		const [remainingHeight, setRemainingHeight] = React.useState(0)
 
 		const contentRef = useRef<HTMLDivElement>(null)
 		const { setEditorCoords } = useLaserStore()
@@ -102,26 +103,36 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { children } = useEditorState()
 		const { setForceSave } = useSaving()
 
+		const isEmpty = useMemo(
+			() =>
+				children.length === 1 &&
+				children[0].children.length === 1 &&
+				children[0].children[0].text === '',
+			[children]
+		)
+
 		useEffect(() => {
 			const editorDiv = contentRef.current
 			if (!editorDiv || readOnly) return
 			const LINE_HEIGHT = 32
+			const MAX_HEIGHT = LINES * LINE_HEIGHT
 			let height = 0
 			for (let i = 0; i < editorDiv.children.length; i++) {
-				const currHeight = editorDiv.children[i].clientHeight
 				const currentDiv = editorDiv.children[i] as HTMLDivElement
+				const currHeight = currentDiv.classList.contains(
+					REMAINING_HEIGHT_CLASSNAME
+				)
+					? currentDiv.clientHeight - remainingHeight
+					: currentDiv.clientHeight
+				// for first block
 				if (i === 0) {
 					currentDiv.classList.add(EDITOR_FIRST_DIV_CLASSNAME)
 				} else {
 					currentDiv.classList.remove(EDITOR_FIRST_DIV_CLASSNAME)
 				}
-				if (i === editorDiv.children.length - 1) {
-					currentDiv.classList.add(EDITOR_LAST_DIV_CLASSNAME)
-				} else {
-					currentDiv.classList.remove(EDITOR_LAST_DIV_CLASSNAME)
-				}
+				// for breaking blocks
 				currentDiv.className += ' px-6 border-r border-l -mx-6'
-				if (height + currHeight > LINE_HEIGHT * LINES) {
+				if (height + currHeight > MAX_HEIGHT) {
 					currentDiv.classList.add(AFTER_PAGE_BREAK_CLASSNAME)
 					height = currHeight
 				} else {
@@ -129,7 +140,10 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 					currentDiv.classList.remove(AFTER_PAGE_BREAK_CLASSNAME)
 				}
 			}
-		}, [children, contentRef, readOnly, scale])
+			// for last block
+			setRemainingHeight(MAX_HEIGHT - height)
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [children, contentRef.current, readOnly, scale])
 
 		useEffect(() => {
 			if (!contentRef.current) return
@@ -180,33 +194,41 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						)}
 					/>
 				) : (
-					<PlateContent
-						className={cn(
-							editorVariants({
-								disabled,
-								focusRing,
-								focused,
-								size,
-								variant,
-							}),
-							className,
-							'h-fit origin-top-left px-6',
-							readOnly ? 'py-5' : 'py-0'
-						)}
-						ref={contentRef}
-						onPaste={handlePaste}
-						readOnly={disabled ?? readOnly}
-						autoFocus
-						aria-disabled={disabled}
-						data-plate-selectable
-						disableDefaultStyles
-						style={{
-							fontSize: `${16 * scale}px`,
-							lineHeight: `${24 * scale}px`,
-							...props.style,
-						}}
-						{...props}
-					/>
+					<>
+						<PlateContent
+							className={cn(
+								editorVariants({
+									disabled,
+									focusRing,
+									focused,
+									size,
+									variant,
+								}),
+								className,
+								'h-fit origin-top-left px-6',
+								isEmpty &&
+									'first-of-type:*:-mx-6 first-of-type:*:border-x first-of-type:*:px-6 first-of-type:*:pt-[var(--editor-break-padding)]',
+								readOnly ? 'py-5' : 'py-0'
+							)}
+							ref={contentRef}
+							onPaste={handlePaste}
+							readOnly={disabled ?? readOnly}
+							autoFocus
+							aria-disabled={disabled}
+							data-plate-selectable
+							disableDefaultStyles
+							style={{
+								fontSize: `${16 * scale}px`,
+								lineHeight: `${24 * scale}px`,
+								...props.style,
+							}}
+							{...props}
+						/>
+						<div
+							style={{ minHeight: `${remainingHeight}px` }}
+							className="border-x border-b pb-[var(--editor-break-padding)]"
+						/>
+					</>
 				)}
 				{isAi && (
 					<div
