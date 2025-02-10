@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import { useCallback } from 'react'
 import {
 	SuggestionActions,
 	SuggestionTypes,
@@ -19,7 +20,6 @@ import {
 	TSuggestionText,
 } from '@udecode/plate-suggestion'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
-import memoize from 'lodash/memoize'
 
 const useSuggestions = () => {
 	const editor = useEditorRef()
@@ -136,14 +136,14 @@ const useSuggestions = () => {
 		}
 	}
 
-	const isLastLeaf = memoize(
+	const isLastLeaf = useCallback(
 		(leaf: TSuggestionText) => {
 			const nodes = findAllSuggestionNodes(editor).filter(
 				({ node }) => node.suggestionId === leaf.suggestionId
 			)
 			return nodes[nodes.length - 1].node.text === leaf.text
 		},
-		(leaf: TSuggestionText) => `${leaf.suggestionId}-${leaf.text}`
+		[editor]
 	)
 
 	return {
