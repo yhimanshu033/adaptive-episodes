@@ -135,12 +135,20 @@ const useSuggestions = () => {
 		}
 	}
 
+	const isLastLeaf = (leaf: TSuggestionText) => {
+		const nodes = findAllSuggestionNodes(editor).filter(
+			({ node }) => node.suggestionId === leaf.suggestionId
+		)
+		return nodes[nodes.length - 1].node.text === leaf.text
+	}
+
 	return {
 		activeSuggestionId,
 		set: setOption,
 		suggestionAction,
 		activeSuggestionDescription,
 		getAllSuggestionDescriptions,
+		isLastLeaf,
 	}
 }
 
