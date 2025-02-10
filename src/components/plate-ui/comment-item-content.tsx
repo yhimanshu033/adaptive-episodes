@@ -6,6 +6,7 @@ import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
+import usePlateStore from '@/store/plate-store'
 import { useCommentItemContentState } from '@udecode/plate-comments/react'
 import { formatDistance } from 'date-fns'
 import { useShallow } from 'zustand/react/shallow'
@@ -26,6 +27,9 @@ export default function CommentItemContent() {
 		isReplyComment,
 		user: defaultUser,
 	} = useCommentItemContentState()
+
+	const { store: usePlateContextStore } = usePlateStore()
+	const isResolved = usePlateContextStore((state) => state.resolved)
 
 	const user = defaultUser as PlateUser
 	const { store, addActiveCommentExampleMap } = useAIStore()
@@ -75,7 +79,9 @@ export default function CommentItemContent() {
 				<div className="absolute -right-0.5 -top-0.5 flex space-x-1">
 					{isReplyComment ? null : <CommentResolveButton />}
 
-					<CommentMoreDropdown onExample={() => void onExample()} />
+					{!isResolved && (
+						<CommentMoreDropdown onExample={() => void onExample()} />
+					)}
 				</div>
 			</div>
 

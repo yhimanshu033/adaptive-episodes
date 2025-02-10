@@ -52,6 +52,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	episodeId: 0,
 	selectedStatus: undefined,
 	notes: [],
+	resolvedComments: [],
 	currentTitle: '',
 	startOverlayLoading: false,
 }
