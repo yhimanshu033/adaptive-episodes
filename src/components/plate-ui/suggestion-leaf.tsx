@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from 'react'
-import {
-	SuggestionActions,
-	SuggestionTypes,
-} from '@/constants/editor-constants'
+import { SuggestionActions } from '@/constants/editor-constants'
 import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import usePlateStore from '@/store/plate-store'
@@ -21,23 +18,14 @@ export default function SuggestionLeaf({
 	...props
 }: PlateLeafProps<TSuggestionText>) {
 	const { children, leaf, nodeProps } = props
-	const {
-		activeSuggestionId,
-		set,
-		suggestionAction,
-		activeSuggestionDescription,
-	} = useSuggestions()
+	const { activeSuggestionId, set, suggestionAction, isLastLeaf } =
+		useSuggestions()
 	const { set: setCommentOptions, activeCommentId } = useComments()
 	const { setSidebar } = usePlateStore()
 
 	const isActive = activeCommentId
 		? false
-		: activeSuggestionId === leaf.suggestionId &&
-			!(
-				activeSuggestionDescription?.type &&
-				activeSuggestionDescription.type === SuggestionTypes.REPLACEMENT &&
-				leaf.suggestionDeletion
-			)
+		: activeSuggestionId === leaf.suggestionId && isLastLeaf(leaf)
 
 	return (
 		<PlateLeaf
@@ -45,7 +33,7 @@ export default function SuggestionLeaf({
 			id={`suggestion-leaf-${leaf.suggestionId}`}
 			className={cn(
 				'relative bg-green-400/20',
-				leaf.suggestionDeletion && 'bg-green-400/20 italic line-through',
+				leaf.suggestionDeletion && 'italic line-through',
 				isActive && 'bg-green-400/50',
 				className
 			)}

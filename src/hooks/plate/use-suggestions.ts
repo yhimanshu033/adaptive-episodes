@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import { useCallback } from 'react'
 import {
 	SuggestionActions,
 	SuggestionTypes,
@@ -135,12 +136,23 @@ const useSuggestions = () => {
 		}
 	}
 
+	const isLastLeaf = useCallback(
+		(leaf: TSuggestionText) => {
+			const nodes = findAllSuggestionNodes(editor).filter(
+				({ node }) => node.suggestionId === leaf.suggestionId
+			)
+			return nodes[nodes.length - 1].node.text === leaf.text
+		},
+		[editor]
+	)
+
 	return {
 		activeSuggestionId,
 		set: setOption,
 		suggestionAction,
 		activeSuggestionDescription,
 		getAllSuggestionDescriptions,
+		isLastLeaf,
 	}
 }
 
