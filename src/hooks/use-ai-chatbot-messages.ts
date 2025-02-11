@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 import { useCallback } from 'react'
 import { DiffStatus } from '@/constants/ai-constants'
 import useAIStore from '@/store/ai-store'
@@ -22,8 +23,8 @@ export default function useAiChatbotMessages() {
 	const value = store(useShallow((state) => state.acceptedValue))
 	const editor = useEditorRef()
 
-	function handleAccept(i: number, all: boolean = true) {
-		handleAcceptResponse(all)
+	function handleAccept(i: number, all: boolean = true, isSfx: boolean = true) {
+		handleAcceptResponse(all, isSfx)
 		updateMessages(
 			{
 				taskId: nanoid(),
@@ -35,7 +36,7 @@ export default function useAiChatbotMessages() {
 		)
 	}
 	const handleAcceptResponse = useCallback(
-		(all: boolean = true) => {
+		(all: boolean = true, isSfx: boolean) => {
 			if (!value) return
 			const newValue = structuredClone(value)
 			const currVal = newValue.map((node) => ({
@@ -60,13 +61,15 @@ export default function useAiChatbotMessages() {
 							delete child.diff_id
 							delete child.status
 							delete child.diffOperation
+
 							if (
-								(accepted && type !== 'delete') ||
-								(!accepted && type === 'delete') ||
-								(child.text && (child.text as string).match(/^\n+$/))
+								((accepted && type !== 'delete') ||
+									(!accepted && type === 'delete')) &&
+								child.text
 							) {
 								add = true
-								child.text = String(child.text).replace(/\n+/, '') + '\n '
+								if (isSfx)
+									child.text = String(child.text).replace(/\n+/, '') + '\n '
 							} else {
 								add = false
 							}

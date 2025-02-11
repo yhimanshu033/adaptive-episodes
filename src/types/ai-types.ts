@@ -46,6 +46,7 @@ export interface AIChatBotParams {
 			content: string
 			role: 'user' | 'assistant'
 		}[]
+		project_id?: number
 		scenes_array?: string[]
 		user_message: string
 	}
@@ -65,6 +66,7 @@ export enum EAction {
 	MESSAGE = 'message',
 	REJECT = 'reject',
 	REVIEW = 'review',
+	VOICE = 'voice_pass',
 }
 
 export enum EChatMode {
@@ -73,7 +75,7 @@ export enum EChatMode {
 	PROMPTS = 'prompts',
 	REVIEW = 'review',
 	SFX = 'sfx',
-	VOICE = 'voice',
+	VOICE = 'voice_tuples',
 }
 
 export type TStoryChatSuggestion = {

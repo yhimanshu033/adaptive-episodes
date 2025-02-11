@@ -30,8 +30,8 @@ import { nanoid } from 'nanoid'
 
 import {
 	addSFX,
+	addVoicePass,
 	convertReviewResponse,
-	maxify,
 	minify,
 } from '@/lib/utils/ai-chatbot'
 import { parseOptimistically } from '@/lib/utils/helpers'
@@ -43,10 +43,10 @@ import {
 	EMessenger,
 	TStoryChatSuggestion,
 } from '@/types/ai-types'
-import { MinifiedValue } from '@/types/common'
 import {
 	IndexedCommentsResponse,
 	IndexedSFXResponse,
+	IndexedVoicePassResponse,
 } from '@/types/editor-types'
 import { ESidebar } from '@/types/plate-types'
 
@@ -86,6 +86,7 @@ export function ChatbotProvider({
 	const [input, setInput] = useState('')
 	const [sfxStreaming, setSfxStreaming] = useState<string>('')
 	const [reviewStreaming, setReviewStreaming] = useState<string>('')
+	const [voiceStreaming, setVoiceStreaming] = useState<string>('')
 	const [originalChildren, setOriginalChildren] = useState<Value>()
 
 	const { id } = useParams()
@@ -204,17 +205,6 @@ export function ChatbotProvider({
 		})
 	}
 
-	const handleChanges = (aiResponse: Value) => {
-		setResponseValue(structuredClone(aiResponse))
-		setPrevValue(structuredClone(children))
-		addMessages({
-			taskId: nanoid(),
-			role: EMessenger.ASSISTANT,
-			action: EAction.CHANGES,
-			content: 'Added changes from StoryChat',
-		})
-	}
-
 	function cancelRequest() {
 		popMessage()
 		reset()
@@ -223,6 +213,7 @@ export function ChatbotProvider({
 		removeReview()
 		setSfxStreaming('')
 		setReviewStreaming('')
+		setVoiceStreaming('')
 	}
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
 		const children = originalChildren
@@ -289,7 +280,14 @@ export function ChatbotProvider({
 					content: 'Erstelle MUSIC/SFX/AMBIENT Tags...',
 				})
 			} else if (requestedAction === EChatMode.VOICE) {
-				handleChanges(maxify(JSON.parse(aiResponse) as MinifiedValue, children))
+				setOriginalChildren(children)
+				setVoiceStreaming(aiResponse)
+				addMessages({
+					taskId: aiResponse,
+					role: EMessenger.ASSISTANT,
+					action: EAction.VOICE,
+					content: 'Voice Pass ist aktiv...',
+				})
 			} else {
 				handleBlock({ text: '', taskId: aiResponse })
 			}
@@ -369,6 +367,44 @@ export function ChatbotProvider({
 		reviewStreaming,
 		responses[reviewStreaming],
 		taskEnded[reviewStreaming],
+		originalChildren,
+	])
+
+	useEffect(() => {
+		if (!voiceStreaming || !originalChildren) return
+		if (taskEnded[voiceStreaming]) {
+			setVoiceStreaming('')
+			setOriginalChildren(undefined)
+			return
+		}
+		if (!responses[voiceStreaming]) return
+
+		try {
+			let parsedResponse = parseOptimistically<IndexedVoicePassResponse>(
+				responses[voiceStreaming].join('')
+			)
+			if (!parsedResponse) return
+			parsedResponse = parsedResponse
+				.filter((item) => {
+					const keys = Object.keys(item)
+					return keys.includes('match_string') &&
+						keys.includes('rewrite') &&
+						keys.includes('id')
+						? item
+						: null
+				})
+				.filter(Boolean)
+			if (!parsedResponse.length) return
+			const responseValue = addVoicePass(parsedResponse, originalChildren)
+			setResponseValue(structuredClone(responseValue))
+			setPrevValue(structuredClone(children))
+		} catch (error) {
+			console.log(error)
+		}
+	}, [
+		voiceStreaming,
+		responses[voiceStreaming],
+		taskEnded[voiceStreaming],
 		originalChildren,
 	])
 

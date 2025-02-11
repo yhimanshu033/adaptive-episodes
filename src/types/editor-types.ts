@@ -41,6 +41,14 @@ export interface IndexedSFXResponseItem {
 
 export type IndexedSFXResponse = Array<IndexedSFXResponseItem>
 
+export interface IndexedVoicePassResponseItem {
+	id: string
+	match_string: string
+	rewrite: string
+}
+
+export type IndexedVoicePassResponse = Array<IndexedVoicePassResponseItem>
+
 export type EditorExtendedStore = {
 	episodeMap: Record<number, TGetEpisodeResponse>
 	extended: number[]
