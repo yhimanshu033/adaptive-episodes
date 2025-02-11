@@ -10,7 +10,12 @@ import { jsonrepair } from 'jsonrepair'
 import { twMerge } from 'tailwind-merge'
 
 import { ERole } from '@/types/admin-types'
-import { BASE_STATUS, EStatus } from '@/types/common'
+import { BASE_STATUS, EStatus, STATUS_ORDER } from '@/types/common'
+import {
+	TGetMetadataAPIResponse,
+	TGetMetadataResponse,
+	TMetadata,
+} from '@/types/content-types'
 import {
 	SaveEpisodeParams,
 	TEpisode,
@@ -233,4 +238,36 @@ export function isAuthorized({
 }) {
 	if (!userRole || !roleToData[userRole]) return false
 	return roleToData[userRole].priority <= roleToData[requiredRole].priority
+}
+
+export function getLatestStatusData(
+	data: TGetMetadataAPIResponse['data']['string']
+): TMetadata {
+	for (const status of STATUS_ORDER) {
+		if (data[status]) {
+			return data[status]
+		}
+	}
+	return {
+		beatsheet: '',
+		context: '',
+		loglines: '',
+		summary: '',
+		chapter_title: '',
+	}
+}
+
+export function convertMetadata(
+	data: TGetMetadataAPIResponse | null
+): TGetMetadataResponse {
+	const convertedData: TGetMetadataResponse = {
+		data: {},
+	}
+	if (!data) return convertedData
+	for (const key in data.data) {
+		const records = data.data[key]
+		const latestData = getLatestStatusData(records)
+		convertedData.data[key] = latestData
+	}
+	return convertedData
 }
