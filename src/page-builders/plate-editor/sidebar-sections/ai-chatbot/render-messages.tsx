@@ -4,7 +4,6 @@ import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { CheckCheck, Copy, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { cn, extract } from '@/lib/utils/helpers'
 
 import { EAction, EMessenger, TMessage } from '@/types/ai-types'
@@ -62,24 +61,7 @@ export default function RenderMessage({
 	) {
 		if ((responses[message.taskId] || []).length) {
 			return (
-				<div className="relative max-w-[70%]">
-					{taskEnded[message.taskId] &&
-						!!extract((responses[message.taskId] || []).join('')).trim()
-							.length && (
-							<TooltipComponent tooltip={'Copy'}>
-								<Button
-									onClick={() => {
-										void navigator.clipboard.writeText(
-											extract((responses[message.taskId] || []).join(''))
-										)
-									}}
-									variant="ghost"
-									className="absolute -right-1 top-1 size-6 translate-x-full !p-1 transition-all hover:scale-105 active:scale-75"
-								>
-									<Copy size={12} />
-								</Button>
-							</TooltipComponent>
-						)}
+				<div className="relative flex max-w-[70%]">
 					<div
 						onClick={() => {
 							void navigator.clipboard.writeText(
@@ -97,12 +79,28 @@ export default function RenderMessage({
 								.replace(/<\/text>/g, '</span>'),
 						}}
 						className={cn(
-							'rounded-lg p-3 transition-transform *:animate-in active:scale-[0.995]',
+							'flex-1 rounded-lg p-3 transition-transform *:animate-in active:scale-[0.995]',
 							message.role === EMessenger.ASSISTANT
 								? 'bg-background'
 								: 'bg-primary'
 						)}
 					/>
+					{taskEnded[message.taskId] &&
+						!!extract((responses[message.taskId] || []).join('')).trim()
+							.length && (
+							<Button
+								tooltip="Copy"
+								onClick={() => {
+									void navigator.clipboard.writeText(
+										extract((responses[message.taskId] || []).join(''))
+									)
+								}}
+								variant="ghost"
+								className="sticky top-1 m-1 size-6 !p-1 transition-all hover:scale-105 active:scale-75"
+							>
+								<Copy size={16} />
+							</Button>
+						)}
 				</div>
 			)
 		}
