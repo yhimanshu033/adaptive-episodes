@@ -286,7 +286,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.VOICE,
-					content: 'Erstelle VOICE Tags...',
+					content: 'Voice Pass ist aktiv...',
 				})
 			} else {
 				handleBlock({ text: '', taskId: aiResponse })
