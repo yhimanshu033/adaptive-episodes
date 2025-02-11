@@ -4,13 +4,10 @@ import useSuggestions from '@/hooks/plate/use-suggestions'
 import CommentComponent from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/comment'
 import ResolvedCommentItem from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/resolved-comment'
 import SuggestionBlock from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
-// import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { BaseCommentsPlugin } from '@udecode/plate-comments'
 import { useEditorState } from '@udecode/plate-common/react'
 import { CheckCheck } from 'lucide-react'
-
-// import { useShallow } from 'zustand/react/shallow'
 
 import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { Button } from '@/components/ui/button'
@@ -25,11 +22,6 @@ export default function CommentSidebar() {
 	const myUserId = get('myUserId')
 	const { getAllSuggestionDescriptions } = useSuggestions()
 	const descriptions = getAllSuggestionDescriptions(editor)
-
-	// const { store: useEpisodeIdContextStore } = useEpisodeIdStore()
-	// const resolvedComments = useEpisodeIdContextStore(
-	// 	useShallow((state) => state.resolvedComments)
-	// )
 
 	const { resolvedComments } = useResolvedComments()
 

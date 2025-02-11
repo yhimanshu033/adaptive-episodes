@@ -29,7 +29,6 @@ export function ResolvedCommentLeaf({
 				className
 			)}
 			nodeProps={{
-				// ...rootProps,
 				...nodeProps,
 			}}
 		>
