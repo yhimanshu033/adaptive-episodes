@@ -69,22 +69,28 @@ import { LaserLeaf } from '@/components/plate-ui/laser-leaf'
 import LaserPromptLeaf from '@/components/plate-ui/laser-prompt-leaf'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
+import { ResolvedCommentLeaf } from '@/components/plate-ui/resolved-comment-leaf'
 import { SearchHighlightLeaf } from '@/components/plate-ui/search-highlight-leaf'
 import SuggestionLeaf from '@/components/plate-ui/suggestion-leaf'
 import useProjectId from '@/providers/project-id-provider'
 import { autoformatRules } from '@/lib/plate/autoformat-rules'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
+import { ResolvedCommentsPlugin } from '@/lib/plate/plugins/resolved-comments'
 import { breakDownValue, getRecord, jsonify } from '@/lib/utils/plate'
+
+import { TCustomComment } from '@/types/editor-types'
 
 const useMyEditor = ({
 	content,
 	id,
 	comments,
+	resolvedComments,
 }: {
 	comments?: TComment[]
 	content: string
 	id?: string
+	resolvedComments?: TCustomComment[]
 }) => {
 	const {
 		users,
@@ -238,7 +244,12 @@ const useMyEditor = ({
 				options: {
 					users,
 					comments: getRecord(comments),
-					myUserId: String(userData?.user.id),
+					myUserId: String(userData?.user?.id),
+				},
+			}),
+			ResolvedCommentsPlugin.configure({
+				options: {
+					resolvedComments,
 				},
 			}),
 			SuggestionPlugin.configure({
@@ -275,6 +286,7 @@ const useMyEditor = ({
 				[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
 				[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
 				[CommentsPlugin.key]: CommentLeaf,
+				[ResolvedCommentsPlugin.key]: ResolvedCommentLeaf,
 				[SuggestionPlugin.key]: SuggestionLeaf,
 				[PromptPlugin.key]: LaserPromptLeaf,
 			}),

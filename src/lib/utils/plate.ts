@@ -523,3 +523,74 @@ export function sortCommentsAndDescriptions(
 
 	return sortedRecords
 }
+
+export function getCommentNodeKey(node: TDescendant) {
+	const commentKey = Object.keys(node)
+		.find((key) => key.startsWith('comment_'))
+		?.replace('comment_', '')
+	return commentKey
+}
+
+export function getResolvedCommentNodeKey(node: TDescendant) {
+	const commentKey = Object.keys(node)
+		.find((key) => key.startsWith('resolved_comments_'))
+		?.replace('resolved_comments_', '')
+	return commentKey
+}
+
+export function addResolvedCommentInChildren(
+	ogNodes: Value,
+	comment: TCustomComment,
+	pluginKey: string
+) {
+	const nodes = structuredClone(ogNodes)
+	function traverse(node: TDescendant) {
+		if ('comment' in node) {
+			const commentKey = getCommentNodeKey(node)
+
+			if (commentKey === comment.id) {
+				node[pluginKey] = true
+				node[`${pluginKey}_${commentKey}`] = true
+				delete node['comment']
+				delete node[`comment_${commentKey}`]
+			}
+		}
+
+		if ('children' in node) {
+			;(node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+
+	nodes.forEach(traverse)
+
+	return nodes
+}
+
+export function addUnresolvedCommentInChildren(
+	ogNodes: Value,
+	comment: TCustomComment,
+	pluginKey?: string
+) {
+	const nodes = structuredClone(ogNodes)
+	function traverse(node: TDescendant) {
+		if ('resolved_comments' in node) {
+			const commentKey = getResolvedCommentNodeKey(node)
+			if (commentKey === comment.id) {
+				if (pluginKey) {
+					node[pluginKey] = true
+					node[`${pluginKey}_${commentKey}`] = true
+				}
+				delete node['resolved_comments']
+				delete node[`resolved_comments_${commentKey}`]
+			}
+		}
+
+		if ('children' in node) {
+			;(node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+
+	nodes.forEach(traverse)
+
+	return nodes
+}

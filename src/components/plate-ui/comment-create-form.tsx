@@ -13,7 +13,7 @@ import { buttonVariants } from '@/components/plate-ui/button'
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
 import { inputVariants } from '@/components/plate-ui/input'
 
-export function CommentCreateForm() {
+export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 	const { useOption, setOption } = useEditorPlugin(CommentsPlugin)
 
 	const myUserId = useOption('myUserId')
@@ -31,7 +31,7 @@ export function CommentCreateForm() {
 			<CommentAvatar userId={myUserId} />
 			<div className="flex grow flex-col items-end gap-2">
 				<CommentNewTextarea
-					autoFocus
+					autoFocus={autoFocus}
 					onBlur={handleBlur}
 					className={inputVariants()}
 				/>

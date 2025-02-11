@@ -32,6 +32,8 @@ import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-b
 import { Separator } from '@/components/ui/separator'
 import useEpisodeId from '@/providers/episode-id-provider'
 
+import { TCustomComment } from '@/types/editor-types'
+
 export default function PlateEditor() {
 	const queryClient = useQueryClient()
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -45,6 +47,8 @@ export default function PlateEditor() {
 	const editor = useMyEditor({
 		content: content?.text || '',
 		comments: content?.chapter.props?.comments,
+		resolvedComments: (content?.chapter.props?.resolvedComments ||
+			[]) as TCustomComment[],
 		id: 'TEST_ID',
 	})
 	const episodeId = useEpisodeId()

@@ -28,7 +28,7 @@ export default function SuggestionLeaf({
 		activeSuggestionDescription,
 	} = useSuggestions()
 	const { set: setCommentOptions, activeCommentId } = useComments()
-	const { setSidebar } = usePlateStore()
+	const { setSidebar, setResolved } = usePlateStore()
 
 	const isActive = activeCommentId
 		? false
@@ -53,6 +53,7 @@ export default function SuggestionLeaf({
 				setCommentOptions({ activeCommentId: null })
 				set('activeSuggestionId', leaf.suggestionId || '')
 				setSidebar(ESidebar.COMMENTS)
+				setResolved(false)
 			}}
 			nodeProps={{ ...nodeProps }}
 		>
