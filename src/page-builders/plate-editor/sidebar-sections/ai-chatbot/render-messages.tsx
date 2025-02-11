@@ -20,15 +20,25 @@ export default function RenderMessage({
 	const { taskEnded, responses } = useSocketStreaming()
 	if (
 		message.role === EMessenger.ASSISTANT &&
-		message.action === EAction.CHANGES
+		(message.action === EAction.CHANGES || message.action === EAction.VOICE)
 	) {
 		if (taskEnded[message.taskId]) {
 			return (
 				<div className="flex max-w-[70%] items-center gap-2 rounded-lg p-3">
-					<Button variant="outline" onClick={() => handleAccept(index, true)}>
+					<Button
+						variant="outline"
+						onClick={() =>
+							handleAccept(index, true, message.action === EAction.CHANGES)
+						}
+					>
 						<CheckCheck />
 					</Button>
-					<Button variant="outline" onClick={() => handleAccept(index, false)}>
+					<Button
+						variant="outline"
+						onClick={() =>
+							handleAccept(index, false, message.action === EAction.CHANGES)
+						}
+					>
 						<X />
 					</Button>
 				</div>
