@@ -14,13 +14,16 @@ import {
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/plate-ui/button'
 import { buttonVariants } from '@/components/ui/button'
+import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 
 export function CommentResolveButton() {
 	const comment = useComment()!
 	const deleteButtonState = useCommentDeleteButtonState()
 	const { props: deleteProps } = useCommentDeleteButton(deleteButtonState)
-	const { addResolvedComment, removeResolvedComment } = useEpisodeIdStore()
+	const { removeResolvedComment } = useEpisodeIdStore()
 	const { sortedComments } = useComments()
+
+	const { addResolvedComment } = useResolvedComments()
 
 	const { store } = usePlateStore()
 	const isResolved = store((state) => state.resolved)

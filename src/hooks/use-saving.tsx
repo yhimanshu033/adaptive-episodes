@@ -10,6 +10,7 @@ import {
 import { useEditorState } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
 
+import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers, getWordCount } from '@/lib/utils/plate'
 
@@ -49,9 +50,7 @@ export function SavingContextProvider({
 	)
 
 	const notes = useEpisodeIdStoreContext(useShallow((state) => state.notes))
-	const resolvedComments = useEpisodeIdStoreContext(
-		useShallow((state) => state.resolvedComments)
-	)
+	const { resolvedComments } = useResolvedComments()
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')

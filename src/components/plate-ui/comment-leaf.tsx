@@ -20,7 +20,7 @@ export function CommentLeaf({
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { children, leaf, nodeProps } = props
 	const { set } = useComments()
-	const { store, setSidebar } = usePlateStore()
+	const { store, setSidebar, setResolved } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
@@ -52,6 +52,7 @@ export function CommentLeaf({
 			}}
 			onMouseDown={(e) => {
 				setSidebar(ESidebar.COMMENTS)
+				setResolved(false)
 				set({ activeCommentId: state.lastCommentId })
 				props.onClick?.(e)
 			}}

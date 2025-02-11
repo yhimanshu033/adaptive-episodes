@@ -7,7 +7,13 @@ import {
 } from '@udecode/plate-comments'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import { someNode } from '@udecode/plate-common'
-import { useEditorPlugin, useEditorRef } from '@udecode/plate-common/react'
+import {
+	useEditorPlugin,
+	useEditorRef,
+	useEditorState,
+} from '@udecode/plate-common/react'
+
+import { addUnresolvedCommentInChildren } from '@/lib/utils/plate'
 
 import { TCustomComment } from '@/types/editor-types'
 
@@ -15,6 +21,7 @@ export default function useComments() {
 	const { useOption, setOptions } = useEditorPlugin(CommentsPlugin)
 	const editor = useEditorRef()
 	const commentsOption = useOption('comments')
+
 	const allComments: TComment[] = commentsOption
 		? Object.values(commentsOption)
 		: []
@@ -31,6 +38,8 @@ export default function useComments() {
 	})
 
 	const nodes = getCommentNodeEntries(editor)
+
+	const { children, tf } = useEditorState()
 
 	const sortedComments: TCustomComment[] = nodes
 		.filter(([node]) => node.comment)
@@ -68,6 +77,23 @@ export default function useComments() {
 		return sortedComments.some((comment) => comment.id === id)
 	}
 
+	const addComment = useCallback(
+		(comment: TCustomComment) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { node: _node, ...rest } = comment
+			const newChildren = addUnresolvedCommentInChildren(
+				children,
+				comment,
+				CommentsPlugin.key
+			)
+			tf.setValue(newChildren)
+			setOptions({
+				comments: { ...commentsOption, [comment.id]: rest },
+			})
+		},
+		[children, setOptions, tf, commentsOption]
+	)
+
 	return {
 		allComments,
 		comments,
@@ -79,5 +105,6 @@ export default function useComments() {
 		activeCommentId,
 		commentExists,
 		isCommented,
+		addComment,
 	}
 }
