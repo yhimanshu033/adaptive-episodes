@@ -1,9 +1,15 @@
+import { TStatus } from '@/types/common'
+
 export type TMetadata = {
 	beatsheet: string
 	chapter_title?: string
 	context: string
 	loglines: string
 	summary: string
+}
+
+export type TGetMetadataAPIResponse = {
+	data: Record<string, Record<TStatus, TMetadata>>
 }
 
 export type TGetMetadataResponse = {

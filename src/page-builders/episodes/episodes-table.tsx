@@ -25,12 +25,10 @@ import { cn } from '@/lib/utils/helpers'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
-	const { useEpisodeTableStore, setInventIndex, setIsInventOpen } =
-		useEpisodeStore()
-	const { episodeSearch } = useEpisodeTableStore()
-	const { currentPage } = usePageState()
+	const { setInventIndex, setIsInventOpen } = useEpisodeStore()
+	const { currentPage, search } = usePageState()
 	const { data, isLoading: isEpisodesLoading } = useEpisodesData(
-		episodeSearch,
+		search,
 		currentPage
 	)
 	const tableData = useMemo(() => data?.results?.data ?? [], [data])

@@ -10,10 +10,12 @@ import {
 import { useEditorState } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
 
+import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers, getWordCount } from '@/lib/utils/plate'
 
 import { BASE_STATUS } from '@/types/common'
+import { TCustomComment } from '@/types/editor-types'
 import {
 	SaveEpisodeParams,
 	TGetEpisodeResponse,
@@ -40,6 +42,7 @@ export function SavingContextProvider({
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
 		setNotes,
+		setResolvedComments,
 		setStartOverlayLoading,
 	} = useEpisodeIdStore()
 	const currentTitle = useEpisodeIdStoreContext(
@@ -47,10 +50,14 @@ export function SavingContextProvider({
 	)
 
 	const notes = useEpisodeIdStoreContext(useShallow((state) => state.notes))
+	const { resolvedComments } = useResolvedComments()
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
 	const savedNotesRef = useRef(JSON.stringify(data?.chapter.props?.notes || []))
+	const savedResolvedCommentsRef = useRef(
+		JSON.stringify(data?.chapter.props?.resolvedComments || [])
+	)
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 
 	const pathname = usePathname()
@@ -63,15 +70,30 @@ export function SavingContextProvider({
 			savedNotesRef.current === JSON.stringify([])
 				? savedNotesRef.current
 				: JSON.stringify(data?.chapter.props?.notes || [])
+		const currentResolvedComments = JSON.stringify(resolvedComments)
+		const storedResolvedComments =
+			savedResolvedCommentsRef.current === JSON.stringify([])
+				? savedResolvedCommentsRef.current
+				: JSON.stringify(data?.chapter.props?.resolvedComments || [])
+		const storedTitle = savedTitleRef.current
+			? savedTitleRef.current
+			: data?.chapter?.chapter_title
 		return (
 			savedRef.current === currentChildren &&
 			savedCommentsRef.current === currentComments &&
-			(savedTitleRef.current
-				? currentTitle === savedTitleRef.current
-				: currentTitle === data?.chapter?.chapter_title) &&
-			currentNotes === storedNotes
+			currentTitle === storedTitle &&
+			currentNotes === storedNotes &&
+			storedResolvedComments === currentResolvedComments
 		)
-	}, [children, allComments, currentTitle, notes, data?.chapter, forceSave])
+	}, [
+		children,
+		allComments,
+		currentTitle,
+		notes,
+		data?.chapter,
+		forceSave,
+		resolvedComments,
+	])
 
 	const handleSave = useCallback(
 		async ({
@@ -117,6 +139,7 @@ export function SavingContextProvider({
 					comments: allComments,
 					prevProps: data?.chapter.props,
 					notes,
+					resolvedComments,
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
 			} catch (error) {
@@ -136,6 +159,7 @@ export function SavingContextProvider({
 			currentTitle,
 			isSaved,
 			notes,
+			resolvedComments,
 			setStartOverlayLoading,
 			setForceSave,
 		]
@@ -157,6 +181,7 @@ export function SavingContextProvider({
 				...data?.chapter.props,
 				comments: allComments,
 				notes,
+				resolvedComments,
 			},
 			chapter_title: currentTitle || data?.chapter.chapter_title,
 		}
@@ -164,7 +189,16 @@ export function SavingContextProvider({
 			`${String(id)}_${String(chapterId)}_${pathname}`,
 			dataToSave
 		)
-	}, [id, children, allComments, data?.chapter, currentTitle, notes, pathname])
+	}, [
+		id,
+		children,
+		allComments,
+		data?.chapter,
+		currentTitle,
+		notes,
+		pathname,
+		resolvedComments,
+	])
 
 	const handleRemoveGlobalStore = useCallback(() => {
 		if (!data?.chapter) return
@@ -203,6 +237,11 @@ export function SavingContextProvider({
 		if (data.chapter.props?.notes) {
 			savedNotesRef.current = JSON.stringify(data.chapter.props.notes)
 			setNotes(data.chapter.props.notes)
+		}
+		if (data.chapter.props?.resolvedComments) {
+			setResolvedComments(
+				(data.chapter.props.resolvedComments || []) as TCustomComment[]
+			)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data])

@@ -35,12 +35,7 @@ export default function Suggestions() {
 							handleSuggestion(suggestion)
 						}}
 						className="mb-1 mr-2"
-						disabled={
-							!!changesPending ||
-							disabled ||
-							isPending ||
-							suggestion.action === EChatMode.VOICE
-						}
+						disabled={!!changesPending || disabled || isPending}
 					>
 						{suggestion.value}
 					</Button>

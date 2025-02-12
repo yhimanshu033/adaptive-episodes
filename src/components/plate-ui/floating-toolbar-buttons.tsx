@@ -71,9 +71,6 @@ const FloatingToolbarButtons = () => {
 				</ColorDropdownMenu>
 			</ToolbarGroup>
 			<ToolbarGroup>
-				<WordCountButton />
-			</ToolbarGroup>
-			<ToolbarGroup>
 				<MarkToolbarButton
 					onClick={() => {
 						setShowRephrase(true)

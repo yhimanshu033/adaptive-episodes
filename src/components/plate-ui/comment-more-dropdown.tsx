@@ -26,6 +26,7 @@ export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 	const deleteButtonState = useCommentDeleteButtonState()
 	const { props: deleteProps } = useCommentDeleteButton(deleteButtonState)
 	const { user, comment } = useCommentItemContentState()
+
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>

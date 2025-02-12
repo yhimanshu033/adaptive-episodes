@@ -112,7 +112,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						}
 						disabled={!isSelected && Object.keys(rowSelection).length > 0}
 					>
-						<SelectTrigger className="w-32">
+						<SelectTrigger className="w-36">
 							<SelectValue>{titleToStatus[latestStatus]}</SelectValue>
 						</SelectTrigger>
 						<SelectContent>

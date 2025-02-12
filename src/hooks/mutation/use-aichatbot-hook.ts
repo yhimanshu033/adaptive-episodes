@@ -30,6 +30,7 @@ const useAIChatbotHook = () => {
 			method: 'POST',
 			url: '/aicopilot/chatbot',
 			body: {
+				project_id: Number(id),
 				...params.aiChatbotData,
 				...extractedData,
 			},

@@ -5,6 +5,7 @@ import { TGetMetadataResponse } from '@/types/content-types'
 import {
 	IndexedCommentsResponse,
 	IndexedSFXResponse,
+	IndexedVoicePassResponse,
 	ReviewComment,
 } from '@/types/editor-types'
 
@@ -268,7 +269,7 @@ export function addSFX(
 					if (matchingValue.sfx)
 						segments.push({
 							type: key,
-							text: `\n${matchingValue.sfx.replace(/\[!/g, '[')}\n`,
+							text: `\n${matchingValue.sfx.replace(/\[!/g, '[').replace(/\]\s*\[/g, ']\n[')}\n`,
 							bold: true,
 						})
 
@@ -279,6 +280,59 @@ export function addSFX(
 					segments.push({ ...node, text: text.slice(currentIndex) })
 				}
 
+				return segments
+			} else if ('children' in node) {
+				return [
+					{
+						...node,
+						children: applyText(node.children, currentPath),
+					},
+				]
+			}
+
+			return [node]
+		})
+	}
+
+	return children.map((child, index) => ({
+		...child,
+		children: applyText(child.children, [index]),
+	}))
+}
+
+export function addVoicePass(
+	voicePass: IndexedVoicePassResponse,
+	children: Value
+): Value {
+	const applyText = (nodes: TDescendant[], path: number[]): TDescendant[] => {
+		return nodes.flatMap((node, index) => {
+			const currentPath = [...path, index]
+
+			if ('text' in node) {
+				const matchingValues = voicePass.filter(
+					(item) => item.id === currentPath.join('_')
+				)
+
+				if (matchingValues.length === 0) {
+					return [node]
+				}
+
+				const segments: TDescendant[] = []
+				const text = node.text as string
+
+				matchingValues.forEach((matchingValue) => {
+					if (!text.includes(matchingValue.match_string)) {
+						return
+					}
+					if (matchingValue.rewrite)
+						segments.push({
+							...node,
+							text: text.replace(
+								matchingValue.match_string,
+								matchingValue.rewrite
+							),
+						})
+				})
 				return segments
 			} else if ('children' in node) {
 				return [

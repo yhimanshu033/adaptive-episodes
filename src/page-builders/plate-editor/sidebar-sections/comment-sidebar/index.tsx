@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from 'react'
 import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import CommentComponent from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/comment'
+import ResolvedCommentItem from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/resolved-comment'
 import SuggestionBlock from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
 import usePlateStore from '@/store/plate-store'
 import { BaseCommentsPlugin } from '@udecode/plate-comments'
@@ -10,48 +11,80 @@ import { CheckCheck } from 'lucide-react'
 
 import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { Button } from '@/components/ui/button'
+import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import { sortCommentsAndDescriptions } from '@/lib/utils/plate'
 
-import { EReviewType, TCustomComment } from '@/types/editor-types'
+import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
 
 export default function CommentSidebar() {
 	const editor = useEditorState()
-	const { get, sortedComments, set, activeCommentId, commentExists } =
-		useComments()
+	const { get, sortedComments, activeCommentId, commentExists } = useComments()
 	const myUserId = get('myUserId')
 	const { getAllSuggestionDescriptions } = useSuggestions()
 	const descriptions = getAllSuggestionDescriptions(editor)
+
+	const { resolvedComments } = useResolvedComments()
 
 	const setActiveComment = useCallback(
 		(comment: TCustomComment) => {
 			editor.setOption(BaseCommentsPlugin, 'activeCommentId', comment.id)
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[set, editor]
+		[editor]
 	)
 
 	const unresolvedComments = [...sortedComments].filter(
 		(comment) => !comment.isResolved
 	)
-	const resolvedComments = [...sortedComments].filter(
-		(comment) => comment.isResolved
-	)
+
 	const { store, setResolved } = usePlateStore()
 	const showResolved = store((state) => state.resolved)
-	const comments = showResolved ? resolvedComments : unresolvedComments
 
-	const commentsAndDescriptions = useMemo(
-		() => sortCommentsAndDescriptions(editor.children, comments, descriptions),
-		[editor.children, comments, descriptions]
+	const commentsAndDescriptions: TReview[] = useMemo(
+		() =>
+			sortCommentsAndDescriptions(
+				editor.children,
+				unresolvedComments,
+				descriptions
+			),
+		[editor.children, unresolvedComments, descriptions]
 	)
+
+	const RenderReviews = useCallback(() => {
+		if (showResolved) {
+			return resolvedComments.map((item, idx) => (
+				<ResolvedCommentItem key={idx} resolvedComment={item} />
+			))
+		}
+		return commentsAndDescriptions.map((item, index) => {
+			if (item.type === EReviewType.COMMENT) {
+				return (
+					<CommentComponent
+						key={index}
+						setActiveComment={setActiveComment}
+						comment={item.data}
+						activeCommentId={activeCommentId}
+						myUserId={myUserId}
+					/>
+				)
+			}
+			return <SuggestionBlock key={index} description={item.data} />
+		})
+	}, [
+		showResolved,
+		resolvedComments,
+		commentsAndDescriptions,
+		activeCommentId,
+		setActiveComment,
+		myUserId,
+	])
 
 	return (
 		<div className="relative">
 			<div className="pb-8 pt-4">
 				<h1 className="w-full text-center">
-					{!comments.length && (!myUserId || !activeCommentId)
+					{!commentsAndDescriptions.length && (!myUserId || !activeCommentId)
 						? `No ${showResolved ? 'resolved' : 'unresolved'} comments`
-						: `${showResolved ? resolvedComments.length : unresolvedComments.length} ${showResolved ? 'resolved' : 'unresolved'} comments`}
+						: `${commentsAndDescriptions.length} ${showResolved ? 'resolved' : 'unresolved'} comments`}
 				</h1>
 			</div>
 			<Button
@@ -62,23 +95,10 @@ export default function CommentSidebar() {
 			>
 				<CheckCheck size={16} />
 			</Button>
-			{commentsAndDescriptions.map((item, index) => {
-				if (item.type === EReviewType.COMMENT) {
-					return (
-						<CommentComponent
-							key={index}
-							setActiveComment={setActiveComment}
-							comment={item.data}
-							activeCommentId={activeCommentId}
-							myUserId={myUserId}
-						/>
-					)
-				} else if (item.type === EReviewType.DESCRIPTION) {
-					return <SuggestionBlock key={index} description={item.data} />
-				}
-				return null
-			})}
-			{!!myUserId && activeCommentId && !commentExists && <CommentCreateForm />}
+			<RenderReviews />
+			{!!myUserId && activeCommentId && !commentExists && (
+				<CommentCreateForm autoFocus />
+			)}
 		</div>
 	)
 }

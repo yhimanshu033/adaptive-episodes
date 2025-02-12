@@ -56,6 +56,33 @@ function useEpisodeIdStore() {
 			return { startOverlayLoading }
 		})
 	}
+
+	const setResolvedComments = (
+		resolvedComments: EpisodeIdStoreType['resolvedComments']
+	) => {
+		useEpisodeIdStoreContext.setState(() => {
+			return { resolvedComments }
+		})
+	}
+
+	const addResolvedComment = (
+		resolvedComment: EpisodeIdStoreType['resolvedComments'][number]
+	) => {
+		useEpisodeIdStoreContext.setState((state) => {
+			return { resolvedComments: [...state.resolvedComments, resolvedComment] }
+		})
+	}
+
+	const removeResolvedComment = (resolvedCommentId: string) => {
+		useEpisodeIdStoreContext.setState((state) => {
+			return {
+				resolvedComments: state.resolvedComments.filter(
+					(comment) => comment.id !== resolvedCommentId
+				),
+			}
+		})
+	}
+
 	return {
 		store: useEpisodeIdStoreContext,
 		setSelectedStatus,
@@ -65,6 +92,9 @@ function useEpisodeIdStore() {
 		deleteNote,
 		setDualViewMode,
 		setStartOverlayLoading,
+		addResolvedComment,
+		setResolvedComments,
+		removeResolvedComment,
 	}
 }
 

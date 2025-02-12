@@ -26,6 +26,16 @@ export enum EStatus {
 
 export const BASE_STATUS = 'BASE'
 
+export const STATUS_ORDER = [
+	EStatus.PUBLISHED,
+	EStatus.POLISH,
+	EStatus.SECOND_DRAFT,
+	EStatus.FIRST_DRAFT,
+	BASE_STATUS,
+] as const
+
+export type TStatus = (typeof STATUS_ORDER)[number]
+
 export type TNoParams = Record<string, never>
 
 export type IndexedText = {
