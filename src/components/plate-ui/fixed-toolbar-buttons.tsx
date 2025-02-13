@@ -1,4 +1,5 @@
 import React from 'react'
+import usePlateStore from '@/store/plate-store'
 import {
 	BoldPlugin,
 	ItalicPlugin,
@@ -10,6 +11,7 @@ import {
 	FontColorPlugin,
 } from '@udecode/plate-font/react'
 import { ListStyleType } from '@udecode/plate-indent-list'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Icons, iconVariants } from '@/components/icons'
 import { AlignDropdownMenu } from '@/components/plate-ui/align-dropdown-menu'
@@ -27,14 +29,17 @@ import TranslationToggleButton from '@/components/plate-ui/translation-toggle-bu
 import { TurnIntoDropdownMenu } from '@/components/plate-ui/turn-into-dropdown-menu'
 import UndoRedoButtons from '@/components/plate-ui/undo-redo-buttons'
 import { ZoomDropdownMenu } from '@/components/plate-ui/zoom-dropdown'
+import { Switch } from '@/components/ui/switch'
 
 export function FixedToolbarButtons() {
 	const readOnly = useEditorReadOnly()
+	const { store: usePlateContextStore, setFocusMode } = usePlateStore()
+	const focusMode = usePlateContextStore(useShallow((state) => state.focusMode))
 
 	return (
 		<div className="w-full overflow-hidden">
 			<div
-				className="flex flex-wrap"
+				className="flex flex-wrap items-center"
 				style={{
 					transform: 'translateX(calc(-1px))',
 				}}
@@ -94,19 +99,31 @@ export function FixedToolbarButtons() {
 				)}
 
 				<div className="grow" />
-				<ToolbarGroup noSeparator>
-					<TranslationToggleButton />
-					<ChatbotToolbarButton />
-					<MoreDropdownMenu />
-				</ToolbarGroup>
+				{focusMode ? (
+					<div className="p-2">
+						<Switch
+							className="bg-primary"
+							checked={focusMode}
+							onCheckedChange={setFocusMode}
+						/>
+					</div>
+				) : (
+					<>
+						<ToolbarGroup noSeparator>
+							<TranslationToggleButton />
+							<ChatbotToolbarButton />
+							<MoreDropdownMenu />
+						</ToolbarGroup>
 
-				<ToolbarGroup>
-					<CommentToolbarButton />
-				</ToolbarGroup>
+						<ToolbarGroup>
+							<CommentToolbarButton />
+						</ToolbarGroup>
 
-				<ToolbarGroup>
-					<ModeDropdownMenu />
-				</ToolbarGroup>
+						<ToolbarGroup>
+							<ModeDropdownMenu />
+						</ToolbarGroup>
+					</>
+				)}
 			</div>
 		</div>
 	)

@@ -92,6 +92,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { store } = useCustomPlateStore()
 		const scale = store((state) => state.scale)
 		const sidebar = store((state) => state.sidebar)
+		const plateFocusMode = store((state) => state.focusMode)
 		const fontFamily = store(useShallow((state) => state.fontFamily))
 
 		const [remainingHeight, setRemainingHeight] = React.useState(0)
@@ -110,7 +111,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			sidebar,
 			TRANSITION_DURATION * 2
 		)
-		const focusMode = !debouncedSidebar
+		const focusMode = !debouncedSidebar && plateFocusMode
 
 		const isEmpty = useMemo(
 			() =>
