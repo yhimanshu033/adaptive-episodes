@@ -36,15 +36,11 @@ const useEpisodeTable = () => {
 		setIsInventOpen,
 		setSelectedEpisodes,
 	} = useEpisodeStore()
-	const {
-		episodeSearch,
-		deleteEpisodeId,
-		selectedEpisodes,
-		currentInventIndex,
-	} = useEpisodeTableStore()
+	const { deleteEpisodeId, selectedEpisodes, currentInventIndex } =
+		useEpisodeTableStore()
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 
-	const { currentPage } = usePageState()
+	const { currentPage, search } = usePageState()
 
 	const handleTitleClick = (episodeId: number) => {
 		router.push(`${pathname}/${episodeId}/editor`)
@@ -182,13 +178,7 @@ const useEpisodeTable = () => {
 				})
 			)
 			await queryClient.invalidateQueries({
-				queryKey: [
-					EPISODE_LIST_QUERY_KEY,
-					Number(id),
-					currentPage,
-					episodeSearch,
-				],
-				exact: true,
+				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id), currentPage, search],
 				type: 'all',
 			})
 		} else if (alertInfo.action === EpisodeActions.DELETE && deleteEpisodeId) {
