@@ -1,5 +1,6 @@
 'use server'
 
+import { validResponseStatuses } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
 import { getServerSession } from 'next-auth'
 
@@ -131,7 +132,7 @@ export async function fetchAPI<
 			mode: 'cors',
 		})
 
-		if (!response.ok || response.status !== 200) {
+		if (!response.ok || !validResponseStatuses.includes(response.status)) {
 			log({
 				type: 'API RESPONSE ERROR',
 				extra: {
