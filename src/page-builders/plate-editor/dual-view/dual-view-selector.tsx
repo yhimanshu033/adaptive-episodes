@@ -37,8 +37,10 @@ export default function DualViewSelector() {
 				value={dualViewMode}
 				onValueChange={(value) => setDualViewMode(value as EDualVIewMode)}
 			>
-				<SelectTrigger className="w-fit gap-2">
-					<SelectValue placeholder="Mode" />
+				<SelectTrigger className="w-fit gap-2 bg-background/30 backdrop-blur-[1px]">
+					<SelectValue placeholder="Mode">
+						Dual View: {MODE_TO_TITLE[dualViewMode]}
+					</SelectValue>
 				</SelectTrigger>
 				<SelectContent>
 					{modes.map((mode, index) => (

@@ -4,6 +4,7 @@ import {
 	EDITOR_FIRST_DIV_CLASSNAME,
 	LINES,
 	REMAINING_HEIGHT_CLASSNAME,
+	TRANSITION_DURATION,
 } from '@/constants/editor-constants'
 import useSaving from '@/hooks/use-saving'
 import useAIStore from '@/store/ai-store'
@@ -20,6 +21,7 @@ import {
 } from '@udecode/plate-common/react'
 import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
+import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeId from '@/providers/episode-id-provider'
@@ -91,6 +93,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const scale = store((state) => state.scale)
 		const sidebar = store((state) => state.sidebar)
 		const fontFamily = store(useShallow((state) => state.fontFamily))
+
 		const [remainingHeight, setRemainingHeight] = React.useState(0)
 
 		const contentRef = useRef<HTMLDivElement>(null)
@@ -102,6 +105,12 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 
 		const { children } = useEditorState()
 		const { setForceSave } = useSaving()
+
+		const [debouncedSidebar] = useDebounceValue(
+			sidebar,
+			TRANSITION_DURATION * 1.2
+		)
+		const focusMode = !debouncedSidebar
 
 		const isEmpty = useMemo(
 			() =>
@@ -132,7 +141,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				}
 				// for breaking blocks
 				currentDiv.className += ' px-6 border-r border-l -mx-6'
-				if (height + currHeight > MAX_HEIGHT) {
+				if (height + currHeight > MAX_HEIGHT && focusMode) {
 					currentDiv.classList.add(AFTER_PAGE_BREAK_CLASSNAME)
 					height = currHeight
 				} else {
@@ -143,7 +152,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			// for last block
 			setRemainingHeight(MAX_HEIGHT - height)
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [children, contentRef.current, readOnly, scale])
+		}, [children, contentRef.current, readOnly, scale, focusMode])
 
 		useEffect(() => {
 			if (!contentRef.current) return
@@ -225,7 +234,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 							{...props}
 						/>
 						<div
-							style={{ minHeight: `${remainingHeight}px` }}
+							style={{ minHeight: `${focusMode ? remainingHeight : 24}px` }}
 							className="border-x border-b pb-[var(--editor-break-padding)]"
 						/>
 					</>

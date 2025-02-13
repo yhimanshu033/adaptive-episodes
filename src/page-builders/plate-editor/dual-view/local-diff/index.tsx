@@ -1,7 +1,6 @@
 import React from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useMyEditor from '@/hooks/use-my-editor'
-import { useToast } from '@/hooks/use-toast'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { Plate } from '@udecode/plate-common/react'
@@ -27,8 +26,6 @@ export default function LocalDiffSection() {
 	const localDiffValue = useEpisodePlateStore(
 		useShallow((state) => state.localDiffValue)
 	)
-	const { dismiss } = useToast()
-
 	const editor = useMyEditor({
 		content: content?.text || '',
 		id: 'local-diff',
@@ -40,13 +37,11 @@ export default function LocalDiffSection() {
 		void removeValue(`${content?.chapter.project}_${content?.chapter?.parent}`)
 		setSidebar(null)
 		setDualViewMode(EDualVIewMode.US_TRANSLATION)
-		dismiss()
 	}
 
 	function handleAccept() {
 		setImported(true)
 		setDualViewMode(EDualVIewMode.US_TRANSLATION)
-		dismiss()
 	}
 
 	return (

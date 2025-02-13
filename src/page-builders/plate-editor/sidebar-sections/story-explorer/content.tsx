@@ -1,6 +1,5 @@
 import React from 'react'
 import useSaveEpisode from '@/hooks/use-save-episode'
-import { toast } from '@/hooks/use-toast'
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { ArrowLeft, FilePlus2 } from 'lucide-react'
@@ -46,9 +45,6 @@ const Content = ({
 			updateTime: new Date().toString(),
 		}
 		addNote(note)
-		toast({
-			title: 'Added to Note!',
-		})
 	}
 	return (
 		<>

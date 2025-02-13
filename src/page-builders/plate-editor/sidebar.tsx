@@ -41,8 +41,9 @@ const Sidebar = () => {
 	if (
 		(!showSidebar && !debouncedShowSidebarView) ||
 		sidebar === ESidebar.DUAL_VIEW
-	)
+	) {
 		return null
+	}
 	return (
 		<>
 			<ResizableHandle />

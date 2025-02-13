@@ -60,12 +60,11 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 					transitionDuration: `${isTransitioning ? TRANSITION_DURATION : 0}ms`,
 				}}
 				className={cn(
-					'flex w-full max-w-full flex-col border transition-all',
+					'relative flex w-full max-w-full flex-col border transition-all',
 					!showDualView && 'max-w-0'
 				)}
 			>
-				<div className="flex items-center justify-between p-4">
-					<h1 className="text-2xl font-bold">Dual View</h1>
+				<div className="absolute top-0 z-20 flex w-full justify-end p-4">
 					<DualViewSelector />
 				</div>
 				{modeToComponent[dualViewMode]}
