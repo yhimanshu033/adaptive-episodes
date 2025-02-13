@@ -108,7 +108,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 
 		const [debouncedSidebar] = useDebounceValue(
 			sidebar,
-			TRANSITION_DURATION * 1.2
+			TRANSITION_DURATION * 2
 		)
 		const focusMode = !debouncedSidebar
 

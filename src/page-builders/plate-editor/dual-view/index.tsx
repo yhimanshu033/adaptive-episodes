@@ -4,6 +4,7 @@ import DualViewSelector from '@/page-builders/plate-editor/dual-view/dual-view-s
 import LocalDiffSection from '@/page-builders/plate-editor/dual-view/local-diff'
 import NextEpisode from '@/page-builders/plate-editor/dual-view/next-episode'
 import Notes from '@/page-builders/plate-editor/dual-view/notes'
+import PreviousEpisode from '@/page-builders/plate-editor/dual-view/prev-episode'
 import Translation from '@/page-builders/plate-editor/dual-view/translation'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
@@ -26,6 +27,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			[EDualVIewMode.US_TRANSLATION]: (
 				<Translation translatedContent={translatedContent} />
 			),
+			[EDualVIewMode.PREV_EP]: <PreviousEpisode />,
 			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
 			[EDualVIewMode.NOTES]: <Notes />,
 			[EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,

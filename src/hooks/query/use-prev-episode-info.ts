@@ -5,10 +5,10 @@ import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { getEpisodeDetails } from '@/server-action/episode-action'
 import { useQuery } from '@tanstack/react-query'
 
-export const useNextEpisodeInfo = () => {
+export const usePreviousEpisodeInfo = () => {
 	const { id }: { id: string } = useParams()
 	const { data } = useEpisodeContent()
-	const episodeId = data?.next_parent_id || 0
+	const episodeId = data?.previous_parent_id || 0
 
 	const query = useQuery({
 		queryKey: ['info', episodeId, id],
