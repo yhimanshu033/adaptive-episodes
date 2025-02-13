@@ -159,6 +159,8 @@ export async function fetchAPI<
 
 		const responseData = (await response.json()) as ResponseDataT
 
+		log({ resolvedUrl, method, body, query, headers, responseData })
+
 		return {
 			success: true,
 			status: response.status,

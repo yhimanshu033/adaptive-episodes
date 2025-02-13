@@ -6,6 +6,7 @@ import NextEpisode from '@/page-builders/plate-editor/dual-view/next-episode'
 import Notes from '@/page-builders/plate-editor/dual-view/notes'
 import PreviousEpisode from '@/page-builders/plate-editor/dual-view/prev-episode'
 import Translation from '@/page-builders/plate-editor/dual-view/translation'
+import VoicePass from '@/page-builders/plate-editor/dual-view/voice-pass'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { useDebounceValue } from 'usehooks-ts'
@@ -31,6 +32,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
 			[EDualVIewMode.NOTES]: <Notes />,
 			[EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
+			[EDualVIewMode.VOICE_PASS]: <VoicePass />,
 		}),
 		[translatedContent]
 	)

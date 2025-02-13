@@ -2,9 +2,9 @@ import React from 'react'
 import { NEXT_EP_EDITOR_ID } from '@/constants/editor-constants'
 import useNextEpisodeContent from '@/hooks/query/use-next-episode-content'
 import useMyEditor from '@/hooks/use-my-editor'
+import DualViewLoader from '@/page-builders/plate-editor/dual-view/dual-view-loader'
 import { Plate } from '@udecode/plate-common/react'
 
-import { Loader } from '@/components/loader'
 import { Editor } from '@/components/plate-ui/editor'
 
 export default function NextEpisode() {
@@ -17,11 +17,7 @@ export default function NextEpisode() {
 	})
 
 	if (isPending) {
-		return (
-			<div className="sticky top-0 flex h-[calc(100svh_-_44px)] flex-col items-center justify-center">
-				<Loader />
-			</div>
-		)
+		return <DualViewLoader />
 	}
 	return (
 		<Plate editor={editor}>

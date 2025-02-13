@@ -108,8 +108,6 @@ export function ChatbotProvider({
 	const value = store((state) => state.acceptedValue)
 	const prevValue = store((state) => state.prevValue)
 
-	const { aiChatbotMutation } = useAIChatbotHook()
-	const { data: aiResponse, isPending, reset } = aiChatbotMutation
 	const { responses, taskEnded } = useSocketStreaming()
 
 	const { data: episodeContent } = useEpisodeContent()
@@ -125,12 +123,17 @@ export function ChatbotProvider({
 		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
 	}, [stories, id])
 
+	const { aiChatbotMutation } = useAIChatbotHook({
+		episodeNumber: episodeContent?.chapter.seq_number || 0,
+		episodesCount,
+	})
+
+	const { data: aiResponse, isPending, reset } = aiChatbotMutation
+
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
 		aiChatbotMutation.mutate({
-			episodeNumber: episodeContent?.chapter.seq_number || 0,
-			episodesCount,
 			aiChatbotData: {
 				messages: messages.map((message) => ({
 					content: message.content || '',
@@ -175,8 +178,6 @@ export function ChatbotProvider({
 		}
 		addMessages({ role: EMessenger.USER, content: suggestion.value })
 		aiChatbotMutation.mutate({
-			episodeNumber: episodeContent?.chapter.seq_number || 0,
-			episodesCount,
 			aiChatbotData: {
 				messages,
 				user_message: suggestion.value,

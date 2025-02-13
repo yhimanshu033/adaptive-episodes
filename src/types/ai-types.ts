@@ -35,7 +35,7 @@ export interface LaserToolsApiResponse {
 export interface AIChatBotParams {
 	aiChatbotData: {
 		beatsheets_array?: string[]
-		chat_mode?: EChatMode
+		chat_mode?: EChatMode | typeof VOICE_PASS_MODE
 		context?: string
 		ep_number?: string
 		ep_text?: string
@@ -50,6 +50,8 @@ export interface AIChatBotParams {
 		scenes_array?: string[]
 		user_message: string
 	}
+}
+export interface AIChatbotHookParams {
 	episodeNumber: number
 	episodesCount: number
 }
@@ -77,6 +79,8 @@ export enum EChatMode {
 	SFX = 'sfx',
 	VOICE = 'voice_tuples',
 }
+
+export const VOICE_PASS_MODE = 'voice'
 
 export type TStoryChatSuggestion = {
 	action: EChatMode

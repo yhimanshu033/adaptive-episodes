@@ -6,8 +6,8 @@ import {
 	ExplorerModeId,
 	PlotAction,
 } from '@/constants/story-explorer-constants'
+import useMetadataQuery from '@/hooks/query/use-metadata-query'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
-import { getMetadata } from '@/server-action/metadata-action'
 import { useQuery } from '@tanstack/react-query'
 import { useEditorState } from '@udecode/plate-common/react'
 
@@ -38,11 +38,10 @@ const usePlotOutlineQuery = ({
 	const episodeId = useEpisodeId()
 	const { children } = useEditorState()
 
-	const { data: metadata, isLoading: isMetadataLoading } = useQuery({
-		queryKey: ['metadata', id, start, end],
-		queryFn: () => getMetadata(Number(id), Math.max(start - 1, 1), end),
-		staleTime: Infinity,
-	})
+	const { data: metadata, isLoading: isMetadataLoading } = useMetadataQuery(
+		start,
+		end
+	)
 
 	const getPlotOutline =
 		useCallback(async (): Promise<PlotExplorerQueryResponse> => {

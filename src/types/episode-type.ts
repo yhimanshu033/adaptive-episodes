@@ -188,12 +188,14 @@ export enum EDualVIewMode {
 	NOTES = 'NOTES',
 	PREV_EP = 'PREVIOUS_EP',
 	US_TRANSLATION = 'US_TRANSLATION',
+	VOICE_PASS = 'VOICE_PASS',
 }
 
 export const DUAL_VIEW_MODES: EDualVIewMode[] = [
 	EDualVIewMode.US_TRANSLATION,
 	EDualVIewMode.PREV_EP,
 	EDualVIewMode.NEXT_EP,
+	EDualVIewMode.VOICE_PASS,
 	EDualVIewMode.NOTES,
 	EDualVIewMode.LOCAL_DIFF,
 ]
@@ -204,6 +206,7 @@ export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
 	[EDualVIewMode.NOTES]: 'Notes',
 	[EDualVIewMode.LOCAL_DIFF]: 'Local Changes',
 	[EDualVIewMode.PREV_EP]: 'Previous Episode',
+	[EDualVIewMode.VOICE_PASS]: 'Voice Pass',
 }
 
 export type TranslationProps = { translatedContent: string }
