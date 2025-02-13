@@ -297,14 +297,17 @@ export function mergeBlocks(
 	}
 
 	const mergedText = [
-		String(startChildrenToMerge[0].text).slice(start.offset),
-		...startChildrenToMerge.slice(1).map((child) => (child as TText).text),
-		...middleChildrenToMerge.map((child) => (child as TText).text),
-		...endChildrenToMerge.slice(0, -1).map((child) => (child as TText).text),
-		String(endChildrenToMerge[endChildrenToMerge.length - 1].text).slice(
-			0,
-			end.offset
+		[
+			String(firstChild.text).slice(start.offset),
+			...startChildrenToMerge.slice(1).map((child) => (child as TText).text),
+		].join(''),
+		...middleParents.map((parent) =>
+			parent.children.map((child) => child.text).join('')
 		),
+		[
+			...endChildrenToMerge.slice(0, -1).map((child) => (child as TText).text),
+			String(lastChild.text).slice(0, end.offset),
+		].join(''),
 	].join('\n')
 
 	const middleText: TText = {
