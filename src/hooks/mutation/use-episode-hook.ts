@@ -37,7 +37,6 @@ const useEpisodeHook = () => {
 	const onSuccess = async () => {
 		await queryClient.invalidateQueries({
 			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id), currentPage],
-			exact: true,
 			type: 'all',
 		})
 	}

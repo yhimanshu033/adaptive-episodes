@@ -120,6 +120,7 @@ export interface PlotExplorerParams {
 	instruction?: string
 	loglines_array: Array<string>
 	mode: string
+	project_id: number
 	scene_array?: Array<string>
 }
 
