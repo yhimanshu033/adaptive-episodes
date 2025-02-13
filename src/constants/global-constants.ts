@@ -38,3 +38,5 @@ export const DEFAULT_USER: Record<string, SuggestionUser> = {
 		avatarUrl: FALLBACK_USER_URL,
 	},
 }
+
+export const validResponseStatuses = [200, 201, 204]

@@ -4,6 +4,7 @@ import DualViewSelector from '@/page-builders/plate-editor/dual-view/dual-view-s
 import LocalDiffSection from '@/page-builders/plate-editor/dual-view/local-diff'
 import NextEpisode from '@/page-builders/plate-editor/dual-view/next-episode'
 import Notes from '@/page-builders/plate-editor/dual-view/notes'
+import PreviousEpisode from '@/page-builders/plate-editor/dual-view/prev-episode'
 import Translation from '@/page-builders/plate-editor/dual-view/translation'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
@@ -26,6 +27,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			[EDualVIewMode.US_TRANSLATION]: (
 				<Translation translatedContent={translatedContent} />
 			),
+			[EDualVIewMode.PREV_EP]: <PreviousEpisode />,
 			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
 			[EDualVIewMode.NOTES]: <Notes />,
 			[EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
@@ -60,12 +62,11 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 					transitionDuration: `${isTransitioning ? TRANSITION_DURATION : 0}ms`,
 				}}
 				className={cn(
-					'flex w-full max-w-full flex-col border transition-all',
+					'relative flex w-full max-w-full flex-col border transition-all',
 					!showDualView && 'max-w-0'
 				)}
 			>
-				<div className="flex items-center justify-between p-4">
-					<h1 className="text-2xl font-bold">Dual View</h1>
+				<div className="absolute top-0 z-20 flex w-full justify-end p-4">
 					<DualViewSelector />
 				</div>
 				{modeToComponent[dualViewMode]}

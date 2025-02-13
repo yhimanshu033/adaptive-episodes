@@ -1,18 +1,18 @@
 import React from 'react'
-import { NEXT_EP_EDITOR_ID } from '@/constants/editor-constants'
-import useNextEpisodeContent from '@/hooks/query/use-next-episode-content'
+import { PREV_EP_EDITOR_ID } from '@/constants/editor-constants'
+import usePreviousEpisodeContent from '@/hooks/query/use-prev-episode-content'
 import useMyEditor from '@/hooks/use-my-editor'
 import { Plate } from '@udecode/plate-common/react'
 
 import { Loader } from '@/components/loader'
 import { Editor } from '@/components/plate-ui/editor'
 
-export default function NextEpisode() {
-	const { data, isPending } = useNextEpisodeContent()
+export default function PreviousEpisode() {
+	const { data, isPending } = usePreviousEpisodeContent()
 
 	const editor = useMyEditor({
 		content: data?.text || '',
-		id: NEXT_EP_EDITOR_ID,
+		id: PREV_EP_EDITOR_ID,
 		simplified: true,
 	})
 

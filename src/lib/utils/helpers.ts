@@ -98,7 +98,10 @@ export function extractBetweenTags(input: string, tagName: string): string {
 }
 
 export function extract(str: string) {
-	return extractBetweenTags(extractBetweenTags(str, 'answer'), 'text')
+	return (
+		extractBetweenTags(extractBetweenTags(str, 'answer'), 'text').trim() ||
+		extractBetweenTags(str, 'text').trim()
+	)
 }
 
 export function parseOptimistically<T>(input: string) {

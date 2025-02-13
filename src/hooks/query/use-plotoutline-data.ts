@@ -81,6 +81,7 @@ const usePlotOutlineQuery = ({
 			const { beatsheets_array: beatsheet_array, ...extractedData } =
 				extractFromMetadata(metadata?.data, start - 1)
 			const params: PlotExplorerParams = {
+				project_id: Number(id),
 				action,
 				ep_from: start,
 				ep_to: end,
@@ -101,15 +102,16 @@ const usePlotOutlineQuery = ({
 				taskId,
 			}
 		}, [
-			start,
-			end,
 			action,
-			metadata,
+			metadata?.data,
+			start,
+			id,
+			end,
 			activeExplorerMode,
 			episodeId,
+			children,
 			instruction,
 			startTask,
-			children,
 		])
 
 	const plotOutlineQuery = useQuery({

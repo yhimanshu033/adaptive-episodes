@@ -57,6 +57,7 @@ export const EditorModes = {
 export const MAIN_EDITOR_ID = 'main-editor'
 export const TRANSLATION_EDITOR_ID = 'translation-editor'
 export const NEXT_EP_EDITOR_ID = 'next-ep-editor'
+export const PREV_EP_EDITOR_ID = 'prev-ep-editor'
 export const LINES = 30
 
 export const AFTER_PAGE_BREAK_CLASSNAME = 'after-editor-page' // CHECK WITH GLOBALS CSS

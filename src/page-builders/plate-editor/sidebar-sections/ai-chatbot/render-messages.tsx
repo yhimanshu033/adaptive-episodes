@@ -61,7 +61,7 @@ export default function RenderMessage({
 	) {
 		if ((responses[message.taskId] || []).length) {
 			return (
-				<div className="relative flex max-w-[70%]">
+				<div className="relative flex">
 					<div
 						onClick={() => {
 							void navigator.clipboard.writeText(
@@ -79,7 +79,7 @@ export default function RenderMessage({
 								.replace(/<\/text>/g, '</span>'),
 						}}
 						className={cn(
-							'flex-1 rounded-lg p-3 transition-transform *:animate-in active:scale-[0.995]',
+							'max-w-[70%] flex-1 rounded-lg p-3 transition-transform *:animate-in active:scale-[0.995]',
 							message.role === EMessenger.ASSISTANT
 								? 'bg-background'
 								: 'bg-primary'
