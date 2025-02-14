@@ -50,6 +50,8 @@ export interface AIChatBotParams {
 		scenes_array?: string[]
 		user_message: string
 	}
+}
+export interface AIChatbotHookParams {
 	episodeNumber: number
 	episodesCount: number
 }
@@ -75,7 +77,7 @@ export enum EChatMode {
 	PROMPTS = 'prompts',
 	REVIEW = 'review',
 	SFX = 'sfx',
-	VOICE = 'voice_tuples',
+	VOICE = 'voice',
 }
 
 export type TStoryChatSuggestion = {

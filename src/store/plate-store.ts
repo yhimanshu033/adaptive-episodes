@@ -49,6 +49,12 @@ export function usePlateStore() {
 		usePlateStoreContext.setState({ localDiffValue })
 	}
 
+	const setFocusMode = (focusMode: PlateStoreData['focusMode']) => {
+		usePlateStoreContext.setState(() => {
+			return { focusMode }
+		})
+	}
+
 	return {
 		store: usePlateStoreContext,
 		setSidebar,
@@ -60,6 +66,7 @@ export function usePlateStore() {
 		setActiveNoteId,
 		setFontFamily,
 		setLocalDiffValue,
+		setFocusMode,
 	}
 }
 

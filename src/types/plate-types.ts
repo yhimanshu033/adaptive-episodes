@@ -49,6 +49,7 @@ export type PlateStoreData = {
 	activeDiffId: string | null
 	activeNoteId: string | null
 	currentDiffValue: Value | null
+	focusMode: boolean
 	fontFamily: string
 	localDiffValue: Value | null
 	resolved: boolean

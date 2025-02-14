@@ -24,6 +24,7 @@ const initialState: PlateStoreData = {
 	activeNoteId: null,
 	fontFamily: DEFAULT_FONT_FAMILY,
 	localDiffValue: null,
+	focusMode: false,
 }
 
 const initialAiState: AIStoreType = {
