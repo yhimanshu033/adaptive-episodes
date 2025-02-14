@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react'
-import { EPISODE_LIMIT } from '@/constants/episodes-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import { usePageState } from '@/hooks/use-page-state'
@@ -26,10 +25,13 @@ import { cn } from '@/lib/utils/helpers'
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const { setInventIndex, setIsInventOpen } = useEpisodeStore()
-	const { currentPage, search } = usePageState()
+	const { currentPage, search, episodeRange, limit } = usePageState()
 	const { data, isLoading: isEpisodesLoading } = useEpisodesData(
 		search,
-		currentPage
+		currentPage,
+		limit,
+		episodeRange.start || undefined,
+		episodeRange.end || undefined
 	)
 	const tableData = useMemo(() => data?.results?.data ?? [], [data])
 	const { table, columnSize } = useCreateTable(tableData)
@@ -131,7 +133,7 @@ const EpisodesTable = () => {
 				</Table>
 			</ScrollArea>
 			<EpisodesPagination
-				totalPages={data ? Math.ceil(data.count / EPISODE_LIMIT) : 0}
+				totalPages={data ? Math.ceil(data.count / limit) : 0}
 			/>
 			<ActionAlert />
 			<InventForm />

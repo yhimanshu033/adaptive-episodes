@@ -1,4 +1,5 @@
-import { parseAsInteger, useQueryState } from 'nuqs'
+import { DEFAULT_EPISODE_LIMIT } from '@/constants/episodes-constants'
+import { parseAsInteger, useQueryState, useQueryStates } from 'nuqs'
 
 export const usePageState = () => {
 	const [currentPage, setCurrentPage] = useQueryState(
@@ -7,5 +8,24 @@ export const usePageState = () => {
 	)
 	const [search, setSearch] = useQueryState('search', { defaultValue: '' })
 
-	return { currentPage, setCurrentPage, search, setSearch }
+	const [limit, setLimit] = useQueryState(
+		'limit',
+		parseAsInteger.withDefault(DEFAULT_EPISODE_LIMIT)
+	)
+
+	const [episodeRange, setEpisodeRange] = useQueryStates({
+		start: parseAsInteger,
+		end: parseAsInteger,
+	})
+
+	return {
+		currentPage,
+		setCurrentPage,
+		search,
+		setSearch,
+		episodeRange,
+		setEpisodeRange,
+		limit,
+		setLimit,
+	}
 }

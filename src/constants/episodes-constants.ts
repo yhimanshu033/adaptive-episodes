@@ -1,3 +1,5 @@
+import { EpisodeRangeFormSchema } from '@/hooks/form-resolvers/episode-range-resolver'
+
 import { EStatus } from '@/types/common'
 import { SaveEpisodeParams, TGetEpisodesResponse } from '@/types/episode-type'
 
@@ -24,7 +26,8 @@ export enum EpisodeActions {
 	UPDATE = 'update',
 }
 
-export const EPISODE_LIMIT = 10
+export const DEFAULT_EPISODE_LIMIT = 10
+export const EPISODE_LIMITS: Array<number> = [5, 10, 25, 50, 100]
 
 export const SIDEBAR_DISABLED = ['4008']
 
@@ -49,3 +52,8 @@ export const PRIMARY_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 	'comments',
 ] as const
+
+export const DEFAULT_EPISODE_RANGE: EpisodeRangeFormSchema = {
+	end: 0,
+	start: 0,
+}

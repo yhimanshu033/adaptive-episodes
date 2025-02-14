@@ -1,22 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { usePageState } from '@/hooks/use-page-state'
 import RenderPageButtons from '@/page-builders/episodes/render-page-btns'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import EpisodeRangeSearch from './episode-range-search'
+import EpisodesLimit from './episodes-limit'
 
 const EpisodesPagination = ({ totalPages }: { totalPages: number }) => {
-	const [inputPage, setInputPage] = useState<number>(0)
-
 	const { currentPage, setCurrentPage } = usePageState()
 
 	const handlePageChange = (page?: number) => {
-		void setCurrentPage(page ?? inputPage)
-	}
-
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-		handlePageChange()
+		void setCurrentPage(page ?? 0)
 	}
 
 	return (
@@ -29,17 +22,9 @@ const EpisodesPagination = ({ totalPages }: { totalPages: number }) => {
 						totalPages={totalPages}
 					/>
 				</div>
-				<form onSubmit={handleSubmit} className="flex items-center space-x-2">
-					<Input
-						type="number"
-						placeholder="Page No."
-						className="w-32 border"
-						onChange={(e) => setInputPage(Number(e.target.value))}
-						min={1}
-						max={totalPages}
-					/>
-					<Button type="submit">Go</Button>
-				</form>
+
+				<EpisodesLimit />
+				<EpisodeRangeSearch />
 			</div>
 		)
 	)

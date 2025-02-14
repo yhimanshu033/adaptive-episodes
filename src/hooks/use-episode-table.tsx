@@ -1,6 +1,5 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import {
-	EPISODE_LIMIT,
 	EPISODE_LIST_QUERY_KEY,
 	EpisodeActions,
 } from '@/constants/episodes-constants'
@@ -19,6 +18,7 @@ const useEpisodeTable = () => {
 	const router = useRouter()
 	const pathname = usePathname()
 	const queryClient = useQueryClient()
+	const { limit } = usePageState()
 
 	const {
 		saveEpisodeMutation,
@@ -139,8 +139,7 @@ const useEpisodeTable = () => {
 	const handleAddEpisode = (data: TEpisodeInventForm) => {
 		episodeInventMutation.mutate({
 			chapter_title: data.title,
-			seq_number:
-				(currentInventIndex || 0) + 2 + (currentPage - 1) * EPISODE_LIMIT,
+			seq_number: (currentInventIndex || 0) + 2 + (currentPage - 1) * limit,
 		})
 		setIsInventOpen(false)
 	}

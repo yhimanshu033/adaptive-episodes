@@ -5,13 +5,27 @@ import { EPISODE_LIST_QUERY_KEY } from '@/constants/episodes-constants'
 import { getEpisodes } from '@/server-action/episode-action'
 import { useQuery } from '@tanstack/react-query'
 
-export const useEpisodesData = (title: string = '', page: number = 1) => {
+export const useEpisodesData = (
+	title: string = '',
+	page: number = 1,
+	limit?: number,
+	start?: number,
+	end?: number
+) => {
 	const { id } = useParams()
 	const storyId = Number(id)
 
 	const query = useQuery({
-		queryKey: [EPISODE_LIST_QUERY_KEY, storyId, page, title],
-		queryFn: () => getEpisodes(storyId, page, title),
+		queryKey: [EPISODE_LIST_QUERY_KEY, storyId, page, title, limit, start, end],
+		queryFn: () =>
+			getEpisodes({
+				project_id: storyId,
+				page,
+				search: title,
+				limit,
+				range_start: start,
+				range_end: end,
+			}),
 	})
 
 	return query
