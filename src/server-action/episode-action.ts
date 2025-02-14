@@ -20,8 +20,6 @@ export const getEpisodes = async ({
 	page = 1,
 	search = '',
 	limit,
-	range_start,
-	range_end,
 }: TGetEpisodesQueryParams) => {
 	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
@@ -36,8 +34,6 @@ export const getEpisodes = async ({
 			page,
 			search,
 			limit,
-			range_start,
-			range_end,
 		},
 	})
 	return episodes.data

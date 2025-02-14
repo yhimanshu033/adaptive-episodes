@@ -72,8 +72,6 @@ export type TGetEpisodesQueryParams = {
 	limit?: number
 	page?: number
 	project_id: number
-	range_end?: number
-	range_start?: number
 	search?: string
 }
 

@@ -1,5 +1,3 @@
-import { EpisodeRangeFormSchema } from '@/hooks/form-resolvers/episode-range-resolver'
-
 import { EStatus } from '@/types/common'
 import { SaveEpisodeParams, TGetEpisodesResponse } from '@/types/episode-type'
 
@@ -52,8 +50,3 @@ export const PRIMARY_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 	'comments',
 ] as const
-
-export const DEFAULT_EPISODE_RANGE: EpisodeRangeFormSchema = {
-	end: 0,
-	start: 0,
-}

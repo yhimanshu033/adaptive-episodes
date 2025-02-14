@@ -2,7 +2,6 @@ import React from 'react'
 import { usePageState } from '@/hooks/use-page-state'
 import RenderPageButtons from '@/page-builders/episodes/render-page-btns'
 
-import EpisodeRangeSearch from './episode-range-search'
 import EpisodesLimit from './episodes-limit'
 
 const EpisodesPagination = ({ totalPages }: { totalPages: number }) => {
@@ -24,7 +23,6 @@ const EpisodesPagination = ({ totalPages }: { totalPages: number }) => {
 				</div>
 
 				<EpisodesLimit />
-				<EpisodeRangeSearch />
 			</div>
 		)
 	)

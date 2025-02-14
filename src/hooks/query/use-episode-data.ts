@@ -8,23 +8,19 @@ import { useQuery } from '@tanstack/react-query'
 export const useEpisodesData = (
 	title: string = '',
 	page: number = 1,
-	limit?: number,
-	start?: number,
-	end?: number
+	limit?: number
 ) => {
 	const { id } = useParams()
 	const storyId = Number(id)
 
 	const query = useQuery({
-		queryKey: [EPISODE_LIST_QUERY_KEY, storyId, page, title, limit, start, end],
+		queryKey: [EPISODE_LIST_QUERY_KEY, storyId, page, title, limit],
 		queryFn: () =>
 			getEpisodes({
 				project_id: storyId,
 				page,
 				search: title,
 				limit,
-				range_start: start,
-				range_end: end,
 			}),
 	})
 
