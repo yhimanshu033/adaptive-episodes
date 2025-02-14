@@ -38,12 +38,12 @@ export default function VoicePass() {
 	})
 
 	const streamedData = useMemo(() => {
-		if (!data || !responses[data]) return ''
+		if (!data || !responses[data]) return []
 
 		return responses[data].join('').split('\n')
 	}, [data, responses])
 
-	if (!streamedData) {
+	if (!streamedData.length) {
 		return <DualViewLoader />
 	}
 
@@ -54,12 +54,12 @@ export default function VoicePass() {
 					<br key={idx} />
 				) : (
 					<TooltipComponent key={idx} tooltip="Click to copy block">
-						<button
+						<div
 							onClick={() => void navigator.clipboard.writeText(data)}
-							className="group cursor-pointer rounded text-left transition-all active:scale-[0.99]"
+							className="group rounded text-left transition-all hover:scale-[0.99] active:scale-[0.96]"
 						>
-							<span className="group-hover:bg-foreground/10">{data}</span>
-						</button>
+							{data}
+						</div>
 					</TooltipComponent>
 				)
 			)}
