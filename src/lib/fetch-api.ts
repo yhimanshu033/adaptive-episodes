@@ -84,8 +84,14 @@ export async function fetchAPI<
 			.replace(`[${key}]`, value.toString())
 	}
 
+	const filteredQuery = Object.fromEntries(
+		Object.entries(query as Record<string, string>).filter(
+			([, value]) => !!value
+		)
+	)
+
 	const queryStr = new URLSearchParams(
-		query as Record<string, string>
+		filteredQuery as Record<string, string>
 	).toString()
 	if (queryStr) {
 		resolvedUrl += `?${queryStr}`

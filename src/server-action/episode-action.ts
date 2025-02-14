@@ -1,7 +1,5 @@
 'use server'
 
-import { DEFAULT_EPISODES_DATA } from '@/constants/episodes-constants'
-
 import { fetchAPI } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
@@ -17,11 +15,12 @@ import {
 	TGetEpisodesResponse,
 } from '@/types/episode-type'
 
-export const getEpisodes = async (
-	project_id: number,
-	page: number = 1,
-	search: string = ''
-) => {
+export const getEpisodes = async ({
+	project_id,
+	page = 1,
+	search = '',
+	limit,
+}: TGetEpisodesQueryParams) => {
 	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
 		TNoParams,
@@ -30,11 +29,11 @@ export const getEpisodes = async (
 	>({
 		method: 'GET',
 		url: '/chapter/',
-		defaultData: DEFAULT_EPISODES_DATA,
 		query: {
 			project_id,
 			page,
 			search,
+			limit,
 		},
 	})
 	return episodes.data
