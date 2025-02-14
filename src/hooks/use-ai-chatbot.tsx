@@ -13,6 +13,7 @@ import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { TComment } from '@udecode/plate-comments'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
@@ -28,12 +29,7 @@ import { parse } from 'best-effort-json-parser'
 import { jsonrepair } from 'jsonrepair'
 import { nanoid } from 'nanoid'
 
-import {
-	addSFX,
-	addVoicePass,
-	convertReviewResponse,
-	minify,
-} from '@/lib/utils/ai-chatbot'
+import { addSFX, convertReviewResponse, minify } from '@/lib/utils/ai-chatbot'
 import { parseOptimistically } from '@/lib/utils/helpers'
 import { breakDownValue, getText } from '@/lib/utils/plate'
 
@@ -46,8 +42,8 @@ import {
 import {
 	IndexedCommentsResponse,
 	IndexedSFXResponse,
-	IndexedVoicePassResponse,
 } from '@/types/editor-types'
+import { EDualVIewMode } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
 type TChatbotContext = {
@@ -86,7 +82,6 @@ export function ChatbotProvider({
 	const [input, setInput] = useState('')
 	const [sfxStreaming, setSfxStreaming] = useState<string>('')
 	const [reviewStreaming, setReviewStreaming] = useState<string>('')
-	const [voiceStreaming, setVoiceStreaming] = useState<string>('')
 	const [originalChildren, setOriginalChildren] = useState<Value>()
 
 	const { id } = useParams()
@@ -103,6 +98,7 @@ export function ChatbotProvider({
 	} = useAIStore()
 
 	const { setSidebar } = usePlateStore()
+	const { setDualViewMode } = useEpisodeIdStore()
 	const { messages } = store()
 	const requestedAction = store((state) => state.requestedAction)
 	const value = store((state) => state.acceptedValue)
@@ -172,6 +168,11 @@ export function ChatbotProvider({
 			setSidebar(ESidebar.FAR)
 			return
 		}
+		if (suggestion.action === EChatMode.VOICE) {
+			setDualViewMode(EDualVIewMode.VOICE_PASS)
+			setSidebar(ESidebar.DUAL_VIEW)
+			return
+		}
 		if (suggestion.action === EChatMode.PROMPTS) {
 			setInput(suggestion.value)
 			return
@@ -214,7 +215,6 @@ export function ChatbotProvider({
 		removeReview()
 		setSfxStreaming('')
 		setReviewStreaming('')
-		setVoiceStreaming('')
 	}
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
 		const children = originalChildren
@@ -282,7 +282,6 @@ export function ChatbotProvider({
 				})
 			} else if (requestedAction === EChatMode.VOICE) {
 				setOriginalChildren(children)
-				setVoiceStreaming(aiResponse)
 				addMessages({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
@@ -368,44 +367,6 @@ export function ChatbotProvider({
 		reviewStreaming,
 		responses[reviewStreaming],
 		taskEnded[reviewStreaming],
-		originalChildren,
-	])
-
-	useEffect(() => {
-		if (!voiceStreaming || !originalChildren) return
-		if (taskEnded[voiceStreaming]) {
-			setVoiceStreaming('')
-			setOriginalChildren(undefined)
-			return
-		}
-		if (!responses[voiceStreaming]) return
-
-		try {
-			let parsedResponse = parseOptimistically<IndexedVoicePassResponse>(
-				responses[voiceStreaming].join('')
-			)
-			if (!parsedResponse) return
-			parsedResponse = parsedResponse
-				.filter((item) => {
-					const keys = Object.keys(item)
-					return keys.includes('match_string') &&
-						keys.includes('rewrite') &&
-						keys.includes('id')
-						? item
-						: null
-				})
-				.filter(Boolean)
-			if (!parsedResponse.length) return
-			const responseValue = addVoicePass(parsedResponse, originalChildren)
-			setResponseValue(structuredClone(responseValue))
-			setPrevValue(structuredClone(children))
-		} catch (error) {
-			console.log(error)
-		}
-	}, [
-		voiceStreaming,
-		responses[voiceStreaming],
-		taskEnded[voiceStreaming],
 		originalChildren,
 	])
 

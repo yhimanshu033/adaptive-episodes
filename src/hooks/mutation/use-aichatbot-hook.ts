@@ -86,6 +86,8 @@ export const useAIChatbotQueryHook = (
 		],
 		queryFn: getChatbotResponse,
 		enabled: !!metadataQueryData?.data?.data,
+		gcTime: 0,
+		staleTime: 0,
 	})
 	return query
 }
