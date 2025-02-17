@@ -140,16 +140,20 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				)
 					? currentDiv.clientHeight - remainingHeight
 					: currentDiv.clientHeight
+
 				// for first block
 				if (i === 0) {
 					currentDiv.classList.add(EDITOR_FIRST_DIV_CLASSNAME)
 				} else {
 					currentDiv.classList.remove(EDITOR_FIRST_DIV_CLASSNAME)
 				}
+
 				// for breaking blocks
 				for (const className of CONSISTENT_CLASSNAMES) {
 					currentDiv.classList.add(className)
 				}
+
+				// for focus mode and unfocus mode
 				if (focusMode) {
 					currentDiv.classList.add(FOCUS_EDITOR_CLASSNAME)
 					for (const className of UNFOCUS_EDITOR_CLASSNAME) {
@@ -161,6 +165,8 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						currentDiv.classList.add(className)
 					}
 				}
+
+				// for identifying last blocks per page
 				if (height + currHeight > MAX_HEIGHT && focusMode) {
 					currentDiv.classList.add(AFTER_PAGE_BREAK_CLASSNAME)
 					height = currHeight
@@ -168,9 +174,9 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				} else {
 					height += currHeight
 					currentDiv.classList.remove(AFTER_PAGE_BREAK_CLASSNAME)
-					// currentDiv.classList.remove(pages + "-" + AFTER_PAGE_BREAK_CLASSNAME)
 				}
 			}
+
 			// for last block
 			setRemainingHeight(MAX_HEIGHT - height)
 			setPages(pages)
@@ -217,10 +223,12 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 					// eslint-disable-next-line react/no-unknown-property
 					<style jsx global>
 						{`
+							/* for counting page numbers */
 							.counter-parent {
 								counter-reset: ${counter};
 							}
 
+							/* for page numbers before page break */
 							.${AFTER_PAGE_BREAK_CLASSNAME}::before {
 								content: counter(${counter}) '/${pages}';
 								counter-increment: ${counter};
@@ -234,6 +242,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 								padding: 0.25rem;
 							}
 
+							/* for page numbers after last block */
 							.last-padding-div::after {
 								content: counter(${counter}) '/${pages}';
 								counter-increment: ${counter};
