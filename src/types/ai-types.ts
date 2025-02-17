@@ -48,6 +48,7 @@ export interface AIChatBotParams {
 		}[]
 		project_id?: number
 		scenes_array?: string[]
+		sources?: string[]
 		user_message: string
 	}
 }
@@ -96,6 +97,12 @@ export type TMessage =
 			role: EMessenger.ASSISTANT
 			taskId: string
 	  }
+
+export type StoryExplorerConfiguration = {
+	current_ep: boolean
+	next_eps: boolean
+	prev_eps: boolean
+}
 export interface AIStoreType {
 	acceptedValue: Value | null
 	activeCommentExampleMap: Record<string, string>
@@ -109,6 +116,7 @@ export interface AIStoreType {
 	prevValue: Value | null
 	requestedAction: EChatMode | null
 	responseValue: Value | null
+	storyExplorerConfiguration: StoryExplorerConfiguration
 }
 
 export interface PlotExplorerParams {

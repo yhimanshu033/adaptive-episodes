@@ -40,6 +40,11 @@ const initialAiState: AIStoreType = {
 		[ExplorerModeId.World]: null,
 	},
 	activeCommentExampleMap: {},
+	storyExplorerConfiguration: {
+		current_ep: true,
+		next_eps: false,
+		prev_eps: false,
+	},
 }
 
 const initialLaserState: LaserStoreType = {

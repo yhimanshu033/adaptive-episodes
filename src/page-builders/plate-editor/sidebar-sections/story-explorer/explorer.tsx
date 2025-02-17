@@ -55,7 +55,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 								end={end}
 							/>
 						) : (
-							<div className="flex flex-col items-center space-y-3">
+							<div className="relative flex flex-col items-center gap-3">
 								{action.map((id, idx) => (
 									<Button
 										key={idx}
@@ -67,7 +67,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										{categoryNames[id]}
 									</Button>
 								))}
-								<div className="mt-8 flex items-center justify-center">
+								<div className="flex items-center justify-center">
 									<div className="relative w-64">
 										<Input
 											disabled

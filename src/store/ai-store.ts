@@ -89,6 +89,24 @@ function useAIStore() {
 		})
 	}
 
+	const setStoryExplorerConfiguration = (
+		storyExplorerConfiguration: AIStoreType['storyExplorerConfiguration']
+	) => {
+		useAiStoreContext.setState({ storyExplorerConfiguration })
+	}
+
+	const setStoryExplorerConfigurationValue = (
+		storyExplorerConfigurationKey: keyof AIStoreType['storyExplorerConfiguration'],
+		value: boolean
+	) => {
+		useAiStoreContext.setState((state) => ({
+			storyExplorerConfiguration: {
+				...state.storyExplorerConfiguration,
+				[storyExplorerConfigurationKey]: value,
+			},
+		}))
+	}
+
 	return {
 		store: useAiStoreContext,
 		addMessages,
@@ -104,6 +122,8 @@ function useAIStore() {
 		setActiveCommentExampleMap,
 		addActiveCommentExampleMap,
 		removeActiveCommentExampleMap,
+		setStoryExplorerConfiguration,
+		setStoryExplorerConfigurationValue,
 	}
 }
 
