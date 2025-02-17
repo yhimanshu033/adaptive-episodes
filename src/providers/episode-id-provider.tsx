@@ -11,7 +11,7 @@ import { immer } from 'zustand/middleware/immer'
 import { useShallow } from 'zustand/react/shallow'
 
 import { AIStoreType } from '@/types/ai-types'
-import { EpisodeIdStoreType } from '@/types/episode-type'
+import { EDualVIewMode, EpisodeIdStoreType } from '@/types/episode-type'
 import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
@@ -22,8 +22,9 @@ const initialState: PlateStoreData = {
 	currentDiffValue: null,
 	viewMode: false,
 	activeNoteId: null,
-	localDiffValue: null,
 	fontFamily: DEFAULT_FONT_FAMILY,
+	localDiffValue: null,
+	focusMode: false,
 }
 
 const initialAiState: AIStoreType = {
@@ -54,6 +55,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	notes: [],
 	resolvedComments: [],
 	currentTitle: '',
+	dualViewMode: EDualVIewMode.US_TRANSLATION,
 	startOverlayLoading: false,
 }
 

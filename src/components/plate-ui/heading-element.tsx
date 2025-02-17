@@ -10,12 +10,12 @@ const headingVariants = cva('', {
 			true: 'mt-0',
 		},
 		variant: {
-			h1: 'mb-1 mt-[0.6em] font-heading text-4xl font-bold',
-			h2: 'mb-px mt-[0.4em] font-heading text-2xl font-semibold tracking-tight',
-			h3: 'mb-px mt-[0.2em] font-heading text-xl font-semibold tracking-tight',
-			h4: 'mt-[0.75em] font-heading text-lg font-semibold tracking-tight',
-			h5: 'mt-[0.75em] text-lg font-semibold tracking-tight',
-			h6: 'mt-[0.75em] text-base font-semibold tracking-tight',
+			h1: 'pb-1 pt-[0.6em] font-heading text-4xl font-bold',
+			h2: 'pb-px pt-[0.4em] font-heading text-2xl font-semibold tracking-tight',
+			h3: 'pb-px pt-[0.2em] font-heading text-xl font-semibold tracking-tight',
+			h4: 'pt-[0.75em] font-heading text-lg font-semibold tracking-tight',
+			h5: 'pt-[0.75em] text-lg font-semibold tracking-tight',
+			h6: 'pt-[0.75em] text-base font-semibold tracking-tight',
 		},
 	},
 })

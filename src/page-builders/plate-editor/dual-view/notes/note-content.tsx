@@ -18,15 +18,13 @@ const NoteContent = ({
 	const { setActiveNoteId } = usePlateStore()
 	const note = notes.find((note) => note.id === activeNoteId)
 	return (
-		<div className="">
-			<div className="flex">
-				<div className="flex-1">
-					<div className="mb-2 text-2xl font-bold">
-						{note?.title || 'Title'}
-					</div>
-					<div className="mb-4 text-sm text-muted-foreground">
+		<div>
+			<div className="flex justify-between">
+				<div>
+					<h4 className="mb-2 text-2xl font-bold">{note?.title || 'Title'}</h4>
+					<p className="mb-4 text-sm text-muted-foreground">
 						Last updated: {formatDate(note?.updateTime || '')}
-					</div>
+					</p>
 				</div>
 				<Button
 					size="icon"

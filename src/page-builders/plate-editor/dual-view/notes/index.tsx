@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import NoteCard from '@/page-builders/plate-editor/sidebar-sections/notes/note-card'
-import NoteContent from '@/page-builders/plate-editor/sidebar-sections/notes/note-content'
+import NoteCard from '@/page-builders/plate-editor/dual-view/notes/note-card'
+import NoteContent from '@/page-builders/plate-editor/dual-view/notes/note-content'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -32,7 +32,7 @@ const Notes = () => {
 	}
 
 	return (
-		<section className="p-4">
+		<section className="mt-16 p-4">
 			<RenderNotes />
 		</section>
 	)

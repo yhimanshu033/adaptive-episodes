@@ -56,8 +56,19 @@ export const EditorModes = {
 
 export const MAIN_EDITOR_ID = 'main-editor'
 export const TRANSLATION_EDITOR_ID = 'translation-editor'
+export const NEXT_EP_EDITOR_ID = 'next-ep-editor'
+export const PREV_EP_EDITOR_ID = 'prev-ep-editor'
+export const LINES = 30
 
-export const IGNORED_DIFF_KEYS = ['id']
+export const AFTER_PAGE_BREAK_CLASSNAME = 'after-editor-page' // CHECK WITH GLOBALS CSS
+export const BEFORE_PAGE_BREAK_CLASSNAME = 'before-editor-page' // CHECK WITH GLOBALS CSS
+
+export const EDITOR_FIRST_DIV_CLASSNAME = 'editor-first-div'
+export const EDITOR_LAST_DIV_CLASSNAME = 'editor-last-div'
+
+export const REMAINING_HEIGHT_CLASSNAME = 'remaining-height-padding'
+
+export const TRANSITION_DURATION = 200
 
 export const DEFAULT_FONT_FAMILY = '--font-default'
 export const FONT_RECORD: Record<string, string> = {
@@ -72,3 +83,7 @@ export const FONT_RECORD: Record<string, string> = {
 	Consolas: '--font-consolas',
 	Impact: '--font-impact',
 }
+
+export const IGNORED_DIFF_KEYS = ['id']
+
+export const END_ELEMENT = `<div data-slate-node="element" class="m-0 px-0 py-1 slate-p border-r border-l -mx-6" placeholder="Type a paragraph" data-block-id="test-end-element"><span data-slate-node="text"><span data-slate-leaf="true" class=""><span data-slate-zero-width="n" data-slate-length="0"><br></span></span></span></div>`

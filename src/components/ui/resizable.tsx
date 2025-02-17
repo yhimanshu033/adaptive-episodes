@@ -16,10 +16,20 @@ const ResizablePanelGroup = ({
 			className
 		)}
 		{...props}
+		style={{ ...props.style, overflow: 'clip' }}
 	/>
 )
 
-const ResizablePanel = ResizablePrimitive.Panel
+const ResizablePanel = ({
+	className,
+	...props
+}: React.ComponentProps<typeof ResizablePrimitive.Panel>) => (
+	<ResizablePrimitive.Panel
+		className={cn(className)}
+		{...props}
+		style={{ ...props.style, overflow: 'clip' }}
+	/>
+)
 
 const ResizableHandle = ({
 	withHandle,

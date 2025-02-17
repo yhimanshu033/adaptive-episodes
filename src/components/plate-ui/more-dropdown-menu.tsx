@@ -2,7 +2,7 @@ import React from 'react'
 import useDisableTools from '@/hooks/use-disable-tools'
 import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
-import { Globe, NotebookPen, Search } from 'lucide-react'
+import { Focus, Globe, Search } from 'lucide-react'
 
 import {
 	DropdownMenu,
@@ -16,7 +16,7 @@ import { ToolbarButton } from '@/components/plate-ui/toolbar'
 import { ESidebar } from '@/types/plate-types'
 
 export function MoreDropdownMenu(props: DropdownMenuProps) {
-	const { setSidebar } = usePlateStore()
+	const { setSidebar, setFocusMode } = usePlateStore()
 	const openState = useOpenState()
 	const { isDisabled } = useDisableTools()
 	return (
@@ -49,9 +49,15 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 					<Search className="mr-2 size-5" />
 					Story Explorer
 				</DropdownMenuItem>
-				<DropdownMenuItem onSelect={() => setSidebar(ESidebar.NOTES, true)}>
-					<NotebookPen className="mr-2 size-5" />
-					Notes
+				<DropdownMenuItem
+					disabled={isDisabled}
+					onSelect={() => {
+						setFocusMode(true)
+						setSidebar(null)
+					}}
+				>
+					<Focus className="mr-2 size-5" />
+					Focus Mode
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

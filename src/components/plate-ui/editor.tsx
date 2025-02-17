@@ -1,4 +1,11 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
+import {
+	AFTER_PAGE_BREAK_CLASSNAME,
+	EDITOR_FIRST_DIV_CLASSNAME,
+	LINES,
+	REMAINING_HEIGHT_CLASSNAME,
+	TRANSITION_DURATION,
+} from '@/constants/editor-constants'
 import useSaving from '@/hooks/use-saving'
 import useAIStore from '@/store/ai-store'
 import useLaserStore from '@/store/laser-store'
@@ -14,6 +21,7 @@ import {
 } from '@udecode/plate-common/react'
 import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
+import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeId from '@/providers/episode-id-provider'
@@ -25,7 +33,7 @@ import { ESidebar } from '@/types/plate-types'
 const editorVariants = cva(
 	cn(
 		'relative overflow-x-auto whitespace-pre-wrap break-words',
-		'min-h-[80px] w-full rounded-md bg-background px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
+		'~min-h-[80px] w-full rounded-md bg-background px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
 		'[&_[data-slate-placeholder]]:text-muted-foreground [&_[data-slate-placeholder]]:!opacity-100',
 		'[&_[data-slate-placeholder]]:top-[auto_!important]',
 		'[&_strong]:font-bold'
@@ -77,31 +85,84 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		},
 		ref
 	) => {
+		const isPasted = React.useRef(false)
+		const editor = useEditorRef()
+		const episodeId = useEpisodeId()
+
 		const { store } = useCustomPlateStore()
 		const scale = store((state) => state.scale)
+		const sidebar = store((state) => state.sidebar)
+		const plateFocusMode = store((state) => state.focusMode)
 		const fontFamily = store(useShallow((state) => state.fontFamily))
-		const mihHeight = 100 / scale
-		const minWidth = 100 / scale
+
+		const [remainingHeight, setRemainingHeight] = React.useState(0)
+
 		const contentRef = useRef<HTMLDivElement>(null)
 		const { setEditorCoords } = useLaserStore()
-		const episodeId = useEpisodeId()
+
+		const { store: AiStore } = useAIStore()
+		const responseValue = AiStore(useShallow((state) => state.responseValue))
+		const prevValue = AiStore(useShallow((state) => state.prevValue))
+
+		const { children } = useEditorState()
+		const { setForceSave } = useSaving()
+
+		const [debouncedSidebar] = useDebounceValue(
+			sidebar,
+			TRANSITION_DURATION * 2
+		)
+		const focusMode = !debouncedSidebar && plateFocusMode
+
+		const isEmpty = useMemo(
+			() =>
+				children.length === 1 &&
+				children[0].children.length === 1 &&
+				children[0].children[0].text === '',
+			[children]
+		)
+
+		useEffect(() => {
+			const editorDiv = contentRef.current
+			if (!editorDiv || readOnly) return
+			const LINE_HEIGHT = 32
+			const MAX_HEIGHT = LINES * LINE_HEIGHT
+			let height = 0
+			for (let i = 0; i < editorDiv.children.length; i++) {
+				const currentDiv = editorDiv.children[i] as HTMLDivElement
+				const currHeight = currentDiv.classList.contains(
+					REMAINING_HEIGHT_CLASSNAME
+				)
+					? currentDiv.clientHeight - remainingHeight
+					: currentDiv.clientHeight
+				// for first block
+				if (i === 0) {
+					currentDiv.classList.add(EDITOR_FIRST_DIV_CLASSNAME)
+				} else {
+					currentDiv.classList.remove(EDITOR_FIRST_DIV_CLASSNAME)
+				}
+				// for breaking blocks
+				currentDiv.className += ' px-6 border-r border-l -mx-6'
+				if (height + currHeight > MAX_HEIGHT && focusMode) {
+					currentDiv.classList.add(AFTER_PAGE_BREAK_CLASSNAME)
+					height = currHeight
+				} else {
+					height += currHeight
+					currentDiv.classList.remove(AFTER_PAGE_BREAK_CLASSNAME)
+				}
+			}
+			// for last block
+			setRemainingHeight(MAX_HEIGHT - height)
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [children, contentRef.current, readOnly, scale, focusMode])
 
 		useEffect(() => {
 			if (!contentRef.current) return
 			const rect = contentRef.current?.getBoundingClientRect()
 			if (!rect) return
 			setEditorCoords(rect.x, rect.y)
+
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [contentRef])
-
-		const sidebar = store((state) => state.sidebar)
-		const { store: AiStore } = useAIStore()
-		const responseValue = AiStore(useShallow((state) => state.responseValue))
-		const prevValue = AiStore(useShallow((state) => state.prevValue))
-		const { children } = useEditorState()
-		const editor = useEditorRef()
-		const isPasted = React.useRef(false)
-		const { setForceSave } = useSaving()
 
 		useEffect(() => {
 			if (!isPasted.current) return
@@ -143,33 +204,41 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						)}
 					/>
 				) : (
-					<PlateContent
-						className={cn(
-							editorVariants({
-								disabled,
-								focusRing,
-								focused,
-								size,
-								variant,
-							}),
-							className,
-							'~absolute h-fit origin-top-left'
-						)}
-						ref={contentRef}
-						onPaste={handlePaste}
-						readOnly={disabled ?? readOnly}
-						autoFocus
-						aria-disabled={disabled}
-						data-plate-selectable
-						disableDefaultStyles
-						style={{
-							transform: `scale(${scale})`,
-							minHeight: `${mihHeight}%`,
-							width: `${minWidth}%`,
-							...props.style,
-						}}
-						{...props}
-					/>
+					<>
+						<PlateContent
+							className={cn(
+								editorVariants({
+									disabled,
+									focusRing,
+									focused,
+									size,
+									variant,
+								}),
+								className,
+								'h-fit origin-top-left px-6',
+								isEmpty &&
+									'first-of-type:*:-mx-6 first-of-type:*:border-x first-of-type:*:px-6 first-of-type:*:pt-[var(--editor-break-padding)]',
+								readOnly ? 'py-5' : 'py-0'
+							)}
+							ref={contentRef}
+							onPaste={handlePaste}
+							readOnly={disabled ?? readOnly}
+							autoFocus
+							aria-disabled={disabled}
+							data-plate-selectable
+							disableDefaultStyles
+							style={{
+								fontSize: `${16 * scale}px`,
+								lineHeight: `${24 * scale}px`,
+								...props.style,
+							}}
+							{...props}
+						/>
+						<div
+							style={{ minHeight: `${focusMode ? remainingHeight : 24}px` }}
+							className="border-x border-b pb-[var(--editor-break-padding)]"
+						/>
+					</>
 				)}
 				{isAi && (
 					<div

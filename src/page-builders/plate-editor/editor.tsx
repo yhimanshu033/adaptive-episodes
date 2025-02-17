@@ -1,17 +1,19 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
+import { MAIN_EDITOR_ID } from '@/constants/editor-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
 import useMyEditor from '@/hooks/use-my-editor'
 import { SavingContextProvider } from '@/hooks/use-saving'
+import DualView from '@/page-builders/plate-editor/dual-view'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
+import FocusEditorWrapper from '@/page-builders/plate-editor/focus-mode/editor-wrapper'
 import SaveEpisode from '@/page-builders/plate-editor/save-episode'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import ControlButtons from '@/page-builders/plate-editor/split-editor/control-buttons'
 import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
 import Title from '@/page-builders/plate-editor/title'
-import Translation from '@/page-builders/plate-editor/translation'
 import Versions from '@/page-builders/plate-editor/versions'
 import useEditorExtendedStore from '@/store/extended-store'
 import { useQueryClient } from '@tanstack/react-query'
@@ -29,6 +31,7 @@ import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response
 import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons'
+import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { Separator } from '@/components/ui/separator'
 import useEpisodeId from '@/providers/episode-id-provider'
 
@@ -49,7 +52,7 @@ export default function PlateEditor() {
 		comments: content?.chapter.props?.comments,
 		resolvedComments: (content?.chapter.props?.resolvedComments ||
 			[]) as TCustomComment[],
-		id: 'TEST_ID',
+		id: MAIN_EDITOR_ID,
 	})
 	const episodeId = useEpisodeId()
 	const { store: extendStore } = useEditorExtendedStore()
@@ -77,59 +80,75 @@ export default function PlateEditor() {
 		<Plate editor={editor}>
 			<SavingContextProvider data={content} initialForceSave={imported}>
 				<ChatbotProvider>
-					<div className="container p-4">
-						<EditorOverlayLoader />
-						<div className="flex animate-fade-in-up items-center justify-between">
-							<Title />
-							<div className="flex items-center gap-2">
-								<DownloadDocxButton latestStatus={latestStatus} />
-								<Versions
-									isChildEpisode={isChildEpisode}
-									latestStatus={latestStatus}
-								/>
-								<SyncMetaData />
-								<SaveEpisode />
-							</div>
-						</div>
-						<div
-							ref={containerRef}
-							className={cn(
-								'relative mt-4 animate-fade-in-up rounded border bg-background-editor shadow-editor',
-								// Block selection
-								'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
-							)}
-						>
-							<FixedToolbar>
-								<FixedToolbarButtons />
-							</FixedToolbar>
-							<div className="~h-[78vh] flex size-full">
-								<div className="w-full flex-1 bg-background">
-									<div className="flex h-full">
-										<div className="flex w-full">
-											<Editor
-												className="size-full rounded-none px-12 py-5"
-												autoFocus
-												focusRing={false}
-												variant="ghost"
-												size="md"
-											/>
-
-											<FloatingToolbar>
-												<FloatingToolbarButtons />
-											</FloatingToolbar>
-
-											<CursorOverlay containerRef={containerRef} />
-										</div>
-										<Translation translatedContent={content.translation_text} />
-									</div>
+					<FocusEditorWrapper>
+						<div className="container p-4">
+							<EditorOverlayLoader />
+							<div className="flex animate-fade-in-up items-center justify-between">
+								<Title />
+								<div className="flex items-center gap-2">
+									<DownloadDocxButton latestStatus={latestStatus} />
+									<Versions
+										isChildEpisode={isChildEpisode}
+										latestStatus={latestStatus}
+									/>
+									<SyncMetaData />
+									<SaveEpisode />
 								</div>
-								<Sidebar />
 							</div>
+							<div
+								ref={containerRef}
+								className={cn(
+									'relative mt-4 animate-fade-in-up rounded',
+									// Block selection
+									'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
+								)}
+							>
+								<FixedToolbar>
+									<FixedToolbarButtons />
+								</FixedToolbar>
+								<ResizablePanelGroup
+									direction="horizontal"
+									className="flex size-full !overflow-visible"
+								>
+									<ResizablePanel
+										minSize={30}
+										order={1}
+										className="w-full flex-1 bg-background"
+									>
+										<ResizablePanelGroup
+											direction="horizontal"
+											className="flex h-full"
+										>
+											<ResizablePanel
+												minSize={30}
+												order={1}
+												className="flex w-full"
+											>
+												<Editor
+													className="size-full rounded-none py-5"
+													autoFocus
+													focusRing={false}
+													variant="ghost"
+													size="md"
+												/>
+
+												<FloatingToolbar>
+													<FloatingToolbarButtons />
+												</FloatingToolbar>
+
+												<CursorOverlay containerRef={containerRef} />
+											</ResizablePanel>
+											<DualView translatedContent={content.translation_text} />
+										</ResizablePanelGroup>
+									</ResizablePanel>
+									<Sidebar />
+								</ResizablePanelGroup>
+							</div>
+							{isLast ? <ControlButtons /> : <Separator className="mt-8" />}
+							<FloatingPrompt />
+							<FloatingLaserResponse />
 						</div>
-						{isLast ? <ControlButtons /> : <Separator className="mt-8" />}
-						<FloatingPrompt />
-						<FloatingLaserResponse />
-					</div>
+					</FocusEditorWrapper>
 				</ChatbotProvider>
 			</SavingContextProvider>
 		</Plate>

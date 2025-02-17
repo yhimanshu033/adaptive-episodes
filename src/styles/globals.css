@@ -47,19 +47,26 @@
 		/* Box Shadow */
 		--box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); /* Light shadow for depth */
 
+		/* editor break styles */
+		--editor-break-padding: 2rem;
+
 		/* editor font styles */
 		--font-serif: 'Times New Roman', Times, serif;
 		--font-georgia: Georgia, serif;
+
 		/* Sans-Serif Fonts */
 		--font-arial: Arial, Helvetica, sans-serif;
 		--font-verdana: Verdana, Geneva, sans-serif;
 		--font-tahoma: Tahoma, Geneva, sans-serif;
 		--font-trebuchet: 'Trebuchet MS', Helvetica, sans-serif;
+
 		/* Monospace Fonts */
 		--font-courier: 'Courier New', Courier, monospace;
 		--font-consolas: Consolas, 'Courier New', monospace;
+
 		/* Display Fonts */
 		--font-impact: Impact, Charcoal, sans-serif;
+
 		/* Default Font */
 		--font-default: 'Inter', 'Inter Fallback'; /* CHECK WITH LAYOUT.TSX */
 	}
@@ -117,4 +124,26 @@
 }
 .ql-editor {
 	min-height: 100px;
+}
+
+/* editor page break styles */
+
+.after-editor-page {
+	padding-top: var(--editor-break-padding);
+	margin-top: var(--editor-break-padding);
+	border-top: 1px solid hsl(var(--border));
+}
+
+div:has(+ .after-editor-page) {
+	padding-bottom: var(--editor-break-padding);
+	border-bottom: 1px solid hsl(var(--border));
+}
+
+.editor-first-div {
+	padding-top: var(--editor-break-padding);
+}
+
+.editor-last-div {
+	padding-bottom: var(--editor-break-padding);
+	border-bottom: 1px solid hsl(var(--border));
 }

@@ -41,16 +41,15 @@ export type TLaserLeafChildren = {
 export enum ESidebar {
 	CHATBOT = 'chatbot',
 	COMMENTS = 'comments',
+	DUAL_VIEW = 'dual-view',
 	FAR = 'far',
-	LOCAL_DIFF = 'local_diff',
-	NOTES = 'notes',
 	OUTLINE = 'outline',
-	TRANSLATION = 'translation',
 }
 export type PlateStoreData = {
 	activeDiffId: string | null
 	activeNoteId: string | null
 	currentDiffValue: Value | null
+	focusMode: boolean
 	fontFamily: string
 	localDiffValue: Value | null
 	resolved: boolean

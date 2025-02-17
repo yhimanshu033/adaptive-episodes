@@ -67,6 +67,7 @@ import {
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf'
 import { LaserLeaf } from '@/components/plate-ui/laser-leaf'
 import LaserPromptLeaf from '@/components/plate-ui/laser-prompt-leaf'
+import { ListElement } from '@/components/plate-ui/list-element'
 import { ParagraphElement } from '@/components/plate-ui/paragraph-element'
 import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { ResolvedCommentLeaf } from '@/components/plate-ui/resolved-comment-leaf'
@@ -81,16 +82,34 @@ import { breakDownValue, getRecord, jsonify } from '@/lib/utils/plate'
 
 import { TCustomComment } from '@/types/editor-types'
 
+const extraPlugins = [
+	LaserPlugin,
+	PromptPlugin,
+	FindReplacePlugin,
+	HeadingPlugin,
+	HorizontalRulePlugin,
+	ResolvedCommentsPlugin,
+]
+const extraPluginComponents = {
+	[LaserPlugin.key]: LaserLeaf,
+	[FindReplacePlugin.key]: SearchHighlightLeaf,
+	[PromptPlugin.key]: LaserPromptLeaf,
+	[CommentsPlugin.key]: CommentLeaf,
+	[SuggestionPlugin.key]: SuggestionLeaf,
+	[ResolvedCommentsPlugin.key]: ResolvedCommentLeaf,
+}
 const useMyEditor = ({
 	content,
 	id,
 	comments,
+	simplified,
 	resolvedComments,
 }: {
 	comments?: TComment[]
 	content: string
 	id?: string
 	resolvedComments?: TCustomComment[]
+	simplified?: boolean
 }) => {
 	const {
 		users,
@@ -101,12 +120,7 @@ const useMyEditor = ({
 	const value = breakDownValue(initialValue)
 	const editor = createPlateEditor({
 		plugins: [
-			LaserPlugin,
-			PromptPlugin,
-			FindReplacePlugin,
-			HeadingPlugin,
-			HorizontalRulePlugin,
-
+			...(simplified ? [] : extraPlugins),
 			// Marks
 			BoldPlugin,
 			ItalicPlugin,
@@ -116,7 +130,7 @@ const useMyEditor = ({
 			FontBackgroundColorPlugin,
 			HighlightPlugin,
 			KbdPlugin,
-
+			BlockquotePlugin,
 			// Block Style
 			BlockquotePlugin,
 			AlignPlugin.configure({
@@ -126,12 +140,13 @@ const useMyEditor = ({
 			}),
 			IndentPlugin.configure({
 				inject: {
-					targetPlugins: [
-						ParagraphPlugin.key,
-						BlockquotePlugin.key,
-						CodeBlockPlugin.key,
-						...HEADING_LEVELS,
-					],
+					nodeProps: {
+						styleKey: 'paddingLeft',
+					},
+				},
+				options: {
+					offset: 48,
+					unit: 'px',
 				},
 			}),
 			IndentListPlugin.configure({
@@ -139,9 +154,11 @@ const useMyEditor = ({
 					targetPlugins: [
 						ParagraphPlugin.key,
 						BlockquotePlugin.key,
-						CodeBlockPlugin.key,
 						...HEADING_LEVELS,
 					],
+				},
+				render: {
+					node: withProps(ListElement, { variant: 'ul' }),
 				},
 				options: {
 					listStyleTypes: {
@@ -268,8 +285,7 @@ const useMyEditor = ({
 		],
 		override: {
 			components: withPlaceholders({
-				[LaserPlugin.key]: LaserLeaf,
-				[FindReplacePlugin.key]: SearchHighlightLeaf,
+				...(simplified ? {} : extraPluginComponents),
 				[HorizontalRulePlugin.key]: HrElement,
 				[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
 				[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
@@ -277,18 +293,14 @@ const useMyEditor = ({
 				[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
 				[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
 				[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
+				[BlockquotePlugin.key]: BlockquoteElement,
 				[ParagraphPlugin.key]: ParagraphElement,
 				[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
-				[BlockquotePlugin.key]: BlockquoteElement,
 				[HighlightPlugin.key]: HighlightLeaf,
 				[ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
 				[KbdPlugin.key]: KbdLeaf,
 				[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
 				[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
-				[CommentsPlugin.key]: CommentLeaf,
-				[ResolvedCommentsPlugin.key]: ResolvedCommentLeaf,
-				[SuggestionPlugin.key]: SuggestionLeaf,
-				[PromptPlugin.key]: LaserPromptLeaf,
 			}),
 		},
 		value,

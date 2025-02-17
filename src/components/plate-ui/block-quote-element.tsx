@@ -10,8 +10,9 @@ export const BlockquoteElement = withRef<typeof PlateElement>(
 			<PlateElement
 				ref={ref}
 				as="blockquote"
-				className={cn(className, 'my-1 border-l-2 pl-6 italic')}
+				className={cn(className, 'py-1 pl-6 italic')}
 				{...props}
+				style={{ paddingLeft: '48px' }}
 			>
 				{children}
 			</PlateElement>

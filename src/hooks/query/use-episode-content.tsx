@@ -25,6 +25,7 @@ import {
 	jsonify,
 } from '@/lib/utils/plate'
 
+import { EDualVIewMode } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
 /**
@@ -49,6 +50,7 @@ export const useEpisodeContentUtil = () => {
 	const [imported, setImported] = useState(false)
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
+	const { setDualViewMode } = useEpisodeIdStore()
 	const { toast, dismiss } = useToast()
 
 	const queryKey = [
@@ -97,7 +99,8 @@ export const useEpisodeContentUtil = () => {
 								)
 							)
 						)
-						setSidebar(ESidebar.LOCAL_DIFF)
+						setSidebar(ESidebar.DUAL_VIEW)
+						setDualViewMode(EDualVIewMode.LOCAL_DIFF)
 						dismiss()
 					}}
 				>

@@ -3,6 +3,8 @@ import { DB_NAME, STORE_NAME, VERSION } from '@/constants/global-constants'
 
 import { SaveEpisodeParams } from '@/types/episode-type'
 
+const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000 // 14 days in milliseconds
+
 export function openDB(): Promise<IDBDatabase> {
 	return new Promise((resolve, reject) => {
 		try {
@@ -15,7 +17,11 @@ export function openDB(): Promise<IDBDatabase> {
 				}
 			}
 
-			request.onsuccess = () => resolve(request.result)
+			request.onsuccess = () => {
+				const db = request.result
+				clearOldEntries(db)
+				resolve(db)
+			}
 			request.onerror = () => reject(request.error)
 		} catch (error) {
 			console.error(error)
@@ -69,4 +75,30 @@ export const getValue = async (
 			reject(error)
 		}
 	})
+}
+
+const clearOldEntries = (db: IDBDatabase) => {
+	try {
+		const tx = db.transaction(STORE_NAME, 'readwrite')
+		const store = tx.objectStore(STORE_NAME)
+		const request = store.openCursor()
+
+		const now = Date.now()
+
+		request.onsuccess = () => {
+			const cursor = request.result
+			if (cursor) {
+				const data = cursor.value as SaveEpisodeParams & { timestamp?: number }
+				if (data.timestamp && now - data.timestamp > TWO_WEEKS_MS) {
+					store.delete(cursor.primaryKey)
+				}
+				cursor.continue()
+			}
+		}
+
+		tx.onerror = () =>
+			console.error('Failed to clear old entries from IndexedDB')
+	} catch (error) {
+		console.error(error)
+	}
 }

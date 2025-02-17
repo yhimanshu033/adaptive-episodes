@@ -29,7 +29,7 @@ const AIChatbot = () => {
 		}
 	}, [input])
 	return (
-		<div className="mx-auto flex h-[93vh] max-w-2xl flex-col text-clip px-4 pt-4">
+		<div className="flex h-[93vh] flex-col text-clip px-4 pt-4">
 			<h1 className="mb-4 flex-[0_0_auto] text-2xl font-bold">StoryChat</h1>
 			<MessagesList isPending={isPending} />
 			<Suggestions />

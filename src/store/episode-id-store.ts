@@ -41,6 +41,14 @@ function useEpisodeIdStore() {
 		})
 	}
 
+	const setDualViewMode = (
+		dualViewMode: EpisodeIdStoreType['dualViewMode']
+	) => {
+		useEpisodeIdStoreContext.setState(() => {
+			return { dualViewMode }
+		})
+	}
+
 	const setStartOverlayLoading = (
 		startOverlayLoading: EpisodeIdStoreType['startOverlayLoading']
 	) => {
@@ -82,6 +90,7 @@ function useEpisodeIdStore() {
 		setNotes,
 		addNote,
 		deleteNote,
+		setDualViewMode,
 		setStartOverlayLoading,
 		addResolvedComment,
 		setResolvedComments,
