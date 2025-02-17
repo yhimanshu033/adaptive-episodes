@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import { useCallback } from 'react'
 import { DiffStatus } from '@/constants/ai-constants'
+import useSaveEpisode from '@/hooks/use-save-episode'
 import useAIStore from '@/store/ai-store'
 import { useEditorRef } from '@udecode/plate-common/react'
 import { DiffOperation, DiffUpdate } from '@udecode/plate-diff'
@@ -10,8 +11,6 @@ import { useShallow } from 'zustand/react/shallow'
 import { breakDownValue } from '@/lib/utils/plate'
 
 import { EAction, EMessenger } from '@/types/ai-types'
-
-import useSaveEpisode from './use-save-episode'
 
 export default function useAiChatbotMessages() {
 	const {

@@ -22,7 +22,7 @@ export function CheckboxDropdown() {
 	)
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger asChild className="absolute right-0 top-0 mt-0">
+			<DropdownMenuTrigger asChild className="absolute right-14 top-2">
 				<Button variant="outline" size="icon">
 					<Settings />
 				</Button>

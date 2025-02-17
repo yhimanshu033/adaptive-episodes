@@ -5,7 +5,6 @@ import {
 	currentlyDisabled,
 } from '@/constants/story-explorer-constants'
 import useStoryExplorer from '@/hooks/use-story-explorer'
-import { CheckboxDropdown } from '@/page-builders/plate-editor/sidebar-sections/story-explorer/checkbox-dropdown'
 import Content from '@/page-builders/plate-editor/sidebar-sections/story-explorer/content'
 import { Send } from 'lucide-react'
 
@@ -68,7 +67,6 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										{categoryNames[id]}
 									</Button>
 								))}
-								<CheckboxDropdown />
 								<div className="flex items-center justify-center">
 									<div className="relative w-64">
 										<Input

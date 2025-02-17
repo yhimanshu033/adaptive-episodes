@@ -1,5 +1,6 @@
 import { nanoid, TDescendant, TText, Value } from '@udecode/plate-common'
 
+import { StoryExplorerConfiguration } from '@/types/ai-types'
 import { MinifiedValue } from '@/types/common'
 import { TGetMetadataResponse } from '@/types/content-types'
 import {
@@ -351,4 +352,14 @@ export function addVoicePass(
 		...child,
 		children: applyText(child.children, [index]),
 	}))
+}
+
+export function getStoryExplorerConfigArray(
+	config: StoryExplorerConfiguration
+): string[] {
+	const configArray = Object.keys(config)
+		.map((key) => config[key as keyof typeof config] && key)
+		.filter(Boolean) as string[]
+
+	return configArray
 }

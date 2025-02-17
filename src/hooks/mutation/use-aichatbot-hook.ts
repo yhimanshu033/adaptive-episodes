@@ -3,9 +3,14 @@
 import { useParams } from 'next/navigation'
 import useMetadataQuery from '@/hooks/query/use-metadata-query'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import useAIStore from '@/store/ai-store'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useShallow } from 'zustand/react/shallow'
 
-import { extractFromMetadata } from '@/lib/utils/ai-chatbot'
+import {
+	extractFromMetadata,
+	getStoryExplorerConfigArray,
+} from '@/lib/utils/ai-chatbot'
 import { getMetaDataRange } from '@/lib/utils/helpers'
 
 import { AIChatbotHookParams, AIChatBotParams } from '@/types/ai-types'
@@ -16,6 +21,10 @@ const useAIChatbotHook = ({
 }: AIChatbotHookParams) => {
 	const { id } = useParams()
 	const { startTask } = useSocketStreaming()
+	const { store: useAIContextStore } = useAIStore()
+	const storyExplorerConfiguration = useAIContextStore(
+		useShallow((state) => state.storyExplorerConfiguration)
+	)
 
 	const [start, end] = getMetaDataRange(episodeNumber, episodesCount)
 	const { data: metadataQueryData } = useMetadataQuery(Math.max(start, 1), end)
@@ -25,13 +34,14 @@ const useAIChatbotHook = ({
 
 		const { data: metadata } = metadataQueryData
 		const extractedData = extractFromMetadata(metadata, start)
-
+		const sources = getStoryExplorerConfigArray(storyExplorerConfiguration)
 		const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
 			method: 'POST',
 			url: '/aicopilot/chatbot',
 			body: {
 				project_id: Number(id),
 				...params.aiChatbotData,
+				sources,
 				...extractedData,
 			},
 		})

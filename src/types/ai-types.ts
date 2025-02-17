@@ -48,6 +48,7 @@ export interface AIChatBotParams {
 		}[]
 		project_id?: number
 		scenes_array?: string[]
+		sources?: string[]
 		user_message: string
 	}
 }
