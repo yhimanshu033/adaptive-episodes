@@ -25,7 +25,8 @@ const renderSidebar: Record<ESidebar, React.ReactNode> = {
 const Sidebar = () => {
 	const { store } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
-	const showSidebar = sidebar && sidebar !== ESidebar.DUAL_VIEW
+	const focusMode = store((state) => state.focusMode)
+	const showSidebar = sidebar && sidebar !== ESidebar.DUAL_VIEW && !focusMode
 
 	const [debouncedShowSidebarView] = useDebounceValue(
 		showSidebar,
