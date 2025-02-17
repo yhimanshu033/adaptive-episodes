@@ -8,6 +8,7 @@ import useMyEditor from '@/hooks/use-my-editor'
 import { SavingContextProvider } from '@/hooks/use-saving'
 import DualView from '@/page-builders/plate-editor/dual-view'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
+import FocusEditorWrapper from '@/page-builders/plate-editor/focus-mode/editor-wrapper'
 import SaveEpisode from '@/page-builders/plate-editor/save-episode'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import ControlButtons from '@/page-builders/plate-editor/split-editor/control-buttons'
@@ -79,73 +80,75 @@ export default function PlateEditor() {
 		<Plate editor={editor}>
 			<SavingContextProvider data={content} initialForceSave={imported}>
 				<ChatbotProvider>
-					<div className="container p-4">
-						<EditorOverlayLoader />
-						<div className="flex animate-fade-in-up items-center justify-between">
-							<Title />
-							<div className="flex items-center gap-2">
-								<DownloadDocxButton latestStatus={latestStatus} />
-								<Versions
-									isChildEpisode={isChildEpisode}
-									latestStatus={latestStatus}
-								/>
-								<SyncMetaData />
-								<SaveEpisode />
+					<FocusEditorWrapper>
+						<div className="container p-4">
+							<EditorOverlayLoader />
+							<div className="flex animate-fade-in-up items-center justify-between">
+								<Title />
+								<div className="flex items-center gap-2">
+									<DownloadDocxButton latestStatus={latestStatus} />
+									<Versions
+										isChildEpisode={isChildEpisode}
+										latestStatus={latestStatus}
+									/>
+									<SyncMetaData />
+									<SaveEpisode />
+								</div>
 							</div>
-						</div>
-						<div
-							ref={containerRef}
-							className={cn(
-								'relative mt-4 animate-fade-in-up rounded',
-								// Block selection
-								'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
-							)}
-						>
-							<FixedToolbar>
-								<FixedToolbarButtons />
-							</FixedToolbar>
-							<ResizablePanelGroup
-								direction="horizontal"
-								className="flex size-full !overflow-visible"
+							<div
+								ref={containerRef}
+								className={cn(
+									'relative mt-4 animate-fade-in-up rounded',
+									// Block selection
+									'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
+								)}
 							>
-								<ResizablePanel
-									minSize={30}
-									order={1}
-									className="w-full flex-1 bg-background"
+								<FixedToolbar>
+									<FixedToolbarButtons />
+								</FixedToolbar>
+								<ResizablePanelGroup
+									direction="horizontal"
+									className="flex size-full !overflow-visible"
 								>
-									<ResizablePanelGroup
-										direction="horizontal"
-										className="flex h-full"
+									<ResizablePanel
+										minSize={30}
+										order={1}
+										className="w-full flex-1 bg-background"
 									>
-										<ResizablePanel
-											minSize={30}
-											order={1}
-											className="flex w-full"
+										<ResizablePanelGroup
+											direction="horizontal"
+											className="flex h-full"
 										>
-											<Editor
-												className="size-full rounded-none py-5"
-												autoFocus
-												focusRing={false}
-												variant="ghost"
-												size="md"
-											/>
+											<ResizablePanel
+												minSize={30}
+												order={1}
+												className="flex w-full"
+											>
+												<Editor
+													className="size-full rounded-none py-5"
+													autoFocus
+													focusRing={false}
+													variant="ghost"
+													size="md"
+												/>
 
-											<FloatingToolbar>
-												<FloatingToolbarButtons />
-											</FloatingToolbar>
+												<FloatingToolbar>
+													<FloatingToolbarButtons />
+												</FloatingToolbar>
 
-											<CursorOverlay containerRef={containerRef} />
-										</ResizablePanel>
-										<DualView translatedContent={content.translation_text} />
-									</ResizablePanelGroup>
-								</ResizablePanel>
-								<Sidebar />
-							</ResizablePanelGroup>
+												<CursorOverlay containerRef={containerRef} />
+											</ResizablePanel>
+											<DualView translatedContent={content.translation_text} />
+										</ResizablePanelGroup>
+									</ResizablePanel>
+									<Sidebar />
+								</ResizablePanelGroup>
+							</div>
+							{isLast ? <ControlButtons /> : <Separator className="mt-8" />}
+							<FloatingPrompt />
+							<FloatingLaserResponse />
 						</div>
-						{isLast ? <ControlButtons /> : <Separator className="mt-8" />}
-						<FloatingPrompt />
-						<FloatingLaserResponse />
-					</div>
+					</FocusEditorWrapper>
 				</ChatbotProvider>
 			</SavingContextProvider>
 		</Plate>

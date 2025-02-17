@@ -56,7 +56,7 @@ export default function VoicePass() {
 					<TooltipComponent key={idx} tooltip="Click to copy block">
 						<div
 							onClick={() => void navigator.clipboard.writeText(data)}
-							className="group rounded text-left transition-all hover:scale-[0.99] active:scale-[0.96]"
+							className="group cursor-pointer rounded text-left transition-all hover:scale-[0.99] active:scale-[0.96]"
 						>
 							{data}
 						</div>
