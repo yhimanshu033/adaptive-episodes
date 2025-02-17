@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
-	EPISODE_LIMIT,
+	DEFAULT_EPISODE_LIMIT,
 	EPISODE_LIST_QUERY_KEY,
 } from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -38,7 +38,7 @@ const Title = () => {
 
 	const handleClick = async () => {
 		const page = Math.ceil(
-			Number(episodeContent?.chapter.seq_number || 1) / EPISODE_LIMIT
+			Number(episodeContent?.chapter.seq_number || 1) / DEFAULT_EPISODE_LIMIT
 		)
 		await handleSave({ startOverlayLoading: true })
 		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)

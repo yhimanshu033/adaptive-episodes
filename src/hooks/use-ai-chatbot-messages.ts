@@ -11,6 +11,8 @@ import { breakDownValue } from '@/lib/utils/plate'
 
 import { EAction, EMessenger } from '@/types/ai-types'
 
+import useSaveEpisode from './use-save-episode'
+
 export default function useAiChatbotMessages() {
 	const {
 		store,
@@ -22,6 +24,7 @@ export default function useAiChatbotMessages() {
 	const { messages } = store()
 	const value = store(useShallow((state) => state.acceptedValue))
 	const editor = useEditorRef()
+	const { handleSave } = useSaveEpisode()
 
 	function handleAccept(i: number, all: boolean = true, isSfx: boolean = true) {
 		handleAcceptResponse(all, isSfx)
@@ -36,6 +39,7 @@ export default function useAiChatbotMessages() {
 			},
 			i
 		)
+		void handleSave({ forced: true })
 	}
 	const handleAcceptResponse = useCallback(
 		(all: boolean = true, isSfx: boolean) => {

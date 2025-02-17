@@ -69,6 +69,7 @@ export type TGetEpisodesResponse = {
 }
 
 export type TGetEpisodesQueryParams = {
+	limit?: number
 	page?: number
 	project_id: number
 	search?: string

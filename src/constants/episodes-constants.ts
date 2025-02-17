@@ -24,7 +24,8 @@ export enum EpisodeActions {
 	UPDATE = 'update',
 }
 
-export const EPISODE_LIMIT = 10
+export const DEFAULT_EPISODE_LIMIT = 10
+export const EPISODE_LIMITS: Array<number> = [5, 10, 25, 50, 100]
 
 export const SIDEBAR_DISABLED = ['4008']
 
