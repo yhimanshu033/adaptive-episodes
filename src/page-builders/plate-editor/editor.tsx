@@ -25,8 +25,7 @@ import { Loader } from '@/components/loader'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import { Editor } from '@/components/plate-ui/editor'
-import { FixedToolbar } from '@/components/plate-ui/fixed-toolbar'
-import { FixedToolbarButtons } from '@/components/plate-ui/fixed-toolbar-buttons'
+import FixedToolbarComponent from '@/components/plate-ui/fixed-toolbar-component'
 import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response'
 import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
@@ -103,9 +102,7 @@ export default function PlateEditor() {
 									'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 								)}
 							>
-								<FixedToolbar>
-									<FixedToolbarButtons />
-								</FixedToolbar>
+								<FixedToolbarComponent />
 								<ResizablePanelGroup
 									direction="horizontal"
 									className="flex size-full !overflow-visible"
@@ -113,7 +110,7 @@ export default function PlateEditor() {
 									<ResizablePanel
 										minSize={30}
 										order={1}
-										className="w-full flex-1 bg-background"
+										className="w-full flex-1"
 									>
 										<ResizablePanelGroup
 											direction="horizontal"

@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import {
 	AFTER_PAGE_BREAK_CLASSNAME,
+	CONSISTENT_CLASSNAMES,
 	EDITOR_FIRST_DIV_CLASSNAME,
+	FOCUS_EDITOR_CLASSNAME,
 	LINES,
 	REMAINING_HEIGHT_CLASSNAME,
 	TRANSITION_DURATION,
+	UNFOCUS_EDITOR_CLASSNAME,
 } from '@/constants/editor-constants'
 import useSaving from '@/hooks/use-saving'
 import useAIStore from '@/store/ai-store'
@@ -33,7 +36,7 @@ import { ESidebar } from '@/types/plate-types'
 const editorVariants = cva(
 	cn(
 		'relative overflow-x-auto whitespace-pre-wrap break-words',
-		'~min-h-[80px] w-full rounded-md bg-background px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
+		'w-full rounded-md px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
 		'[&_[data-slate-placeholder]]:text-muted-foreground [&_[data-slate-placeholder]]:!opacity-100',
 		'[&_[data-slate-placeholder]]:top-[auto_!important]',
 		'[&_strong]:font-bold'
@@ -96,6 +99,8 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const fontFamily = store(useShallow((state) => state.fontFamily))
 
 		const [remainingHeight, setRemainingHeight] = React.useState(0)
+		const [pages, setPages] = React.useState(1)
+		const [ctrSwitch, setCtrSwitch] = React.useState(false)
 
 		const contentRef = useRef<HTMLDivElement>(null)
 		const { setEditorCoords } = useLaserStore()
@@ -127,6 +132,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			const LINE_HEIGHT = 32
 			const MAX_HEIGHT = LINES * LINE_HEIGHT
 			let height = 0
+			let pages = 1
 			for (let i = 0; i < editorDiv.children.length; i++) {
 				const currentDiv = editorDiv.children[i] as HTMLDivElement
 				const currHeight = currentDiv.classList.contains(
@@ -134,24 +140,47 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				)
 					? currentDiv.clientHeight - remainingHeight
 					: currentDiv.clientHeight
+
 				// for first block
 				if (i === 0) {
 					currentDiv.classList.add(EDITOR_FIRST_DIV_CLASSNAME)
 				} else {
 					currentDiv.classList.remove(EDITOR_FIRST_DIV_CLASSNAME)
 				}
+
 				// for breaking blocks
-				currentDiv.className += ' px-6 border-r border-l -mx-6'
+				for (const className of CONSISTENT_CLASSNAMES) {
+					currentDiv.classList.add(className)
+				}
+
+				// for focus mode and unfocus mode
+				if (focusMode) {
+					currentDiv.classList.add(FOCUS_EDITOR_CLASSNAME)
+					for (const className of UNFOCUS_EDITOR_CLASSNAME) {
+						currentDiv.classList.remove(className)
+					}
+				} else {
+					currentDiv.classList.remove(FOCUS_EDITOR_CLASSNAME)
+					for (const className of UNFOCUS_EDITOR_CLASSNAME) {
+						currentDiv.classList.add(className)
+					}
+				}
+
+				// for identifying last blocks per page
 				if (height + currHeight > MAX_HEIGHT && focusMode) {
 					currentDiv.classList.add(AFTER_PAGE_BREAK_CLASSNAME)
 					height = currHeight
+					pages++
 				} else {
 					height += currHeight
 					currentDiv.classList.remove(AFTER_PAGE_BREAK_CLASSNAME)
 				}
 			}
+
 			// for last block
 			setRemainingHeight(MAX_HEIGHT - height)
+			setPages(pages)
+			setCtrSwitch((p) => !p)
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [children, contentRef.current, readOnly, scale, focusMode])
 
@@ -181,6 +210,8 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			setForceSave(true)
 		}
 
+		const counter = useMemo(() => 'ctr' + (ctrSwitch ? 'a' : 'b'), [ctrSwitch]) // to re-initialize the counter on children re-render
+
 		return (
 			<div
 				id={`editor-container-${episodeId}`}
@@ -188,6 +219,45 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				className="relative size-full"
 				style={{ fontFamily: `var(${fontFamily})` }}
 			>
+				{plateFocusMode && (
+					// eslint-disable-next-line react/no-unknown-property
+					<style jsx global>
+						{`
+							/* for counting page numbers */
+							.counter-parent {
+								counter-reset: ${counter};
+							}
+
+							/* for page numbers before page break */
+							.${AFTER_PAGE_BREAK_CLASSNAME}::before {
+								content: counter(${counter}) '/${pages}';
+								counter-increment: ${counter};
+								display: block;
+								position: absolute;
+								top: 0rem;
+								right: 0rem;
+								font-style: italic;
+								font-size: 0.8rem;
+								line-height: 0.8rem;
+								padding: 0.25rem;
+							}
+
+							/* for page numbers after last block */
+							.last-padding-div::after {
+								content: counter(${counter}) '/${pages}';
+								counter-increment: ${counter};
+								display: block;
+								position: absolute;
+								bottom: 0rem;
+								right: 0rem;
+								font-style: italic;
+								font-size: 0.8rem;
+								line-height: 0.8rem;
+								padding: 0.25rem;
+							}
+						`}
+					</style>
+				)}
 				{sidebar === ESidebar.CHATBOT && responseValue && prevValue && !isAi ? (
 					<DiffView
 						current={responseValue}
@@ -216,8 +286,12 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 								}),
 								className,
 								'h-fit origin-top-left px-6',
-								isEmpty &&
-									'first-of-type:*:-mx-6 first-of-type:*:border-x first-of-type:*:px-6 first-of-type:*:pt-[var(--editor-break-padding)]',
+								{
+									'first-of-type:*:-mx-6 first-of-type:*:border-x first-of-type:*:px-6 first-of-type:*:pt-[var(--editor-break-padding)]':
+										isEmpty && !plateFocusMode,
+									'counter-parent bg-background-editor first-of-type:*:pt-[var(--editor-break-padding)]':
+										plateFocusMode,
+								},
 								readOnly ? 'py-5' : 'py-0'
 							)}
 							ref={contentRef}
@@ -236,7 +310,10 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						/>
 						<div
 							style={{ minHeight: `${focusMode ? remainingHeight : 24}px` }}
-							className="border-x border-b pb-[var(--editor-break-padding)]"
+							className={cn('pb-[var(--editor-break-padding)]', {
+								'last-padding-div mb-6 bg-background-editor': plateFocusMode,
+								'border-x border-b': !plateFocusMode,
+							})}
 						/>
 					</>
 				)}
