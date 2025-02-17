@@ -5,6 +5,7 @@ import {
 	currentlyDisabled,
 } from '@/constants/story-explorer-constants'
 import useStoryExplorer from '@/hooks/use-story-explorer'
+import { CheckboxDropdown } from '@/page-builders/plate-editor/sidebar-sections/story-explorer/checkbox-dropdown'
 import Content from '@/page-builders/plate-editor/sidebar-sections/story-explorer/content'
 import { Send } from 'lucide-react'
 
@@ -55,7 +56,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 								end={end}
 							/>
 						) : (
-							<div className="flex flex-col items-center space-y-3">
+							<div className="relative flex flex-col items-center gap-3">
 								{action.map((id, idx) => (
 									<Button
 										key={idx}
@@ -67,7 +68,8 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										{categoryNames[id]}
 									</Button>
 								))}
-								<div className="mt-8 flex items-center justify-center">
+								<CheckboxDropdown />
+								<div className="flex items-center justify-center">
 									<div className="relative w-64">
 										<Input
 											disabled
