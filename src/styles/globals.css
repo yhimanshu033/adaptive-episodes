@@ -129,14 +129,17 @@
 /* editor page break styles */
 
 .after-editor-page {
-	padding-top: var(--editor-break-padding);
-	margin-top: var(--editor-break-padding);
-	border-top: 1px solid hsl(var(--border));
+	padding-top: calc(2 * var(--editor-break-padding));
+	position: relative;
+	background: linear-gradient(
+		180deg,
+		hsl(var(--background)) var(--editor-break-padding),
+		hsl(var(--editor-background)) var(--editor-break-padding)
+	);
 }
 
 div:has(+ .after-editor-page) {
 	padding-bottom: var(--editor-break-padding);
-	border-bottom: 1px solid hsl(var(--border));
 }
 
 .editor-first-div {
@@ -145,5 +148,4 @@ div:has(+ .after-editor-page) {
 
 .editor-last-div {
 	padding-bottom: var(--editor-break-padding);
-	border-bottom: 1px solid hsl(var(--border));
 }

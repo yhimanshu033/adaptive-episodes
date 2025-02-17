@@ -68,6 +68,11 @@ export const EDITOR_LAST_DIV_CLASSNAME = 'editor-last-div'
 
 export const REMAINING_HEIGHT_CLASSNAME = 'remaining-height-padding'
 
+export const CONSISTENT_CLASSNAMES = ['px-6', '-mx-6']
+
+export const FOCUS_EDITOR_CLASSNAME = 'bg-background-editor'
+export const UNFOCUS_EDITOR_CLASSNAME = ['border-r', 'border-l']
+
 export const TRANSITION_DURATION = 200
 
 export const DEFAULT_FONT_FAMILY = '--font-default'
