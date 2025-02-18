@@ -5,10 +5,10 @@ import Link from 'next/link'
 import useUnsavedChecker from '@/hooks/use-unsaved-checker'
 import { signOut, useSession } from 'next-auth/react'
 
-import { Button } from '@/components/ui/button'
+import { Button, ButtonProps } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
 
-export default function LogOutButton() {
+export default function LogOutButton(props: ButtonProps) {
 	const session = useSession()
 	const { data } = session
 	const [isLoading, setIsLoading] = useState(false)
@@ -34,6 +34,7 @@ export default function LogOutButton() {
 		<Button
 			tooltip={'Log out'}
 			variant="ghost"
+			{...props}
 			disabled={isLoading}
 			onClick={() => void handleLogout()}
 		>

@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
+import { colorOptions } from '@/constants/global-constants'
 import { TComment, TCommentText } from '@udecode/plate-comments'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
 
@@ -62,3 +63,5 @@ export enum EReviewType {
 export type TReview =
 	| { data: TCustomComment; type: EReviewType.COMMENT }
 	| { data: TSuggestionDescription; type: EReviewType.DESCRIPTION }
+
+export type TColorKey = keyof typeof colorOptions

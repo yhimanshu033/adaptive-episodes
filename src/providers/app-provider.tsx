@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { PRIMARY_BACKGROUND_COLOR } from '@/constants/global-constants'
+import { colorOptions, USER_SELECTED_COLOR } from '@/constants/global-constants'
 import { SocketProvider } from '@/hooks/use-socket'
 import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
 import { updateUserData } from '@/store/global-store'
@@ -17,6 +17,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { queryClient } from '@/lib/get-query-client'
 
 import { SessionData } from '@/types/admin-types'
+import { TColorKey } from '@/types/editor-types'
 
 const AppProvider = ({
 	session,
@@ -28,6 +29,22 @@ const AppProvider = ({
 	useEffect(() => {
 		updateUserData(session)
 	}, [session])
+
+	useEffect(() => {
+		const selectedColor = localStorage.getItem(USER_SELECTED_COLOR) as
+			| TColorKey
+			| undefined
+		if (!selectedColor || !colorOptions[selectedColor]) return
+
+		document.documentElement.style.setProperty(
+			'--primary',
+			colorOptions[selectedColor].value
+		)
+		document.documentElement.style.setProperty(
+			'--secondary',
+			colorOptions[selectedColor].secondary
+		)
+	}, [])
 
 	return (
 		<SessionProvider session={session}>
@@ -46,7 +63,7 @@ const AppProvider = ({
 									delayDuration={500}
 									skipDelayDuration={0}
 								>
-									<NextTopLoader color={PRIMARY_BACKGROUND_COLOR} />
+									<NextTopLoader color="hsl(var(--primary))" />
 									{children}
 									<Toaster />
 									<ReactQueryDevtools />
