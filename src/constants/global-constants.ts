@@ -8,8 +8,6 @@ export const FALLBACK_USER_URL = '/assets/placeholder-user.webp'
 
 export const STORIES_QUERY_KEY = 'stories'
 
-export const PRIMARY_BACKGROUND_COLOR = '#e6194d'
-
 export const DB_NAME = 'COPILOT_DB'
 export const STORE_NAME = 'EPISODE_DATA_STORE'
 export const VERSION = 1
@@ -40,3 +38,14 @@ export const DEFAULT_USER: Record<string, SuggestionUser> = {
 }
 
 export const validResponseStatuses = [200, 201, 204]
+
+export const colorOptions = {
+	Pink: { value: '345 80% 50%', secondary: '345 80% 85%' },
+	Purple: { value: '275 80% 50%', secondary: '275 80% 85%' },
+	Blue: { value: '200 80% 50%', secondary: '200 80% 85%' },
+	Brown: { value: '400 80% 40%', secondary: '400 80% 85%' },
+	Orange: { value: '10 80% 50%', secondary: '10 80% 85%' },
+	Green: { value: '500 80% 40%', secondary: '500 80% 85%' },
+} as const
+
+export const USER_SELECTED_COLOR = 'userSelectedColor'

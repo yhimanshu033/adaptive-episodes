@@ -1,29 +1,32 @@
 'use client'
 
 import React, { useState } from 'react'
+import { colorOptions, USER_SELECTED_COLOR } from '@/constants/global-constants'
 
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
-const colorOptions = [
-	{ name: 'Red', value: '0 84% 60%' },
-	{ name: 'Blue', value: '217 91% 60%' },
-	{ name: 'Pink', value: '330 84% 58%' },
-	{ name: 'Dark Yellow', value: '49 91% 50%' },
-	{ name: 'Green', value: '144 74% 45%' },
-	{ name: 'Purple', value: '267 89% 64%' },
-]
+import { TColorKey } from '@/types/editor-types'
 
 export function ColorPicker() {
-	const [selectedColor, setSelectedColor] = useState(colorOptions[0].value)
+	const [selectedColor, setSelectedColor] = useState<TColorKey>('Pink')
 
-	const handleColorChange = (value: string) => {
+	const handleColorChange = (key: TColorKey) => {
+		setSelectedColor(key)
 		const settingsPage = document.getElementById('settings-page') as
 			| HTMLDivElement
 			| undefined
 		if (!settingsPage) return
-		settingsPage.style.setProperty('--primary', value)
-		setSelectedColor(value)
+		document.documentElement.style.setProperty(
+			'--primary',
+			colorOptions[key].value
+		)
+		document.documentElement.style.setProperty(
+			'--secondary',
+			colorOptions[key].secondary
+		)
+
+		localStorage.setItem(USER_SELECTED_COLOR, key)
 	}
 
 	return (
@@ -34,26 +37,28 @@ export function ColorPicker() {
 				onValueChange={handleColorChange}
 				className="flex flex-wrap gap-4"
 			>
-				{colorOptions.map((color) => (
-					<div key={color.value} className="flex items-center space-x-2">
+				{Object.keys(colorOptions).map((colorKey) => (
+					<div key={colorKey} className="flex items-center space-x-2">
 						<RadioGroupItem
-							value={color.value}
-							id={color.value}
+							value={colorKey}
+							id={colorKey}
 							className="sr-only"
 						/>
 						<Label
-							htmlFor={color.value}
+							htmlFor={colorKey}
 							className="flex cursor-pointer flex-col items-center"
 						>
 							<div
 								className={`size-8 rounded-full border-2 ${
-									selectedColor === color.value
+									selectedColor === colorKey
 										? 'border-black dark:border-white'
 										: 'border-transparent'
 								}`}
-								style={{ backgroundColor: `hsl(${color.value})` }}
+								style={{
+									backgroundColor: `hsl(${colorOptions[colorKey as TColorKey].value})`,
+								}}
 							/>
-							<span className="mt-1 text-xs">{color.name}</span>
+							<span className="mt-1 text-xs">{colorKey}</span>
 						</Label>
 					</div>
 				))}
