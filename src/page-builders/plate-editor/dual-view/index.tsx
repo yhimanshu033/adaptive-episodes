@@ -21,7 +21,9 @@ import { ESidebar } from '@/types/plate-types'
 const DualView = ({ translatedContent }: TranslationProps) => {
 	const { store } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
-	const showDualView = sidebar === ESidebar.DUAL_VIEW
+	const focusMode = store((state) => state.focusMode)
+
+	const showDualView = sidebar === ESidebar.DUAL_VIEW && !focusMode
 
 	const modeToComponent: Record<EDualVIewMode, React.ReactNode> = useMemo(
 		() => ({

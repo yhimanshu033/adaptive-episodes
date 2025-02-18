@@ -4,11 +4,7 @@ import React from 'react'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import { useEditorPlugin } from '@udecode/plate-common/react'
 
-import {
-	Avatar,
-	AvatarFallback,
-	AvatarImage,
-} from '@/components/plate-ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function CommentAvatar({ userId }: { userId: string | null }) {
 	const { useOption } = useEditorPlugin(CommentsPlugin)
@@ -19,7 +15,9 @@ export function CommentAvatar({ userId }: { userId: string | null }) {
 	return (
 		<Avatar className="size-5">
 			<AvatarImage alt={user.name} src={user.avatarUrl} />
-			<AvatarFallback className="text-xs">{user.name?.[0]}</AvatarFallback>
+			<AvatarFallback className="text-xs" colorString={user.name}>
+				{user.name?.[0]}
+			</AvatarFallback>
 		</Avatar>
 	)
 }

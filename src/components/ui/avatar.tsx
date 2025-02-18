@@ -3,7 +3,7 @@
 import * as React from 'react'
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
 
-import { cn } from '@/lib/utils/helpers'
+import { cn, stringToHexColor } from '@/lib/utils/helpers'
 
 const Avatar = React.forwardRef<
 	React.ElementRef<typeof AvatarPrimitive.Root>,
@@ -34,14 +34,19 @@ AvatarImage.displayName = AvatarPrimitive.Image.displayName
 
 const AvatarFallback = React.forwardRef<
 	React.ElementRef<typeof AvatarPrimitive.Fallback>,
-	React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
->(({ className, ...props }, ref) => (
+	React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback> & {
+		colorString?: string
+	}
+>(({ className, colorString, ...props }, ref) => (
 	<AvatarPrimitive.Fallback
 		ref={ref}
 		className={cn(
 			'flex size-full items-center justify-center rounded-full bg-muted',
 			className
 		)}
+		style={
+			colorString ? { backgroundColor: stringToHexColor(colorString) } : {}
+		}
 		{...props}
 	/>
 ))

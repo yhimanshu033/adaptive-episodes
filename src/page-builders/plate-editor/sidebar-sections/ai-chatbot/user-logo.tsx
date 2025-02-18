@@ -1,5 +1,4 @@
 import React from 'react'
-import { FALLBACK_USER_URL } from '@/constants/global-constants'
 import { useGlobalStore } from '@/store/global-store'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -14,11 +13,12 @@ export function UserLogo({ message }: { message: TMessage }) {
 
 	return (
 		<Avatar className="ml-2">
-			<AvatarImage
-				src={userData?.user?.image || FALLBACK_USER_URL}
-				alt="User"
-			/>
-			<AvatarFallback>U</AvatarFallback>
+			{userData?.user?.image && (
+				<AvatarImage src={userData?.user?.image} alt="User" />
+			)}
+			<AvatarFallback colorString={userData?.user?.name || ''}>
+				{userData?.user?.name?.[0] || 'U'}
+			</AvatarFallback>
 		</Avatar>
 	)
 }
