@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
+import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import WriterCombobox from '@/page-builders/episodes/writer-combobox'
 // import { updateEpisode } from '@/server-action/content-action'
@@ -28,8 +29,6 @@ import { formatDate } from '@/lib/format-date'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
-
-import useUserMembersQuery from './query/user-members-data'
 
 export const useCreateTable = (episodes: TEpisode[]) => {
 	const [expanded, setExpanded] = useState<ExpandedState>({})

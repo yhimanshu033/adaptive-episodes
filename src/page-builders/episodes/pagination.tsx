@@ -1,8 +1,7 @@
 import React from 'react'
 import { usePageState } from '@/hooks/use-page-state'
+import EpisodesLimit from '@/page-builders/episodes/episodes-limit'
 import RenderPageButtons from '@/page-builders/episodes/render-page-btns'
-
-import EpisodesLimit from './episodes-limit'
 
 const EpisodesPagination = ({ totalPages }: { totalPages: number }) => {
 	const { currentPage, setCurrentPage } = usePageState()
