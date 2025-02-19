@@ -1,12 +1,8 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import {
 	AFTER_PAGE_BREAK_CLASSNAME,
-	CONSISTENT_CLASSNAMES,
-	EDITOR_FIRST_DIV_CLASSNAME,
-	FOCUS_EDITOR_CLASSNAME,
 	LINES,
-	REMAINING_HEIGHT_CLASSNAME,
-	UNFOCUS_EDITOR_CLASSNAME,
+	TRANSITION_DURATION,
 } from '@/constants/editor-constants'
 import useSaving from '@/hooks/use-saving'
 import useAIStore from '@/store/ai-store'
@@ -23,6 +19,7 @@ import {
 } from '@udecode/plate-common/react'
 import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
+import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeId from '@/providers/episode-id-provider'
@@ -34,7 +31,7 @@ import { ESidebar } from '@/types/plate-types'
 const editorVariants = cva(
 	cn(
 		'relative overflow-x-auto whitespace-pre-wrap break-words',
-		'w-full rounded-md px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
+		'w-full rounded-md ~px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
 		'[&_[data-slate-placeholder]]:text-muted-foreground [&_[data-slate-placeholder]]:!opacity-100',
 		'[&_[data-slate-placeholder]]:top-[auto_!important]',
 		'[&_strong]:font-bold'
@@ -70,6 +67,9 @@ const editorVariants = cva(
 
 export type EditorProps = PlateContentProps &
 	VariantProps<typeof editorVariants> & { isAi?: boolean }
+
+const LINE_HEIGHT = 38
+const MAX_HEIGHT = LINES * LINE_HEIGHT
 
 const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 	(
@@ -110,6 +110,11 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { children } = useEditorState()
 		const { setForceSave } = useSaving()
 
+		const [debouncedSidebar] = useDebounceValue(
+			sidebar,
+			TRANSITION_DURATION * 2
+		)
+
 		const isEmpty = useMemo(
 			() =>
 				children.length === 1 &&
@@ -121,64 +126,36 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		useEffect(() => {
 			const editorDiv = contentRef.current
 			if (!editorDiv || readOnly) return
-			const LINE_HEIGHT = 32
-			const MAX_HEIGHT = LINES * LINE_HEIGHT
+
 			let height = 0
-			let pages = 1
-			for (let i = 0; i < editorDiv.children.length; i++) {
-				const currentDiv = editorDiv.children[i] as HTMLDivElement
-				const currHeight = currentDiv.classList.contains(
-					REMAINING_HEIGHT_CLASSNAME
-				)
-					? currentDiv.clientHeight - remainingHeight
-					: currentDiv.clientHeight
+			let newPages = 1
 
-				// for first block
-				if (i === 0) {
-					currentDiv.classList.add(EDITOR_FIRST_DIV_CLASSNAME)
-				} else {
-					currentDiv.classList.remove(EDITOR_FIRST_DIV_CLASSNAME)
-				}
+			const childrenArray = Array.from(editorDiv.children) as HTMLDivElement[]
 
-				// for breaking blocks
-				for (const className of CONSISTENT_CLASSNAMES) {
-					currentDiv.classList.add(className)
-				}
-
-				// for focus mode and unfocus mode
-				if (focusMode) {
-					currentDiv.classList.add(FOCUS_EDITOR_CLASSNAME)
-					for (const className of UNFOCUS_EDITOR_CLASSNAME) {
-						currentDiv.classList.remove(className)
-					}
-				} else {
-					currentDiv.classList.remove(FOCUS_EDITOR_CLASSNAME)
-					for (const className of UNFOCUS_EDITOR_CLASSNAME) {
-						currentDiv.classList.add(className)
-					}
-				}
-
-				// for identifying last blocks per page
+			for (const currentDiv of childrenArray) {
+				const currHeight = currentDiv.clientHeight
 				if (height + currHeight > MAX_HEIGHT && focusMode) {
 					currentDiv.classList.add(AFTER_PAGE_BREAK_CLASSNAME)
 					height = currHeight
-					pages++
+					newPages++
 				} else {
-					height += currHeight
 					currentDiv.classList.remove(AFTER_PAGE_BREAK_CLASSNAME)
+					height += currHeight
 				}
 			}
 
-			// for last block
-			setRemainingHeight(MAX_HEIGHT - height)
-			setPages(pages)
+			const newRemainingHeight = MAX_HEIGHT - height
+			setRemainingHeight(newRemainingHeight)
+			setPages(newPages)
 			setCtrSwitch((p) => !p)
+
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [children, contentRef.current, readOnly, scale, focusMode])
+		}, [children, readOnly, scale, focusMode, debouncedSidebar])
 
 		useEffect(() => {
 			if (!contentRef.current) return
 			const rect = contentRef.current?.getBoundingClientRect()
+
 			if (!rect) return
 			setEditorCoords(rect.x, rect.y)
 
@@ -190,9 +167,12 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 
 			isPasted.current = false
 			const clearedColors = clearColors(children)
+
 			if (JSON.stringify(clearedColors) === JSON.stringify(children)) return
+
 			const currentTarget = editor.selection?.anchor
 			editor.tf.setValue(clearedColors)
+
 			collapseSelection(editor)
 			focusEditor(editor, currentTarget)
 		}, [children, editor])
@@ -277,12 +257,13 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 									variant,
 								}),
 								className,
-								'h-fit origin-top-left px-6',
+								'h-fit origin-top-left *:px-6 first-of-type:*:pt-[var(--editor-break-padding)]',
 								{
-									'first-of-type:*:-mx-6 first-of-type:*:border-x first-of-type:*:px-6 first-of-type:*:pt-[var(--editor-break-padding)]':
+									'px-6 first-of-type:*:-mx-6 first-of-type:*:px-6':
 										isEmpty && !focusMode,
-									'counter-parent bg-background-editor first-of-type:*:pt-[var(--editor-break-padding)]':
+									'counter-parent first-of-type:*:pt-[var(--editor-break-padding) bg-background-editor':
 										focusMode,
+									'border-x': !focusMode,
 								},
 								readOnly ? 'py-5' : 'py-0'
 							)}
@@ -296,6 +277,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 							style={{
 								fontSize: `${16 * scale}px`,
 								lineHeight: `${24 * scale}px`,
+								minHeight: `${!focusMode ? MAX_HEIGHT : 0}px`,
 								...props.style,
 							}}
 							{...props}
