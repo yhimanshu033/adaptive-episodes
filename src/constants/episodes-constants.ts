@@ -50,3 +50,5 @@ export const PRIMARY_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 	'comments',
 ] as const
+
+export const UNASSIGNED_LABEL = 'Nicht zugewiesen'

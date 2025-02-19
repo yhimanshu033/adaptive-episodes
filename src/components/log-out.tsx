@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import useUnsavedChecker from '@/hooks/use-unsaved-checker'
 import { signOut, useSession } from 'next-auth/react'
 
 import { Button, ButtonProps } from '@/components/ui/button'
@@ -12,12 +11,10 @@ export default function LogOutButton(props: ButtonProps) {
 	const session = useSession()
 	const { data } = session
 	const [isLoading, setIsLoading] = useState(false)
-	const { handleUnsaved } = useUnsavedChecker()
 
 	const handleLogout = async () => {
 		setIsLoading(true)
 		try {
-			await handleUnsaved(true)
 			await signOut()
 		} catch (error) {
 			console.error({ error })

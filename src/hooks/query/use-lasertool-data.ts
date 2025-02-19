@@ -1,5 +1,6 @@
 'use client'
 
+import { API_URLS } from '@/constants/global-constants'
 import useSocket from '@/hooks/use-socket'
 import { useQuery } from '@tanstack/react-query'
 
@@ -11,7 +12,7 @@ const useLaserToolsQuery = (key: string | null, params: LaserToolsParams) => {
 		if (!key) return
 		const taskId = await startTask<LaserToolsParams>({
 			method: 'POST',
-			url: '/aicopilot/lasertools',
+			url: API_URLS.STREAM_LASER,
 			body: params,
 			noCache: true,
 		})

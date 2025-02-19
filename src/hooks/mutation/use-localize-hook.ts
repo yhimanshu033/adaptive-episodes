@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { API_URLS, TIdParams } from '@/constants/global-constants'
 import useSocket from '@/hooks/use-socket'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEditorState } from '@udecode/plate-common/react'
@@ -22,7 +23,7 @@ const useLocalizeHook = () => {
 	const onLocalize = async () => {
 		const taskId = await startTask<{ project_id: string; text: string }>({
 			method: 'POST',
-			url: '/aicopilot/localize/',
+			url: API_URLS.STREAM_LOCALIZATION,
 			body: {
 				text: getText(children),
 				project_id: String(id),
@@ -46,10 +47,11 @@ export const useLocalizeMutation = () => {
 	const mutation = useMutation({
 		mutationKey: ['localize-update'],
 		mutationFn: async (params: TLocalizeUpdateRequest) => {
-			const res = await fetchAPI<TNoParams, TNoParams, TLocalizeUpdateRequest>({
+			const res = await fetchAPI<TNoParams, TIdParams, TLocalizeUpdateRequest>({
 				method: 'PATCH',
-				url: `/project/${String(id)}/update-ls-mapping/`,
+				url: API_URLS.LOCALIZATION_UPDATE,
 				body: params,
+				urlParams: { id: String(id) },
 			})
 			return res
 		},
@@ -64,9 +66,10 @@ export const useLocalizeDownloadMutation = () => {
 	const mutation = useMutation({
 		mutationKey: ['localize-sheet-download'],
 		mutationFn: async () => {
-			const res = await fetchAPI<{ csv_sheet_url: string }>({
+			const res = await fetchAPI<{ csv_sheet_url: string }, TIdParams>({
 				method: 'GET',
-				url: `/project/${String(id)}/get-ls-sheet-url/`,
+				url: API_URLS.LOCALIZATION_GET,
+				urlParams: { id: String(id) },
 			})
 			return res.data
 		},

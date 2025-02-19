@@ -126,6 +126,7 @@ export function SavingContextProvider({
 						...data?.chapter.props,
 						comments: allComments,
 						notes,
+						resolvedComments,
 					},
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				}
@@ -251,9 +252,6 @@ export function SavingContextProvider({
 			handleRemoveGlobalStore()
 		} else {
 			handleSaveGlobalStore()
-		}
-		return () => {
-			handleRemoveGlobalStore()
 		}
 	}, [
 		isSaved,

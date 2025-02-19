@@ -1,5 +1,7 @@
 'use server'
 
+import { API_URLS } from '@/constants/global-constants'
+
 import { fetchAPI } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
@@ -28,7 +30,7 @@ export const getEpisodes = async ({
 		TGetEpisodesQueryParams
 	>({
 		method: 'GET',
-		url: '/chapter/',
+		url: API_URLS.GET_EPISODES,
 		query: {
 			project_id,
 			page,
@@ -50,7 +52,7 @@ export const getEpisodeDetails = async (
 		TGetEpisodeDetailsQueryParams
 	>({
 		method: 'GET',
-		url: '/chapter/',
+		url: API_URLS.GET_EPISODES,
 		query: {
 			project_id,
 			parent,
@@ -66,7 +68,7 @@ export const unmergeEpisodes = async (merged_chapter_id: number) => {
 		TEpisodeUnmergeParams
 	>({
 		method: 'PATCH',
-		url: '/chapters/unmerge/',
+		url: API_URLS.UNMERGE_EPISODES,
 		body: {
 			merged_chapter_id,
 		},
@@ -89,7 +91,7 @@ export const inventEpisode = async ({
 		TEpisodeInventParams
 	>({
 		method: 'POST',
-		url: '/chapters/invent/',
+		url: API_URLS.INVENT_EPISODE,
 		body: {
 			project_id,
 			chapter_title,
@@ -103,7 +105,7 @@ export const inventEpisode = async ({
 export const deleteEpisode = async (chapter_id: number) => {
 	const res = await fetchAPI<TEpisodeDeleteResponse, TEpisodeDeleteURLParams>({
 		method: 'PATCH',
-		url: '/chapters/:chapter_id/delete/',
+		url: API_URLS.DELETE_EPISODE,
 		urlParams: {
 			chapter_id,
 		},
