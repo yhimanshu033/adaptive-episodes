@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { QUICK_PROMPTS } from '@/constants/ai-constants'
+import { RotateCcw, Save } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -59,8 +60,29 @@ export function PromptEditor() {
 				onChange={(e) => setPromptText(e.target.value)}
 				className="min-h-[100px]"
 			/>
-			<div className="flex justify-end">
-				<Button onClick={handleSave}>Save Prompt</Button>
+			<div className="flex justify-between">
+				<Button
+					onClick={handleSave}
+					disabled
+					variant="outline"
+					className="flex gap-2"
+				>
+					Reset Prompt{' '}
+					<span>
+						<RotateCcw size={16} />{' '}
+					</span>
+				</Button>
+				<Button
+					onClick={handleSave}
+					disabled
+					variant="outline"
+					className="flex gap-2"
+				>
+					Save Prompt{' '}
+					<span>
+						<Save size={16} />{' '}
+					</span>
+				</Button>
 			</div>
 		</div>
 	)
