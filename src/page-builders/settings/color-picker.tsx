@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { colorOptions, USER_SELECTED_COLOR } from '@/constants/global-constants'
 
 import { Label } from '@/components/ui/label'
@@ -10,6 +10,15 @@ import { TColorKey } from '@/types/editor-types'
 
 export function ColorPicker() {
 	const [selectedColor, setSelectedColor] = useState<TColorKey>('Pink')
+
+	useEffect(() => {
+		const userSelectedColor = localStorage.getItem(
+			USER_SELECTED_COLOR
+		) as TColorKey
+		if (userSelectedColor) {
+			setSelectedColor(userSelectedColor)
+		}
+	}, [])
 
 	const handleColorChange = (key: TColorKey) => {
 		setSelectedColor(key)
