@@ -41,6 +41,7 @@ export type UserData = {
 	firstname: string | null
 	fullname: string
 	id: number
+	image: string | null
 	is_verified: boolean
 	lastname: string | null
 	login_type: string | null
@@ -64,4 +65,8 @@ export type MemberData = {
 
 export type TGetMembersResponse = {
 	members: MemberData[]
+}
+
+export type TUpdateWritersBody = {
+	user_id: number
 }

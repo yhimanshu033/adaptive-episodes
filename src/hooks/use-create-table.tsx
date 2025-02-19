@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
+import WriterCombobox from '@/page-builders/episodes/writer-combobox'
 // import { updateEpisode } from '@/server-action/content-action'
 import {
 	ColumnDef,
@@ -23,7 +24,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
-import WriterCombobox from '@/components/writer-combobox'
 import { formatDate } from '@/lib/format-date'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
@@ -37,14 +37,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
 	const { data: members } = useUserMembersQuery()
-
-	// async function handleSaveWriter(episodeId: number, writer: string) {
-	// 	await updateEpisode({
-	// 		episodeId,
-	// 		projectId: 1,
-	// 		chapter_title: writer,
-	// 	})
-	// }
 
 	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
 		useEpisodeTable()
@@ -140,7 +132,11 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			cell: ({ row }) =>
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 				!row.depth ? (
-					<WriterCombobox members={members?.members} />
+					<WriterCombobox
+						members={members?.members}
+						chapterId={String(row.original.id)}
+						selectedMemberId={row.original.writer}
+					/>
 				) : (
 					row.getValue('writer') || 'Anonymous'
 				),
