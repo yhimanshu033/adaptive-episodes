@@ -21,7 +21,13 @@ export default function NextEpisode() {
 	}
 	return (
 		<Plate editor={editor}>
-			<Editor focusRing={false} readOnly variant="ghost" size="md" />
+			<Editor
+				focusRing={false}
+				readOnly
+				variant="ghost"
+				size="md"
+				className="!pt-0"
+			/>
 		</Plate>
 	)
 }

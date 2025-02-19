@@ -122,7 +122,7 @@ export default function PlateEditor() {
 												className="flex w-full"
 											>
 												<Editor
-													className="size-full rounded-none py-5"
+													className="size-full rounded-none"
 													autoFocus
 													focusRing={false}
 													variant="ghost"
