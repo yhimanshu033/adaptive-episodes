@@ -54,7 +54,7 @@ export type TEpisode = {
 	type: string
 	update_time: string
 	word_count: number
-	writer?: string
+	writer?: number
 }
 
 export type TEpisodesData = {

@@ -134,7 +134,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 					<WriterCombobox
 						members={members?.members}
 						chapterId={String(row.original.id)}
-						selectedMemberId={row.original.writer}
+						selectedMemberId={String(row.original.writer || '')}
 					/>
 				) : (
 					row.getValue('writer') || 'Anonymous'
