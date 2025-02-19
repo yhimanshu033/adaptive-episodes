@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { API_URLS } from '@/constants/global-constants'
 import useMetadataQuery from '@/hooks/query/use-metadata-query'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
@@ -37,7 +38,7 @@ const useAIChatbotHook = ({
 		const sources = getStoryExplorerConfigArray(storyExplorerConfiguration)
 		const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
 			method: 'POST',
-			url: '/aicopilot/chatbot',
+			url: API_URLS.STREAM_CHATBOT,
 			body: {
 				project_id: Number(id),
 				...params.aiChatbotData,
@@ -76,7 +77,7 @@ export const useAIChatbotQueryHook = (
 
 		const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
 			method: 'POST',
-			url: '/aicopilot/chatbot',
+			url: API_URLS.STREAM_CHATBOT,
 			body: {
 				project_id: Number(id),
 				...params.aiChatbotData,

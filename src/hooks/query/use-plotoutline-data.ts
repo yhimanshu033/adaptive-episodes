@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { API_URLS } from '@/constants/global-constants'
 import {
 	ExplorerModeId,
 	PlotAction,
@@ -93,7 +94,7 @@ const usePlotOutlineQuery = ({
 			}
 			const taskId = await startTask({
 				method: 'POST',
-				url: '/aicopilot/explorer',
+				url: API_URLS.STREAM_EXPLORER,
 				body: params,
 			})
 			return {

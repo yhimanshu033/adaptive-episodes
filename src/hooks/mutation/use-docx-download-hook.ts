@@ -1,4 +1,5 @@
 import React from 'react'
+import { API_URLS } from '@/constants/global-constants'
 import useSocket from '@/hooks/use-socket'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useMutation } from '@tanstack/react-query'
@@ -194,7 +195,7 @@ export default function useDocxDownloadHook({
 		const base64String = btoa(unescape(encodeURIComponent(html)))
 		const taskId = await startTask<TGetDocxFromHtmlBody>({
 			method: 'POST',
-			url: '/project/convert-html-to-docx/',
+			url: API_URLS.STREAM_DOCX,
 			body: {
 				html_content: base64String,
 			},

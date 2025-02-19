@@ -1,5 +1,7 @@
 'use server'
 
+import { API_URLS } from '@/constants/global-constants'
+
 import { fetchAPI } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
@@ -9,7 +11,7 @@ export const uploadFile = async (file: File) => {
 	formData.append('file', file)
 	const stories = await fetchAPI<{ url: string }, TNoParams, FormData>({
 		method: 'POST',
-		url: '/project/file-upload/',
+		url: API_URLS.FILE_UPLOAD,
 		body: formData,
 	})
 

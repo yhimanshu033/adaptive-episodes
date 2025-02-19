@@ -1,4 +1,5 @@
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { API_URLS } from '@/constants/global-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
@@ -43,7 +44,7 @@ export default function useCommentExampleHook() {
 
 		const taskId = await startTask<CommentExampleParams, string[]>({
 			method: 'POST',
-			url: '/aicopilot/review-example',
+			url: API_URLS.STREAM_COMMENT_EXAMPLE,
 			body: {
 				comment: getText(comment.value),
 				highlighted_text: text,

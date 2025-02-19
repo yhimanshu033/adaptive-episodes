@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { API_URLS, TIdParams } from '@/constants/global-constants'
 import { StoryImportFormSchema } from '@/hooks/form-resolvers/story-import-resolver'
 import useSocket from '@/hooks/use-socket'
 import { useToast } from '@/hooks/use-toast'
@@ -53,7 +54,7 @@ const useStoryUploadHook = () => {
 
 			const taskId = await startTask<StoryUploadParams>({
 				method: 'POST',
-				url: '/project/upload/',
+				url: API_URLS.STREAM_PROJECT_UPLOAD,
 				body: {
 					task_data: { ...payload },
 				},
@@ -72,10 +73,11 @@ const useStoryUploadHook = () => {
 	})
 
 	async function storyUpdate({ author }: { author: string }) {
-		const resp = await fetchAPI<TNoParams, TNoParams, { author: string }>({
+		const resp = await fetchAPI<TNoParams, TIdParams, { author: string }>({
 			method: 'PATCH',
-			url: `/project/${String(id)}/`,
+			url: API_URLS.PROJECT_UPDATE,
 			body: { author },
+			urlParams: { id: String(id) },
 		})
 		return resp.data
 	}

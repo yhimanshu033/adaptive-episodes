@@ -3,7 +3,6 @@ import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import WriterCombobox from '@/page-builders/episodes/writer-combobox'
-// import { updateEpisode } from '@/server-action/content-action'
 import {
 	ColumnDef,
 	ExpandedState,
@@ -153,7 +152,9 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 					<Button
 						variant="ghost"
 						size="icon"
-						onClick={() => handleDeleteEpisode(row.original.id)}
+						onClick={() =>
+							handleDeleteEpisode(row.original.parent || row.original.id)
+						}
 					>
 						<Trash2 size={16} />
 					</Button>

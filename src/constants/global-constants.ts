@@ -49,3 +49,33 @@ export const colorOptions = {
 } as const
 
 export const USER_SELECTED_COLOR = 'userSelectedColor'
+
+export const API_URLS = {
+	UPDATE_WRITER: '/chapter/update-writer/:id/',
+	LOCALIZATION_UPDATE: '/project/:id/update-ls-mapping/',
+	LOCALIZATION_GET: '/project/:id/get-ls-sheet-url/',
+	STREAM_LOCALIZATION: '/aicopilot/localize/',
+	STREAM_PROJECT_UPLOAD: '/project/upload/',
+	PROJECT_UPDATE: '/project/:id/',
+	MEMBERS_GET: '/project/:id/get-project-members',
+	LOGIN: '/auth/login/',
+	GET_MY_USER: '/user/me',
+	GET_EPISODE: '/chapter/:chapterId/content/',
+	SAVE_EPISODE: '/chapter/:projectId/:episodeId/',
+	GET_EPISODES: '/chapter/',
+	UNMERGE_EPISODES: '/chapters/unmerge/',
+	INVENT_EPISODE: '/chapters/invent/',
+	DELETE_EPISODE: '/chapters/:chapter_id/delete/',
+	FILE_UPLOAD: '/project/file-upload/',
+	GET_METADATA: '/adapted-metadata/:projectId/:startSequence/:endSequence/',
+	GET_STORIES: '/projects/',
+	STREAM_CHATBOT: '/aicopilot/chatbot',
+	STREAM_COMMENT_EXAMPLE: '/aicopilot/review-example',
+	STREAM_DOCX: '/project/convert-html-to-docx/',
+	STREAM_LASER: '/aicopilot/lasertools',
+	STREAM_EXPLORER: '/aicopilot/explorer',
+}
+
+export type TIdParams = {
+	id: string
+}

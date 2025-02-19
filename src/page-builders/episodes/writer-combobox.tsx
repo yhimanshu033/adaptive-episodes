@@ -49,11 +49,7 @@ const WriterCombobox = ({
 					aria-expanded={open}
 					className="w-[200px] justify-between"
 				>
-					{selectedMember ? (
-						<UserInfo user={selectedMember.user} />
-					) : (
-						'Unassigned'
-					)}
+					<UserInfo user={selectedMember?.user} />
 					<ChevronsUpDown className="opacity-50" />
 				</Button>
 			</PopoverTrigger>

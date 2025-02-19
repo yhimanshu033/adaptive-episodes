@@ -1,5 +1,7 @@
 'use server'
 
+import { API_URLS } from '@/constants/global-constants'
+
 import { fetchAPI } from '@/lib/fetch-api'
 import { convertMetadata } from '@/lib/utils/helpers'
 
@@ -15,7 +17,7 @@ export const getMetadata = async (
 ) => {
 	const metadata = await fetchAPI<TGetMetadataAPIResponse, TMetadataUrlParams>({
 		method: 'GET',
-		url: '/adapted-metadata/:projectId/:startSequence/:endSequence',
+		url: API_URLS.GET_METADATA,
 		defaultData: {
 			data: {},
 		},

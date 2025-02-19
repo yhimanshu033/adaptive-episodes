@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+import { API_URLS } from '@/constants/global-constants'
 import { Account } from 'next-auth'
 import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
 
@@ -55,8 +56,8 @@ const authOptions = {
 			const token = params.token
 			if (account?.id_token) {
 				const resp = await fetchAPI<LoginResponse, TNoParams, LoginBodyParams>({
-					url: '/auth/login/',
 					method: 'POST',
+					url: API_URLS.LOGIN,
 					body: {
 						token: account.id_token,
 					},
@@ -69,7 +70,7 @@ const authOptions = {
 					TNoParams
 				>({
 					method: 'GET',
-					url: '/user/me',
+					url: API_URLS.GET_MY_USER,
 					headers: {
 						Authorization: `Bearer ${resp.data?.data.access_token}`,
 					},

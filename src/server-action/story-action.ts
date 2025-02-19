@@ -1,5 +1,7 @@
 'use server'
 
+import { API_URLS } from '@/constants/global-constants'
+
 import { fetchAPI } from '@/lib/fetch-api'
 
 import { TGetStoriesResponse } from '@/types/story-types'
@@ -7,7 +9,7 @@ import { TGetStoriesResponse } from '@/types/story-types'
 export const getStories = async () => {
 	const stories = await fetchAPI<TGetStoriesResponse>({
 		method: 'GET',
-		url: '/projects/',
+		url: API_URLS.GET_STORIES,
 		defaultData: [],
 	})
 
