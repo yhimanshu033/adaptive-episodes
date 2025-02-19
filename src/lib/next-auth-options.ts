@@ -38,10 +38,15 @@ const authOptions = {
 			return false
 		},
 
-		async session({ session, token }: any) {
+		async session(params: any) {
+			const { session, token } = params
 			session.uid = token.uid
 			session.accessToken = token.accessToken
-			session.user = { ...session.user, ...token.user }
+			session.user = {
+				...session.user,
+				...token.user,
+				image: session.user.image,
+			}
 			return session as SessionData
 		},
 

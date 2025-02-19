@@ -3,8 +3,8 @@
 import React from 'react'
 import { usePathname } from 'next/navigation'
 
-import LogOutButton from '@/components/log-out'
 import Logo from '@/components/logo'
+import SettingsButton from '@/components/settings-button'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils/helpers'
 
@@ -22,7 +22,7 @@ const Header = () => {
 				<Logo className="text-2xl font-bold" />
 				<div className="flex items-center gap-2">
 					<ThemeToggle />
-					<LogOutButton />
+					<SettingsButton />
 				</div>
 			</header>
 		</div>
