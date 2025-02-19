@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
-import { updateEpisode } from '@/server-action/content-action'
+// import { updateEpisode } from '@/server-action/content-action'
 import {
 	ColumnDef,
 	ExpandedState,
@@ -14,7 +14,6 @@ import {
 } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
 
-import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -24,23 +23,28 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import WriterCombobox from '@/components/writer-combobox'
 import { formatDate } from '@/lib/format-date'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
+
+import useUserMembersQuery from './query/user-members-data'
 
 export const useCreateTable = (episodes: TEpisode[]) => {
 	const [expanded, setExpanded] = useState<ExpandedState>({})
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
-	async function handleSaveWriter(episodeId: number, writer: string) {
-		await updateEpisode({
-			episodeId,
-			projectId: 1,
-			chapter_title: writer,
-		})
-	}
+	const { data: members } = useUserMembersQuery()
+
+	// async function handleSaveWriter(episodeId: number, writer: string) {
+	// 	await updateEpisode({
+	// 		episodeId,
+	// 		projectId: 1,
+	// 		chapter_title: writer,
+	// 	})
+	// }
 
 	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
 		useEpisodeTable()
@@ -136,12 +140,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			cell: ({ row }) =>
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 				!row.depth ? (
-					<EditableText
-						key={row.original.id}
-						text={row.getValue('writer') || 'Anonymous'}
-						isEditable
-						onComplete={(val) => void handleSaveWriter(row.original.id, val)}
-					/>
+					<WriterCombobox members={members?.members} />
 				) : (
 					row.getValue('writer') || 'Anonymous'
 				),
