@@ -6,7 +6,6 @@ import {
 	FOCUS_EDITOR_CLASSNAME,
 	LINES,
 	REMAINING_HEIGHT_CLASSNAME,
-	TRANSITION_DURATION,
 	UNFOCUS_EDITOR_CLASSNAME,
 } from '@/constants/editor-constants'
 import useSaving from '@/hooks/use-saving'
@@ -24,7 +23,6 @@ import {
 } from '@udecode/plate-common/react'
 import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
-import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeId from '@/providers/episode-id-provider'
@@ -95,7 +93,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { store } = useCustomPlateStore()
 		const scale = store((state) => state.scale)
 		const sidebar = store((state) => state.sidebar)
-		const plateFocusMode = store((state) => state.focusMode)
+		const focusMode = store((state) => state.focusMode)
 		const fontFamily = store(useShallow((state) => state.fontFamily))
 
 		const [remainingHeight, setRemainingHeight] = React.useState(0)
@@ -111,12 +109,6 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 
 		const { children } = useEditorState()
 		const { setForceSave } = useSaving()
-
-		const [debouncedSidebar] = useDebounceValue(
-			sidebar,
-			TRANSITION_DURATION * 2
-		)
-		const focusMode = !debouncedSidebar && plateFocusMode
 
 		const isEmpty = useMemo(
 			() =>
@@ -219,7 +211,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				className="relative size-full"
 				style={{ fontFamily: `var(${fontFamily})` }}
 			>
-				{plateFocusMode && (
+				{focusMode && (
 					// eslint-disable-next-line react/no-unknown-property
 					<style jsx global>
 						{`
@@ -288,9 +280,9 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 								'h-fit origin-top-left px-6',
 								{
 									'first-of-type:*:-mx-6 first-of-type:*:border-x first-of-type:*:px-6 first-of-type:*:pt-[var(--editor-break-padding)]':
-										isEmpty && !plateFocusMode,
+										isEmpty && !focusMode,
 									'counter-parent bg-background-editor first-of-type:*:pt-[var(--editor-break-padding)]':
-										plateFocusMode,
+										focusMode,
 								},
 								readOnly ? 'py-5' : 'py-0'
 							)}
@@ -311,8 +303,8 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						<div
 							style={{ minHeight: `${focusMode ? remainingHeight : 24}px` }}
 							className={cn('pb-[var(--editor-break-padding)]', {
-								'last-padding-div mb-6 bg-background-editor': plateFocusMode,
-								'border-x border-b': !plateFocusMode,
+								'last-padding-div mb-6 bg-background-editor': focusMode,
+								'border-x border-b': !focusMode,
 							})}
 						/>
 					</>
