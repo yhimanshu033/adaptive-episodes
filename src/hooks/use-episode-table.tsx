@@ -10,7 +10,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Row, Table } from '@tanstack/react-table'
 import { useShallow } from 'zustand/react/shallow'
 
-import { EStatus } from '@/types/common'
+import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisode, TEpisodeInventForm } from '@/types/episode-type'
 
 const useEpisodeTable = () => {
@@ -168,7 +168,14 @@ const useEpisodeTable = () => {
 			const { episodes, status } = selectedEpisodes
 
 			await Promise.all(
-				episodes.map((episode) => {
+				episodes.map(async (episode) => {
+					if (episode.status === BASE_STATUS) {
+						await saveEpisodeMutation.mutateAsync({
+							text: 'Status update',
+							status: EStatus.FIRST_DRAFT,
+							chapterId: episode.parent ?? episode.id,
+						})
+					}
 					return saveEpisodeMutation.mutateAsync({
 						text: 'Status update',
 						status,

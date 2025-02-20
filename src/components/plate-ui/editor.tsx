@@ -31,7 +31,7 @@ import { ESidebar } from '@/types/plate-types'
 const editorVariants = cva(
 	cn(
 		'relative overflow-x-auto whitespace-pre-wrap break-words',
-		'w-full rounded-md ~px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
+		'w-full rounded-md ~px-6 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
 		'[&_[data-slate-placeholder]]:text-muted-foreground [&_[data-slate-placeholder]]:!opacity-100',
 		'[&_[data-slate-placeholder]]:top-[auto_!important]',
 		'[&_strong]:font-bold'
@@ -115,6 +115,11 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			TRANSITION_DURATION * 2
 		)
 
+		const isDiff = useMemo(
+			() => sidebar === ESidebar.CHATBOT && responseValue && prevValue && !isAi,
+			[isAi, sidebar, responseValue, prevValue]
+		)
+
 		const isEmpty = useMemo(
 			() =>
 				children.length === 1 &&
@@ -125,7 +130,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 
 		useEffect(() => {
 			const editorDiv = contentRef.current
-			if (!editorDiv || readOnly) return
+			if (!editorDiv || readOnly || isDiff) return
 
 			let height = 0
 			let newPages = 1
@@ -150,7 +155,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			setCtrSwitch((p) => !p)
 
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [children, readOnly, scale, focusMode, debouncedSidebar])
+		}, [children, readOnly, scale, focusMode, debouncedSidebar, isDiff])
 
 		useEffect(() => {
 			if (!contentRef.current) return
@@ -230,7 +235,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						`}
 					</style>
 				)}
-				{sidebar === ESidebar.CHATBOT && responseValue && prevValue && !isAi ? (
+				{isDiff ? (
 					<DiffView
 						current={responseValue}
 						previous={prevValue}
@@ -242,6 +247,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 								size,
 								variant,
 							}),
+							'px-6 py-5',
 							className
 						)}
 					/>
@@ -256,16 +262,15 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 									size,
 									variant,
 								}),
-								className,
 								'h-fit origin-top-left *:px-6 first-of-type:*:pt-[var(--editor-break-padding)]',
 								{
 									'px-6 first-of-type:*:-mx-6 first-of-type:*:px-6':
 										isEmpty && !focusMode,
 									'counter-parent first-of-type:*:pt-[var(--editor-break-padding) bg-background-editor':
 										focusMode,
-									'border-x': !focusMode,
+									'border-x border-b pb-6': !focusMode,
 								},
-								readOnly ? 'py-5' : 'py-0'
+								className
 							)}
 							ref={contentRef}
 							onPaste={handlePaste}
@@ -277,18 +282,19 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 							style={{
 								fontSize: `${16 * scale}px`,
 								lineHeight: `${24 * scale}px`,
-								minHeight: `${!focusMode ? MAX_HEIGHT : 0}px`,
+								...(!focusMode
+									? { minHeight: MAX_HEIGHT }
+									: { height: 'fit-content' }),
 								...props.style,
 							}}
 							{...props}
 						/>
-						<div
-							style={{ minHeight: `${focusMode ? remainingHeight : 24}px` }}
-							className={cn('pb-[var(--editor-break-padding)]', {
-								'last-padding-div mb-6 bg-background-editor': focusMode,
-								'border-x border-b': !focusMode,
-							})}
-						/>
+						{focusMode && (
+							<div
+								style={{ minHeight: `${remainingHeight}px` }}
+								className="last-padding-div mb-6 bg-background-editor pb-[var(--editor-break-padding)]"
+							/>
+						)}
 					</>
 				)}
 				{isAi && (

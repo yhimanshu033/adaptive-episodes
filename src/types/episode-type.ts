@@ -203,7 +203,7 @@ export const DUAL_VIEW_MODES: EDualVIewMode[] = [
 ]
 
 export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
-	[EDualVIewMode.US_TRANSLATION]: 'US Translation',
+	[EDualVIewMode.US_TRANSLATION]: 'US Original',
 	[EDualVIewMode.NEXT_EP]: 'Next Episode',
 	[EDualVIewMode.NOTES]: 'Notes',
 	[EDualVIewMode.LOCAL_DIFF]: 'Local Changes',

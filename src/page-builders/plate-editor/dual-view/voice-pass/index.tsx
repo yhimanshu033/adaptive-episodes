@@ -5,9 +5,10 @@ import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import DualViewLoader from '@/page-builders/plate-editor/dual-view/dual-view-loader'
+import Block from '@/page-builders/plate-editor/dual-view/voice-pass/block'
+import CopyAll from '@/page-builders/plate-editor/dual-view/voice-pass/copy-all'
 import { useEditorState } from '@udecode/plate-common/react'
 
-import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { minify } from '@/lib/utils/ai-chatbot'
 
 import { EChatMode } from '@/types/ai-types'
@@ -48,21 +49,13 @@ export default function VoicePass() {
 	}
 
 	return (
-		<div className="flex flex-col p-6">
-			{streamedData.map((data, idx) =>
-				!data ? (
-					<br key={idx} />
-				) : (
-					<TooltipComponent key={idx} tooltip="Click to copy block">
-						<div
-							onClick={() => void navigator.clipboard.writeText(data)}
-							className="group cursor-pointer rounded text-left transition-all hover:scale-[0.99] active:scale-[0.96]"
-						>
-							{data}
-						</div>
-					</TooltipComponent>
-				)
-			)}
+		<div className="grid *:[grid-area:1/-1]">
+			<CopyAll id={data} streamedData={streamedData} />
+			<div className="flex flex-col p-6">
+				{streamedData.map((data, idx) => (
+					<Block key={idx} data={data} />
+				))}
+			</div>
 		</div>
 	)
 }
