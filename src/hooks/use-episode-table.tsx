@@ -18,7 +18,6 @@ const useEpisodeTable = () => {
 	const router = useRouter()
 	const pathname = usePathname()
 	const queryClient = useQueryClient()
-	const { limit } = usePageState()
 
 	const {
 		saveEpisodeMutation,
@@ -40,10 +39,10 @@ const useEpisodeTable = () => {
 		useEpisodeTableStore()
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 
-	const { currentPage, search } = usePageState()
+	const { currentPage, search, limit } = usePageState()
 
 	const handleTitleClick = (episodeId: number) => {
-		router.push(`${pathname}/${episodeId}/editor`)
+		router.push(`${pathname}/${episodeId}/editor?${`limit=${limit}`}`)
 	}
 
 	const hasConsistentStatus = (selectedRows: TEpisode[]) =>

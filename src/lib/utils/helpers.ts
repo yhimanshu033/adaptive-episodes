@@ -298,3 +298,20 @@ export function stringToHexColor(str: string): string {
 
 	return color
 }
+
+export const buildQueryString = (
+	params: Record<string, string | number | boolean | undefined | null>
+): string => {
+	const query = Object.entries(params)
+		.reduce<string[]>((acc, [key, value]) => {
+			if (value !== undefined && value !== null && value !== '') {
+				acc.push(
+					`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
+				)
+			}
+			return acc
+		}, [])
+		.join('&')
+
+	return query ? `?${query}` : ''
+}

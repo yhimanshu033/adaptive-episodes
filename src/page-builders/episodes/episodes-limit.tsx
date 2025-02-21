@@ -12,7 +12,6 @@ import {
 
 const EpisodesLimit = () => {
 	const { limit, setLimit } = usePageState()
-
 	const handleChange = (value: string) => {
 		void setLimit(Number(value))
 	}

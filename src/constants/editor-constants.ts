@@ -92,3 +92,8 @@ export const FONT_RECORD: Record<string, string> = {
 export const IGNORED_DIFF_KEYS = ['id']
 
 export const END_ELEMENT = `<div data-slate-node="element" class="m-0 px-0 py-1 slate-p border-r border-l -mx-6" placeholder="Type a paragraph" data-block-id="test-end-element"><span data-slate-node="text"><span data-slate-leaf="true" class=""><span data-slate-zero-width="n" data-slate-length="0"><br></span></span></span></div>`
+
+export enum farSearchModes {
+	CASE_SENSITIVE = 'case-sensititve',
+	WHOLE_WORD = 'whole-word',
+}
