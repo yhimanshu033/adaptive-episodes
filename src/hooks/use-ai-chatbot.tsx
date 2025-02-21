@@ -151,7 +151,7 @@ export function ChatbotProvider({
 			...value,
 		}
 
-		if (newComment.userId) {
+		if (newComment?.userId) {
 			setOptions((draft) => {
 				if (!draft.comments) {
 					draft.comments = {}

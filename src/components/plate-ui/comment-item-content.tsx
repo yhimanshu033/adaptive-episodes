@@ -60,7 +60,7 @@ export default function CommentItemContent() {
 	return (
 		<div>
 			<div className="relative flex items-center gap-2">
-				<CommentAvatar userId={comment.userId} />
+				<CommentAvatar userId={comment?.userId} />
 
 				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
 				{userTitle && (
