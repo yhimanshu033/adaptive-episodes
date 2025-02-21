@@ -30,7 +30,7 @@ export default function ResolvedCommentItem({
 
 	const { addComment } = useComments()
 
-	const user = getUser(resolvedComment.userId) as PlateUser
+	const user = getUser(resolvedComment?.userId) as PlateUser
 
 	const userTitle = roleToData[user?.role]?.title
 
@@ -67,7 +67,7 @@ export default function ResolvedCommentItem({
 					<h1 className="w-64 truncate">{resolvedComment.node.text}</h1>
 				</div>
 				<div className="relative flex items-center gap-2">
-					<CommentAvatar userId={resolvedComment.userId} />
+					<CommentAvatar userId={resolvedComment?.userId} />
 
 					<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
 					{userTitle && (

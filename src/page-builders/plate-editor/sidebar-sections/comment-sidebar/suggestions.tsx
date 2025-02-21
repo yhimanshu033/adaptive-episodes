@@ -26,7 +26,7 @@ const SuggestionBlock = ({
 }) => {
 	const { useOption } = useEditorPlugin(SuggestionPlugin)
 	const { activeCommentId, set: setCommentOption } = useComments()
-	const user = useOption('suggestionUserById', description.userId) as PlateUser
+	const user = useOption('suggestionUserById', description?.userId) as PlateUser
 	const { suggestionAction, activeSuggestionId, set } = useSuggestions()
 	const ref = useRef<HTMLDivElement>(null)
 
