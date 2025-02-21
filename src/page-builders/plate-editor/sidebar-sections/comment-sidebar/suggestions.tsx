@@ -26,7 +26,10 @@ const SuggestionBlock = ({
 }) => {
 	const { useOption } = useEditorPlugin(SuggestionPlugin)
 	const { activeCommentId, set: setCommentOption } = useComments()
-	const user = useOption('suggestionUserById', description?.userId) as PlateUser
+	const user = useOption('suggestionUserById', description?.userId) as
+		| PlateUser
+		| undefined
+
 	const { suggestionAction, activeSuggestionId, set } = useSuggestions()
 	const ref = useRef<HTMLDivElement>(null)
 
@@ -53,7 +56,7 @@ const SuggestionBlock = ({
 		}
 	}, [isActive])
 
-	const userTitle = roleToData[user?.role]?.title
+	const userTitle = user ? roleToData[user?.role]?.title : ''
 
 	if (!user) return null
 

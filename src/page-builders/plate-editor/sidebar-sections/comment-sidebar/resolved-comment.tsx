@@ -30,9 +30,9 @@ export default function ResolvedCommentItem({
 
 	const { addComment } = useComments()
 
-	const user = getUser(resolvedComment?.userId) as PlateUser
+	const user = getUser(resolvedComment?.userId) as PlateUser | undefined
 
-	const userTitle = roleToData[user?.role]?.title
+	const userTitle = user ? roleToData[user.role]?.title : ''
 
 	function handleRestore() {
 		addComment(resolvedComment)
