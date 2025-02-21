@@ -25,6 +25,7 @@ import {
 	jsonify,
 } from '@/lib/utils/plate'
 
+import { BASE_STATUS } from '@/types/common'
 import { EDualVIewMode } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
@@ -56,16 +57,16 @@ export const useEpisodeContentUtil = () => {
 	const queryKey = [
 		EPISODE_CONTENT_QUERY_KEY,
 		episode ? episode.id : episodeId,
-		latestStatus || 'BASE',
+		latestStatus || BASE_STATUS,
 		imported,
 	]
 
 	async function fetchEpisodeContent() {
 		const resp = await getEpisodeContent(episode?.id || episodeId)
 		if (!resp) return resp
+
 		addEpisodeMap(episodeId, resp)
-		const chapterId = String(resp.chapter.parent)
-		const oldData = await getValue(`${resp.chapter.project}_${chapterId}`)
+		const oldData = await getValue(`${resp.chapter.project}_${episodeId}`)
 		if (!oldData) return resp
 		if (imported) {
 			setLocalDiffValue(null)
@@ -81,7 +82,7 @@ export const useEpisodeContentUtil = () => {
 			newData.text
 		)
 		if (!isContentDifferent) {
-			void removeValue(`${resp.chapter.project}_${chapterId}`)
+			void removeValue(`${resp.chapter.project}_${episodeId}`)
 			return resp
 		}
 		toast({

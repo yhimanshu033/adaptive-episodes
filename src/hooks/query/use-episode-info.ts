@@ -16,6 +16,8 @@ export const useEpisodeInfo = () => {
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
+		staleTime: 0,
+		gcTime: 0,
 	})
 
 	return query
