@@ -11,6 +11,7 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 }) => {
 	const originalSearch = getOption('search') || ''
 	const caseSensitive = getOption('caseSensitive') || false
+	const wholeWord = getOption('wholeWord') || false
 
 	const ranges: SearchRange[] = []
 
@@ -21,7 +22,7 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 	const { text: originalText } = node
 	const text = caseSensitive ? originalText : originalText.toLowerCase()
 	const search = caseSensitive ? originalSearch : originalSearch.toLowerCase()
-	const parts = text.split(search)
+	const parts = text.split(wholeWord ? new RegExp(`\\b${search}\\b`) : search)
 	let offset = 0
 	return parts.reduce<SearchRange[]>((acc, part, i) => {
 		if (i !== 0) {

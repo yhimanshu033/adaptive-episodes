@@ -6,6 +6,7 @@ import {
 } from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
+import { usePageState } from '@/hooks/use-page-state'
 import useSaving from '@/hooks/use-saving'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useQueryClient } from '@tanstack/react-query'
@@ -15,7 +16,7 @@ import { ArrowLeft } from 'lucide-react'
 import EditableText from '@/components/editable-text'
 import { Button } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
-import { getSelectedEpisode } from '@/lib/utils/helpers'
+import { buildQueryString, getSelectedEpisode } from '@/lib/utils/helpers'
 
 const Title = () => {
 	const router = useRouter()
@@ -36,12 +37,19 @@ const Title = () => {
 		return date.toLocaleString()
 	}, [episodeInfo])
 
+	const { limit } = usePageState()
+
 	const handleClick = async () => {
 		const page = Math.ceil(
-			Number(episodeContent?.chapter.seq_number || 1) / DEFAULT_EPISODE_LIMIT
+			Number(episodeContent?.chapter.seq_number || 1) / limit
 		)
 		await handleSave({ startOverlayLoading: true })
-		router.push(`/projects/${String(id)}${page === 1 ? '' : `?page=${page}`}`)
+		const queryParams = {
+			page: page === 1 ? undefined : page,
+			limit: limit === DEFAULT_EPISODE_LIMIT ? undefined : limit,
+		}
+		const queryString = buildQueryString(queryParams)
+		router.push(`/projects/${String(id)}${queryString}`)
 		await queryClient.refetchQueries({
 			queryKey: [EPISODE_LIST_QUERY_KEY],
 		})

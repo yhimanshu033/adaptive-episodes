@@ -1,4 +1,5 @@
 import React from 'react'
+import { farSearchModes } from '@/constants/editor-constants'
 import useFindAndReplace from '@/hooks/use-find-and-replace'
 import AddForm from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/add-form'
 import {
@@ -9,6 +10,7 @@ import {
 	Download,
 	ReplaceAllIcon,
 	ReplaceIcon,
+	WholeWord,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -32,7 +34,7 @@ export default function FindAndReplace() {
 		onReplace,
 		onReplaceAll,
 		refetch,
-		toggleCaseSensitive,
+		toggleSearchMode,
 		toggleReplace,
 		replaceEnabled,
 		caseSensitive,
@@ -42,6 +44,7 @@ export default function FindAndReplace() {
 		search,
 		setData,
 		setOptions,
+		wholeWord,
 	} = useFindAndReplace()
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
@@ -63,22 +66,26 @@ export default function FindAndReplace() {
 						placeholder="Find"
 						className="flex-1 rounded border border-gray-300 p-2"
 					/>
-					<TooltipComponent
-						tooltip={
-							caseSensitive ? 'Make Case Insensitive' : 'Make Case Sensitive'
-						}
-					>
+					<div className="absolute inset-y-0 right-0 my-auto flex scale-75 gap-2">
 						<Toggle
-							onClick={toggleCaseSensitive}
+							tooltip={
+								caseSensitive ? 'Make Case Insensitive' : 'Make Case Sensitive'
+							}
+							onClick={() => toggleSearchMode(farSearchModes.CASE_SENSITIVE)}
 							aria-label="Toggle case-sensitivity"
-							className={cn(
-								'absolute inset-y-0 right-0 my-auto scale-75',
-								caseSensitive && 'border'
-							)}
+							className={cn(caseSensitive && 'border')}
 						>
 							<CaseSensitive />
 						</Toggle>
-					</TooltipComponent>
+						<Toggle
+							tooltip="Match whole word"
+							aria-label="Toggle match whole word"
+							className={cn(wholeWord && 'border')}
+							onClick={() => toggleSearchMode(farSearchModes.WHOLE_WORD)}
+						>
+							<WholeWord />
+						</Toggle>
+					</div>
 				</div>
 				<div className="flex gap-2">
 					<Button

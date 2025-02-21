@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { farSearchModes } from '@/constants/editor-constants'
 import useLocalizeHook, {
 	useLocalizeDownloadMutation,
 } from '@/hooks/mutation/use-localize-hook'
@@ -29,6 +30,7 @@ export default function useFindAndReplace() {
 	const replace = useOption('replace') || ''
 	const replaceEnabled = useOption('replaceEnabled')
 	const caseSensitive = useOption('caseSensitive')
+	const wholeWord = useOption('wholeWord')
 	const [ptr, setPtr] = useState(0)
 	const { data: fetchedData, refetch, isFetching } = useLocalizeHook()
 	const { isPending, mutateAsync } = useLocalizeDownloadMutation()
@@ -47,7 +49,10 @@ export default function useFindAndReplace() {
 		return children.reduce((acc, node) => {
 			const getCount = (node: TElement | TText): number => {
 				if ('text' in node) {
-					const regex = new RegExp(search, caseSensitive ? 'g' : 'gi')
+					const regex = new RegExp(
+						wholeWord ? new RegExp(`\\b${search}\\b`) : search,
+						caseSensitive ? 'g' : 'gi'
+					)
 					const matches = String(node.text).match(regex)
 					return matches ? matches.length : 0
 				} else if ('children' in node) {
@@ -60,14 +65,17 @@ export default function useFindAndReplace() {
 			}
 			return acc + getCount(node)
 		}, 0)
-	}, [children, search, caseSensitive])
+	}, [children, search, caseSensitive, wholeWord])
 
 	const records = useMemo(() => {
 		const records: number[][] = []
 		children.forEach((node, index) => {
 			const getCount = (node: TElement | TText, path: number[]): void => {
 				if ('text' in node) {
-					const regex = new RegExp(search, caseSensitive ? 'g' : 'gi')
+					const regex = new RegExp(
+						wholeWord ? new RegExp(`\\b${search}\\b`) : search,
+						caseSensitive ? 'g' : 'gi'
+					)
 					const matches = String(node.text).match(regex)
 					matches?.forEach((m, i) => records.push([...path, i]))
 				} else if ('children' in node) {
@@ -79,7 +87,7 @@ export default function useFindAndReplace() {
 			getCount(node, [index])
 		})
 		return records
-	}, [children, search, caseSensitive])
+	}, [children, search, caseSensitive, wholeWord])
 
 	useEffect(() => {
 		if (!records[ptr]) return
@@ -94,7 +102,7 @@ export default function useFindAndReplace() {
 
 	useEffect(() => {
 		setPtr(0)
-	}, [search, caseSensitive])
+	}, [search, caseSensitive, wholeWord])
 
 	function toggleReplace() {
 		setOptions({ replaceEnabled: !replaceEnabled })
@@ -107,7 +115,10 @@ export default function useFindAndReplace() {
 		function processNode(node: TElement | TText): void {
 			if ('text' in node) {
 				if (!replaceEnabled || !search) return
-				const regex = new RegExp(search, caseSensitive ? 'g' : 'gi')
+				const regex = new RegExp(
+					wholeWord ? new RegExp(`\\b${search}\\b`) : search,
+					caseSensitive ? 'g' : 'gi'
+				)
 				node.text = String(node.text).replace(regex, replace)
 			} else if ('children' in node) {
 				node.children.forEach(processNode)
@@ -118,6 +129,7 @@ export default function useFindAndReplace() {
 		setOptions({ search: '', replace: '', replaceEnabled: false })
 	}, [
 		caseSensitive,
+		wholeWord,
 		children,
 		editor,
 		replace,
@@ -151,8 +163,11 @@ export default function useFindAndReplace() {
 		setPtr(ptr < records.length - 1 ? ptr + 1 : ptr)
 	}
 
-	function toggleCaseSensitive() {
-		setOptions({ caseSensitive: !caseSensitive })
+	function toggleSearchMode(mode: farSearchModes) {
+		if (mode === farSearchModes.CASE_SENSITIVE)
+			setOptions({ caseSensitive: !caseSensitive })
+		else if (mode === farSearchModes.WHOLE_WORD)
+			setOptions({ wholeWord: !wholeWord })
 		const updatedChildren = structuredClone(children)
 		editor.tf.setValue(breakDownValue(updatedChildren))
 	}
@@ -262,7 +277,7 @@ export default function useFindAndReplace() {
 		handleDownload,
 		localized_entities,
 		handleSuggestionClick,
-		toggleCaseSensitive,
+		toggleSearchMode,
 		onReplace,
 		toggleReplace,
 		handlePrev,
@@ -281,5 +296,6 @@ export default function useFindAndReplace() {
 		replace,
 		records,
 		setData,
+		wholeWord,
 	}
 }

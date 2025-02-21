@@ -10,6 +10,7 @@ export type FindReplaceConfig = PluginConfig<
 		replace?: string
 		replaceEnabled?: boolean
 		search?: string
+		wholeWord?: boolean
 	}
 >
 
@@ -23,5 +24,6 @@ export const FindReplacePlugin = createTSlatePlugin<FindReplaceConfig>({
 		replaceEnabled: false,
 		currentId: [0, 0, 0],
 		caseSensitive: true,
+		wholeWord: true,
 	},
 })
