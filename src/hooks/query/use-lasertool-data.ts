@@ -1,6 +1,7 @@
 'use client'
 
 import { API_URLS } from '@/constants/global-constants'
+import { LASERTOOLS_QUERY_KEY } from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
 import { useQuery } from '@tanstack/react-query'
 
@@ -20,7 +21,7 @@ const useLaserToolsQuery = (key: string | null, params: LaserToolsParams) => {
 		return response
 	}
 	const laserToolsQuery = useQuery({
-		queryKey: ['lasertools', key],
+		queryKey: [LASERTOOLS_QUERY_KEY, key],
 		queryFn: onRephraseFn,
 		staleTime: Infinity,
 	})

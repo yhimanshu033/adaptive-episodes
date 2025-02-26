@@ -1,8 +1,6 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import {
-	EPISODE_LIST_QUERY_KEY,
-	EpisodeActions,
-} from '@/constants/episodes-constants'
+import { EpisodeActions } from '@/constants/episodes-constants'
+import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
 import { useEpisodeStore } from '@/store/episode-store'

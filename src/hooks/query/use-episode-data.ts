@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { EPISODE_LIST_QUERY_KEY } from '@/constants/episodes-constants'
+import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import { getEpisodes } from '@/server-action/episode-action'
 import { useQuery } from '@tanstack/react-query'
 

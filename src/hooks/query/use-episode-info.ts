@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { EPISODE_INFO_QUERY_KEY } from '@/constants/query-constants'
 import { getEpisodeDetails } from '@/server-action/episode-action'
 import { useQuery } from '@tanstack/react-query'
 
@@ -11,7 +12,7 @@ export const useEpisodeInfo = () => {
 	const { id }: { id: string } = useParams()
 
 	const query = useQuery({
-		queryKey: ['info', episodeId, id],
+		queryKey: [EPISODE_INFO_QUERY_KEY, episodeId, id],
 		queryFn: () => getEpisodeDetails(parseInt(id), episodeId),
 		refetchOnMount: false,
 		refetchOnReconnect: false,

@@ -3,6 +3,7 @@
 import { useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
+import { PLOTOUTLINE_QUERY_KEY } from '@/constants/query-constants'
 import {
 	ExplorerModeId,
 	PlotAction,
@@ -116,7 +117,7 @@ const usePlotOutlineQuery = ({
 
 	const plotOutlineQuery = useQuery({
 		queryKey: [
-			'plotoutline',
+			PLOTOUTLINE_QUERY_KEY,
 			episodeId,
 			action,
 			instruction,

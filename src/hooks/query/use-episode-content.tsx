@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useState } from 'react'
-import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/episodes-constants'
+import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { useToast } from '@/hooks/use-toast'
 import { getEpisodeContent } from '@/server-action/content-action'
