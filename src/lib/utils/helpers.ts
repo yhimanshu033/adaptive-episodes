@@ -315,3 +315,23 @@ export const buildQueryString = (
 
 	return query ? `?${query}` : ''
 }
+
+export const generateGenitives = (input: string) => {
+	// Handle empty or invalid input
+	if (!input || typeof input !== 'string') {
+		return input
+	}
+
+	// Check if input already has a genitive form
+	if (input.endsWith("'s") || input.endsWith("'")) {
+		return input
+	}
+
+	// For names ending in s, x, z - add apostrophe
+	if (/[szx]$/i.test(input)) {
+		return input + "'"
+	}
+
+	// For all other names - add "s"
+	return input + 's'
+}

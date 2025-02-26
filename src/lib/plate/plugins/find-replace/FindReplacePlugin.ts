@@ -7,6 +7,7 @@ export type FindReplaceConfig = PluginConfig<
 	{
 		caseSensitive?: boolean
 		currentId?: number[]
+		genitive?: boolean
 		replace?: string
 		replaceEnabled?: boolean
 		search?: string
@@ -25,5 +26,6 @@ export const FindReplacePlugin = createTSlatePlugin<FindReplaceConfig>({
 		currentId: [0, 0, 0],
 		caseSensitive: true,
 		wholeWord: true,
+		genitive: true,
 	},
 })

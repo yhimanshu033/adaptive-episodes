@@ -13,6 +13,7 @@ import { TElement, TText } from '@udecode/slate'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { replaceNthInsensitive } from '@/lib/utils/ai-chatbot'
 import { downloadFile } from '@/lib/utils/client-helpers'
+import { generateGenitives } from '@/lib/utils/helpers'
 import { breakDownValue } from '@/lib/utils/plate'
 
 import {
@@ -31,6 +32,7 @@ export default function useFindAndReplace() {
 	const replaceEnabled = useOption('replaceEnabled')
 	const caseSensitive = useOption('caseSensitive')
 	const wholeWord = useOption('wholeWord')
+	const genitive = useOption('genitive')
 	const [ptr, setPtr] = useState(0)
 	const { data: fetchedData, refetch, isFetching } = useLocalizeHook()
 	const { isPending, mutateAsync } = useLocalizeDownloadMutation()
@@ -50,7 +52,9 @@ export default function useFindAndReplace() {
 			const getCount = (node: TElement | TText): number => {
 				if ('text' in node) {
 					const regex = new RegExp(
-						wholeWord ? new RegExp(`\\b${search}\\b`) : search,
+						wholeWord
+							? `(\\b${genitive ? generateGenitives(search) + "'?|\\b" : ''}${search}\\b)`
+							: `(${search})`,
 						caseSensitive ? 'g' : 'gi'
 					)
 					const matches = String(node.text).match(regex)
@@ -65,7 +69,7 @@ export default function useFindAndReplace() {
 			}
 			return acc + getCount(node)
 		}, 0)
-	}, [children, search, caseSensitive, wholeWord])
+	}, [children, wholeWord, genitive, search, caseSensitive])
 
 	const records = useMemo(() => {
 		const records: number[][] = []
@@ -73,7 +77,9 @@ export default function useFindAndReplace() {
 			const getCount = (node: TElement | TText, path: number[]): void => {
 				if ('text' in node) {
 					const regex = new RegExp(
-						wholeWord ? new RegExp(`\\b${search}\\b`) : search,
+						wholeWord
+							? `(\\b${genitive ? generateGenitives(search) + "'?|\\b" : ''}${search}\\b)`
+							: `(${search})`,
 						caseSensitive ? 'g' : 'gi'
 					)
 					const matches = String(node.text).match(regex)
@@ -87,7 +93,7 @@ export default function useFindAndReplace() {
 			getCount(node, [index])
 		})
 		return records
-	}, [children, search, caseSensitive, wholeWord])
+	}, [children, wholeWord, genitive, search, caseSensitive])
 
 	useEffect(() => {
 		if (!records[ptr]) return
@@ -116,10 +122,14 @@ export default function useFindAndReplace() {
 			if ('text' in node) {
 				if (!replaceEnabled || !search) return
 				const regex = new RegExp(
-					wholeWord ? new RegExp(`\\b${search}\\b`) : search,
+					wholeWord
+						? `(\\b${genitive ? generateGenitives(search) + "'?|\\b" : ''}${search}\\b)`
+						: `(${search})`,
 					caseSensitive ? 'g' : 'gi'
 				)
-				node.text = String(node.text).replace(regex, replace)
+				node.text = String(node.text).replace(regex, (match) =>
+					match !== search ? generateGenitives(replace) : replace
+				)
 			} else if ('children' in node) {
 				node.children.forEach(processNode)
 			}
@@ -128,14 +138,15 @@ export default function useFindAndReplace() {
 		editor.tf.setValue(breakDownValue(updatedChildren))
 		setOptions({ search: '', replace: '', replaceEnabled: false })
 	}, [
-		caseSensitive,
-		wholeWord,
-		children,
-		editor,
-		replace,
-		replaceEnabled,
 		search,
+		replaceEnabled,
+		editor,
+		children,
 		setOptions,
+		wholeWord,
+		genitive,
+		caseSensitive,
+		replace,
 	])
 
 	const onReplace = useCallback(() => {
@@ -166,8 +177,9 @@ export default function useFindAndReplace() {
 	function toggleSearchMode(mode: farSearchModes) {
 		if (mode === farSearchModes.CASE_SENSITIVE)
 			setOptions({ caseSensitive: !caseSensitive })
-		else if (mode === farSearchModes.WHOLE_WORD)
-			setOptions({ wholeWord: !wholeWord })
+		else if (mode === farSearchModes.WHOLE_WORD) {
+			setOptions({ wholeWord: !wholeWord, genitive: !wholeWord })
+		}
 		const updatedChildren = structuredClone(children)
 		editor.tf.setValue(breakDownValue(updatedChildren))
 	}
@@ -297,5 +309,6 @@ export default function useFindAndReplace() {
 		records,
 		setData,
 		wholeWord,
+		genitive,
 	}
 }
