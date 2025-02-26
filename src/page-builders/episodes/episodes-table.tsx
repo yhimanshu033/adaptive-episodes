@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils/helpers'
 
+import { episodeHeaderKeys } from '@/types/episode-type'
+
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const { setInventIndex, setIsInventOpen } = useEpisodeStore()
@@ -56,7 +58,13 @@ const EpisodesTable = () => {
 														header.column.getCanSort() &&
 															'flex cursor-pointer select-none items-center'
 													)}
-													onClick={header.column.getToggleSortingHandler()}
+													{...(header.id !==
+													(episodeHeaderKeys.SERIAL_NUMBER as string)
+														? {
+																onClick:
+																	header.column.getToggleSortingHandler(),
+															}
+														: {})}
 												>
 													{flexRender(
 														header.column.columnDef.header,

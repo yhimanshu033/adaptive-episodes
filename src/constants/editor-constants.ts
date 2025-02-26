@@ -95,5 +95,6 @@ export const END_ELEMENT = `<div data-slate-node="element" class="m-0 px-0 py-1 
 
 export enum farSearchModes {
 	CASE_SENSITIVE = 'case-sensititve',
+	GENITIVE = 'genitive',
 	WHOLE_WORD = 'whole-word',
 }

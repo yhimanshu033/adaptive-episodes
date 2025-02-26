@@ -3,6 +3,7 @@ import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import WriterCombobox from '@/page-builders/episodes/writer-combobox'
+import { HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
 import {
 	ColumnDef,
 	ExpandedState,
@@ -17,6 +18,7 @@ import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { HoverCard } from '@/components/ui/hover-card'
 import {
 	Select,
 	SelectContent,
@@ -24,23 +26,26 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { formatDate } from '@/lib/format-date'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
-import { TEpisode } from '@/types/episode-type'
+import { episodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
 export const useCreateTable = (episodes: TEpisode[]) => {
 	const [expanded, setExpanded] = useState<ExpandedState>({})
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+	const [checked, setChecked] = useState<boolean>(false)
 
 	const { data: members } = useUserMembersQuery()
 
 	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
 		useEpisodeTable()
+
 	const columns: ColumnDef<TEpisode>[] = [
 		{
-			id: 'select-col',
+			id: episodeHeaderKeys.SELECT_COL,
 			header: ({ table }) => (
 				<Checkbox
 					checked={table.getIsAllRowsSelected()}
@@ -57,12 +62,24 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				),
 		},
 		{
-			accessorKey: 'serialNumber',
-			header: '#',
-			cell: ({ row }) => !row.depth && row.original.seq_number,
+			accessorKey: episodeHeaderKeys.SERIAL_NUMBER,
+			header: () => (
+				<HoverCard openDelay={0}>
+					<HoverCardTrigger> {`DE${checked ? '/US' : ''}`} </HoverCardTrigger>
+					<HoverCardContent className="w-38 z-[100] mt-2 rounded-md border bg-background p-2">
+						<div className="flex items-center justify-center gap-2">
+							<p>US Index:</p>
+							<Switch checked={checked} onCheckedChange={setChecked} />
+						</div>
+					</HoverCardContent>
+				</HoverCard>
+			),
+			cell: ({ row }) =>
+				!row.depth &&
+				`${row.original.seq_number}${checked && row.original.original_seq_number ? `/${row.original.original_seq_number}` : ''}`,
 		},
 		{
-			accessorKey: 'chapter_title',
+			accessorKey: episodeHeaderKeys.CHAPTER_TITLE,
 			header: 'Title',
 			cell: ({ row }) => (
 				<div
@@ -88,7 +105,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			),
 		},
 		{
-			accessorKey: 'status',
+			accessorKey: episodeHeaderKeys.STATUS,
 			header: 'Status',
 			cell: ({ row, table }) => {
 				const isSelected = !!rowSelection[row.id]
@@ -125,7 +142,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			},
 		},
 		{
-			accessorKey: 'writer',
+			accessorKey: episodeHeaderKeys.WRITER,
 			header: 'Writer',
 			cell: ({ row }) =>
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -140,12 +157,12 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				),
 		},
 		{
-			accessorKey: 'update_time',
+			accessorKey: episodeHeaderKeys.UPDATE_TIME,
 			header: 'Last Updated',
 			cell: ({ row }) => formatDate(row.original.update_time),
 		},
 		{
-			accessorKey: 'delete',
+			accessorKey: episodeHeaderKeys.DELETE,
 			header: 'Delete',
 			cell: ({ row }) =>
 				row.original.props?.creation_timestamp && (

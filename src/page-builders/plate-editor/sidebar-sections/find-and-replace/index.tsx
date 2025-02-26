@@ -45,6 +45,7 @@ export default function FindAndReplace() {
 		setData,
 		setOptions,
 		wholeWord,
+		genitive,
 	} = useFindAndReplace()
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
@@ -136,6 +137,7 @@ export default function FindAndReplace() {
 					Found <span className="font-bold text-foreground">{occurrences}</span>{' '}
 					occurrences of{' '}
 					<span className="font-medium italic text-foreground">{search}</span>
+					{genitive && " and it's genitives"}
 				</p>
 			)}
 
