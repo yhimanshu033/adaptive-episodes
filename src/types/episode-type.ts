@@ -38,6 +38,7 @@ export type TEpisode = {
 	id: number
 	is_deleted: boolean
 	latest_version: number
+	original_seq_number: number
 	parent: number | null
 	project: number
 	props?: Record<string, unknown> & {
@@ -212,3 +213,13 @@ export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
 }
 
 export type TranslationProps = { translatedContent: string }
+
+export enum episodeHeaderKeys {
+	CHAPTER_TITLE = 'chapter_title',
+	DELETE = 'delete',
+	SELECT_COL = 'select-col',
+	SERIAL_NUMBER = 'serialNumber',
+	STATUS = 'status',
+	UPDATE_TIME = 'update_time',
+	WRITER = 'writer',
+}
