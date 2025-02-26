@@ -47,7 +47,6 @@ const EpisodesTable = () => {
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => {
-									console.log({ header })
 									return (
 										<TableHead
 											key={header.id}
