@@ -6,8 +6,6 @@ import { ERole } from '@/types/admin-types'
 export const COPILOT_LOGO_URL = '/assets/pocket-copilot-logo.webp'
 export const FALLBACK_USER_URL = '/assets/placeholder-user.webp'
 
-export const STORIES_QUERY_KEY = 'stories'
-
 export const DB_NAME = 'COPILOT_DB'
 export const STORE_NAME = 'EPISODE_DATA_STORE'
 export const VERSION = 1

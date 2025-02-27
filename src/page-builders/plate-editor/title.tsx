@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import {
-	DEFAULT_EPISODE_LIMIT,
-	EPISODE_LIST_QUERY_KEY,
-} from '@/constants/episodes-constants'
+import { DEFAULT_EPISODE_LIMIT } from '@/constants/episodes-constants'
+import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { usePageState } from '@/hooks/use-page-state'

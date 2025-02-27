@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
+import { USER_LIST_QUERY_KEY } from '@/constants/query-constants'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchAPI } from '@/lib/fetch-api'
@@ -23,7 +24,7 @@ export default function useUserMembersQuery() {
 		return resp.data
 	}
 	const query = useQuery({
-		queryKey: ['user-list', id],
+		queryKey: [USER_LIST_QUERY_KEY, id],
 		queryFn: getMembers,
 	})
 

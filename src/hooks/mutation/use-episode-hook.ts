@@ -2,10 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
-	EPISODE_LIST_QUERY_KEY,
-	EpisodeActions,
-} from '@/constants/episodes-constants'
+import { EpisodeActions } from '@/constants/episodes-constants'
+import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import { usePageState } from '@/hooks/use-page-state'
 import useSocket from '@/hooks/use-socket'
 import { saveContent } from '@/server-action/content-action'

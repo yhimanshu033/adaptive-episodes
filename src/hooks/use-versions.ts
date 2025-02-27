@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
-	EPISODE_LIST_QUERY_KEY,
-	statuses,
-} from '@/constants/episodes-constants'
+import { statuses } from '@/constants/episodes-constants'
+import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEditorPlugin } from '@udecode/plate-common/react'
+import { useEditorPlugin, useEditorState } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { useEpisodeContext } from '@/providers/episode-id-provider'
@@ -45,6 +43,7 @@ export default function useVersions({
 	const { sidebar } = usePlateStoreContext()
 	const { data } = useEpisodeContent()
 	const { handleSave, isSaved } = useSaving()
+	const { children } = useEditorState()
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
@@ -74,7 +73,7 @@ export default function useVersions({
 			await handleSave({ forced: true })
 			await saveEpisodeMutation.mutateAsync({
 				chapterId,
-				text: 'Status update',
+				text: JSON.stringify(children),
 				status: currentSelection.current,
 			})
 			await queryClient.invalidateQueries({ queryKey: ['info'], type: 'all' })
