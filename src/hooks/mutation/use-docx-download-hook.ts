@@ -1,5 +1,6 @@
 import React from 'react'
 import { API_URLS } from '@/constants/global-constants'
+import { useEpisodeContentUtil } from '@/hooks/query/use-episode-content'
 import useSocket from '@/hooks/use-socket'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useMutation } from '@tanstack/react-query'
@@ -58,8 +59,6 @@ import { downloadFile } from '@/lib/utils/client-helpers'
 
 import { EStatus } from '@/types/common'
 import { DownloadDocxParams, TGetDocxFromHtmlBody } from '@/types/episode-type'
-
-import { useEpisodeContentUtil } from '../query/use-episode-content'
 
 const siteUrl = 'https://platejs.org'
 
