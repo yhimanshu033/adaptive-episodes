@@ -59,6 +59,8 @@ import { downloadFile } from '@/lib/utils/client-helpers'
 import { EStatus } from '@/types/common'
 import { DownloadDocxParams, TGetDocxFromHtmlBody } from '@/types/episode-type'
 
+import { useEpisodeContentUtil } from '../query/use-episode-content'
+
 const siteUrl = 'https://platejs.org'
 
 export default function useDocxDownloadHook({
@@ -69,6 +71,8 @@ export default function useDocxDownloadHook({
 	const title = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
 	)
+	const { data } = useEpisodeContentUtil()
+	const epNumber = data?.chapter.seq_number || 0
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
@@ -188,6 +192,7 @@ export default function useDocxDownloadHook({
             </style>
           </head>
           <body>
+		  <div><strong>EP ${epNumber} - ${title}</strong></div><br>
           ${editorHtml.replace(/<\/div>/g, '</div><br>')}
           </body>
         </html>`

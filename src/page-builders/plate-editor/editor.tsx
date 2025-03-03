@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import { MAIN_EDITOR_ID } from '@/constants/editor-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
@@ -16,7 +16,6 @@ import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
 import Title from '@/page-builders/plate-editor/title'
 import Versions from '@/page-builders/plate-editor/versions'
 import useEditorExtendedStore from '@/store/extended-store'
-import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
@@ -37,14 +36,8 @@ import useEpisodeId from '@/providers/episode-id-provider'
 import { TCustomComment } from '@/types/editor-types'
 
 export default function PlateEditor() {
-	const queryClient = useQueryClient()
 	const containerRef = useRef<HTMLDivElement>(null)
-	const {
-		data: content,
-		latestStatus,
-		queryKey,
-		imported,
-	} = useEpisodeContent()
+	const { data: content, latestStatus, imported } = useEpisodeContent()
 	const isChildEpisode = !!content?.chapter.is_deleted
 	const editor = useMyEditor({
 		content: content?.text || '',
@@ -58,15 +51,6 @@ export default function PlateEditor() {
 	const extended = extendStore(useShallow((state) => state.extended))
 
 	const isLast = episodeId === extended[extended.length - 1]
-
-	useEffect(() => {
-		if (extended.length === 1) return
-		const invalidate = async () => {
-			await queryClient.invalidateQueries({ queryKey })
-		}
-		void invalidate()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [extended])
 
 	if (!content || !latestStatus)
 		return (

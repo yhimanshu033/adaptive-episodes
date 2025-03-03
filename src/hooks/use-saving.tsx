@@ -14,7 +14,7 @@ import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resol
 import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers, getWordCount } from '@/lib/utils/plate'
 
-import { BASE_STATUS } from '@/types/common'
+import { BASE_STATUS, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
 import {
 	SaveEpisodeParams,
@@ -37,7 +37,7 @@ export function SavingContextProvider({
 	const { id } = useParams()
 	const { children } = useEditorState()
 	const { allComments } = useComments()
-	const { saveEpisodeMutation } = useEpisodeHook()
+	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()
 	const {
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
@@ -114,8 +114,8 @@ export function SavingContextProvider({
 				setForceSave(false)
 				const clearedLaser = clearLasers(children)
 				const text = JSON.stringify(clearedLaser)
-				const status = data?.chapter.status || BASE_STATUS
-				const chapterId = data?.chapter.parent
+				let status = data?.chapter.status || BASE_STATUS
+				const chapterId = data?.chapter.parent || data?.chapter.id
 				const dataToSave: SaveEpisodeParams = {
 					projectId: Number(id),
 					status,
@@ -131,6 +131,14 @@ export function SavingContextProvider({
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				}
 				void setValue(`${String(id)}_${String(chapterId)}`, dataToSave)
+
+				if (status === BASE_STATUS) {
+					await statusUpdateMutation.mutateAsync({
+						parent_id: chapterId,
+						status,
+					})
+					status = EStatus.FIRST_DRAFT
+				}
 
 				await saveEpisodeMutation.mutateAsync({
 					status,
@@ -152,17 +160,17 @@ export function SavingContextProvider({
 			}
 		},
 		[
-			id,
+			data?.chapter,
+			isSaved,
+			setStartOverlayLoading,
 			children,
 			allComments,
-			data?.chapter,
-			saveEpisodeMutation,
 			currentTitle,
-			isSaved,
 			notes,
+			id,
 			resolvedComments,
-			setStartOverlayLoading,
-			setForceSave,
+			saveEpisodeMutation,
+			statusUpdateMutation,
 		]
 	)
 

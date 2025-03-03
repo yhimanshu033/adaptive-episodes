@@ -18,11 +18,11 @@ const useEpisodeTable = () => {
 	const queryClient = useQueryClient()
 
 	const {
-		saveEpisodeMutation,
 		episodeInventMutation,
 		episodeDeleteMutation,
 		episodesMergeMutation,
 		episodeUnmergeMutation,
+		statusUpdateMutation,
 	} = useEpisodeHook()
 
 	const {
@@ -162,21 +162,22 @@ const useEpisodeTable = () => {
 		) {
 			episodeUnmergeMutation.mutate(selectedEpisodes.episodes[0].id)
 		} else if (alertInfo.action === EpisodeActions.UPDATE && selectedEpisodes) {
-			const { episodes, status } = selectedEpisodes
+			const { episodes } = selectedEpisodes
 
 			await Promise.all(
 				episodes.map(async (episode) => {
 					if (episode.status === BASE_STATUS) {
-						await saveEpisodeMutation.mutateAsync({
-							text: 'Status update',
-							status: EStatus.FIRST_DRAFT,
-							chapterId: episode.parent ?? episode.id,
+						await statusUpdateMutation.mutateAsync({
+							parent_id: episode.parent ?? episode.id,
+							status: BASE_STATUS,
 						})
 					}
-					return saveEpisodeMutation.mutateAsync({
-						text: 'Status update',
-						status,
-						chapterId: episode.parent ?? episode.id,
+					return statusUpdateMutation.mutateAsync({
+						parent_id: episode.parent ?? episode.id,
+						status:
+							episode.status === BASE_STATUS
+								? EStatus.FIRST_DRAFT
+								: episode.status,
 					})
 				})
 			)

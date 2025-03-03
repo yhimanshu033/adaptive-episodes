@@ -41,16 +41,16 @@ const Versions = ({
 		handleConfirm,
 		handleSelect,
 		isDialogOpen,
-		saveEpisodeMutation,
 		latestIndex,
 		setIsDialogOpen,
 		currentSelection,
+		statusUpdateMutation,
 	} = useVersions({
 		isChildEpisode,
 		latestStatus,
 	})
 
-	if (saveEpisodeMutation.isPending) return <Spinner size={24} />
+	if (statusUpdateMutation.isPending) return <Spinner size={24} />
 
 	return (
 		<>

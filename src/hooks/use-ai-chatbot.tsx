@@ -147,6 +147,7 @@ export function ChatbotProvider({
 
 	const addComment = (value: TComment) => {
 		const id = value.id ?? nanoid()
+		if (!value) return
 		const newComment: WithPartial<TComment, 'userId'> = {
 			...value,
 		}

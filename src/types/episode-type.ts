@@ -156,6 +156,23 @@ export type TEpisodeDeleteResponse = {
 	project_id: number
 }
 
+export type TStatusUpdateURLParams = {
+	parent_id: number
+	project_id: number
+}
+
+export type TStatusUpdateBody = {
+	status: string
+}
+
+export type TStatusUpdateResponse = {
+	id: number
+	message: string
+	parent: number
+	project_id: number
+	status: string
+}
+
 export type TGetDocxFromHtmlBody = {
 	html_content: string
 }
