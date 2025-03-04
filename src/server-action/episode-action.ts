@@ -1,6 +1,6 @@
 'use server'
 
-import { API_URLS } from '@/constants/global-constants'
+import { API_URLS, LOGS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
@@ -127,6 +127,7 @@ export const updateStatus = async (
 		TStatusUpdateBody
 	>({
 		method: 'PATCH',
+		sendLog: LOGS.STATUS_UPDATE,
 		url: API_URLS.UPDATE_STATUS,
 		urlParams: {
 			project_id,

@@ -23,6 +23,7 @@ export type FetchRequestParams<
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 	noAuth?: boolean
 	query?: QueryParamsT
+	sendLog?: string
 	throwOnError?: boolean
 	url: string
 	urlParams?: UrlParamsT
@@ -67,6 +68,7 @@ export async function fetchAPI<
 		throwOnError,
 		baseUrl,
 		noAuth,
+		sendLog,
 	} = params
 
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
@@ -164,6 +166,13 @@ export async function fetchAPI<
 		}
 
 		const responseData = (await response.json()) as ResponseDataT
+		if (sendLog) {
+			const message = `${sendLog}: ${session.user.id} - ${resolvedUrl.split(BASE_URL)[1]} - ${new Date().toUTCString()}`
+			Sentry.captureMessage(message, 'info')
+			log({
+				message,
+			})
+		}
 
 		return {
 			success: true,
