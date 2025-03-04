@@ -8,7 +8,7 @@ import useSaving from '@/hooks/use-saving'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEditorPlugin, useEditorState } from '@udecode/plate-common/react'
+import { useEditorPlugin } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { useEpisodeContext } from '@/providers/episode-id-provider'
@@ -35,7 +35,7 @@ export default function useVersions({
 		useShallow((s) => s.selectedStatus)
 	)
 
-	const { saveEpisodeMutation } = useEpisodeHook()
+	const { statusUpdateMutation } = useEpisodeHook()
 	const { useOption } = useEditorPlugin(FindReplacePlugin)
 	const replaceEnabled = useOption('replaceEnabled')
 	const { setViewMode } = useCustomPlateStore()
@@ -43,7 +43,6 @@ export default function useVersions({
 	const { sidebar } = usePlateStoreContext()
 	const { data } = useEpisodeContent()
 	const { handleSave, isSaved } = useSaving()
-	const { children } = useEditorState()
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
@@ -69,12 +68,12 @@ export default function useVersions({
 
 	const handleConfirm = async () => {
 		if (currentSelection.current) {
-			const chapterId = data?.chapter.parent
+			const chapterId = data?.chapter.parent || data?.chapter.id || 0
 			await handleSave({ forced: true })
-			await saveEpisodeMutation.mutateAsync({
-				chapterId,
-				text: JSON.stringify(children),
-				status: currentSelection.current,
+			await statusUpdateMutation.mutateAsync({
+				parent_id: chapterId,
+				status:
+					latestStatus === BASE_STATUS ? EStatus.FIRST_DRAFT : latestStatus,
 			})
 			await queryClient.invalidateQueries({ queryKey: ['info'], type: 'all' })
 			await queryClient.invalidateQueries({
@@ -104,7 +103,7 @@ export default function useVersions({
 		handleConfirm,
 		handleSelect,
 		isDialogOpen,
-		saveEpisodeMutation,
+		statusUpdateMutation,
 		latestIndex,
 		setIsDialogOpen,
 		currentSelection: currentSelection.current,

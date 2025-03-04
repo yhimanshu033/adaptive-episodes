@@ -1,5 +1,6 @@
 import React from 'react'
 import { API_URLS } from '@/constants/global-constants'
+import { useEpisodeContentUtil } from '@/hooks/query/use-episode-content'
 import useSocket from '@/hooks/use-socket'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useMutation } from '@tanstack/react-query'
@@ -69,6 +70,8 @@ export default function useDocxDownloadHook({
 	const title = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
 	)
+	const { data } = useEpisodeContentUtil()
+	const epNumber = data?.chapter.seq_number || 0
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
@@ -188,6 +191,7 @@ export default function useDocxDownloadHook({
             </style>
           </head>
           <body>
+		  <div><strong>EP ${epNumber} - ${title}</strong></div><br>
           ${editorHtml.replace(/<\/div>/g, '</div><br>')}
           </body>
         </html>`

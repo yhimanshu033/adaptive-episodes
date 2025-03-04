@@ -15,6 +15,9 @@ import {
 	TGetEpisodeDetailsQueryParams,
 	TGetEpisodesQueryParams,
 	TGetEpisodesResponse,
+	TStatusUpdateBody,
+	TStatusUpdateResponse,
+	TStatusUpdateURLParams,
 } from '@/types/episode-type'
 
 export const getEpisodes = async ({
@@ -108,6 +111,29 @@ export const deleteEpisode = async (chapter_id: number) => {
 		url: API_URLS.DELETE_EPISODE,
 		urlParams: {
 			chapter_id,
+		},
+	})
+	return res.data
+}
+
+export const updateStatus = async (
+	project_id: number,
+	parent_id: number,
+	status: string
+) => {
+	const res = await fetchAPI<
+		TStatusUpdateResponse,
+		TStatusUpdateURLParams,
+		TStatusUpdateBody
+	>({
+		method: 'PATCH',
+		url: API_URLS.UPDATE_STATUS,
+		urlParams: {
+			project_id,
+			parent_id,
+		},
+		body: {
+			status,
 		},
 	})
 	return res.data

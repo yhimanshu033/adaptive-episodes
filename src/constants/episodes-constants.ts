@@ -20,6 +20,7 @@ export enum EpisodeActions {
 	INVENT = 'invent',
 	MERGE = 'merge',
 	METATDATA = 'metadata',
+	STATUS = 'status',
 	UNMERGE = 'unmerge',
 	UPDATE = 'update',
 }

@@ -64,6 +64,7 @@ export const API_URLS = {
 	UNMERGE_EPISODES: '/chapters/unmerge/',
 	INVENT_EPISODE: '/chapters/invent/',
 	DELETE_EPISODE: '/chapters/:chapter_id/delete/',
+	UPDATE_STATUS: '/chapter/update_status/:project_id/:parent_id/',
 	FILE_UPLOAD: '/project/file-upload/',
 	GET_METADATA: '/adapted-metadata/:projectId/:startSequence/:endSequence/',
 	GET_STORIES: '/projects/',

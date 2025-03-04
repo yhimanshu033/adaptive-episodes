@@ -11,6 +11,7 @@ import {
 	deleteEpisode,
 	inventEpisode,
 	unmergeEpisodes,
+	updateStatus,
 } from '@/server-action/episode-action'
 import { setFullScreenLoading } from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -116,6 +117,16 @@ const useEpisodeHook = () => {
 		})
 	}
 
+	const onStatusUpdate = ({
+		parent_id,
+		status,
+	}: {
+		parent_id: number
+		status: string
+	}) => {
+		return updateStatus(Number(id), parent_id, status)
+	}
+
 	const onMetadataSync = async (chapterId: number) => {
 		const taskId = await startTask({
 			method: 'PATCH',
@@ -156,6 +167,12 @@ const useEpisodeHook = () => {
 		onSuccess,
 	})
 
+	const statusUpdateMutation = useMutation({
+		mutationKey: [EpisodeActions.STATUS, id],
+		mutationFn: onStatusUpdate,
+		onSuccess,
+	})
+
 	const metadataSyncMutation = useMutation({
 		mutationKey: [EpisodeActions.METATDATA, id],
 		mutationFn: onMetadataSync,
@@ -185,6 +202,7 @@ const useEpisodeHook = () => {
 		episodeInventMutation,
 		episodeDeleteMutation,
 		metadataSyncMutation,
+		statusUpdateMutation,
 	}
 }
 

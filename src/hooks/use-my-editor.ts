@@ -272,7 +272,7 @@ const useMyEditor = ({
 			SuggestionPlugin.configure({
 				options: {
 					users,
-					currentUserId: String(userData?.user.id),
+					currentUserId: String(userData?.user?.id),
 				},
 			}),
 
