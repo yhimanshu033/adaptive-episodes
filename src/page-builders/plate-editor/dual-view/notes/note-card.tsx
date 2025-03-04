@@ -3,6 +3,7 @@ import useSaveEpisode from '@/hooks/use-save-episode'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { IconLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
@@ -50,6 +51,7 @@ const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 						size="icon"
 						onClick={(e) => {
 							e.stopPropagation()
+							toast.success('Note deleted successfully!')
 							deleteNote(id)
 						}}
 					>

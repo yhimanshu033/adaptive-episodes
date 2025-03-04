@@ -8,9 +8,9 @@ import {
 	useStoryImportFormResolver,
 } from '@/hooks/form-resolvers/story-import-resolver'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
-import { useToast } from '@/hooks/use-toast'
 import { setFormOpen } from '@/store/story-store'
 import { ImageIcon, Upload, X } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { FullScreenLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
@@ -34,8 +34,6 @@ export function ImportStory() {
 	const { storyUploadMutation } = useStoryUploadHook()
 
 	const form = useStoryImportFormResolver()
-
-	const { toast } = useToast()
 
 	const handleDiscardImage = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -71,8 +69,7 @@ export function ImportStory() {
 				form.reset()
 				setImageSrc(null)
 				setFormOpen(false)
-				toast({
-					title: 'Story uploaded successfully',
+				toast.success('Story uploaded successfully', {
 					description: 'Please wait while the server processes the story.',
 					className: 'bg-primary text-foreground top-0 mx-auto',
 				})

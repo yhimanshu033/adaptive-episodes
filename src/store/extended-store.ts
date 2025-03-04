@@ -26,11 +26,21 @@ function useEditorExtendedStore() {
 		})
 	}
 
+	const addEpisodeKey = (
+		id: number,
+		keys: EditorExtendedStore['episodeKeys'][number]
+	) => {
+		useEpisodeExtendedStoreUtil.setState((state) => {
+			return { episodeKeys: { ...state.episodeKeys, [id]: keys } }
+		})
+	}
+
 	return {
 		store: useEpisodeExtendedStoreUtil,
 		setEpisodeMap,
 		setExtended,
 		addEpisodeMap,
+		addEpisodeKey,
 	}
 }
 

@@ -4,9 +4,9 @@ import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
 import { StoryImportFormSchema } from '@/hooks/form-resolvers/story-import-resolver'
 import useSocket from '@/hooks/use-socket'
-import { useToast } from '@/hooks/use-toast'
 import { uploadFile } from '@/server-action/file-upload'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
@@ -16,7 +16,6 @@ import { StoryUploadParams } from '@/types/story-types'
 const useStoryUploadHook = () => {
 	const { startTask } = useSocket()
 	const queryClient = useQueryClient()
-	const { toast } = useToast()
 	const { id } = useParams()
 
 	const onSuccess = () => {
@@ -30,10 +29,8 @@ const useStoryUploadHook = () => {
 	}
 
 	const onError = (error: Error) => {
-		toast({
-			title: "Error: couldn't able upload story",
+		toast.error("Error: couldn't able upload story", {
 			description: error.message,
-			variant: 'destructive',
 		})
 	}
 

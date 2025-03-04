@@ -51,6 +51,7 @@ export interface IndexedVoicePassResponseItem {
 export type IndexedVoicePassResponse = Array<IndexedVoicePassResponseItem>
 
 export type EditorExtendedStore = {
+	episodeKeys: Record<number, (string | number | boolean)[]>
 	episodeMap: Record<number, TGetEpisodeResponse>
 	extended: number[]
 }

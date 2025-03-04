@@ -10,6 +10,7 @@ import { EditorExtendedStore } from '@/types/editor-types'
 const initialExtendedState: EditorExtendedStore = {
 	episodeMap: {},
 	extended: [],
+	episodeKeys: {},
 }
 
 type EditorExtendedState = {
@@ -29,6 +30,7 @@ export const EditorExtendedStateProvider = ({
 	const initialExtendedState: EditorExtendedStore = {
 		episodeMap: {},
 		extended: [episodeId],
+		episodeKeys: {},
 	}
 	const useEpisodeExtendedStoreUtil = create(
 		devtools(immer(() => initialExtendedState))

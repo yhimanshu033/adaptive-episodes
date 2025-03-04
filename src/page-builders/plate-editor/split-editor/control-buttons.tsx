@@ -17,12 +17,12 @@ export default function ControlButtons() {
 	const { id } = useParams()
 	const queryClient = useQueryClient()
 	const { store: extendStore, setExtended } = useEditorExtendedStore()
-	const { extended, episodeMap } = extendStore()
+	const { extended, episodeMap, episodeKeys } = extendStore()
 
 	const firstEpisode = episodeMap[extended[0]]
 	const lastEpisode = episodeMap[extended[extended.length - 1]]
-	const { data: content, queryKey } = useEpisodeContent()
-	const { isSaved, handleSave } = useSaving()
+	const { data: content } = useEpisodeContent()
+	const { handleSave } = useSaving()
 
 	const handleEpisodeChange = async (episode: number | null) => {
 		if (!episode) return
@@ -31,8 +31,13 @@ export default function ControlButtons() {
 	}
 
 	const handleEpisodeSplit = async () => {
-		if (!isSaved) {
-			await handleSave({ startOverlayLoading: true, stopOverlayLoading: true })
+		await handleSave({
+			startOverlayLoading: true,
+			stopOverlayLoading: true,
+			forced: true,
+		})
+		for (const key of Object.keys(episodeKeys)) {
+			const queryKey = episodeKeys[Number(key)]
 			await queryClient.invalidateQueries({ queryKey })
 		}
 

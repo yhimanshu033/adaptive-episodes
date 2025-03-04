@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { statuses } from '@/constants/episodes-constants'
-import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
+import {
+	EPISODE_INFO_QUERY_KEY,
+	EPISODE_LIST_QUERY_KEY,
+} from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
@@ -11,7 +14,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useEditorPlugin } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
 
-import { useEpisodeContext } from '@/providers/episode-id-provider'
+import useEpisodeId, {
+	useEpisodeContext,
+} from '@/providers/episode-id-provider'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
@@ -25,6 +30,7 @@ export default function useVersions({
 	latestStatus: EStatus | typeof BASE_STATUS
 }) {
 	const { id } = useParams()
+	const episodeId = useEpisodeId()
 	const currentSelection = useRef<EStatus>()
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const queryClient = useQueryClient()
@@ -34,7 +40,6 @@ export default function useVersions({
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((s) => s.selectedStatus)
 	)
-
 	const { statusUpdateMutation } = useEpisodeHook()
 	const { useOption } = useEditorPlugin(FindReplacePlugin)
 	const replaceEnabled = useOption('replaceEnabled')
@@ -75,7 +80,9 @@ export default function useVersions({
 				status:
 					latestStatus === BASE_STATUS ? EStatus.FIRST_DRAFT : latestStatus,
 			})
-			await queryClient.invalidateQueries({ queryKey: ['info'], type: 'all' })
+			await queryClient.invalidateQueries({
+				queryKey: [EPISODE_INFO_QUERY_KEY, episodeId, id],
+			})
 			await queryClient.invalidateQueries({
 				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
 				type: 'all',

@@ -68,8 +68,8 @@ export function SavingContextProvider({
 		const currentNotes = JSON.stringify(notes)
 		const storedNotes =
 			savedNotesRef.current === JSON.stringify([])
-				? savedNotesRef.current
-				: JSON.stringify(data?.chapter.props?.notes || [])
+				? JSON.stringify(data?.chapter.props?.notes || [])
+				: savedNotesRef.current
 		const currentResolvedComments = JSON.stringify(resolvedComments)
 		const storedResolvedComments =
 			savedResolvedCommentsRef.current === JSON.stringify([])
