@@ -75,6 +75,10 @@ export const API_URLS = {
 	STREAM_EXPLORER: '/aicopilot/explorer',
 }
 
+export const LOGS = {
+	SAVE_EPISODE: 'SAVE_EPISODE',
+	STATUS_UPDATE: 'STATUS_UPDATE',
+}
 export type TIdParams = {
 	id: string
 }
