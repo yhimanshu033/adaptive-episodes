@@ -12,7 +12,8 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --check src",
     "format:fix": "prettier --write src",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "plate:sync": "npx tsx ./scripts/plate-sync.mts"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.15",
