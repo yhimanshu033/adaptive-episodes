@@ -15,10 +15,8 @@ import ControlButtons from '@/page-builders/plate-editor/split-editor/control-bu
 import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
 import Title from '@/page-builders/plate-editor/title'
 import Versions from '@/page-builders/plate-editor/versions'
-import useEditorExtendedStore from '@/store/extended-store'
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
-import { useShallow } from 'zustand/react/shallow'
 
 import { Loader } from '@/components/loader'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
@@ -30,8 +28,6 @@ import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar'
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons'
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-import { Separator } from '@/components/ui/separator'
-import useEpisodeId from '@/providers/episode-id-provider'
 
 import { TCustomComment } from '@/types/editor-types'
 
@@ -46,11 +42,6 @@ export default function PlateEditor() {
 			[]) as TCustomComment[],
 		id: MAIN_EDITOR_ID,
 	})
-	const episodeId = useEpisodeId()
-	const { store: extendStore } = useEditorExtendedStore()
-	const extended = extendStore(useShallow((state) => state.extended))
-
-	const isLast = episodeId === extended[extended.length - 1]
 
 	if (!content || !latestStatus)
 		return (
@@ -125,7 +116,7 @@ export default function PlateEditor() {
 									<Sidebar />
 								</ResizablePanelGroup>
 							</div>
-							{isLast ? <ControlButtons /> : <Separator className="mt-8" />}
+							<ControlButtons />
 							<FloatingPrompt />
 							<FloatingLaserResponse />
 						</div>

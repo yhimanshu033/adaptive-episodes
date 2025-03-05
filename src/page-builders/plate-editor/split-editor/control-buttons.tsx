@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
 import useEditorExtendedStore from '@/store/extended-store'
-import { useQueryClient } from '@tanstack/react-query'
 import {
 	CircleArrowLeft,
 	CircleArrowRight,
@@ -11,13 +10,15 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import useEpisodeId from '@/providers/episode-id-provider'
 
 export default function ControlButtons() {
 	const router = useRouter()
 	const { id } = useParams()
-	const queryClient = useQueryClient()
 	const { store: extendStore, setExtended } = useEditorExtendedStore()
-	const { extended, episodeMap, episodeKeys } = extendStore()
+	const { extended, episodeMap } = extendStore()
+	const episodeId = useEpisodeId()
 
 	const firstEpisode = episodeMap[extended[0]]
 	const lastEpisode = episodeMap[extended[extended.length - 1]]
@@ -30,18 +31,17 @@ export default function ControlButtons() {
 		router.push(`/projects/${String(id)}/${episode}/editor`)
 	}
 
-	const handleEpisodeSplit = async () => {
-		await handleSave({
-			startOverlayLoading: true,
-			stopOverlayLoading: true,
-			forced: true,
-		})
-		for (const key of Object.keys(episodeKeys)) {
-			const queryKey = episodeKeys[Number(key)]
-			await queryClient.invalidateQueries({ queryKey })
-		}
-
+	const handleEpisodeSplit = () => {
 		void setExtended([...extended, Number(content?.next_parent_id)])
+	}
+
+	const isLast = useMemo(
+		() => episodeId === extended[extended.length - 1],
+		[episodeId, extended]
+	)
+
+	if (!isLast) {
+		return <Separator className="mt-8" />
 	}
 
 	return (
@@ -70,7 +70,7 @@ export default function ControlButtons() {
 			<Button
 				tooltip="Episode Extension"
 				disabled={!content?.next_parent_id}
-				onClick={() => void handleEpisodeSplit()}
+				onClick={handleEpisodeSplit}
 				size="icon"
 				variant="ghost"
 			>
