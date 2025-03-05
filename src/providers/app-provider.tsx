@@ -13,7 +13,7 @@ import NextTopLoader from 'nextjs-toploader'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
-import { Toaster } from '@/components/ui/toaster'
+import { Toaster } from '@/components/ui/sonner'
 import { queryClient } from '@/lib/get-query-client'
 
 import { SessionData } from '@/types/admin-types'

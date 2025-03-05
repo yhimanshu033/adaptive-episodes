@@ -12,7 +12,8 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --check src",
     "format:fix": "prettier --write src",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "plate:sync": "npx tsx ./scripts/plate-sync.mts"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.15",
@@ -99,7 +100,7 @@
     "lucide-react": "^0.462.0",
     "next": "15.0.3",
     "next-auth": "^4.24.10",
-    "next-themes": "^0.4.3",
+    "next-themes": "^0.4.4",
     "nextjs-toploader": "^3.7.15",
     "nuqs": "^2.2.3",
     "prismjs": "^1.29.0",
@@ -114,6 +115,7 @@
     "react-tweet": "^3.2.1",
     "sharp": "^0.33.5",
     "socket.io-client": "^4.8.1",
+    "sonner": "^2.0.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.0",

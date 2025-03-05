@@ -3,12 +3,12 @@
 import React, { createContext, useState } from 'react'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
-import { useToast } from '@/hooks/use-toast'
 import { getEpisodeContent } from '@/server-action/content-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/ui/button'
@@ -42,7 +42,7 @@ export const useEpisodeContentUtil = () => {
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
-	const { addEpisodeMap } = useEditorExtendedStore()
+	const { addEpisodeMap, addEpisodeKey } = useEditorExtendedStore()
 	const { data } = useEpisodeInfo()
 	const episodeId = useEpisodeId()
 	const { episode, latestStatus } = data
@@ -52,7 +52,6 @@ export const useEpisodeContentUtil = () => {
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
 	const { setDualViewMode } = useEpisodeIdStore()
-	const { toast, dismiss } = useToast()
 
 	const queryKey = [
 		EPISODE_CONTENT_QUERY_KEY,
@@ -66,6 +65,7 @@ export const useEpisodeContentUtil = () => {
 		if (!resp) return resp
 
 		addEpisodeMap(episodeId, resp)
+		addEpisodeKey(episodeId, queryKey)
 		const oldData = await getValue(`${resp.chapter.project}_${episodeId}`)
 		if (!oldData) return resp
 		if (imported) {
@@ -85,30 +85,34 @@ export const useEpisodeContentUtil = () => {
 			void removeValue(`${resp.chapter.project}_${episodeId}`)
 			return resp
 		}
-		toast({
-			description: `Der Inhalt von Episode ${resp?.chapter?.seq_number || ''} scheint geändert zu sein`,
-			action: (
-				<Button
-					onClick={() => {
-						setLocalDiffValue(
-							breakDownValue(
-								jsonify(
-									getEpisodeQueryResponseFromStoredData({
-										episodeData: resp,
-										oldData,
-									}).text
+		toast(
+			`Der Inhalt von Episode ${resp?.chapter?.seq_number || ''} scheint geändert zu sein`,
+			{
+				id: episodeId,
+				action: (
+					<Button
+						onClick={() => {
+							setLocalDiffValue(
+								breakDownValue(
+									jsonify(
+										getEpisodeQueryResponseFromStoredData({
+											episodeData: resp,
+											oldData,
+										}).text
+									)
 								)
 							)
-						)
-						setSidebar(ESidebar.DUAL_VIEW)
-						setDualViewMode(EDualVIewMode.LOCAL_DIFF)
-						dismiss()
-					}}
-				>
-					Lokal Ansehen
-				</Button>
-			),
-		})
+							setSidebar(ESidebar.DUAL_VIEW)
+							setDualViewMode(EDualVIewMode.LOCAL_DIFF)
+							toast.dismiss(episodeId)
+						}}
+					>
+						Lokal Ansehen
+					</Button>
+				),
+				duration: Infinity,
+			}
+		)
 		return resp
 	}
 

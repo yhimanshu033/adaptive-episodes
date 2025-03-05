@@ -1,5 +1,8 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { EpisodeActions } from '@/constants/episodes-constants'
+import {
+	DEFAULT_EPISODE_LIMIT,
+	EpisodeActions,
+} from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
@@ -40,7 +43,9 @@ const useEpisodeTable = () => {
 	const { currentPage, search, limit } = usePageState()
 
 	const handleTitleClick = (episodeId: number) => {
-		router.push(`${pathname}/${episodeId}/editor?${`limit=${limit}`}`)
+		router.push(
+			`${pathname}/${episodeId}/editor?${limit === DEFAULT_EPISODE_LIMIT ? '' : `limit=${limit}`}`
+		)
 	}
 
 	const hasConsistentStatus = (selectedRows: TEpisode[]) =>

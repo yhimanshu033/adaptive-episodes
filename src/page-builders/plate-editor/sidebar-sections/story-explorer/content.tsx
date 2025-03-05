@@ -4,6 +4,7 @@ import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { ArrowLeft, FilePlus2 } from 'lucide-react'
 import { nanoid } from 'nanoid'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import { IconLoader, Loader } from '@/components/loader'
@@ -45,6 +46,7 @@ const Content = ({
 			updateTime: new Date().toString(),
 		}
 		addNote(note)
+		toast.success('Added to note successfully!')
 	}
 	return (
 		<>
