@@ -78,13 +78,18 @@ export default function CommentSidebar() {
 		myUserId,
 	])
 
+	const commentType = showResolved ? 'resolved' : 'unresolved'
+	const commentCount = showResolved
+		? resolvedComments.length
+		: commentsAndDescriptions.length
+
 	return (
 		<div className="relative">
 			<div className="pb-8 pt-4">
 				<h1 className="w-full text-center">
-					{!commentsAndDescriptions.length && (!myUserId || !activeCommentId)
+					{!commentCount && (!myUserId || !activeCommentId)
 						? `No ${showResolved ? 'resolved' : 'unresolved'} comments`
-						: `${commentsAndDescriptions.length} ${showResolved ? 'resolved' : 'unresolved'} comments`}
+						: `${commentCount} ${commentType} comments`}
 				</h1>
 			</div>
 			<Button
