@@ -19,19 +19,19 @@ export function PromptsPopover({ children }: { children: React.ReactNode }) {
 			<PopoverTrigger asChild>{children}</PopoverTrigger>
 			<PopoverContent className="w-[700px]">
 				<div className="flex flex-col gap-2">
-					{QUICK_PROMPTS.map((suggestion, idx) => (
+					{QUICK_PROMPTS.map(({ title, text }, idx) => (
 						<Button
 							onClick={() =>
 								handleSuggestion({
 									action: EChatMode.PROMPTS,
-									value: suggestion,
+									value: text,
 								})
 							}
 							variant="outline"
 							className="overflow-hidden"
 							key={idx}
 						>
-							{trim(suggestion, 80)}
+							{trim(title ?? text, 80)}
 						</Button>
 					))}
 				</div>
