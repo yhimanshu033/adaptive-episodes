@@ -51,7 +51,7 @@ const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 						size="icon"
 						onClick={(e) => {
 							e.stopPropagation()
-							toast.success('Note deleted successfully!')
+							toast.success('Notiz erfolgreich gelöscht!')
 							deleteNote(id)
 						}}
 					>

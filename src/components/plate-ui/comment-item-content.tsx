@@ -9,6 +9,7 @@ import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
 import { useCommentItemContentState } from '@udecode/plate-comments/react'
 import { formatDistance } from 'date-fns'
+import { Copy } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
@@ -16,6 +17,7 @@ import { CommentMoreDropdown } from '@/components/plate-ui/comment-more-dropdown
 import { CommentResolveButton } from '@/components/plate-ui/comment-resolve-button'
 import { CommentValue } from '@/components/plate-ui/comment-value'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 import { PlateUser } from '@/types/plate-types'
 
@@ -57,6 +59,11 @@ export default function CommentItemContent() {
 
 	const userTitle = roleToData[user?.role]?.title
 
+	const handleCopy = (data: string | null) => {
+		if (!data) return
+		void navigator.clipboard.writeText(data)
+	}
+
 	return (
 		<div>
 			<div className="relative flex items-center gap-2">
@@ -76,8 +83,17 @@ export default function CommentItemContent() {
 					{formatDistance(comment.createdAt, Date.now())} ago
 				</div>
 
-				<div className="absolute -right-0.5 -top-0.5 flex space-x-1">
+				<div className="absolute -right-0.5 -top-0.5 flex items-center space-x-1">
 					{isReplyComment ? null : <CommentResolveButton />}
+
+					{isReplyComment && user?.id === AI_USER_ID && (
+						<Button asChild tooltip="Copy" size="icon" variant="ghost">
+							<Copy
+								className="mr-1 size-4"
+								onClick={() => handleCopy(commentText)}
+							/>
+						</Button>
+					)}
 
 					{!isResolved && (
 						<CommentMoreDropdown onExample={() => void onExample()} />

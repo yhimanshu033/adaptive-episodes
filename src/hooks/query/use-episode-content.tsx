@@ -8,6 +8,7 @@ import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
 import { useQuery } from '@tanstack/react-query'
+import { X } from 'lucide-react'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -90,25 +91,32 @@ export const useEpisodeContentUtil = () => {
 			{
 				id: episodeId,
 				action: (
-					<Button
-						onClick={() => {
-							setLocalDiffValue(
-								breakDownValue(
-									jsonify(
-										getEpisodeQueryResponseFromStoredData({
-											episodeData: resp,
-											oldData,
-										}).text
+					<>
+						<Button
+							onClick={() => {
+								setLocalDiffValue(
+									breakDownValue(
+										jsonify(
+											getEpisodeQueryResponseFromStoredData({
+												episodeData: resp,
+												oldData,
+											}).text
+										)
 									)
 								)
-							)
-							setSidebar(ESidebar.DUAL_VIEW)
-							setDualViewMode(EDualVIewMode.LOCAL_DIFF)
-							toast.dismiss(episodeId)
-						}}
-					>
-						Lokal Ansehen
-					</Button>
+								setSidebar(ESidebar.DUAL_VIEW)
+								setDualViewMode(EDualVIewMode.LOCAL_DIFF)
+								toast.dismiss(episodeId)
+							}}
+						>
+							Lokal Ansehen
+						</Button>
+						<X
+							className="absolute right-3 top-3 z-10 cursor-pointer"
+							onClick={() => toast.dismiss(episodeId)}
+							size={12}
+						/>
+					</>
 				),
 				duration: Infinity,
 			}
