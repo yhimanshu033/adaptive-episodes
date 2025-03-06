@@ -18,6 +18,7 @@ const MessagesList = ({ isPending }: { isPending: boolean }) => {
 		if (messageEndRef.current) {
 			messageEndRef.current.scrollIntoView({
 				behavior: 'smooth',
+				block: 'nearest',
 			})
 		}
 	}, [messages])
