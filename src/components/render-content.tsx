@@ -40,7 +40,7 @@ export default function RenderContent({
 						}}
 					/>
 				)}
-				<Accordion type="single" collapsible className="w-full">
+				<Accordion type="multiple" className="w-full">
 					{content.map((item, index) => {
 						const processedData = preProcessData(item)
 						return processedData.map(
@@ -78,7 +78,7 @@ export function StoryAccordion({
 			}}
 		/>
 	) : (
-		<Accordion type="single" collapsible className="w-full">
+		<Accordion type="multiple" className="w-full">
 			{explorerData.map((data, index) => {
 				const processedData = preProcessData(data)
 				return processedData.map(({ title, content, preContent }, subIndex) => (

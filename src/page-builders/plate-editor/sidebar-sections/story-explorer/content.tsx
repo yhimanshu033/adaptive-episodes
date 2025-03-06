@@ -2,7 +2,7 @@ import React from 'react'
 import useSaveEpisode from '@/hooks/use-save-episode'
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { ArrowLeft, FilePlus2 } from 'lucide-react'
+import { ArrowLeft, Copy, FilePlus2 } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
@@ -10,6 +10,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { IconLoader, Loader } from '@/components/loader'
 import { StoryAccordion } from '@/components/render-content'
 import { Button } from '@/components/ui/button'
+import { formatExplorerData } from '@/lib/utils/explorer'
 import { toPascalCase } from '@/lib/utils/helpers'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
@@ -46,12 +47,26 @@ const Content = ({
 			updateTime: new Date().toString(),
 		}
 		addNote(note)
-		toast.success('Added to note successfully!')
+		toast.success('Erfolgreich zur Notiz hinzugefügt!')
 	}
 	return (
 		<>
 			<div className="mb-4 flex items-center justify-between gap-2">
 				<h1 className="flex-1 text-xl font-bold">{header}</h1>
+				{enableNote !== false && (
+					<Button
+						variant="ghost"
+						size="icon"
+						tooltip="Copy"
+						onClick={() =>
+							void navigator.clipboard.writeText(
+								formatExplorerData(explorerData || '')
+							)
+						}
+					>
+						<Copy size={16} />
+					</Button>
+				)}
 				{isPending ? (
 					<IconLoader />
 				) : (
