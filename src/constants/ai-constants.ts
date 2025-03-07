@@ -92,7 +92,7 @@ export const QUICK_PROMPTS: Array<{ text: string; title: string | null }> = [
 		text: 'Plot holes, dramaturgische schwächen und Logische Fehler auflisten - mit kurzem Textanker, um sie zu finden',
 	},
 	{
-		title: 'Speed Writer Prompt',
+		title: 'Retention Writer Prompt',
 		text: 'Bitte schreibe den folgenden Abschnitt um. Bleibe nah am Original und erfinde nichts dazu - aber straffe nicht zu sehr.\nAußerdem achte darauf, keinen Nominalstil oder Passiv zu verwenden, sondern leicht lesbare Sätze. Unser Ziel ist es, das Original so gut wie möglich zu verbessern. Der überarbeitete Text soll flüssiger und atmosphärischer geschrieben sein. Die Spannung und die Emotionen der Charaktere sollen besser zur Geltung kommen. Der Text muss alle wichtigen Handlungselemente beibehalten, sie aber in einer fesselnderen und lebendigeren Weise präsentieren. Einige Hauptpunkte der Verbesserung sind:\nBildlicher und atmosphärischer Stil.\nStraffung redundanter Informationen\nVerstärkung der inneren Konflikte, besonders bei Sen\nLebhaftere Dialoge und Reaktionen\nBessere Übergänge zwischen den Szenen\n###\n(ABSCHNITT REINKOPIEREN)',
 	},
 ]
