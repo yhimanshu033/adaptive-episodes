@@ -10,6 +10,7 @@ import CopyAll from '@/page-builders/plate-editor/dual-view/voice-pass/copy-all'
 import { useEditorState } from '@udecode/plate-common/react'
 
 import { minify } from '@/lib/utils/ai-chatbot'
+import { getText } from '@/lib/utils/plate'
 
 import { EChatMode } from '@/types/ai-types'
 
@@ -33,7 +34,7 @@ export default function VoicePass() {
 			messages: [],
 			user_message: EChatMode.VOICE,
 			chat_mode: EChatMode.VOICE,
-			ep_text: episodeContent?.text as string,
+			ep_text: getText(children),
 			ep_text_json: minify(children),
 		},
 	})

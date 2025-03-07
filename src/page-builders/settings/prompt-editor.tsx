@@ -18,9 +18,9 @@ const promptTypes = [
 	{ value: 'Stylize', label: 'Laser Tools: Stylize' },
 	{ value: 'Expand', label: 'Laser Tools: Expand' },
 	{ value: 'Shorten', label: 'Laser Tools: Shorten' },
-	...QUICK_PROMPTS.map((prompt) => ({
-		value: prompt,
-		label: prompt.slice(0, 50) + '...',
+	...QUICK_PROMPTS.map(({ text }) => ({
+		value: text,
+		label: text.slice(0, 50) + '...',
 	})),
 ]
 

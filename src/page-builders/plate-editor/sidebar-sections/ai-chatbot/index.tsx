@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 const AIChatbot = () => {
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
+	const endRef = useRef<HTMLDivElement>(null)
 	const {
 		disabled,
 		isPending,
@@ -29,50 +30,62 @@ const AIChatbot = () => {
 			textareaRef.current.style.height = `${Math.min(scrollHeight, 150)}px`
 		}
 	}, [input])
+
+	useEffect(() => {
+		if (endRef.current) {
+			endRef.current.scrollIntoView({
+				behavior: 'smooth',
+				block: 'end',
+			})
+		}
+	}, [])
 	return (
-		<div className="flex h-[93vh] flex-col text-clip px-4 pt-4">
-			<h1 className="mb-4 flex-[0_0_auto] text-2xl font-bold">StoryChat</h1>
-			<CheckboxDropdown />
-			<MessagesList isPending={isPending} />
-			<Suggestions />
-			<div className="flex flex-[0_0_auto] items-end gap-1">
-				<form
-					onSubmit={handleSendMessage}
-					className="flex flex-1 items-end space-x-2 rounded-md border bg-background"
-				>
-					<Textarea
-						ref={textareaRef}
-						placeholder="Geben Sie Ihre Nachricht ein..."
-						disabled={disabled}
-						value={input}
-						onChange={(e) => setInput(e.target.value)}
-						onKeyDown={handleKeyDown}
-						className="grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-					/>
-					{disabled ? (
-						<Button
-							variant="ghost"
-							size="icon"
-							type="button"
-							tooltip="Cancel Request"
-							onClick={cancelRequest}
-						>
-							<StopCircle size={16} />
-						</Button>
-					) : (
-						<Button
-							tooltip="Send Message"
-							variant="ghost"
-							size="icon"
-							type="submit"
-						>
-							<Send size={16} />
-						</Button>
-					)}
-				</form>
-				<ChatClearAlert />
+		<>
+			<div className="flex h-[93vh] flex-col text-clip px-4 pt-4">
+				<h1 className="mb-4 flex-[0_0_auto] text-2xl font-bold">StoryChat</h1>
+				<CheckboxDropdown />
+				<MessagesList isPending={isPending} />
+				<Suggestions />
+				<div className="flex flex-[0_0_auto] items-end gap-1">
+					<form
+						onSubmit={handleSendMessage}
+						className="flex flex-1 items-end space-x-2 rounded-md border bg-background"
+					>
+						<Textarea
+							ref={textareaRef}
+							placeholder="Geben Sie Ihre Nachricht ein..."
+							disabled={disabled}
+							value={input}
+							onChange={(e) => setInput(e.target.value)}
+							onKeyDown={handleKeyDown}
+							className="grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+						/>
+						{disabled ? (
+							<Button
+								variant="ghost"
+								size="icon"
+								type="button"
+								tooltip="Cancel Request"
+								onClick={cancelRequest}
+							>
+								<StopCircle size={16} />
+							</Button>
+						) : (
+							<Button
+								tooltip="Send Message"
+								variant="ghost"
+								size="icon"
+								type="submit"
+							>
+								<Send size={16} />
+							</Button>
+						)}
+					</form>
+					<ChatClearAlert />
+				</div>
 			</div>
-		</div>
+			<div ref={endRef} className="absolute bottom-0" />
+		</>
 	)
 }
 
