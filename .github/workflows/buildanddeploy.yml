@@ -136,6 +136,20 @@ jobs:
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
 
+      # - name: Build and Push Multi-Architecture Image without Cache
+      #   if: ${{ github.event.inputs.build_with_cache == 'no' }}
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     platforms: linux/arm64
+      #     push: true
+      #     tags: |
+      #       ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
+      #     no-cache: true
+      #     cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
+      #     build-args: |
+      #       APP_ENV=${{ env.ENVIRONMENT }}
+
       - name: Build and Push Multi-Architecture Image without Cache
         if: ${{ github.event.inputs.build_with_cache == 'no' }}
         uses: docker/build-push-action@v5
@@ -146,9 +160,11 @@ jobs:
           tags: |
             ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
           no-cache: true
-          cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
+          cache-to: |
+            type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
+
             
       - name: Check Docker Tag in ECR Repo
         env:
