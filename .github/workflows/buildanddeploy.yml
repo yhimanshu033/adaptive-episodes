@@ -77,8 +77,19 @@ jobs:
           else
             ECR_REPO="$ECR_BASE/dev"
           fi
-          echo "ECR_REPO=$ECR_REPO" >> $GITHUB_ENV
-          echo "ecrRepo=$ECR_REPO" >> $GITHUB_OUTPUT
+          # echo "ECR_REPO=$ECR_REPO" >> $GITHUB_ENV
+          # echo "ecrRepo=$ECR_REPO" >> $GITHUB_OUTPUT
+          {
+            echo 'ECR_REPO<<EOF'
+            echo "$ECR_REPO"
+            echo 'EOF'
+          } >> $GITHUB_ENV
+    
+          {
+            echo 'ecrRepo<<EOF'
+            echo "$ECR_REPO"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.1
