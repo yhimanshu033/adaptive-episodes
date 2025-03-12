@@ -7,8 +7,15 @@ import { Settings } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils/helpers'
 
-export default function SettingsButton() {
+export default function SettingsButton({
+	className,
+	label,
+}: {
+	className?: string
+	label?: boolean
+}) {
 	const { data } = useSession()
 	useUnsavedChecker()
 
@@ -19,9 +26,14 @@ export default function SettingsButton() {
 	return (
 		<Link
 			href="/projects/settings"
-			className={buttonVariants({ size: 'icon', variant: 'ghost' })}
+			className={cn(
+				'gap-2',
+				buttonVariants({ size: label ? 'sm' : 'icon', variant: 'ghost' }),
+				className
+			)}
 		>
 			<Settings />
+			{label && <span>Settings</span>}
 		</Link>
 	)
 }

@@ -15,8 +15,11 @@ import { useShallow } from 'zustand/react/shallow'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { cn } from '@/lib/utils/helpers'
 
+import { EChatMode } from '@/types/ai-types'
 import { EDualVIewMode, TranslationProps } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
+
+import BaseScript from './base-script'
 
 const DualView = ({ translatedContent }: TranslationProps) => {
 	const { store } = usePlateStore()
@@ -30,11 +33,13 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			[EDualVIewMode.US_TRANSLATION]: (
 				<Translation translatedContent={translatedContent} />
 			),
+			[EDualVIewMode.BASE_SCRIPT]: <BaseScript />,
 			[EDualVIewMode.PREV_EP]: <PreviousEpisode />,
 			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
 			[EDualVIewMode.NOTES]: <Notes />,
 			[EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
-			[EDualVIewMode.VOICE_PASS]: <VoicePass />,
+			[EDualVIewMode.VOICE_PASS]: <VoicePass voiceMode={EChatMode.VOICE} />,
+			[EDualVIewMode.VOICE_PASS_2]: <VoicePass voiceMode={EChatMode.VOICE2} />,
 		}),
 		[translatedContent]
 	)

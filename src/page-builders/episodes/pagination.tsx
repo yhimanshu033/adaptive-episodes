@@ -20,7 +20,6 @@ const EpisodesPagination = ({ totalPages }: { totalPages: number }) => {
 						totalPages={totalPages}
 					/>
 				</div>
-
 				<EpisodesLimit />
 			</div>
 		)

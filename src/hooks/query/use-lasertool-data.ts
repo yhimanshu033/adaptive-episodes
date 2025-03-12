@@ -11,6 +11,7 @@ const useLaserToolsQuery = (key: string | null, params: LaserToolsParams) => {
 	const { startTask, getResponse } = useSocket()
 	async function onRephraseFn() {
 		if (!key) return
+		console.log(params)
 		const taskId = await startTask<LaserToolsParams>({
 			method: 'POST',
 			url: API_URLS.STREAM_LASER,

@@ -12,7 +12,6 @@ import FocusEditorWrapper from '@/page-builders/plate-editor/focus-mode/editor-w
 import SaveEpisode from '@/page-builders/plate-editor/save-episode'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import ControlButtons from '@/page-builders/plate-editor/split-editor/control-buttons'
-import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
 import Title from '@/page-builders/plate-editor/title'
 import Versions from '@/page-builders/plate-editor/versions'
 import { cn } from '@udecode/cn'
@@ -30,6 +29,8 @@ import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-b
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 import { TCustomComment } from '@/types/editor-types'
+
+import EpisodeButton from './episode-button'
 
 export default function PlateEditor() {
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -58,15 +59,27 @@ export default function PlateEditor() {
 						<div className="container p-4">
 							<EditorOverlayLoader />
 							<div className="flex animate-fade-in-up items-center justify-between">
-								<Title />
 								<div className="flex items-center gap-2">
-									<DownloadDocxButton latestStatus={latestStatus} />
+									<EpisodeButton
+										direction="previous"
+										episodeId={content?.previous_parent_id}
+									/>
+									<Title
+										chapterId={String(content?.chapter?.id)}
+										memberId={String(content?.chapter?.writer)}
+									/>
+								</div>
+								<div className="flex items-center gap-2">
 									<Versions
 										isChildEpisode={isChildEpisode}
 										latestStatus={latestStatus}
 									/>
-									<SyncMetaData />
+									<DownloadDocxButton latestStatus={latestStatus} />
 									<SaveEpisode />
+									<EpisodeButton
+										direction="next"
+										episodeId={content?.next_parent_id}
+									/>
 								</div>
 							</div>
 							<div

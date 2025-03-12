@@ -4,6 +4,7 @@ import { usePageState } from '@/hooks/use-page-state'
 import { Table } from '@tanstack/react-table'
 import { Merge, Search, Split } from 'lucide-react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -17,16 +18,44 @@ import { Input } from '@/components/ui/input'
 
 import { TEpisode, TEpisodeSearchForm } from '@/types/episode-type'
 
-const Filters = ({ table }: { table: Table<TEpisode> }) => {
+const Filters = ({
+	table,
+	totalEpisodes = 0,
+	setSearchedRow,
+}: {
+	setSearchedRow: React.Dispatch<React.SetStateAction<number | null>>
+	table: Table<TEpisode>
+	totalEpisodes?: number
+}) => {
 	const { handleMerge, handleUnmerge } = useEpisodeTable()
-	const { setSearch, setCurrentPage } = usePageState()
+	const { limit, setSearch, setCurrentPage } = usePageState()
 
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
 
 	const handleSearch = (data: TEpisodeSearchForm) => {
-		void setSearch(data.input)
-		void setCurrentPage(1)
+		if (Number(data.input)) {
+			const input = Number(data.input)
+			if (input > totalEpisodes) {
+				toast.info('Total episodes exceeded', {
+					description: `Please search within ${totalEpisodes} episodes`,
+				})
+				return
+			} else if (input <= 0) {
+				toast.info('Invalid input', {
+					description: `Please enter a positive number`,
+				})
+				return
+			}
+			const page = Math.ceil(Number(input) / limit)
+			const row = input % limit || limit
+			void setSearch('')
+			void setCurrentPage(page)
+			setSearchedRow(row)
+		} else {
+			void setSearch(data.input)
+			void setCurrentPage(1)
+		}
 	}
 
 	const form = useForm<TEpisodeSearchForm>({

@@ -25,17 +25,6 @@ export default function LaserRephrase({
 	const { data: episodeContent } = useEpisodeContent()
 	const { children } = useEditorState()
 
-	const params: LaserToolsParams = {
-		action: methodId,
-		...getSelectedText(),
-		context: episodeContent?.chapter.props?.llm_memories?.context || '',
-		ep_number: episodeContent?.chapter.seq_number.toString() || '',
-		ep_text: getText(children) || '',
-		prompt: promptInput,
-		style_template: '',
-	}
-	const { data, isFetching, refetch } = useLaserToolsQuery(key, params)
-
 	const {
 		store: laserStore,
 		getLaser,
@@ -48,6 +37,23 @@ export default function LaserRephrase({
 		useShallow((state) => state.triggerRephrase)
 	)
 	const responseActive = laserStore(useShallow((state) => state.responseActive))
+	const lasersResponseMap = laserStore(useShallow((state) => state.lasers))
+
+	const params: LaserToolsParams = {
+		action: methodId,
+		...getSelectedText(),
+		context: episodeContent?.chapter.props?.llm_memories?.context || '',
+		ep_number: episodeContent?.chapter.seq_number.toString() || '',
+		ep_text: getText(children) || '',
+		prompt: promptInput,
+		style_template: '',
+	}
+
+	if (key && triggerRephrase === key && lasersResponseMap[key]?.response) {
+		params.last_answer = lasersResponseMap[key].response
+	}
+
+	const { data, isFetching, refetch } = useLaserToolsQuery(key, params)
 
 	useEffect(() => {
 		setResponseMode(!!data)

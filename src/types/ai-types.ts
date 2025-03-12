@@ -14,6 +14,7 @@ export interface LaserToolsParams {
 	context?: string
 	ep_number: string
 	ep_text: string
+	last_answer?: string
 	nexttext?: string
 	prevtext?: string
 	prompt?: string
@@ -70,6 +71,7 @@ export enum EAction {
 	REJECT = 'reject',
 	REVIEW = 'review',
 	VOICE = 'voice_pass',
+	VOICE2 = 'voice_pass_2',
 }
 
 export enum EChatMode {
@@ -79,6 +81,7 @@ export enum EChatMode {
 	REVIEW = 'review',
 	SFX = 'sfx',
 	VOICE = 'voice',
+	VOICE2 = 'voice_2',
 }
 
 export type TStoryChatSuggestion = {

@@ -1,8 +1,5 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import {
-	DEFAULT_EPISODE_LIMIT,
-	EpisodeActions,
-} from '@/constants/episodes-constants'
+import { EpisodeActions } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
@@ -40,11 +37,11 @@ const useEpisodeTable = () => {
 		useEpisodeTableStore()
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 
-	const { currentPage, search, limit } = usePageState()
+	const { currentPage, search, limit, userDefaultLimit } = usePageState()
 
 	const handleTitleClick = (episodeId: number) => {
 		router.push(
-			`${pathname}/${episodeId}/editor?${limit === DEFAULT_EPISODE_LIMIT ? '' : `limit=${limit}`}`
+			`${pathname}/${episodeId}/editor?${limit === userDefaultLimit ? '' : `limit=${limit}`}`
 		)
 	}
 

@@ -31,6 +31,8 @@ import UndoRedoButtons from '@/components/plate-ui/undo-redo-buttons'
 import { ZoomDropdownMenu } from '@/components/plate-ui/zoom-dropdown'
 import { Switch } from '@/components/ui/switch'
 
+import WordCountButton from './word-count-button'
+
 export function FixedToolbarButtons() {
 	const readOnly = useEditorReadOnly()
 	const { store: usePlateContextStore, setFocusMode } = usePlateStore()
@@ -45,8 +47,12 @@ export function FixedToolbarButtons() {
 				}}
 			>
 				{!readOnly && (
-					<>
+					<div className="flex">
 						<ToolbarGroup noSeparator>
+							<WordCountButton />
+						</ToolbarGroup>
+
+						<ToolbarGroup>
 							<TurnIntoDropdownMenu />
 							<FontDropdownMenu />
 						</ToolbarGroup>
@@ -95,7 +101,7 @@ export function FixedToolbarButtons() {
 							<IndentListToolbarButton nodeType={ListStyleType.Disc} />
 							<IndentListToolbarButton nodeType={ListStyleType.Decimal} />
 						</ToolbarGroup>
-					</>
+					</div>
 				)}
 
 				<div className="grow" />
@@ -108,7 +114,7 @@ export function FixedToolbarButtons() {
 						/>
 					</div>
 				) : (
-					<>
+					<div className="flex">
 						<ToolbarGroup noSeparator>
 							<TranslationToggleButton />
 							<ChatbotToolbarButton />
@@ -122,7 +128,7 @@ export function FixedToolbarButtons() {
 						<ToolbarGroup>
 							<ModeDropdownMenu />
 						</ToolbarGroup>
-					</>
+					</div>
 				)}
 			</div>
 		</div>

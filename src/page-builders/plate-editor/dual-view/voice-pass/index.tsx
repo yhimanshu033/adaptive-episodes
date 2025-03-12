@@ -14,7 +14,11 @@ import { getText } from '@/lib/utils/plate'
 
 import { EChatMode } from '@/types/ai-types'
 
-export default function VoicePass() {
+export default function VoicePass({
+	voiceMode,
+}: {
+	voiceMode: EChatMode.VOICE | EChatMode.VOICE2
+}) {
 	const { id } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
@@ -32,8 +36,8 @@ export default function VoicePass() {
 		episodesCount,
 		aiChatbotData: {
 			messages: [],
-			user_message: EChatMode.VOICE,
-			chat_mode: EChatMode.VOICE,
+			user_message: voiceMode,
+			chat_mode: voiceMode,
 			ep_text: getText(children),
 			ep_text_json: minify(children),
 		},

@@ -9,6 +9,7 @@ export const EPISODE_NEXT_INFO_QUERY_KEY = 'info-next'
 export const EPISODE_PREV_INFO_QUERY_KEY = 'info-prev'
 
 export const EPISODE_CONTENT_QUERY_KEY = 'episode-content'
+export const EPISODE_BASE_CONTENT_QUERY_KEY = 'episode-base-content'
 export const EPISODE_NEXT_CONTENT_QUERY_KEY = 'episode-next-content'
 export const EPISODE_PREV_CONTENT_QUERY_KEY = 'episode-prev-content'
 
