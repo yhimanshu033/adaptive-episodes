@@ -104,6 +104,10 @@ const config = {
 						transform: 'none',
 					},
 				},
+				flash: {
+					'0%, 100%': { backgroundColor: 'transparent' },
+					'50%': { backgroundColor: 'hsl(var(--primary))', opacity: '0.5' },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -111,9 +115,11 @@ const config = {
 				'fade-in-down':
 					'fade-in-down 1s var(--animation-delay, 0ms) ease forwards',
 				'fade-in-up': 'fade-in-up 1s var(--animation-delay, 0ms) ease forwards',
+				'slow-flash': 'flash 1s ease',
 			},
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
 	plugins: [require('tailwindcss-animate')],
 } satisfies Config
 

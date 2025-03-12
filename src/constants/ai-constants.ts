@@ -64,35 +64,35 @@ export enum ESocketStatus {
 
 export const QUICK_PROMPTS: Array<{ text: string; title: string | null }> = [
 	{
-		title: null,
+		title: 'Beat-Analyse',
 		text: 'Analysiere die dramaturgischen Beats dieser Episode und zeige auf, wo die dramatische Spannung nachlässt oder gesteigert werden sollte.',
 	},
 	{
-		title: null,
-		text: 'Überprüfe die Dialogszenen und mache Vorschläge zu “character-revealing inner thoughts, more theatrical exchanges, and heightened emotional stakes"',
+		title: 'Dialog-Enhancement',
+		text: 'Überprüfe die Dialogszenen und mache Vorschläge zu "character-revealing inner thoughts, more theatrical exchanges, and heightened emotional stakes"',
 	},
 	{
-		title: null,
+		title: 'Konfliktintensivierung',
 		text: 'Identifiziere Momente, in denen Konflikte zwischen den Charakteren intensiviert werden könnten, und schlage Möglichkeiten vor, ihre Dynamik dramatischer zu gestalten, ohne die Kernhandlung zu ändern.',
 	},
 	{
-		title: null,
+		title: 'Charakterentwicklung & Reaktionsverstärkung',
 		text: 'Zeichne die emotionale Entwicklung des Protagonisten in dieser Episode nach und verstärke seine Reaktionen, wobei der Fokus auf äußeren Hindernissen statt auf inneren Schwächen liegt.',
 	},
 	{
-		title: null,
+		title: 'Hook & Cliffhanger Optimierung',
 		text: 'Überprüfe den Anfang/das Ende dieser Episode und schlageMöglichkeiten vor, einen spannenderen Hook oder Cliffhanger zu schaffen, der sofort Spannung aufbaut.',
 	},
 	{
-		title: null,
+		title: 'Rewrite (Stylize)',
 		text: 'Umzuschreibender Absatz:\n[INSERT PARAGRAPH]\n\n###\nBitte schreibe den obigen Absatz um, ergänze mehr farbenfrohe Beschreibungen hinzu und behalte dabei das Tempo bei. Füge während an den entsprechenden Momenten Hinweise für Musik und Soundeffekte ein – aber auf Englisch in diesem Format: SFX:  MUSIC: \n\nRewrite Guidelines: \n- direkte Rede immer in Du-Form und jede Figur mit ihrer eigenen Umgangssprache \n- schreibe im Aktiv \n- verbessere die Lesbarkeit des Textes durch gute Grammatik - vermeide Partizipien',
 	},
 	{
-		title: null,
+		title: 'Dramaturgie-Schwachstellen & Logik-Check',
 		text: 'Plot holes, dramaturgische schwächen und Logische Fehler auflisten - mit kurzem Textanker, um sie zu finden',
 	},
 	{
-		title: 'Speed Writer Prompt',
+		title: 'Retention Writer Prompt',
 		text: 'Bitte schreibe den folgenden Abschnitt um. Bleibe nah am Original und erfinde nichts dazu - aber straffe nicht zu sehr.\nAußerdem achte darauf, keinen Nominalstil oder Passiv zu verwenden, sondern leicht lesbare Sätze. Unser Ziel ist es, das Original so gut wie möglich zu verbessern. Der überarbeitete Text soll flüssiger und atmosphärischer geschrieben sein. Die Spannung und die Emotionen der Charaktere sollen besser zur Geltung kommen. Der Text muss alle wichtigen Handlungselemente beibehalten, sie aber in einer fesselnderen und lebendigeren Weise präsentieren. Einige Hauptpunkte der Verbesserung sind:\nBildlicher und atmosphärischer Stil.\nStraffung redundanter Informationen\nVerstärkung der inneren Konflikte, besonders bei Sen\nLebhaftere Dialoge und Reaktionen\nBessere Übergänge zwischen den Szenen\n###\n(ABSCHNITT REINKOPIEREN)',
 	},
 ]

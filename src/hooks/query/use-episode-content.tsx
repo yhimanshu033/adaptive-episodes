@@ -112,7 +112,7 @@ export const useEpisodeContentUtil = () => {
 							Lokal Ansehen
 						</Button>
 						<X
-							className="absolute right-3 top-3 z-10 cursor-pointer"
+							className="absolute right-1 top-1 z-10 cursor-pointer"
 							onClick={() => toast.dismiss(episodeId)}
 							size={12}
 						/>
@@ -134,7 +134,13 @@ export const useEpisodeContentUtil = () => {
 		staleTime: 0,
 		gcTime: 0,
 	})
-	return { ...query, latestStatus, queryKey, setImported, imported }
+	return {
+		...query,
+		latestStatus,
+		queryKey,
+		setImported,
+		imported,
+	}
 }
 
 const EpisodeContentContext = createContext<ReturnType<

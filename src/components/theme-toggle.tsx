@@ -9,20 +9,22 @@ import { cn } from '@/lib/utils/helpers'
 
 interface ThemeToggleProps {
 	className?: undefined | string
+	label?: boolean
 }
 
-export function ThemeToggle({ className }: ThemeToggleProps) {
+export function ThemeToggle({ className, label }: ThemeToggleProps) {
 	const { setTheme, theme } = useTheme()
 
 	return (
 		<Button
-			size="icon"
+			size={label ? 'sm' : 'icon'}
 			variant="ghost"
-			className={cn(className)}
+			className={cn('gap-2', className)}
 			onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
 		>
-			<Sun className="h-6 w-[1.3rem] dark:hidden" />
+			<Sun className="size-6 dark:hidden" />
 			<Moon className="hidden size-5 dark:block" />
+			{label && <span>{theme === 'light' ? 'Light' : 'Dark'} Mode</span>}
 			<span className="sr-only">Toggle theme</span>
 		</Button>
 	)

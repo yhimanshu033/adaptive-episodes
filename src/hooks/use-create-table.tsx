@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
-import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import WriterCombobox from '@/page-builders/episodes/writer-combobox'
 import { HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
@@ -37,8 +36,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 	const [checked, setChecked] = useState<boolean>(false)
-
-	const { data: members } = useUserMembersQuery()
 
 	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
 		useEpisodeTable()
@@ -148,7 +145,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 				!row.depth ? (
 					<WriterCombobox
-						members={members?.members}
 						chapterId={String(row.original.id)}
 						selectedMemberId={String(row.original.writer || '')}
 					/>

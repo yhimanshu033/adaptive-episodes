@@ -10,10 +10,15 @@ import CopyAll from '@/page-builders/plate-editor/dual-view/voice-pass/copy-all'
 import { useEditorState } from '@udecode/plate-common/react'
 
 import { minify } from '@/lib/utils/ai-chatbot'
+import { getText } from '@/lib/utils/plate'
 
 import { EChatMode } from '@/types/ai-types'
 
-export default function VoicePass() {
+export default function VoicePass({
+	voiceMode,
+}: {
+	voiceMode: EChatMode.VOICE | EChatMode.VOICE2
+}) {
 	const { id } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
@@ -31,9 +36,9 @@ export default function VoicePass() {
 		episodesCount,
 		aiChatbotData: {
 			messages: [],
-			user_message: EChatMode.VOICE,
-			chat_mode: EChatMode.VOICE,
-			ep_text: episodeContent?.text as string,
+			user_message: voiceMode,
+			chat_mode: voiceMode,
+			ep_text: getText(children),
 			ep_text_json: minify(children),
 		},
 	})

@@ -17,7 +17,7 @@ export function PromptsPopover({ children }: { children: React.ReactNode }) {
 	return (
 		<Popover>
 			<PopoverTrigger asChild>{children}</PopoverTrigger>
-			<PopoverContent className="w-[700px]">
+			<PopoverContent className="w-[400px]">
 				<div className="flex flex-col gap-2">
 					{QUICK_PROMPTS.map(({ title, text }, idx) => (
 						<Button
@@ -31,7 +31,7 @@ export function PromptsPopover({ children }: { children: React.ReactNode }) {
 							className="overflow-hidden"
 							key={idx}
 						>
-							{trim(title ?? text, 80)}
+							{trim(title ?? text, 50)}
 						</Button>
 					))}
 				</div>
