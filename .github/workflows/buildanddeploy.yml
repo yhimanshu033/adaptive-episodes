@@ -207,11 +207,11 @@ jobs:
               dockerTag: ${{ env.dockerTag }}
             run: |
               cd infra
-              if [ "${{ env.ENVIRONMENT }}" == "prod" ]; then
-                # DEPLOYMENT_PATH="prod/Websites/kustomize/overlays/flow-ui/deployment.yaml"
-              else
+              # if [ "${{ env.ENVIRONMENT }}" == "prod" ]; then
+              #   DEPLOYMENT_PATH="prod/Websites/kustomize/overlays/flow-ui/deployment.yaml"
+              # else
                 DEPLOYMENT_PATH="dev/Websites/overlays/co-writer/deployment.yaml"
-              fi
+              # fi
               
               # Debug echo statements
               echo "Debug: BRANCH_NAME = ${{ env.BRANCH_NAME }}"
