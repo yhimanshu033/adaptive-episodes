@@ -83,6 +83,7 @@ export function ChatbotProvider({
 	const [sfxStreaming, setSfxStreaming] = useState<string>('')
 	const [reviewStreaming, setReviewStreaming] = useState<string>('')
 	const [originalChildren, setOriginalChildren] = useState<Value>()
+	const [blockStreaming, setBlockStreaming] = useState<string>('')
 
 	const { id } = useParams()
 	const {
@@ -211,6 +212,7 @@ export function ChatbotProvider({
 			action: EAction.BLOCK,
 			taskId,
 		})
+		setBlockStreaming(taskId)
 	}
 
 	function cancelRequest() {
@@ -375,6 +377,25 @@ export function ChatbotProvider({
 		taskEnded[reviewStreaming],
 		originalChildren,
 	])
+
+	useEffect(() => {
+		if (!blockStreaming) return
+		if (taskEnded[blockStreaming]) {
+			const lastIndex = messages.length - 1
+			if (lastIndex >= 0) {
+				updateMessages(
+					{
+						...messages[lastIndex],
+						content:
+							responses[blockStreaming].join('') ||
+							'Tut mir leid, darauf habe ich im Moment keine Antwort.',
+					},
+					lastIndex
+				)
+			}
+			setBlockStreaming('')
+		}
+	}, [blockStreaming, taskEnded[blockStreaming]])
 
 	const lastMessage = useMemo(() => messages[messages.length - 1], [messages])
 	const disabled = !!(

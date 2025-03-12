@@ -36,6 +36,7 @@ const useAIChatbotHook = ({
 		const { data: metadata } = metadataQueryData
 		const extractedData = extractFromMetadata(metadata, start)
 		const sources = getStoryExplorerConfigArray(storyExplorerConfiguration)
+
 		const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
 			method: 'POST',
 			url: API_URLS.STREAM_CHATBOT,
