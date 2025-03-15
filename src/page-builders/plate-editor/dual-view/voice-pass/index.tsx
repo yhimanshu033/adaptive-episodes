@@ -40,6 +40,7 @@ export default function VoicePass({
 			chat_mode: voiceMode,
 			ep_text: getText(children),
 			ep_text_json: minify(children),
+			context: episodeContent?.chapter?.props?.llm_memories?.context || '',
 		},
 	})
 

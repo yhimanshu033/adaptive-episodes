@@ -52,35 +52,31 @@ const usePlotOutlineQuery = ({
 
 			if ((action as PlotAction) === PlotAction.Summary) {
 				return {
-					content: metadataEntries
-						.slice(start > 1 ? 1 : 0)
-						.map((data, index) => ({
-							title: `${index + start}. ${data.chapter_title || ''}`,
-							preContent: `Synopsis:\n${data?.loglines?.replace(/\d+:/, '') || 'No data found 😢'}`,
-							content: [
-								{
-									title: 'Summary',
-									content: data.summary,
-								},
-							],
-						})),
+					content: metadataEntries.map((data, index) => ({
+						title: `${index + start}. ${data.chapter_title || ''}`,
+						preContent: `Synopsis:\n${data?.loglines?.replace(/\d+:/, '') || 'No data found 😢'}`,
+						content: [
+							{
+								title: 'Summary',
+								content: data.summary,
+							},
+						],
+					})),
 					taskId: '',
 				}
 			} else if ((action as PlotAction) === PlotAction.Scenes) {
 				return {
-					content: metadataEntries
-						.slice(start > 1 ? 1 : 0)
-						.map((data, index) => {
-							return {
-								title: `${index + start}. ${data.chapter_title || ''}`,
-								content: extractScenesFromBeatsheet(data.beatsheet),
-							}
-						}),
+					content: metadataEntries.map((data, index) => {
+						return {
+							title: `${index + start}. ${data.chapter_title || ''}`,
+							content: extractScenesFromBeatsheet(data.beatsheet),
+						}
+					}),
 					taskId: '',
 				}
 			}
 			const { beatsheets_array: beatsheet_array, ...extractedData } =
-				extractFromMetadata(metadata?.data, start - 1)
+				extractFromMetadata(metadata?.data)
 			const params: PlotExplorerParams = {
 				project_id: Number(id),
 				action,
