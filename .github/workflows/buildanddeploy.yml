@@ -77,19 +77,8 @@ jobs:
           else
             ECR_REPO="$ECR_BASE/dev"
           fi
-          # echo "ECR_REPO=$ECR_REPO" >> $GITHUB_ENV
-          # echo "ecrRepo=$ECR_REPO" >> $GITHUB_OUTPUT
-          {
-            echo 'ECR_REPO<<EOF'
-            echo "$ECR_REPO"
-            echo 'EOF'
-          } >> $GITHUB_ENV
-    
-          {
-            echo 'ecrRepo<<EOF'
-            echo "$ECR_REPO"
-            echo 'EOF'
-          } >> $GITHUB_OUTPUT
+          echo "ECR_REPO=$ECR_REPO" >> $GITHUB_ENV
+          echo "ecrRepo=$ECR_REPO" >> $GITHUB_OUTPUT
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.1
@@ -136,20 +125,6 @@ jobs:
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
 
-      # - name: Build and Push Multi-Architecture Image without Cache
-      #   if: ${{ github.event.inputs.build_with_cache == 'no' }}
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     platforms: linux/arm64
-      #     push: true
-      #     tags: |
-      #       ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
-      #     no-cache: true
-      #     cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
-      #     build-args: |
-      #       APP_ENV=${{ env.ENVIRONMENT }}
-
       - name: Build and Push Multi-Architecture Image without Cache
         if: ${{ github.event.inputs.build_with_cache == 'no' }}
         uses: docker/build-push-action@v5
@@ -160,11 +135,9 @@ jobs:
           tags: |
             ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
           no-cache: true
-          cache-to: |
-            type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
+          cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
-
             
       - name: Check Docker Tag in ECR Repo
         env:
@@ -234,11 +207,11 @@ jobs:
               dockerTag: ${{ env.dockerTag }}
             run: |
               cd infra
-              # if [ "${{ env.ENVIRONMENT }}" == "prod" ]; then
-              #   DEPLOYMENT_PATH="prod/Websites/kustomize/overlays/flow-ui/deployment.yaml"
-              # else
-                DEPLOYMENT_PATH="dev/Websites/overlays/co-writer/deployment.yaml"
-              # fi
+              if [ "${{ env.ENVIRONMENT }}" == "prod" ]; then
+                #DEPLOYMENT_PATH="overlays/co-writer/prod/deployment.yaml"
+              else
+                DEPLOYMENT_PATH="overlays/co-writer/qa/deployment.yaml"
+              fi
               
               # Debug echo statements
               echo "Debug: BRANCH_NAME = ${{ env.BRANCH_NAME }}"
