@@ -71,7 +71,8 @@ jobs:
       - name: Determine ECR Repository Based on Branch
         id: set_repo
         run: |
-          ECR_BASE="${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}"
+          #ECR_BASE="${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}"
+          ECR_BASE="856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/co-writer"
           if [ "$IS_PRODUCTION" == "true" ]; then
             ECR_REPO="$ECR_BASE/prod"
           else
