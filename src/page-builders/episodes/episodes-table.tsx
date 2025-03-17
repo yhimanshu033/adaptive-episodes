@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import { usePageState } from '@/hooks/use-page-state'
@@ -28,6 +28,7 @@ const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const { setInventIndex, setIsInventOpen } = useEpisodeStore()
 	const { currentPage, search, limit } = usePageState()
+	const [searchedRow, setSearchedRow] = useState<number | null>(null)
 	const { data, isLoading: isEpisodesLoading } = useEpisodesData(
 		search,
 		currentPage,
@@ -36,12 +37,34 @@ const EpisodesTable = () => {
 	const tableData = useMemo(() => data?.results?.data ?? [], [data])
 	const { table, columnSize } = useCreateTable(tableData)
 
+	useEffect(() => {
+		if (searchedRow && !isEpisodesLoading) {
+			const rowElement = document.getElementById(`row-${searchedRow - 1}`)
+			if (!rowElement) return
+			rowElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+			const scrollDistance = Math.abs(
+				rowElement.getBoundingClientRect().top - window.innerHeight / 2
+			)
+			const timeoutDuration = Math.min(Math.max(scrollDistance / 2, 300), 1500)
+
+			setTimeout(() => {
+				rowElement.classList.remove('animate-slow-flash')
+				void rowElement.offsetWidth
+				rowElement.classList.add('animate-slow-flash')
+			}, timeoutDuration)
+		}
+	}, [searchedRow, isEpisodesLoading])
+
 	return (
 		<>
 			<div className="flex gap-2">
-				<Filters table={table} />
+				<Filters
+					table={table}
+					totalEpisodes={data?.count}
+					setSearchedRow={setSearchedRow}
+				/>
 			</div>
-			<ScrollArea className="overflow-auto-y relative flex max-h-[48vh] w-full flex-col rounded-md border">
+			<ScrollArea className="relative flex max-h-[48vh] w-full flex-col overflow-x-auto rounded-md border">
 				<Table>
 					<TableHeader className="sticky top-0 z-10 bg-background">
 						{table.getHeaderGroups().map((headerGroup) => (
@@ -92,7 +115,10 @@ const EpisodesTable = () => {
 						) : table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row, rowIndex) => (
 								<React.Fragment key={row.id}>
-									<TableRow className={cn({ selected: row.getIsSelected() })}>
+									<TableRow
+										id={`row-${row.id}`}
+										className={cn({ selected: row.getIsSelected() })}
+									>
 										{row.getVisibleCells().map((cell) => (
 											<TableCell
 												key={cell.id}

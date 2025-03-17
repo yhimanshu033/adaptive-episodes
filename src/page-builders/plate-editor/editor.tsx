@@ -9,18 +9,13 @@ import { SavingContextProvider } from '@/hooks/use-saving'
 import DualView from '@/page-builders/plate-editor/dual-view'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
 import FocusEditorWrapper from '@/page-builders/plate-editor/focus-mode/editor-wrapper'
-import SaveEpisode from '@/page-builders/plate-editor/save-episode'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import ControlButtons from '@/page-builders/plate-editor/split-editor/control-buttons'
-import SyncMetaData from '@/page-builders/plate-editor/sync-metadata'
-import Title from '@/page-builders/plate-editor/title'
-import Versions from '@/page-builders/plate-editor/versions'
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
 
 import { Loader } from '@/components/loader'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
-import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import { Editor } from '@/components/plate-ui/editor'
 import FixedToolbarComponent from '@/components/plate-ui/fixed-toolbar-component'
 import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response'
@@ -30,6 +25,8 @@ import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-b
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 import { TCustomComment } from '@/types/editor-types'
+
+import EpisodeHeader from './episode-header'
 
 export default function PlateEditor() {
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -57,18 +54,7 @@ export default function PlateEditor() {
 					<FocusEditorWrapper>
 						<div className="container p-4">
 							<EditorOverlayLoader />
-							<div className="flex animate-fade-in-up items-center justify-between">
-								<Title />
-								<div className="flex items-center gap-2">
-									<DownloadDocxButton latestStatus={latestStatus} />
-									<Versions
-										isChildEpisode={isChildEpisode}
-										latestStatus={latestStatus}
-									/>
-									<SyncMetaData />
-									<SaveEpisode />
-								</div>
-							</div>
+							<EpisodeHeader {...{ content, isChildEpisode, latestStatus }} />
 							<div
 								ref={containerRef}
 								className={cn(

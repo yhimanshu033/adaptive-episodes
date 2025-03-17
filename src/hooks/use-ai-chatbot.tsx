@@ -83,6 +83,7 @@ export function ChatbotProvider({
 	const [sfxStreaming, setSfxStreaming] = useState<string>('')
 	const [reviewStreaming, setReviewStreaming] = useState<string>('')
 	const [originalChildren, setOriginalChildren] = useState<Value>()
+	const [blockStreaming, setBlockStreaming] = useState<string>('')
 
 	const { id } = useParams()
 	const {
@@ -138,6 +139,7 @@ export function ChatbotProvider({
 				user_message: input,
 				ep_number: episodeContent?.chapter.seq_number?.toString(),
 				ep_text: getText(children),
+				context: episodeContent?.chapter?.props?.llm_memories?.context || '',
 			},
 		})
 		addMessages({ role: EMessenger.USER, content: input })
@@ -174,6 +176,11 @@ export function ChatbotProvider({
 			setSidebar(ESidebar.DUAL_VIEW)
 			return
 		}
+		if (suggestion.action === EChatMode.VOICE2) {
+			setDualViewMode(EDualVIewMode.VOICE_PASS_2)
+			setSidebar(ESidebar.DUAL_VIEW)
+			return
+		}
 		if (suggestion.action === EChatMode.PROMPTS) {
 			setInput(suggestion.value)
 			return
@@ -206,6 +213,7 @@ export function ChatbotProvider({
 			action: EAction.BLOCK,
 			taskId,
 		})
+		setBlockStreaming(taskId)
 	}
 
 	function cancelRequest() {
@@ -370,6 +378,25 @@ export function ChatbotProvider({
 		taskEnded[reviewStreaming],
 		originalChildren,
 	])
+
+	useEffect(() => {
+		if (!blockStreaming) return
+		if (taskEnded[blockStreaming]) {
+			const lastIndex = messages.length - 1
+			if (lastIndex >= 0) {
+				updateMessages(
+					{
+						...messages[lastIndex],
+						content:
+							responses[blockStreaming].join('') ||
+							'Tut mir leid, darauf habe ich im Moment keine Antwort.',
+					},
+					lastIndex
+				)
+			}
+			setBlockStreaming('')
+		}
+	}, [blockStreaming, taskEnded[blockStreaming]])
 
 	const lastMessage = useMemo(() => messages[messages.length - 1], [messages])
 	const disabled = !!(

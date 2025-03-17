@@ -136,7 +136,7 @@ export const getMetaDataRange = (
 		Math.max(1, currEpisode - range / 2 + 1),
 		Math.max(totalEpisodes - range + 1, 1)
 	)
-	return [start - 1, end]
+	return [start, end]
 }
 
 export const toPascalCase = (str: string | null) => {

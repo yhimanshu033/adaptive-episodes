@@ -28,14 +28,15 @@ const useAIChatbotHook = ({
 	)
 
 	const [start, end] = getMetaDataRange(episodeNumber, episodesCount)
-	const { data: metadataQueryData } = useMetadataQuery(Math.max(start, 1), end)
+	const { data: metadataQueryData } = useMetadataQuery(start, end)
 
 	const onAiChatbotMutation = async (params: AIChatBotParams) => {
 		if (!metadataQueryData?.data) return
 
 		const { data: metadata } = metadataQueryData
-		const extractedData = extractFromMetadata(metadata, start)
+		const { beatsheets_array, loglines_array } = extractFromMetadata(metadata)
 		const sources = getStoryExplorerConfigArray(storyExplorerConfiguration)
+
 		const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
 			method: 'POST',
 			url: API_URLS.STREAM_CHATBOT,
@@ -43,7 +44,8 @@ const useAIChatbotHook = ({
 				project_id: Number(id),
 				...params.aiChatbotData,
 				sources,
-				...extractedData,
+				beatsheets_array,
+				loglines_array,
 			},
 		})
 		return taskId
@@ -66,14 +68,14 @@ export const useAIChatbotQueryHook = (
 		params.episodeNumber,
 		params.episodesCount
 	)
-	const { data: metadataQueryData } = useMetadataQuery(Math.max(start, 1), end)
+	const { data: metadataQueryData } = useMetadataQuery(start, end)
 
 	const getChatbotResponse = async () => {
 		if (!metadataQueryData?.data) return
 
 		const { data: metadata } = metadataQueryData
 
-		const extractedData = extractFromMetadata(metadata, start)
+		const { beatsheets_array, loglines_array } = extractFromMetadata(metadata)
 
 		const taskId = await startTask<AIChatBotParams['aiChatbotData']>({
 			method: 'POST',
@@ -81,7 +83,8 @@ export const useAIChatbotQueryHook = (
 			body: {
 				project_id: Number(id),
 				...params.aiChatbotData,
-				...extractedData,
+				beatsheets_array,
+				loglines_array,
 			},
 		})
 		return taskId

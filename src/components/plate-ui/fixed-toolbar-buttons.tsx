@@ -10,7 +10,6 @@ import {
 	FontBackgroundColorPlugin,
 	FontColorPlugin,
 } from '@udecode/plate-font/react'
-import { ListStyleType } from '@udecode/plate-indent-list'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Icons, iconVariants } from '@/components/icons'
@@ -19,7 +18,6 @@ import { ChatbotToolbarButton } from '@/components/plate-ui/chatbot-toggle-butto
 import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
 import { CommentToolbarButton } from '@/components/plate-ui/comment-toolbar-button'
 import { FontDropdownMenu } from '@/components/plate-ui/font-dropdown-menu'
-import { IndentListToolbarButton } from '@/components/plate-ui/indent-list-toolbar-button'
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
 import { MarkToolbarButton } from '@/components/plate-ui/mark-toolbar-button'
 import { ModeDropdownMenu } from '@/components/plate-ui/mode-dropdown-menu'
@@ -30,6 +28,8 @@ import { TurnIntoDropdownMenu } from '@/components/plate-ui/turn-into-dropdown-m
 import UndoRedoButtons from '@/components/plate-ui/undo-redo-buttons'
 import { ZoomDropdownMenu } from '@/components/plate-ui/zoom-dropdown'
 import { Switch } from '@/components/ui/switch'
+
+import WordCountButton from './word-count-button'
 
 export function FixedToolbarButtons() {
 	const readOnly = useEditorReadOnly()
@@ -45,8 +45,12 @@ export function FixedToolbarButtons() {
 				}}
 			>
 				{!readOnly && (
-					<>
+					<div className="flex">
 						<ToolbarGroup noSeparator>
+							<WordCountButton />
+						</ToolbarGroup>
+
+						<ToolbarGroup>
 							<TurnIntoDropdownMenu />
 							<FontDropdownMenu />
 						</ToolbarGroup>
@@ -92,10 +96,8 @@ export function FixedToolbarButtons() {
 						<ToolbarGroup>
 							<AlignDropdownMenu />
 							<LineHeightDropdownMenu />
-							<IndentListToolbarButton nodeType={ListStyleType.Disc} />
-							<IndentListToolbarButton nodeType={ListStyleType.Decimal} />
 						</ToolbarGroup>
-					</>
+					</div>
 				)}
 
 				<div className="grow" />
@@ -108,7 +110,7 @@ export function FixedToolbarButtons() {
 						/>
 					</div>
 				) : (
-					<>
+					<div className="flex">
 						<ToolbarGroup noSeparator>
 							<TranslationToggleButton />
 							<ChatbotToolbarButton />
@@ -122,7 +124,7 @@ export function FixedToolbarButtons() {
 						<ToolbarGroup>
 							<ModeDropdownMenu />
 						</ToolbarGroup>
-					</>
+					</div>
 				)}
 			</div>
 		</div>

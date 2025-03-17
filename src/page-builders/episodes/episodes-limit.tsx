@@ -10,13 +10,17 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 
+import { EPISODE_LIMIT_KEY } from '@/types/episode-type'
+
 const EpisodesLimit = () => {
 	const { limit, setLimit, currentPage, setCurrentPage } = usePageState()
+
 	const handleChange = (value: string) => {
 		const firstEpisodeNumber = (currentPage - 1) * limit + 1
 		const newPage = Math.ceil(firstEpisodeNumber / Number(value))
 		void setCurrentPage(newPage)
 		void setLimit(Number(value))
+		localStorage.setItem(EPISODE_LIMIT_KEY, value)
 	}
 
 	return (

@@ -56,6 +56,7 @@ import { HrElementStatic } from '@/components/plate-ui/hr-element-static'
 import { KbdLeafStatic } from '@/components/plate-ui/kbd-leaf-static'
 import { ParagraphElementStatic } from '@/components/plate-ui/paragraph-element-static'
 import { downloadFile } from '@/lib/utils/client-helpers'
+import { getWordCount } from '@/lib/utils/plate'
 
 import { EStatus } from '@/types/common'
 import { DownloadDocxParams, TGetDocxFromHtmlBody } from '@/types/episode-type'
@@ -191,7 +192,8 @@ export default function useDocxDownloadHook({
             </style>
           </head>
           <body>
-		  <div><strong>EP ${epNumber} - ${title}</strong></div><br>
+		  <div><strong>EP ${epNumber} - ${title}</strong></div><br><br>
+		  <div> Neueste Wortanzahl: ${getWordCount(editor.children)} </div><br><br>
           ${editorHtml.replace(/<\/div>/g, '</div><br>')}
           </body>
         </html>`

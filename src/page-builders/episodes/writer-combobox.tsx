@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import useWriterUpdateMutation from '@/hooks/mutation/use-writer-update-mutation'
+import useUserMembersQuery from '@/hooks/query/user-members-data'
 import UserInfo from '@/page-builders/episodes/user-info'
 import { Check, ChevronsUpDown } from 'lucide-react'
 
@@ -21,20 +22,21 @@ import {
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils/helpers'
 
-import { MemberData } from '@/types/admin-types'
-
 const WriterCombobox = ({
-	members,
 	chapterId,
 	selectedMemberId,
+	className,
 }: {
-	chapterId: string
-	members?: MemberData[]
+	chapterId?: string
+	className?: string
 	selectedMemberId?: string
 }) => {
 	const [open, setOpen] = React.useState<boolean>(false)
 	const [value, setValue] = React.useState<string>(selectedMemberId || '')
-	const { mutate } = useWriterUpdateMutation(chapterId)
+	const { mutate } = useWriterUpdateMutation(chapterId || '')
+
+	const { data } = useUserMembersQuery()
+	const members = data?.members || []
 
 	const selectedMember = members?.find(
 		(member) => member.user.id === Number(value)
@@ -42,12 +44,12 @@ const WriterCombobox = ({
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
+			<PopoverTrigger asChild disabled={!chapterId}>
 				<Button
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className="w-[200px] justify-between"
+					className={cn('w-[200px] justify-between', className)}
 				>
 					<UserInfo user={selectedMember?.user} />
 					<ChevronsUpDown className="opacity-50" />

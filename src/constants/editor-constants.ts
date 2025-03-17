@@ -18,6 +18,10 @@ export const storyChatSuggestions: Array<TStoryChatSuggestion> = [
 		action: EChatMode.VOICE,
 	},
 	{
+		value: 'Voice Pass - Retention Writers ✍️',
+		action: EChatMode.VOICE2,
+	},
+	{
 		value: 'Review ✅',
 		action: EChatMode.REVIEW,
 	},
@@ -58,6 +62,7 @@ export const MAIN_EDITOR_ID = 'main-editor'
 export const TRANSLATION_EDITOR_ID = 'translation-editor'
 export const NEXT_EP_EDITOR_ID = 'next-ep-editor'
 export const PREV_EP_EDITOR_ID = 'prev-ep-editor'
+export const BASE_SCRIPT_EDITOR_ID = 'base-script-editor'
 export const LINES = 30
 
 export const AFTER_PAGE_BREAK_CLASSNAME = 'after-editor-page' // CHECK WITH GLOBALS CSS
@@ -98,3 +103,5 @@ export enum farSearchModes {
 	GENITIVE = 'genitive',
 	WHOLE_WORD = 'whole-word',
 }
+
+export const SAVE_EPISODE_BUTTON_ID = 'save-episode-button'
