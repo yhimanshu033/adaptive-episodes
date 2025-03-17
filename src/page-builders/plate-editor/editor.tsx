@@ -9,17 +9,13 @@ import { SavingContextProvider } from '@/hooks/use-saving'
 import DualView from '@/page-builders/plate-editor/dual-view'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
 import FocusEditorWrapper from '@/page-builders/plate-editor/focus-mode/editor-wrapper'
-import SaveEpisode from '@/page-builders/plate-editor/save-episode'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import ControlButtons from '@/page-builders/plate-editor/split-editor/control-buttons'
-import Title from '@/page-builders/plate-editor/title'
-import Versions from '@/page-builders/plate-editor/versions'
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
 
 import { Loader } from '@/components/loader'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
-import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import { Editor } from '@/components/plate-ui/editor'
 import FixedToolbarComponent from '@/components/plate-ui/fixed-toolbar-component'
 import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response'
@@ -30,7 +26,7 @@ import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 import { TCustomComment } from '@/types/editor-types'
 
-import EpisodeButton from './episode-button'
+import EpisodeHeader from './episode-header'
 
 export default function PlateEditor() {
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -58,30 +54,7 @@ export default function PlateEditor() {
 					<FocusEditorWrapper>
 						<div className="container p-4">
 							<EditorOverlayLoader />
-							<div className="flex animate-fade-in-up items-center justify-between">
-								<div className="flex items-center gap-2">
-									<EpisodeButton
-										direction="previous"
-										episodeId={content?.previous_parent_id}
-									/>
-									<Title
-										chapterId={String(content?.chapter?.id)}
-										memberId={String(content?.chapter?.writer)}
-									/>
-								</div>
-								<div className="flex items-center gap-2">
-									<Versions
-										isChildEpisode={isChildEpisode}
-										latestStatus={latestStatus}
-									/>
-									<DownloadDocxButton latestStatus={latestStatus} />
-									<SaveEpisode />
-									<EpisodeButton
-										direction="next"
-										episodeId={content?.next_parent_id}
-									/>
-								</div>
-							</div>
+							<EpisodeHeader {...{ content, isChildEpisode, latestStatus }} />
 							<div
 								ref={containerRef}
 								className={cn(

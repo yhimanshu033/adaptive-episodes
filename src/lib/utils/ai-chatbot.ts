@@ -174,8 +174,7 @@ export function convertReviewResponse(
 }
 
 export const extractFromMetadata = (
-	metadata: TGetMetadataResponse | null | undefined,
-	start: number
+	metadata: TGetMetadataResponse | null | undefined
 ) => {
 	const loglines_array: string[] = []
 	const beatsheets_array: string[] = []
@@ -184,11 +183,9 @@ export const extractFromMetadata = (
 	if (metadata?.data) {
 		const metadataEntries = Object.values(metadata?.data)
 
-		if (start) {
-			context = metadataEntries[0]?.context ?? ''
-		}
+		context = metadataEntries[0]?.context ?? ''
 
-		for (const data of Object.values(metadata.data).slice(start ? 1 : 0)) {
+		for (const data of Object.values(metadata.data)) {
 			loglines_array.push(`Ep ${data.loglines}`)
 			beatsheets_array.push(`Ep ${data.beatsheet}`)
 		}

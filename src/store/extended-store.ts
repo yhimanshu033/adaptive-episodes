@@ -11,6 +11,16 @@ function useEditorExtendedStore() {
 		})
 	}
 
+	const updateExtended = (episodeId: number, direction: 'prev' | 'next') => {
+		useEpisodeExtendedStoreUtil.setState((state) => {
+			const updatedExtended =
+				direction === 'next'
+					? [...state.extended, episodeId]
+					: [episodeId, ...state.extended]
+			return { extended: updatedExtended }
+		})
+	}
+
 	const setEpisodeMap = (episodeMap: EditorExtendedStore['episodeMap']) => {
 		useEpisodeExtendedStoreUtil.setState(() => {
 			return { episodeMap }
@@ -39,6 +49,7 @@ function useEditorExtendedStore() {
 		store: useEpisodeExtendedStoreUtil,
 		setEpisodeMap,
 		setExtended,
+		updateExtended,
 		addEpisodeMap,
 		addEpisodeKey,
 	}

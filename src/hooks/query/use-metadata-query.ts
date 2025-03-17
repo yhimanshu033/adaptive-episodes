@@ -8,7 +8,7 @@ export default function useMetadataQuery(start: number, end: number) {
 
 	const query = useQuery({
 		queryKey: [METADATA_QUERY_KEY, id, start, end],
-		queryFn: () => getMetadata(Number(id), Math.max(start - 1, 1), end),
+		queryFn: () => getMetadata(Number(id), start, end),
 		staleTime: Infinity,
 	})
 

@@ -139,6 +139,7 @@ export function ChatbotProvider({
 				user_message: input,
 				ep_number: episodeContent?.chapter.seq_number?.toString(),
 				ep_text: getText(children),
+				context: episodeContent?.chapter?.props?.llm_memories?.context || '',
 			},
 		})
 		addMessages({ role: EMessenger.USER, content: input })

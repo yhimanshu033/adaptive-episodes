@@ -10,17 +10,13 @@ import useEpisodeId from '@/providers/episode-id-provider'
 import EpisodeButton from '../episode-button'
 
 export default function ControlButtons() {
-	const { store: extendStore, setExtended } = useEditorExtendedStore()
+	const { store: extendStore, updateExtended } = useEditorExtendedStore()
 	const { extended, episodeMap } = extendStore()
 	const episodeId = useEpisodeId()
 
 	const firstEpisode = episodeMap[extended[0]]
 	const lastEpisode = episodeMap[extended[extended.length - 1]]
 	const { data: content } = useEpisodeContent()
-
-	const handleEpisodeSplit = () => {
-		void setExtended([...extended, Number(content?.next_parent_id)])
-	}
 
 	const isLast = useMemo(
 		() => episodeId === extended[extended.length - 1],
@@ -38,9 +34,9 @@ export default function ControlButtons() {
 				episodeId={firstEpisode?.previous_parent_id}
 			/>
 			<Button
-				tooltip="Episode Extension"
+				tooltip="Next Episode Extension"
 				disabled={!content?.next_parent_id}
-				onClick={handleEpisodeSplit}
+				onClick={() => updateExtended(Number(content?.next_parent_id), 'next')}
 				size="icon"
 				variant="ghost"
 			>
