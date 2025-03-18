@@ -209,7 +209,7 @@ jobs:
             run: |
               cd infra
               if [ "${{ env.ENVIRONMENT }}" == "prod" ]; then
-                #DEPLOYMENT_PATH="overlays/co-writer/prod/deployment.yaml"
+                DEPLOYMENT_PATH="overlays/co-writer/prod/deployment.yaml"
               else
                 DEPLOYMENT_PATH="overlays/co-writer/qa/deployment.yaml"
               fi
