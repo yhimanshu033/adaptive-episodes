@@ -46,9 +46,7 @@ const Title = ({
 				<div className="flex items-end gap-2">
 					<EditableText
 						key={episodeContent?.chapter.chapter_title}
-						text={decodeURIComponent(
-							episodeContent?.chapter.chapter_title || ''
-						)}
+						text={episodeContent?.chapter.chapter_title || ''}
 						rootClass="text-xl"
 						inputClass="text-xl"
 						isEditable={!readOnly}

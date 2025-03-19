@@ -48,6 +48,7 @@ import { BaseLinkPlugin } from '@udecode/plate-link'
 import { useShallow } from 'zustand/react/shallow'
 
 import { BlockquoteElementStatic } from '@/components/plate-ui/block-quote-element-static'
+import { DEFAULT_COLOR } from '@/components/plate-ui/color-constants'
 import { CommentLeafStatic } from '@/components/plate-ui/comment-leaf-static'
 import { EditorStatic } from '@/components/plate-ui/editor-static'
 import { HeadingElementStatic } from '@/components/plate-ui/heading-element-static'
@@ -194,7 +195,7 @@ export default function useDocxDownloadHook({
           <body>
 		  <div><strong>EP ${epNumber} - ${title}</strong></div><br><br>
 		  <div> Neueste Wortanzahl: ${getWordCount(editor.children)} </div><br><br>
-          ${editorHtml.replace(/<\/div>/g, '</div><br>')}
+          ${editorHtml.replace(/<\/div>/g, '</div><br>').replace(/rgba\([\d\s,.]*\)/g, DEFAULT_COLOR)}
           </body>
         </html>`
 
