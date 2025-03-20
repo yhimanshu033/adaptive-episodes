@@ -41,7 +41,6 @@ export function SavingContextProvider({
 	const {
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
-		setNotes,
 		setResolvedComments,
 		setStartOverlayLoading,
 	} = useEpisodeIdStore()
@@ -49,12 +48,10 @@ export function SavingContextProvider({
 		useShallow((state) => state.currentTitle)
 	)
 
-	const notes = useEpisodeIdStoreContext(useShallow((state) => state.notes))
 	const { resolvedComments } = useResolvedComments()
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
-	const savedNotesRef = useRef(JSON.stringify(data?.chapter.props?.notes || []))
 	const savedResolvedCommentsRef = useRef(
 		JSON.stringify(data?.chapter.props?.resolvedComments || [])
 	)
@@ -65,11 +62,6 @@ export function SavingContextProvider({
 		if (forceSave) return false
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(allComments)
-		const currentNotes = JSON.stringify(notes)
-		const storedNotes =
-			savedNotesRef.current === JSON.stringify([])
-				? JSON.stringify(data?.chapter.props?.notes || [])
-				: savedNotesRef.current
 		const currentResolvedComments = JSON.stringify(resolvedComments)
 		const storedResolvedComments =
 			savedResolvedCommentsRef.current === JSON.stringify([])
@@ -82,14 +74,12 @@ export function SavingContextProvider({
 			savedRef.current === currentChildren &&
 			savedCommentsRef.current === currentComments &&
 			currentTitle === storedTitle &&
-			currentNotes === storedNotes &&
 			storedResolvedComments === currentResolvedComments
 		)
 	}, [
 		children,
 		allComments,
 		currentTitle,
-		notes,
 		data?.chapter,
 		forceSave,
 		resolvedComments,
@@ -110,7 +100,6 @@ export function SavingContextProvider({
 				savedRef.current = JSON.stringify(children)
 				savedCommentsRef.current = JSON.stringify(allComments)
 				savedTitleRef.current = currentTitle
-				savedNotesRef.current = JSON.stringify(notes)
 				setForceSave(false)
 				const clearedLaser = clearLasers(children)
 				const text = JSON.stringify(clearedLaser)
@@ -125,7 +114,6 @@ export function SavingContextProvider({
 					props: {
 						...data?.chapter.props,
 						comments: allComments,
-						notes,
 						resolvedComments,
 					},
 					chapter_title: currentTitle || data?.chapter.chapter_title,
@@ -147,7 +135,6 @@ export function SavingContextProvider({
 					word_count,
 					comments: allComments,
 					prevProps: data?.chapter.props,
-					notes,
 					resolvedComments,
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
@@ -166,7 +153,6 @@ export function SavingContextProvider({
 			children,
 			allComments,
 			currentTitle,
-			notes,
 			id,
 			resolvedComments,
 			saveEpisodeMutation,
@@ -189,7 +175,6 @@ export function SavingContextProvider({
 			props: {
 				...data?.chapter.props,
 				comments: allComments,
-				notes,
 				resolvedComments,
 			},
 			chapter_title: currentTitle || data?.chapter.chapter_title,
@@ -204,7 +189,6 @@ export function SavingContextProvider({
 		allComments,
 		data?.chapter,
 		currentTitle,
-		notes,
 		pathname,
 		resolvedComments,
 	])
@@ -216,13 +200,10 @@ export function SavingContextProvider({
 	}, [data?.chapter, pathname, id])
 
 	useEffect(() => {
-		if (
-			savedCommentsRef.current !== JSON.stringify(allComments) ||
-			savedNotesRef.current !== JSON.stringify(notes)
-		) {
+		if (savedCommentsRef.current !== JSON.stringify(allComments)) {
 			void handleSave()
 		}
-	}, [allComments, handleSave, notes, currentTitle])
+	}, [allComments, handleSave, currentTitle])
 
 	useEffect(() => {
 		const handleBeforeUnload = () => {
@@ -243,10 +224,6 @@ export function SavingContextProvider({
 			savedTitleRef.current = data.chapter.chapter_title
 			setCurrentTitle(data.chapter.chapter_title)
 		}
-		if (data.chapter.props?.notes) {
-			savedNotesRef.current = JSON.stringify(data.chapter.props.notes)
-			setNotes(data.chapter.props.notes)
-		}
 		if (data.chapter.props?.resolvedComments) {
 			setResolvedComments(
 				(data.chapter.props.resolvedComments || []) as TCustomComment[]
@@ -265,7 +242,6 @@ export function SavingContextProvider({
 		isSaved,
 		children,
 		allComments,
-		notes,
 		currentTitle,
 		handleRemoveGlobalStore,
 		handleSaveGlobalStore,

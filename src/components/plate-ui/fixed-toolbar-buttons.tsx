@@ -10,6 +10,7 @@ import {
 	FontBackgroundColorPlugin,
 	FontColorPlugin,
 } from '@udecode/plate-font/react'
+import { ListStyleType } from '@udecode/plate-indent-list'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Icons, iconVariants } from '@/components/icons'
@@ -29,12 +30,59 @@ import UndoRedoButtons from '@/components/plate-ui/undo-redo-buttons'
 import { ZoomDropdownMenu } from '@/components/plate-ui/zoom-dropdown'
 import { Switch } from '@/components/ui/switch'
 
+import { IndentListToolbarButton } from './indent-list-toolbar-button'
 import WordCountButton from './word-count-button'
 
-export function FixedToolbarButtons() {
+export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 	const readOnly = useEditorReadOnly()
 	const { store: usePlateContextStore, setFocusMode } = usePlateStore()
 	const focusMode = usePlateContextStore(useShallow((state) => state.focusMode))
+
+	const SimplifiedToolbar = () => {
+		return (
+			<>
+				<ToolbarGroup noSeparator={simplified}>
+					<MarkToolbarButton nodeType={BoldPlugin.key} tooltip="Bold (⌘+B)">
+						<Icons.bold />
+					</MarkToolbarButton>
+					<MarkToolbarButton nodeType={ItalicPlugin.key} tooltip="Italic (⌘+I)">
+						<Icons.italic />
+					</MarkToolbarButton>
+					<MarkToolbarButton
+						nodeType={UnderlinePlugin.key}
+						tooltip="Underline (⌘+U)"
+					>
+						<Icons.underline />
+					</MarkToolbarButton>
+				</ToolbarGroup>
+
+				<ToolbarGroup>
+					<ColorDropdownMenu
+						nodeType={FontColorPlugin.key}
+						tooltip="Text Color"
+					>
+						<Icons.color className={iconVariants({ variant: 'toolbar' })} />
+					</ColorDropdownMenu>
+					<ColorDropdownMenu
+						nodeType={FontBackgroundColorPlugin.key}
+						tooltip="Highlight Color"
+					>
+						<Icons.bg className={iconVariants({ variant: 'toolbar' })} />
+					</ColorDropdownMenu>
+				</ToolbarGroup>
+			</>
+		)
+	}
+
+	if (simplified)
+		return (
+			<div className="flex">
+				<SimplifiedToolbar />
+				<ToolbarGroup>
+					<IndentListToolbarButton nodeType={ListStyleType.Disc} />
+				</ToolbarGroup>
+			</div>
+		)
 
 	return (
 		<div className="w-full overflow-hidden">
@@ -54,40 +102,7 @@ export function FixedToolbarButtons() {
 							<TurnIntoDropdownMenu />
 							<FontDropdownMenu />
 						</ToolbarGroup>
-
-						<ToolbarGroup>
-							<MarkToolbarButton nodeType={BoldPlugin.key} tooltip="Bold (⌘+B)">
-								<Icons.bold />
-							</MarkToolbarButton>
-							<MarkToolbarButton
-								nodeType={ItalicPlugin.key}
-								tooltip="Italic (⌘+I)"
-							>
-								<Icons.italic />
-							</MarkToolbarButton>
-							<MarkToolbarButton
-								nodeType={UnderlinePlugin.key}
-								tooltip="Underline (⌘+U)"
-							>
-								<Icons.underline />
-							</MarkToolbarButton>
-						</ToolbarGroup>
-
-						<ToolbarGroup>
-							<ColorDropdownMenu
-								nodeType={FontColorPlugin.key}
-								tooltip="Text Color"
-							>
-								<Icons.color className={iconVariants({ variant: 'toolbar' })} />
-							</ColorDropdownMenu>
-							<ColorDropdownMenu
-								nodeType={FontBackgroundColorPlugin.key}
-								tooltip="Highlight Color"
-							>
-								<Icons.bg className={iconVariants({ variant: 'toolbar' })} />
-							</ColorDropdownMenu>
-						</ToolbarGroup>
-
+						<SimplifiedToolbar />
 						<ToolbarGroup>
 							<UndoRedoButtons />
 							<ZoomDropdownMenu />

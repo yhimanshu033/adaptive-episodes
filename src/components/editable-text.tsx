@@ -35,6 +35,7 @@ const EditableText = ({
 
 	const handleComplete = () => {
 		setIsEditing(false)
+		if (text === defaultText) return
 		onComplete?.(text || defaultText)
 		if (!text) setText(defaultText)
 	}

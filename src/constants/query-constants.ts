@@ -1,8 +1,11 @@
+//Query Keys
+
 export const STORIES_QUERY_KEY = 'stories'
 
 export const USER_LIST_QUERY_KEY = 'user-list'
 
 export const EPISODE_LIST_QUERY_KEY = 'episodes'
+export const NOTES_QUERY_KEY = 'project-notes'
 
 export const EPISODE_INFO_QUERY_KEY = 'info'
 export const EPISODE_NEXT_INFO_QUERY_KEY = 'info-next'
@@ -16,3 +19,7 @@ export const EPISODE_PREV_CONTENT_QUERY_KEY = 'episode-prev-content'
 export const LASERTOOLS_QUERY_KEY = 'lasertools'
 export const METADATA_QUERY_KEY = 'metadata'
 export const PLOTOUTLINE_QUERY_KEY = 'plotoutline'
+
+//Mutation keys
+
+export const NOTES_MUTATION = 'update-notes'

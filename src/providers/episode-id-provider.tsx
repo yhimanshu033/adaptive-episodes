@@ -21,7 +21,6 @@ const initialState: PlateStoreData = {
 	activeDiffId: null,
 	currentDiffValue: null,
 	viewMode: false,
-	activeNoteId: null,
 	fontFamily: DEFAULT_FONT_FAMILY,
 	localDiffValue: null,
 	focusMode: false,
@@ -57,7 +56,7 @@ const initialLaserState: LaserStoreType = {
 const initialEpisodeIdState: EpisodeIdStoreType = {
 	episodeId: 0,
 	selectedStatus: undefined,
-	notes: [],
+	activeNoteId: null,
 	resolvedComments: [],
 	currentTitle: '',
 	dualViewMode: EDualVIewMode.US_TRANSLATION,

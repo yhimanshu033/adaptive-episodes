@@ -1,9 +1,7 @@
 import React from 'react'
-import useSaveEpisode from '@/hooks/use-save-episode'
+import useNotes from '@/hooks/use-notes'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import usePlateStore from '@/store/plate-store'
 import { Trash2 } from 'lucide-react'
-import { toast } from 'sonner'
 
 import { IconLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
@@ -19,9 +17,8 @@ import { formatDate } from '@/lib/format-date'
 import { TNote } from '@/types/plate-types'
 
 const NoteCard = ({ id, title, content, updateTime }: TNote) => {
-	const { setActiveNoteId } = usePlateStore()
-	const { isPending } = useSaveEpisode()
-	const { deleteNote } = useEpisodeIdStore()
+	const { setActiveNoteId } = useEpisodeIdStore()
+	const { handleDeleteNote, isPending } = useNotes()
 	return (
 		<div className="group relative">
 			<Card
@@ -32,11 +29,13 @@ const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 					<CardTitle className="break-words">{title}</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<CardDescription className="line-clamp-2 text-sm text-foreground">
-						{typeof content === 'string'
-							? content
-							: `${content.length} results`}
-					</CardDescription>
+					{content && (
+						<CardDescription className="line-clamp-2 text-sm text-foreground">
+							{typeof content === 'string'
+								? content
+								: `${content.length} results from Explorer`}
+						</CardDescription>
+					)}
 					<div className="mt-2 text-xs text-muted-foreground">
 						Last updated: {formatDate(updateTime)}
 					</div>
@@ -51,8 +50,7 @@ const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 						size="icon"
 						onClick={(e) => {
 							e.stopPropagation()
-							toast.success('Notiz erfolgreich gelöscht!')
-							deleteNote(id)
+							handleDeleteNote(id)
 						}}
 					>
 						<Trash2 size={16} />
