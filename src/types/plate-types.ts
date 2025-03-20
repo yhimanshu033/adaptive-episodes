@@ -47,7 +47,6 @@ export enum ESidebar {
 }
 export type PlateStoreData = {
 	activeDiffId: string | null
-	activeNoteId: string | null
 	currentDiffValue: Value | null
 	focusMode: boolean
 	fontFamily: string
@@ -70,7 +69,8 @@ export type LaserStoreType = {
 }
 
 export type TNote = {
-	content: string | PlotExplorerApiResponse['data']
+	content?: string | PlotExplorerApiResponse['data']
+	edit?: string
 	id: string
 	title: string
 	updateTime: string

@@ -15,6 +15,8 @@ import {
 	TGetEpisodeDetailsQueryParams,
 	TGetEpisodesQueryParams,
 	TGetEpisodesResponse,
+	TGetNotesResponse,
+	TNotesUpdateBody,
 	TStatusUpdateBody,
 	TStatusUpdateResponse,
 	TStatusUpdateURLParams,
@@ -136,6 +138,39 @@ export const updateStatus = async (
 		body: {
 			status,
 		},
+	})
+	return res.data
+}
+
+export const getNotes = async (project_id: number) => {
+	const res = await fetchAPI<TGetNotesResponse, { project_id: number }>({
+		method: 'GET',
+		url: API_URLS.GET_NOTES,
+		urlParams: {
+			project_id,
+		},
+	})
+	return res.data?.data
+}
+
+export const updateNotes = async ({
+	project_id,
+	params,
+}: {
+	params: TNotesUpdateBody
+	project_id: number
+}) => {
+	const res = await fetchAPI<
+		{ message: string },
+		{ project_id: number },
+		TNotesUpdateBody
+	>({
+		method: 'POST',
+		url: API_URLS.UPDATE_NOTES,
+		urlParams: {
+			project_id,
+		},
+		body: params,
 	})
 	return res.data
 }

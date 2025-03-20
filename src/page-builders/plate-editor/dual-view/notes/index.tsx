@@ -1,32 +1,55 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useNotesData } from '@/hooks/query/use-notes-query'
+import DualViewLoader from '@/page-builders/plate-editor/dual-view/dual-view-loader'
+import AddNotes from '@/page-builders/plate-editor/dual-view/notes/add-notes'
 import NoteCard from '@/page-builders/plate-editor/dual-view/notes/note-card'
 import NoteContent from '@/page-builders/plate-editor/dual-view/notes/note-content'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import usePlateStore from '@/store/plate-store'
+import { useEpisodeStore } from '@/store/episode-store'
 import { useShallow } from 'zustand/react/shallow'
 
+import { TNote } from '@/types/plate-types'
+
 const Notes = () => {
-	const { store } = usePlateStore()
+	const { store } = useEpisodeIdStore()
 	const activeNoteId = store((state) => state.activeNoteId)
-	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
-	const notes = useEpisodeIdStoreContext(useShallow((state) => state.notes))
+	const { useEpisodeTableStore, setNotes } = useEpisodeStore()
+	const notes = useEpisodeTableStore(useShallow((state) => state.notes))
+	const { data, isLoading } = useNotesData()
+
+	useEffect(() => {
+		if (data && data.notes && !notes.length) {
+			const fetchedNotes = Object.values(data.notes).map(
+				({ note_text }) => JSON.parse(note_text) as TNote
+			)
+			if (fetchedNotes.length) {
+				setNotes(fetchedNotes)
+			}
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [data])
 
 	const RenderNotes = () => {
-		if (!notes || !notes.length) {
-			return <p className="pt-12 text-center">No notes available</p>
-		}
-
-		if (activeNoteId) {
-			return <NoteContent activeNoteId={activeNoteId} notes={notes} />
+		if (isLoading) {
+			return <DualViewLoader />
 		}
 
 		return (
 			<div className="grid grid-cols-1 gap-4">
-				{notes.map((note) => (
-					<NoteCard key={note.id} {...note} />
-				))}
+				<AddNotes />
+				{notes.map((note) =>
+					note.id === activeNoteId ? (
+						<NoteContent
+							key={note.id}
+							activeNoteId={activeNoteId}
+							notes={notes}
+						/>
+					) : (
+						<NoteCard key={note.id} {...note} />
+					)
+				)}
 			</div>
 		)
 	}

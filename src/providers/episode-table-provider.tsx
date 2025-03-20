@@ -18,6 +18,7 @@ const initialState: EpisodeStoreState = {
 	deleteEpisodeId: null,
 	selectedEpisodes: null,
 	currentInventIndex: null,
+	notes: [],
 }
 
 function useEpisodeContextUtil() {

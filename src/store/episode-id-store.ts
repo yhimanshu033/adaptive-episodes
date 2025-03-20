@@ -21,26 +21,6 @@ function useEpisodeIdStore() {
 		})
 	}
 
-	const setNotes = (notes: EpisodeIdStoreType['notes']) => {
-		useEpisodeIdStoreContext.setState(() => {
-			return { notes }
-		})
-	}
-
-	const addNote = (note: EpisodeIdStoreType['notes'][number]) => {
-		useEpisodeIdStoreContext.setState((state) => {
-			return { notes: [...state.notes, note] }
-		})
-	}
-
-	const deleteNote = (noteId: EpisodeIdStoreType['notes'][number]['id']) => {
-		useEpisodeIdStoreContext.setState((state) => {
-			return {
-				notes: state.notes.filter((note) => note.id !== noteId),
-			}
-		})
-	}
-
 	const setDualViewMode = (
 		dualViewMode: EpisodeIdStoreType['dualViewMode']
 	) => {
@@ -83,18 +63,20 @@ function useEpisodeIdStore() {
 		})
 	}
 
+	const setActiveNoteId = (activeNoteId: string | null) => {
+		useEpisodeIdStoreContext.setState({ activeNoteId })
+	}
+
 	return {
 		store: useEpisodeIdStoreContext,
 		setSelectedStatus,
 		setCurrentTitle,
-		setNotes,
-		addNote,
-		deleteNote,
 		setDualViewMode,
 		setStartOverlayLoading,
 		addResolvedComment,
 		setResolvedComments,
 		removeResolvedComment,
+		setActiveNoteId,
 	}
 }
 

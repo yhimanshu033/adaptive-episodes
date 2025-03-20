@@ -34,11 +34,6 @@ export function usePlateStore() {
 	const setViewMode = (viewMode: boolean) => {
 		usePlateStoreContext.setState({ viewMode })
 	}
-
-	const setActiveNoteId = (activeNoteId: string | null) => {
-		usePlateStoreContext.setState({ activeNoteId })
-	}
-
 	const setFontFamily = (fontFamily: PlateStoreData['fontFamily']) => {
 		usePlateStoreContext.setState({ fontFamily })
 	}
@@ -63,7 +58,6 @@ export function usePlateStore() {
 		setActiveDiffId,
 		setCurrentDiffValue,
 		setViewMode,
-		setActiveNoteId,
 		setFontFamily,
 		setLocalDiffValue,
 		setFocusMode,

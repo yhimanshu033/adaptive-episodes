@@ -73,6 +73,8 @@ export const API_URLS = {
 	STREAM_DOCX: '/project/convert-html-to-docx/',
 	STREAM_LASER: '/aicopilot/lasertools',
 	STREAM_EXPLORER: '/aicopilot/explorer',
+	GET_NOTES: '/user/:project_id/fetch-user-notes/',
+	UPDATE_NOTES: '/user/:project_id/update-user-notes/',
 }
 
 export const LOGS = {
