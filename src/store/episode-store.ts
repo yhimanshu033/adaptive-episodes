@@ -1,6 +1,7 @@
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 import { EpisodeStoreState } from '@/types/episode-type'
+import { TNote } from '@/types/plate-types'
 
 export function useEpisodeStore() {
 	const { useEpisodeStoreUtil } = useEpisodeTableContext()
@@ -40,6 +41,39 @@ export function useEpisodeStore() {
 		useEpisodeStoreUtil.setState({ currentInventIndex })
 	}
 
+	const setNotes = (notes: EpisodeStoreState['notes']) => {
+		useEpisodeStoreUtil.setState(() => {
+			return { notes }
+		})
+	}
+
+	const addNote = (
+		note: EpisodeStoreState['notes'][number],
+		addToStart = false
+	) => {
+		useEpisodeStoreUtil.setState((state) => ({
+			notes: addToStart ? [note, ...state.notes] : [...state.notes, note],
+		}))
+	}
+
+	const deleteNote = (noteId: EpisodeStoreState['notes'][number]['id']) => {
+		useEpisodeStoreUtil.setState((state) => {
+			return {
+				notes: state.notes.filter((note) => note.id !== noteId),
+			}
+		})
+	}
+
+	const updateNote = (noteId: string, params: Partial<TNote>) => {
+		useEpisodeStoreUtil.setState((state) => {
+			const updatedNotes = state.notes.map((note) =>
+				note.id === noteId ? { ...note, ...params } : note
+			)
+
+			return { notes: updatedNotes }
+		})
+	}
+
 	return {
 		setCurrentPage,
 		setEpisodeSearch,
@@ -49,6 +83,10 @@ export function useEpisodeStore() {
 		setSelectedEpisodes,
 		setDeleteEpisodeId,
 		setInventIndex,
+		setNotes,
+		addNote,
+		deleteNote,
+		updateNote,
 		useEpisodeTableStore: useEpisodeStoreUtil,
 	}
 }

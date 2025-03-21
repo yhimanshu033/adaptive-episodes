@@ -22,7 +22,6 @@ import useEpisodeId from '@/providers/episode-id-provider'
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
 import { TEpisodeMergeParams } from '@/types/episode-type'
-import { TNote } from '@/types/plate-types'
 
 const useEpisodeHook = () => {
 	const { id } = useParams()
@@ -47,7 +46,6 @@ const useEpisodeHook = () => {
 			chapterId,
 			chapter_title,
 			comments,
-			notes,
 			prevProps,
 			word_count,
 			resolvedComments,
@@ -55,7 +53,6 @@ const useEpisodeHook = () => {
 			chapterId?: number | null
 			chapter_title?: string
 			comments?: TComment[]
-			notes?: TNote[]
 			prevProps?: Record<string, unknown>
 			resolvedComments?: TCustomComment[]
 			status: EStatus | typeof BASE_STATUS
@@ -81,7 +78,6 @@ const useEpisodeHook = () => {
 				props: {
 					...prevProps,
 					comments,
-					notes,
 					resolvedComments,
 				},
 			})

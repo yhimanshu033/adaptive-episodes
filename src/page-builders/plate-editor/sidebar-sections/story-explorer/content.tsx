@@ -1,10 +1,9 @@
 import React from 'react'
-import useSaveEpisode from '@/hooks/use-save-episode'
+import useNotesMutation from '@/hooks/mutation/use-notes-mutation'
+import useNotes from '@/hooks/use-notes'
 import useAIStore from '@/store/ai-store'
-import useEpisodeIdStore from '@/store/episode-id-store'
 import { ArrowLeft, Copy, FilePlus2 } from 'lucide-react'
 import { nanoid } from 'nanoid'
-import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import { IconLoader, Loader } from '@/components/loader'
@@ -32,22 +31,23 @@ const Content = ({
 	start: number
 }) => {
 	const { store, setActiveExplorerActions } = useAIStore()
-	const { addNote } = useEpisodeIdStore()
+	const { handleAddNote } = useNotes()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
 	const activeExplorerActions = store(
 		useShallow((state) => state.activeExplorerActions)
 	)
-	const { isPending } = useSaveEpisode()
+
+	const updateNotesMutation = useNotesMutation()
 
 	const addToNote = (explorerData?: PlotExplorerApiResponse['data']) => {
+		const id = nanoid()
 		const note: TNote = {
-			id: nanoid(),
+			id,
 			title: `${toPascalCase(activeExplorerMode)} ${toPascalCase(activeExplorerActions[activeExplorerMode])} (Episode ${start} - ${end})`,
 			content: explorerData || '',
 			updateTime: new Date().toString(),
 		}
-		addNote(note)
-		toast.success('Erfolgreich zur Notiz hinzugefügt!')
+		handleAddNote(note)
 	}
 	return (
 		<>
@@ -67,7 +67,7 @@ const Content = ({
 						<Copy size={16} />
 					</Button>
 				)}
-				{isPending ? (
+				{updateNotesMutation.isPending ? (
 					<IconLoader />
 				) : (
 					<Button

@@ -29,7 +29,7 @@ import { Switch } from '@/components/ui/switch'
 import { formatDate } from '@/lib/format-date'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
-import { episodeHeaderKeys, TEpisode } from '@/types/episode-type'
+import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
 export const useCreateTable = (episodes: TEpisode[]) => {
 	const [expanded, setExpanded] = useState<ExpandedState>({})
@@ -42,7 +42,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 
 	const columns: ColumnDef<TEpisode>[] = [
 		{
-			id: episodeHeaderKeys.SELECT_COL,
+			id: EEpisodeHeaderKeys.SELECT_COL,
 			header: ({ table }) => (
 				<Checkbox
 					checked={table.getIsAllRowsSelected()}
@@ -59,7 +59,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				),
 		},
 		{
-			accessorKey: episodeHeaderKeys.SERIAL_NUMBER,
+			accessorKey: EEpisodeHeaderKeys.SERIAL_NUMBER,
 			header: () => (
 				<HoverCard openDelay={0}>
 					<HoverCardTrigger> {`DE${checked ? '/US' : ''}`} </HoverCardTrigger>
@@ -76,7 +76,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				`${row.original.seq_number}${checked && row.original.original_seq_number ? `/${row.original.original_seq_number}` : ''}`,
 		},
 		{
-			accessorKey: episodeHeaderKeys.CHAPTER_TITLE,
+			accessorKey: EEpisodeHeaderKeys.CHAPTER_TITLE,
 			header: 'Title',
 			cell: ({ row }) => (
 				<div
@@ -102,7 +102,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			),
 		},
 		{
-			accessorKey: episodeHeaderKeys.STATUS,
+			accessorKey: EEpisodeHeaderKeys.STATUS,
 			header: 'Status',
 			cell: ({ row, table }) => {
 				const isSelected = !!rowSelection[row.id]
@@ -139,7 +139,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			},
 		},
 		{
-			accessorKey: episodeHeaderKeys.WRITER,
+			accessorKey: EEpisodeHeaderKeys.WRITER,
 			header: 'Writer',
 			cell: ({ row }) =>
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -153,12 +153,12 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				),
 		},
 		{
-			accessorKey: episodeHeaderKeys.UPDATE_TIME,
+			accessorKey: EEpisodeHeaderKeys.UPDATE_TIME,
 			header: 'Last Updated',
 			cell: ({ row }) => formatDate(row.original.update_time),
 		},
 		{
-			accessorKey: episodeHeaderKeys.DELETE,
+			accessorKey: EEpisodeHeaderKeys.DELETE,
 			header: 'Delete',
 			cell: ({ row }) =>
 				row.original.props?.creation_timestamp && (

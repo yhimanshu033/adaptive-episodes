@@ -384,3 +384,5 @@ export const DEFAULT_CUSTOM_COLORS = [
 		value: '#4C1130',
 	},
 ]
+
+export const DEFAULT_COLOR = '#D3D3D3' //white grey

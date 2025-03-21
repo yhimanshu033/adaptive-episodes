@@ -1,5 +1,9 @@
 import { EStatus } from '@/types/common'
-import { SaveEpisodeParams, TGetEpisodesResponse } from '@/types/episode-type'
+import {
+	ENotesAction,
+	SaveEpisodeParams,
+	TGetEpisodesResponse,
+} from '@/types/episode-type'
 
 export const statuses: EStatus[] = [
 	EStatus.FIRST_DRAFT,
@@ -51,3 +55,10 @@ export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 ] as const
 
 export const UNASSIGNED_LABEL = 'Nicht zugewiesen'
+
+export const notesMessages = {
+	[ENotesAction.CREATE]: 'Erfolgreich zur Notiz hinzugefügt!',
+	[ENotesAction.DELETE]: 'Notiz erfolgreich gelöscht!',
+	[ENotesAction.UPDATE]: 'Hinweis erfolgreich aktualisiert!',
+	[ENotesAction.DELETE_ALL]: 'Alle Notizen erfolgreich gelöscht!',
+}

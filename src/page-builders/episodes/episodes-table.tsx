@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils/helpers'
 
-import { episodeHeaderKeys } from '@/types/episode-type'
+import { EEpisodeHeaderKeys } from '@/types/episode-type'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
@@ -82,7 +82,7 @@ const EpisodesTable = () => {
 															'flex cursor-pointer select-none items-center'
 													)}
 													{...(header.id !==
-													(episodeHeaderKeys.SERIAL_NUMBER as string)
+													(EEpisodeHeaderKeys.SERIAL_NUMBER as string)
 														? {
 																onClick:
 																	header.column.getToggleSortingHandler(),

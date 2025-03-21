@@ -16,6 +16,7 @@ export type EpisodeStoreState = {
 	episodeSearch: string
 	isDialogOpen: boolean
 	isInventOpen: boolean
+	notes: TNote[]
 	selectedEpisodes: {
 		episodes: TEpisode[]
 		status: EStatus | typeof BASE_STATUS
@@ -178,10 +179,10 @@ export type TGetDocxFromHtmlBody = {
 }
 
 export type EpisodeIdStoreType = {
+	activeNoteId: string | null
 	currentTitle: string
 	dualViewMode: EDualVIewMode
 	episodeId: number
-	notes: TNote[]
 	resolvedComments: TCustomComment[]
 	selectedStatus: EStatus | undefined
 	startOverlayLoading: boolean
@@ -237,7 +238,7 @@ export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
 
 export type TranslationProps = { translatedContent: string }
 
-export enum episodeHeaderKeys {
+export enum EEpisodeHeaderKeys {
 	CHAPTER_TITLE = 'chapter_title',
 	DELETE = 'delete',
 	SELECT_COL = 'select-col',
@@ -248,3 +249,33 @@ export enum episodeHeaderKeys {
 }
 
 export const EPISODE_LIMIT_KEY = 'episodeLimit'
+
+export enum ENotesAction {
+	CREATE = 'create',
+	DELETE = 'delete',
+	DELETE_ALL = 'delete_all',
+	UPDATE = 'update',
+}
+
+export type TGetNotesResponse = {
+	data: {
+		create_time: string
+		notes: Record<
+			string,
+			{
+				create_time: string
+				note_text: string
+				update_time: string
+			}
+		>
+		project: number
+		update_time: string
+		user: number
+	}
+}
+
+export type TNotesUpdateBody = {
+	action: ENotesAction
+	note_text?: string
+	unique_id: string
+}
