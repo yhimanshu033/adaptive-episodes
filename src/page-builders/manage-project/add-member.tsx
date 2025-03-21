@@ -6,6 +6,7 @@ import {
 } from '@/hooks/form-resolvers/add-user-resolver'
 import useProjectAccessMutation from '@/hooks/mutation/use-project-access-mutation'
 import SearchUser from '@/page-builders/manage-project/search-user'
+import { Plus } from 'lucide-react'
 
 import { IconLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
@@ -78,7 +79,9 @@ const AddMember = () => {
 				{projectAccessMutation.isPending ? (
 					<IconLoader />
 				) : (
-					<Button size="sm">+ Add User</Button>
+					<Button size="sm">
+						<Plus size={16} /> Add User
+					</Button>
 				)}
 			</form>
 		</Form>

@@ -10,7 +10,7 @@ const useAdmin = () => {
 	const { id } = useParams()
 
 	const isAdmin = useMemo(() => {
-		return projects
+		return projects && typeof projects === 'object'
 			? projects.find(
 					(project) =>
 						project.project.id === Number(id) && project.role === ERole.ADMIN
