@@ -3,6 +3,8 @@
 export const STORIES_QUERY_KEY = 'stories'
 
 export const USER_LIST_QUERY_KEY = 'user-list'
+export const USER_PROJECTS_QUERY_KEY = 'user-projects'
+export const ALL_USERS_QUERY_KEY = 'all-users'
 
 export const EPISODE_LIST_QUERY_KEY = 'episodes'
 export const NOTES_QUERY_KEY = 'project-notes'
@@ -23,3 +25,4 @@ export const PLOTOUTLINE_QUERY_KEY = 'plotoutline'
 //Mutation keys
 
 export const NOTES_MUTATION = 'update-notes'
+export const PROJECT_ACCESS_MUTATION = 'update-project-access'
