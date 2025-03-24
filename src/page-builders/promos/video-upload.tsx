@@ -4,10 +4,11 @@ import type React from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { PROMO_PAGE } from '@/constants/german-constants'
 import useVideoTranslation from '@/hooks/mutation/use-video-translation'
-import { Copy, FileVideo, Loader2, Upload, X } from 'lucide-react'
+import { Copy, FileVideo, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import IfElse, { Else, If } from '@/components/if-else'
+import { IconLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import {
 	Card,
@@ -208,7 +209,7 @@ export default function VideoUpload() {
 					>
 						<IfElse condition={isPending}>
 							<If>
-								<Loader2 className="mr-2 size-4 animate-spin" />
+								<IconLoader />
 								{PROMO_PAGE.PROCESSING}
 							</If>
 							<Else>{data ? PROMO_PAGE.RESET : PROMO_PAGE.TRANSCRIBE}</Else>
