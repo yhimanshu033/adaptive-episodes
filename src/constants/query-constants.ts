@@ -20,6 +20,7 @@ export const LASERTOOLS_QUERY_KEY = 'lasertools'
 export const METADATA_QUERY_KEY = 'metadata'
 export const PLOTOUTLINE_QUERY_KEY = 'plotoutline'
 
+export const TRANSLATE_VIDEO_MUTATION_KEY = 'translate-video'
 //Mutation keys
 
 export const NOTES_MUTATION = 'update-notes'
