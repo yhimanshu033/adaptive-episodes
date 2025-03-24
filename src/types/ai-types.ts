@@ -236,3 +236,11 @@ export interface CommentExampleParams {
 	next_paragraphs?: string
 	prev_paragraphs?: string
 }
+
+export interface TVideoTranslationResponse {
+	translation: string
+}
+
+export interface TVideoTranslationBody {
+	video_url: string
+}

@@ -75,6 +75,7 @@ export const API_URLS = {
 	STREAM_EXPLORER: '/aicopilot/explorer',
 	GET_NOTES: '/user/:project_id/fetch-user-notes/',
 	UPDATE_NOTES: '/user/:project_id/update-user-notes/',
+	TRANSLATE_VIDEO: '/aicopilot/mp4_to_german',
 }
 
 export const LOGS = {
