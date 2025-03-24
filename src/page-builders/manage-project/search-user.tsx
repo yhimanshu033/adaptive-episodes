@@ -1,6 +1,7 @@
 import React from 'react'
 import useAllUsersData from '@/hooks/query/use-all-users-data'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
+import useAdminStore, { setMemberQuery } from '@/store/admin-store'
 import { Check } from 'lucide-react'
 
 import {
@@ -25,9 +26,9 @@ const SearchUser = ({
 	selectedValue: string
 }) => {
 	const [open, setOpen] = React.useState<boolean>(false)
-	const [query, setQuery] = React.useState<string>('')
 	const { data, isLoading } = useAllUsersData('')
 	const { data: membersData } = useUserMembersQuery()
+	const addMemberQuery = useAdminStore((state) => state.addMemberQuery)
 
 	const users = React.useMemo(() => {
 		if (!data || !membersData) return []
@@ -39,13 +40,13 @@ const SearchUser = ({
 	}, [data, membersData])
 
 	const handleValueChange = (value: string) => {
-		setQuery(value)
+		setMemberQuery(value)
 		if (selectedValue) onUserSelect('')
 	}
 
 	const handleSelect = (user: UserData) => {
 		onUserSelect(user.email)
-		setQuery(user.fullname)
+		setMemberQuery(user.fullname)
 	}
 
 	return (
@@ -54,7 +55,7 @@ const SearchUser = ({
 				<div className="relative flex items-center">
 					<CommandInput
 						placeholder="Search User"
-						value={query}
+						value={addMemberQuery}
 						onValueChange={handleValueChange}
 						onFocus={() => setOpen(true)}
 						onBlur={() => setOpen(false)}

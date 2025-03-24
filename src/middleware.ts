@@ -7,8 +7,7 @@ import {
 } from '@/constants/route-constants'
 import { getToken, JWT } from 'next-auth/jwt'
 
-import { API_URLS } from './constants/global-constants'
-import { ERole, UserProject } from './types/admin-types'
+import { projectAdminCheck } from './lib/utils/helpers'
 
 const handleUIRoutes = async (req: NextRequest, jwt: JWT | null) => {
 	const auth = req.nextUrl.clone()
@@ -24,24 +23,7 @@ const handleUIRoutes = async (req: NextRequest, jwt: JWT | null) => {
 	}
 
 	if (MANAGE_PROJECT.test(req.nextUrl.pathname) && jwt) {
-		const data = (await fetch(
-			`${process.env.NEXT_PUBLIC_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
-			{
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${jwt.accessToken}`,
-				},
-			}
-		).then((res) => res.json())) as { projects: UserProject[] }
-		const projectId = req.nextUrl.pathname.match(MANAGE_PROJECT)?.[1] || null
-		const isAdmin =
-			data && projectId
-				? data?.projects?.some(
-						(project) =>
-							project.project.id === Number(projectId) &&
-							project.role === ERole.ADMIN
-					)
-				: false
+		const isAdmin = await projectAdminCheck(req, jwt)
 		if (isAdmin) return NextResponse.next()
 		return NextResponse.redirect(afterAuth)
 	}

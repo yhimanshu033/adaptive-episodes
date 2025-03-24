@@ -6,7 +6,7 @@ import {
 } from '@/hooks/form-resolvers/add-user-resolver'
 import useProjectAccessMutation from '@/hooks/mutation/use-project-access-mutation'
 import SearchUser from '@/page-builders/manage-project/search-user'
-import { Plus } from 'lucide-react'
+import { setMemberQuery } from '@/store/admin-store'
 
 import { IconLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,7 @@ import {
 
 import { EProjectAccessActions } from '@/types/admin-types'
 
-const AddMember = () => {
+const AddMemberForm = () => {
 	const form = useAddUserFormResolver()
 	const projectAccessMutation = useProjectAccessMutation()
 
@@ -32,13 +32,14 @@ const AddMember = () => {
 			body: { user_email: email, role },
 		})
 		form.reset()
+		setMemberQuery('')
 	}
 
 	return (
 		<Form {...form}>
 			<form
 				onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
-				className="flex items-center gap-2"
+				className="flex w-full items-center gap-2"
 			>
 				<FormField
 					control={form.control}
@@ -79,8 +80,11 @@ const AddMember = () => {
 				{projectAccessMutation.isPending ? (
 					<IconLoader />
 				) : (
-					<Button size="sm">
-						<Plus size={16} /> Add User
+					<Button
+						size="sm"
+						disabled={!form.watch('email') || !form.watch('role')}
+					>
+						Add
 					</Button>
 				)}
 			</form>
@@ -88,4 +92,4 @@ const AddMember = () => {
 	)
 }
 
-export default AddMember
+export default AddMemberForm

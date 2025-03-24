@@ -1,4 +1,4 @@
-export const PROTECTED_ROUTES = /^\/(projects(\/.*)?)/
+export const PROTECTED_ROUTES = /^\/(projects(\/.*)?|promos)/
 
 export const AUTH = '/auth/signin'
 

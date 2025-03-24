@@ -83,6 +83,9 @@ export const API_URLS = {
 	STREAM_EXPLORER: '/aicopilot/explorer',
 	GET_NOTES: '/user/:project_id/fetch-user-notes/',
 	UPDATE_NOTES: '/user/:project_id/update-user-notes/',
+	UPDATE_LOC_SHEET: '/project/:projectId/update-loc-sheet/',
+	UPDATE_LOC_MAPPING: '/project/:projectId/update-localisation-data/',
+	GET_LOC_SHEET: '/project/:projectId/get-loc-spreadsheet-data/',
 }
 
 export const LOGS = {

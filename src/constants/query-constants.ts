@@ -22,6 +22,8 @@ export const LASERTOOLS_QUERY_KEY = 'lasertools'
 export const METADATA_QUERY_KEY = 'metadata'
 export const PLOTOUTLINE_QUERY_KEY = 'plotoutline'
 
+export const LOC_SHEET_QUERY_KEY = 'loc-sheet-url'
+
 //Mutation keys
 
 export const NOTES_MUTATION = 'update-notes'

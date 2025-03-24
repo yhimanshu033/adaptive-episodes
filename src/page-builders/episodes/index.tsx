@@ -5,8 +5,11 @@ import Link from 'next/link'
 import EpisodesTable from '@/page-builders/episodes/episodes-table'
 import { ArrowLeft } from 'lucide-react'
 
+import AuthWrapper from '@/components/auth-wrapper'
 import StoryDetails from '@/components/story-details'
 import { Button } from '@/components/ui/button'
+
+import { ERole } from '@/types/admin-types'
 
 import AdminManageProject from './admin-manage-project'
 
@@ -16,7 +19,9 @@ export default function EpisodeListPage() {
 			<div className="mb-6 flex items-center justify-between">
 				<StoryDetails />
 				<div className="flex gap-2">
-					<AdminManageProject />
+					<AuthWrapper role={ERole.ADMIN}>
+						<AdminManageProject />
+					</AuthWrapper>
 					<Button variant="outline" size="sm" asChild>
 						<Link href="/projects">
 							<ArrowLeft className="mr-2 size-4" />

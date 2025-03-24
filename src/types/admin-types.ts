@@ -116,5 +116,6 @@ export enum EProjectUsersHeaderKeys {
 }
 
 export type TAdminStoreState = {
+	addMemberQuery: string
 	deleteMemberMail: string
 }
