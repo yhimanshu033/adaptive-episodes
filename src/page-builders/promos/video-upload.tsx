@@ -75,7 +75,8 @@ export default function VideoUpload() {
 		reset()
 	}
 
-	const handleSubmit = () => {
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
 		if (!file) return
 
 		if (data) {
@@ -101,7 +102,10 @@ export default function VideoUpload() {
 	)
 
 	return (
-		<div className={cn('container max-w-3xl py-10', { 'max-w-6xl': !!data })}>
+		<form
+			onSubmit={handleSubmit}
+			className={cn('container max-w-3xl py-10', { 'max-w-6xl': !!data })}
+		>
 			<Card>
 				<CardHeader>
 					<CardTitle>{PROMO_PAGE.TITLE}</CardTitle>
@@ -203,9 +207,9 @@ export default function VideoUpload() {
 				</CardContent>
 				<CardFooter>
 					<Button
-						onClick={handleSubmit}
 						disabled={!file || isPending}
 						className="w-full"
+						type="submit"
 					>
 						<IfElse condition={isPending}>
 							<If>
@@ -217,6 +221,6 @@ export default function VideoUpload() {
 					</Button>
 				</CardFooter>
 			</Card>
-		</div>
+		</form>
 	)
 }

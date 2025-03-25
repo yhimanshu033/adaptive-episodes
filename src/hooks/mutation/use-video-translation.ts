@@ -22,6 +22,8 @@ async function translateVideo({ file }: { file: File }) {
 		body: formData,
 	})
 
+	console.log({ response })
+
 	return response.data?.translation || PROMO_PAGE.TRANSCRIPTION_FAILED
 }
 

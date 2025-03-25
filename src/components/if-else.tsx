@@ -29,14 +29,14 @@ export function If({
 	const context = React.useContext(IfElseContext)
 
 	if (!context) {
-		return propCondition ? <>{children}</> : null
+		return propCondition ? children : null
 	}
 
 	const condition = propCondition ?? context.condition
-	return condition ? <>{children}</> : null
+	return condition ? children : null
 }
 
 export function Else({ children }: { children: React.ReactNode }) {
 	const { condition } = React.useContext(IfElseContext)
-	return condition ? null : <>{children}</>
+	return condition ? null : children
 }
