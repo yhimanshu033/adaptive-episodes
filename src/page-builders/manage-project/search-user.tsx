@@ -4,7 +4,7 @@ import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useAdminStore, { setMemberQuery } from '@/store/admin-store'
 import { Check } from 'lucide-react'
 
-import { Else, If } from '@/components/if-else'
+import IfElse, { Else, If } from '@/components/if-else'
 import {
 	Command,
 	CommandEmpty,
@@ -67,32 +67,36 @@ const SearchUser = ({
 
 			<ScrollArea className="mt-2 h-[50vh] rounded-md border border-input">
 				<CommandList className="max-h-none">
-					<If condition={!isLoading}>
-						<CommandEmpty className="my-5 text-sm text-muted-foreground">
-							No user found
-						</CommandEmpty>
-					</If>
-					<Else>
-						<CommandGroup>
-							<If condition={isLoading}>
-								<CommandItem className="my-5" disabled>
-									Loading users..
-								</CommandItem>
-							</If>
-							<Else>
-								{users.map((user, index) => (
-									<CommandItem
-										key={index}
-										onMouseDown={(e) => e.preventDefault()}
-										onSelect={() => handleSelect(user)}
-										className="cursor-pointer py-3"
-									>
-										<UserInfo user={user} showFullName showEmail />
-									</CommandItem>
-								))}
-							</Else>
-						</CommandGroup>
-					</Else>
+					<IfElse condition={isLoading}>
+						<If>
+							<CommandItem className="test-sm p-2" disabled>
+								Loading users..
+							</CommandItem>
+						</If>
+						<Else>
+							<IfElse condition={users.length !== 0}>
+								<CommandGroup>
+									<If>
+										{users.map((user, index) => (
+											<CommandItem
+												key={index}
+												onMouseDown={(e) => e.preventDefault()}
+												onSelect={() => handleSelect(user)}
+												className="cursor-pointer py-3"
+											>
+												<UserInfo user={user} showFullName showEmail />
+											</CommandItem>
+										))}
+									</If>
+									<Else>
+										<CommandEmpty className="my-5 text-sm text-muted-foreground">
+											No user found
+										</CommandEmpty>
+									</Else>
+								</CommandGroup>
+							</IfElse>
+						</Else>
+					</IfElse>
 				</CommandList>
 			</ScrollArea>
 		</Command>
