@@ -39,49 +39,51 @@ const AddMemberForm = () => {
 		<Form {...form}>
 			<form
 				onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
-				className="flex w-full items-center gap-2"
+				className="space-y-5 text-center"
 			>
-				<FormField
-					control={form.control}
-					name="email"
-					render={({ field }) => (
-						<FormItem className="flex-1">
-							<FormControl>
-								<SearchUser
-									selectedValue={field.value}
-									onUserSelect={field.onChange}
-								/>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="role"
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Select onValueChange={field.onChange} value={field.value}>
-									<SelectTrigger disabled={!form.watch('email')}>
-										<SelectValue placeholder="Select Role" />
-									</SelectTrigger>
-									<SelectContent>
-										{rolesArray.map((role, index) => (
-											<SelectItem key={index} value={role}>
-												{role}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
+				<div className="flex w-full gap-2">
+					<FormField
+						control={form.control}
+						name="email"
+						render={({ field }) => (
+							<FormItem className="flex-1">
+								<FormControl>
+									<SearchUser
+										selectedValue={field.value}
+										onUserSelect={field.onChange}
+									/>
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="role"
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Select onValueChange={field.onChange} value={field.value}>
+										<SelectTrigger disabled={!form.watch('email')}>
+											<SelectValue placeholder="Select Role" />
+										</SelectTrigger>
+										<SelectContent>
+											{rolesArray.map((role, index) => (
+												<SelectItem key={index} value={role}>
+													{role}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+				</div>
 				{projectAccessMutation.isPending ? (
 					<IconLoader />
 				) : (
 					<Button
-						size="sm"
+						className="w-full"
 						disabled={!form.watch('email') || !form.watch('role')}
 					>
 						Add

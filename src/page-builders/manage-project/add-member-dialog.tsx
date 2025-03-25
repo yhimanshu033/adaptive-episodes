@@ -21,10 +21,7 @@ const AddMemberDialog = () => {
 					<Plus size={16} /> Add User
 				</Button>
 			</DialogTrigger>
-			<DialogContent
-				className="w-2/3 max-w-none -translate-y-full"
-				autoFocus={false}
-			>
+			<DialogContent className="w-2/3 max-w-none" autoFocus={false}>
 				<DialogHeader>
 					<DialogTitle>Add User</DialogTitle>
 					<DialogDescription>
@@ -32,9 +29,7 @@ const AddMemberDialog = () => {
 						role.
 					</DialogDescription>
 				</DialogHeader>
-				<div>
-					<AddMemberForm />
-				</div>
+				<AddMemberForm />
 			</DialogContent>
 		</Dialog>
 	)
