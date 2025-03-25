@@ -27,6 +27,10 @@ export const roleToData: Record<ERole, { priority: number; title: string }> = {
 	[ERole.READER]: { title: '', priority: 3 },
 }
 
+export const rolesArray: ERole[] = Object.entries(roleToData)
+	.sort(([, a], [, b]) => a.priority - b.priority)
+	.map(([role]) => role as ERole)
+
 export const DEFAULT_USER: Record<string, SuggestionUser> = {
 	'1': {
 		id: '1',
@@ -58,6 +62,10 @@ export const API_URLS = {
 	MEMBERS_GET: '/project/:id/get-project-members',
 	LOGIN: '/auth/login/',
 	GET_MY_USER: '/user/me',
+	GET_USER_PROJECTS: '/user/get-user-projects',
+	GET_ALL_USERS: '/user/get-all-users/',
+	GIVE_PROJECT_ACCESS: '/project/:projectId/:userId/give-project-access',
+	REVOKE_PROJECT_ACCESS: '/project/:projectId/:userId/revoke-project-access',
 	GET_EPISODE: '/chapter/:chapterId/content/',
 	SAVE_EPISODE: '/chapter/:projectId/:episodeId/',
 	GET_EPISODES: '/chapter/',
@@ -75,6 +83,9 @@ export const API_URLS = {
 	STREAM_EXPLORER: '/aicopilot/explorer',
 	GET_NOTES: '/user/:project_id/fetch-user-notes/',
 	UPDATE_NOTES: '/user/:project_id/update-user-notes/',
+	UPDATE_LOC_SHEET: '/project/:projectId/update-loc-sheet/',
+	UPDATE_LOC_MAPPING: '/project/:projectId/update-localisation-data/',
+	GET_LOC_SHEET: '/project/:projectId/get-loc-spreadsheet-data/',
 	TRANSLATE_VIDEO: '/aicopilot/mp4_to_german',
 }
 
@@ -85,3 +96,5 @@ export const LOGS = {
 export type TIdParams = {
 	id: string
 }
+
+export const pathsWithoutGlobalHeader = ['/editor', '/manage-project']

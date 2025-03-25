@@ -7,7 +7,7 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useShallow } from 'zustand/react/shallow'
 
-import EditorHeader from './editor-header'
+import ProjectHeader from '@/components/project-header'
 
 const EpisodePlateEditor = () => {
 	const { store: extendStore } = useEditorExtendedStore()
@@ -17,7 +17,7 @@ const EpisodePlateEditor = () => {
 	return (
 		<main className="flex flex-1 flex-col">
 			<DndProvider backend={HTML5Backend}>
-				<EditorHeader
+				<ProjectHeader
 					initialSeqNumber={episodeMap[extended[0]]?.chapter?.seq_number}
 				/>
 				<div className="relative">

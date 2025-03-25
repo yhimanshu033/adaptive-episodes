@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { buildQueryString } from '@/lib/utils/helpers'
 
-const EditorHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
+const ProjectHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 	const router = useRouter()
 	const { id } = useParams()
 	const { limit, userDefaultLimit } = usePageState()
@@ -80,4 +80,4 @@ const EditorHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 	)
 }
 
-export default EditorHeader
+export default ProjectHeader
