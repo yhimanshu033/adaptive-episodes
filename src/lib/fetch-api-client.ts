@@ -1,0 +1,209 @@
+import { validResponseStatuses } from '@/constants/global-constants'
+import * as Sentry from '@sentry/nextjs'
+
+import { log } from '@/lib/utils/helpers'
+
+import { SessionData } from '@/types/admin-types'
+import { TNoParams } from '@/types/common'
+
+export type FetchRequestParams<
+	ResponseDataT = TNoParams,
+	UrlParamsT = TNoParams,
+	BodyParamsT = TNoParams,
+	QueryParamsT = TNoParams,
+> = {
+	baseUrl?: string
+	body?: BodyParamsT
+	defaultData?: ResponseDataT
+	headers?: Record<string, string>
+	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
+	noAuth?: boolean
+	query?: QueryParamsT
+	sendLog?: string
+	session?: SessionData
+	throwOnError?: boolean
+	url: string
+	urlParams?: UrlParamsT
+}
+
+type FetchResponseResult<ResponseDataT = TNoParams> =
+	| {
+			data: ResponseDataT
+			error: null
+			status: number
+			success: true
+	  }
+	| {
+			data: null | ResponseDataT
+			error: Error
+			status: 0
+			success: false
+	  }
+
+export async function fetchAPIClient<
+	ResponseDataT = TNoParams,
+	UrlParamsT = TNoParams,
+	BodyParamsT = TNoParams,
+	QueryParamsT = TNoParams,
+>(
+	params: FetchRequestParams<
+		ResponseDataT,
+		UrlParamsT,
+		BodyParamsT,
+		QueryParamsT
+	>
+): Promise<FetchResponseResult<ResponseDataT>> {
+	const {
+		url,
+		method,
+		urlParams = {},
+		query = {},
+		body = {},
+		headers = {},
+		defaultData,
+		throwOnError,
+		baseUrl,
+		noAuth,
+		sendLog,
+		session,
+	} = params
+
+	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
+	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
+
+	if (!BASE_URL) {
+		throw new Error('Backend URL not set in env!')
+	}
+
+	let resolvedUrl = BASE_URL + url
+	for (const key in urlParams as Record<string, string>) {
+		const value = (urlParams as Record<string, string>)[key]
+		resolvedUrl = resolvedUrl
+			.replace(`:${key}`, value.toString())
+			.replace(`[${key}]`, value.toString())
+	}
+
+	const filteredQuery = Object.fromEntries(
+		Object.entries(query as Record<string, string>).filter(
+			([, value]) => !!value
+		)
+	)
+
+	const queryStr = new URLSearchParams(
+		filteredQuery as Record<string, string>
+	).toString()
+	if (queryStr) {
+		resolvedUrl += `?${queryStr}`
+	}
+	const accessToken = session?.accessToken || ''
+
+	const defaultSentryData: Record<string, string> = {
+		user: JSON.stringify(session?.user),
+		url: resolvedUrl,
+		method,
+		accessToken: accessToken ? 'exists' : "doesn't exist",
+		body: JSON.stringify(body),
+		query: JSON.stringify(query),
+		headers: JSON.stringify(headers),
+	}
+	try {
+		const isFormData = body instanceof FormData
+		if (!accessToken && !noAuth) {
+			console.warn('No access token found in session')
+			log({
+				type: 'API ACCESS_TOKEN ERROR',
+				extra: {
+					...defaultSentryData,
+				},
+			})
+			Sentry.captureException(new Error('API ACCESS_TOKEN ERROR'), {
+				extra: defaultSentryData,
+			})
+		}
+		const response = await fetch(resolvedUrl, {
+			method,
+			headers: {
+				...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+				'API-Key': API_KEY,
+				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
+				...headers,
+			},
+			...(method !== 'GET' && method !== 'DELETE'
+				? { body: isFormData ? body : JSON.stringify(body) }
+				: {}),
+			next: {
+				revalidate: 0,
+			},
+			mode: 'cors',
+		})
+
+		if (!response.ok || !validResponseStatuses.includes(response.status)) {
+			log({
+				type: 'API RESPONSE ERROR',
+				extra: {
+					...defaultSentryData,
+					responseStatus: response.status,
+					responseStatusText: response.statusText,
+				},
+			})
+			Sentry.captureException(new Error('API RESPONSE ERROR'), {
+				extra: {
+					...defaultSentryData,
+					responseStatus: response.status,
+					responseStatusText: response.statusText,
+				},
+			})
+
+			return {
+				success: false,
+				status: 0,
+				data: defaultData ?? null,
+				error: new Error(response.statusText),
+			}
+		}
+
+		const responseData = (await response.json()) as ResponseDataT
+		if (sendLog) {
+			const message = `${sendLog}: ${session?.user.id} - ${resolvedUrl.split(BASE_URL)[1]} - ${new Date().toUTCString()}`
+			Sentry.captureMessage(message, 'info')
+			log({
+				message,
+			})
+		}
+
+		return {
+			success: true,
+			status: response.status,
+			data: responseData,
+			error: null,
+		}
+	} catch (error) {
+		log({
+			type: 'API CATCH ERROR',
+			extra: {
+				...defaultSentryData,
+				error: JSON.stringify(error),
+			},
+		})
+		Sentry.captureException(new Error('API CATCH ERROR'), {
+			extra: {
+				...defaultSentryData,
+				error: JSON.stringify(error),
+			},
+		})
+		const errorInstance = error as Error
+
+		if (throwOnError) {
+			throw errorInstance
+		}
+
+		console.log({ errorInstance })
+
+		return {
+			success: false,
+			status: 0,
+			data: defaultData ?? null,
+			error: errorInstance,
+		}
+	}
+}

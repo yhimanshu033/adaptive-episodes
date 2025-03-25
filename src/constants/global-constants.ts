@@ -86,6 +86,7 @@ export const API_URLS = {
 	UPDATE_LOC_SHEET: '/project/:projectId/update-loc-sheet/',
 	UPDATE_LOC_MAPPING: '/project/:projectId/update-localisation-data/',
 	GET_LOC_SHEET: '/project/:projectId/get-loc-spreadsheet-data/',
+	TRANSLATE_VIDEO: '/aicopilot/mp4_to_german',
 }
 
 export const LOGS = {
