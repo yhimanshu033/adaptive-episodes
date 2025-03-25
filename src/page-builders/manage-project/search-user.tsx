@@ -74,30 +74,24 @@ const SearchUser = ({
 							</CommandItem>
 						</If>
 						<Else>
-							<IfElse condition={users.length !== 0}>
-								<CommandGroup>
-									<If>
-										{users.map((user, index) => (
-											<CommandItem
-												key={index}
-												onMouseDown={(e) => e.preventDefault()}
-												onSelect={() => handleSelect(user)}
-												className="cursor-pointer py-3"
-											>
-												<UserInfo user={user} showFullName showEmail />
-											</CommandItem>
-										))}
-									</If>
-									<Else>
-										<CommandEmpty className="my-5 text-sm text-muted-foreground">
-											No user found
-										</CommandEmpty>
-									</Else>
-								</CommandGroup>
-							</IfElse>
+							<CommandGroup>
+								{users.map((user, index) => (
+									<CommandItem
+										key={index}
+										onMouseDown={(e) => e.preventDefault()}
+										onSelect={() => handleSelect(user)}
+										className="cursor-pointer py-3"
+									>
+										<UserInfo user={user} showFullName showEmail />
+									</CommandItem>
+								))}
+							</CommandGroup>
 						</Else>
 					</IfElse>
 				</CommandList>
+				<CommandEmpty className="my-5 text-sm text-muted-foreground">
+					No user found
+				</CommandEmpty>
 			</ScrollArea>
 		</Command>
 	)
