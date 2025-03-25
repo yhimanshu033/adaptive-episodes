@@ -14,6 +14,7 @@ import {
 	CommandList,
 } from '@/components/ui/command'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Skeleton } from '@/components/ui/skeleton'
 
 import { UserData } from '@/types/admin-types'
 
@@ -65,13 +66,15 @@ const SearchUser = ({
 				)}
 			</div>
 
-			<ScrollArea className="mt-2 h-[50vh] rounded-md border border-input">
+			<ScrollArea className="mt-2 max-h-[52vh] rounded-md border border-input">
 				<CommandList className="max-h-none">
 					<IfElse condition={isLoading}>
 						<If>
-							<CommandItem className="test-sm p-2" disabled>
-								Loading users..
-							</CommandItem>
+							{Array.from({ length: 9 }).map((_, index) => (
+								<CommandItem key={index} disabled>
+									<Skeleton className="h-8 w-full" />
+								</CommandItem>
+							))}
 						</If>
 						<Else>
 							<CommandGroup>

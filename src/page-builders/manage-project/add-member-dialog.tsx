@@ -10,6 +10,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog'
+import { Separator } from '@/components/ui/separator'
 
 import AddMemberForm from './add-member-form'
 
@@ -21,7 +22,10 @@ const AddMemberDialog = () => {
 					<Plus size={16} /> Add User
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="w-2/3 max-w-none" autoFocus={false}>
+			<DialogContent
+				className="flex h-[85vh] w-2/3 max-w-none flex-col items-start"
+				autoFocus={false}
+			>
 				<DialogHeader>
 					<DialogTitle>Add User</DialogTitle>
 					<DialogDescription>
@@ -29,6 +33,7 @@ const AddMemberDialog = () => {
 						role.
 					</DialogDescription>
 				</DialogHeader>
+				<Separator />
 				<AddMemberForm />
 			</DialogContent>
 		</Dialog>

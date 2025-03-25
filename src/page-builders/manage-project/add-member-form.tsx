@@ -18,6 +18,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 
 import { EProjectAccessActions } from '@/types/admin-types'
 
@@ -39,7 +40,7 @@ const AddMemberForm = () => {
 		<Form {...form}>
 			<form
 				onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
-				className="space-y-5 text-center"
+				className="flex w-full flex-1 flex-col justify-between gap-5"
 			>
 				<div className="flex w-full gap-2">
 					<FormField
@@ -66,9 +67,13 @@ const AddMemberForm = () => {
 										<SelectTrigger disabled={!form.watch('email')}>
 											<SelectValue placeholder="Select Role" />
 										</SelectTrigger>
-										<SelectContent>
+										<SelectContent className="mt-2 bg-background" align="end">
 											{rolesArray.map((role, index) => (
-												<SelectItem key={index} value={role}>
+												<SelectItem
+													className="cursor-pointer hover:bg-muted"
+													key={index}
+													value={role}
+												>
 													{role}
 												</SelectItem>
 											))}
@@ -79,16 +84,16 @@ const AddMemberForm = () => {
 						)}
 					/>
 				</div>
-				{projectAccessMutation.isPending ? (
-					<IconLoader />
-				) : (
-					<Button
-						className="w-full"
-						disabled={!form.watch('email') || !form.watch('role')}
-					>
-						Add
-					</Button>
-				)}
+				<div className="space-y-4 text-end">
+					<Separator />
+					{projectAccessMutation.isPending ? (
+						<IconLoader />
+					) : (
+						<Button disabled={!form.watch('email') || !form.watch('role')}>
+							Add
+						</Button>
+					)}
+				</div>
 			</form>
 		</Form>
 	)

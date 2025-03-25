@@ -4,7 +4,6 @@ import { useProjectUsersTable } from '@/hooks/use-project-users-table'
 import { flexRender } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
-import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
 	Table,
@@ -17,7 +16,7 @@ import {
 import { cn } from '@/lib/utils/helpers'
 
 import SkeletonBuilder from '../episodes/episode-skeleton'
-import AddMemberDialog from './add-member-dialog'
+import SearchTable from './search-table'
 
 const MembersTable = () => {
 	const { data, isLoading: isMembersLoading } = useUserMembersQuery()
@@ -27,14 +26,8 @@ const MembersTable = () => {
 
 	return (
 		<>
-			<div className="flex items-center gap-2">
-				<Input
-					placeholder="Search Members"
-					onChange={(e) => setGlobalFilter(e.target.value)}
-				/>
-				<AddMemberDialog />
-			</div>
-			<ScrollArea className="relative mt-2 flex max-h-[48vh] w-full flex-col rounded-md border">
+			<SearchTable setGlobalFilter={setGlobalFilter} />
+			<ScrollArea className="relative mt-2 flex h-[48vh] w-full flex-col rounded-md border">
 				<Table>
 					<TableHeader className="sticky top-0 z-10 bg-background">
 						{table.getHeaderGroups().map((headerGroup) => (
