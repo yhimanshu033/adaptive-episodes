@@ -51,21 +51,7 @@ export default function FindAndReplace() {
 	} = useFindAndReplace()
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
-			<div className="flex items-center gap-2">
-				<h2 className="text-2xl font-bold">Localization</h2>
-				<If condition={!!sheetURL}>
-					<Button
-						variant="outline"
-						size="icon"
-						tooltip="View localization sheet"
-						asChild
-					>
-						<Link href={sheetURL}>
-							<Eye />
-						</Link>
-					</Button>
-				</If>
-			</div>
+			<h2 className="text-2xl font-bold">Localization</h2>
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
 				<TooltipComponent tooltip="Enable Replace">
 					<Toggle onClick={toggleReplace} aria-label="Toggle replace">
@@ -186,13 +172,24 @@ export default function FindAndReplace() {
 								)
 						)}
 					</div>
-					<div className="text-end">
-						<Button onClick={() => void refetch()} className="w-fit gap-2">
-							<Search size={16} /> Scan
-						</Button>
-					</div>
 				</>
 			)}
+			<div className="flex items-center justify-end gap-2">
+				<If condition={!!sheetURL}>
+					<Button size="icon" tooltip="Open LOC sheet" asChild>
+						<Link href={sheetURL} target="_blank" rel="noopener noreferrer">
+							<Eye />
+						</Link>
+					</Button>
+				</If>
+				<Button
+					onClick={() => void refetch()}
+					disabled={isFetching}
+					className="w-fit gap-2"
+				>
+					<Search size={16} /> Scan
+				</Button>
+			</div>
 			<hr />
 			<AddForm setData={setData} />
 		</div>

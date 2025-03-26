@@ -2,9 +2,10 @@
 
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
+import { LOC_SHEET_QUERY_KEY } from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
 import { updateLOCSheet } from '@/server-action/localization-action'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEditorState } from '@udecode/plate-common/react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -93,9 +94,14 @@ export const useUpdateLOCSheetMutation = () => {
 	const { id } = useParams()
 	const session = useSession()
 	const { startTask, getResponse } = useSocket()
+	const queryClient = useQueryClient()
 
-	const onSuccess = () => {
+	const onSuccess = async () => {
 		toast.success('URL des Lokalisierungsblatts aktualisiert!')
+		await queryClient.invalidateQueries({
+			queryKey: [LOC_SHEET_QUERY_KEY, Number(id)],
+			exact: true,
+		})
 	}
 
 	const onUpdateLOCSheet = async (url: string) => {
