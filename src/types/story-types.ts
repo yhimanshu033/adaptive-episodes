@@ -8,6 +8,7 @@ export type TGetStoriesResponse = Array<TStory>
 
 export type TStory = {
 	author: string | null
+	cms_ready_drive_folder_url: string | null
 	create_time: string
 	episode_count: number
 	id: number

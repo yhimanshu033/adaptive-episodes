@@ -6,6 +6,8 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '1000mb',
+      allowedForwardedHosts: ['https://k0bbchh3-3000.inc1.devtunnels.ms'],
+      allowedOrigins: ['localhost:3000'],
     },
   },
   async headers() {

@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { LOC_SHEET_SERVICE_ACCOUNT } from '@/constants/user-constants'
+import UpdateDriveFolder from '@/page-builders/manage-project/update-gdrive-folder'
 import { Copy } from 'lucide-react'
 
 import ProjectHeader from '@/components/project-header'
@@ -55,6 +56,16 @@ const ManageProject = () => {
 					</div>
 
 					<UpdateLOCSheet />
+				</section>
+				<section className="space-y-4">
+					<div className="space-y-1">
+						<h1 className="text-xl font-bold">Google Drive Folder</h1>
+						<p className="text-muted-foreground">
+							Provide the Google drive folder link to store the CMS Ready
+							Episodes
+						</p>
+					</div>
+					<UpdateDriveFolder />
 				</section>
 			</div>
 			<AdminAlert />
