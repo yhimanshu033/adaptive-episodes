@@ -16,8 +16,6 @@ import { getText } from '@/lib/utils/plate'
 import { TLocalizeResponse, TLocalizeUpdateRequest } from '@/types/ai-types'
 import { TNoParams } from '@/types/common'
 
-import useSocketStreaming from '../use-socket-streaming'
-
 const useLocalizeHook = () => {
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
@@ -48,17 +46,25 @@ export default useLocalizeHook
 
 export const useLocalizeMutation = () => {
 	const { id } = useParams()
+	const { startTask, getResponse } = useSocket()
 
 	const mutation = useMutation({
 		mutationKey: ['localize-update'],
 		mutationFn: async (params: TLocalizeUpdateRequest) => {
-			const res = await fetchAPI<TNoParams, TIdParams, TLocalizeUpdateRequest>({
+			const taskId = await startTask<
+				TLocalizeUpdateRequest,
+				TNoParams,
+				TIdParams
+			>({
 				method: 'PATCH',
 				url: API_URLS.LOCALIZATION_UPDATE,
 				body: params,
 				urlParams: { id: String(id) },
 			})
-			return res
+
+			const response = await getResponse(taskId)
+
+			return response
 		},
 	})
 
@@ -86,7 +92,7 @@ export const useLocalizeDownloadMutation = () => {
 export const useUpdateLOCSheetMutation = () => {
 	const { id } = useParams()
 	const session = useSession()
-	const { startTask } = useSocketStreaming()
+	const { startTask, getResponse } = useSocket()
 
 	const onSuccess = () => {
 		toast.success('URL des Lokalisierungsblatts aktualisiert!')
@@ -104,7 +110,8 @@ export const useUpdateLOCSheetMutation = () => {
 				projectId: Number(id),
 			},
 		})
-		return taskId
+		const resp = await getResponse(taskId)
+		return resp
 	}
 
 	const mutation = useMutation({

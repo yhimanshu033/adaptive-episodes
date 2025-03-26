@@ -16,7 +16,7 @@ export function Loader({
 	textClass?: string
 }) {
 	return (
-		<div className={cn('flex flex-col gap-6', loaderClass)}>
+		<div className={cn('flex flex-col items-center gap-6', loaderClass)}>
 			<div className="flex gap-2">
 				<div
 					className={cn(

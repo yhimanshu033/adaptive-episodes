@@ -10,6 +10,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
+import IfElse, { Else, If } from '@/components/if-else'
+import { IconLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import {
 	Form,
@@ -178,9 +180,14 @@ export default function AddForm({
 					)}
 				/>
 				<div className="flex justify-end">
-					<Button disabled={isPending} type="submit">
-						Submit
-					</Button>
+					<IfElse condition={isPending}>
+						<If>
+							<IconLoader />
+						</If>
+						<Else>
+							<Button type="submit">Submit</Button>
+						</Else>
+					</IfElse>
 				</div>
 			</form>
 		</Form>
