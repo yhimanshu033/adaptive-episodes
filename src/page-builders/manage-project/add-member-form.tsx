@@ -8,6 +8,7 @@ import useProjectAccessMutation from '@/hooks/mutation/use-project-access-mutati
 import SearchUser from '@/page-builders/manage-project/search-user'
 import { setMemberQuery } from '@/store/admin-store'
 
+import IfElse, { Else, If } from '@/components/if-else'
 import { IconLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
@@ -85,14 +86,17 @@ const AddMemberForm = () => {
 					/>
 				</div>
 				<div className="space-y-4 text-end">
-					<Separator />
-					{projectAccessMutation.isPending ? (
-						<IconLoader />
-					) : (
-						<Button disabled={!form.watch('email') || !form.watch('role')}>
-							Add
-						</Button>
-					)}
+					<Separator className="-mx-6 w-[calc(100%+48px)]" />
+					<IfElse condition={projectAccessMutation.isPending}>
+						<If>
+							<IconLoader />
+						</If>
+						<Else>
+							<Button disabled={!form.watch('email') || !form.watch('role')}>
+								Add
+							</Button>
+						</Else>
+					</IfElse>
 				</div>
 			</form>
 		</Form>

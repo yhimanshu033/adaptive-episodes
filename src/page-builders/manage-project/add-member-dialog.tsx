@@ -33,7 +33,7 @@ const AddMemberDialog = () => {
 						role.
 					</DialogDescription>
 				</DialogHeader>
-				<Separator />
+				<Separator className="-mx-6 w-[calc(100%+48px)]" />
 				<AddMemberForm />
 			</DialogContent>
 		</Dialog>

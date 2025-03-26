@@ -24,6 +24,8 @@ import {
 	TLocalizeResponse,
 } from '@/types/ai-types'
 
+import useLOCSheetData from './query/use-loc-sheet-data'
+
 export default function useFindAndReplace() {
 	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
 
@@ -39,6 +41,8 @@ export default function useFindAndReplace() {
 	const [data, setData] = useState<TLocalizeResponse['result'] | undefined>(
 		fetchedData
 	)
+	const { data: urlData } = useLOCSheetData()
+	const sheetURL = urlData ? urlData.loc_sheet_url : ''
 
 	useEffect(() => {
 		setData(fetchedData)
@@ -310,5 +314,6 @@ export default function useFindAndReplace() {
 		setData,
 		wholeWord,
 		genitive,
+		sheetURL,
 	}
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import { farSearchModes } from '@/constants/editor-constants'
 import useFindAndReplace from '@/hooks/use-find-and-replace'
 import AddForm from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/add-form'
@@ -7,15 +8,17 @@ import {
 	ChevronDown,
 	ChevronRight,
 	ChevronUp,
-	Download,
+	Eye,
 	ReplaceAllIcon,
 	ReplaceIcon,
+	Search,
 	WholeWord,
 } from 'lucide-react'
 
+import { If } from '@/components/if-else'
+import { Loader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import Spinner from '@/components/ui/spinner'
 import { Toggle } from '@/components/ui/toggle'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { cn } from '@/lib/utils/helpers'
@@ -23,13 +26,11 @@ import { cn } from '@/lib/utils/helpers'
 export default function FindAndReplace() {
 	const {
 		localized_entities,
-		handleDownload,
 		handleNext,
 		handlePrev,
 		handleSearchChange,
 		handleSuggestionClick,
 		isFetching,
-		isPending,
 		occurrences,
 		onReplace,
 		onReplaceAll,
@@ -46,10 +47,25 @@ export default function FindAndReplace() {
 		setOptions,
 		wholeWord,
 		genitive,
+		sheetURL,
 	} = useFindAndReplace()
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
-			<h2 className="text-2xl font-bold">Localization</h2>
+			<div className="flex items-center gap-2">
+				<h2 className="text-2xl font-bold">Localization</h2>
+				<If condition={!!sheetURL}>
+					<Button
+						variant="outline"
+						size="icon"
+						tooltip="View localization sheet"
+						asChild
+					>
+						<Link href={sheetURL}>
+							<Eye />
+						</Link>
+					</Button>
+				</If>
+			</div>
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
 				<TooltipComponent tooltip="Enable Replace">
 					<Toggle onClick={toggleReplace} aria-label="Toggle replace">
@@ -142,9 +158,8 @@ export default function FindAndReplace() {
 			)}
 
 			{isFetching ? (
-				<div className="flex flex-col items-center justify-center space-y-2 py-12">
-					<Spinner size={64} />
-					<p>Finding localized name suggestions—please wait.</p>
+				<div className="flex items-center justify-center py-12">
+					<Loader text="Suche nach lokalisierten Namen, bitte warten …" />
 				</div>
 			) : (
 				<>
@@ -153,10 +168,10 @@ export default function FindAndReplace() {
 							(localized_entity, index) =>
 								!!localized_entity.entities.length && (
 									<React.Fragment key={index}>
-										<h4 className="text-lg font-semibold">
+										<h4 className="my-2 rounded-md bg-muted p-2 text-lg font-semibold">
 											{localized_entity.title}
 										</h4>
-										<div className="flex flex-wrap gap-2 pt-1">
+										<div className="flex flex-wrap gap-2">
 											{localized_entity.entities.map((character, index) => (
 												<Button
 													onClick={() => handleSuggestionClick(character)}
@@ -171,18 +186,10 @@ export default function FindAndReplace() {
 								)
 						)}
 					</div>
-					<div className="flex items-center justify-end gap-2">
-						<Button onClick={() => void refetch()} className="w-fit self-end">
-							Scan the Episode
+					<div className="text-end">
+						<Button onClick={() => void refetch()} className="w-fit gap-2">
+							<Search size={16} /> Scan
 						</Button>
-						<TooltipComponent tooltip="Download Localization sheet">
-							<Button
-								onClick={() => void handleDownload()}
-								className="w-fit self-end"
-							>
-								{isPending ? <Spinner size={24} /> : <Download />}
-							</Button>
-						</TooltipComponent>
 					</div>
 				</>
 			)}
