@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import { DEFAULT_EPISODE_LIMIT } from '@/constants/episodes-constants'
 import {
 	EPISODE_LIST_RECENT_QUERY_KEY,
@@ -17,6 +17,7 @@ import {
 import { EPISODE_LIMIT_KEY } from '@/types/episode-type'
 
 export const usePageState = () => {
+	const path = usePathname()
 	const [currentPage, setCurrentPage] = useQueryState(
 		'page',
 		parseAsInteger.withDefault(1)
@@ -30,7 +31,8 @@ export const usePageState = () => {
 	const { id: paramId } = useParams()
 	const id = Number(paramId)
 
-	async function getOpenedEpisodePage(id: number) {
+	async function getOpenedEpisodePage(id: number | undefined) {
+		if (!id) return
 		const map = await getOpenedEpisodeList()
 		void setSearch((prev) => map[id]?.search || prev)
 		void setCurrentPage((prev) => (prev === 1 ? map[id]?.page || 1 : prev))
@@ -44,7 +46,7 @@ export const usePageState = () => {
 	}
 
 	const { isLoading, data } = useQuery({
-		queryKey: [EPISODE_LIST_RECENT_QUERY_KEY, id],
+		queryKey: [EPISODE_LIST_RECENT_QUERY_KEY, id, path],
 		queryFn: () => getOpenedEpisodePage(id),
 		enabled: !!id,
 		staleTime: 0,

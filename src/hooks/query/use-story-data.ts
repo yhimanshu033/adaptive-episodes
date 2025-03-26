@@ -1,5 +1,6 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import {
 	STORIES_QUERY_KEY,
 	STORIES_SORT_QUERY_KEY,
@@ -11,6 +12,7 @@ import { sortOpenedStories } from '@/lib/utils/helpers'
 import { getOpenedStories } from '@/lib/utils/indexed-db'
 
 export const useStoriesData = () => {
+	const path = usePathname()
 	const sortStories = async () => {
 		if (!data) return undefined
 		const openedStories = await getOpenedStories()
@@ -24,7 +26,7 @@ export const useStoriesData = () => {
 	const { data } = query
 
 	const { data: sortedStories } = useQuery({
-		queryKey: [STORIES_SORT_QUERY_KEY, data?.length],
+		queryKey: [STORIES_SORT_QUERY_KEY, data?.length, path],
 		queryFn: sortStories,
 		enabled: !!data,
 		staleTime: 0,

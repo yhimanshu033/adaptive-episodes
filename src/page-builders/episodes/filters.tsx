@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { usePageState } from '@/hooks/use-page-state'
 import { Table } from '@tanstack/react-table'
@@ -28,7 +28,7 @@ const Filters = ({
 	totalEpisodes?: number
 }) => {
 	const { handleMerge, handleUnmerge } = useEpisodeTable()
-	const { limit, setSearch, setCurrentPage } = usePageState()
+	const { limit, setSearch, setCurrentPage, search } = usePageState()
 
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
@@ -63,6 +63,13 @@ const Filters = ({
 			input: '',
 		},
 	})
+
+	useEffect(() => {
+		if (!search || search === form.getValues('input')) return
+
+		form.setValue('input', search)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [search])
 
 	return (
 		<>
