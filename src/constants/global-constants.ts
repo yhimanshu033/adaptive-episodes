@@ -8,7 +8,8 @@ export const FALLBACK_USER_URL = '/assets/placeholder-user.webp'
 
 export const DB_NAME = 'COPILOT_DB'
 export const STORE_NAME = 'EPISODE_DATA_STORE'
-export const VERSION = 1
+export const RECENT_STORE_NAME = 'RECENT_DATA_STORE'
+export const VERSION = 2
 export const EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000 // 1 week in milliseconds
 export const MAX_ENTRIES = 1000
 
@@ -89,6 +90,11 @@ export const API_URLS = {
 	TRANSLATE_VIDEO: '/aicopilot/mp4_to_german',
 }
 
+export const INDEXED_DB_KEYS = {
+	OPENED_PROJECTS: 'OPENED_PROJECTS',
+	OPENED_EPISODE_PAGES: 'OPENED_EPISODE_PAGES',
+	OPENED_EPISODES: 'OPENED_EPISODES',
+}
 export const LOGS = {
 	SAVE_EPISODE: 'SAVE_EPISODE',
 	STATUS_UPDATE: 'STATUS_UPDATE',

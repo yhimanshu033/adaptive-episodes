@@ -25,6 +25,7 @@ import {
 	TGetEpisodeResponse,
 	TGetEpisodesResponse,
 } from '@/types/episode-type'
+import { TGetStoriesResponse } from '@/types/story-types'
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
@@ -362,4 +363,22 @@ export async function projectAdminCheck(req: NextRequest, jwt: JWT) {
 					project.role === ERole.ADMIN
 			)
 		: false
+}
+
+export function sortOpenedStories(
+	openedIds: number[],
+	projects: TGetStoriesResponse
+) {
+	const sortedProjects = [...projects].sort((a, b) => {
+		const indexA = openedIds.indexOf(a.id)
+		const indexB = openedIds.indexOf(b.id)
+
+		if (indexA === -1 && indexB === -1) return 0 // Both not in openedIds, keep relative order
+		if (indexA === -1) return 1 // A is not in openedIds, move to end
+		if (indexB === -1) return -1 // B is not in openedIds, move to end
+
+		return indexA - indexB
+	})
+
+	return sortedProjects
 }

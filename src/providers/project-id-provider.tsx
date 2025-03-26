@@ -1,6 +1,7 @@
 'use client'
 
-import React, { createContext, useMemo } from 'react'
+import React, { createContext, useEffect, useMemo } from 'react'
+import { useParams } from 'next/navigation'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { COPILOT_LOGO_URL, DEFAULT_USER } from '@/constants/global-constants'
 import userMembersQuery from '@/hooks/query/user-members-data'
@@ -8,9 +9,12 @@ import { useGlobalStore } from '@/store/global-store'
 import { SuggestionUser } from '@udecode/plate-suggestion'
 import { useShallow } from 'zustand/react/shallow'
 
+import { getOpenedStories, setOpenedStories } from '@/lib/utils/indexed-db'
+
 import { ERole } from '@/types/admin-types'
 
 const useProjectIdUtil = () => {
+	const { id } = useParams()
 	const { data } = userMembersQuery()
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 
@@ -43,6 +47,21 @@ const useProjectIdUtil = () => {
 			),
 		[data]
 	)
+
+	async function updateOpenedStories() {
+		const openedProjects = await getOpenedStories()
+		const newOpenedProjects = openedProjects
+			.filter((val) => val !== Number(id))
+			.slice(0, 30)
+		newOpenedProjects.unshift(Number(id))
+
+		await setOpenedStories(newOpenedProjects)
+	}
+
+	useEffect(() => {
+		void updateOpenedStories()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	return {
 		members: data?.members ?? [],

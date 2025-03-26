@@ -16,7 +16,8 @@ import { formatDate } from '@/lib/format-date'
 import { cn } from '@/lib/utils/helpers'
 
 const Stories = () => {
-	const { data: stories, isLoading } = useStoriesData()
+	const { data: stories, isLoading, sortedStories } = useStoriesData()
+
 	if (isLoading)
 		return (
 			<div className="flex flex-1 items-center justify-center">
@@ -26,7 +27,7 @@ const Stories = () => {
 	return (
 		<section className="container my-6 grid grid-cols-1 justify-items-center gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 			<ImportStoryCard />
-			{stories?.map((story) => (
+			{(sortedStories || stories)?.map((story) => (
 				<Card key={story.id} className="w-64 overflow-hidden">
 					<Link href={`/projects/${story.id}`}>
 						<div className="relative aspect-square">

@@ -1,7 +1,18 @@
 'use client'
 
+import { useParams } from 'next/navigation'
 import { DEFAULT_EPISODE_LIMIT } from '@/constants/episodes-constants'
+import {
+	EPISODE_LIST_RECENT_QUERY_KEY,
+	EPISODE_LIST_RECENT_QUERY_KEY_STORE,
+} from '@/constants/query-constants'
+import { useQuery } from '@tanstack/react-query'
 import { parseAsInteger, useQueryState } from 'nuqs'
+
+import {
+	addOpenedEpisodeList,
+	getOpenedEpisodeList,
+} from '@/lib/utils/indexed-db'
 
 import { EPISODE_LIMIT_KEY } from '@/types/episode-type'
 
@@ -10,17 +21,53 @@ export const usePageState = () => {
 		'page',
 		parseAsInteger.withDefault(1)
 	)
+
 	const [search, setSearch] = useQueryState('search', { defaultValue: '' })
-
-	const userDefaultLimit =
-		typeof window !== 'undefined'
-			? Number(localStorage.getItem(EPISODE_LIMIT_KEY)) || DEFAULT_EPISODE_LIMIT
-			: DEFAULT_EPISODE_LIMIT // fallback for SSR
-
 	const [limit, setLimit] = useQueryState(
 		'limit',
-		parseAsInteger.withDefault(userDefaultLimit)
+		parseAsInteger.withDefault(DEFAULT_EPISODE_LIMIT)
 	)
+	const { id: paramId } = useParams()
+	const id = Number(paramId)
+
+	async function getOpenedEpisodePage(id: number) {
+		const map = await getOpenedEpisodeList()
+		void setSearch((prev) => map[id]?.search || prev)
+		void setCurrentPage((prev) => (prev === 1 ? map[id]?.page || 1 : prev))
+		void setLimit(
+			(prev) =>
+				map[id]?.limit ||
+				Number(localStorage.getItem(EPISODE_LIMIT_KEY)) ||
+				prev
+		)
+		return map[id] || {}
+	}
+
+	const { isLoading, data } = useQuery({
+		queryKey: [EPISODE_LIST_RECENT_QUERY_KEY, id],
+		queryFn: () => getOpenedEpisodePage(id),
+		enabled: !!id,
+		staleTime: 0,
+		gcTime: 0,
+	})
+
+	useQuery({
+		queryKey: [
+			EPISODE_LIST_RECENT_QUERY_KEY_STORE,
+			id,
+			currentPage,
+			search,
+			limit,
+		],
+		queryFn: () =>
+			addOpenedEpisodeList({
+				project: id,
+				data: { page: currentPage, search, limit },
+			}),
+		enabled: !!id && !isLoading,
+		staleTime: 0,
+		gcTime: 0,
+	})
 
 	return {
 		currentPage,
@@ -29,6 +76,6 @@ export const usePageState = () => {
 		setSearch,
 		limit,
 		setLimit,
-		userDefaultLimit,
+		userDefaultLimit: data?.limit || DEFAULT_EPISODE_LIMIT,
 	}
 }

@@ -22,6 +22,8 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 	hideAuthor,
 }) => {
 	const { initialStoryData: storyData } = useEpisodeTableContext()
+
+	console.log({ storyData })
 	return (
 		<div className="flex items-center gap-2">
 			<Image

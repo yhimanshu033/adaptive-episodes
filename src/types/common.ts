@@ -43,4 +43,12 @@ export type IndexedText = {
 	text: string
 }
 
+export type TOpenedStories = number[]
+export type TOpenedStoryPage = {
+	limit: number
+	page: number
+	search: string
+}
+export type TOpenedEpisodeList = Record<number, TOpenedStoryPage>
+
 export type MinifiedValue = Array<IndexedText>
