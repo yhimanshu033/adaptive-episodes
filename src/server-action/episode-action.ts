@@ -172,5 +172,7 @@ export const updateNotes = async ({
 		},
 		body: params,
 	})
+
+	if (!res.success) throw res.error
 	return res.data
 }
