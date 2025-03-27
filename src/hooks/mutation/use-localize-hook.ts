@@ -6,7 +6,7 @@ import { LOC_SHEET_QUERY_KEY } from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
 import { updateLOCSheet } from '@/server-action/localization-action'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEditorState } from '@udecode/plate-common/react'
+import { useEditorRef } from '@udecode/plate-common/react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 
@@ -20,7 +20,7 @@ import { TNoParams } from '@/types/common'
 const useLocalizeHook = () => {
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
-	const { children } = useEditorState()
+	const { children } = useEditorRef()
 
 	const { startTask, getResponse } = useSocket()
 
@@ -32,6 +32,7 @@ const useLocalizeHook = () => {
 				text: getText(children),
 				project_id: String(id),
 			},
+			noCache: true,
 		})
 		const response: TLocalizeResponse['result'] = await getResponse(taskId)
 		return response
@@ -43,6 +44,7 @@ const useLocalizeHook = () => {
 	})
 	return localizeQuery
 }
+
 export default useLocalizeHook
 
 export const useLocalizeMutation = () => {
@@ -96,25 +98,38 @@ export const useUpdateLOCSheetMutation = () => {
 	const { startTask, getResponse } = useSocket()
 	const queryClient = useQueryClient()
 
-	const onSuccess = async () => {
-		toast.success('URL des Lokalisierungsblatts aktualisiert!')
-		await queryClient.invalidateQueries({
-			queryKey: [LOC_SHEET_QUERY_KEY, Number(id)],
-			exact: true,
-		})
+	const onSuccess = async (url?: string) => {
+		if (url) {
+			toast.success('URL des Lokalisierungsblatts aktualisiert!')
+			await queryClient.invalidateQueries({
+				queryKey: [LOC_SHEET_QUERY_KEY, Number(id)],
+				exact: true,
+			})
+		} else {
+			toast.success(
+				'Synchronisierte Aktualisierungen des Lokalisierungsblatts!'
+			)
+		}
 	}
 
-	const onUpdateLOCSheet = async (url: string) => {
-		await updateLOCSheet(Number(id), {
-			loc_sheet_url: url,
-			user_id: session.data?.user.id || 0,
-		})
+	const onError = () => {
+		toast.error('Fehler beim Aktualisieren des Lokalisierungsblatts!')
+	}
+
+	const onUpdateLOCSheet = async (url?: string) => {
+		if (url) {
+			await updateLOCSheet(Number(id), {
+				loc_sheet_url: url,
+				user_id: session.data?.user.id || 0,
+			})
+		}
 		const taskId = await startTask({
 			method: 'POST',
 			url: API_URLS.UPDATE_LOC_MAPPING,
 			urlParams: {
 				projectId: Number(id),
 			},
+			noCache: true,
 		})
 		const resp = await getResponse(taskId)
 		return resp
@@ -123,7 +138,8 @@ export const useUpdateLOCSheetMutation = () => {
 	const mutation = useMutation({
 		mutationKey: ['update-loc-sheet'],
 		mutationFn: onUpdateLOCSheet,
-		onSuccess,
+		onSuccess: (_, url) => onSuccess(url),
+		onError,
 	})
 
 	return mutation

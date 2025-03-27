@@ -15,8 +15,8 @@ import {
 	WholeWord,
 } from 'lucide-react'
 
-import { If } from '@/components/if-else'
-import { Loader } from '@/components/loader'
+import IfElse, { Else, If } from '@/components/if-else'
+import { IconLoader, Loader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
@@ -34,7 +34,6 @@ export default function FindAndReplace() {
 		occurrences,
 		onReplace,
 		onReplaceAll,
-		refetch,
 		toggleSearchMode,
 		toggleReplace,
 		replaceEnabled,
@@ -48,6 +47,8 @@ export default function FindAndReplace() {
 		wholeWord,
 		genitive,
 		sheetURL,
+		handleScanEpisode,
+		updateLOCPending,
 	} = useFindAndReplace()
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
@@ -182,13 +183,20 @@ export default function FindAndReplace() {
 						</Link>
 					</Button>
 				</If>
-				<Button
-					onClick={() => void refetch()}
-					disabled={isFetching}
-					className="w-fit gap-2"
-				>
-					<Search size={16} /> Scan
-				</Button>
+				<IfElse condition={updateLOCPending}>
+					<If>
+						<IconLoader />
+					</If>
+					<Else>
+						<Button
+							onClick={() => void handleScanEpisode()}
+							disabled={isFetching}
+							className="w-fit gap-2"
+						>
+							<Search size={16} /> Scan
+						</Button>
+					</Else>
+				</IfElse>
 			</div>
 			<hr />
 			<AddForm setData={setData} />
