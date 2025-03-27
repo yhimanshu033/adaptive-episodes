@@ -46,8 +46,6 @@ const Stories = () => {
 								src={story.image || COPILOT_LOGO_URL}
 								alt={`${story.project_title} thumbnail`}
 								className="transition-transform duration-300 hover:scale-105"
-								loading="lazy"
-								unoptimized
 							/>
 						</div>
 						<CardContent className="space-y-2 p-4">

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
-import { usePageState } from '@/hooks/use-page-state'
 import useSocket from '@/hooks/use-socket'
 import { saveContent } from '@/server-action/content-action'
 import {
@@ -30,11 +29,9 @@ const useEpisodeHook = () => {
 	const [updatedStatus, setUpdatedStatus] = useState<boolean>(false)
 	const queryClient = useQueryClient()
 
-	const { currentPage } = usePageState()
-
 	const onSuccess = async () => {
 		await queryClient.invalidateQueries({
-			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id), currentPage],
+			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
 			type: 'all',
 		})
 	}

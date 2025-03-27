@@ -6,6 +6,7 @@ import useEpisodeIdStore from '@/store/episode-id-store'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 
 import EditableText from '@/components/editable-text'
+import { If } from '@/components/if-else'
 import Spinner from '@/components/ui/spinner'
 import { getSelectedEpisode } from '@/lib/utils/helpers'
 
@@ -37,13 +38,12 @@ const Title = ({
 	return (
 		<div>
 			<div className="flex items-center justify-center gap-2">
-				{episodeContent ? (
-					<p className="text-xl">{episodeContent?.chapter.seq_number}.</p>
-				) : (
+				<If condition={!episodeContent}>
 					<Spinner size={24} />
-				)}
+				</If>
 
-				<div className="flex items-end gap-2">
+				<div className="flex items-center gap-2">
+					<p className="text-xl">{episodeContent?.chapter.seq_number}.</p>
 					<EditableText
 						key={episodeContent?.chapter.chapter_title}
 						text={episodeContent?.chapter.chapter_title || ''}
@@ -52,18 +52,18 @@ const Title = ({
 						isEditable={!readOnly}
 						onComplete={(title) => void updateChapterTitle(title)}
 					/>
-					{updatedAt && (
-						<p className="text-xs italic text-foreground/50">
-							(Last updated: {updatedAt})
-						</p>
-					)}
+					<WriterCombobox
+						chapterId={chapterId}
+						selectedMemberId={memberId}
+						className="ml-2 origin-left scale-75"
+					/>
 				</div>
 			</div>
-			<WriterCombobox
-				chapterId={chapterId}
-				selectedMemberId={memberId}
-				className="mt-1 origin-left scale-75"
-			/>
+			{updatedAt && (
+				<p className="text-xs italic text-foreground/50">
+					(Last updated: {updatedAt})
+				</p>
+			)}
 		</div>
 	)
 }

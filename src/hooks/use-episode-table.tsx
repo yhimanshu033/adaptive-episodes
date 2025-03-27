@@ -37,12 +37,10 @@ const useEpisodeTable = () => {
 		useEpisodeTableStore()
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 
-	const { currentPage, search, limit, userDefaultLimit } = usePageState()
+	const { currentPage, search, limit } = usePageState()
 
 	const handleTitleClick = (episodeId: number) => {
-		router.push(
-			`${pathname}/${episodeId}/editor?${limit === userDefaultLimit ? '' : `limit=${limit}`}`
-		)
+		router.push(`${pathname}/${episodeId}/editor`)
 	}
 
 	const hasConsistentStatus = (selectedRows: TEpisode[]) =>

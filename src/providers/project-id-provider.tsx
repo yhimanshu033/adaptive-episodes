@@ -49,7 +49,7 @@ const useProjectIdUtil = () => {
 	)
 
 	async function updateOpenedStories() {
-		const openedProjects = await getOpenedStories()
+		const openedProjects = (await getOpenedStories()) || []
 		const newOpenedProjects = openedProjects
 			.filter((val) => val !== Number(id))
 			.slice(0, 30)

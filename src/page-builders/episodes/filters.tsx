@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { usePageState } from '@/hooks/use-page-state'
 import { Table } from '@tanstack/react-table'
@@ -28,7 +28,8 @@ const Filters = ({
 	totalEpisodes?: number
 }) => {
 	const { handleMerge, handleUnmerge } = useEpisodeTable()
-	const { limit, setSearch, setCurrentPage, search } = usePageState()
+	const [fetchedSeqNumber, setFetchedSeqNumber] = useState<boolean>(false)
+	const { limit, setSearch, setCurrentPage, search, seqNumber } = usePageState()
 
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
@@ -57,6 +58,20 @@ const Filters = ({
 			void setCurrentPage(1)
 		}
 	}
+
+	useEffect(() => {
+		if (
+			fetchedSeqNumber ||
+			!seqNumber ||
+			String(seqNumber) === search ||
+			totalEpisodes === 0
+		)
+			return
+
+		setFetchedSeqNumber(true)
+		handleSearch({ input: String(seqNumber) })
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [seqNumber, totalEpisodes])
 
 	const form = useForm<TEpisodeSearchForm>({
 		defaultValues: {

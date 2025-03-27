@@ -48,54 +48,7 @@ export function openDB(): Promise<IDBDatabase> {
 	})
 }
 
-export const setValue = async (key: string, value: SaveEpisodeParams) => {
-	try {
-		const db = await openDB()
-		const tx = db.transaction(STORE_NAME, 'readwrite')
-		const store = tx.objectStore(STORE_NAME)
-		store.put(value, key)
-
-		tx.onerror = () => console.error('Failed to save data to IndexedDB')
-	} catch (error) {
-		console.error(error)
-	}
-}
-
-export const removeValue = async (key: string) => {
-	try {
-		const db = await openDB()
-		const tx = db.transaction(STORE_NAME, 'readwrite')
-		const store = tx.objectStore(STORE_NAME)
-		store.delete(key)
-
-		tx.oncomplete = () => {}
-
-		tx.onerror = () => console.error('Failed to remove data from IndexedDB')
-	} catch (error) {
-		console.error(error)
-	}
-}
-
-export const getValue = async (
-	key: string
-): Promise<SaveEpisodeParams | undefined> => {
-	const db = await openDB()
-	return new Promise((resolve, reject) => {
-		try {
-			const tx = db.transaction(STORE_NAME, 'readonly')
-			const store = tx.objectStore(STORE_NAME)
-			const request = store.get(key)
-
-			request.onsuccess = () => resolve(request.result as SaveEpisodeParams)
-			request.onerror = () => reject(request.error)
-		} catch (error) {
-			console.error(error)
-			reject(error)
-		}
-	})
-}
-
-const clearOldEntries = (db: IDBDatabase) => {
+export const clearOldEntries = (db: IDBDatabase) => {
 	try {
 		const tx = db.transaction(STORE_NAME, 'readwrite')
 		const store = tx.objectStore(STORE_NAME)
@@ -120,66 +73,89 @@ const clearOldEntries = (db: IDBDatabase) => {
 		console.error(error)
 	}
 }
+export async function getData<T>(
+	storeName: string,
+	key: string
+): Promise<T | undefined> {
+	try {
+		const db = await openDB()
+		return new Promise((resolve, reject) => {
+			const tx = db.transaction(storeName, 'readonly')
+			const store = tx.objectStore(storeName)
+			const request = store.get(key)
 
-export const getOpenedStories = async (): Promise<TOpenedStories> => {
-	const db = await openDB()
-	return new Promise((resolve) => {
-		try {
-			const tx = db.transaction(RECENT_STORE_NAME, 'readonly')
-			const store = tx.objectStore(RECENT_STORE_NAME)
-			const request = store.get(INDEXED_DB_KEYS.OPENED_PROJECTS)
+			request.onsuccess = () => resolve(request.result as T)
+			request.onerror = () => reject(request.error)
+		})
+	} catch (error) {
+		console.error(error)
+	}
+}
 
-			request.onsuccess = () =>
-				resolve(request.result || ([] as TOpenedStories))
-			request.onerror = () => resolve([])
-		} catch (error) {
-			console.error(error)
-			resolve([])
-		}
-	})
+export const setData = async (
+	storeName: string,
+	key: string,
+	value: unknown
+) => {
+	try {
+		const db = await openDB()
+		const tx = db.transaction(storeName, 'readwrite')
+		const store = tx.objectStore(storeName)
+		store.put(value, key)
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+export const removeData = async (storeName: string, key: string) => {
+	try {
+		const db = await openDB()
+		const tx = db.transaction(storeName, 'readwrite')
+		const store = tx.objectStore(storeName)
+		store.delete(key)
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+export const setValue = async (key: string, value: SaveEpisodeParams) => {
+	await setData(STORE_NAME, key, value)
+}
+
+export const removeValue = async (key: string) => {
+	await removeData(STORE_NAME, key)
+}
+
+export const getValue = async (
+	key: string
+): Promise<SaveEpisodeParams | undefined> => {
+	return getData<SaveEpisodeParams>(STORE_NAME, key)
+}
+
+export const getOpenedStories = async (): Promise<
+	TOpenedStories | undefined
+> => {
+	return getData<TOpenedStories>(
+		RECENT_STORE_NAME,
+		INDEXED_DB_KEYS.OPENED_PROJECTS
+	)
 }
 
 export const setOpenedStories = async (value: TOpenedStories) => {
-	try {
-		const db = await openDB()
-		const tx = db.transaction(RECENT_STORE_NAME, 'readwrite')
-		const store = tx.objectStore(RECENT_STORE_NAME)
-		store.put(value, INDEXED_DB_KEYS.OPENED_PROJECTS)
-
-		tx.onerror = () => console.error('Failed to save data to IndexedDB')
-	} catch (error) {
-		console.error(error)
-	}
+	await setData(RECENT_STORE_NAME, INDEXED_DB_KEYS.OPENED_PROJECTS, value)
 }
 
-export const getOpenedEpisodeList = async (): Promise<TOpenedEpisodeList> => {
-	const db = await openDB()
-	return new Promise((resolve) => {
-		try {
-			const tx = db.transaction(RECENT_STORE_NAME, 'readonly')
-			const store = tx.objectStore(RECENT_STORE_NAME)
-			const request = store.get(INDEXED_DB_KEYS.OPENED_EPISODE_PAGES)
-
-			request.onsuccess = () => resolve(request.result || {})
-			request.onerror = () => resolve({})
-		} catch (error) {
-			console.error(error)
-			resolve({})
-		}
-	})
+export const getOpenedEpisodeList = async (): Promise<
+	TOpenedEpisodeList | undefined
+> => {
+	return await getData<TOpenedEpisodeList>(
+		RECENT_STORE_NAME,
+		INDEXED_DB_KEYS.OPENED_EPISODE_PAGES
+	)
 }
 
 export const setOpenedEpisodeList = async (value: TOpenedEpisodeList) => {
-	try {
-		const db = await openDB()
-		const tx = db.transaction(RECENT_STORE_NAME, 'readwrite')
-		const store = tx.objectStore(RECENT_STORE_NAME)
-		store.put(value, INDEXED_DB_KEYS.OPENED_EPISODE_PAGES)
-
-		tx.onerror = () => console.error('Failed to save data to IndexedDB')
-	} catch (error) {
-		console.error(error)
-	}
+	await setData(RECENT_STORE_NAME, INDEXED_DB_KEYS.OPENED_EPISODE_PAGES, value)
 }
 
 export const addOpenedEpisodeList = async ({
@@ -189,33 +165,19 @@ export const addOpenedEpisodeList = async ({
 	data: Partial<TOpenedStoryPage>
 	project: number
 }) => {
-	try {
-		const db = await openDB()
-		return new Promise((resolve) => {
-			try {
-				const tx = db.transaction(RECENT_STORE_NAME, 'readwrite')
-				const store = tx.objectStore(RECENT_STORE_NAME)
-				const request = store.get(INDEXED_DB_KEYS.OPENED_EPISODE_PAGES)
-
-				request.onsuccess = () => {
-					const prev = request?.result || {}
-					store.put(
-						{
-							...prev,
-							[project]: { ...prev[project], ...data },
-						},
-						INDEXED_DB_KEYS.OPENED_EPISODE_PAGES
-					)
-					tx.onerror = () => console.error('Failed to save data to IndexedDB')
-					resolve(true)
-				}
-				request.onerror = () => resolve(false)
-			} catch (error) {
-				console.error(error)
-				resolve(true)
-			}
-		})
-	} catch (error) {
-		console.error(error)
+	const prev =
+		(await getData<TOpenedEpisodeList>(
+			RECENT_STORE_NAME,
+			INDEXED_DB_KEYS.OPENED_EPISODE_PAGES
+		)) || {}
+	const newData = {
+		...prev,
+		[project]: { ...prev[project], ...data },
 	}
+	await setData(
+		RECENT_STORE_NAME,
+		INDEXED_DB_KEYS.OPENED_EPISODE_PAGES,
+		newData
+	)
+	return newData
 }

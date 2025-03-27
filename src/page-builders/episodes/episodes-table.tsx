@@ -55,6 +55,10 @@ const EpisodesTable = () => {
 		}
 	}, [searchedRow, isEpisodesLoading])
 
+	useEffect(() => {
+		setSearchedRow(null)
+	}, [currentPage, search, limit])
+
 	return (
 		<>
 			<div className="flex gap-2">

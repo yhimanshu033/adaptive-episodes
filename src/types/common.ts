@@ -45,9 +45,10 @@ export type IndexedText = {
 
 export type TOpenedStories = number[]
 export type TOpenedStoryPage = {
-	limit: number
-	page: number
-	search: string
+	limit?: number
+	page?: number
+	search?: string
+	seqNumber?: number
 }
 export type TOpenedEpisodeList = Record<number, TOpenedStoryPage>
 
