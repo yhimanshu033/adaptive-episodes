@@ -2,6 +2,7 @@ import React from 'react'
 import usePublishDocxHook from '@/hooks/mutation/use-publish-docx-hook'
 import { Upload } from 'lucide-react'
 
+import IfElse from '@/components/if-else'
 import { Button } from '@/components/ui/button'
 import Spinner from '@/components/ui/spinner'
 
@@ -24,7 +25,11 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 			tooltip="Upload to Google Drive"
 			onClick={() => mutate()}
 		>
-			{isPending ? <Spinner size={16} /> : <Upload size={16} />}
+			<IfElse
+				condition={isPending}
+				if={<Spinner size={16} />}
+				else={<Upload size={16} />}
+			/>
 		</Button>
 	)
 }

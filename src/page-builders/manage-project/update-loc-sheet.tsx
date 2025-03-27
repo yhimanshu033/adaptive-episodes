@@ -7,6 +7,7 @@ import { useUpdateLOCSheetMutation } from '@/hooks/mutation/use-localize-hook'
 import useLOCSheetData from '@/hooks/query/use-loc-sheet-data'
 import { ArrowUpRight } from 'lucide-react'
 
+import IfElse from '@/components/if-else'
 import { IconLoader } from '@/components/loader'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -57,7 +58,6 @@ const UpdateLOCSheet = () => {
 						</FormItem>
 					)}
 				/>
-
 				<a
 					href={link}
 					target="_blank"
@@ -66,11 +66,11 @@ const UpdateLOCSheet = () => {
 				>
 					<ArrowUpRight size={16} />
 				</a>
-				{updateLOCSheetMutation.isPending ? (
-					<IconLoader />
-				) : (
-					<Button>Update</Button>
-				)}
+				<IfElse
+					condition={updateLOCSheetMutation.isPending}
+					if={<IconLoader />}
+					else={<Button>Update</Button>}
+				/>
 			</form>
 		</Form>
 	)

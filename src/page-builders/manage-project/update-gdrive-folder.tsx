@@ -6,6 +6,7 @@ import {
 import { useGDriveUpdateMutation } from '@/hooks/mutation/use-gdrive-hook'
 import { ArrowUpRight } from 'lucide-react'
 
+import IfElse from '@/components/if-else'
 import { IconLoader } from '@/components/loader'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -71,12 +72,11 @@ const UpdateDriveFolder = () => {
 				>
 					<ArrowUpRight size={16} />
 				</a>
-
-				{updateGDriveFolderMutation.isPending ? (
-					<IconLoader />
-				) : (
-					<Button>Update</Button>
-				)}
+				<IfElse
+					condition={updateGDriveFolderMutation.isPending}
+					if={<IconLoader />}
+					else={<Button>Update</Button>}
+				/>
 			</form>
 		</Form>
 	)
