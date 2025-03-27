@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import { EImportStatus } from '@/constants/story-constants'
@@ -9,14 +8,21 @@ import { useStoriesData } from '@/hooks/query/use-story-data'
 import ImportStoryCard from '@/page-builders/stories/import-story-card'
 import { BookOpen, Clock, User } from 'lucide-react'
 
+import { If } from '@/components/if-else'
 import { Loader } from '@/components/loader'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import Image from '@/components/ui/image'
 import { formatDate } from '@/lib/format-date'
 import { cn } from '@/lib/utils/helpers'
 
 const Stories = () => {
-	const { data: stories, isLoading, sortedStories } = useStoriesData()
+	const {
+		data: stories,
+		isLoading,
+		sortedStories,
+		openedStories,
+	} = useStoriesData()
 
 	if (isLoading)
 		return (
@@ -31,11 +37,14 @@ const Stories = () => {
 				<Card key={story.id} className="w-64 overflow-hidden">
 					<Link href={`/projects/${story.id}`}>
 						<div className="relative aspect-square">
+							<If condition={openedStories?.slice(0, 5).includes(story.id)}>
+								<Badge className="absolute right-2 top-2 z-50">
+									Recently Opened
+								</Badge>
+							</If>
 							<Image
 								src={story.image || COPILOT_LOGO_URL}
 								alt={`${story.project_title} thumbnail`}
-								fill
-								style={{ objectFit: 'cover' }}
 								className="transition-transform duration-300 hover:scale-105"
 								loading="lazy"
 								unoptimized
