@@ -4,9 +4,10 @@ import {
 	useUploadGDriveFolderResolver,
 } from '@/hooks/form-resolvers/upload-gdrive-folder-resolver'
 import { useGDriveUpdateMutation } from '@/hooks/mutation/use-gdrive-hook'
+import { ArrowUpRight } from 'lucide-react'
 
 import { IconLoader } from '@/components/loader'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
 	Form,
 	FormControl,
@@ -31,6 +32,8 @@ const UpdateDriveFolder = () => {
 	const handleSubmit = ({ link }: UploadGDriveFolderSchema) => {
 		updateGDriveFolderMutation.mutate(link)
 	}
+
+	const link = form.watch('link')
 
 	useEffect(() => {
 		if (!defaultLink) return
@@ -60,6 +63,14 @@ const UpdateDriveFolder = () => {
 						</FormItem>
 					)}
 				/>
+				<a
+					href={link}
+					target="_blank"
+					className={buttonVariants({ size: 'icon', variant: 'outline' })}
+					rel="noreferrer"
+				>
+					<ArrowUpRight size={16} />
+				</a>
 
 				{updateGDriveFolderMutation.isPending ? (
 					<IconLoader />

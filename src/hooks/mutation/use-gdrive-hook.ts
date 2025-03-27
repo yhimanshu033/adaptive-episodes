@@ -91,16 +91,19 @@ export function useGDrivePushMutation() {
 					projectId: String(id),
 				},
 				body,
+				noCache: true,
 			})
 
 			const resp = await getResponse<FetchResponseResult<TMessage>>(taskId)
 
 			if (resp?.error) {
-				toast.info('Wait for google drive authentication, then try again!')
+				toast.info(
+					'Warten Sie auf die Google Drive-Authentifizierung und versuchen Sie es dann erneut!'
+				)
 				await redirectToGDriveAuth()
 				return
 			}
-
+			toast.success('Google Drive-Ordner aktualisiert!')
 			return resp
 		} catch (error) {
 			console.log(error)
@@ -110,6 +113,7 @@ export function useGDrivePushMutation() {
 	const mutation = useMutation({
 		mutationKey: ['push-to-gdrive'],
 		mutationFn: onGDrivePush,
+		gcTime: 0,
 	})
 
 	return mutation

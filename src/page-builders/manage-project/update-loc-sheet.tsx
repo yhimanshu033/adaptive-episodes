@@ -5,9 +5,10 @@ import {
 } from '@/hooks/form-resolvers/upload-loc-sheet-resolver'
 import { useUpdateLOCSheetMutation } from '@/hooks/mutation/use-localize-hook'
 import useLOCSheetData from '@/hooks/query/use-loc-sheet-data'
+import { ArrowUpRight } from 'lucide-react'
 
 import { IconLoader } from '@/components/loader'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
 	Form,
 	FormControl,
@@ -28,6 +29,7 @@ const UpdateLOCSheet = () => {
 		updateLOCSheetMutation.mutate(link)
 	}
 
+	const link = form.watch('link')
 	useEffect(() => {
 		if (currentLOCSheetURL) {
 			form.setValue('link', currentLOCSheetURL)
@@ -56,6 +58,14 @@ const UpdateLOCSheet = () => {
 					)}
 				/>
 
+				<a
+					href={link}
+					target="_blank"
+					className={buttonVariants({ size: 'icon', variant: 'outline' })}
+					rel="noreferrer"
+				>
+					<ArrowUpRight size={16} />
+				</a>
 				{updateLOCSheetMutation.isPending ? (
 					<IconLoader />
 				) : (

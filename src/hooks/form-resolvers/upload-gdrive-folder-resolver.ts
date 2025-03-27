@@ -8,7 +8,7 @@ export const uploadGDriveFolderSchema = z.object({
 		.string()
 		.refine(
 			(value) => VALID_GOOGLE_DRIVE_FOLDER.test(value),
-			'Please provide a valid Google Sheet link in the format: https://drive.google.com/drive/folders/<folderId>'
+			'Please provide a valid Google Drive Folder link in the format: https://drive.google.com/drive/folders/<folderId>'
 		),
 })
 

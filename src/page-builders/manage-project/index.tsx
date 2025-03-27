@@ -1,9 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useCallback } from 'react'
+import { COMMON } from '@/constants/german-constants'
 import { LOC_SHEET_SERVICE_ACCOUNT } from '@/constants/user-constants'
 import UpdateDriveFolder from '@/page-builders/manage-project/update-gdrive-folder'
 import { Copy } from 'lucide-react'
+import { toast } from 'sonner'
 
 import ProjectHeader from '@/components/project-header'
 import { Button } from '@/components/ui/button'
@@ -13,6 +15,11 @@ import MembersTable from './members-table'
 import UpdateLOCSheet from './update-loc-sheet'
 
 const ManageProject = () => {
+	const handleCopy = useCallback(() => {
+		void navigator.clipboard.writeText(LOC_SHEET_SERVICE_ACCOUNT)
+		toast.info(COMMON.COPY2CLIP)
+	}, [])
+
 	return (
 		<main id="edit-roles-page" className="flex flex-1 flex-col">
 			<ProjectHeader />
@@ -46,9 +53,8 @@ const ManageProject = () => {
 								variant="ghost"
 								size="icon"
 								asChild
-								onClick={() =>
-									void navigator.clipboard.writeText(LOC_SHEET_SERVICE_ACCOUNT)
-								}
+								className="hover:cursor-pointer"
+								onClick={handleCopy}
 							>
 								<Copy className="size-4" />
 							</Button>

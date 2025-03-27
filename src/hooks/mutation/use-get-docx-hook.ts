@@ -53,6 +53,7 @@ import { HighlightLeafStatic } from '@/components/plate-ui/highlight-leaf-static
 import { HrElementStatic } from '@/components/plate-ui/hr-element-static'
 import { KbdLeafStatic } from '@/components/plate-ui/kbd-leaf-static'
 import { ParagraphElementStatic } from '@/components/plate-ui/paragraph-element-static'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { getWordCount } from '@/lib/utils/plate'
 
 import { EStatus } from '@/types/common'
@@ -68,6 +69,8 @@ export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 	)
 	const { data } = useEpisodeContentUtil()
 	const epNumber = data?.chapter.seq_number || 0
+	const { initialStoryData } = useEpisodeTableContext()
+	const projectTitle = initialStoryData?.project_title || ''
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
@@ -202,5 +205,5 @@ export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 	const showButton =
 		selectedStatus === EStatus.PUBLISHED || latestStatus === EStatus.PUBLISHED
 
-	return { showButton, ...mutation }
+	return { showButton, ...mutation, epNumber, projectTitle }
 }
