@@ -15,11 +15,7 @@ export const storyChatSuggestions: Array<TStoryChatSuggestion> = [
 	},
 	{
 		value: 'Voice Pass 🎙️',
-		action: EChatMode.VOICE,
-	},
-	{
-		value: 'Voice Pass - Retention Writers ✍️',
-		action: EChatMode.VOICE2,
+		action: EChatMode.VOICE2_XML,
 	},
 	{
 		value: 'Review ✅',

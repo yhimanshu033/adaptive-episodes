@@ -10,6 +10,7 @@ import CopyAll from '@/page-builders/plate-editor/dual-view/voice-pass/copy-all'
 import { useEditorState } from '@udecode/plate-common/react'
 
 import { minify } from '@/lib/utils/ai-chatbot'
+import { pretifyVoiceXMLData } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
 
 import { EChatMode } from '@/types/ai-types'
@@ -17,7 +18,7 @@ import { EChatMode } from '@/types/ai-types'
 export default function VoicePass({
 	voiceMode,
 }: {
-	voiceMode: EChatMode.VOICE | EChatMode.VOICE2
+	voiceMode: EChatMode.VOICE | EChatMode.VOICE2 | EChatMode.VOICE2_XML
 }) {
 	const { id } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
@@ -47,8 +48,13 @@ export default function VoicePass({
 	const streamedData = useMemo(() => {
 		if (!data || !responses[data]) return []
 
-		return responses[data].join('').split('\n')
-	}, [data, responses])
+		let concatenatedResponse = responses[data].join('')
+		if (voiceMode === EChatMode.VOICE2_XML) {
+			concatenatedResponse = pretifyVoiceXMLData(concatenatedResponse)
+		}
+
+		return concatenatedResponse.split('\n')
+	}, [data, responses, voiceMode])
 
 	if (!streamedData.length) {
 		return <DualViewLoader />
