@@ -21,3 +21,19 @@ export type TMetadataUrlParams = {
 	projectId: number
 	startSequence: number
 }
+
+export type TPushToGDriveBody = {
+	file_name: string
+	html_content: string
+}
+
+export type TPushToGDriveUrlParams = {
+	projectId: string
+}
+
+export type TGDriveAuthUrlParams = {
+	userId: string
+}
+export type TGDriveAuthResponse = {
+	auth_url: string
+}

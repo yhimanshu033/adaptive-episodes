@@ -24,6 +24,8 @@ export const updateLOCSheet = async (
 		},
 		body: params,
 	})
+
+	if (!resp.success) throw resp.error
 	return resp.data
 }
 

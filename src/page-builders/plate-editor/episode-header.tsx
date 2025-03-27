@@ -7,6 +7,7 @@ import useEditorExtendedStore from '@/store/extended-store'
 import { SeparatorHorizontal } from 'lucide-react'
 
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
+import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
 import { Button } from '@/components/ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
 
@@ -60,6 +61,7 @@ const EpisodeHeader = ({
 				)}
 				<Versions isChildEpisode={isChildEpisode} latestStatus={latestStatus} />
 				<DownloadDocxButton latestStatus={latestStatus} />
+				<UploadDocxButton latestStatus={latestStatus} />
 				<SaveEpisode />
 				<EpisodeButton direction="next" episodeId={content?.next_parent_id} />
 			</div>

@@ -73,5 +73,7 @@ export const updateProjectAccess = async (
 			userId,
 		},
 	})
+
+	if (!resp.success) throw resp.error
 	return resp.data
 }

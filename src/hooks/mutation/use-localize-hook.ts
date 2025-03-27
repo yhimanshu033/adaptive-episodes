@@ -2,10 +2,11 @@
 
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
+import { LOC_SHEET_QUERY_KEY } from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
 import { updateLOCSheet } from '@/server-action/localization-action'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { useEditorState } from '@udecode/plate-common/react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEditorRef } from '@udecode/plate-common/react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 
@@ -16,12 +17,10 @@ import { getText } from '@/lib/utils/plate'
 import { TLocalizeResponse, TLocalizeUpdateRequest } from '@/types/ai-types'
 import { TNoParams } from '@/types/common'
 
-import useSocketStreaming from '../use-socket-streaming'
-
 const useLocalizeHook = () => {
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
-	const { children } = useEditorState()
+	const { children } = useEditorRef()
 
 	const { startTask, getResponse } = useSocket()
 
@@ -33,6 +32,7 @@ const useLocalizeHook = () => {
 				text: getText(children),
 				project_id: String(id),
 			},
+			noCache: true,
 		})
 		const response: TLocalizeResponse['result'] = await getResponse(taskId)
 		return response
@@ -44,21 +44,30 @@ const useLocalizeHook = () => {
 	})
 	return localizeQuery
 }
+
 export default useLocalizeHook
 
 export const useLocalizeMutation = () => {
 	const { id } = useParams()
+	const { startTask, getResponse } = useSocket()
 
 	const mutation = useMutation({
 		mutationKey: ['localize-update'],
 		mutationFn: async (params: TLocalizeUpdateRequest) => {
-			const res = await fetchAPI<TNoParams, TIdParams, TLocalizeUpdateRequest>({
+			const taskId = await startTask<
+				TLocalizeUpdateRequest,
+				TNoParams,
+				TIdParams
+			>({
 				method: 'PATCH',
 				url: API_URLS.LOCALIZATION_UPDATE,
 				body: params,
 				urlParams: { id: String(id) },
 			})
-			return res
+
+			const response = await getResponse(taskId)
+
+			return response
 		},
 	})
 
@@ -86,31 +95,51 @@ export const useLocalizeDownloadMutation = () => {
 export const useUpdateLOCSheetMutation = () => {
 	const { id } = useParams()
 	const session = useSession()
-	const { startTask } = useSocketStreaming()
+	const { startTask, getResponse } = useSocket()
+	const queryClient = useQueryClient()
 
-	const onSuccess = () => {
-		toast.success('URL des Lokalisierungsblatts aktualisiert!')
+	const onSuccess = async (url?: string) => {
+		if (url) {
+			toast.success('URL des Lokalisierungsblatts aktualisiert!')
+			await queryClient.invalidateQueries({
+				queryKey: [LOC_SHEET_QUERY_KEY, Number(id)],
+				exact: true,
+			})
+		} else {
+			toast.success(
+				'Synchronisierte Aktualisierungen des Lokalisierungsblatts!'
+			)
+		}
 	}
 
-	const onUpdateLOCSheet = async (url: string) => {
-		await updateLOCSheet(Number(id), {
-			loc_sheet_url: url,
-			user_id: session.data?.user.id || 0,
-		})
+	const onError = () => {
+		toast.error('Fehler beim Aktualisieren des Lokalisierungsblatts!')
+	}
+
+	const onUpdateLOCSheet = async (url?: string) => {
+		if (url) {
+			await updateLOCSheet(Number(id), {
+				loc_sheet_url: url,
+				user_id: session.data?.user.id || 0,
+			})
+		}
 		const taskId = await startTask({
 			method: 'POST',
 			url: API_URLS.UPDATE_LOC_MAPPING,
 			urlParams: {
 				projectId: Number(id),
 			},
+			noCache: true,
 		})
-		return taskId
+		const resp = await getResponse(taskId)
+		return resp
 	}
 
 	const mutation = useMutation({
 		mutationKey: ['update-loc-sheet'],
 		mutationFn: onUpdateLOCSheet,
-		onSuccess,
+		onSuccess: (_, url) => onSuccess(url),
+		onError,
 	})
 
 	return mutation

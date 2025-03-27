@@ -29,7 +29,7 @@ export type FetchRequestParams<
 	urlParams?: UrlParamsT
 }
 
-type FetchResponseResult<ResponseDataT = TNoParams> =
+export type FetchResponseResult<ResponseDataT = TNoParams> =
 	| {
 			data: ResponseDataT
 			error: null
@@ -164,8 +164,8 @@ export async function fetchAPI<
 				error: new Error(response.statusText),
 			}
 		}
-
 		const responseData = (await response.json()) as ResponseDataT
+
 		if (sendLog) {
 			const message = `${sendLog}: ${session.user.id} - ${resolvedUrl.split(BASE_URL)[1]} - ${new Date().toUTCString()}`
 			Sentry.captureMessage(message, 'info')

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { farSearchModes } from '@/constants/editor-constants'
 import useLocalizeHook, {
 	useLocalizeDownloadMutation,
+	useUpdateLOCSheetMutation,
 } from '@/hooks/mutation/use-localize-hook'
 import {
 	useEditorPlugin,
@@ -24,6 +25,8 @@ import {
 	TLocalizeResponse,
 } from '@/types/ai-types'
 
+import useLOCSheetData from './query/use-loc-sheet-data'
+
 export default function useFindAndReplace() {
 	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
 
@@ -36,9 +39,13 @@ export default function useFindAndReplace() {
 	const [ptr, setPtr] = useState(0)
 	const { data: fetchedData, refetch, isFetching } = useLocalizeHook()
 	const { isPending, mutateAsync } = useLocalizeDownloadMutation()
+	const { isPending: updateLOCPending, mutateAsync: updateLOCMutateAsync } =
+		useUpdateLOCSheetMutation()
 	const [data, setData] = useState<TLocalizeResponse['result'] | undefined>(
 		fetchedData
 	)
+	const { data: urlData } = useLOCSheetData()
+	const sheetURL = urlData ? urlData.loc_sheet_url : ''
 
 	useEffect(() => {
 		setData(fetchedData)
@@ -266,6 +273,11 @@ export default function useFindAndReplace() {
 		downloadFile(url.csv_sheet_url, `LOC_sheet.csv`)
 	}
 
+	async function handleScanEpisode() {
+		await updateLOCMutateAsync('')
+		void refetch()
+	}
+
 	const localized_entities = [
 		{
 			title: 'Characters',
@@ -297,7 +309,6 @@ export default function useFindAndReplace() {
 		handleNext,
 		onReplaceAll,
 		isPending,
-		refetch,
 		occurrences,
 		isFetching,
 		replaceEnabled,
@@ -310,5 +321,8 @@ export default function useFindAndReplace() {
 		setData,
 		wholeWord,
 		genitive,
+		sheetURL,
+		handleScanEpisode,
+		updateLOCPending,
 	}
 }

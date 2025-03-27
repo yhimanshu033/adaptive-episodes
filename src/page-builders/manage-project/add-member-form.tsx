@@ -8,6 +8,7 @@ import useProjectAccessMutation from '@/hooks/mutation/use-project-access-mutati
 import SearchUser from '@/page-builders/manage-project/search-user'
 import { setMemberQuery } from '@/store/admin-store'
 
+import IfElse, { Else, If } from '@/components/if-else'
 import { IconLoader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
@@ -18,6 +19,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 
 import { EProjectAccessActions } from '@/types/admin-types'
 
@@ -39,54 +41,63 @@ const AddMemberForm = () => {
 		<Form {...form}>
 			<form
 				onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
-				className="flex w-full items-center gap-2"
+				className="flex w-full flex-1 flex-col justify-between gap-5"
 			>
-				<FormField
-					control={form.control}
-					name="email"
-					render={({ field }) => (
-						<FormItem className="flex-1">
-							<FormControl>
-								<SearchUser
-									selectedValue={field.value}
-									onUserSelect={field.onChange}
-								/>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="role"
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Select onValueChange={field.onChange} value={field.value}>
-									<SelectTrigger disabled={!form.watch('email')}>
-										<SelectValue placeholder="Select Role" />
-									</SelectTrigger>
-									<SelectContent>
-										{rolesArray.map((role, index) => (
-											<SelectItem key={index} value={role}>
-												{role}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
-				{projectAccessMutation.isPending ? (
-					<IconLoader />
-				) : (
-					<Button
-						size="sm"
-						disabled={!form.watch('email') || !form.watch('role')}
-					>
-						Add
-					</Button>
-				)}
+				<div className="flex w-full gap-2">
+					<FormField
+						control={form.control}
+						name="email"
+						render={({ field }) => (
+							<FormItem className="flex-1">
+								<FormControl>
+									<SearchUser
+										selectedValue={field.value}
+										onUserSelect={field.onChange}
+									/>
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="role"
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Select onValueChange={field.onChange} value={field.value}>
+										<SelectTrigger disabled={!form.watch('email')}>
+											<SelectValue placeholder="Select Role" />
+										</SelectTrigger>
+										<SelectContent className="mt-2 bg-background" align="end">
+											{rolesArray.map((role, index) => (
+												<SelectItem
+													className="cursor-pointer hover:bg-muted"
+													key={index}
+													value={role}
+												>
+													{role}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+				</div>
+				<div className="space-y-4 text-end">
+					<Separator className="-mx-6 w-[calc(100%+48px)]" />
+					<IfElse condition={projectAccessMutation.isPending}>
+						<If>
+							<IconLoader />
+						</If>
+						<Else>
+							<Button disabled={!form.watch('email') || !form.watch('role')}>
+								Add
+							</Button>
+						</Else>
+					</IfElse>
+				</div>
 			</form>
 		</Form>
 	)

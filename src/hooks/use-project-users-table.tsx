@@ -75,7 +75,7 @@ export const useProjectUsersTable = (members: MemberData[]) => {
 						<SelectTrigger className="max-w-28">
 							<SelectValue placeholder="Select role" />
 						</SelectTrigger>
-						<SelectContent>
+						<SelectContent className="bg-background">
 							{rolesArray.map((role, index) => (
 								<SelectItem key={index} value={role}>
 									{role}
