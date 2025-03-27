@@ -5,13 +5,26 @@ interface IfElseContextProps {
 }
 
 interface IfElseProps extends IfElseContextProps {
-	children: React.ReactNode
+	children?: React.ReactNode
+	else?: React.ReactNode
+	if?: React.ReactNode
 }
 
 const IfElseContext = React.createContext<IfElseContextProps>({
 	condition: false,
 })
-export default function IfElse({ condition, children }: IfElseProps) {
+export default function IfElse({
+	condition,
+	children,
+	else: ElseComponent = null,
+	if: IfComponent = null,
+}: IfElseProps) {
+	if (!!ElseComponent || !!IfComponent) {
+		if (condition) {
+			return IfComponent
+		}
+		return ElseComponent
+	}
 	return (
 		<IfElseContext.Provider value={{ condition }}>
 			{children}

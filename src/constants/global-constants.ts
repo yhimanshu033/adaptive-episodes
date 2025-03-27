@@ -87,6 +87,9 @@ export const API_URLS = {
 	UPDATE_LOC_MAPPING: '/project/:projectId/update-localisation-data/',
 	GET_LOC_SHEET: '/project/:projectId/get-loc-spreadsheet-data/',
 	TRANSLATE_VIDEO: '/aicopilot/mp4_to_german',
+	UPDATE_GDRIVE_FOLDER: '/project/:projectId/update-cms-ready-drive-url/',
+	PUSH_TO_GDRIVE: '/project/:projectId/upload-cms-ready-file/',
+	GDRIVE_AUTH: '/user/:userId/google-drive-auth/',
 }
 
 export const LOGS = {

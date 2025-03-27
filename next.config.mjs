@@ -5,7 +5,7 @@ const nextConfig = {
   crossOrigin: 'anonymous',
   experimental: {
     serverActions: {
-      bodySizeLimit: '1000mb',
+      bodySizeLimit: '10mb',
     },
   },
   async headers() {

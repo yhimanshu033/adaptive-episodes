@@ -119,3 +119,13 @@ export type TAdminStoreState = {
 	addMemberQuery: string
 	deleteMemberMail: string
 }
+
+export type TUpdateGDriveFolderBody = {
+	drive_folder_url: string
+}
+
+export type TUpdateGDriveFolderUrlParams = {
+	projectId: string
+}
+
+export type TMessageResponse = { message: string }

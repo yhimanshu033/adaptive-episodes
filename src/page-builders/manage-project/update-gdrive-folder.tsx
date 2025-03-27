@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import {
-	UploadLOCSheetSchema,
-	useUploadLOCSheetResolver,
-} from '@/hooks/form-resolvers/upload-loc-sheet-resolver'
-import { useUpdateLOCSheetMutation } from '@/hooks/mutation/use-localize-hook'
-import useLOCSheetData from '@/hooks/query/use-loc-sheet-data'
+	UploadGDriveFolderSchema,
+	useUploadGDriveFolderResolver,
+} from '@/hooks/form-resolvers/upload-gdrive-folder-resolver'
+import { useGDriveUpdateMutation } from '@/hooks/mutation/use-gdrive-hook'
 import { ArrowUpRight } from 'lucide-react'
 
 import IfElse from '@/components/if-else'
@@ -18,24 +17,31 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 
-const UpdateLOCSheet = () => {
-	const { data } = useLOCSheetData()
-	const currentLOCSheetURL = data ? data.loc_sheet_url : ''
+const UpdateDriveFolder = () => {
+	const { initialStoryData } = useEpisodeTableContext()
 
-	const form = useUploadLOCSheetResolver()
-	const updateLOCSheetMutation = useUpdateLOCSheetMutation()
+	const defaultLink = useMemo(
+		() => initialStoryData?.cms_ready_drive_folder_url || '',
+		[initialStoryData]
+	)
 
-	const handleSubmit = ({ link }: UploadLOCSheetSchema) => {
-		updateLOCSheetMutation.mutate(link)
+	const form = useUploadGDriveFolderResolver()
+	const updateGDriveFolderMutation = useGDriveUpdateMutation()
+
+	const handleSubmit = ({ link }: UploadGDriveFolderSchema) => {
+		updateGDriveFolderMutation.mutate(link)
 	}
 
 	const link = form.watch('link')
+
 	useEffect(() => {
-		if (currentLOCSheetURL) {
-			form.setValue('link', currentLOCSheetURL)
-		}
-	}, [currentLOCSheetURL, form])
+		if (!defaultLink) return
+
+		form.setValue('link', defaultLink)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [defaultLink])
 
 	return (
 		<Form {...form}>
@@ -67,7 +73,7 @@ const UpdateLOCSheet = () => {
 					<ArrowUpRight size={16} />
 				</a>
 				<IfElse
-					condition={updateLOCSheetMutation.isPending}
+					condition={updateGDriveFolderMutation.isPending}
 					if={<IconLoader />}
 					else={<Button>Update</Button>}
 				/>
@@ -76,4 +82,4 @@ const UpdateLOCSheet = () => {
 	)
 }
 
-export default UpdateLOCSheet
+export default UpdateDriveFolder
