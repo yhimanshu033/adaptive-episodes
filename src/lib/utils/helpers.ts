@@ -372,3 +372,24 @@ export function getFormattedDate(date?: Date): string {
 
 	return `${day}.${month}.${year}`
 }
+
+export function pretifyVoiceXMLData(data: string) {
+	const statusRegex = /<status section="(\d+)">(.*?)<\/status>/g
+	const sectionRegex = /<section-start id="(\d+)"\/>/g
+
+	const statusMatches = [...data.matchAll(statusRegex)]
+	const sectionMatches = [...data.matchAll(sectionRegex)]
+
+	const removeCount = Math.min(statusMatches.length, sectionMatches.length)
+
+	let cleanedData = data
+
+	if (removeCount > 0) {
+		for (let i = 0; i < removeCount; i++) {
+			cleanedData = cleanedData.replace(statusMatches[i][0], '')
+		}
+	}
+	cleanedData = cleanedData.replace(/<\/?[^>]+\/?>/g, '\n').trim()
+
+	return cleanedData
+}
