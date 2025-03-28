@@ -1,5 +1,9 @@
 import { useParams } from 'next/navigation'
-import { API_URLS } from '@/constants/global-constants'
+import {
+	API_URLS,
+	GDRIVE_BROADCAST_CHANNEL,
+	GDRIVE_SUCCESS_MESSAGE,
+} from '@/constants/global-constants'
 import useSocket from '@/hooks/use-socket'
 import { useMutation } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
@@ -75,7 +79,23 @@ export function useGDrivePushMutation() {
 
 		if (!resp.data?.auth_url) return
 
-		window.open(resp.data.auth_url, '_blank')
+		const newTab = window.open(resp.data.auth_url, '_blank')
+
+		const channel = new BroadcastChannel(GDRIVE_BROADCAST_CHANNEL)
+
+		channel.addEventListener('message', (e) => {
+			try {
+				const message = String(e.data)
+				if (message === GDRIVE_SUCCESS_MESSAGE) {
+					toast.success('Google Drive-Ordner aktualisiert!')
+					newTab?.close()
+					channel.close()
+				}
+			} catch (error) {
+				console.log(error)
+				channel.close()
+			}
+		})
 	}
 
 	async function onGDrivePush(body: TPushToGDriveBody) {

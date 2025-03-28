@@ -17,4 +17,6 @@ export const PROMO_PAGE = {
 
 export const COMMON = {
 	COPY2CLIP: 'In die Zwischenablage kopiert!',
+	AUTH_SUCCESS: 'Autorisierung erfolgreich!',
+	PUSH_TO_DRIVE: 'Bitte übertragen Sie Ihre Episode erneut auf Google Drive!',
 }
