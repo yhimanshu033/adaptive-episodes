@@ -5,13 +5,19 @@ import useSocket from '@/hooks/use-socket'
 import { useMutation } from '@tanstack/react-query'
 
 import { downloadFile } from '@/lib/utils/client-helpers'
+import { getFormattedDate } from '@/lib/utils/helpers'
 
 import { DownloadDocxParams, TGetDocxFromHtmlBody } from '@/types/episode-type'
 
 export default function useDocxDownloadHook({
 	latestStatus,
 }: DownloadDocxParams) {
-	const { mutateAsync: getDocxHtml, showButton } = useDocxHtml({ latestStatus })
+	const {
+		mutateAsync: getDocxHtml,
+		showButton,
+		projectTitle,
+		epNumber,
+	} = useDocxHtml({ latestStatus })
 	const { startTask, getResponse } = useSocket()
 	const downloadedContentRef = React.useRef<string | null>(null)
 
@@ -27,7 +33,10 @@ export default function useDocxDownloadHook({
 		})
 		downloadedContentRef.current = html
 		const responseUrl = await getResponse(taskId)
-		downloadFile(responseUrl as string, `${title}.docx`)
+		downloadFile(
+			responseUrl as string,
+			`${projectTitle} - Ep ${epNumber} - ${title} - ${getFormattedDate()}.docx`
+		)
 	}
 
 	const mutation = useMutation({

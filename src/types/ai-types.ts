@@ -132,11 +132,11 @@ export interface PlotExplorerParams {
 	ep_from: number
 	ep_number: string
 	ep_to: number
-	instruction?: string
 	loglines_array: Array<string>
 	mode: string
 	project_id: number
 	scene_array?: Array<string>
+	search_query?: string
 }
 
 export interface PlotExplorerQueryResponse {

@@ -188,7 +188,7 @@ export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
           </head>
           <body>
 		  <div><strong>EP ${epNumber} - ${title}</strong></div><br><br>
-		  <div> Neueste Wortanzahl: ${getWordCount(editor.children)} </div><br><br>
+		  <div> Word Count: ${getWordCount(editor.children)} </div><br><br>
           ${editorHtml.replace(/<\/div>/g, '</div><br>').replace(/rgba\([\d\s,.]*\)/g, DEFAULT_COLOR)}
           </body>
         </html>`
@@ -205,5 +205,5 @@ export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 	const showButton =
 		selectedStatus === EStatus.PUBLISHED || latestStatus === EStatus.PUBLISHED
 
-	return { showButton, ...mutation, epNumber, projectTitle }
+	return { showButton, ...mutation, epNumber, projectTitle, title }
 }
