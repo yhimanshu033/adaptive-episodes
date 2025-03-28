@@ -6,11 +6,11 @@ import {
 } from '@/constants/story-explorer-constants'
 import useStoryExplorer from '@/hooks/use-story-explorer'
 import Content from '@/page-builders/plate-editor/sidebar-sections/story-explorer/content'
-import { Send } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { cn } from '@/lib/utils/helpers'
 
 const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const {
@@ -55,42 +55,39 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 								end={end}
 							/>
 						) : (
-							<div className="relative flex flex-col items-center gap-3">
-								{action.map((id, idx) => (
-									<Button
-										key={idx}
-										variant="outline"
-										className="w-48"
-										onClick={() => void handleRequest(id)}
-										disabled={id === currentlyDisabled}
+							<>
+								<div className="relative mb-5 flex items-center gap-2">
+									<label
+										htmlFor="focus-input"
+										className="w-fit text-sm font-medium text-muted-foreground"
 									>
-										{categoryNames[id]}
-									</Button>
-								))}
-								<div className="flex items-center justify-center">
-									<div className="relative w-64">
-										<Input
-											disabled
-											type="text"
-											placeholder="Custom Prompt..."
-											className="w-full"
-											value={promptInput}
-											onChange={(e) => setPromptInput(e.target.value)}
-										/>
-										<Button
-											disabled
-											size="icon"
-											variant="ghost"
-											className="absolute right-1 top-1/2 -translate-y-1/2"
-										>
-											<Send
-												className="size-4"
-												onClick={() => void handleRequest(promptInput)}
-											/>
-										</Button>
-									</div>
+										Fokus (Optional) :
+									</label>
+
+									<Input
+										id="focus-input"
+										type="text"
+										placeholder="Enter focus keyword"
+										className="w-48"
+										value={promptInput}
+										onChange={(e) => setPromptInput(e.target.value)}
+									/>
 								</div>
-							</div>
+								<div className="relative flex flex-col items-center gap-3">
+									{action.map((id, idx) => (
+										<Button
+											key={idx}
+											variant="outline"
+											className={cn('w-48', {
+												hidden: id === currentlyDisabled,
+											})}
+											onClick={() => void handleRequest(id)}
+										>
+											{categoryNames[id]}
+										</Button>
+									))}
+								</div>
+							</>
 						)}
 					</TabsContent>
 				))}
