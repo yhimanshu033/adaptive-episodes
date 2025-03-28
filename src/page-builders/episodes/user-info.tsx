@@ -34,7 +34,10 @@ export default function UserInfo({
 			<div className="flex items-center gap-2">
 				<Avatar className="size-5">
 					{user.image && <AvatarImage alt={user.fullname} src={user.image} />}
-					<AvatarFallback className="text-xs" colorString={user.fullname}>
+					<AvatarFallback
+						className="text-xs text-white"
+						colorString={user.fullname}
+					>
 						{user.fullname?.charAt(0)}
 					</AvatarFallback>
 				</Avatar>
