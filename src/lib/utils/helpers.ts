@@ -1,15 +1,18 @@
+import { NextRequest } from 'next/server'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
 	PROPS_KEYS_TO_COMPARE,
 } from '@/constants/episodes-constants'
-import { roleToData } from '@/constants/global-constants'
+import { API_URLS, roleToData } from '@/constants/global-constants'
+import { MANAGE_PROJECT } from '@/constants/route-constants'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
 import { jsonrepair } from 'jsonrepair'
+import { JWT } from 'next-auth/jwt'
 import { twMerge } from 'tailwind-merge'
 
-import { ERole } from '@/types/admin-types'
+import { ERole, UserProject } from '@/types/admin-types'
 import { BASE_STATUS, EStatus, STATUS_ORDER } from '@/types/common'
 import {
 	TGetMetadataAPIResponse,
@@ -334,4 +337,59 @@ export const generateGenitives = (input: string) => {
 
 	// For all other names - add "s"
 	return input + 's'
+}
+
+export async function projectAdminCheck(req: NextRequest, jwt: JWT) {
+	let data: { projects: UserProject[] } | null = null
+	try {
+		data = (await fetch(
+			`${process.env.NEXT_PUBLIC_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${jwt.accessToken}`,
+				},
+			}
+		).then((res) => res.json())) as { projects: UserProject[] }
+	} catch (error) {
+		console.error('Error fetching user projects:', error)
+	}
+	const projectId = req.nextUrl.pathname.match(MANAGE_PROJECT)?.[1] || null
+	return data && projectId
+		? data?.projects?.some(
+				(project) =>
+					project.project.id === Number(projectId) &&
+					project.role === ERole.ADMIN
+			)
+		: false
+}
+
+export function getFormattedDate(date?: Date): string {
+	const now = date || new Date()
+	const day = now.getDate().toString().padStart(2, '0')
+	const month = (now.getMonth() + 1).toString().padStart(2, '0') // Months are 0-based
+	const year = now.getFullYear().toString()
+
+	return `${day}.${month}.${year}`
+}
+
+export function pretifyVoiceXMLData(data: string) {
+	const statusRegex = /<status section="(\d+)">(.*?)<\/status>/g
+	const sectionRegex = /<section-start id="(\d+)"\/>/g
+
+	const statusMatches = [...data.matchAll(statusRegex)]
+	const sectionMatches = [...data.matchAll(sectionRegex)]
+
+	const removeCount = Math.min(statusMatches.length, sectionMatches.length)
+
+	let cleanedData = data
+
+	if (removeCount > 0) {
+		for (let i = 0; i < removeCount; i++) {
+			cleanedData = cleanedData.replace(statusMatches[i][0], '')
+		}
+	}
+	cleanedData = cleanedData.replace(/<\/?[^>]+\/?>/g, '\n').trim()
+
+	return cleanedData
 }

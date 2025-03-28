@@ -26,6 +26,9 @@ export const roleToData: Record<ERole, { priority: number; title: string }> = {
 	[ERole.WRITER]: { title: 'Writer', priority: 2 },
 	[ERole.READER]: { title: '', priority: 3 },
 }
+export const rolesArray = Object.values(ERole).filter(
+	(role) => role !== ERole.READER
+)
 
 export const DEFAULT_USER: Record<string, SuggestionUser> = {
 	'1': {
@@ -58,6 +61,10 @@ export const API_URLS = {
 	MEMBERS_GET: '/project/:id/get-project-members',
 	LOGIN: '/auth/login/',
 	GET_MY_USER: '/user/me',
+	GET_USER_PROJECTS: '/user/get-user-projects',
+	GET_ALL_USERS: '/user/get-all-users/',
+	GIVE_PROJECT_ACCESS: '/project/:projectId/:userId/give-project-access',
+	REVOKE_PROJECT_ACCESS: '/project/:projectId/:userId/revoke-project-access',
 	GET_EPISODE: '/chapter/:chapterId/content/',
 	SAVE_EPISODE: '/chapter/:projectId/:episodeId/',
 	GET_EPISODES: '/chapter/',
@@ -75,6 +82,13 @@ export const API_URLS = {
 	STREAM_EXPLORER: '/aicopilot/explorer',
 	GET_NOTES: '/user/:project_id/fetch-user-notes/',
 	UPDATE_NOTES: '/user/:project_id/update-user-notes/',
+	UPDATE_LOC_SHEET: '/project/:projectId/update-loc-sheet/',
+	UPDATE_LOC_MAPPING: '/project/:projectId/update-localisation-data/',
+	GET_LOC_SHEET: '/project/:projectId/get-loc-spreadsheet-data/',
+	TRANSLATE_VIDEO: '/aicopilot/mp4_to_german',
+	UPDATE_GDRIVE_FOLDER: '/project/:projectId/update-cms-ready-drive-url/',
+	PUSH_TO_GDRIVE: '/project/:projectId/upload-cms-ready-file/',
+	GDRIVE_AUTH: '/user/:userId/google-drive-auth/',
 }
 
 export const LOGS = {
@@ -84,3 +98,8 @@ export const LOGS = {
 export type TIdParams = {
 	id: string
 }
+
+export const pathsWithoutGlobalHeader = ['/editor', '/manage-project']
+
+export const GDRIVE_BROADCAST_CHANNEL = 'gdrive-channel'
+export const GDRIVE_SUCCESS_MESSAGE = 'gdrive-success'

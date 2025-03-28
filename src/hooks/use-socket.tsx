@@ -97,7 +97,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 				taskCallbacksRef.current[taskId] = onResponse
 			}
 
-			await fetchAPI<
+			const resp = await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
 				BodyParamsT,
@@ -106,6 +106,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 				...restParams,
 				query: { task_id: taskId, ...(params.query as QueryParamsT) },
 			})
+
+			if (!resp.success) {
+				responsesRef.current[taskId] = {
+					result: resp,
+				}
+			}
 
 			return taskId
 		},

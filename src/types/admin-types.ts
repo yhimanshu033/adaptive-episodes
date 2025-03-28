@@ -28,11 +28,7 @@ export type LoginResponse = {
 	}
 }
 
-export type SessionData = {
-	accessToken: string
-	uid: string
-	user: UserData
-} & Session
+export type SessionData = Session
 
 export type UserData = {
 	create_time: string
@@ -49,6 +45,21 @@ export type UserData = {
 	uid: string
 	update_time: string
 	username: string
+}
+
+export type UserProject = {
+	project: {
+		author: string
+		create_time: string
+		id: number
+		image: string
+		project_title: string
+		props: Record<string, unknown>
+		status: string
+		update_time: string
+		user: null | UserData
+	}
+	role: ERole
 }
 
 export enum ERole {
@@ -70,3 +81,51 @@ export type TGetMembersResponse = {
 export type TUpdateWritersBody = {
 	user_id: number
 }
+
+export type TGetAllUsersResponse = {
+	data: UserData[]
+	message: string
+	status: number
+}
+
+export type TGetAllUsersQueryParams = {
+	q: string
+}
+
+export type TProjectAccessURLParams = {
+	projectId: number
+	userId: number
+}
+
+export type TProjectAccessBody = {
+	role?: ERole
+	user_email: string
+}
+
+export enum EProjectAccessActions {
+	GRANT = 'grant',
+	REVOKE = 'revoke',
+}
+
+export enum EProjectUsersHeaderKeys {
+	DELETE = 'delete',
+	EMAIL = 'email',
+	ROLE = 'role',
+	SERIAL_NUMBER = 'serial-number',
+	USER = 'user',
+}
+
+export type TAdminStoreState = {
+	addMemberQuery: string
+	deleteMemberMail: string
+}
+
+export type TUpdateGDriveFolderBody = {
+	drive_folder_url: string
+}
+
+export type TUpdateGDriveFolderUrlParams = {
+	projectId: string
+}
+
+export type TMessageResponse = { message: string }
