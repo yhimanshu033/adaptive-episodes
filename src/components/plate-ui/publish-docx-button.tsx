@@ -50,8 +50,7 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 			'fileName',
 			`${projectTitle.toUpperCase()} - Episode - ${epNumber} - ${title} - ${getFormattedDate()}`
 		)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, [epNumber, form, projectTitle, title])
 
 	if (!showButton) {
 		return null
