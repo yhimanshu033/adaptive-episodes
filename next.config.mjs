@@ -8,6 +8,16 @@ const nextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: '/prod-pocketfm-generative-ai/**',
+        port: '',
+      },
+    ],
+  },
   async headers() {
     return [
       {
