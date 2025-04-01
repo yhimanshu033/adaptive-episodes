@@ -6,11 +6,11 @@ import {
 } from '@/constants/story-explorer-constants'
 import useStoryExplorer from '@/hooks/use-story-explorer'
 import Content from '@/page-builders/plate-editor/sidebar-sections/story-explorer/content'
-import { Send } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { cn } from '@/lib/utils/helpers'
 
 const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const {
@@ -55,42 +55,30 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 								end={end}
 							/>
 						) : (
-							<div className="relative flex flex-col items-center gap-3">
-								{action.map((id, idx) => (
-									<Button
-										key={idx}
-										variant="outline"
-										className="w-48"
-										onClick={() => void handleRequest(id)}
-										disabled={id === currentlyDisabled}
-									>
-										{categoryNames[id]}
-									</Button>
-								))}
-								<div className="flex items-center justify-center">
-									<div className="relative w-64">
-										<Input
-											disabled
-											type="text"
-											placeholder="Custom Prompt..."
-											className="w-full"
-											value={promptInput}
-											onChange={(e) => setPromptInput(e.target.value)}
-										/>
+							<>
+								<div className="relative flex flex-col items-center gap-3">
+									{action.map((id, idx) => (
 										<Button
-											disabled
-											size="icon"
-											variant="ghost"
-											className="absolute right-1 top-1/2 -translate-y-1/2"
+											key={idx}
+											variant="outline"
+											className={cn('w-48', {
+												hidden: id === currentlyDisabled,
+											})}
+											onClick={() => void handleRequest(id)}
 										>
-											<Send
-												className="size-4"
-												onClick={() => void handleRequest(promptInput)}
-											/>
+											{categoryNames[id]}
 										</Button>
-									</div>
+									))}
+									<Input
+										id="focus-input"
+										type="text"
+										placeholder="Focus (optional)"
+										className="w-48"
+										value={promptInput}
+										onChange={(e) => setPromptInput(e.target.value)}
+									/>
 								</div>
-							</div>
+							</>
 						)}
 					</TabsContent>
 				))}

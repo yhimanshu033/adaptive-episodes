@@ -1,4 +1,4 @@
-export const formatDate = (input: string | number) => {
+export const formatDate = (input: string | number, showTime?: boolean) => {
 	let dateObj: Date
 
 	if (typeof input === 'string' || typeof input === 'number') {
@@ -9,12 +9,17 @@ export const formatDate = (input: string | number) => {
 		throw new Error('Invalid input type. Expected a string or a number.')
 	}
 
-	return dateObj.toLocaleString(undefined, {
+	const options: Intl.DateTimeFormatOptions = {
 		day: 'numeric',
 		month: 'short',
 		year: 'numeric',
-		hour: 'numeric',
-		minute: 'numeric',
-		hour12: true,
-	})
+	}
+
+	if (showTime) {
+		options.hour = 'numeric'
+		options.minute = 'numeric'
+		options.hour12 = true
+	}
+
+	return dateObj.toLocaleString(undefined, options)
 }

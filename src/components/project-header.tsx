@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { SAVE_EPISODE_BUTTON_ID } from '@/constants/editor-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
-import { usePageState } from '@/hooks/use-page-state'
 import useEditorExtendedStore from '@/store/extended-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, EllipsisVertical } from 'lucide-react'
@@ -18,15 +17,26 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { buildQueryString } from '@/lib/utils/helpers'
+import { addOpenedEpisodeList } from '@/lib/utils/indexed-db'
 
 const ProjectHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 	const router = useRouter()
 	const { id } = useParams()
-	const { limit, userDefaultLimit } = usePageState()
 	const queryClient = useQueryClient()
 	const { store } = useEditorExtendedStore()
 	const extendedEpisodeIds = store(useShallow((state) => state.extended))
+
+	useEffect(() => {
+		if (!initialSeqNumber || !id) return
+		void addOpenedEpisodeList({
+			data: {
+				seqNumber: initialSeqNumber,
+				page: 1,
+				search: '',
+			},
+			project: Number(id),
+		})
+	}, [initialSeqNumber, id])
 
 	const handleClick = async () => {
 		extendedEpisodeIds.forEach((episodeId) => {
@@ -35,21 +45,21 @@ const ProjectHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 			)
 			saveButtonElement?.click()
 		})
-		const page = Math.ceil((initialSeqNumber || 1) / limit)
-		const queryParams = {
-			page: page === 1 ? undefined : page,
-			limit: limit === userDefaultLimit ? undefined : limit,
-		}
-		const queryString = buildQueryString(queryParams)
-		router.push(`/projects/${String(id)}${queryString}`)
-		await queryClient.refetchQueries({
-			queryKey: [EPISODE_LIST_QUERY_KEY],
+		router.push(`/projects/${String(id)}`)
+		await queryClient.invalidateQueries({
+			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
 		})
 	}
+
 	return (
 		<div className="left-0 top-0 z-50 animate-fade-in-down overflow-hidden border-b bg-background">
 			<header className="container flex h-14 animate-fade-in-down items-center justify-between py-1">
-				<StoryDetails imageSize={30} titleClassname="text-lg" hideAuthor />
+				<StoryDetails
+					handleClick={() => void handleClick()}
+					imageSize={30}
+					titleClassname="text-lg"
+					hideAuthor
+				/>
 				<div className="flex items-center gap-2">
 					<Button
 						variant="outline"
@@ -65,7 +75,7 @@ const ProjectHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 								<EllipsisVertical size={16} />
 							</Button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent>
+						<DropdownMenuContent align="end">
 							<DropdownMenuItem className="p-0">
 								<ThemeToggle label className="w-full" />
 							</DropdownMenuItem>
