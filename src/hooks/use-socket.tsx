@@ -46,8 +46,14 @@ type TSocketContext = {
 }
 const SocketContext = createContext<TSocketContext | undefined>(undefined)
 
-export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
-	const socketUrl = process.env.NEXT_PUBLIC_BACKEND_URL || ''
+export const SocketProvider = ({
+	children,
+	baseUrl,
+}: {
+	baseUrl?: string
+	children: React.ReactNode
+}) => {
+	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_BACKEND_URL || ''
 	const [socket] = useState(() =>
 		io(socketUrl, {
 			autoConnect: false,
@@ -103,6 +109,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 				BodyParamsT,
 				QueryParamsT & { task_id: string }
 			>({
+				baseUrl: socketUrl,
 				...restParams,
 				query: { task_id: taskId, ...(params.query as QueryParamsT) },
 			})
@@ -115,7 +122,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
 			return taskId
 		},
-		[fetchedData]
+		[fetchedData, socketUrl]
 	)
 
 	const getResponse = useCallback(<T,>(taskId: string) => {
