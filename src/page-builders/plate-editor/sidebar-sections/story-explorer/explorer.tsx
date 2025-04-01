@@ -56,23 +56,6 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 							/>
 						) : (
 							<>
-								<div className="relative mb-5 flex items-center gap-2">
-									<label
-										htmlFor="focus-input"
-										className="w-fit text-sm font-medium text-muted-foreground"
-									>
-										Fokus (Optional) :
-									</label>
-
-									<Input
-										id="focus-input"
-										type="text"
-										placeholder="Enter focus keyword"
-										className="w-48"
-										value={promptInput}
-										onChange={(e) => setPromptInput(e.target.value)}
-									/>
-								</div>
 								<div className="relative flex flex-col items-center gap-3">
 									{action.map((id, idx) => (
 										<Button
@@ -86,6 +69,14 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 											{categoryNames[id]}
 										</Button>
 									))}
+									<Input
+										id="focus-input"
+										type="text"
+										placeholder="Focus (optional)"
+										className="w-48"
+										value={promptInput}
+										onChange={(e) => setPromptInput(e.target.value)}
+									/>
 								</div>
 							</>
 						)}
