@@ -1,31 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { AUTH, DASHBOARD, PROTECTED_ROUTES } from '@/constants/route-constants'
-import { Session } from 'next-auth'
-import { getToken } from 'next-auth/jwt'
+import {
+	AUTH,
+	DASHBOARD,
+	MANAGE_PROJECT,
+	PROTECTED_ROUTES,
+} from '@/constants/route-constants'
+import { getToken, JWT } from 'next-auth/jwt'
 
-const handleUIRoutes = (req: NextRequest, session: Session) => {
+import { projectAdminCheck } from './lib/utils/helpers'
+
+const handleUIRoutes = async (req: NextRequest, jwt: JWT | null) => {
 	const auth = req.nextUrl.clone()
 	auth.pathname = AUTH
 	const afterAuth = req.nextUrl.clone()
 	afterAuth.pathname = DASHBOARD
 
-	if (PROTECTED_ROUTES.test(req.nextUrl.pathname) && !session) {
+	if (PROTECTED_ROUTES.test(req.nextUrl.pathname) && !jwt) {
 		return NextResponse.redirect(auth)
 	}
-	if (!!req.nextUrl.pathname.startsWith(AUTH) && session) {
+	if (!!req.nextUrl.pathname.startsWith(AUTH) && jwt) {
 		return NextResponse.redirect(afterAuth)
 	}
 
-	return NextResponse.next()
+	if (MANAGE_PROJECT.test(req.nextUrl.pathname) && jwt) {
+		const isAdmin = await projectAdminCheck(req, jwt)
+		if (isAdmin) return NextResponse.next()
+		return NextResponse.redirect(afterAuth)
+	}
 }
 
 export async function middleware(req: NextRequest) {
-	const session = await getToken({
+	const jwt = await getToken({
 		req,
 		secret: process.env.NEXTAUTH_SECRET,
 	})
-
-	return handleUIRoutes(req, session as unknown as Session)
+	return handleUIRoutes(req, jwt)
 }
 
 export const config = {

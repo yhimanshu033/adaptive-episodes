@@ -10,19 +10,19 @@ export function UserInfo() {
 	const { session } = useAuth()
 	const user = session?.data?.user
 
-	if (!user?.name) {
+	if (!user?.fullname) {
 		return <UserInfoSkeleton />
 	}
 	return (
 		<div className="flex items-center space-x-4 rounded-lg bg-background-editor p-4">
 			<Avatar className="size-20">
-				{user.image && <AvatarImage src={user.image} alt={user.name} />}
-				<AvatarFallback colorString={user.name}>
-					{user.name.charAt(0)}
+				{user.image && <AvatarImage src={user.image} alt={user.fullname} />}
+				<AvatarFallback colorString={user.fullname} className="text-white">
+					{user.fullname.charAt(0)}
 				</AvatarFallback>
 			</Avatar>
 			<div>
-				<h2 className="text-xl font-semibold">{user.name}</h2>
+				<h2 className="text-xl font-semibold">{user.fullname}</h2>
 				<p className="text-muted-foreground">{user.email}</p>
 			</div>
 		</div>

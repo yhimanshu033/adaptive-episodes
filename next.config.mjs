@@ -5,8 +5,18 @@ const nextConfig = {
   crossOrigin: 'anonymous',
   experimental: {
     serverActions: {
-      bodySizeLimit: '1000mb',
+      bodySizeLimit: '10mb',
     },
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: '/prod-pocketfm-generative-ai/**',
+        port: '',
+      },
+    ],
   },
   async headers() {
     return [

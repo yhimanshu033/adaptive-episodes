@@ -16,8 +16,11 @@ export function UserLogo({ message }: { message: TMessage }) {
 			{userData?.user?.image && (
 				<AvatarImage src={userData?.user?.image} alt="User" />
 			)}
-			<AvatarFallback colorString={userData?.user?.name || ''}>
-				{userData?.user?.name?.[0] || 'U'}
+			<AvatarFallback
+				className="text-white"
+				colorString={userData?.user?.fullname || ''}
+			>
+				{userData?.user?.fullname?.[0] || 'U'}
 			</AvatarFallback>
 		</Avatar>
 	)

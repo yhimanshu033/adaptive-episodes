@@ -72,6 +72,7 @@ export enum EAction {
 	REVIEW = 'review',
 	VOICE = 'voice_pass',
 	VOICE2 = 'voice_pass_2',
+	VOICE2_XML = 'voice_2_xml',
 }
 
 export enum EChatMode {
@@ -82,6 +83,7 @@ export enum EChatMode {
 	SFX = 'sfx',
 	VOICE = 'voice',
 	VOICE2 = 'voice_2',
+	VOICE2_XML = 'voice_2_xml',
 }
 
 export type TStoryChatSuggestion = {
@@ -130,11 +132,11 @@ export interface PlotExplorerParams {
 	ep_from: number
 	ep_number: string
 	ep_to: number
-	instruction?: string
 	loglines_array: Array<string>
 	mode: string
 	project_id: number
 	scene_array?: Array<string>
+	search_query?: string
 }
 
 export interface PlotExplorerQueryResponse {

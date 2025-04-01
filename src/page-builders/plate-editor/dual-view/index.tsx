@@ -38,8 +38,9 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
 			[EDualVIewMode.NOTES]: <Notes />,
 			[EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
-			[EDualVIewMode.VOICE_PASS]: <VoicePass voiceMode={EChatMode.VOICE} />,
-			[EDualVIewMode.VOICE_PASS_2]: <VoicePass voiceMode={EChatMode.VOICE2} />,
+			[EDualVIewMode.VOICE_PASS]: (
+				<VoicePass voiceMode={EChatMode.VOICE2_XML} />
+			),
 		}),
 		[translatedContent]
 	)

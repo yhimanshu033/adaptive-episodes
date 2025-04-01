@@ -87,8 +87,9 @@ const usePlotOutlineQuery = ({
 				beatsheet_array,
 				...extractedData,
 				current_ep: getText(children) || ' ',
-				instruction,
+				search_query: instruction,
 			}
+
 			const taskId = await startTask({
 				method: 'POST',
 				url: API_URLS.STREAM_EXPLORER,

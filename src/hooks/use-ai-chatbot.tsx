@@ -171,13 +171,8 @@ export function ChatbotProvider({
 			setSidebar(ESidebar.FAR)
 			return
 		}
-		if (suggestion.action === EChatMode.VOICE) {
+		if (suggestion.action === EChatMode.VOICE2_XML) {
 			setDualViewMode(EDualVIewMode.VOICE_PASS)
-			setSidebar(ESidebar.DUAL_VIEW)
-			return
-		}
-		if (suggestion.action === EChatMode.VOICE2) {
-			setDualViewMode(EDualVIewMode.VOICE_PASS_2)
 			setSidebar(ESidebar.DUAL_VIEW)
 			return
 		}
