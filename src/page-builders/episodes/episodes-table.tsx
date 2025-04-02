@@ -52,12 +52,10 @@ const EpisodesTable = () => {
 				void rowElement.offsetWidth
 				rowElement.classList.add('animate-slow-flash')
 			}, timeoutDuration)
+
+			setSearchedRow(null)
 		}
 	}, [searchedRow, isEpisodesLoading])
-
-	useEffect(() => {
-		setSearchedRow(null)
-	}, [currentPage, search, limit])
 
 	return (
 		<>

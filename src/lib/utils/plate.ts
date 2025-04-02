@@ -7,7 +7,7 @@ import { TComment } from '@udecode/plate-comments'
 import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
 import { computeDiff } from '@udecode/plate-diff'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
-import type { Range } from 'slate'
+import type { BaseRange, Range } from 'slate'
 
 import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
 import { Selection } from '@/types/plate-types'
@@ -171,14 +171,8 @@ export function clearLaserNode(ogVal: Value, key: string, pluginKey: string) {
 	return val
 }
 
-export function mergeBlocks(
-	ogVal: Value,
-	path: Range,
-	keys: string[] = []
-): Value {
-	const { anchor, focus } = path
-	const value = structuredClone(ogVal)
-
+export function getStartEndFromRange(range: BaseRange) {
+	const { anchor, focus } = range
 	const isAnchorBeforeFocus =
 		anchor.path[0] < focus.path[0] ||
 		(anchor.path[0] === focus.path[0] && anchor.path[1] < focus.path[1]) ||
@@ -193,6 +187,31 @@ export function mergeBlocks(
 	const startChildIndex = start.path[1]
 	const endParentIndex = end.path[0]
 	const endChildIndex = end.path[1]
+
+	return {
+		start,
+		end,
+		startParentIndex,
+		startChildIndex,
+		endParentIndex,
+		endChildIndex,
+	}
+}
+
+export function mergeBlocks(
+	ogVal: Value,
+	path: Range,
+	keys: string[] = []
+): Value {
+	const {
+		start,
+		end,
+		startParentIndex,
+		startChildIndex,
+		endParentIndex,
+		endChildIndex,
+	} = getStartEndFromRange(path)
+	const value = structuredClone(ogVal)
 
 	// Input validation
 	if (startParentIndex >= value.length || endParentIndex >= value.length) {
@@ -596,4 +615,26 @@ export function addUnresolvedCommentInChildren(
 	nodes.forEach(traverse)
 
 	return nodes
+}
+
+export function nodeOperation(
+	ogChildren: Value,
+	selection: Range,
+	operation: (node: TDescendant) => void
+) {
+	const { endChildIndex, endParentIndex, startChildIndex, startParentIndex } =
+		getStartEndFromRange(selection)
+
+	const children = structuredClone(ogChildren)
+	for (let i = startParentIndex; i <= endParentIndex; i++) {
+		const parent = children[i]
+		const childrenToOperate = parent.children.slice(
+			i === startParentIndex ? startChildIndex : 0,
+			i === endParentIndex ? endChildIndex + 1 : parent.children.length
+		)
+		for (const child of childrenToOperate) {
+			operation(child)
+		}
+	}
+	return children
 }
