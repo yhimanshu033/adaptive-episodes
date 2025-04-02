@@ -4,7 +4,7 @@ import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { CheckCheck, Copy, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { cn, extract } from '@/lib/utils/helpers'
+import { cn, extract, handleToolTags } from '@/lib/utils/helpers'
 
 import { EAction, EMessenger, TMessage } from '@/types/ai-types'
 
@@ -69,14 +69,13 @@ export default function RenderMessage({
 							)
 						}}
 						dangerouslySetInnerHTML={{
-							__html: (responses[message.taskId] || [])
-								.join('')
+							__html: handleToolTags(responses[message.taskId] || [])
 								.replaceAll('\n', '<br/>')
 								.replace(
-									/<text>/g,
+									/<text>|<tool[^>]*>/g,
 									"<span class='bg-background-editor rounded-md'>"
 								)
-								.replace(/<\/text>/g, '</span>'),
+								.replace(/<\/(text|tool)>/g, '</span>'),
 						}}
 						className={cn(
 							'max-w-[70%] flex-1 rounded-lg p-3 transition-transform *:animate-in active:scale-[0.995]',
