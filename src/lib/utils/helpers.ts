@@ -413,18 +413,19 @@ export function pretifyVoiceXMLData(data: string) {
 	return cleanedData
 }
 
-export function handleToolTags(responseChunks: string[]) {
-	if (!responseChunks.some((chunk) => /<tool[^>]*>/.test(chunk))) {
-		return responseChunks.join('')
-	}
-
-	const hasResult = responseChunks.some((chunk) =>
-		/<tool[^>]*status="result"[^>]*>/.test(chunk)
-	)
-
+export function handleToolTags(
+	responseChunks: string[],
+	isRunning: boolean = false
+) {
 	return responseChunks
-		.filter(
-			(chunk) => !/<tool[^>]*status="running"[^>]*>/.test(chunk) || !hasResult
-		)
+		.slice(isRunning ? 0 : 1)
 		.join('')
+		.replace(/<tool [^>]*>/g, '')
+		.replace(/<\/tool>/g, '')
+}
+
+export function hasToolResult(responseChunks: string[]) {
+	return responseChunks.some((chunk) =>
+		/<tool[^>]* status="result">/.test(chunk)
+	)
 }
