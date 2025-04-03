@@ -10,7 +10,7 @@ import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { useShallow } from 'zustand/react/shallow'
 
-import { AIStoreType } from '@/types/ai-types'
+import { AIStoreType, EFocusSetting } from '@/types/ai-types'
 import { EDualVIewMode, EpisodeIdStoreType } from '@/types/episode-type'
 import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
@@ -44,6 +44,8 @@ const initialAiState: AIStoreType = {
 		next_eps: false,
 		prev_eps: false,
 	},
+	inputFocus: null,
+	explorerFocusConfig: EFocusSetting.CMS,
 }
 
 const initialLaserState: LaserStoreType = {

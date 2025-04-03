@@ -3,10 +3,22 @@ import useAiChatbotMessages from '@/hooks/use-ai-chatbot-messages'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { CheckCheck, Copy, X } from 'lucide-react'
 
+import { StoryAccordion } from '@/components/render-content'
 import { Button } from '@/components/ui/button'
-import { cn, extract } from '@/lib/utils/helpers'
+import {
+	cn,
+	extract,
+	handleToolTags,
+	hasToolResult,
+	parseOptimistically,
+} from '@/lib/utils/helpers'
 
-import { EAction, EMessenger, TMessage } from '@/types/ai-types'
+import {
+	EAction,
+	EMessenger,
+	PlotExplorerApiResponse,
+	TMessage,
+} from '@/types/ai-types'
 
 export default function RenderMessage({
 	message,
@@ -60,7 +72,7 @@ export default function RenderMessage({
 		message.action === EAction.BLOCK
 	) {
 		if ((responses[message.taskId] || []).length) {
-			return (
+			return !hasToolResult(responses[message.taskId]) ? (
 				<div className="relative flex">
 					<div
 						onClick={() => {
@@ -69,8 +81,7 @@ export default function RenderMessage({
 							)
 						}}
 						dangerouslySetInnerHTML={{
-							__html: (responses[message.taskId] || [])
-								.join('')
+							__html: handleToolTags(responses[message.taskId] || [], true)
 								.replaceAll('\n', '<br/>')
 								.replace(
 									/<text>/g,
@@ -102,6 +113,15 @@ export default function RenderMessage({
 							</Button>
 						)}
 				</div>
+			) : (
+				<StoryAccordion
+					className="max-w-[70%] flex-1 rounded-lg p-3 transition-transform *:animate-in active:scale-[0.995]"
+					explorerData={
+						parseOptimistically<PlotExplorerApiResponse['data']>(
+							handleToolTags(responses[message.taskId])
+						) ?? ''
+					}
+				/>
 			)
 		}
 		return (

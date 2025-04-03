@@ -12,14 +12,16 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils/helpers'
 
+import { ExplorerSettings } from './explorer-setting'
+
 const Explorer = ({ start, end }: { end: number; start: number }) => {
 	const {
 		activeExplorerMode,
 		handleTabChange,
 		currentAction,
 		content,
-		promptInput,
-		setPromptInput,
+		inputFocus,
+		setInputFocus,
 		handleRequest,
 		isMetadataLoading,
 		isTaskEnded,
@@ -69,14 +71,17 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 											{categoryNames[id]}
 										</Button>
 									))}
-									<Input
-										id="focus-input"
-										type="text"
-										placeholder="Focus (optional)"
-										className="w-48"
-										value={promptInput}
-										onChange={(e) => setPromptInput(e.target.value)}
-									/>
+									<div className="relative flex items-center gap-2">
+										<Input
+											id="focus-input"
+											type="text"
+											placeholder="Focus (optional)"
+											className="w-48"
+											value={inputFocus ?? ''}
+											onChange={(e) => setInputFocus(e.target.value)}
+										/>
+										<ExplorerSettings />
+									</div>
 								</div>
 							</>
 						)}
