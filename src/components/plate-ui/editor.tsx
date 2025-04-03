@@ -196,6 +196,11 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				className="relative size-full"
 				style={{ fontFamily: `var(${fontFamily})` }}
 			>
+				<audio
+					className="hidden"
+					id={`${episodeId}-audio-player`}
+					loop={false}
+				/>
 				{focusMode && (
 					// eslint-disable-next-line react/no-unknown-property
 					<style jsx global>
