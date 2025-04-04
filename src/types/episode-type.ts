@@ -276,3 +276,12 @@ export type TNotesUpdateBody = {
 	note_text?: string
 	unique_id: string
 }
+
+export type TPlayingEpisode = {
+	info: {
+		chapter?: string
+		episode?: string
+		img?: string
+	}
+	src: string
+}

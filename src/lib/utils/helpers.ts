@@ -423,3 +423,44 @@ export function pretifyVoiceXMLData(data: string) {
 
 	return cleanedData
 }
+
+export function speak(value: string) {
+	const utterance = new SpeechSynthesisUtterance(value)
+	utterance.lang = 'de-DE'
+	utterance.rate = 0.8
+
+	speechSynthesis.speak(utterance)
+}
+
+export function formatDuration(seconds: number, showHours?: boolean): string {
+	const hours = Math.floor(seconds / 3600)
+	const minutes = Math.floor((seconds % 3600) / 60)
+	const remainingSeconds = Math.floor(seconds % 60)
+
+	const formattedMinutes = minutes.toString().padStart(2, '0')
+	const formattedSeconds = remainingSeconds.toString().padStart(2, '0')
+
+	if (hours > 0 || showHours) {
+		const formattedHours = hours.toString().padStart(2, '0')
+		return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`
+	} else {
+		return `${formattedMinutes}:${formattedSeconds}`
+	}
+}
+
+export function handleToolTags(
+	responseChunks: string[],
+	isRunning: boolean = false
+) {
+	return responseChunks
+		.slice(isRunning ? 0 : 1)
+		.join('')
+		.replace(/<tool [^>]*>/g, '')
+		.replace(/<\/tool>/g, '')
+}
+
+export function hasToolResult(responseChunks: string[]) {
+	return responseChunks.some((chunk) =>
+		/<tool[^>]* status="result">/.test(chunk)
+	)
+}

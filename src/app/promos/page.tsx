@@ -14,6 +14,7 @@ const TEMP_WHITELISTED_EMAILS = [
 	'ilan.benjamin@pocketfm.com',
 	'thomas.kornmaier@pocketfm.com',
 	'himanshu.yadav@pocketfm.com',
+	'dhairya.bhadani@pocketfm.com',
 ]
 export default async function Page() {
 	const session = (await getServerSession()) as SessionData
