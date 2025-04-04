@@ -2,6 +2,7 @@
 
 import React from 'react'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
+import { useEditorRef, useEditorState } from '@udecode/plate-common/react'
 import {
 	useColorDropdownMenu,
 	useColorDropdownMenuState,
@@ -18,6 +19,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/plate-ui/dropdown-menu'
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
+import { nodeOperation } from '@/lib/utils/plate'
 
 export type TColor = {
 	isBrightColor: boolean
@@ -41,6 +43,17 @@ export function ColorDropdownMenu({
 		customColors: DEFAULT_CUSTOM_COLORS,
 		nodeType,
 	})
+	const editor = useEditorRef()
+	const { children: value } = useEditorState()
+
+	const clearColor = React.useCallback(() => {
+		if (editor.selection) {
+			const newChildren = nodeOperation(value, editor.selection, (node) => {
+				delete node[nodeType]
+			})
+			editor.tf.setValue(newChildren)
+		}
+	}, [editor, nodeType, value])
 
 	const { buttonProps, menuProps } = useColorDropdownMenu(state)
 
@@ -55,7 +68,7 @@ export function ColorDropdownMenu({
 			<DropdownMenuContent align="start">
 				<ColorPicker
 					color={state.selectedColor || state.color}
-					clearColor={state.clearColor}
+					clearColor={clearColor}
 					colors={state.colors}
 					customColors={state.customColors}
 					updateColor={state.updateColorAndClose}

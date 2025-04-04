@@ -436,3 +436,20 @@ export function formatDuration(seconds: number, showHours?: boolean): string {
 		return `${formattedMinutes}:${formattedSeconds}`
 	}
 }
+
+export function handleToolTags(
+	responseChunks: string[],
+	isRunning: boolean = false
+) {
+	return responseChunks
+		.slice(isRunning ? 0 : 1)
+		.join('')
+		.replace(/<tool [^>]*>/g, '')
+		.replace(/<\/tool>/g, '')
+}
+
+export function hasToolResult(responseChunks: string[]) {
+	return responseChunks.some((chunk) =>
+		/<tool[^>]* status="result">/.test(chunk)
+	)
+}
