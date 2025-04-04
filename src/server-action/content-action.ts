@@ -1,6 +1,6 @@
 'use server'
 
-import { API_URLS, LOGS } from '@/constants/global-constants'
+import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 import { getWordCountFromString } from '@/lib/utils/plate'
@@ -42,7 +42,6 @@ export const saveContent = async ({
 	>({
 		method: 'PATCH',
 		url: API_URLS.SAVE_EPISODE,
-		sendLog: LOGS.SAVE_EPISODE,
 		body: {
 			...data,
 			...(word_count ? { word_count } : {}),
@@ -67,7 +66,6 @@ export const updateEpisode = async ({
 	>({
 		method: 'PATCH',
 		url: API_URLS.SAVE_EPISODE,
-		sendLog: LOGS.SAVE_EPISODE,
 		body: {
 			...data,
 		},

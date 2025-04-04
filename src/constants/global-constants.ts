@@ -90,6 +90,8 @@ export const API_URLS = {
 	UPDATE_GDRIVE_FOLDER: '/project/:projectId/update-cms-ready-drive-url/',
 	PUSH_TO_GDRIVE: '/project/:projectId/upload-cms-ready-file/',
 	GDRIVE_AUTH: '/user/:userId/google-drive-auth/',
+	ELEVENLABS_TTS:
+		'https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream?output_format=mp3_44100_128',
 }
 
 export const INDEXED_DB_KEYS = {
