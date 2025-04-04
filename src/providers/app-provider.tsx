@@ -7,6 +7,7 @@ import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
 import Player from '@/page-builders/plate-editor/player'
 import { updateUserData } from '@/store/global-store'
 import { QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import NextTopLoader from 'nextjs-toploader'
@@ -70,7 +71,7 @@ const AppProvider = ({
 										{children}
 									</PlayerProvider>
 									<Toaster />
-									{/* <ReactQueryDevtools /> */}
+									<ReactQueryDevtools />
 								</TooltipProvider>
 							</ThemeProvider>
 						</QueryClientProvider>
