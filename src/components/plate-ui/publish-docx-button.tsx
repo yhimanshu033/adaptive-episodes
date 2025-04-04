@@ -48,7 +48,7 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 	useEffect(() => {
 		form.setValue(
 			'fileName',
-			`${projectTitle.toUpperCase()} - Episode - ${epNumber} - ${title} - ${getFormattedDate()}`
+			`${projectTitle.toUpperCase()} - EP ${epNumber} - ${title} - ${getFormattedDate()}`
 		)
 	}, [epNumber, form, projectTitle, title])
 

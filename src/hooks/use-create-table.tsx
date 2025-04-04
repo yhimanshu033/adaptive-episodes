@@ -9,6 +9,7 @@ import {
 	getCoreRowModel,
 	getExpandedRowModel,
 	getSortedRowModel,
+	Row,
 	RowSelectionState,
 	SortingState,
 	useReactTable,
@@ -36,25 +37,72 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 	const [checked, setChecked] = useState<boolean>(false)
+	const [lastSelectedRowIndex, setLastSelectedRowIndex] = useState<
+		number | null
+	>(null)
 
 	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
 		useEpisodeTable()
 
+	const handleRowSelection = (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		row: Row<TEpisode>
+	) => {
+		const isShiftPressed = e.shiftKey
+		const rowIndex = row.index
+
+		if (isShiftPressed && lastSelectedRowIndex !== null) {
+			const start = Math.min(lastSelectedRowIndex, rowIndex)
+			const end = Math.max(lastSelectedRowIndex, rowIndex)
+
+			const newSelection = { ...rowSelection }
+			for (let i = start; i <= end; i++) {
+				const rowId = table.getRowModel().rows[i]?.id
+				if (rowId) newSelection[rowId] = true
+			}
+			setRowSelection(newSelection)
+		} else {
+			const rowId = row.id
+			const newSelection = { ...rowSelection }
+			if (row.getIsSelected()) {
+				delete newSelection[rowId]
+			} else {
+				newSelection[rowId] = true
+			}
+			setRowSelection(newSelection)
+			setLastSelectedRowIndex(rowIndex)
+		}
+	}
+
 	const columns: ColumnDef<TEpisode>[] = [
 		{
 			id: EEpisodeHeaderKeys.SELECT_COL,
-			header: ({ table }) => (
-				<Checkbox
-					checked={table.getIsAllRowsSelected()}
-					onClick={table.getToggleAllRowsSelectedHandler()}
-				/>
-			),
+			header: ({ table, column }) => {
+				const isSomeSelected = table.getIsSomeRowsSelected()
+				const isAllSelected = table.getIsAllRowsSelected()
+
+				return (
+					<Checkbox
+						id={`header-${column.id}`}
+						checked={isSomeSelected || isAllSelected}
+						indeterminate={isSomeSelected}
+						onClick={() => {
+							if (isSomeSelected) {
+								table.resetRowSelection()
+							} else {
+								table.toggleAllRowsSelected()
+							}
+						}}
+					/>
+				)
+			},
 			cell: ({ row }) =>
 				!row.depth && (
 					<Checkbox
+						id={`row-${row.id}`}
 						checked={row.getIsSelected()}
 						disabled={!row.getCanSelect()}
-						onClick={row.getToggleSelectedHandler()}
+						onClick={(e) => handleRowSelection(e, row)}
 					/>
 				),
 		},
@@ -63,7 +111,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			header: () => (
 				<HoverCard openDelay={0}>
 					<HoverCardTrigger> {`DE${checked ? '/US' : ''}`} </HoverCardTrigger>
-					<HoverCardContent className="w-38 z-[100] mt-2 rounded-md border bg-background p-2">
+					<HoverCardContent className="w-38 b</HoverCard>order z-[100] mt-2 rounded-md bg-background p-2">
 						<div className="flex items-center justify-center gap-2">
 							<p>US Index:</p>
 							<Switch checked={checked} onCheckedChange={setChecked} />

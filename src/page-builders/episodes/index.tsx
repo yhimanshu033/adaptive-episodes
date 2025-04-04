@@ -15,9 +15,9 @@ import AdminManageProject from './admin-manage-project'
 
 export default function EpisodeListPage() {
 	return (
-		<main className="container flex-1 animate-fade-in-up flex-col px-4 py-8">
-			<div className="mb-6 flex items-center justify-between">
-				<StoryDetails />
+		<main className="container flex-1 animate-fade-in-up flex-col p-4">
+			<div className="mb-4 flex items-center justify-between">
+				<StoryDetails titleClassname="text-xl" imageSize={60} />
 				<div className="flex gap-2">
 					<AuthWrapper role={ERole.ADMIN}>
 						<AdminManageProject />

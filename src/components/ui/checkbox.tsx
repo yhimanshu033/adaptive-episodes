@@ -2,14 +2,18 @@
 
 import * as React from 'react'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
-import { Check } from 'lucide-react'
+import { Check, Minus } from 'lucide-react'
 
 import { cn } from '@/lib/utils/helpers'
 
+import IfElse from '../if-else'
+
 const Checkbox = React.forwardRef<
 	React.ElementRef<typeof CheckboxPrimitive.Root>,
-	React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
+	React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> & {
+		indeterminate?: boolean
+	}
+>(({ className, indeterminate, ...props }, ref) => (
 	<CheckboxPrimitive.Root
 		ref={ref}
 		className={cn(
@@ -21,10 +25,15 @@ const Checkbox = React.forwardRef<
 		<CheckboxPrimitive.Indicator
 			className={cn('flex items-center justify-center text-current')}
 		>
-			<Check className="size-4" />
+			<IfElse
+				condition={!!indeterminate}
+				if={<Minus className="size-4" />}
+				else={<Check className="size-4" />}
+			/>
 		</CheckboxPrimitive.Indicator>
 	</CheckboxPrimitive.Root>
 ))
+
 Checkbox.displayName = CheckboxPrimitive.Root.displayName
 
 export { Checkbox }
