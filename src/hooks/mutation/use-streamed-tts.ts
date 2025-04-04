@@ -30,7 +30,6 @@ export default function useStreamedTTS() {
 	)
 
 	async function ttsMutation() {
-		toast.info('Starting TTS process')
 		setPlayingEpisode({
 			info: infoData,
 			src: '',
@@ -50,13 +49,14 @@ export default function useStreamedTTS() {
 		mutationFn: ttsMutation,
 		onSuccess: (data) => {
 			if (!data) {
-				return toast.error('Error in TTS conversion')
+				toast.error('Error in TTS conversion')
+				setPlayingEpisode(null)
+				return
 			}
 			setPlayingEpisode({
 				info: infoData,
 				src: data,
 			})
-			toast.success('TTS process completed')
 		},
 	})
 

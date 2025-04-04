@@ -279,9 +279,9 @@ export type TNotesUpdateBody = {
 
 export type TPlayingEpisode = {
 	info: {
-		img?: string
 		chapter?: string
 		episode?: string
+		img?: string
 	}
 	src: string
 }

@@ -1,13 +1,15 @@
+import React from 'react'
+
 import { cn } from '@/lib/utils/helpers'
 
 interface AnimatedCircularProgressBarProps {
-	max: number
-	value: number
-	min: number
+	children?: React.ReactNode
+	className?: string
 	gaugePrimaryColor: string
 	gaugeSecondaryColor: string
-	className?: string
-	children?: React.ReactNode
+	max: number
+	min: number
+	value: number
 }
 
 export function CircularProgressBar({
@@ -100,8 +102,12 @@ export function CircularProgressBar({
 				/>
 			</svg>
 			<span
-				data-current-value={currentPercent}
-				className="duration-[var(--transition-length)] delay-[var(--delay)] absolute inset-0 m-auto size-fit ease-linear animate-in fade-in"
+				data-current-value={isNaN(currentPercent) ? 0 : currentPercent}
+				className="absolute inset-0 m-auto size-fit ease-linear animate-in fade-in"
+				style={{
+					transitionDuration: 'var(--transition-length)',
+					transitionDelay: 'var(--delay)',
+				}}
 			>
 				{children}
 			</span>
