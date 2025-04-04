@@ -4,9 +4,8 @@ import * as React from 'react'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 import { Check, Minus } from 'lucide-react'
 
+import IfElse from '@/components/if-else'
 import { cn } from '@/lib/utils/helpers'
-
-import IfElse from '../if-else'
 
 const Checkbox = React.forwardRef<
 	React.ElementRef<typeof CheckboxPrimitive.Root>,
