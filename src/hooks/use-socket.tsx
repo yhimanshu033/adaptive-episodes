@@ -109,7 +109,7 @@ export const SocketProvider = ({
 				BodyParamsT,
 				QueryParamsT & { task_id: string }
 			>({
-				baseUrl: socketUrl,
+				...(baseUrl ? { baseUrl } : {}),
 				...restParams,
 				query: { task_id: taskId, ...(params.query as QueryParamsT) },
 			})
@@ -122,7 +122,7 @@ export const SocketProvider = ({
 
 			return taskId
 		},
-		[fetchedData, socketUrl]
+		[fetchedData, baseUrl]
 	)
 
 	const getResponse = useCallback(<T,>(taskId: string) => {

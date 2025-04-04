@@ -4,6 +4,7 @@ import type React from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { PROMO_PAGE } from '@/constants/german-constants'
 import useVideoTranslation from '@/hooks/mutation/use-video-translation'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { Copy, FileVideo, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -18,6 +19,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card'
+import Spinner from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils/helpers'
 
@@ -26,6 +28,20 @@ export default function VideoUpload() {
 	const [file, setFile] = useState<File | null>(null)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const { mutate, data, isPending, isError, reset } = useVideoTranslation()
+
+	const { responses, taskEnded } = useSocketStreaming()
+
+	const translatedData = useMemo(() => {
+		if (!data || !responses[data]) return ''
+
+		const concatenatedResponse = responses[data].join('')
+		return concatenatedResponse
+	}, [data, responses])
+
+	const isEnded = useMemo(() => {
+		if (!data) return false
+		return taskEnded[data]
+	}, [data, taskEnded])
 
 	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault()
@@ -87,9 +103,9 @@ export default function VideoUpload() {
 	}
 
 	const handleCopy = useCallback(() => {
-		void navigator.clipboard.writeText(data || '')
+		void navigator.clipboard.writeText(translatedData)
 		toast.success(PROMO_PAGE.COPIED)
-	}, [data])
+	}, [translatedData])
 
 	const fileSize = useMemo(
 		() => ((file?.size || 0) / (1024 * 1024)).toFixed(2) + 'MB',
@@ -160,6 +176,7 @@ export default function VideoUpload() {
 												</span>
 											</div>
 											<Button
+												type="button"
 												variant="ghost"
 												size="icon"
 												onClick={(e) => {
@@ -188,19 +205,29 @@ export default function VideoUpload() {
 					</If>
 
 					<If condition={!!data}>
-						<div className="space-y-2">
+						<div className="grid grid-rows-[auto_1fr] gap-2">
 							<div className="flex w-full items-center justify-between">
 								<h3 className="text-lg font-medium">
 									{PROMO_PAGE.TRANSCRIPTION_TITLE}
 								</h3>
-								<Button variant="ghost" size="icon" onClick={handleCopy}>
-									<Copy className="size-4" />
-								</Button>
+								<div className="flex items-center gap-2">
+									<If condition={!isEnded}>
+										<Spinner size={20} />
+									</If>
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon"
+										onClick={handleCopy}
+									>
+										<Copy className="size-4" />
+									</Button>
+								</div>
 							</div>
 							<Textarea
-								value={data}
+								value={translatedData || PROMO_PAGE.PROCESSING}
 								readOnly
-								className="min-h-[150px] resize-none"
+								className="h-full resize-none"
 							/>
 						</div>
 					</If>

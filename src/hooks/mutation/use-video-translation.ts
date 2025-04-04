@@ -1,7 +1,6 @@
-import { PROMO_PAGE } from '@/constants/german-constants'
 import { API_URLS } from '@/constants/global-constants'
 import { TRANSLATE_VIDEO_MUTATION_KEY } from '@/constants/query-constants'
-import useSocket from '@/hooks/use-socket'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util'
 import { useMutation } from '@tanstack/react-query'
@@ -9,7 +8,7 @@ import { useMutation } from '@tanstack/react-query'
 import { TVideoTranslationResponse } from '@/types/ai-types'
 
 export default function useVideoTranslation() {
-	const { startTask, getResponse } = useSocket()
+	const { startTask } = useSocketStreaming()
 
 	async function translateVideo({ file }: { file: File }) {
 		try {
@@ -41,13 +40,10 @@ export default function useVideoTranslation() {
 				body: formData,
 			})
 
-			const response = await getResponse<TVideoTranslationResponse>(taskId)
-
-			console.log({ response })
-
-			return response.translation || PROMO_PAGE.TRANSCRIPTION_FAILED
+			return taskId
 		} catch (error) {
 			console.error(error)
+			return ''
 		}
 	}
 
