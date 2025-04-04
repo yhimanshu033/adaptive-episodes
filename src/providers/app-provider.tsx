@@ -4,9 +4,9 @@ import React, { useEffect } from 'react'
 import { colorOptions, USER_SELECTED_COLOR } from '@/constants/global-constants'
 import { SocketProvider } from '@/hooks/use-socket'
 import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
+import Player from '@/page-builders/plate-editor/player'
 import { updateUserData } from '@/store/global-store'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import NextTopLoader from 'nextjs-toploader'
@@ -14,6 +14,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
+import { PlayerProvider } from '@/providers/player-provider'
 import { queryClient } from '@/lib/get-query-client'
 
 import { SessionData } from '@/types/admin-types'
@@ -64,9 +65,12 @@ const AppProvider = ({
 									skipDelayDuration={0}
 								>
 									<NextTopLoader color="hsl(var(--primary))" />
-									{children}
+									<PlayerProvider>
+										<Player />
+										{children}
+									</PlayerProvider>
 									<Toaster />
-									<ReactQueryDevtools />
+									{/* <ReactQueryDevtools /> */}
 								</TooltipProvider>
 							</ThemeProvider>
 						</QueryClientProvider>
