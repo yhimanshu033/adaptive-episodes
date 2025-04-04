@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react'
 import useLaserStore from '@/store/laser-store'
 import usePlateStore from '@/store/plate-store'
+import { TDescendant } from '@udecode/plate-common'
 import { useEditorRef } from '@udecode/plate-common/react'
-import { TDescendant } from '@udecode/slate'
 import { ArrowLeft, Send } from 'lucide-react'
 import { nanoid } from 'nanoid'
 
