@@ -1,21 +1,21 @@
 import React, { useCallback } from 'react'
 import { Download } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import usePlayer from '@/providers/player-provider'
 import { downloadBlobUrl } from '@/lib/utils/client-helpers'
 
 export default function PlayerInfo() {
-	const { playingEpisode } = usePlayer()
+	const { playingEpisode, audioRef } = usePlayer()
 
 	const info = playingEpisode?.info
-	const src = playingEpisode?.src
 
 	const handleDownload = useCallback(() => {
-		if (!src) return
-
-		downloadBlobUrl(src, `${info?.chapter}-${info?.episode}.mp3`)
-	}, [src, info])
+		if (!audioRef.current) return toast.error('Audio not found!')
+		const src = audioRef.current?.src
+		downloadBlobUrl(src, `${info?.chapter} - ${info?.episode}.mp3`)
+	}, [info, audioRef])
 
 	if (!info) {
 		return null

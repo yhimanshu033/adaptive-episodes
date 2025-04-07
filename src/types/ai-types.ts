@@ -253,3 +253,7 @@ export interface TVideoTranslationResponse {
 export interface TVideoTranslationBody {
 	video_url: string
 }
+
+export type TElevenLabsAPIBody = {
+	text: string
+}

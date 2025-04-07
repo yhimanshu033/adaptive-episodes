@@ -1,10 +1,6 @@
 import { useMemo } from 'react'
-import { TTS_MUTATION } from '@/constants/query-constants'
-import { elevenLabsTTS } from '@/server-action/external'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { useMutation } from '@tanstack/react-query'
 import { useEditorState } from '@udecode/plate-common/react'
-import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
@@ -18,7 +14,7 @@ export default function useStreamedTTS() {
 	const { store: episodeStore } = useEpisodeIdStore()
 	const episodeTitle = episodeStore(useShallow((state) => state.currentTitle))
 
-	const { setPlayingEpisode } = usePlayer()
+	const { mutation } = usePlayer()
 
 	const infoData = useMemo(
 		() => ({
@@ -29,36 +25,13 @@ export default function useStreamedTTS() {
 		[initialStoryData, episodeTitle]
 	)
 
-	async function ttsMutation() {
-		setPlayingEpisode({
+	function onTTSMutation() {
+		if (!text) return
+		mutation.mutate({
 			info: infoData,
-			src: '',
+			text,
 		})
-		const chunks = await elevenLabsTTS(text)
-
-		if (!chunks) return
-
-		const blob = new Blob(chunks, { type: 'audio/mpeg' })
-		const audioUrl = URL.createObjectURL(blob)
-
-		return audioUrl
 	}
 
-	const mutation = useMutation({
-		mutationKey: [TTS_MUTATION],
-		mutationFn: ttsMutation,
-		onSuccess: (data) => {
-			if (!data) {
-				toast.error('Error in TTS conversion')
-				setPlayingEpisode(null)
-				return
-			}
-			setPlayingEpisode({
-				info: infoData,
-				src: data,
-			})
-		},
-	})
-
-	return mutation
+	return { ...mutation, mutate: onTTSMutation }
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import PlayerInfo from '@/page-builders/plate-editor/player/info'
 import { Pause, Play, X } from 'lucide-react'
 
@@ -13,23 +13,24 @@ import usePlayer from '@/providers/player-provider'
 import { formatDuration } from '@/lib/utils/helpers'
 
 export default function PlayerAudio() {
-	const { playingEpisode } = usePlayer()
+	const { playingEpisode, audioRef } = usePlayer()
 
-	const src = useMemo(() => playingEpisode?.src, [playingEpisode])
 	const info = useMemo(() => playingEpisode?.info, [playingEpisode])
 
-	const audioRef = useRef<HTMLAudioElement | null>(null)
 	const [time, setTime] = useState(0)
 	const [duration, setDuration] = useState(0)
 	const [isPlaying, setIsPlaying] = useState(true)
-	const { setPlayingEpisode } = usePlayer()
+	const { setPlayingEpisode, mutation } = usePlayer()
 
-	const handleTimeUpdate = useCallback((time: number) => {
-		const audioElem = audioRef.current
-		if (!audioElem) return
+	const handleTimeUpdate = useCallback(
+		(time: number) => {
+			const audioElem = audioRef.current
+			if (!audioElem) return
 
-		audioElem.currentTime = time
-	}, [])
+			audioElem.currentTime = time
+		},
+		[audioRef]
+	)
 
 	const handlePlayPause = useCallback(() => {
 		const audioElem = audioRef.current
@@ -40,14 +41,14 @@ export default function PlayerAudio() {
 		} else {
 			void audioElem.play()
 		}
-	}, [isPlaying])
+	}, [isPlaying, audioRef])
 
 	const handleCancel = useCallback(() => {
+		mutation.reset()
 		setPlayingEpisode(null)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, [setPlayingEpisode, mutation])
 
-	if (!info || !src) {
+	if (!info) {
 		return null
 	}
 
@@ -61,11 +62,10 @@ export default function PlayerAudio() {
 				onPlay={() => setIsPlaying(true)}
 				onPause={() => setIsPlaying(false)}
 				onDurationChange={(e) => setDuration(e.currentTarget.duration)}
-				src={src}
 				className="hidden"
 			/>
-			<div className="flex">
-				<div className="w-0 overflow-hidden pr-0 transition-all group-hover:w-64 group-hover:pr-4">
+			<div className="flex rounded-md bg-background/50 p-2 backdrop-blur-[1px]">
+				<div className="h-full max-h-0 w-0 overflow-hidden px-0 transition-all group-hover:max-h-20 group-hover:w-64 group-hover:pl-2 group-hover:pr-4">
 					<PlayerInfo />
 					<div className="mt-2 flex grow flex-col gap-2">
 						<Slider
