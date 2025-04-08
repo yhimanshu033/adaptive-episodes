@@ -340,6 +340,17 @@ export const generateGenitives = (input: string) => {
 	return input + 's'
 }
 
+export function downloadBlob(blob: Blob, fileName: string) {
+	const url = URL.createObjectURL(blob)
+	const a = document.createElement('a')
+	a.href = url
+	a.download = fileName
+	document.body.appendChild(a)
+	a.click()
+	document.body.removeChild(a)
+	URL.revokeObjectURL(url)
+}
+
 export async function projectAdminCheck(req: NextRequest, jwt: JWT) {
 	let data: { projects: UserProject[] } | null = null
 	try {
@@ -411,6 +422,30 @@ export function pretifyVoiceXMLData(data: string) {
 	cleanedData = cleanedData.replace(/<\/?[^>]+\/?>/g, '\n').trim()
 
 	return cleanedData
+}
+
+export function speak(value: string) {
+	const utterance = new SpeechSynthesisUtterance(value)
+	utterance.lang = 'de-DE'
+	utterance.rate = 0.8
+
+	speechSynthesis.speak(utterance)
+}
+
+export function formatDuration(seconds: number, showHours?: boolean): string {
+	const hours = Math.floor(seconds / 3600)
+	const minutes = Math.floor((seconds % 3600) / 60)
+	const remainingSeconds = Math.floor(seconds % 60)
+
+	const formattedMinutes = minutes.toString().padStart(2, '0')
+	const formattedSeconds = remainingSeconds.toString().padStart(2, '0')
+
+	if (hours > 0 || showHours) {
+		const formattedHours = hours.toString().padStart(2, '0')
+		return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`
+	} else {
+		return `${formattedMinutes}:${formattedSeconds}`
+	}
 }
 
 export function handleToolTags(

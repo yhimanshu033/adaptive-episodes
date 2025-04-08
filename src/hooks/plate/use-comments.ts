@@ -4,6 +4,7 @@ import {
 	getCommentKey,
 	getCommentNodeEntries,
 	TComment,
+	TCommentText,
 } from '@udecode/plate-comments'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import { someNode } from '@udecode/plate-common'
@@ -41,7 +42,7 @@ export default function useComments() {
 
 	const { children, tf } = useEditorState()
 
-	const sortedComments: TCustomComment[] = nodes
+	const sortedComments: TCustomComment[] = (nodes as TCommentText[][])
 		.filter(([node]) => node.comment)
 		.map(([node]) => {
 			const comment = comments.find((comment) =>

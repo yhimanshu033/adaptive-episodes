@@ -6,8 +6,11 @@ import {
 	SuggestionActions,
 	SuggestionTypes,
 } from '@/constants/editor-constants'
-import { useEditorPlugin, useEditorRef } from '@udecode/plate-common/react'
-import { SlateEditor } from '@udecode/plate-core'
+import {
+	PlateEditor,
+	useEditorPlugin,
+	useEditorRef,
+} from '@udecode/plate-common/react'
 import {
 	acceptSuggestion,
 	BaseSuggestionPlugin,
@@ -27,7 +30,7 @@ const useSuggestions = () => {
 	const activeSuggestionId = useOption('activeSuggestionId')
 	const activeSuggestionDescription = getActiveSuggestionDescriptions(editor)[0]
 
-	const findAllSuggestionNodes = <E extends SlateEditor>(
+	const findAllSuggestionNodes = <E extends PlateEditor>(
 		editor: E
 	): Array<{ node: TSuggestionText; path: any }> =>
 		Array.from(
@@ -91,7 +94,7 @@ const useSuggestions = () => {
 	}
 
 	const getAllSuggestionDescriptions = (
-		editor: SlateEditor
+		editor: PlateEditor
 	): TSuggestionDescription[] => {
 		const processedSuggestionIds = new Set<string>()
 

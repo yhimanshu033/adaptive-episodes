@@ -374,17 +374,17 @@ export function getCommentNode(val: Value, id: string) {
 	return { beforeText, text, afterText }
 }
 
-export function getText(val: Value) {
+export function getText(val: Value, separator?: string) {
 	let text = ''
 	function getTextFromNode(node: TDescendant) {
 		if ('text' in node) {
 			text += String(node.text)
-		} else {
+		} else if (node.children) {
 			node.children.forEach(getTextFromNode)
 		}
 	}
 	val.forEach((node, i) => {
-		if (i > 0) text += '\n'
+		if (i > 0) text += separator || '\n'
 		getTextFromNode(node)
 	})
 	return text

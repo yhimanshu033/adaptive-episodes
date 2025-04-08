@@ -22,3 +22,12 @@ export function downloadFile(url: string, filename: string) {
 			console.error('There was a problem with the download operation:', error)
 		})
 }
+
+export function downloadBlobUrl(objectURL: string, filename: string) {
+	const link = document.createElement('a')
+	link.href = objectURL
+	link.download = filename
+	document.body.appendChild(link)
+	link.click()
+	document.body.removeChild(link)
+}
