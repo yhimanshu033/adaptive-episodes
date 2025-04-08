@@ -15,15 +15,19 @@ export default function useStoryExplorer({
 	end: number
 	start: number
 }) {
-	const { store, setActiveExplorerMode, setActiveExplorerActions } =
-		useAIStore()
+	const {
+		store,
+		setActiveExplorerMode,
+		setActiveExplorerActions,
+		setInputFocus,
+	} = useAIStore()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
 	const activeExplorerActions = store((state) => state.activeExplorerActions)
 	const currentAction = activeExplorerActions[activeExplorerMode]
+	const inputFocus = store((state) => state.inputFocus)
 	const [content, setContent] = useState<
 		PlotExplorerApiResponse['data'] | undefined
 	>([])
-	const [promptInput, setPromptInput] = useState<string>('')
 	const [taskId, setTaskId] = useState<string>('')
 
 	const {
@@ -31,7 +35,7 @@ export default function useStoryExplorer({
 		isMetadataLoading,
 	} = usePlotOutlineQuery({
 		action: currentAction,
-		instruction: promptInput,
+		instruction: inputFocus || '',
 		end,
 		start,
 		activeExplorerMode,
@@ -95,8 +99,8 @@ export default function useStoryExplorer({
 
 	return {
 		content,
-		promptInput,
-		setPromptInput,
+		inputFocus,
+		setInputFocus,
 		handleTabChange,
 		activeExplorerMode,
 		currentAction,

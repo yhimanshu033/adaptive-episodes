@@ -107,12 +107,10 @@ export function ColorDropdownMenuItems({
 			className={cn('grid grid-cols-[repeat(10,1fr)] gap-1', className)}
 			{...props}
 		>
-			{color && (
-				<Tooltip>
-					<TooltipTrigger>{noneItem}</TooltipTrigger>
-					<TooltipContent>None</TooltipContent>
-				</Tooltip>
-			)}
+			<Tooltip>
+				<TooltipTrigger>{noneItem}</TooltipTrigger>
+				<TooltipContent>None</TooltipContent>
+			</Tooltip>
 			{colors.map(({ isBrightColor, name, value }) => (
 				<ColorDropdownMenuItem
 					name={name}

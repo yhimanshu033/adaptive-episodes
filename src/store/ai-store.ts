@@ -107,6 +107,16 @@ function useAIStore() {
 		}))
 	}
 
+	const setInputFocus = (inputFocus: AIStoreType['inputFocus']) => {
+		useAiStoreContext.setState({ inputFocus })
+	}
+
+	const setFocusConfig = (
+		explorerFocusConfig: AIStoreType['explorerFocusConfig']
+	) => {
+		useAiStoreContext.setState({ explorerFocusConfig })
+	}
+
 	return {
 		store: useAiStoreContext,
 		addMessages,
@@ -124,6 +134,8 @@ function useAIStore() {
 		removeActiveCommentExampleMap,
 		setStoryExplorerConfiguration,
 		setStoryExplorerConfigurationValue,
+		setInputFocus,
+		setFocusConfig,
 	}
 }
 

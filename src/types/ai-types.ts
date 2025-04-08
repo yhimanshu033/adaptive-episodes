@@ -117,6 +117,8 @@ export interface AIStoreType {
 		[ExplorerModeId.World]: WorldAction | string | null
 	}
 	activeExplorerMode: ExplorerModeId
+	explorerFocusConfig: EFocusSetting
+	inputFocus: string | null
 	messages: TMessage[]
 	prevValue: Value | null
 	requestedAction: EChatMode | null
@@ -161,6 +163,11 @@ export type ExplorerCategories = Array<{
 export interface PlotExplorerApiResponse {
 	data: ExplorerType[]
 	message: string
+}
+
+export enum EFocusSetting {
+	BASE_SCRIPT = 'base_script',
+	CMS = 'cms',
 }
 
 export interface TAiChatbotResponse {
