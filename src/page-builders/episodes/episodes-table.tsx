@@ -11,6 +11,7 @@ import { useEpisodeStore } from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
 	Table,
@@ -35,7 +36,7 @@ const EpisodesTable = () => {
 		limit
 	)
 	const tableData = useMemo(() => data?.results?.data ?? [], [data])
-	const { table, columnSize } = useCreateTable(tableData)
+	const { table, columnSize, isWriter } = useCreateTable(tableData)
 
 	useEffect(() => {
 		if (searchedRow && !isEpisodesLoading) {
@@ -63,6 +64,7 @@ const EpisodesTable = () => {
 		<>
 			<div className="flex gap-2">
 				<Filters
+					disabled={!isWriter}
 					table={table}
 					totalEpisodes={data?.count}
 					setSearchedRow={setSearchedRow}
@@ -140,19 +142,20 @@ const EpisodesTable = () => {
 										))}
 									</TableRow>
 
-									{hoverIndex === rowIndex && (
+									{hoverIndex === rowIndex && isWriter && (
 										<TableRow className="relative border-none">
 											<TableCell className="relative p-0">
-												<div
+												<Button
 													title="Invent episode"
-													className="absolute z-10 -translate-y-1/2 cursor-pointer rounded-full bg-primary p-1"
+													className="absolute z-10 h-auto -translate-y-1/2 rounded-full bg-primary p-1"
+													disabled={!isWriter}
 													onClick={() => {
 														setIsInventOpen(true)
 														setInventIndex(rowIndex)
 													}}
 												>
 													<Plus size={12} />
-												</div>
+												</Button>
 											</TableCell>
 										</TableRow>
 									)}

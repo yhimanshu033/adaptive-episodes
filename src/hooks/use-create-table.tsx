@@ -26,6 +26,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import useProjectId from '@/providers/project-id-provider'
 import { formatDate } from '@/lib/format-date'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
@@ -40,11 +41,14 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
 		useEpisodeTable()
 
+	const { isWriter } = useProjectId()
+
 	const columns: ColumnDef<TEpisode>[] = [
 		{
 			id: EEpisodeHeaderKeys.SELECT_COL,
 			header: ({ table }) => (
 				<Checkbox
+					disabled={!isWriter}
 					checked={table.getIsAllRowsSelected()}
 					onClick={table.getToggleAllRowsSelectedHandler()}
 				/>
@@ -53,7 +57,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				!row.depth && (
 					<Checkbox
 						checked={row.getIsSelected()}
-						disabled={!row.getCanSelect()}
+						disabled={!isWriter || !row.getCanSelect()}
 						onClick={row.getToggleSelectedHandler()}
 					/>
 				),
@@ -120,7 +124,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						}
 						disabled={!isSelected && Object.keys(rowSelection).length > 0}
 					>
-						<SelectTrigger className="w-36">
+						<SelectTrigger disabled={!isWriter} className="w-36">
 							<SelectValue>{titleToStatus[latestStatus]}</SelectValue>
 						</SelectTrigger>
 						<SelectContent>
@@ -163,6 +167,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			cell: ({ row }) =>
 				row.original.props?.creation_timestamp && (
 					<Button
+						disabled={!isWriter}
 						variant="ghost"
 						size="icon"
 						onClick={() => handleDeleteEpisode(row.original.id)}
@@ -189,5 +194,5 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			expanded,
 		},
 	})
-	return { table, columnSize: columns.length }
+	return { table, columnSize: columns.length, isWriter }
 }

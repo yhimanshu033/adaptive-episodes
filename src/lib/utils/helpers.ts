@@ -191,7 +191,6 @@ export function log(data: any) {
 	console.dir(data, { depth: null })
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getDifferingKeys(
 	obj1: SaveEpisodeParams,
 	obj2: SaveEpisodeParams
