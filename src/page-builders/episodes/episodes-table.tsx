@@ -11,8 +11,8 @@ import { useEpisodeStore } from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 
+import IfElse, { Else, If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
 	Table,
 	TableBody,
@@ -53,16 +53,14 @@ const EpisodesTable = () => {
 				void rowElement.offsetWidth
 				rowElement.classList.add('animate-slow-flash')
 			}, timeoutDuration)
+
+			setSearchedRow(null)
 		}
 	}, [searchedRow, isEpisodesLoading])
 
-	useEffect(() => {
-		setSearchedRow(null)
-	}, [currentPage, search, limit])
-
 	return (
 		<>
-			<div className="flex gap-2">
+			<div className="flex gap-3">
 				<Filters
 					disabled={!isWriter}
 					table={table}
@@ -70,107 +68,112 @@ const EpisodesTable = () => {
 					setSearchedRow={setSearchedRow}
 				/>
 			</div>
-			<ScrollArea className="relative flex max-h-[48vh] w-full flex-col overflow-x-auto rounded-md border">
-				<Table>
-					<TableHeader className="sticky top-0 z-10 bg-background">
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => {
-									return (
-										<TableHead
-											key={header.id}
-											className="after:absolute after:bottom-0 after:left-0 after:w-full after:border-b after:border-border"
-										>
-											{header.isPlaceholder ? null : (
-												<div
-													className={cn(
-														header.column.getCanSort() &&
-															'flex cursor-pointer select-none items-center'
-													)}
-													{...(header.id !==
-													(EEpisodeHeaderKeys.SERIAL_NUMBER as string)
-														? {
-																onClick:
-																	header.column.getToggleSortingHandler(),
-															}
-														: {})}
-												>
-													{flexRender(
-														header.column.columnDef.header,
-														header.getContext()
-													)}
-													{{
-														asc: <ChevronUp className="ml-2 size-4" />,
-														desc: <ChevronDown className="ml-2 size-4" />,
-													}[header.column.getIsSorted() as string] ?? null}
-												</div>
-											)}
-										</TableHead>
-									)
-								})}
-							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{isEpisodesLoading ? (
-							<TableRow className="hover:bg-transparent">
-								<TableCell colSpan={columnSize + 1}>
-									<SkeletonBuilder count={5} className="h-8" />
-								</TableCell>
-							</TableRow>
-						) : table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row, rowIndex) => (
-								<React.Fragment key={row.id}>
-									<TableRow
-										id={`row-${row.id}`}
-										className={cn({ selected: row.getIsSelected() })}
+			<Table className="rounded-md border">
+				<TableHeader className="sticky top-14 z-10 bg-background">
+					{table.getHeaderGroups().map((headerGroup) => (
+						<TableRow key={headerGroup.id}>
+							{headerGroup.headers.map((header) => {
+								return (
+									<TableHead
+										key={header.id}
+										className="after:absolute after:bottom-0 after:left-0 after:w-full after:border-b after:border-border"
 									>
-										{row.getVisibleCells().map((cell) => (
-											<TableCell
-												key={cell.id}
-												onMouseEnter={
-													cell.column.id === 'select-col' && !row.depth
-														? () => setHoverIndex(rowIndex)
-														: () => setHoverIndex(null)
-												}
+										<If condition={!header.isPlaceholder}>
+											<div
+												className={cn(
+													header.column.getCanSort() &&
+														'flex cursor-pointer select-none items-center'
+												)}
+												{...(header.id !==
+												(EEpisodeHeaderKeys.SERIAL_NUMBER as string)
+													? {
+															onClick: header.column.getToggleSortingHandler(),
+														}
+													: {})}
 											>
 												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext()
+													header.column.columnDef.header,
+													header.getContext()
 												)}
-											</TableCell>
-										))}
-									</TableRow>
-
-									{hoverIndex === rowIndex && isWriter && (
-										<TableRow className="relative border-none">
-											<TableCell className="relative p-0">
-												<Button
-													title="Invent episode"
-													className="absolute z-10 h-auto -translate-y-1/2 rounded-full bg-primary p-1"
-													disabled={!isWriter}
-													onClick={() => {
-														setIsInventOpen(true)
-														setInventIndex(rowIndex)
-													}}
-												>
-													<Plus size={12} />
-												</Button>
-											</TableCell>
-										</TableRow>
-									)}
-								</React.Fragment>
-							))
-						) : (
-							<TableRow className="p-5 text-center">
+												{{
+													asc: <ChevronUp className="ml-2 size-4" />,
+													desc: <ChevronDown className="ml-2 size-4" />,
+												}[header.column.getIsSorted() as string] ?? null}
+											</div>
+										</If>
+									</TableHead>
+								)
+							})}
+						</TableRow>
+					))}
+				</TableHeader>
+				<TableBody>
+					<IfElse condition={isEpisodesLoading}>
+						<If>
+							<TableRow className="hover:bg-transparent">
 								<TableCell colSpan={columnSize + 1}>
-									<p className="text-gray-500">No Episodes found</p>
+									<SkeletonBuilder count={limit} className="h-8" />
 								</TableCell>
 							</TableRow>
-						)}
-					</TableBody>
-				</Table>
-			</ScrollArea>
+						</If>
+						<Else>
+							<IfElse condition={!!table.getRowModel().rows?.length}>
+								<If>
+									{table.getRowModel().rows.map((row, rowIndex) => (
+										<React.Fragment key={row.id}>
+											<TableRow
+												id={`row-${row.id}`}
+												className={cn({ selected: row.getIsSelected() })}
+											>
+												{row.getVisibleCells().map((cell) => (
+													<TableCell
+														key={cell.id}
+														onMouseEnter={
+															cell.column.id === 'select-col' && !row.depth
+																? () => setHoverIndex(rowIndex)
+																: () => setHoverIndex(null)
+														}
+													>
+														{flexRender(
+															cell.column.columnDef.cell,
+															cell.getContext()
+														)}
+													</TableCell>
+												))}
+											</TableRow>
+
+											{hoverIndex === rowIndex && isWriter && (
+												<TableRow className="relative border-none">
+													<TableCell className="relative p-0">
+														<Button
+															title="Invent episode"
+															className="absolute z-10 h-auto -translate-y-1/2 rounded-full bg-primary p-1"
+															disabled={!isWriter}
+															onClick={() => {
+																setIsInventOpen(true)
+																setInventIndex(rowIndex)
+															}}
+														>
+															<Plus size={12} />
+														</Button>
+													</TableCell>
+												</TableRow>
+											)}
+										</React.Fragment>
+									))}
+								</If>
+								<Else>
+									<TableRow className="p-5 text-center">
+										<TableCell colSpan={columnSize + 1}>
+											<p className="text-gray-500">No Episodes found</p>
+										</TableCell>
+									</TableRow>
+								</Else>
+							</IfElse>
+						</Else>
+					</IfElse>
+				</TableBody>
+			</Table>
 			<EpisodesPagination
 				totalPages={data ? Math.ceil(data.count / limit) : 0}
 			/>

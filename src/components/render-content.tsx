@@ -7,6 +7,7 @@ import {
 	AccordionTrigger,
 } from '@/components/ui/accordion'
 import { preProcessData } from '@/lib/utils/explorer'
+import { cn } from '@/lib/utils/helpers'
 
 import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
 
@@ -68,7 +69,9 @@ export default function RenderContent({
 
 export function StoryAccordion({
 	explorerData,
+	className,
 }: {
+	className?: string
 	explorerData: PlotExplorerApiResponse['data'] | string
 }) {
 	return typeof explorerData === 'string' ? (
@@ -78,7 +81,7 @@ export function StoryAccordion({
 			}}
 		/>
 	) : (
-		<Accordion type="multiple" className="w-full">
+		<Accordion type="multiple" className={cn('w-full', className)}>
 			{explorerData.map((data, index) => {
 				const processedData = preProcessData(data)
 				return processedData.map(({ title, content, preContent }, subIndex) => (

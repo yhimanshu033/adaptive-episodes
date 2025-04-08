@@ -63,7 +63,7 @@ export default function useFindAndReplace() {
 				if ('text' in node) {
 					const regex = new RegExp(
 						wholeWord
-							? `(\\b${genitive ? generateGenitives(search) + "'?|\\b" : ''}${search}\\b)`
+							? `(\\b(${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$))`
 							: `(${search})`,
 						caseSensitive ? 'g' : 'gi'
 					)
@@ -88,7 +88,7 @@ export default function useFindAndReplace() {
 				if ('text' in node) {
 					const regex = new RegExp(
 						wholeWord
-							? `(\\b${genitive ? generateGenitives(search) + "'?|\\b" : ''}${search}\\b)`
+							? `(\\b(${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$))`
 							: `(${search})`,
 						caseSensitive ? 'g' : 'gi'
 					)
@@ -133,7 +133,7 @@ export default function useFindAndReplace() {
 				if (!replaceEnabled || !search) return
 				const regex = new RegExp(
 					wholeWord
-						? `(\\b${genitive ? generateGenitives(search) + "'?|\\b" : ''}${search}\\b)`
+						? `(\\b(${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$))`
 						: `(${search})`,
 					caseSensitive ? 'g' : 'gi'
 				)

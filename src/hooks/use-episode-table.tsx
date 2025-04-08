@@ -198,7 +198,6 @@ const useEpisodeTable = () => {
 			episodeDeleteMutation.mutate(deleteEpisodeId)
 		}
 	}
-
 	return {
 		handleStatusChange,
 		handleConfirm,

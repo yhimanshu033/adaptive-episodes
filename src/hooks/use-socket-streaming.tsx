@@ -48,10 +48,12 @@ const SocketStreamingContext = createContext<TSocketStreamingContext>(undefined)
 
 export const SocketStreamingProvider = ({
 	children,
+	baseUrl,
 }: {
+	baseUrl?: string
 	children: React.ReactNode
 }) => {
-	const socketUrl = process.env.NEXT_PUBLIC_BACKEND_URL || ''
+	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_BACKEND_URL || ''
 	const [socket] = useState(() =>
 		io(socketUrl, {
 			autoConnect: false,
@@ -139,13 +141,14 @@ export const SocketStreamingProvider = ({
 				BodyParamsT,
 				QueryParamsT & { task_id: string }
 			>({
+				...(baseUrl ? { baseUrl } : {}),
 				...rest,
 				query: { task_id: taskId, ...(params.query as QueryParamsT) },
 			})
 
 			return taskId
 		},
-		[fetchedData]
+		[fetchedData, baseUrl]
 	)
 
 	const getStreamedResponse = useCallback(

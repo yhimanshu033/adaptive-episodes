@@ -219,6 +219,7 @@ export function ChatbotProvider({
 		removeReview()
 		setSfxStreaming('')
 		setReviewStreaming('')
+		setBlockStreaming('')
 	}
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
 		const children = originalChildren
