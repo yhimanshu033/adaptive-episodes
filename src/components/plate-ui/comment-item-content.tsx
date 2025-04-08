@@ -7,7 +7,10 @@ import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
-import { useCommentItemContentState } from '@udecode/plate-comments/react'
+import {
+	useCommentItemContentState,
+	useCommentReplies,
+} from '@udecode/plate-comments/react'
 import { formatDistance } from 'date-fns'
 import { Copy } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -40,6 +43,13 @@ export default function CommentItemContent() {
 	)
 	const { responses, taskEnded } = useSocketStreaming()
 	const { mutateAsync, data } = useCommentExampleHook()
+
+	const commentReplies = useCommentReplies(comment.id)
+
+	const replyCount = useMemo(
+		() => Object.values(commentReplies).length,
+		[commentReplies]
+	)
 
 	const key = useMemo(
 		() => data || activeCommentExampleMap[comment.id] || '',
@@ -84,6 +94,11 @@ export default function CommentItemContent() {
 				</div>
 
 				<div className="absolute -right-0.5 -top-0.5 flex items-center space-x-1">
+					{replyCount > 0 && (
+						<div className="ml-2 flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+							{replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}
+						</div>
+					)}
 					{isReplyComment ? null : <CommentResolveButton />}
 
 					{isReplyComment && user?.id === AI_USER_ID && (
