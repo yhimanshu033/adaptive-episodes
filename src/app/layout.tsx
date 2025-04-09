@@ -5,6 +5,9 @@ import { fontSans } from '@/lib/fonts'
 
 import '@/styles/globals.css'
 
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale } from 'next-intl/server'
+
 import AppProvider from '@/providers/app-provider'
 import getServerSession from '@/lib/get-access-token'
 
@@ -20,10 +23,13 @@ export default async function RootLayout({
 	children: React.ReactNode
 }>) {
 	const session = await getServerSession()
+	const locale = await getLocale()
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang={locale} suppressHydrationWarning>
 			<body className={`${fontSans.className} antialiased`}>
-				<AppProvider session={session}>{children}</AppProvider>
+				<NextIntlClientProvider>
+					<AppProvider session={session}>{children}</AppProvider>
+				</NextIntlClientProvider>
 			</body>
 		</html>
 	)
