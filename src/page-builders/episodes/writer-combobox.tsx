@@ -36,7 +36,7 @@ const WriterCombobox = ({
 	const [value, setValue] = React.useState<string>(selectedMemberId || '')
 	const { mutate } = useWriterUpdateMutation(chapterId || '')
 
-	const { isLead } = useProjectId()
+	const { isWriter } = useProjectId()
 
 	const { data } = useUserMembersQuery()
 	const members = data?.members || []
@@ -52,7 +52,7 @@ const WriterCombobox = ({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					disabled={!isLead}
+					disabled={!isWriter}
 					className={cn('w-[200px] justify-between', className)}
 				>
 					<UserInfo user={selectedMember?.user} />
@@ -70,7 +70,7 @@ const WriterCombobox = ({
 									key={member.user.id}
 									value={String(member.user.fullname)}
 									onSelect={() => {
-										if (!isLead) return
+										if (!isWriter) return
 										setValue(String(member.user.id))
 										mutate(member.user.id)
 										setOpen(false)
