@@ -1,11 +1,19 @@
 'use client'
 
-import React, { createContext, useContext, useRef, useState } from 'react'
+import React, {
+	createContext,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from 'react'
+import { API_URLS } from '@/constants/global-constants'
 import { TTS_MUTATION } from '@/constants/query-constants'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import { TElevenLabsAPIBody } from '@/types/ai-types'
+import { TElevenLabsAPIBody, TTSAPIBody } from '@/types/ai-types'
 import { TPlayingEpisode } from '@/types/episode-type'
 
 function usePlayerUtil() {
@@ -16,6 +24,8 @@ function usePlayerUtil() {
 	const [controller, setController] = useState<AbortController | null>(
 		new AbortController()
 	)
+	const { startTask, responses } = useSocketStreaming()
+	const currentTime = useRef(Date.now())
 
 	async function ttsMutation({
 		info,
@@ -26,22 +36,35 @@ function usePlayerUtil() {
 		setPlayingEpisode({
 			info,
 		})
-		// 10k credit limit not handled yet
-		const response = await fetch('/api/tts', {
-			body: JSON.stringify({ text }),
+
+		const taskId = await startTask<TTSAPIBody>({
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
+			url: API_URLS.COPILOT_TTS,
+			body: {
+				ep_text: text,
 			},
-			signal: controller?.signal,
 		})
+		currentTime.current = Date.now()
+		return taskId
+	}
 
-		if (!response.body) {
-			console.error('Stream not supported by the server')
-			return ''
-		}
+	const mutation = useMutation({
+		mutationKey: [TTS_MUTATION],
+		mutationFn: ttsMutation,
+		onSuccess: (data) => {
+			if (!data) {
+				toast.error('Error in TTS conversion')
+				setPlayingEpisode(null)
+				return
+			}
+		},
+	})
 
-		const reader = response.body.getReader()
+	const { data } = mutation
+
+	/*
+
+	const reader = response.body.getReader()
 		let done = false
 		const chunks: Uint8Array[] = []
 
@@ -75,19 +98,37 @@ function usePlayerUtil() {
 		}
 
 		return chunks
-	}
+	 */
 
-	const mutation = useMutation({
-		mutationKey: [TTS_MUTATION],
-		mutationFn: ttsMutation,
-		onSuccess: (data) => {
-			if (!data) {
-				toast.error('Error in TTS conversion')
-				setPlayingEpisode(null)
-				return
-			}
-		},
-	})
+	useEffect(() => {
+		const now = Date.now()
+		if (
+			!data ||
+			!responses[data] ||
+			!audioRef.current ||
+			now - currentTime.current < 3000
+		)
+			return
+		currentTime.current = now
+		const b64 = responses[data].join()
+
+		const audioUrl = b64
+
+		const time = audioRef.current?.currentTime
+		const isPaused = audioRef.current?.paused
+		const currentSrc = audioRef.current?.src
+
+		if (currentSrc === audioUrl) return
+		audioRef.current.src = audioUrl
+		audioRef.current.currentTime = time
+
+		if (currentSrc) {
+			audioRef.current.currentTime = time
+		}
+		if (currentSrc && isPaused) {
+			audioRef.current.pause()
+		}
+	}, [responses, data])
 
 	function customReset() {
 		if (controller) {

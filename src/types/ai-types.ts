@@ -257,3 +257,7 @@ export interface TVideoTranslationBody {
 export type TElevenLabsAPIBody = {
 	text: string
 }
+
+export type TTSAPIBody = {
+	ep_text: string
+}
