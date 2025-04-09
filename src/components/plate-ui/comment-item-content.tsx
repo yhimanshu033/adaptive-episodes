@@ -7,7 +7,10 @@ import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
-import { useCommentItemContentState } from '@udecode/plate-comments/react'
+import {
+	useCommentItemContentState,
+	useCommentReplies,
+} from '@udecode/plate-comments/react'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 import { formatDistance } from 'date-fns'
 import { Copy } from 'lucide-react'
@@ -42,6 +45,13 @@ export default function CommentItemContent() {
 	)
 	const { responses, taskEnded } = useSocketStreaming()
 	const { mutateAsync, data } = useCommentExampleHook()
+
+	const commentReplies = useCommentReplies(comment.id)
+
+	const replyCount = useMemo(
+		() => Object.values(commentReplies).length,
+		[commentReplies]
+	)
 
 	const readOnly = useEditorReadOnly()
 
@@ -89,6 +99,11 @@ export default function CommentItemContent() {
 
 				<If condition={!readOnly}>
 					<div className="absolute -right-0.5 -top-0.5 flex items-center space-x-1">
+						<If condition={replyCount > 0}>
+							<div className="ml-2 flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+								{replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}
+							</div>
+						</If>
 						<If condition={!isReplyComment}>
 							<CommentResolveButton />
 						</If>
