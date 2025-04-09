@@ -7,7 +7,7 @@ import {
 	CommentNewTextarea,
 	CommentsPlugin,
 } from '@udecode/plate-comments/react'
-import { useEditorPlugin } from '@udecode/plate-common/react'
+import { useEditorPlugin, useEditorReadOnly } from '@udecode/plate-common/react'
 
 import { buttonVariants } from '@/components/plate-ui/button'
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
@@ -20,11 +20,15 @@ export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 	const activeCommentId = useOption('activeCommentId')
 	const comments = useOption('comments')
 
+	const readOnly = useEditorReadOnly()
+
 	const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement, Element>) => {
 		if (!e.target.value && activeCommentId && !comments[activeCommentId]) {
 			setOption('activeCommentId', null)
 		}
 	}
+
+	if (readOnly) return null
 
 	return (
 		<div className="flex w-full space-x-2 p-2">

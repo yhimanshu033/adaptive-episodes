@@ -11,6 +11,7 @@ import {
 } from '@udecode/plate-common/react'
 import { TElement, TText } from '@udecode/slate'
 
+import useProjectId from '@/providers/project-id-provider'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { replaceNthInsensitive } from '@/lib/utils/ai-chatbot'
 import { downloadFile } from '@/lib/utils/client-helpers'
@@ -46,6 +47,8 @@ export default function useFindAndReplace() {
 	)
 	const { data: urlData } = useLOCSheetData()
 	const sheetURL = urlData ? urlData.loc_sheet_url : ''
+
+	const { isWriter } = useProjectId()
 
 	useEffect(() => {
 		setData(fetchedData)
@@ -274,6 +277,7 @@ export default function useFindAndReplace() {
 	}
 
 	async function handleScanEpisode() {
+		if (!isWriter) return
 		await updateLOCMutateAsync('')
 		void refetch()
 	}

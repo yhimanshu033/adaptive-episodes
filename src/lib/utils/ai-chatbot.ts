@@ -1,6 +1,6 @@
 import { nanoid, TDescendant, TText, Value } from '@udecode/plate-common'
 
-import { StoryExplorerConfiguration } from '@/types/ai-types'
+import { EChatMode, StoryExplorerConfiguration } from '@/types/ai-types'
 import { MinifiedValue } from '@/types/common'
 import { TGetMetadataResponse } from '@/types/content-types'
 import {
@@ -359,4 +359,8 @@ export function getStoryExplorerConfigArray(
 		.filter(Boolean) as string[]
 
 	return configArray
+}
+
+export function isEditingAction(action: EChatMode) {
+	return action === EChatMode.SFX || action === EChatMode.REVIEW
 }

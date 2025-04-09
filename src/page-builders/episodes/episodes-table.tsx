@@ -11,6 +11,8 @@ import { useEpisodeStore } from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 
+import IfElse, { Else, If } from '@/components/if-else'
+import { Button } from '@/components/ui/button'
 import {
 	Table,
 	TableBody,
@@ -34,7 +36,7 @@ const EpisodesTable = () => {
 		limit
 	)
 	const tableData = useMemo(() => data?.results?.data ?? [], [data])
-	const { table, columnSize } = useCreateTable(tableData)
+	const { table, columnSize, isWriter } = useCreateTable(tableData)
 
 	useEffect(() => {
 		if (searchedRow && !isEpisodesLoading) {
@@ -60,6 +62,7 @@ const EpisodesTable = () => {
 		<>
 			<div className="flex gap-3">
 				<Filters
+					disabled={!isWriter}
 					table={table}
 					totalEpisodes={data?.count}
 					setSearchedRow={setSearchedRow}
@@ -75,7 +78,7 @@ const EpisodesTable = () => {
 										key={header.id}
 										className="after:absolute after:bottom-0 after:left-0 after:w-full after:border-b after:border-border"
 									>
-										{header.isPlaceholder ? null : (
+										<If condition={!header.isPlaceholder}>
 											<div
 												className={cn(
 													header.column.getCanSort() &&
@@ -97,7 +100,7 @@ const EpisodesTable = () => {
 													desc: <ChevronDown className="ml-2 size-4" />,
 												}[header.column.getIsSorted() as string] ?? null}
 											</div>
-										)}
+										</If>
 									</TableHead>
 								)
 							})}
@@ -105,61 +108,70 @@ const EpisodesTable = () => {
 					))}
 				</TableHeader>
 				<TableBody>
-					{isEpisodesLoading ? (
-						<TableRow className="hover:bg-transparent">
-							<TableCell colSpan={columnSize + 1}>
-								<SkeletonBuilder count={limit} className="h-8" />
-							</TableCell>
-						</TableRow>
-					) : table.getRowModel().rows?.length ? (
-						table.getRowModel().rows.map((row, rowIndex) => (
-							<React.Fragment key={row.id}>
-								<TableRow
-									id={`row-${row.id}`}
-									className={cn({ selected: row.getIsSelected() })}
-								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell
-											key={cell.id}
-											onMouseEnter={
-												cell.column.id === 'select-col' && !row.depth
-													? () => setHoverIndex(rowIndex)
-													: () => setHoverIndex(null)
-											}
-										>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext()
-											)}
-										</TableCell>
-									))}
-								</TableRow>
-
-								{hoverIndex === rowIndex && (
-									<TableRow className="relative border-none">
-										<TableCell className="relative p-0">
-											<div
-												title="Invent episode"
-												className="absolute z-10 -translate-y-1/2 cursor-pointer rounded-full bg-primary p-1"
-												onClick={() => {
-													setIsInventOpen(true)
-													setInventIndex(rowIndex)
-												}}
+					<IfElse condition={isEpisodesLoading}>
+						<If>
+							<TableRow className="hover:bg-transparent">
+								<TableCell colSpan={columnSize + 1}>
+									<SkeletonBuilder count={limit} className="h-8" />
+								</TableCell>
+							</TableRow>
+						</If>
+						<Else>
+							<IfElse condition={!!table.getRowModel().rows?.length}>
+								<If>
+									{table.getRowModel().rows.map((row, rowIndex) => (
+										<React.Fragment key={row.id}>
+											<TableRow
+												id={`row-${row.id}`}
+												className={cn({ selected: row.getIsSelected() })}
 											>
-												<Plus size={12} />
-											</div>
+												{row.getVisibleCells().map((cell) => (
+													<TableCell
+														key={cell.id}
+														onMouseEnter={
+															cell.column.id === 'select-col' && !row.depth
+																? () => setHoverIndex(rowIndex)
+																: () => setHoverIndex(null)
+														}
+													>
+														{flexRender(
+															cell.column.columnDef.cell,
+															cell.getContext()
+														)}
+													</TableCell>
+												))}
+											</TableRow>
+
+											{hoverIndex === rowIndex && isWriter && (
+												<TableRow className="relative border-none">
+													<TableCell className="relative p-0">
+														<Button
+															title="Invent episode"
+															className="absolute z-10 h-auto -translate-y-1/2 rounded-full bg-primary p-1"
+															disabled={!isWriter}
+															onClick={() => {
+																setIsInventOpen(true)
+																setInventIndex(rowIndex)
+															}}
+														>
+															<Plus size={12} />
+														</Button>
+													</TableCell>
+												</TableRow>
+											)}
+										</React.Fragment>
+									))}
+								</If>
+								<Else>
+									<TableRow className="p-5 text-center">
+										<TableCell colSpan={columnSize + 1}>
+											<p className="text-gray-500">No Episodes found</p>
 										</TableCell>
 									</TableRow>
-								)}
-							</React.Fragment>
-						))
-					) : (
-						<TableRow className="p-5 text-center">
-							<TableCell colSpan={columnSize + 1}>
-								<p className="text-gray-500">No Episodes found</p>
-							</TableCell>
-						</TableRow>
-					)}
+								</Else>
+							</IfElse>
+						</Else>
+					</IfElse>
 				</TableBody>
 			</Table>
 			<EpisodesPagination
