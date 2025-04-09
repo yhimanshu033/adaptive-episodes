@@ -3,11 +3,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
+import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/editor-constants'
 import { TComment } from '@udecode/plate-comments'
 import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
 import { computeDiff } from '@udecode/plate-diff'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
-import type { BaseRange, Range } from 'slate'
+import { type BaseRange, type Range } from 'slate'
 
 import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
 import { Selection } from '@/types/plate-types'
@@ -409,7 +410,11 @@ export function breakDownValue(ogVal: Value | string): Value {
 			for (const child of block.children) {
 				const lastBlock = newVal[newVal.length - 1]
 				if ('text' in child) {
-					if (!String(child.text).includes('\n')) {
+					const keys = Object.keys(child)
+					const shouldExclude = keys.some((k) =>
+						EXCLUDE_BREAKDOWN_KEYS.includes(k)
+					)
+					if (!String(child.text).includes('\n') || shouldExclude) {
 						if (lastBlock && lastBlock?.type === block.type && !isNewBlock) {
 							lastBlock.children.push(child) // added child to lastBlock
 						} else {
@@ -636,5 +641,56 @@ export function nodeOperation(
 			operation(child)
 		}
 	}
+	return children
+}
+
+export function deleteNodesWithStartKeys(str: string, node: TDescendant) {
+	const keys = Object.keys(node).filter((key) => key.startsWith(str))
+	keys.forEach((key) => {
+		delete node[key]
+	})
+	return node
+}
+
+export function updateNodesWithStartKeys(
+	str: string,
+	text: string,
+	node: TDescendant
+) {
+	node.text = text
+	const keys = Object.keys(node).filter((key) => key.startsWith(str))
+	keys.forEach((key) => {
+		delete node[key]
+	})
+	return node
+}
+
+export function keyNodeOperationOnce(
+	children: Value,
+	key: string,
+	foundNodeOperation: (node: TDescendant) => TDescendant,
+	nodeOperation: (node: TDescendant) => TDescendant = (node) => node
+) {
+	if (!key) return children
+
+	let found = false
+	const traverse = (node: TDescendant) => {
+		if (key in node) {
+			if (!found) {
+				node = foundNodeOperation(node)
+				found = true
+			} else {
+				node = nodeOperation(node)
+			}
+		} else if ('children' in node) {
+			;(node.children as TDescendant[]).forEach(traverse)
+		}
+	}
+
+	children.forEach((node) => {
+		if (found) return
+		traverse(node)
+	})
+
 	return children
 }

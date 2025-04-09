@@ -6,11 +6,13 @@ import Versions from '@/page-builders/plate-editor/versions'
 import useEditorExtendedStore from '@/store/extended-store'
 import { SeparatorHorizontal } from 'lucide-react'
 
+import AuthWrapper from '@/components/auth-wrapper'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
 import { Button } from '@/components/ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
 
+import { ERole } from '@/types/admin-types'
 import { EStatus } from '@/types/common'
 import { TGetEpisodeResponse } from '@/types/episode-type'
 
@@ -59,9 +61,14 @@ const EpisodeHeader = ({
 						<SeparatorHorizontal />
 					</Button>
 				)}
-				<Versions isChildEpisode={isChildEpisode} latestStatus={latestStatus} />
-				<DownloadDocxButton latestStatus={latestStatus} />
-				<UploadDocxButton latestStatus={latestStatus} />
+				<AuthWrapper role={ERole.WRITER}>
+					<Versions
+						isChildEpisode={isChildEpisode}
+						latestStatus={latestStatus}
+					/>
+					<DownloadDocxButton latestStatus={latestStatus} />
+					<UploadDocxButton latestStatus={latestStatus} />
+				</AuthWrapper>
 				<SaveEpisode />
 				<EpisodeButton direction="next" episodeId={content?.next_parent_id} />
 			</div>

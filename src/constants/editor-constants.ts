@@ -102,3 +102,5 @@ export enum farSearchModes {
 }
 
 export const SAVE_EPISODE_BUTTON_ID = 'save-episode-button'
+
+export const EXCLUDE_BREAKDOWN_KEYS = ['laser']
