@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react'
 import useLaserStore from '@/store/laser-store'
 import usePlateStore from '@/store/plate-store'
 import { ScrollArea } from '@radix-ui/react-scroll-area'
-import { TDescendant } from '@udecode/plate-common'
 import { useEditorRef } from '@udecode/plate-common/react'
 import { ArrowLeft, RotateCw } from 'lucide-react'
 import { nanoid } from 'nanoid'
@@ -10,7 +9,12 @@ import { nanoid } from 'nanoid'
 import { Button } from '@/components/plate-ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils/helpers'
-import { breakDownValue } from '@/lib/utils/plate'
+import {
+	breakDownValue,
+	deleteNodesWithStartKeys,
+	keyNodeOperationOnce,
+	updateNodesWithStartKeys,
+} from '@/lib/utils/plate'
 
 export default function FloatingLaserResponse() {
 	const {
@@ -51,61 +55,42 @@ export default function FloatingLaserResponse() {
 
 	const key = responseActive
 
-	const traverseAndReplace = useCallback(
-		(node: TDescendant, text: string) => {
-			if (!key) return
-			if (key in node) {
-				node.text = text
-				const keys = Object.keys(node).filter((key) => key.startsWith('laser'))
-				keys.forEach((key) => {
-					delete node[key]
-				})
-			} else if ('children' in node) {
-				;(node.children as TDescendant[]).forEach((child) =>
-					traverseAndReplace(child, text)
-				)
-			}
-		},
-		[key]
-	)
-
 	const onRephrase = useCallback(
 		(text: string) => {
+			if (!key) return
 			try {
 				const val = structuredClone(editor.children)
-				val.forEach((child) => traverseAndReplace(child, text))
-				editor.tf.setValue(breakDownValue(val))
+
+				const newVal = keyNodeOperationOnce(
+					val,
+					key,
+					(node) => updateNodesWithStartKeys('laser', text, node),
+					(node) => updateNodesWithStartKeys('laser', '', node)
+				)
+
+				editor.tf.setValue(breakDownValue(newVal))
 			} catch (error) {
 				console.error(error)
 			}
 		},
-		[editor, traverseAndReplace]
-	)
-
-	const traverse = useCallback(
-		(node: TDescendant) => {
-			if (!key) return
-			if (key in node) {
-				const keys = Object.keys(node).filter((key) => key.startsWith('laser'))
-				keys.forEach((key) => {
-					delete node[key]
-				})
-			} else if ('children' in node) {
-				;(node.children as TDescendant[]).forEach(traverse)
-			}
-		},
-		[key]
+		[editor, key]
 	)
 
 	const onResetLeaf = useCallback(() => {
+		if (!key) return
 		try {
 			const val = structuredClone(editor.children)
-			val.forEach(traverse)
-			editor.tf.setValue(breakDownValue(val))
+			const newVal = keyNodeOperationOnce(
+				val,
+				key,
+				(node) => deleteNodesWithStartKeys('laser', node),
+				(node) => deleteNodesWithStartKeys('laser', node)
+			)
+			editor.tf.setValue(breakDownValue(newVal))
 		} catch (error) {
 			console.error(error)
 		}
-	}, [editor, traverse])
+	}, [editor, key])
 
 	function handleAcceptRephrase() {
 		onRephrase(val)
