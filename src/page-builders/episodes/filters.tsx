@@ -22,7 +22,9 @@ const Filters = ({
 	table,
 	totalEpisodes = 0,
 	setSearchedRow,
+	disabled,
 }: {
+	disabled?: boolean
 	setSearchedRow: React.Dispatch<React.SetStateAction<number | null>>
 	table: Table<TEpisode>
 	totalEpisodes?: number
@@ -112,7 +114,7 @@ const Filters = ({
 			</Form>
 			<Button
 				size="icon"
-				disabled={Object.keys(selectedRowData).length <= 1}
+				disabled={disabled || Object.keys(selectedRowData).length <= 1}
 				onClick={() => handleMerge(selectedRowData)}
 				title="Merge episodes"
 			>
@@ -120,7 +122,7 @@ const Filters = ({
 			</Button>
 			<Button
 				size="icon"
-				disabled={selectedRowData.length !== 1}
+				disabled={disabled || selectedRowData.length !== 1}
 				onClick={() => handleUnmerge(selectedRowModel)}
 				title="Unmerge episodes"
 			>

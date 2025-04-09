@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useEffect, useMemo } from 'react'
+import React, { createContext, useCallback, useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { COPILOT_LOGO_URL, DEFAULT_USER } from '@/constants/global-constants'
@@ -9,6 +9,7 @@ import { useGlobalStore } from '@/store/global-store'
 import { SuggestionUser } from '@udecode/plate-suggestion'
 import { useShallow } from 'zustand/react/shallow'
 
+import { isAuthorized } from '@/lib/utils/helpers'
 import { getOpenedStories, setOpenedStories } from '@/lib/utils/indexed-db'
 
 import { ERole } from '@/types/admin-types'
@@ -48,6 +49,26 @@ const useProjectIdUtil = () => {
 		[data]
 	)
 
+	const isAccessible = useCallback(
+		(role: ERole) => {
+			if (!myRole) return false
+			return isAuthorized({ requiredRole: role, userRole: myRole })
+		},
+		[myRole]
+	)
+
+	const isWriter = useMemo(() => {
+		return isAccessible(ERole.WRITER)
+	}, [isAccessible])
+
+	const isLead = useMemo(() => {
+		return isAccessible(ERole.LEAD)
+	}, [isAccessible])
+
+	const isAdmin = useMemo(() => {
+		return isAccessible(ERole.ADMIN)
+	}, [isAccessible])
+
 	async function updateOpenedStories() {
 		const openedProjects = (await getOpenedStories()) || []
 		const newOpenedProjects = openedProjects
@@ -70,6 +91,10 @@ const useProjectIdUtil = () => {
 			...users,
 			...DEFAULT_USER,
 		},
+		isAccessible,
+		isWriter,
+		isLead,
+		isAdmin,
 	}
 }
 
