@@ -1,22 +1,24 @@
+import { TLocaleDict } from '@/constants/localization'
 import { BookOpen, PlusCircle, Sparkles } from 'lucide-react'
 
-export const FEATURES_LIST = [
+export const FEATURES_LIST: {
+	content: keyof TLocaleDict['landing']['features']
+	icon: typeof BookOpen
+	title: keyof TLocaleDict['landing']['features']
+}[] = [
 	{
 		icon: BookOpen,
-		title: 'Explore Stories',
-		content:
-			"Find Pocket FM's most successful stories, generate translations, and organize all drafts & versions in one place.",
+		title: 'f1_title',
+		content: 'f1_desc',
 	},
 	{
 		icon: PlusCircle,
-		title: 'Start Writing',
-		content:
-			'Write, adapt, receive feedback, and finalize your episodes for production.',
+		title: 'f2_title',
+		content: 'f2_desc',
 	},
 	{
 		icon: Sparkles,
-		title: 'AI Collaboration',
-		content:
-			"Enjoy a full suite of AI tools to enhance your storytelling and overcome writer's block.",
+		title: 'f3_title',
+		content: 'f3_desc',
 	},
-]
+] as const

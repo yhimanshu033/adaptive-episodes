@@ -9,6 +9,7 @@ import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
 import { useQuery } from '@tanstack/react-query'
 import { X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -51,6 +52,8 @@ export const useEpisodeContentUtil = () => {
 		: { episode: undefined, latestStatus: undefined }
 	const [imported, setImported] = useState(false)
 
+	const dict = useTranslations('placeholders')
+
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
 	const { setDualViewMode } = useEpisodeIdStore()
 
@@ -87,7 +90,7 @@ export const useEpisodeContentUtil = () => {
 			return resp
 		}
 		toast(
-			`Der Inhalt von Episode ${resp?.chapter?.seq_number || ''} scheint geändert zu sein`,
+			`Episode ${resp?.chapter?.seq_number || ''}: ${dict('contentChanged')}`,
 			{
 				id: episodeId,
 				action: (
@@ -109,7 +112,7 @@ export const useEpisodeContentUtil = () => {
 								toast.dismiss(episodeId)
 							}}
 						>
-							Lokal Ansehen
+							{dict('localChanges')}
 						</Button>
 						<X
 							className="absolute right-1 top-1 z-10 cursor-pointer"

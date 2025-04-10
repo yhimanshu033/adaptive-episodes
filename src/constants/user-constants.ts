@@ -1,8 +1,13 @@
+import { TLocaleDict } from '@/constants/localization'
+
 import { EProjectAccessActions } from '@/types/admin-types'
 
-export const projectAccessMessages = {
-	[EProjectAccessActions.GRANT]: 'Zum Projekt hinzugefügt!',
-	[EProjectAccessActions.REVOKE]: 'Aus dem Projekt entfernt!',
+export const projectAccessMessages: Record<
+	EProjectAccessActions,
+	keyof TLocaleDict['toasts']
+> = {
+	[EProjectAccessActions.GRANT]: 'addedToProject',
+	[EProjectAccessActions.REVOKE]: 'removedFromProject',
 }
 
 export const VALID_LOC_SHEET_FORMAT =
