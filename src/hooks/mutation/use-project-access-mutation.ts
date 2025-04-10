@@ -10,6 +10,7 @@ import { projectAccessMessages } from '@/constants/user-constants'
 import { updateProjectAccess } from '@/server-action/user-action'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { EProjectAccessActions, TProjectAccessBody } from '@/types/admin-types'
@@ -18,6 +19,8 @@ const useProjectAccessMutation = () => {
 	const { id } = useParams()
 	const { data } = useSession()
 	const queryClient = useQueryClient()
+
+	const dict = useTranslations('placeholders')
 
 	const onSuccess = async (
 		action: EProjectAccessActions,
@@ -48,7 +51,7 @@ const useProjectAccessMutation = () => {
 		mutationFn: onProjectAccessMutation,
 		onSuccess: (_, { action, body: { user_email } }) =>
 			onSuccess(action, user_email),
-		onError: () => toast.error('Etwas ist schief gelaufen!'),
+		onError: () => toast.error(dict('somethingWentWrong')),
 	})
 
 	return projectAccessMutation

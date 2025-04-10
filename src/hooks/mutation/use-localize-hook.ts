@@ -8,6 +8,7 @@ import { updateLOCSheet } from '@/server-action/localization-action'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEditorRef } from '@udecode/plate-common/react'
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import useEpisodeId from '@/providers/episode-id-provider'
@@ -98,22 +99,22 @@ export const useUpdateLOCSheetMutation = () => {
 	const { startTask, getResponse } = useSocket()
 	const queryClient = useQueryClient()
 
+	const dict = useTranslations('toasts')
+
 	const onSuccess = async (url?: string) => {
 		if (url) {
-			toast.success('URL des Lokalisierungsblatts aktualisiert!')
+			toast.success(dict('localizationSuccess'))
 			await queryClient.invalidateQueries({
 				queryKey: [LOC_SHEET_QUERY_KEY, Number(id)],
 				exact: true,
 			})
 		} else {
-			toast.success(
-				'Synchronisierte Aktualisierungen des Lokalisierungsblatts!'
-			)
+			toast.success(dict('localizationSync'))
 		}
 	}
 
 	const onError = () => {
-		toast.error('Fehler beim Aktualisieren des Lokalisierungsblatts!')
+		toast.error(dict('localizationError'))
 	}
 
 	const onUpdateLOCSheet = async (url?: string) => {

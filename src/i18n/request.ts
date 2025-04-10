@@ -1,4 +1,4 @@
-import { DICTS } from '@/constants/localization-constants'
+import DICTS from '@/constants/localization'
 import { getUserLocale } from '@/i18n/service'
 import { getRequestConfig } from 'next-intl/server'
 

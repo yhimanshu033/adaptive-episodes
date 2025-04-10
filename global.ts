@@ -1,4 +1,4 @@
-import { TLocaleDict } from '@/constants/localization-constants'
+import { TLocaleDict } from '@/constants/localization'
 
 declare module 'next-intl' {
   interface AppConfig {

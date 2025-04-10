@@ -1,4 +1,4 @@
-import { TLocaleDict } from '@/constants/localization-constants'
+import { TLocaleDict } from '@/constants/localization'
 import { BookOpen, PlusCircle, Sparkles } from 'lucide-react'
 
 export const FEATURES_LIST: {
