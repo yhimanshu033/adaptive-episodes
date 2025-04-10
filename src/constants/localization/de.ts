@@ -2,21 +2,19 @@ import { TLocaleDict } from '.'
 
 const DE_LANG: TLocaleDict = {
 	landing: {
-		title: 'Willkommen bei Pocket CoPilot',
+		title: 'Welcome to Pocket CoPilot',
 		description:
-			'Schreiben, überprüfen und lokalisieren Sie die erfolgreichen Audiogeschichten von Pocket FM mit einem kreativen KI-Assistenten.',
-		cta: 'Entdecken Sie Geschichten',
+			"Write, review, & localize Pocket FM's successful audio stories with a creative AI assistant.",
+		cta: 'Explore Stories',
 		features: {
-			title: 'Wie es funktioniert',
-			f1_title: 'Entdecken Sie Geschichten',
-			f1_desc:
-				'Finden Sie die erfolgreichsten Geschichten von Pocket FM, erstellen Sie Übersetzungen und organisieren Sie alle Entwürfe und Versionen an einem Ort.',
-			f2_title: 'Beginnen Sie mit dem Schreiben',
-			f3_title: 'KI-Zusammenarbeit',
+			title: 'How it works',
+			f1_title: 'Explore Stories',
+			f1_desc: `Find Pocket FM's most successful stories, generate translations, and organize all drafts & versions in one place.`,
+			f2_title: 'Start Writing',
+			f3_title: 'AI Collaboration',
 			f2_desc:
-				'Schreiben Sie, passen Sie an, erhalten Sie Feedback und stellen Sie Ihre Episoden für die Produktion fertig.',
-			f3_desc:
-				'Profitieren Sie von einer umfassenden Palette an KI-Tools, um Ihr Storytelling zu verbessern und Schreibblockaden zu überwinden.',
+				'Write, adapt, receive feedback, and finalize your episodes for production.',
+			f3_desc: `Enjoy a full suite of AI tools to enhance your storytelling and overcome writer's block.`,
 		},
 	},
 	notFound: {
