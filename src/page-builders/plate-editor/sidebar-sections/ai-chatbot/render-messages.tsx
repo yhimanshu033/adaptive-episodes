@@ -2,7 +2,9 @@ import React from 'react'
 import useAiChatbotMessages from '@/hooks/use-ai-chatbot-messages'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { CheckCheck, Copy, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
+import { If } from '@/components/if-else'
 import { StoryAccordion } from '@/components/render-content'
 import { Button } from '@/components/ui/button'
 import {
@@ -29,6 +31,8 @@ export default function RenderMessage({
 }) {
 	const { handleAccept } = useAiChatbotMessages()
 	const { taskEnded, responses } = useSocketStreaming()
+	const dict = useTranslations('placeholders')
+
 	if (
 		message.role === EMessenger.ASSISTANT &&
 		(message.action === EAction.CHANGES || message.action === EAction.VOICE)
@@ -96,22 +100,26 @@ export default function RenderMessage({
 								: 'bg-primary'
 						)}
 					/>
-					{taskEnded[message.taskId] &&
-						!!extract((responses[message.taskId] || []).join('')).trim()
-							.length && (
-							<Button
-								tooltip="Copy"
-								onClick={() => {
-									void navigator.clipboard.writeText(
-										extract((responses[message.taskId] || []).join(''))
-									)
-								}}
-								variant="ghost"
-								className="sticky top-1 m-1 size-6 !p-1 transition-all hover:scale-105 active:scale-75"
-							>
-								<Copy size={16} />
-							</Button>
-						)}
+					<If
+						condition={
+							taskEnded[message.taskId] &&
+							!!extract((responses[message.taskId] || []).join('')).trim()
+								.length
+						}
+					>
+						<Button
+							tooltip="Copy"
+							onClick={() => {
+								void navigator.clipboard.writeText(
+									extract((responses[message.taskId] || []).join(''))
+								)
+							}}
+							variant="ghost"
+							className="sticky top-1 m-1 size-6 !p-1 transition-all hover:scale-105 active:scale-75"
+						>
+							<Copy size={16} />
+						</Button>
+					</If>
 				</div>
 			) : (
 				<StoryAccordion
@@ -127,7 +135,7 @@ export default function RenderMessage({
 		return (
 			<div
 				dangerouslySetInnerHTML={{
-					__html: 'Denke nach...',
+					__html: dict('thinking'),
 				}}
 				className={cn(
 					'max-w-[70%] rounded-lg p-3',

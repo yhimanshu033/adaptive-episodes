@@ -30,6 +30,10 @@ export const EN_LANG = {
 		localizationLoading: 'Searching for localized names, please wait...',
 		somethingWentWrong: 'Something went wrong',
 		notesError: 'Your notes could not be added',
+		localChanges: 'Local Changes',
+		contentChanged: 'The content appears to have changed',
+		thinking: 'Thinking...',
+		example: 'Example:',
 	},
 }
 
@@ -67,6 +71,10 @@ export const DE_LANG: TLocaleDict = {
 		localizationLoading: 'Suche nach lokalisierten Namen, bitte warten...',
 		somethingWentWrong: 'Etwas ist schief gelaufen',
 		notesError: 'Ihre Notizen konnten nicht hinzugefügt werden',
+		localChanges: 'Lokal Ansehen',
+		contentChanged: 'Der Inhalt scheint geändert zu sein',
+		thinking: 'Denke nach...',
+		example: 'Beispiel:',
 	},
 }
 
