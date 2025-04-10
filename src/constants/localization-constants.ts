@@ -34,6 +34,7 @@ export const EN_LANG = {
 		contentChanged: 'The content appears to have changed',
 		thinking: 'Thinking...',
 		example: 'Example:',
+		words: 'Words',
 	},
 }
 
@@ -75,6 +76,7 @@ export const DE_LANG: TLocaleDict = {
 		contentChanged: 'Der Inhalt scheint geändert zu sein',
 		thinking: 'Denke nach...',
 		example: 'Beispiel:',
+		words: 'Worte',
 	},
 }
 

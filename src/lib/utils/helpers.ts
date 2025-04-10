@@ -72,7 +72,7 @@ export const getSelectedEpisode = (
 
 export function prettifyNumber(
 	num: number,
-	locale: string = 'de-DE', // 'en-US' for English
+	locale: string = 'de', // 'en-US' for English
 	options?: Intl.NumberFormatOptions
 ): string {
 	return new Intl.NumberFormat(locale, options).format(num)
