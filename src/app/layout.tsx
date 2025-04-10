@@ -26,7 +26,10 @@ export default async function RootLayout({
 	const locale = await getLocale()
 	return (
 		<html lang={locale} suppressHydrationWarning>
-			<body className={`${fontSans.className} antialiased`}>
+			<body
+				suppressHydrationWarning
+				className={`${fontSans.className} antialiased`}
+			>
 				<NextIntlClientProvider>
 					<AppProvider session={session}>{children}</AppProvider>
 				</NextIntlClientProvider>

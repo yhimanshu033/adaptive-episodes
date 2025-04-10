@@ -7,11 +7,13 @@ import { CheckboxDropdown } from '@/page-builders/plate-editor/sidebar-sections/
 import MessagesList from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages'
 import Suggestions from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/suggestions'
 import { Send, StopCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
 const AIChatbot = () => {
+	const dict = useTranslations('placeholders')
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const endRef = useRef<HTMLDivElement>(null)
 	const {
@@ -53,7 +55,7 @@ const AIChatbot = () => {
 					>
 						<Textarea
 							ref={textareaRef}
-							placeholder="Geben Sie Ihre Nachricht ein..."
+							placeholder={dict('enterMessage')}
 							disabled={disabled}
 							value={input}
 							onChange={(e) => setInput(e.target.value)}

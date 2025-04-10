@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { DICTS } from '@/constants/localization-constants'
+import { getUserLocale } from '@/i18n/service'
 import { getRequestConfig } from 'next-intl/server'
 
 export default getRequestConfig(async () => {
-	// Provide a static locale, fetch a user setting,
-	// read from `cookies()`, `headers()`, etc.
-	const locale = 'en'
+	const locale = await getUserLocale()
 
 	return {
 		locale,
-		messages: (await import(`../../messages/${locale}.json`)).default,
+		messages: DICTS[locale],
 	}
 })

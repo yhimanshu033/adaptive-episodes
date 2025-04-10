@@ -1,13 +1,12 @@
-'use client'
-
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils/helpers'
+import { buttonVariants, cn } from '@/lib/utils/helpers'
 
-const Hero = () => {
+const Hero = async () => {
+	const dict = await getTranslations('landing')
 	return (
 		<section className="container flex flex-1 animate-fade-in-up flex-col items-center justify-center gap-5">
 			<Image
@@ -18,17 +17,16 @@ const Hero = () => {
 				unoptimized
 			/>
 			<h1 className="font-display text-center text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
-				Welcome to Pocket CoPilot
+				{dict('title')}
 			</h1>
 			<p className="max-w-[700px] text-center text-xl font-light opacity-80 md:text-2xl">
-				Write, review, & localize Pocket FM&apos;s successful audio stories with
-				a creative AI assistant.
+				{dict('description')}
 			</p>
 			<Link
 				className={cn(buttonVariants({ size: 'lg' }), 'mt-3 text-lg')}
 				href="/projects"
 			>
-				Explore Stories
+				{dict('cta')}
 			</Link>
 		</section>
 	)

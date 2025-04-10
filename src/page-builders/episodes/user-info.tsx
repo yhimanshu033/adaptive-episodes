@@ -1,5 +1,5 @@
 import React from 'react'
-import { UNASSIGNED_LABEL } from '@/constants/episodes-constants'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -25,8 +25,10 @@ export default function UserInfo({
 		toast.success('E-Mail kopiert!')
 	}
 
+	const dict = useTranslations('common')
+
 	if (!user) {
-		return UNASSIGNED_LABEL
+		return dict('unassigned')
 	}
 
 	return (
