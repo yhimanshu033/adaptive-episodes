@@ -5,10 +5,13 @@ import {
 } from '@/constants/episodes-constants'
 import { API_URLS, roleToData } from '@/constants/global-constants'
 import { MANAGE_PROJECT } from '@/constants/route-constants'
+import { Locale } from '@/i18n/config'
+import { match } from '@formatjs/intl-localematcher'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
 import { jsonrepair } from 'jsonrepair'
+import Negotiator from 'negotiator'
 import { JWT } from 'next-auth/jwt'
 import { twMerge } from 'tailwind-merge'
 
@@ -69,7 +72,7 @@ export const getSelectedEpisode = (
 
 export function prettifyNumber(
 	num: number,
-	locale: string = 'de-DE', // 'en-US' for English
+	locale: string = 'de', // 'en-US' for English
 	options?: Intl.NumberFormatOptions
 ): string {
 	return new Intl.NumberFormat(locale, options).format(num)
@@ -462,4 +465,31 @@ export function hasToolResult(responseChunks: string[]) {
 	return responseChunks.some((chunk) =>
 		/<tool[^>]* status="result">/.test(chunk)
 	)
+}
+
+function orderLocales<AppLocales extends Locale[]>(locales: AppLocales) {
+	// Workaround for https://github.com/formatjs/formatjs/issues/4469
+	return locales.slice().sort((a, b) => b.length - a.length)
+}
+
+export function getAcceptLanguageLocale<AppLocales extends Locale[]>(
+	requestHeaders: Headers,
+	locales: AppLocales,
+	defaultLocale: Locale
+) {
+	let locale
+
+	const languages = new Negotiator({
+		headers: {
+			'accept-language': requestHeaders.get('accept-language') || undefined,
+		},
+	}).languages()
+	try {
+		const orderedLocales = orderLocales(locales)
+		locale = match(languages, orderedLocales, defaultLocale)
+	} catch {
+		console.info('invalid language')
+	}
+
+	return locale
 }

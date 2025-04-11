@@ -3,6 +3,7 @@ import { API_URLS } from '@/constants/global-constants'
 import useSocket from '@/hooks/use-socket'
 import { useMutation } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { fetchAPI, FetchResponseResult } from '@/lib/fetch-api'
@@ -22,9 +23,10 @@ import {
 
 export function useGDriveUpdateMutation() {
 	const { id } = useParams()
+	const dict = useTranslations('toasts')
 
 	const onSuccess = () => {
-		toast.success('Google Drive-Ordner aktualisiert!')
+		toast.success(dict('gdriveFolderUpdated'))
 	}
 
 	const onUpdateGDriveFolder = async (drive_folder_url: string) => {
@@ -59,6 +61,8 @@ export function useGDrivePushMutation() {
 	const { id } = useParams()
 	const { data } = useSession()
 	const { startTask, getResponse } = useSocket()
+
+	const dict = useTranslations('toasts')
 
 	async function redirectToGDriveAuth() {
 		if (!data?.user.id) {
@@ -97,13 +101,11 @@ export function useGDrivePushMutation() {
 			const resp = await getResponse<FetchResponseResult<TMessage>>(taskId)
 
 			if (resp?.error) {
-				toast.info(
-					'Warten Sie auf die Google Drive-Authentifizierung und versuchen Sie es dann erneut!'
-				)
+				toast.info(dict('gdriveAuthPrompt'))
 				await redirectToGDriveAuth()
 				return
 			}
-			toast.success('Google Drive-Ordner aktualisiert!')
+			toast.success(dict('gdriveFolderUpdated'))
 			return resp
 		} catch (error) {
 			console.log(error)

@@ -14,6 +14,7 @@ import { ListStyleType } from '@udecode/plate-indent-list'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Icons, iconVariants } from '@/components/icons'
+import IfElse, { Else, If } from '@/components/if-else'
 import { AlignDropdownMenu } from '@/components/plate-ui/align-dropdown-menu'
 import { ChatbotToolbarButton } from '@/components/plate-ui/chatbot-toggle-button'
 import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
@@ -93,7 +94,7 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 					transform: 'translateX(calc(-1px))',
 				}}
 			>
-				{!readOnly && (
+				<If condition={!readOnly}>
 					<div className="flex">
 						<ToolbarGroup noSeparator>
 							<WordCountButton />
@@ -114,35 +115,37 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 							<LineHeightDropdownMenu />
 						</ToolbarGroup>
 					</div>
-				)}
-
+				</If>
 				<div className="grow" />
-				{focusMode ? (
-					<div className="p-2">
-						<Switch
-							className="bg-primary"
-							checked={focusMode}
-							onCheckedChange={setFocusMode}
-						/>
-					</div>
-				) : (
-					<div className="flex">
-						<ToolbarGroup noSeparator>
-							<TranslationToggleButton />
-							<ChatbotToolbarButton />
-							<TtsToolbarButton />
-							<MoreDropdownMenu />
-						</ToolbarGroup>
+				<IfElse condition={focusMode}>
+					<If>
+						<div className="p-2">
+							<Switch
+								className="bg-primary"
+								checked={focusMode}
+								onCheckedChange={setFocusMode}
+							/>
+						</div>
+					</If>
+					<Else>
+						<div className="flex">
+							<ToolbarGroup noSeparator>
+								<TranslationToggleButton />
+								<ChatbotToolbarButton />
+								<TtsToolbarButton />
+								<MoreDropdownMenu />
+							</ToolbarGroup>
 
-						<ToolbarGroup>
-							<CommentToolbarButton />
-						</ToolbarGroup>
+							<ToolbarGroup>
+								<CommentToolbarButton />
+							</ToolbarGroup>
 
-						<ToolbarGroup>
-							<ModeDropdownMenu />
-						</ToolbarGroup>
-					</div>
-				)}
+							<ToolbarGroup>
+								<ModeDropdownMenu />
+							</ToolbarGroup>
+						</div>
+					</Else>
+				</IfElse>
 			</div>
 		</div>
 	)

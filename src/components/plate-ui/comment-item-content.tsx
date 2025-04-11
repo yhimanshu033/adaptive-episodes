@@ -14,6 +14,7 @@ import {
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 import { formatDistance } from 'date-fns'
 import { Copy } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useShallow } from 'zustand/react/shallow'
 
 import IfElse, { If } from '@/components/if-else'
@@ -34,6 +35,8 @@ export default function CommentItemContent() {
 		isReplyComment,
 		user: defaultUser,
 	} = useCommentItemContentState()
+
+	const dict = useTranslations('placeholders')
 
 	const { store: usePlateContextStore } = usePlateStore()
 	const isResolved = usePlateContextStore((state) => state.resolved)
@@ -134,12 +137,12 @@ export default function CommentItemContent() {
 			</div>
 			<If condition={!exampleData && !!key}>
 				<div className="flex flex-col gap-2 p-2">
-					<h2 className="font-semibold">Denke nach...</h2>
+					<h2 className="font-semibold">{dict('thinking')}</h2>
 				</div>
 			</If>
 			<If condition={!!exampleData && !taskEnded[key]}>
 				<div className="flex flex-col gap-2 p-2">
-					<h2 className="text-sm font-semibold">Beispiel:</h2>
+					<h2 className="text-sm font-semibold">{dict('example')}:</h2>
 					<p className="text-xs">{exampleData}</p>
 				</div>
 			</If>

@@ -15,6 +15,7 @@ import {
 	Search,
 	WholeWord,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import IfElse, { Else, If } from '@/components/if-else'
 import { IconLoader, Loader } from '@/components/loader'
@@ -55,6 +56,9 @@ export default function FindAndReplace() {
 
 	const { isWriter } = useProjectId()
 	const readOnly = useEditorReadOnly()
+
+	const dict = useTranslations('placeholders')
+
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
 			<h2 className="text-2xl font-bold">Localization</h2>
@@ -152,7 +156,7 @@ export default function FindAndReplace() {
 			<IfElse condition={isFetching}>
 				<If>
 					<div className="flex items-center justify-center py-12">
-						<Loader text="Suche nach lokalisierten Namen, bitte warten …" />
+						<Loader text={dict('localizationLoading')} />
 					</div>
 				</If>
 				<Else>
