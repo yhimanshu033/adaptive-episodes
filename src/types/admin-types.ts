@@ -115,6 +115,11 @@ export enum EProjectUsersHeaderKeys {
 	USER = 'user',
 }
 
+export enum EFolderType {
+	BASE_SCRIPT = 'base_script',
+	CMS = 'cms',
+}
+
 export type TAdminStoreState = {
 	addMemberQuery: string
 	deleteMemberMail: string
@@ -122,6 +127,7 @@ export type TAdminStoreState = {
 
 export type TUpdateGDriveFolderBody = {
 	drive_folder_url: string
+	user_id?: number
 }
 
 export type TUpdateGDriveFolderUrlParams = {
@@ -129,3 +135,30 @@ export type TUpdateGDriveFolderUrlParams = {
 }
 
 export type TMessageResponse = { message: string }
+
+export type TBaseScriptExtensionResponse = {
+	file_found: boolean
+	file_id: string
+	file_name: string
+	ranges: {
+		de_end: number
+		de_start: number
+		file_end: number
+		file_start: number
+		us_end: number
+		us_start: number
+	}
+}
+
+export type TBaseScriptExtensionBody = {
+	file_id: string
+	project_id: number
+	ranges: {
+		de_end: number
+		de_start: number
+		file_end: number
+		file_start: number
+		us_end: number
+		us_start: number
+	}
+}

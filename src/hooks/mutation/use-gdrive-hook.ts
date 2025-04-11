@@ -1,7 +1,8 @@
 import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
+import { STORIES_QUERY_KEY } from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -9,36 +10,57 @@ import { toast } from 'sonner'
 import { fetchAPI, FetchResponseResult } from '@/lib/fetch-api'
 
 import {
+	EFolderType,
 	TMessageResponse,
 	TUpdateGDriveFolderBody,
 	TUpdateGDriveFolderUrlParams,
 } from '@/types/admin-types'
 import { TMessage } from '@/types/ai-types'
 import {
-	TGDriveAuthResponse,
-	TGDriveAuthUrlParams,
 	TPushToGDriveBody,
 	TPushToGDriveUrlParams,
 } from '@/types/content-types'
 
+import useGDriveAuth from '../query/use-gdrive-auth'
+
 export function useGDriveUpdateMutation() {
 	const { id } = useParams()
-	const dict = useTranslations('toasts')
+	const { data } = useSession()
+	const queryClient = useQueryClient()
 
-	const onSuccess = () => {
-		toast.success(dict('gdriveFolderUpdated'))
+	const onSuccess = async (type: EFolderType) => {
+		toast.success('Google Drive-Ordner aktualisiert!')
+		if (type === EFolderType.BASE_SCRIPT) {
+			await queryClient.invalidateQueries({
+				queryKey: [STORIES_QUERY_KEY],
+			})
+		}
 	}
 
-	const onUpdateGDriveFolder = async (drive_folder_url: string) => {
+	const onUpdateGDriveFolder = async ({
+		drive_folder_url,
+		type,
+	}: {
+		drive_folder_url: string
+		type: EFolderType
+	}) => {
 		const resp = await fetchAPI<
 			TMessageResponse,
 			TUpdateGDriveFolderUrlParams,
 			TUpdateGDriveFolderBody
 		>({
 			method: 'PATCH',
-			url: API_URLS.UPDATE_GDRIVE_FOLDER,
+			url:
+				type === EFolderType.BASE_SCRIPT
+					? API_URLS.UPDATE_GDRIVE_FOLDER_BASE
+					: API_URLS.UPDATE_GDRIVE_FOLDER,
 			body: {
 				drive_folder_url,
+				...(type === EFolderType.BASE_SCRIPT
+					? {
+							user_id: Number(data?.user?.id),
+						}
+					: {}),
 			},
 			urlParams: {
 				projectId: String(id),
@@ -51,7 +73,7 @@ export function useGDriveUpdateMutation() {
 	const mutation = useMutation({
 		mutationKey: ['update-gdrive-folder'],
 		mutationFn: onUpdateGDriveFolder,
-		onSuccess,
+		onSuccess: (_, { type }) => onSuccess(type),
 	})
 
 	return mutation
@@ -59,28 +81,10 @@ export function useGDriveUpdateMutation() {
 
 export function useGDrivePushMutation() {
 	const { id } = useParams()
-	const { data } = useSession()
 	const { startTask, getResponse } = useSocket()
 
 	const dict = useTranslations('toasts')
-
-	async function redirectToGDriveAuth() {
-		if (!data?.user.id) {
-			toast.error('User not found')
-			return
-		}
-		const resp = await fetchAPI<TGDriveAuthResponse, TGDriveAuthUrlParams>({
-			method: 'GET',
-			url: API_URLS.GDRIVE_AUTH,
-			urlParams: {
-				userId: String(data?.user?.id || 1),
-			},
-		})
-
-		if (!resp.data?.auth_url) return
-
-		window.open(resp.data.auth_url, '_blank')
-	}
+	const { redirectToGDriveAuth } = useGDriveAuth()
 
 	async function onGDrivePush(body: TPushToGDriveBody) {
 		try {
