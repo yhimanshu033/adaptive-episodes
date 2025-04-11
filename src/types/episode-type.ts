@@ -283,5 +283,4 @@ export type TPlayingEpisode = {
 		episode?: string
 		img?: string
 	}
-	src: string
 }

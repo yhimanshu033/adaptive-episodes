@@ -26,6 +26,7 @@ import { ModeDropdownMenu } from '@/components/plate-ui/mode-dropdown-menu'
 import { MoreDropdownMenu } from '@/components/plate-ui/more-dropdown-menu'
 import { ToolbarGroup } from '@/components/plate-ui/toolbar'
 import TranslationToggleButton from '@/components/plate-ui/translation-toggle-button'
+import TtsToolbarButton from '@/components/plate-ui/tts-toolbar-button'
 import { TurnIntoDropdownMenu } from '@/components/plate-ui/turn-into-dropdown-menu'
 import UndoRedoButtons from '@/components/plate-ui/undo-redo-buttons'
 import { ZoomDropdownMenu } from '@/components/plate-ui/zoom-dropdown'
@@ -131,6 +132,7 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 							<ToolbarGroup noSeparator>
 								<TranslationToggleButton />
 								<ChatbotToolbarButton />
+								<TtsToolbarButton />
 								<MoreDropdownMenu />
 							</ToolbarGroup>
 

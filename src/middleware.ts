@@ -7,7 +7,7 @@ import {
 } from '@/constants/route-constants'
 import { getToken, JWT } from 'next-auth/jwt'
 
-import { projectAdminCheck } from './lib/utils/helpers'
+import { projectAdminCheck } from '@/lib/utils/helpers'
 
 const handleUIRoutes = async (req: NextRequest, jwt: JWT | null) => {
 	const auth = req.nextUrl.clone()

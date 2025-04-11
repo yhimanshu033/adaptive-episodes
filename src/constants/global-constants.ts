@@ -94,6 +94,7 @@ export const API_URLS = {
 	GDRIVE_AUTH: '/user/:userId/google-drive-auth/',
 	ELEVENLABS_TTS:
 		'https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream?output_format=mp3_44100_128',
+	COPILOT_TTS: '/aicopilot/text-to-speech',
 	GET_BASE_SCRIPT_EXTENSION:
 		'/project/:projectId/get-base-script-extension-info/',
 	EXTEND_BASE_SCRIPT: '/aicopilot/extend-base-script/',
