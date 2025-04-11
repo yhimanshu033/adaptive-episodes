@@ -5,6 +5,7 @@ import { aiInitialMessage } from '@/constants/ai-constants'
 import { DEFAULT_FONT_FAMILY } from '@/constants/editor-constants'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
 import { EpisodeContentProvider } from '@/hooks/query/use-episode-content'
+import { useTranslations } from 'next-intl'
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -86,6 +87,7 @@ export function EpisodeIdProvider({
 	children: ReactNode
 	episodeId: number
 }) {
+	const dict = useTranslations('placeholders')
 	const useEpisodeIdStoreContext = create(
 		devtools(
 			immer(() => ({ ...initialEpisodeIdState, episodeId: defaultEpisodeId }))
@@ -93,6 +95,8 @@ export function EpisodeIdProvider({
 	)
 
 	const usePlateStoreContext = create(devtools(immer(() => initialState)))
+
+	initialAiState.messages[0].content = dict('initialAiMessage')
 
 	const useAiStoreContext = create(devtools(immer(() => initialAiState)))
 

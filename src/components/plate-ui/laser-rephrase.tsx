@@ -85,21 +85,19 @@ export default function LaserRephrase({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [triggerRephrase, key, refetch])
 
+	if (data || responseActive === key) {
+		return null
+	}
+
 	return (
-		<>
-			{data || responseActive === key ? (
-				<></>
-			) : (
-				<div className="flex items-center gap-1 p-2">
-					<Button variant="ghost" size="sm" onClick={onResetLeaf}>
-						<X size={16} />
-					</Button>
-					<h4>
-						{rephraseMethods.find((m) => m.id === methodId)?.method} working...
-					</h4>
-					<Spinner size={24} />
-				</div>
-			)}
-		</>
+		<div className="flex items-center gap-1 p-2">
+			<Button variant="ghost" size="sm" onClick={onResetLeaf}>
+				<X size={16} />
+			</Button>
+			<h4>
+				{rephraseMethods.find((m) => m.id === methodId)?.method} working...
+			</h4>
+			<Spinner size={24} />
+		</div>
 	)
 }

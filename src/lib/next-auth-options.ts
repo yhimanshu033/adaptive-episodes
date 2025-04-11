@@ -2,7 +2,7 @@
 
 import { API_URLS } from '@/constants/global-constants'
 import { Account } from 'next-auth'
-import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
+import GoogleProvider from 'next-auth/providers/google'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
@@ -23,22 +23,6 @@ const authOptions = {
 		}),
 	],
 	callbacks: {
-		async signIn(params: any) {
-			const account: Account = params.account
-			const profile: GoogleProfile = params.profile
-
-			if (account.provider === 'google') {
-				if (
-					!profile.email.endsWith('@pocketfm.in') &&
-					!profile.email.endsWith('@pocketfm.com')
-				) {
-					return false
-				}
-				return true
-			}
-			return false
-		},
-
 		async session(params: any) {
 			const { session, token } = params
 			session.uid = token.uid

@@ -23,6 +23,7 @@ import {
 	useOpenState,
 } from '@/components/plate-ui/dropdown-menu'
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
+import useProjectId from '@/providers/project-id-provider'
 
 export function ModeDropdownMenu(props: DropdownMenuProps) {
 	const editorRef = useEditorRef()
@@ -31,12 +32,18 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	const openState = useOpenState()
 	const { setOption, getOption } = useEditorPlugin(SuggestionPlugin)
 
+	const { isWriter } = useProjectId()
+
 	const { store } = useCustomPlateStore()
 	const viewMode = store((state) => state.viewMode)
 
 	useEffect(() => {
+		if (!isWriter) {
+			setReadOnly(true)
+			return
+		}
 		setReadOnly(viewMode)
-	}, [viewMode, setReadOnly])
+	}, [viewMode, setReadOnly, isWriter])
 
 	const value = readOnly
 		? EditorModes.viewing
@@ -73,6 +80,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 					pressed={openState.open}
 					tooltip="Editing mode"
 					isDropdown
+					disabled={!isWriter}
 				>
 					{item[value]}
 				</ToolbarButton>
@@ -83,6 +91,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 					className="flex flex-col gap-0.5"
 					value={value}
 					onValueChange={(newValue) => {
+						if (!isWriter) return
 						setReadOnly(newValue === EditorModes.viewing)
 						setOption('isSuggesting', newValue === EditorModes.suggesting)
 

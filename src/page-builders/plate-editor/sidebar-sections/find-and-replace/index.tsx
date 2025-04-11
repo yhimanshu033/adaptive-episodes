@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { farSearchModes } from '@/constants/editor-constants'
 import useFindAndReplace from '@/hooks/use-find-and-replace'
 import AddForm from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/add-form'
+import { useEditorReadOnly } from '@udecode/plate-common/react'
 import {
 	CaseSensitive,
 	ChevronDown,
@@ -14,6 +15,7 @@ import {
 	Search,
 	WholeWord,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import IfElse, { Else, If } from '@/components/if-else'
 import { IconLoader, Loader } from '@/components/loader'
@@ -21,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
+import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/utils/helpers'
 
 export default function FindAndReplace() {
@@ -50,6 +53,12 @@ export default function FindAndReplace() {
 		handleScanEpisode,
 		updateLOCPending,
 	} = useFindAndReplace()
+
+	const { isWriter } = useProjectId()
+	const readOnly = useEditorReadOnly()
+
+	const dict = useTranslations('placeholders')
+
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
 			<h2 className="text-2xl font-bold">Localization</h2>
@@ -107,49 +116,50 @@ export default function FindAndReplace() {
 						<ChevronDown />
 					</Button>
 				</div>
-				{replaceEnabled && (
-					<>
-						<Input
-							value={replace}
-							onChange={(e) => setOptions({ replace: e.target.value })}
-							type="text"
-							placeholder="Replace with"
-							className="col-start-2 flex-1 rounded border border-gray-300 p-2"
-						/>
-						<div className="flex gap-2">
-							<Button
-								tooltip="Replace Current Selection"
-								title="replace"
-								onClick={onReplace}
-							>
-								<ReplaceIcon />{' '}
-							</Button>
-							<Button
-								tooltip="Replace All"
-								title="replace all"
-								onClick={onReplaceAll}
-							>
-								<ReplaceAllIcon />{' '}
-							</Button>
-						</div>
-					</>
-				)}
+				<If condition={replaceEnabled}>
+					<Input
+						value={replace}
+						onChange={(e) => setOptions({ replace: e.target.value })}
+						type="text"
+						placeholder="Replace with"
+						className="col-start-2 flex-1 rounded border border-gray-300 p-2"
+					/>
+					<div className="flex gap-2">
+						<Button
+							tooltip="Replace Current Selection"
+							disabled={readOnly}
+							title="replace"
+							onClick={onReplace}
+						>
+							<ReplaceIcon />{' '}
+						</Button>
+						<Button
+							tooltip="Replace All"
+							disabled={readOnly}
+							title="replace all"
+							onClick={onReplaceAll}
+						>
+							<ReplaceAllIcon />{' '}
+						</Button>
+					</div>
+				</If>
 			</div>
-			{search && (
+			<If condition={!!search}>
 				<p className="text-lg text-muted-foreground">
 					Found <span className="font-bold text-foreground">{occurrences}</span>{' '}
 					occurrences of{' '}
 					<span className="font-medium italic text-foreground">{search}</span>
 					{genitive && " and it's genitives"}
 				</p>
-			)}
+			</If>
 
-			{isFetching ? (
-				<div className="flex items-center justify-center py-12">
-					<Loader text="Suche nach lokalisierten Namen, bitte warten …" />
-				</div>
-			) : (
-				<>
+			<IfElse condition={isFetching}>
+				<If>
+					<div className="flex items-center justify-center py-12">
+						<Loader text={dict('localizationLoading')} />
+					</div>
+				</If>
+				<Else>
 					<div className={cn('flex h-full flex-col')}>
 						{localized_entities.map(
 							(localized_entity, index) =>
@@ -173,10 +183,10 @@ export default function FindAndReplace() {
 								)
 						)}
 					</div>
-				</>
-			)}
+				</Else>
+			</IfElse>
 			<div className="flex items-center justify-end gap-2">
-				<If condition={!!sheetURL}>
+				<If condition={!!sheetURL && isWriter}>
 					<Button size="icon" tooltip="Open LOC sheet" asChild>
 						<Link href={sheetURL} target="_blank" rel="noopener noreferrer">
 							<Eye />
@@ -190,7 +200,7 @@ export default function FindAndReplace() {
 					<Else>
 						<Button
 							onClick={() => void handleScanEpisode()}
-							disabled={isFetching}
+							disabled={!isWriter || isFetching}
 							className="w-fit gap-2"
 						>
 							<Search size={16} /> Scan
@@ -199,7 +209,9 @@ export default function FindAndReplace() {
 				</IfElse>
 			</div>
 			<hr />
-			<AddForm setData={setData} />
+			<If condition={isWriter}>
+				<AddForm setData={setData} />
+			</If>
 		</div>
 	)
 }
