@@ -39,7 +39,8 @@ export type FetchResponseResult<ResponseDataT = TNoParams> =
 	| {
 			data: null | ResponseDataT
 			error: Error
-			status: 0
+			message?: Record<string, string>
+			status: number
 			success: false
 	  }
 
@@ -157,11 +158,14 @@ export async function fetchAPI<
 				},
 			})
 
+			const message = (await response.json()) as Record<string, string>
+
 			return {
 				success: false,
-				status: 0,
+				status: response.status,
 				data: defaultData ?? null,
 				error: new Error(response.statusText),
+				message,
 			}
 		}
 		const responseData = (await response.json()) as ResponseDataT
