@@ -28,9 +28,12 @@ export const PLOTOUTLINE_QUERY_KEY = 'plotoutline'
 export const LOC_SHEET_QUERY_KEY = 'loc-sheet-url'
 export const TRANSLATE_VIDEO_MUTATION_KEY = 'translate-video'
 
+export const BASE_EXTENSION_QUERY_KEY = 'base-script-extension'
+
 // Mutation keys
 
 export const NOTES_MUTATION = 'update-notes'
 export const PROJECT_ACCESS_MUTATION = 'update-project-access'
+export const BASE_EXTENSION_MUTATION = 'base-script-extension-mutation'
 
 export const TTS_MUTATION = 'tts-elevenlabs'
