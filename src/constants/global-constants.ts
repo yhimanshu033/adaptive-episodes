@@ -88,11 +88,16 @@ export const API_URLS = {
 	GET_LOC_SHEET: '/project/:projectId/get-loc-spreadsheet-data/',
 	TRANSLATE_VIDEO: '/aicopilot/mp4-to-german/',
 	UPDATE_GDRIVE_FOLDER: '/project/:projectId/update-cms-ready-drive-url/',
+	UPDATE_GDRIVE_FOLDER_BASE:
+		'/project/:projectId/update-base-script-drive-url/',
 	PUSH_TO_GDRIVE: '/project/:projectId/upload-cms-ready-file/',
 	GDRIVE_AUTH: '/user/:userId/google-drive-auth/',
 	ELEVENLABS_TTS:
 		'https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream?output_format=mp3_44100_128',
 	COPILOT_TTS: '/aicopilot/text-to-speech',
+	GET_BASE_SCRIPT_EXTENSION:
+		'/project/:projectId/get-base-script-extension-info/',
+	EXTEND_BASE_SCRIPT: '/aicopilot/extend-base-script/',
 }
 
 export const INDEXED_DB_KEYS = {

@@ -19,19 +19,27 @@ import {
 import { Input } from '@/components/ui/input'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 
-const UpdateDriveFolder = () => {
+import { EFolderType } from '@/types/admin-types'
+
+const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 	const { initialStoryData } = useEpisodeTableContext()
 
-	const defaultLink = useMemo(
-		() => initialStoryData?.cms_ready_drive_folder_url || '',
-		[initialStoryData]
-	)
+	const defaultLink = useMemo(() => {
+		if (!initialStoryData) return ''
+
+		return folderType === EFolderType.BASE_SCRIPT
+			? initialStoryData.base_script_drive_folder_url || ''
+			: initialStoryData.cms_ready_drive_folder_url || ''
+	}, [folderType, initialStoryData])
 
 	const form = useUploadGDriveFolderResolver()
 	const updateGDriveFolderMutation = useGDriveUpdateMutation()
 
 	const handleSubmit = ({ link }: UploadGDriveFolderSchema) => {
-		updateGDriveFolderMutation.mutate(link)
+		updateGDriveFolderMutation.mutate({
+			drive_folder_url: link,
+			type: folderType,
+		})
 	}
 
 	const link = form.watch('link')
@@ -47,7 +55,7 @@ const UpdateDriveFolder = () => {
 		<Form {...form}>
 			<form
 				onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
-				className="flex gap-2"
+				className="flex flex-1 gap-2"
 			>
 				<FormField
 					control={form.control}
@@ -56,7 +64,7 @@ const UpdateDriveFolder = () => {
 						<FormItem className="flex-1">
 							<FormControl>
 								<Input
-									placeholder="Paste the google sheet link here"
+									placeholder="Paste the goolge drive folder link here"
 									{...field}
 								/>
 							</FormControl>

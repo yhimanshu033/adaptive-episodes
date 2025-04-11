@@ -10,7 +10,10 @@ import { toast } from 'sonner'
 import ProjectHeader from '@/components/project-header'
 import { Button } from '@/components/ui/button'
 
+import { EFolderType } from '@/types/admin-types'
+
 import AdminAlert from './admin-alert'
+import BaseScriptExtension from './base-script-extension'
 import MembersTable from './members-table'
 import UpdateLOCSheet from './update-loc-sheet'
 
@@ -71,7 +74,20 @@ const ManageProject = () => {
 							Episodes
 						</p>
 					</div>
-					<UpdateDriveFolder />
+					<UpdateDriveFolder folderType={EFolderType.CMS} />
+				</section>
+				<section className="space-y-4">
+					<div className="space-y-1">
+						<h1 className="text-xl font-bold">Base Script Extension</h1>
+						<p className="text-muted-foreground">
+							Provide the Google Drive folder link for base script extension
+							reference.
+						</p>
+					</div>
+					<div className="flex gap-2">
+						<UpdateDriveFolder folderType={EFolderType.BASE_SCRIPT} />
+						<BaseScriptExtension />
+					</div>
 				</section>
 			</div>
 			<AdminAlert />

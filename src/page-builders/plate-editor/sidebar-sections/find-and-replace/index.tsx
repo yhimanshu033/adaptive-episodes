@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { farSearchModes } from '@/constants/editor-constants'
 import useFindAndReplace from '@/hooks/use-find-and-replace'
 import AddForm from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/add-form'
-import { useEditorReadOnly } from '@udecode/plate-common/react'
 import {
 	CaseSensitive,
 	ChevronDown,
@@ -55,7 +54,6 @@ export default function FindAndReplace() {
 	} = useFindAndReplace()
 
 	const { isWriter } = useProjectId()
-	const readOnly = useEditorReadOnly()
 
 	const dict = useTranslations('placeholders')
 
@@ -127,7 +125,7 @@ export default function FindAndReplace() {
 					<div className="flex gap-2">
 						<Button
 							tooltip="Replace Current Selection"
-							disabled={readOnly}
+							disabled={!isWriter}
 							title="replace"
 							onClick={onReplace}
 						>
@@ -135,7 +133,7 @@ export default function FindAndReplace() {
 						</Button>
 						<Button
 							tooltip="Replace All"
-							disabled={readOnly}
+							disabled={!isWriter}
 							title="replace all"
 							onClick={onReplaceAll}
 						>
