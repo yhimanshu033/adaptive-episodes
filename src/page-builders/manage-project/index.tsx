@@ -4,6 +4,7 @@ import React, { useCallback } from 'react'
 import { COMMON } from '@/constants/german-constants'
 import { LOC_SHEET_SERVICE_ACCOUNT } from '@/constants/user-constants'
 import UpdateDriveFolder from '@/page-builders/manage-project/update-gdrive-folder'
+import UpdateSlackChannel from '@/page-builders/manage-project/update-slack-channel'
 import { Copy } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -88,6 +89,15 @@ const ManageProject = () => {
 						<UpdateDriveFolder folderType={EFolderType.BASE_SCRIPT} />
 						<BaseScriptExtension />
 					</div>
+				</section>
+				<section className="space-y-4">
+					<div className="space-y-1">
+						<h1 className="text-xl font-bold">Slack Notifications</h1>
+						<p className="text-muted-foreground">
+							Provide the Slack Channel ID to receive notifications.
+						</p>
+					</div>
+					<UpdateSlackChannel />
 				</section>
 			</div>
 			<AdminAlert />
