@@ -1,6 +1,6 @@
 import React from 'react'
 import useStreamedTTS from '@/hooks/mutation/use-streamed-tts'
-import { Mic } from 'lucide-react'
+import { Headphones } from 'lucide-react'
 
 import IfElse from '@/components/if-else'
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
@@ -17,7 +17,7 @@ export default function TtsToolbarButton() {
 			<IfElse
 				condition={isPending}
 				if={<Spinner className="size-4" />}
-				else={<Mic className="size-4" />}
+				else={<Headphones className="size-4" />}
 			/>
 		</ToolbarButton>
 	)
