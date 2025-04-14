@@ -98,6 +98,8 @@ export const API_URLS = {
 	GET_BASE_SCRIPT_EXTENSION:
 		'/project/:projectId/get-base-script-extension-info/',
 	EXTEND_BASE_SCRIPT: '/aicopilot/extend-base-script/',
+	UPDATE_SLACK_CHANNEL: '/project/:projectId/update-slack-channel-id/',
+	GET_SLACK_CHANNEL: '/project/:projectId/get-slack-channel-info/',
 }
 
 export const INDEXED_DB_KEYS = {
