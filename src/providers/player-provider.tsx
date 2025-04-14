@@ -1,6 +1,12 @@
 'use client'
 
-import React, { createContext, useContext, useRef, useState } from 'react'
+import React, {
+	createContext,
+	useCallback,
+	useContext,
+	useRef,
+	useState,
+} from 'react'
 import { TTS_MUTATION } from '@/constants/query-constants'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -18,6 +24,24 @@ function usePlayerUtil() {
 	const [controller, setController] = useState<AbortController | null>(
 		new AbortController()
 	)
+
+	const setAudioUrl = useCallback((chunks: Uint8Array[]) => {
+		if (!audioRef.current) return
+		const blob = new Blob(chunks, { type: 'audio/mpeg' })
+		const audioUrl = URL.createObjectURL(blob)
+		const time = audioRef.current?.currentTime
+		const isPaused = audioRef.current?.paused
+		const currentSrc = audioRef.current?.src
+		audioRef.current.src = audioUrl
+		audioRef.current.currentTime = time
+
+		if (currentSrc) {
+			audioRef.current.currentTime = time
+		}
+		if (currentSrc && isPaused) {
+			audioRef.current.pause()
+		}
+	}, [])
 
 	async function ttsMutation({
 		info,
@@ -62,24 +86,12 @@ function usePlayerUtil() {
 				const diff = currNow - prevNow
 				if (diff < 3000 && !done) continue
 				prevNow = currNow
-				const blob = new Blob(chunks, { type: 'audio/mpeg' })
-				const audioUrl = URL.createObjectURL(blob)
-
-				if (!audioRef.current) continue
-				const time = audioRef.current?.currentTime
-				const isPaused = audioRef.current?.paused
-				const currentSrc = audioRef.current?.src
-				audioRef.current.src = audioUrl
-				audioRef.current.currentTime = time
-
-				if (currentSrc) {
-					audioRef.current.currentTime = time
-				}
-				if (currentSrc && isPaused) {
-					audioRef.current.pause()
-				}
+				setAudioUrl(chunks)
 			}
+
+			setAudioUrl(chunks)
 		}
+
 		return chunks
 	}
 
@@ -93,7 +105,8 @@ function usePlayerUtil() {
 				return
 			}
 		},
-		onError: () => {
+		onError: (err) => {
+			console.error(err)
 			toast.error('Error in TTS conversion')
 			setPlayingEpisode(null)
 		},
