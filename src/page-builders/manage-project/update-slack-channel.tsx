@@ -87,7 +87,12 @@ const UpdateSlackChannel = () => {
 						</FormItem>
 					)}
 				/>
-				<Button size="icon" variant="outline" onClick={handleCopy}>
+				<Button
+					size="icon"
+					variant="outline"
+					type="button"
+					onClick={handleCopy}
+				>
 					<Copy size={16} />
 				</Button>
 				<IfElse
