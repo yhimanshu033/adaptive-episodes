@@ -1,5 +1,4 @@
 import React from 'react'
-import { COMMON } from '@/constants/german-constants'
 import { getTranslations } from 'next-intl/server'
 
 export default async function AuthSuccess() {
