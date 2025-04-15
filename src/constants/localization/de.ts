@@ -23,6 +23,7 @@ const DE_LANG: TLocaleDict = {
 	},
 	common: {
 		unassigned: 'Nicht zugewiesen',
+		copiedToClipBoard: 'In die Zwischenablage kopiert!',
 	},
 	placeholders: {
 		initialAiMessage: 'Wie kann ich dir heute beim Überarbeiten helfen',

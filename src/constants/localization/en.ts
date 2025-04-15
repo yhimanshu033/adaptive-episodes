@@ -21,6 +21,7 @@ const EN_LANG = {
 	},
 	common: {
 		unassigned: 'Unassigned',
+		copiedToClipBoard: 'Copied to clipboard!',
 	},
 	placeholders: {
 		initialAiMessage: 'How can I help you with your revision today?',
@@ -48,10 +49,10 @@ const EN_LANG = {
 		errorOccurred: 'An error has occurred!',
 		goToHomePage: 'Go to home page',
 	},
-	auth:{
+	auth: {
 		success: 'Authorization successful!',
-		uploadEpisode:'Please upload your episode to Google Drive again!'
-	}
+		uploadEpisode: 'Please upload your episode to Google Drive again!',
+	},
 }
 
 export default EN_LANG
