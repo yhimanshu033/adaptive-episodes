@@ -51,6 +51,10 @@ const DE_LANG: TLocaleDict = {
 		errorOccurred: 'Es ist ein Fehler aufgetreten !',
 		goToHomePage: 'Gehen Sie zur Startseite',
 	},
+	auth: {
+		success: 'Autorisierung erfolgreich!',
+		uploadEpisode: 'Bitte übertragen Sie Ihre Episode erneut auf Google Drive!',
+	},
 }
 
 export default DE_LANG

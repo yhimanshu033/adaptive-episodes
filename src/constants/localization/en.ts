@@ -45,9 +45,13 @@ const EN_LANG = {
 		removedFromProject: 'Removed from the project!',
 	},
 	error: {
-		errorOccurred: 'An error has occurred !',
+		errorOccurred: 'An error has occurred!',
 		goToHomePage: 'Go to home page',
 	},
+	auth:{
+		success: 'Authorization successful!',
+		uploadEpisode:'Please upload your episode to Google Drive again!'
+	}
 }
 
 export default EN_LANG
