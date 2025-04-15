@@ -104,11 +104,17 @@ export function useGDrivePushMutation() {
 
 			const resp = await getResponse<FetchResponseResult<TMessage>>(taskId)
 
-			if (resp?.error) {
+			if (resp?.status === 401) {
 				toast.info(dict('gdriveAuthPrompt'))
 				await redirectToGDriveAuth()
 				return
 			}
+
+			if (resp?.error) {
+				toast.info(dict('gdriveAccessDenied'))
+				return
+			}
+
 			toast.success(dict('gdriveFolderUpdated'))
 			return resp
 		} catch (error) {
