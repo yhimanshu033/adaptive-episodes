@@ -47,6 +47,10 @@ const DE_LANG: TLocaleDict = {
 		addedToProject: 'Zum Projekt hinzugefügt!',
 		removedFromProject: 'Aus dem Projekt entfernt!',
 	},
+	error: {
+		errorOccurred: 'Es ist ein Fehler aufgetreten !',
+		goToHomePage: 'Gehen Sie zur Startseite',
+	},
 }
 
 export default DE_LANG

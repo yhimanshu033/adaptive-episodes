@@ -44,6 +44,10 @@ const EN_LANG = {
 		addedToProject: 'Added to project!',
 		removedFromProject: 'Removed from the project!',
 	},
+	error: {
+		errorOccurred: 'An error has occurred !',
+		goToHomePage: 'Go to home page',
+	},
 }
 
 export default EN_LANG
