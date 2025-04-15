@@ -14,9 +14,3 @@ export const PROMO_PAGE = {
 	COPIED: 'In die Zwischenablage kopiert!',
 	TRANSCRIPTION_FAILED: 'Fehler beim Übersetzen des Videos!',
 }
-
-export const COMMON = {
-	COPY2CLIP: 'In die Zwischenablage kopiert!',
-	AUTH_SUCCESS: 'Autorisierung erfolgreich!',
-	PUSH_TO_DRIVE: 'Bitte übertragen Sie Ihre Episode erneut auf Google Drive!',
-}
