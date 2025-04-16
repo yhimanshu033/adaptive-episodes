@@ -32,9 +32,9 @@ export default function SuggestionLeaf({
 			{...props}
 			id={`suggestion-leaf-${leaf.suggestionId}`}
 			className={cn(
-				'relative bg-green-400/20',
+				'relative border-b-2 border-b-green-800/20 bg-green-600/40 hover:bg-green-600/80',
 				leaf.suggestionDeletion && 'italic line-through',
-				isActive && 'bg-green-400/50',
+				isActive && 'bg-green-600/80',
 				className
 			)}
 			onClick={() => {
