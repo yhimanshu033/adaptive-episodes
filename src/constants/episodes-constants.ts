@@ -1,4 +1,4 @@
-import { EStatus } from '@/types/common'
+import { ELanguage, EStatus } from '@/types/common'
 import {
 	ENotesAction,
 	SaveEpisodeParams,
@@ -12,11 +12,27 @@ export const statuses: EStatus[] = [
 	EStatus.PUBLISHED,
 ]
 
+export const languages: ELanguage[] = [
+	ELanguage.ENGLISH,
+	ELanguage.DEUTSCH,
+	ELanguage.ITALIAN,
+	ELanguage.HINDI,
+	ELanguage.SPANISH,
+]
+
 export const titleToStatus: Partial<Record<EStatus, string>> = {
 	[EStatus.FIRST_DRAFT]: '🔴 1ST DRAFT',
 	[EStatus.SECOND_DRAFT]: '🟡 REVIEW',
 	[EStatus.POLISH]: '🟠 2ND DRAFT',
 	[EStatus.PUBLISHED]: '🟢 CMS READY',
+}
+
+export const languageToTitle: Record<ELanguage, string> = {
+	[ELanguage.ENGLISH]: 'English',
+	[ELanguage.DEUTSCH]: 'Deutsch',
+	[ELanguage.ITALIAN]: 'Italian',
+	[ELanguage.HINDI]: 'Hindi',
+	[ELanguage.SPANISH]: 'Spanish',
 }
 
 export enum EpisodeActions {

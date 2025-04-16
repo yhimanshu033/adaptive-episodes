@@ -59,7 +59,7 @@ const Versions = ({
 				onValueChange={handleSelect}
 			>
 				<SelectTrigger className="gap-2">
-					<SelectValue placeholder="Version" />
+					<SelectValue className="" placeholder="Version" />
 				</SelectTrigger>
 				<SelectContent>
 					{statuses.map((status, index) => (

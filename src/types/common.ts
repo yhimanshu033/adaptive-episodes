@@ -24,6 +24,16 @@ export enum EStatus {
 	SECOND_DRAFT = '2ND_DRAFT',
 }
 
+export enum ELanguage {
+	DEUTSCH = 'Deutsch',
+	ENGLISH = 'English',
+	HINDI = 'Hindi',
+	ITALIAN = 'Italian',
+	SPANISH = 'Spanish',
+}
+
+export type TSourceLanguage = ELanguage.ENGLISH | ELanguage.HINDI
+
 export const BASE_STATUS = 'BASE'
 
 export const STATUS_ORDER = [

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { usePageState } from '@/hooks/use-page-state'
+import AdaptationDialog from '@/page-builders/episodes/adaptation-dialog'
 import { Table } from '@tanstack/react-table'
 import { Merge, Search, Split } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -112,6 +113,10 @@ const Filters = ({
 					</Button>
 				</form>
 			</Form>
+			<AdaptationDialog
+				disabled={disabled || Object.keys(selectedRowData).length <= 1}
+				selectedRowData={selectedRowData}
+			/>
 			<Button
 				size="icon"
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}

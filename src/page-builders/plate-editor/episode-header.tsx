@@ -8,6 +8,7 @@ import { SeparatorHorizontal } from 'lucide-react'
 
 import AuthWrapper from '@/components/auth-wrapper'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
+import Languages from '@/components/plate-ui/languages'
 import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
 import { Button } from '@/components/ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
@@ -61,6 +62,7 @@ const EpisodeHeader = ({
 						<SeparatorHorizontal />
 					</Button>
 				)}
+				<Languages />
 				<AuthWrapper role={ERole.WRITER}>
 					<Versions
 						isChildEpisode={isChildEpisode}

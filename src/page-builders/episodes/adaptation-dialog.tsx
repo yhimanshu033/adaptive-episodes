@@ -1,0 +1,112 @@
+import React, { useMemo, useState } from 'react'
+import { languages, languageToTitle } from '@/constants/episodes-constants'
+import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
+import { ArrowRight, CheckCircle, Languages } from 'lucide-react'
+
+import LanguageSelector from '@/components/plate-ui/language-selector'
+import SwitchCase, { Case } from '@/components/switch-case'
+import { Button } from '@/components/ui/button'
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog'
+import Spinner from '@/components/ui/spinner'
+
+import { ELanguage } from '@/types/common'
+import { TEpisode } from '@/types/episode-type'
+
+interface TAdaptationDialogProps {
+	disabled?: boolean
+	selectedRowData: TEpisode[]
+}
+export default function AdaptationDialog({
+	disabled,
+	selectedRowData,
+}: TAdaptationDialogProps) {
+	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
+		useState<ELanguage>(ELanguage.DEUTSCH)
+	const currentLanguage = ELanguage.ENGLISH
+	const selectableLanguages = languages.filter(
+		(lang) => lang !== currentLanguage
+	)
+
+	const { mutate, isPending, data, reset } = useAdaptationMutation()
+
+	const step = useMemo(() => {
+		if (data) return 3
+		if (isPending) return 2
+		return 1
+	}, [data, isPending])
+
+	return (
+		<Dialog onOpenChange={() => reset()}>
+			<DialogTrigger asChild>
+				<Button size="icon" disabled={disabled} title="Adapt episodes">
+					<Languages size={16} />
+				</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<SwitchCase value={step}>
+					<DialogHeader>
+						<DialogTitle>Adapt the selected Episodes</DialogTitle>
+						<Case value={1}>
+							<DialogDescription>
+								Please select the language you want to adapt the episodes to.
+							</DialogDescription>
+						</Case>
+						<Case value={2}>
+							<DialogDescription>
+								Please wait for task registration.
+							</DialogDescription>
+						</Case>
+						<Case value={3}>
+							<DialogDescription>
+								Task registered successfully. You can close this dialog!
+							</DialogDescription>
+						</Case>
+					</DialogHeader>
+					<Case value={1}>
+						<div className="flex w-full items-center gap-4">
+							<h4>{languageToTitle[currentLanguage]}</h4>
+							<ArrowRight size={24} />
+							<LanguageSelector
+								value={selectedAdaptingLanguage}
+								onChange={setSelectedAdaptingLanguage}
+								selectableLanguages={selectableLanguages}
+							/>
+						</div>
+						<DialogFooter className="flex justify-end">
+							<Button
+								onClick={() =>
+									mutate({
+										language: selectedAdaptingLanguage,
+										selectedRowData,
+									})
+								}
+							>
+								Adapt
+							</Button>
+						</DialogFooter>
+					</Case>
+					<Case value={2}>
+						<Spinner size={48} className="mx-auto my-10" />
+					</Case>
+					<Case value={3}>
+						<CheckCircle size={48} className="mx-auto my-4 text-green-500" />
+						<DialogFooter className="flex justify-end">
+							<DialogClose asChild>
+								<Button>Close</Button>
+							</DialogClose>
+						</DialogFooter>
+					</Case>
+				</SwitchCase>
+			</DialogContent>
+		</Dialog>
+	)
+}

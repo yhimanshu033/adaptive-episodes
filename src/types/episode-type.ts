@@ -1,7 +1,7 @@
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
 
-import { BASE_STATUS, EStatus } from '@/types/common'
+import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
 import { TNote } from '@/types/plate-types'
 
@@ -184,6 +184,7 @@ export type EpisodeIdStoreType = {
 	dualViewMode: EDualVIewMode
 	episodeId: number
 	resolvedComments: TCustomComment[]
+	selectedLanguage: ELanguage
 	selectedStatus: EStatus | undefined
 	startOverlayLoading: boolean
 }
