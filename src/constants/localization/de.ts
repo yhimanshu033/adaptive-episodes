@@ -23,6 +23,7 @@ const DE_LANG: TLocaleDict = {
 	},
 	common: {
 		unassigned: 'Nicht zugewiesen',
+		copiedToClipBoard: 'In die Zwischenablage kopiert!',
 	},
 	placeholders: {
 		initialAiMessage: 'Wie kann ich dir heute beim Überarbeiten helfen',
@@ -46,6 +47,15 @@ const DE_LANG: TLocaleDict = {
 			'Warten Sie auf die Google Drive-Authentifizierung und versuchen Sie es dann erneut!',
 		addedToProject: 'Zum Projekt hinzugefügt!',
 		removedFromProject: 'Aus dem Projekt entfernt!',
+		gdriveAccessDenied: 'Sieht aus, als hätten Sie keinen Zugriff!',
+	},
+	error: {
+		errorOccurred: 'Es ist ein Fehler aufgetreten !',
+		goToHomePage: 'Gehen Sie zur Startseite',
+	},
+	auth: {
+		success: 'Autorisierung erfolgreich!',
+		uploadEpisode: 'Bitte übertragen Sie Ihre Episode erneut auf Google Drive!',
 	},
 }
 

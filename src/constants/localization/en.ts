@@ -21,6 +21,7 @@ const EN_LANG = {
 	},
 	common: {
 		unassigned: 'Unassigned',
+		copiedToClipBoard: 'Copied to clipboard!',
 	},
 	placeholders: {
 		initialAiMessage: 'How can I help you with your revision today?',
@@ -43,6 +44,15 @@ const EN_LANG = {
 			'Wait for Google Drive authentication and then try again!',
 		addedToProject: 'Added to project!',
 		removedFromProject: 'Removed from the project!',
+		gdriveAccessDenied: "Looks like you don't have access!",
+	},
+	error: {
+		errorOccurred: 'An error has occurred!',
+		goToHomePage: 'Go to home page',
+	},
+	auth: {
+		success: 'Authorization successful!',
+		uploadEpisode: 'Please upload your episode to Google Drive again!',
 	},
 }
 

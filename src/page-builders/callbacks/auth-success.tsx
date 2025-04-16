@@ -1,11 +1,12 @@
 import React from 'react'
-import { COMMON } from '@/constants/german-constants'
+import { getTranslations } from 'next-intl/server'
 
-export default function AuthSuccess() {
+export default async function AuthSuccess() {
+	const dict = await getTranslations('auth')
 	return (
 		<div className="flex min-h-svh flex-col items-center justify-center gap-6">
-			<h2 className="text-4xl font-semibold">{COMMON.AUTH_SUCCESS}</h2>
-			<h4>{COMMON.PUSH_TO_DRIVE}</h4>
+			<h2 className="text-4xl font-semibold">{dict('success')}</h2>
+			<h4>{dict('uploadEpisode')}</h4>
 		</div>
 	)
 }

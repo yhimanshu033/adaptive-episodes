@@ -162,3 +162,17 @@ export type TBaseScriptExtensionBody = {
 		us_start: number
 	}
 }
+
+export type TGetSlackChannelParams = {
+	projectId: string
+}
+
+export type TGetSlackChannelResponse = {
+	bot_is_member: boolean
+	slack_channel_id?: string
+	slack_channel_name?: string
+}
+
+export type TUpdateSlackChannelBody = {
+	slack_channel_id: string
+}

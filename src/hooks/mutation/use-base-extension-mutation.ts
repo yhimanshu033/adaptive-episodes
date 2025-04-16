@@ -1,7 +1,10 @@
 import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
-import { BASE_EXTENSION_MUTATION } from '@/constants/query-constants'
-import { useMutation } from '@tanstack/react-query'
+import {
+	BASE_EXTENSION_MUTATION,
+	BASE_EXTENSION_QUERY_KEY,
+} from '@/constants/query-constants'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { TBaseScriptExtensionBody } from '@/types/admin-types'
@@ -11,9 +14,13 @@ import useSocket from '../use-socket'
 const useBaseExtensionMutation = () => {
 	const { startTask, getResponse } = useSocket()
 	const { id } = useParams()
+	const queryClient = useQueryClient()
 
-	const onSuccess = () => {
+	const onSuccess = async () => {
 		toast.success('Base script extension started ...')
+		await queryClient.invalidateQueries({
+			queryKey: [BASE_EXTENSION_QUERY_KEY, Number(id)],
+		})
 	}
 
 	const onBaseExtensionMutation = async (params: TBaseScriptExtensionBody) => {

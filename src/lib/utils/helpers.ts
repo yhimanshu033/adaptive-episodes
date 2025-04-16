@@ -493,3 +493,28 @@ export function getAcceptLanguageLocale<AppLocales extends Locale[]>(
 
 	return locale
 }
+
+export function splitStringByLength(input: string, maxLen: number): string[] {
+	const words = input.split(' ')
+	const result: string[] = []
+	let currentLine = ''
+
+	for (const word of words) {
+		if (word.length > maxLen) {
+			throw new Error(`Word "${word}" exceeds the max length of ${maxLen}`)
+		}
+
+		if (currentLine.length + word.length + (currentLine ? 1 : 0) <= maxLen) {
+			currentLine += (currentLine ? ' ' : '') + word
+		} else {
+			result.push(currentLine)
+			currentLine = word
+		}
+	}
+
+	if (currentLine) {
+		result.push(currentLine)
+	}
+
+	return result
+}

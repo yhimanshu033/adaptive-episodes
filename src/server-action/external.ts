@@ -20,11 +20,6 @@ export async function elevenLabsTTS(value: string) {
 		return ''
 	}
 
-	if (!response.body) {
-		console.error('Stream not supported by the server')
-		return
-	}
-
 	const reader = response.body.getReader()
 	let done = false
 	const chunks: Uint8Array[] = []
