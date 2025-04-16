@@ -11,6 +11,8 @@ import { TNoParams } from '@/types/common'
 import useSocket from '../use-socket'
 import useGDriveAuth from './use-gdrive-auth'
 
+type GetBaseResponse<T> = FetchResponseResult<T> | T
+
 const useBaseExtensionQuery = (enabled: boolean) => {
 	const { id } = useParams()
 	const { startTask, getResponse } = useSocket()
@@ -27,21 +29,27 @@ const useBaseExtensionQuery = (enabled: boolean) => {
 			urlParams: { projectId: Number(id) },
 			noCache: true,
 		})
-		const resp =
-			await getResponse<FetchResponseResult<TBaseScriptExtensionResponse>>(
-				taskId
-			)
 
-		if (!resp.success && resp.status === 401) {
-			await redirectToGDriveAuth()
+		const resp =
+			await getResponse<GetBaseResponse<TBaseScriptExtensionResponse>>(taskId)
+
+		if ('status' in resp) {
+			if (resp.status === 401) {
+				await redirectToGDriveAuth()
+			}
+			if (resp.status === 400) {
+				return {
+					message: 'Base script extension is currently running in background',
+				}
+			}
+			return resp.data
 		}
-		return resp.data
+		return resp
 	}
 	const baseExtensionQuery = useQuery({
 		queryKey: [BASE_EXTENSION_QUERY_KEY, Number(id)],
 		queryFn: getBaseExtensionData,
 		enabled,
-		gcTime: 0,
 	})
 	return baseExtensionQuery
 }
