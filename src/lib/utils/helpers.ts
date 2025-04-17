@@ -551,10 +551,9 @@ export function getUniqueAllComments(children:Value, allComments:TComment[]) {
 	if (allComments.length === cleanedComments.length) {
 		return null
 	}
-	const cleanedCommentsRecord = cleanedComments.reduce<Record<string, any>>(
+	const cleanedCommentsRecord = cleanedComments.reduce<Record<string, TComment>>(
 		(acc, comment) => {
-			const { id, ...rest } = comment
-			acc[id] = rest
+			acc[comment.id] = comment
 			return acc
 		},
 		{}
