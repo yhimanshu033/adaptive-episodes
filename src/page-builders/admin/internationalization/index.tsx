@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import Sidebar from '@/page-builders/admin/internationalization/sidebar'
 import Stories from '@/page-builders/admin/internationalization/stories'
 
 import BackButton from '@/components/back-button'
@@ -16,7 +15,6 @@ const Projects = () => {
 				</div>
 			</div>
 			<Stories />
-			<Sidebar />
 		</main>
 	)
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
+import { MOCK_EPISODE } from '@/mock-data/admin'
 import AIChatbot from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot'
 import { createPlateEditor, Plate } from '@udecode/plate-common/react'
 import { Bot } from 'lucide-react'
@@ -12,7 +13,7 @@ const Sidebar = () => {
 
 	return (
 		<Plate editor={createPlateEditor()}>
-			<ChatbotProvider>
+			<ChatbotProvider episodeContent={MOCK_EPISODE}>
 				<div className="absolute right-0 top-0 z-10 flex bg-background py-8 pl-8">
 					<Button size="icon" onClick={() => setOpen((prev) => !prev)}>
 						<Bot size={24} />

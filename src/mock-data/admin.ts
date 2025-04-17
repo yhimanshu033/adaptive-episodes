@@ -1,4 +1,5 @@
 import { Writer } from '@/types/admin-types'
+import { TEpisode, TGetEpisodeResponse } from '@/types/episode-type'
 
 export const MOCK_WRITERS: Writer[] = [
 	{
@@ -135,3 +136,65 @@ export const MOCK_RATIO_STORY = [
 	'Saving Nora',
 	'Rekindled Heartache',
 ]
+
+export const MOCK_CHAPTER: TEpisode = {
+	chapter_title: 'The Beginning of Everything',
+	comments: 'This chapter introduces the main character and sets the tone.',
+	context: 'Set in a dystopian future where AI governs society.',
+	create_time: '2025-04-17T10:00:00Z',
+	file_url: 'https://example.com/files/episode1.txt',
+	id: 1,
+	is_deleted: false,
+	latest_version: 3,
+	original_seq_number: 1,
+	parent: null,
+	project: 101,
+	props: {
+		comments: [],
+		creation_timestamp: 1713342000,
+		llm_memories: {
+			summary: 'Introduces the protagonist and dystopian world setup.',
+			beatsheet: '',
+			context: '',
+			loglines: '',
+		},
+		merged_chapter_ids: [],
+		notes: [],
+		original_chapters: [
+			{
+				chapter_title: 'Old Chapter 1',
+				comments: null,
+				context: null,
+				create_time: '2024-12-01T08:00:00Z',
+				file_url: 'https://example.com/files/old1.txt',
+				id: 99,
+				is_deleted: false,
+				latest_version: 1,
+				original_seq_number: 1,
+				parent: null,
+				project: 101,
+				seq_number: 1,
+				status: 'BASE',
+				translation_url: null,
+				type: 'draft',
+				update_time: '2024-12-01T08:30:00Z',
+				word_count: 1100,
+			},
+		],
+	},
+	seq_number: 1,
+	status: 'BASE',
+	translation_url: 'https://example.com/files/episode1_fr.txt',
+	type: 'main',
+	update_time: '2025-04-17T12:00:00Z',
+	word_count: 2500,
+	writer: 200,
+}
+
+export const MOCK_EPISODE: TGetEpisodeResponse = {
+	chapter: MOCK_CHAPTER,
+	next_parent_id: null,
+	previous_parent_id: null,
+	text: 'Dies ist der Text der Episode.',
+	translation_text: 'This is the text of the episode.',
+}
