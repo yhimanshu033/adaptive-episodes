@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import {
 	BaseCommentsPlugin,
 	getCommentKey,
@@ -14,7 +14,6 @@ import {
 	useEditorState,
 } from '@udecode/plate-common/react'
 
-import { getUniqueAllComments } from '@/lib/utils/helpers'
 import { addUnresolvedCommentInChildren } from '@/lib/utils/plate'
 
 import { TCustomComment } from '@/types/editor-types'
@@ -95,15 +94,6 @@ export default function useComments() {
 		},
 		[children, setOptions, tf, commentsOption]
 	)
-
-	useEffect(() => {
-		const cleanedCommentsRecord = getUniqueAllComments(children, allComments)
-		if (cleanedCommentsRecord) {
-			setOptions({
-				comments: cleanedCommentsRecord,
-			})
-		}
-	}, [allComments, children])
 
 	return {
 		allComments,

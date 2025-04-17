@@ -12,7 +12,11 @@ import { useShallow } from 'zustand/react/shallow'
 
 import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import { setValue } from '@/lib/utils/indexed-db'
-import { clearLasers, getWordCount } from '@/lib/utils/plate'
+import {
+	clearLasers,
+	getUniqueAllComments,
+	getWordCount,
+} from '@/lib/utils/plate'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
@@ -36,7 +40,7 @@ export function SavingContextProvider({
 }) {
 	const { id } = useParams()
 	const { children } = useEditorState()
-	const { allComments } = useComments()
+	const { allComments, set } = useComments()
 	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()
 	const {
 		store: useEpisodeIdStoreContext,
@@ -57,11 +61,16 @@ export function SavingContextProvider({
 	)
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 
+	const { cleanedComments, cleanedCommentsRecord } = useMemo(
+		() => getUniqueAllComments(children, allComments),
+		[allComments, children]
+	)
+
 	const pathname = usePathname()
 	const isSaved = useMemo(() => {
 		if (forceSave) return false
 		const currentChildren = JSON.stringify(children)
-		const currentComments = JSON.stringify(allComments)
+		const currentComments = JSON.stringify(cleanedComments)
 		const currentResolvedComments = JSON.stringify(resolvedComments)
 		const storedResolvedComments =
 			savedResolvedCommentsRef.current === JSON.stringify([])
@@ -78,7 +87,7 @@ export function SavingContextProvider({
 		)
 	}, [
 		children,
-		allComments,
+		cleanedComments,
 		currentTitle,
 		data?.chapter,
 		forceSave,
@@ -96,9 +105,14 @@ export function SavingContextProvider({
 				setStartOverlayLoading(true)
 			}
 			try {
+				if (cleanedComments.length !== allComments.length) {
+					set({
+						comments: cleanedCommentsRecord,
+					})
+				}
 				const word_count = getWordCount(children)
 				savedRef.current = JSON.stringify(children)
-				savedCommentsRef.current = JSON.stringify(allComments)
+				savedCommentsRef.current = JSON.stringify(cleanedComments)
 				savedTitleRef.current = currentTitle
 				setForceSave(false)
 				const clearedLaser = clearLasers(children)
@@ -113,7 +127,7 @@ export function SavingContextProvider({
 					word_count,
 					props: {
 						...data?.chapter.props,
-						comments: allComments,
+						comments: cleanedComments,
 						resolvedComments,
 					},
 					chapter_title: currentTitle || data?.chapter.chapter_title,
@@ -133,7 +147,7 @@ export function SavingContextProvider({
 					chapterId,
 					text,
 					word_count,
-					comments: allComments,
+					comments: cleanedComments,
 					prevProps: data?.chapter.props,
 					resolvedComments,
 					chapter_title: currentTitle || data?.chapter.chapter_title,
@@ -147,11 +161,14 @@ export function SavingContextProvider({
 			}
 		},
 		[
+			set,
 			data?.chapter,
 			isSaved,
 			setStartOverlayLoading,
 			children,
+			cleanedComments,
 			allComments,
+			cleanedCommentsRecord,
 			currentTitle,
 			id,
 			resolvedComments,
@@ -174,7 +191,7 @@ export function SavingContextProvider({
 			text,
 			props: {
 				...data?.chapter.props,
-				comments: allComments,
+				comments: cleanedComments,
 				resolvedComments,
 			},
 			chapter_title: currentTitle || data?.chapter.chapter_title,
@@ -186,7 +203,7 @@ export function SavingContextProvider({
 	}, [
 		id,
 		children,
-		allComments,
+		cleanedComments,
 		data?.chapter,
 		currentTitle,
 		pathname,
@@ -200,10 +217,10 @@ export function SavingContextProvider({
 	}, [data?.chapter, pathname, id])
 
 	useEffect(() => {
-		if (savedCommentsRef.current !== JSON.stringify(allComments)) {
+		if (savedCommentsRef.current !== JSON.stringify(cleanedComments)) {
 			void handleSave()
 		}
-	}, [allComments, handleSave, currentTitle])
+	}, [cleanedComments, handleSave, currentTitle])
 
 	useEffect(() => {
 		const handleBeforeUnload = () => {
@@ -241,7 +258,7 @@ export function SavingContextProvider({
 	}, [
 		isSaved,
 		children,
-		allComments,
+		cleanedComments,
 		currentTitle,
 		handleRemoveGlobalStore,
 		handleSaveGlobalStore,

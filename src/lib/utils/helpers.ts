@@ -7,8 +7,6 @@ import { API_URLS, roleToData } from '@/constants/global-constants'
 import { MANAGE_PROJECT } from '@/constants/route-constants'
 import { Locale } from '@/i18n/config'
 import { match } from '@formatjs/intl-localematcher'
-import { Value } from '@udecode/plate'
-import { TComment } from '@udecode/plate-comments'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
@@ -519,43 +517,4 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	}
 
 	return result
-}
-
-export function getUniqueAllComments(children: Value, allComments: TComment[]) {
-	if (!children || !allComments) return null
-
-	const uniqueChildrenCommentIds = children
-		.map((obj) => {
-			const child = obj.children?.[0]
-			if (child?.comment === true) {
-				const commentKey = Object.keys(child).find((key) =>
-					key.startsWith('comment_')
-				)
-				if (commentKey) {
-					return commentKey.replace('comment_', '')
-				}
-			}
-			return null
-		})
-		.filter(Boolean)
-
-	let cleanedComments: TComment[] = []
-
-	uniqueChildrenCommentIds.forEach((id) => {
-		const uniqueCommentObjs = allComments.filter(
-			(c) => c.id === id || c.parentId === id
-		)
-		cleanedComments = [...uniqueCommentObjs]
-	})
-
-	if (allComments.length === cleanedComments.length) {
-		return null
-	}
-	const cleanedCommentsRecord = cleanedComments.reduce<
-		Record<string, TComment>
-	>((acc, comment) => {
-		acc[comment.id] = comment
-		return acc
-	}, {})
-	return cleanedCommentsRecord
 }
