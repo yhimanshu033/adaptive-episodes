@@ -23,7 +23,7 @@ const ManageProject = () => {
 	const handleCopy = useCallback(() => {
 		void navigator.clipboard.writeText(LOC_SHEET_SERVICE_ACCOUNT)
 		toast.info(dict('copiedToClipBoard'))
-	}, [])
+	}, [dict])
 
 	return (
 		<main id="edit-roles-page" className="flex flex-1 flex-col">

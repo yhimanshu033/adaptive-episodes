@@ -694,3 +694,36 @@ export function keyNodeOperationOnce(
 
 	return children
 }
+
+export function getUniqueAllComments(children: Value, allComments: TComment[]) {
+	const uniqueChildrenCommentIds: Record<string, boolean> = {}
+
+	function traverse(child: TDescendant) {
+		if (child.comment) {
+			const keys = Object.keys(child)
+			const commentKey = keys.find((key) => key.startsWith('comment_'))
+			const commentId = commentKey?.replace('comment_', '')
+			if (!commentId) return
+			uniqueChildrenCommentIds[commentId] = true
+		}
+		if (child.children) {
+			;(child.children as TDescendant[]).forEach((c) => traverse(c))
+		}
+	}
+
+	structuredClone(children).forEach((node) => {
+		traverse(node)
+	})
+
+	const cleanedComments: TComment[] = allComments.filter(
+		(comment) =>
+			uniqueChildrenCommentIds[comment.id] ||
+			(comment.parentId && uniqueChildrenCommentIds[comment.parentId])
+	)
+
+	const cleanedCommentsRecord = cleanedComments.reduce<
+		Record<string, TComment>
+	>((acc, comment) => ({ ...acc, [comment.id]: comment }), {})
+
+	return { cleanedCommentsRecord, cleanedComments }
+}
