@@ -29,6 +29,8 @@ import {
 	TGetEpisodesResponse,
 } from '@/types/episode-type'
 import { TGetStoriesResponse } from '@/types/story-types'
+import { Value } from '@udecode/plate'
+import { TComment } from '@udecode/plate-comments'
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
@@ -517,4 +519,45 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	}
 
 	return result
+}
+
+export function getUniqueAllComments(children:Value, allComments:TComment[]) {
+	if (!children || !allComments) return null
+
+	const uniqueChildrenCommentIds = children
+		.map((obj) => {
+			const child = obj.children?.[0]
+			if (child?.comment === true) {
+				const commentKey = Object.keys(child).find((key) =>
+					key.startsWith('comment_')
+				)
+				if (commentKey) {
+					return commentKey.replace('comment_', '')
+				}
+			}
+			return null
+		})
+		.filter(Boolean)
+
+	let cleanedComments: TComment[] = []
+
+	uniqueChildrenCommentIds.forEach((id) => {
+		const uniqueCommentObjs = allComments.filter(
+			(c) => c.id === id || c.parentId === id
+		)
+		cleanedComments = [...uniqueCommentObjs]
+	})
+
+	if (allComments.length === cleanedComments.length) {
+		return null
+	}
+	const cleanedCommentsRecord = cleanedComments.reduce<Record<string, any>>(
+		(acc, comment) => {
+			const { id, ...rest } = comment
+			acc[id] = rest
+			return acc
+		},
+		{}
+	)
+	return cleanedCommentsRecord
 }
