@@ -1,6 +1,7 @@
 'use client'
 
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -11,6 +12,7 @@ const initialExtendedState: EditorExtendedStore = {
 	episodeMap: {},
 	extended: [],
 	episodeKeys: {},
+	episodeContentMap: {},
 }
 
 type EditorExtendedState = {
@@ -27,13 +29,23 @@ export const EditorExtendedStateProvider = ({
 	children: React.ReactNode
 	episodeId: number
 }) => {
-	const initialExtendedState: EditorExtendedStore = {
-		episodeMap: {},
-		extended: [episodeId],
-		episodeKeys: {},
+	const searchParams = useSearchParams()
+	const paramExtend = useMemo(() => searchParams.get('extend'), [searchParams])
+	const extended = useMemo(
+		() =>
+			paramExtend!
+				.split(',')
+				.map((id) => Number(id))
+				.filter((id) => !isNaN(id)) || [episodeId],
+		[paramExtend, episodeId]
+	)
+
+	const extendedState: EditorExtendedStore = {
+		...initialExtendedState,
+		extended: extended,
 	}
 	const useEpisodeExtendedStoreUtil = create(
-		devtools(immer(() => initialExtendedState))
+		devtools(immer(() => extendedState))
 	)
 	return (
 		<EditorExtendedContext.Provider value={{ useEpisodeExtendedStoreUtil }}>

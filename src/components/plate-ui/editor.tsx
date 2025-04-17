@@ -6,6 +6,7 @@ import {
 } from '@/constants/editor-constants'
 import useSaving from '@/hooks/use-saving'
 import useAIStore from '@/store/ai-store'
+import useEditorExtendedStore from '@/store/extended-store'
 import useLaserStore from '@/store/laser-store'
 import useCustomPlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
@@ -110,6 +111,8 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { children } = useEditorState()
 		const { setForceSave } = useSaving()
 
+		const { addExtendedContentMap } = useEditorExtendedStore()
+
 		const [debouncedSidebar] = useDebounceValue(
 			sidebar,
 			TRANSITION_DURATION * 2
@@ -181,6 +184,11 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			collapseSelection(editor)
 			focusEditor(editor, currentTarget)
 		}, [children, editor])
+
+		useEffect(() => {
+			addExtendedContentMap(episodeId, { children })
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [children, episodeId])
 
 		function handlePaste() {
 			isPasted.current = true

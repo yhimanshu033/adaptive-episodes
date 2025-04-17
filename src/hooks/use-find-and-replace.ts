@@ -25,6 +25,7 @@ import {
 	TLocalizePlaceArrayItem,
 	TLocalizeResponse,
 } from '@/types/ai-types'
+import { TLocalizationObject } from '@/types/editor-types'
 
 import useLOCSheetData from './query/use-loc-sheet-data'
 
@@ -282,7 +283,7 @@ export default function useFindAndReplace() {
 		void refetch()
 	}
 
-	const localized_entities = [
+	const localized_entities: TLocalizationObject = [
 		{
 			title: 'Characters',
 			entities: characters,
@@ -315,16 +316,16 @@ export default function useFindAndReplace() {
 		isPending,
 		occurrences,
 		isFetching,
-		replaceEnabled,
-		caseSensitive,
+		replaceEnabled: !!replaceEnabled,
+		caseSensitive: !!caseSensitive,
 		search,
 		ptr,
 		setOptions,
 		replace,
 		records,
 		setData,
-		wholeWord,
-		genitive,
+		wholeWord: !!wholeWord,
+		genitive: !!genitive,
 		sheetURL,
 		handleScanEpisode,
 		updateLOCPending,
