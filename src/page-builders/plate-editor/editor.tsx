@@ -50,7 +50,7 @@ export default function PlateEditor() {
 	return (
 		<Plate editor={editor}>
 			<SavingContextProvider data={content} initialForceSave={imported}>
-				<ChatbotProvider>
+				<ChatbotProvider episodeContent={content}>
 					<FocusEditorWrapper>
 						<div className="container p-4">
 							<EditorOverlayLoader />
