@@ -7,6 +7,8 @@ import { API_URLS, roleToData } from '@/constants/global-constants'
 import { MANAGE_PROJECT } from '@/constants/route-constants'
 import { Locale } from '@/i18n/config'
 import { match } from '@formatjs/intl-localematcher'
+import { Value } from '@udecode/plate'
+import { TComment } from '@udecode/plate-comments'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
@@ -29,8 +31,6 @@ import {
 	TGetEpisodesResponse,
 } from '@/types/episode-type'
 import { TGetStoriesResponse } from '@/types/story-types'
-import { Value } from '@udecode/plate'
-import { TComment } from '@udecode/plate-comments'
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
@@ -521,7 +521,7 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	return result
 }
 
-export function getUniqueAllComments(children:Value, allComments:TComment[]) {
+export function getUniqueAllComments(children: Value, allComments: TComment[]) {
 	if (!children || !allComments) return null
 
 	const uniqueChildrenCommentIds = children
@@ -551,12 +551,11 @@ export function getUniqueAllComments(children:Value, allComments:TComment[]) {
 	if (allComments.length === cleanedComments.length) {
 		return null
 	}
-	const cleanedCommentsRecord = cleanedComments.reduce<Record<string, TComment>>(
-		(acc, comment) => {
-			acc[comment.id] = comment
-			return acc
-		},
-		{}
-	)
+	const cleanedCommentsRecord = cleanedComments.reduce<
+		Record<string, TComment>
+	>((acc, comment) => {
+		acc[comment.id] = comment
+		return acc
+	}, {})
 	return cleanedCommentsRecord
 }
