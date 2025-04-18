@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
+import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
 import GlobalLocalize from '@/page-builders/plate-editor/sidebar-sections/global-localize'
 import EditorChild from '@/page-builders/plate-editor/split-editor/editor-child'
 import useEditorExtendedStore from '@/store/extended-store'
@@ -17,7 +18,7 @@ const EpisodePlateEditor = () => {
 	const extended = extendStore(useShallow((state) => state.extended))
 	const episodeMap = extendStore(useShallow((state) => state.episodeMap))
 	const searchParams = useSearchParams()
-	const localize = searchParams.get('localize')
+	const globalLocalize = searchParams.get(GLOBAL_LOCALIZE)
 
 	return (
 		<main className="flex flex-1 flex-col">
@@ -26,12 +27,12 @@ const EpisodePlateEditor = () => {
 					initialSeqNumber={episodeMap[extended[0]]?.chapter?.seq_number}
 				/>
 				<div className="flex">
-					<div className="relative">
+					<div className="relative w-full">
 						{extended.map((episodeId) => (
 							<EditorChild key={episodeId} episodeId={episodeId} />
 						))}
 					</div>
-					<If condition={!!localize}>
+					<If condition={!!globalLocalize}>
 						<GlobalLocalize />
 					</If>
 				</div>

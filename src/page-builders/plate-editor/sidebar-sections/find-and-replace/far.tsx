@@ -1,21 +1,18 @@
 import React from 'react'
-import Link from 'next/link'
 import { farSearchModes } from '@/constants/editor-constants'
 import {
 	CaseSensitive,
 	ChevronDown,
 	ChevronRight,
 	ChevronUp,
-	Eye,
 	ReplaceAllIcon,
 	ReplaceIcon,
-	Search,
 	WholeWord,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import IfElse, { Else, If } from '@/components/if-else'
-import { IconLoader, Loader } from '@/components/loader'
+import { Loader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
@@ -35,7 +32,6 @@ export interface IFindAndReplaceUIProps {
 	genitive: boolean
 	handleNext: () => void
 	handlePrev: () => void
-	handleScanEpisode: () => void
 	handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 	handleSuggestionClick: (
 		character:
@@ -56,10 +52,8 @@ export interface IFindAndReplaceUIProps {
 	replace: string
 	replaceEnabled: boolean
 	search: string
-	sheetURL: string
 	toggleReplace: () => void
 	toggleSearchMode: (mode: farSearchModes) => void
-	updateLOCPending: boolean
 	wholeWord: boolean
 }
 export default function FindAndReplaceUI({
@@ -78,15 +72,12 @@ export default function FindAndReplaceUI({
 	search,
 	toggleSearchMode,
 	wholeWord,
-	handleScanEpisode,
 	isFetching,
 	records,
 	onReplaceChange,
 	replace,
 	genitive,
 	handleSuggestionClick,
-	sheetURL,
-	updateLOCPending,
 }: IFindAndReplaceUIProps) {
 	const dict = useTranslations('placeholders')
 	return (
@@ -215,29 +206,6 @@ export default function FindAndReplaceUI({
 					</div>
 				</Else>
 			</IfElse>
-			<div className="flex items-center justify-end gap-2">
-				<If condition={!!sheetURL && isWriter}>
-					<Button size="icon" tooltip="Open LOC sheet" asChild>
-						<Link href={sheetURL} target="_blank" rel="noopener noreferrer">
-							<Eye />
-						</Link>
-					</Button>
-				</If>
-				<IfElse condition={updateLOCPending}>
-					<If>
-						<IconLoader />
-					</If>
-					<Else>
-						<Button
-							onClick={() => void handleScanEpisode()}
-							disabled={!isWriter || isFetching}
-							className="w-fit gap-2"
-						>
-							<Search size={16} /> Scan
-						</Button>
-					</Else>
-				</IfElse>
-			</div>
 		</div>
 	)
 }

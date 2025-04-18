@@ -4,6 +4,7 @@ import AddForm from '@/page-builders/plate-editor/sidebar-sections/find-and-repl
 import FindAndReplaceUI, {
 	IFindAndReplaceUIProps,
 } from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/far'
+import ReScan from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/re-scan'
 
 import { If } from '@/components/if-else'
 import useProjectId from '@/providers/project-id-provider'
@@ -43,7 +44,6 @@ export default function FindAndReplace() {
 		caseSensitive,
 		handleNext,
 		handlePrev,
-		handleScanEpisode: () => void handleScanEpisode(),
 		handleSearchChange,
 		isFetching,
 		isWriter,
@@ -61,14 +61,19 @@ export default function FindAndReplace() {
 		replace,
 		genitive,
 		handleSuggestionClick,
-		sheetURL,
-		updateLOCPending,
 	}
 
 	return (
 		<>
 			<FindAndReplaceUI {...farUiprops} />
 			<hr />
+			<ReScan
+				handleScanEpisode={() => void handleScanEpisode()}
+				isFetching={isFetching}
+				isWriter={isWriter}
+				sheetURL={sheetURL}
+				updateLOCPending={updateLOCPending}
+			/>
 			<If condition={isWriter}>
 				<AddForm setData={setData} />
 			</If>

@@ -33,8 +33,8 @@ export const EditorExtendedStateProvider = ({
 	const paramExtend = useMemo(() => searchParams.get('extend'), [searchParams])
 	const extended = useMemo(
 		() =>
-			paramExtend!
-				.split(',')
+			paramExtend
+				?.split(',')
 				.map((id) => Number(id))
 				.filter((id) => !isNaN(id)) || [episodeId],
 		[paramExtend, episodeId]

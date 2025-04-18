@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import SplitButton from '@/page-builders/plate-editor/split-editor/split-button'
 import useEditorExtendedStore from '@/store/extended-store'
-import { SeparatorHorizontal } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import useEpisodeId from '@/providers/episode-id-provider'
 
@@ -33,15 +32,11 @@ export default function ControlButtons() {
 				direction="previous"
 				episodeId={firstEpisode?.previous_parent_id}
 			/>
-			<Button
+			<SplitButton
 				tooltip="Next Episode Extension"
 				disabled={!content?.next_parent_id}
 				onClick={() => updateExtended(Number(content?.next_parent_id), 'next')}
-				size="icon"
-				variant="ghost"
-			>
-				<SeparatorHorizontal />
-			</Button>
+			/>
 			<EpisodeButton direction="next" episodeId={lastEpisode?.next_parent_id} />
 		</div>
 	)

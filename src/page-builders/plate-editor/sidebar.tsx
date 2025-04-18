@@ -55,7 +55,7 @@ const Sidebar = () => {
 					transitionDuration: `${isTransitioning ? TRANSITION_DURATION : 0}ms`,
 				}}
 				className={cn(
-					'sticky top-11 h-fit w-full max-w-full border-b bg-background-editor transition-all',
+					'sticky top-11 h-fit w-full max-w-full border-b border-r bg-background-editor transition-all',
 					!showSidebar && 'max-w-0'
 				)}
 			>

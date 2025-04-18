@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import {
+	GLOBAL_LOCALIZE,
+	SIMPLIFIED_VIEWABLE_EDITOR,
+} from '@/constants/global-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { usePageState } from '@/hooks/use-page-state'
 import { Table } from '@tanstack/react-table'
@@ -97,7 +101,7 @@ const Filters = ({
 		const extended = selectedRowData.map((episode) => episode.id).join(',')
 
 		router.push(
-			`/projects/${String(id)}/${episodeId}/editor?extend=${extended}&localize=true`
+			`/projects/${String(id)}/${episodeId}/editor?extend=${extended}&${SIMPLIFIED_VIEWABLE_EDITOR}=true&${GLOBAL_LOCALIZE}=true`
 		)
 	}, [selectedRowData, id, router])
 

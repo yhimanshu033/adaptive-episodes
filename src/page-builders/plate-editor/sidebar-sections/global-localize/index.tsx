@@ -1,21 +1,17 @@
-import React, { useMemo } from 'react'
-import useEditorExtendedStore from '@/store/extended-store'
+import React from 'react'
+import useGlobalFindAndReplace from '@/hooks/use-global-find-and-replace'
+import FindAndReplaceUI from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/far'
 
-import { getText } from '@/lib/utils/plate'
+import useProjectId from '@/providers/project-id-provider'
 
 export default function GlobalLocalize() {
-	const { store: useExtendedStore } = useEditorExtendedStore()
-	const contentMap = useExtendedStore((state) => state.episodeContentMap)
+	const props = useGlobalFindAndReplace()
 
-	const contentText = useMemo(
-		() =>
-			Object.keys(contentMap).reduce(
-				(acc, key) => acc + getText(contentMap[Number(key)].children),
-				''
-			),
-		[contentMap]
+	const { isWriter } = useProjectId()
+
+	return (
+		<div className="sticky top-0 size-fit">
+			<FindAndReplaceUI {...props} isWriter={isWriter} />
+		</div>
 	)
-
-	console.log({ contentText })
-	return <div className="w-fit"></div>
 }

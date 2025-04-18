@@ -224,6 +224,11 @@ export interface TLocalizeResponse {
 	}
 	task_id: string
 }
+export type TLocalizeArrayItem =
+	| TLocalizeCharacterArrayItem
+	| TLocalizeConceptArrayItem
+	| TLocalizePlaceArrayItem
+	| TLocalizeObjectArrayItem
 
 export interface TLocalizeUpdateRequest {
 	ls_mapping: Record<
@@ -261,3 +266,5 @@ export type TElevenLabsAPIBody = {
 export type TTSAPIBody = {
 	ep_text: string
 }
+
+export type TLocalizeBody = { project_id: string; text: string }
