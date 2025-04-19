@@ -1,8 +1,15 @@
 import { Dispatch, SetStateAction } from 'react'
 import { colorOptions } from '@/constants/global-constants'
+import { Value } from '@udecode/plate'
 import { TComment, TCommentText } from '@udecode/plate-comments'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
 
+import {
+	TLocalizeCharacterArrayItem,
+	TLocalizeConceptArrayItem,
+	TLocalizeObjectArrayItem,
+	TLocalizePlaceArrayItem,
+} from '@/types/ai-types'
 import { TGetEpisodeResponse } from '@/types/episode-type'
 
 export type TCustomComment = TComment & { node: TCommentText }
@@ -51,6 +58,7 @@ export interface IndexedVoicePassResponseItem {
 export type IndexedVoicePassResponse = Array<IndexedVoicePassResponseItem>
 
 export type EditorExtendedStore = {
+	episodeContentMap: Record<number, { children: Value }>
 	episodeKeys: Record<number, (string | number | boolean)[]>
 	episodeMap: Record<number, TGetEpisodeResponse>
 	extended: number[]
@@ -66,3 +74,22 @@ export type TReview =
 	| { data: TSuggestionDescription; type: EReviewType.DESCRIPTION }
 
 export type TColorKey = keyof typeof colorOptions
+
+export type TLocalizationObject = [
+	{
+		entities: TLocalizeCharacterArrayItem[]
+		title: 'Characters'
+	},
+	{
+		entities: TLocalizePlaceArrayItem[]
+		title: 'Places'
+	},
+	{
+		entities: TLocalizeConceptArrayItem[]
+		title: 'Concepts'
+	},
+	{
+		entities: TLocalizeObjectArrayItem[]
+		title: 'Objects'
+	},
+]

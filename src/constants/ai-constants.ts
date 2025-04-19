@@ -1,3 +1,5 @@
+import { FindReplaceConfig } from '@/lib/plate/plugins/find-replace'
+
 import {
 	EAction,
 	EMessenger,
@@ -109,4 +111,14 @@ export const SFX_INFO = {
 		'Nur ausgewählte SFX-Vorschläge annehmen (Auswahl: entsprechende SFX-Tags anklicken und durch Klick auf den Haken der Auswahl hinzufügen)',
 	DOUBLE_TICK: 'Alle SFX-Vorschläge annehmen',
 	CROSS: 'Vorschläge verwerfen',
+}
+
+export const INITIAL_FAR_OPTIONS: FindReplaceConfig['options'] = {
+	search: '',
+	replace: '',
+	replaceEnabled: false,
+	currentId: [0, 0, 0],
+	caseSensitive: true,
+	wholeWord: true,
+	genitive: true,
 }

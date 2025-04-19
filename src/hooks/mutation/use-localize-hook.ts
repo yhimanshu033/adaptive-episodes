@@ -6,31 +6,36 @@ import { LOC_SHEET_QUERY_KEY } from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
 import { updateLOCSheet } from '@/server-action/localization-action'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEditorRef } from '@udecode/plate-common/react'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
-import useEpisodeId from '@/providers/episode-id-provider'
 import { fetchAPI } from '@/lib/fetch-api'
-import { getText } from '@/lib/utils/plate'
 
-import { TLocalizeResponse, TLocalizeUpdateRequest } from '@/types/ai-types'
+import {
+	TLocalizeBody,
+	TLocalizeResponse,
+	TLocalizeUpdateRequest,
+} from '@/types/ai-types'
 import { TNoParams } from '@/types/common'
 
-const useLocalizeHook = () => {
+const useLocalizeHook = ({
+	text,
+	episodeId,
+}: {
+	episodeId: number
+	text: string
+}) => {
 	const { id } = useParams()
-	const episodeId = useEpisodeId()
-	const { children } = useEditorRef()
 
 	const { startTask, getResponse } = useSocket()
 
 	const onLocalize = async () => {
-		const taskId = await startTask<{ project_id: string; text: string }>({
+		const taskId = await startTask<TLocalizeBody>({
 			method: 'POST',
 			url: API_URLS.STREAM_LOCALIZATION,
 			body: {
-				text: getText(children),
+				text,
 				project_id: String(id),
 			},
 			noCache: true,
@@ -42,6 +47,7 @@ const useLocalizeHook = () => {
 	const localizeQuery = useQuery({
 		queryKey: ['localize', id, episodeId],
 		queryFn: onLocalize,
+		enabled: !!text,
 	})
 	return localizeQuery
 }

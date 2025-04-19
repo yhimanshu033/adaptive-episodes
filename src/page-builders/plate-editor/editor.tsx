@@ -1,7 +1,9 @@
 'use client'
 
 import React, { useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { MAIN_EDITOR_ID } from '@/constants/editor-constants'
+import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
 import useMyEditor from '@/hooks/use-my-editor'
@@ -39,6 +41,9 @@ export default function PlateEditor() {
 			[]) as TCustomComment[],
 		id: MAIN_EDITOR_ID,
 	})
+
+	const searchParams = useSearchParams()
+	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
 	if (!content || !latestStatus)
 		return (
@@ -85,6 +90,7 @@ export default function PlateEditor() {
 												<Editor
 													className="size-full rounded-none"
 													autoFocus
+													readOnly={!!simplifiedEditor}
 													focusRing={false}
 													variant="ghost"
 													size="md"
