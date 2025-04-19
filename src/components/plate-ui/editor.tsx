@@ -215,13 +215,19 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		}, [options, globalLocalize, setOptions])
 
 		useEffect(() => {
-			if (!replacedContentMap[episodeId]) return
+			if (!globalLocalize || !replacedContentMap[episodeId]) return
 			editor.tf.setValue(replacedContentMap[episodeId].children)
 			setReplacedContentMap((prev) => {
 				delete prev[episodeId]
 				return prev
 			})
-		}, [replacedContentMap, episodeId, editor.tf, setReplacedContentMap])
+		}, [
+			replacedContentMap,
+			episodeId,
+			editor.tf,
+			setReplacedContentMap,
+			globalLocalize,
+		])
 
 		function handlePaste() {
 			isPasted.current = true
