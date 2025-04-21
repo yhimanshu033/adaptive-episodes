@@ -432,7 +432,7 @@ export function replaceAll({
 			if (!replaceEnabled || !search) return
 			const regex = new RegExp(
 				wholeWord
-					? `(\\b(${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$))`
+					? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
 					: `(${search})`,
 				caseSensitive ? 'g' : 'gi'
 			)
@@ -467,7 +467,7 @@ export function getRecordsUtil({
 			if ('text' in node) {
 				const regex = new RegExp(
 					wholeWord
-						? `(\\b(${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$))`
+						? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
 						: `(${search})`,
 					caseSensitive ? 'g' : 'gi'
 				)
@@ -502,7 +502,7 @@ export function getOccurrencesUtil({
 			if ('text' in node) {
 				const regex = new RegExp(
 					wholeWord
-						? `(\\b(${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$))`
+						? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
 						: `(${search})`,
 					caseSensitive ? 'g' : 'gi'
 				)
