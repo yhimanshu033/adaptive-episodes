@@ -111,6 +111,7 @@ export function useGDrivePushMutation() {
 			}
 
 			if (resp?.error) {
+				console.log(resp)
 				toast.info(dict('gdriveAccessDenied'))
 				return
 			}
