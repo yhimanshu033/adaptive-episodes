@@ -23,6 +23,7 @@ export type TMetadataUrlParams = {
 }
 
 export type TPushToGDriveBody = {
+	chapter_id: number
 	file_name: string
 	html_content: string
 }
