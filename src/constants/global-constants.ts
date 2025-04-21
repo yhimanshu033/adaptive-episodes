@@ -119,3 +119,6 @@ export const pathsWithoutGlobalHeader = ['/editor', '/manage-project']
 
 export const GDRIVE_BROADCAST_CHANNEL = 'gdrive-channel'
 export const GDRIVE_SUCCESS_MESSAGE = 'gdrive-success'
+
+export const SIMPLIFIED_VIEWABLE_EDITOR = 'sve'
+export const GLOBAL_LOCALIZE = 'global-localize'

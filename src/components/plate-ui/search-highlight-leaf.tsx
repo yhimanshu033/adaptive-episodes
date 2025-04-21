@@ -1,6 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
+import useGlobalFindAndReplace from '@/hooks/use-global-find-and-replace'
 import usePlateStore from '@/store/plate-store'
 import {
 	PlateLeaf,
@@ -8,6 +11,7 @@ import {
 	useEditorPlugin,
 } from '@udecode/plate-common/react'
 
+import useEpisodeId from '@/providers/episode-id-provider'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { cn } from '@/lib/utils/helpers'
 
@@ -29,8 +33,22 @@ export const SearchHighlightLeaf = ({
 	const replaceEnabled = useOption('replaceEnabled')
 	const currentId = useOption('currentId') || [0, 0, 0]
 	const id = leaf.id as number[]
+
+	const episodeId = useEpisodeId()
+	const globalLocalize = useSearchParams().get(GLOBAL_LOCALIZE)
+	const { setOptions } = useGlobalFindAndReplace()
+
+	const elemId = useMemo(() => {
+		if (!globalLocalize) {
+			return `search-highlight-${id.join('-')}`
+		}
+		return `search-highlight-${episodeId}-${id.join('-')}`
+	}, [episodeId, id, globalLocalize])
+
 	function setCurrent() {
 		setOption('currentId', id)
+		if (!globalLocalize) return
+		setOptions({ currentId: id })
 	}
 	function renderContent() {
 		if (isCurrent(id, currentId) && replaceEnabled) {
@@ -46,10 +64,10 @@ export const SearchHighlightLeaf = ({
 			return <span className="bg-green-500/60">{children}</span>
 		}
 	}
-	return sidebar === ESidebar.FAR ? (
+	return sidebar === ESidebar.FAR || !!globalLocalize ? (
 		<PlateLeaf
 			onClick={setCurrent}
-			id={`search-highlight-${id.join('-')}`}
+			id={elemId}
 			{...props}
 			className={cn(className)}
 		>

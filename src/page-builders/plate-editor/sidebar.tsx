@@ -1,5 +1,7 @@
 import React from 'react'
+import { useSearchParams } from 'next/navigation'
 import { TRANSITION_DURATION } from '@/constants/editor-constants'
+import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
 import AiChatbot from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot'
 import CommentSidebar from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar'
 import FindAndReplace from '@/page-builders/plate-editor/sidebar-sections/find-and-replace'
@@ -28,6 +30,8 @@ const Sidebar = () => {
 	const focusMode = store((state) => state.focusMode)
 	const showSidebar = sidebar && sidebar !== ESidebar.DUAL_VIEW && !focusMode
 
+	const globalLocalize = useSearchParams().get(GLOBAL_LOCALIZE)
+
 	const [debouncedShowSidebarView] = useDebounceValue(
 		showSidebar,
 		TRANSITION_DURATION
@@ -40,11 +44,13 @@ const Sidebar = () => {
 	const sidebarToDisplay = showSidebar ? sidebar : debouncedSidebar
 
 	if (
+		!!globalLocalize ||
 		(!showSidebar && !debouncedShowSidebarView) ||
 		sidebar === ESidebar.DUAL_VIEW
 	) {
 		return null
 	}
+
 	return (
 		<>
 			<ResizableHandle />
@@ -55,7 +61,7 @@ const Sidebar = () => {
 					transitionDuration: `${isTransitioning ? TRANSITION_DURATION : 0}ms`,
 				}}
 				className={cn(
-					'sticky top-11 h-fit w-full max-w-full border-b bg-background-editor transition-all',
+					'sticky top-11 h-fit w-full max-w-full border-b border-r bg-background-editor transition-all',
 					!showSidebar && 'max-w-0'
 				)}
 			>

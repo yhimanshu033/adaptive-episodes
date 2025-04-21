@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { EditorModes } from '@/constants/editor-constants'
+import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import useCustomPlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
@@ -33,17 +35,23 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 	const { setOption, getOption } = useEditorPlugin(SuggestionPlugin)
 
 	const { isWriter } = useProjectId()
+	const searchParams = useSearchParams()
+	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
 	const { store } = useCustomPlateStore()
 	const viewMode = store((state) => state.viewMode)
 
 	useEffect(() => {
+		if (simplifiedEditor) {
+			setReadOnly(true)
+			return
+		}
 		if (!isWriter) {
 			setReadOnly(true)
 			return
 		}
 		setReadOnly(viewMode)
-	}, [viewMode, setReadOnly, isWriter])
+	}, [viewMode, setReadOnly, isWriter, simplifiedEditor])
 
 	const value = readOnly
 		? EditorModes.viewing
@@ -91,7 +99,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 					className="flex flex-col gap-0.5"
 					value={value}
 					onValueChange={(newValue) => {
-						if (!isWriter) return
+						if (!isWriter || !!simplifiedEditor) return
 						setReadOnly(newValue === EditorModes.viewing)
 						setOption('isSuggesting', newValue === EditorModes.suggesting)
 

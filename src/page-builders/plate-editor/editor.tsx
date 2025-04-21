@@ -1,7 +1,9 @@
 'use client'
 
 import React, { useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { MAIN_EDITOR_ID } from '@/constants/editor-constants'
+import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
 import useMyEditor from '@/hooks/use-my-editor'
@@ -40,6 +42,9 @@ export default function PlateEditor() {
 		id: MAIN_EDITOR_ID,
 	})
 
+	const searchParams = useSearchParams()
+	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
+
 	if (!content || !latestStatus)
 		return (
 			<div className="flex min-h-[80vh] flex-1 items-center justify-center">
@@ -50,7 +55,7 @@ export default function PlateEditor() {
 	return (
 		<Plate editor={editor}>
 			<SavingContextProvider data={content} initialForceSave={imported}>
-				<ChatbotProvider>
+				<ChatbotProvider episodeContent={content}>
 					<FocusEditorWrapper>
 						<div className="container p-4">
 							<EditorOverlayLoader />
@@ -85,6 +90,7 @@ export default function PlateEditor() {
 												<Editor
 													className="size-full rounded-none"
 													autoFocus
+													readOnly={!!simplifiedEditor}
 													focusRing={false}
 													variant="ghost"
 													size="md"
