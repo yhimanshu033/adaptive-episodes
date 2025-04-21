@@ -8,16 +8,18 @@ import React, {
 	useCallback,
 	useContext,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from 'react'
 import { ESocketStatus } from '@/constants/ai-constants'
 import { nanoid } from 'nanoid'
+import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
 
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 
-import { TNoParams } from '@/types/common'
+import { TNoParams, TSocketQueryParams } from '@/types/common'
 
 type TSocketStreamingContext =
 	| {
@@ -54,10 +56,16 @@ export const SocketStreamingProvider = ({
 	children: React.ReactNode
 }) => {
 	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_BACKEND_URL || ''
-	const [socket] = useState(() =>
-		io(socketUrl, {
-			autoConnect: false,
-		})
+	const { data: session } = useSession()
+	const socket = useMemo(
+		() =>
+			io(socketUrl, {
+				autoConnect: false,
+				extraHeaders: {
+					Authorization: `Bearer ${session?.accessToken}`,
+				},
+			}),
+		[session, socketUrl]
 	)
 	const [responses, setResponses] = useState<Record<string, string[]>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
@@ -100,12 +108,18 @@ export const SocketStreamingProvider = ({
 				]
 			}
 		)
-
+		if (!session?.user.id) {
+			return
+		}
+		socket.on('connect', () => {
+			socket.emit('subscribe', String(session?.user.id))
+		})
 		return () => {
+			socket.emit('unsubscribe', String(session?.user.id))
 			socket.disconnect()
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [socket])
+	}, [socket, session])
 
 	const startTask = useCallback(
 		async <
@@ -139,16 +153,20 @@ export const SocketStreamingProvider = ({
 				ResponseDataT,
 				UrlParamsT,
 				BodyParamsT,
-				QueryParamsT & { task_id: string }
+				QueryParamsT & TSocketQueryParams
 			>({
 				...(baseUrl ? { baseUrl } : {}),
 				...rest,
-				query: { task_id: taskId, ...(params.query as QueryParamsT) },
+				query: {
+					task_id: taskId,
+					room_id: String(session?.user.id),
+					...(params.query as QueryParamsT),
+				},
 			})
 
 			return taskId
 		},
-		[fetchedData, baseUrl]
+		[fetchedData, baseUrl, session]
 	)
 
 	const getStreamedResponse = useCallback(

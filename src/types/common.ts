@@ -63,3 +63,5 @@ export type TOpenedStoryPage = {
 export type TOpenedEpisodeList = Record<number, TOpenedStoryPage>
 
 export type MinifiedValue = Array<IndexedText>
+
+export type TSocketQueryParams = { room_id?: string; task_id: string }
