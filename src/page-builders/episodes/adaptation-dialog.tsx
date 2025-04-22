@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { languages, languageToTitle } from '@/constants/episodes-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
+import LSTableEditor from '@/page-builders/episodes/ls-editor'
 import { ArrowRight, CheckCircle, Languages } from 'lucide-react'
 
 import LanguageSelector from '@/components/plate-ui/language-selector'
@@ -51,7 +52,7 @@ export default function AdaptationDialog({
 					<Languages size={16} />
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className="max-w-screen-lg">
 				<SwitchCase value={step}>
 					<DialogHeader>
 						<DialogTitle>Adapt the selected Episodes</DialogTitle>
@@ -67,7 +68,7 @@ export default function AdaptationDialog({
 						</Case>
 						<Case value={3}>
 							<DialogDescription>
-								Task registered successfully. You can close this dialog!
+								Please check/edit the LS sheet!
 							</DialogDescription>
 						</Case>
 					</DialogHeader>
@@ -98,6 +99,9 @@ export default function AdaptationDialog({
 						<Spinner size={48} className="mx-auto my-10" />
 					</Case>
 					<Case value={3}>
+						<LSTableEditor />
+					</Case>
+					<Case value={4}>
 						<CheckCircle size={48} className="mx-auto my-4 text-green-500" />
 						<DialogFooter className="flex justify-end">
 							<DialogClose asChild>

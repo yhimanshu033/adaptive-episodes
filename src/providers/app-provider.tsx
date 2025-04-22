@@ -16,6 +16,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
 import { PlayerProvider } from '@/providers/player-provider'
+import { PollingProvider } from '@/providers/polling-provider'
 import { queryClient } from '@/lib/get-query-client'
 
 import { SessionData } from '@/types/admin-types'
@@ -53,28 +54,30 @@ const AppProvider = ({
 			<NuqsAdapter>
 				<SocketProvider>
 					<SocketStreamingProvider>
-						<QueryClientProvider client={queryClient}>
-							<ThemeProvider
-								attribute="class"
-								defaultTheme="dark"
-								enableSystem
-								disableTransitionOnChange
-							>
-								<TooltipProvider
-									disableHoverableContent
-									delayDuration={500}
-									skipDelayDuration={0}
+						<PollingProvider>
+							<QueryClientProvider client={queryClient}>
+								<ThemeProvider
+									attribute="class"
+									defaultTheme="dark"
+									enableSystem
+									disableTransitionOnChange
 								>
-									<NextTopLoader color="hsl(var(--primary))" />
-									<PlayerProvider>
-										<Player />
-										{children}
-									</PlayerProvider>
-									<Toaster />
-									<ReactQueryDevtools />
-								</TooltipProvider>
-							</ThemeProvider>
-						</QueryClientProvider>
+									<TooltipProvider
+										disableHoverableContent
+										delayDuration={500}
+										skipDelayDuration={0}
+									>
+										<NextTopLoader color="hsl(var(--primary))" />
+										<PlayerProvider>
+											<Player />
+											{children}
+										</PlayerProvider>
+										<Toaster />
+										<ReactQueryDevtools />
+									</TooltipProvider>
+								</ThemeProvider>
+							</QueryClientProvider>
+						</PollingProvider>
 					</SocketStreamingProvider>
 				</SocketProvider>
 			</NuqsAdapter>

@@ -69,6 +69,7 @@ export async function fetchAPIClient<
 	} = params
 
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
+	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {
 		throw new Error('Backend URL not set in env!')
@@ -123,6 +124,7 @@ export async function fetchAPIClient<
 			method,
 			headers: {
 				...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+				'API-Key': API_KEY,
 				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
 				...headers,
 			},

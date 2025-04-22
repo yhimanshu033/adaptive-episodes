@@ -6,6 +6,7 @@ import {
 	TLocalizeResponse,
 	TMessage,
 } from '@/types/ai-types'
+import { ELSMappingGender, ELSMappingType } from '@/types/common'
 
 export const aiInitialMessage: TMessage[] = [
 	{
@@ -122,3 +123,7 @@ export const INITIAL_FAR_OPTIONS: FindReplaceConfig['options'] = {
 	wholeWord: true,
 	genitive: true,
 }
+
+export const LSMappingGenders = [ELSMappingGender.MALE, ELSMappingGender.FEMALE]
+
+export const LSMappingTypes = [ELSMappingType.PERSON, ELSMappingType.ENTITY]

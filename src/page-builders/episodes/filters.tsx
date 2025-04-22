@@ -131,7 +131,7 @@ const Filters = ({
 				</form>
 			</Form>
 			<AdaptationDialog
-				disabled={disabled || Object.keys(selectedRowData).length <= 1}
+				disabled={disabled || Object.keys(selectedRowData).length < 1}
 				selectedRowData={selectedRowData}
 			/>
 			<Button

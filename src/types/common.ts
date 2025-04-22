@@ -25,11 +25,11 @@ export enum EStatus {
 }
 
 export enum ELanguage {
-	DEUTSCH = 'Deutsch',
+	DEUTSCH = 'deutsch',
 	ENGLISH = 'English',
-	HINDI = 'Hindi',
-	ITALIAN = 'Italian',
-	SPANISH = 'Spanish',
+	HINDI = 'hindi',
+	ITALIAN = 'italian',
+	SPANISH = 'spanish',
 }
 
 export type TSourceLanguage = ELanguage.ENGLISH | ELanguage.HINDI
@@ -65,3 +65,37 @@ export type TOpenedEpisodeList = Record<number, TOpenedStoryPage>
 export type MinifiedValue = Array<IndexedText>
 
 export type TSocketQueryParams = { room_id?: string; task_id: string }
+
+export enum ELSMappingType {
+	ENTITY = 'entity',
+	PERSON = 'person',
+}
+
+export enum ELSMappingGender {
+	FEMALE = 'Female',
+	MALE = 'Male',
+}
+
+export type LSMappingCommon = {
+	gender?: ELSMappingGender
+	type: ELSMappingType
+}
+
+export interface LSMappingOutputItem extends LSMappingCommon {
+	'localised name': string
+	'original name': string
+}
+
+export interface LSMappingInputItem {
+	[key: string]: {
+		'localised name': string
+	} & LSMappingCommon
+}
+
+export interface LSMappingInput {
+	ls_mapping: LSMappingInputItem
+}
+
+export interface LSMappingOutput {
+	ls_mapping: LSMappingOutputItem[]
+}

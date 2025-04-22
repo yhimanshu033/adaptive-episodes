@@ -16,7 +16,14 @@ import { JWT } from 'next-auth/jwt'
 import { twMerge } from 'tailwind-merge'
 
 import { ERole, UserProject } from '@/types/admin-types'
-import { BASE_STATUS, EStatus, STATUS_ORDER } from '@/types/common'
+import {
+	BASE_STATUS,
+	ELSMappingType,
+	EStatus,
+	LSMappingInput,
+	LSMappingOutputItem,
+	STATUS_ORDER,
+} from '@/types/common'
 import {
 	TGetMetadataAPIResponse,
 	TGetMetadataResponse,
@@ -517,4 +524,17 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	}
 
 	return result
+}
+
+export function parseInputLSMapping(input: LSMappingInput) {
+	const tableItems: LSMappingOutputItem[] = Object.entries(
+		input.ls_mapping
+	).map(([key, value]) => ({
+		'original name': key,
+		'localised name': value['localised name'] || '',
+		type: value.type || ELSMappingType.ENTITY,
+		gender: value.gender,
+	}))
+
+	return tableItems
 }
