@@ -38,9 +38,8 @@ jobs:
 
   build:
     needs: debug
-    if: |
-      github.ref == 'refs/heads/main' ||
-      github.ref == 'refs/heads/staging'
+    if: 
+      ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/PF-')}}
     runs-on: self-hosted
     outputs:
       docker-tag: ${{ steps.set_tag.outputs.dockerTag }}
