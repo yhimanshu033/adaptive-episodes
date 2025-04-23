@@ -4,10 +4,13 @@ import { useMutation } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 
-import usePolling from '@/providers/polling-provider'
+import { doPoll } from '@/lib/do-poll'
 import { fetchAPI } from '@/lib/fetch-api'
 
-import { TSendAdaptationStartBody } from '@/types/ai-types'
+import {
+	TGetAdaptationLSUrlParams,
+	TSendAdaptationStartBody,
+} from '@/types/ai-types'
 import { ELanguage, TNoParams } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
 
@@ -16,7 +19,6 @@ export default function useAdaptationMutation() {
 	const projectId = Number(params.id)
 	const { data: session } = useSession()
 
-	const { poll, stopPolling } = usePolling()
 	async function createAdaptation({
 		language,
 		selectedRowData,
@@ -35,29 +37,40 @@ export default function useAdaptationMutation() {
 					project_id: projectId,
 					seq_no: selectedRowData.map((item) => item.seq_number),
 					source_lang: ELanguage.ENGLISH,
-					target_lang: ELanguage.SPANISH,
+					target_lang: language,
 					type: 'ls_sheet_gen',
 				},
 			}
 		)
+		if (resp.error || !resp.data) {
+			toast.error('Error during adaptation!')
+			throw new Error('Error during adaptation!')
+		}
 
-		const pollingKey = `adaptation-${projectId}-${language}-${selectedRowData.map((item) => item.seq_number).join('-')}`
-		await poll({
+		const pollingResp = await doPoll<
+			TNoParams,
+			TNoParams,
+			TGetAdaptationLSUrlParams
+		>({
 			method: 'GET',
-			url: '/',
-			baseUrl: 'https://jsonplaceholder.typicode.com/todos/1',
-			pollingKey,
+			url: API_URLS.GET_ADAPTATION_LS,
+			urlParams: {
+				language,
+				projectId: String(projectId),
+			},
 			delay: 2000,
-			onResponse: () => {
-				stopPolling(pollingKey)
+			stop: (resp) => {
+				console.log({ resp })
+				if (!resp.error && resp.data) {
+					return false
+				}
+				return false
 			},
 		})
 
-		if (resp.error || !resp.data) {
-			toast.error('Error during adaptation!')
-		}
+		console.log({ pollingResp })
 
-		return resp.data
+		return pollingResp?.data
 	}
 
 	const mutation = useMutation({

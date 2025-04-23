@@ -101,6 +101,7 @@ export const API_URLS = {
 	UPDATE_SLACK_CHANNEL: '/project/:projectId/update-slack-channel-id/',
 	GET_SLACK_CHANNEL: '/project/:projectId/get-slack-channel-info/',
 	SEND_TASK_TO_ADAPTATION: '/project/send-task-to-adaptation',
+	GET_ADAPTATION_LS: '/project/:projectId/:language/get_ls_sheet',
 }
 
 export const INDEXED_DB_KEYS = {

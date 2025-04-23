@@ -72,7 +72,6 @@ export const SocketProvider = ({
 	const [fetchedData, setFetchedData] = useState<Record<string, string>>({})
 
 	useEffect(() => {
-		console.log({ socket, session })
 		socket.connect()
 		socket.onAny((taskId: string, data) => {
 			const callback = taskCallbacksRef.current[taskId]

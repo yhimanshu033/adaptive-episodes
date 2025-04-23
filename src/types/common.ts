@@ -1,6 +1,8 @@
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
 import { LucideProps } from 'lucide-react'
 
+import { FetchRequestParams, FetchResponseResult } from '@/lib/fetch-api'
+
 import { SessionData } from '@/types/admin-types'
 import { SaveEpisodeParams } from '@/types/episode-type'
 
@@ -98,4 +100,14 @@ export interface LSMappingInput {
 
 export interface LSMappingOutput {
 	ls_mapping: LSMappingOutputItem[]
+}
+
+export type StartPollingParams<
+	BodyParamsT = TNoParams,
+	ResponseDataT = TNoParams,
+	UrlParamsT = TNoParams,
+	QueryParamsT = TNoParams,
+> = FetchRequestParams<ResponseDataT, UrlParamsT, BodyParamsT, QueryParamsT> & {
+	delay: number
+	stop: (data: FetchResponseResult<ResponseDataT>) => boolean
 }

@@ -279,3 +279,8 @@ export type TSendAdaptationStartBody = {
 	target_lang: ELanguage
 	type: 'ls_sheet_gen'
 }
+
+export type TGetAdaptationLSUrlParams = {
+	language: ELanguage
+	projectId: string
+}
