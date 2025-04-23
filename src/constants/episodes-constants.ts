@@ -14,10 +14,12 @@ export const statuses: EStatus[] = [
 
 export const languages: ELanguage[] = [
 	ELanguage.ENGLISH,
-	ELanguage.DEUTSCH,
-	ELanguage.ITALIAN,
+	ELanguage.FRENCH,
+	ELanguage.GERMAN,
 	ELanguage.HINDI,
-	ELanguage.SPANISH,
+	ELanguage.ITALIAN,
+	ELanguage.MEXICAN_SPANISH,
+	ELanguage.ENGLISH_US,
 ]
 
 export const titleToStatus: Partial<Record<EStatus, string>> = {
@@ -29,10 +31,12 @@ export const titleToStatus: Partial<Record<EStatus, string>> = {
 
 export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.ENGLISH]: 'English',
-	[ELanguage.DEUTSCH]: 'Deutsch',
-	[ELanguage.ITALIAN]: 'Italian',
+	[ELanguage.FRENCH]: 'French',
+	[ELanguage.GERMAN]: 'German',
 	[ELanguage.HINDI]: 'Hindi',
-	[ELanguage.SPANISH]: 'Spanish',
+	[ELanguage.ITALIAN]: 'Italian',
+	[ELanguage.MEXICAN_SPANISH]: 'Spanish',
+	[ELanguage.ENGLISH_US]: 'English (US)',
 }
 
 export enum EpisodeActions {

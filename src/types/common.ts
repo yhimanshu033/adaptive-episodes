@@ -27,11 +27,13 @@ export enum EStatus {
 }
 
 export enum ELanguage {
-	DEUTSCH = 'deutsch',
-	ENGLISH = 'English',
+	ENGLISH = 'english',
+	ENGLISH_US = 'english_us',
+	FRENCH = 'french',
+	GERMAN = 'german',
 	HINDI = 'hindi',
 	ITALIAN = 'italian',
-	SPANISH = 'spanish',
+	MEXICAN_SPANISH = 'mexican_spanish',
 }
 
 export type TSourceLanguage = ELanguage.ENGLISH | ELanguage.HINDI
@@ -84,13 +86,13 @@ export type LSMappingCommon = {
 }
 
 export interface LSMappingOutputItem extends LSMappingCommon {
-	'localised name': string
-	'original name': string
+	localised_name: string
+	original_name: string
 }
 
 export interface LSMappingInputItem {
 	[key: string]: {
-		'localised name': string
+		localised_name: string
 	} & LSMappingCommon
 }
 

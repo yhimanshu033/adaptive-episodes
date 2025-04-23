@@ -11,7 +11,12 @@ import {
 	TGetAdaptationLSUrlParams,
 	TSendAdaptationStartBody,
 } from '@/types/ai-types'
-import { ELanguage, TNoParams } from '@/types/common'
+import {
+	ELanguage,
+	LSMappingInput,
+	LSMappingOutput,
+	TNoParams,
+} from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
 
 export default function useAdaptationMutation() {
@@ -43,13 +48,12 @@ export default function useAdaptationMutation() {
 			}
 		)
 		if (resp.error || !resp.data) {
-			toast.error('Error during adaptation!')
 			throw new Error('Error during adaptation!')
 		}
 
 		const pollingResp = await doPoll<
 			TNoParams,
-			TNoParams,
+			LSMappingInput,
 			TGetAdaptationLSUrlParams
 		>({
 			method: 'GET',
@@ -60,29 +64,71 @@ export default function useAdaptationMutation() {
 			},
 			delay: 2000,
 			stop: (resp) => {
-				console.log({ resp })
+				console.log(resp)
 				if (!resp.error && resp.data) {
-					return false
+					return true
 				}
 				return false
 			},
 		})
 
-		console.log({ pollingResp })
-
 		return pollingResp?.data
 	}
 
-	const mutation = useMutation({
+	const createLSMutation = useMutation({
 		mutationFn: createAdaptation,
 		onSuccess: () => {
-			toast.success('Adaptation started successfully')
+			toast.success('Localization sheet fetched!')
+		},
+		onError: () => {
+			toast.error('Localization failed!')
+		},
+		mutationKey: ['create-adaptation-ls', projectId],
+	})
+
+	async function sendAdaptationLS({
+		language,
+		selectedRowData,
+		inputls,
+	}: {
+		inputls: LSMappingOutput
+		language: ELanguage
+		selectedRowData: TEpisode[]
+	}) {
+		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
+			{
+				method: 'POST',
+				url: API_URLS.SEND_TASK_TO_ADAPTATION,
+				body: {
+					author: session?.user?.fullname || '',
+					inputls,
+					is_external: true,
+					project_id: projectId,
+					seq_no: selectedRowData.map((item) => item.seq_number),
+					source_lang: ELanguage.ENGLISH,
+					target_lang: language,
+					type: 'adaptation',
+				},
+			}
+		)
+		console.log({ resp })
+		if (resp.error || !resp.data) {
+			throw new Error('Error during adaptation!')
+		}
+
+		return resp?.data
+	}
+
+	const sendLSMutation = useMutation({
+		mutationFn: sendAdaptationLS,
+		onSuccess: () => {
+			toast.success('Adaptation registered!')
 		},
 		onError: () => {
 			toast.error('Adaptation failed!')
 		},
-		mutationKey: ['adaptation', projectId],
+		mutationKey: ['send-adaptation-ls', projectId],
 	})
 
-	return mutation
+	return { createLSMutation, sendLSMutation }
 }

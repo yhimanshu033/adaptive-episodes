@@ -31,19 +31,27 @@ export default function AdaptationDialog({
 	selectedRowData,
 }: TAdaptationDialogProps) {
 	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
-		useState<ELanguage>(ELanguage.DEUTSCH)
+		useState<ELanguage>(ELanguage.HINDI)
 	const currentLanguage = ELanguage.ENGLISH
 	const selectableLanguages = languages.filter(
 		(lang) => lang !== currentLanguage
 	)
 
-	const { mutate, isPending, data, reset } = useAdaptationMutation()
+	const {
+		createLSMutation: { mutate, isPending, data, reset },
+		sendLSMutation: {
+			mutate: sendLS,
+			data: sendLSData,
+			isPending: sendLSPending,
+		},
+	} = useAdaptationMutation()
 
 	const step = useMemo(() => {
-		if (data) return 3
-		if (isPending) return 2
+		if (sendLSData) return 4
+		if (data?.ls_mapping) return 3
+		if (isPending || sendLSPending) return 2
 		return 1
-	}, [data, isPending])
+	}, [data, isPending, sendLSData, sendLSPending])
 
 	return (
 		<Dialog onOpenChange={() => reset()}>
@@ -99,7 +107,16 @@ export default function AdaptationDialog({
 						<Spinner size={48} className="mx-auto my-10" />
 					</Case>
 					<Case value={3}>
-						<LSTableEditor />
+						<LSTableEditor
+							inputData={data || { ls_mapping: {} }}
+							onSubmit={(inputls) =>
+								sendLS({
+									inputls,
+									language: selectedAdaptingLanguage,
+									selectedRowData,
+								})
+							}
+						/>
 					</Case>
 					<Case value={4}>
 						<CheckCircle size={48} className="mx-auto my-4 text-green-500" />

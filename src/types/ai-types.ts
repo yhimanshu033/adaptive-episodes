@@ -7,7 +7,7 @@ import {
 } from '@/constants/story-explorer-constants'
 import { Value } from '@udecode/plate-common'
 
-import { ELanguage, LSMappingInput, MinifiedValue } from '@/types/common'
+import { ELanguage, LSMappingOutput, MinifiedValue } from '@/types/common'
 
 export interface LaserToolsParams {
 	action: string
@@ -271,13 +271,13 @@ export type TLocalizeBody = { project_id: string; text: string }
 
 export type TSendAdaptationStartBody = {
 	author: string
-	inputls: LSMappingInput['ls_mapping']
+	inputls: LSMappingOutput | Record<string, never>
 	is_external: boolean
 	project_id: number
 	seq_no: number[]
 	source_lang: ELanguage
 	target_lang: ELanguage
-	type: 'ls_sheet_gen'
+	type: 'ls_sheet_gen' | 'adaptation'
 }
 
 export type TGetAdaptationLSUrlParams = {
