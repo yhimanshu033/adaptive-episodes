@@ -134,7 +134,9 @@ const Filters = ({
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}
 				onClick={handleLocalize}
 				title="Localize episodes"
+				className="hidden"
 			>
+				{/* HIDDEN FOR NOW */}
 				<Replace size={16} />
 			</Button>
 			<Button
