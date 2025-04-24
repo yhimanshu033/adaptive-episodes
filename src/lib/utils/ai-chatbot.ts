@@ -1,6 +1,23 @@
-import { nanoid, TDescendant, TText, Value } from '@udecode/plate-common'
+import {
+	nanoid,
+	TDescendant,
+	TElement,
+	TText,
+	Value,
+} from '@udecode/plate-common'
 
-import { EChatMode, StoryExplorerConfiguration } from '@/types/ai-types'
+import { generateGenitives } from '@/lib/utils/helpers'
+
+import {
+	EChatMode,
+	StoryExplorerConfiguration,
+	TLocalizeArrayItem,
+	TLocalizeCharacterArrayItem,
+	TLocalizeConceptArrayItem,
+	TLocalizeObjectArrayItem,
+	TLocalizePlaceArrayItem,
+	TLocalizeResponse,
+} from '@/types/ai-types'
 import { MinifiedValue } from '@/types/common'
 import { TGetMetadataResponse } from '@/types/content-types'
 import {
@@ -8,6 +25,7 @@ import {
 	IndexedSFXResponse,
 	IndexedVoicePassResponse,
 	ReviewComment,
+	TLocalizationObject,
 } from '@/types/editor-types'
 
 export const minify = (children: Value): MinifiedValue => {
@@ -363,4 +381,210 @@ export function getStoryExplorerConfigArray(
 
 export function isEditingAction(action: EChatMode) {
 	return action === EChatMode.SFX || action === EChatMode.REVIEW
+}
+
+export function replaceOnce({
+	children,
+	path,
+	replace,
+	search,
+}: {
+	children: Value
+	path: number[]
+	replace: string
+	search: string
+}) {
+	const updatedChildren = structuredClone(children)
+	const node = updatedChildren[path[0]].children[path[1]] as TElement
+	const text = replaceNthInsensitive(
+		node.text as string,
+		search,
+		replace,
+		path[2]
+	)
+	updatedChildren[path[0]].children[path[1]] = {
+		...node,
+		text,
+	}
+	return updatedChildren
+}
+
+export function replaceAll({
+	children,
+	replace,
+	replaceEnabled,
+	search,
+	caseSensitive,
+	genitive,
+	wholeWord,
+}: {
+	caseSensitive: boolean | undefined
+	children: Value
+	genitive: boolean | undefined
+	replace: string
+	replaceEnabled: boolean | undefined
+	search: string
+	wholeWord: boolean | undefined
+}) {
+	const updatedChildren = structuredClone(children)
+	function processNode(node: TElement | TText): void {
+		if ('text' in node) {
+			if (!replaceEnabled || !search) return
+			const regex = new RegExp(
+				wholeWord
+					? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
+					: `(${search})`,
+				caseSensitive ? 'g' : 'gi'
+			)
+			node.text = String(node.text).replace(regex, (match) =>
+				match !== search ? generateGenitives(replace) : replace
+			)
+		} else if ('children' in node) {
+			node.children.forEach(processNode)
+		}
+	}
+	updatedChildren.forEach(processNode)
+
+	return updatedChildren
+}
+
+export function getRecordsUtil({
+	children,
+	search,
+	caseSensitive,
+	genitive,
+	wholeWord,
+}: {
+	caseSensitive: boolean | undefined
+	children: Value
+	genitive: boolean | undefined
+	search: string
+	wholeWord: boolean | undefined
+}) {
+	const records: number[][] = []
+	children.forEach((node, index) => {
+		const getCount = (node: TElement | TText, path: number[]): void => {
+			if ('text' in node) {
+				const regex = new RegExp(
+					wholeWord
+						? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
+						: `(${search})`,
+					caseSensitive ? 'g' : 'gi'
+				)
+				const matches = String(node.text).match(regex)
+				matches?.forEach((m, i) => records.push([...path, i]))
+			} else if ('children' in node) {
+				node.children.forEach((child, childIndex) =>
+					getCount(child, [...path, childIndex])
+				)
+			}
+		}
+		getCount(node, [index])
+	})
+	return records
+}
+
+export function getOccurrencesUtil({
+	children,
+	search,
+	caseSensitive,
+	genitive,
+	wholeWord,
+}: {
+	caseSensitive: boolean | undefined
+	children: Value
+	genitive: boolean | undefined
+	search: string
+	wholeWord: boolean | undefined
+}) {
+	return children.reduce((acc, node) => {
+		const getCount = (node: TElement | TText): number => {
+			if ('text' in node) {
+				const regex = new RegExp(
+					wholeWord
+						? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
+						: `(${search})`,
+					caseSensitive ? 'g' : 'gi'
+				)
+				const matches = String(node.text).match(regex)
+				return matches ? matches.length : 0
+			} else if ('children' in node) {
+				return node.children.reduce(
+					(childAcc, child) => childAcc + getCount(child),
+					0
+				)
+			}
+			return 0
+		}
+		return acc + getCount(node)
+	}, 0)
+}
+
+export function getLocalizationData({
+	data,
+}: {
+	data: TLocalizeResponse['result'] | undefined
+}) {
+	const characters = Object.keys(data?.characters || {}).reduce((acc, key) => {
+		const obj = data?.characters?.[key]
+		if (obj) {
+			acc.push({ ...obj, name: key })
+		}
+		return acc
+	}, [] as Array<TLocalizeCharacterArrayItem>)
+
+	const places = Object.keys(data?.places || {}).reduce((acc, key) => {
+		const obj = data?.places?.[key]
+		if (obj) {
+			acc.push({ ...obj, name: key })
+		}
+		return acc
+	}, [] as Array<TLocalizePlaceArrayItem>)
+
+	const concepts = Object.keys(data?.concepts || {}).reduce((acc, key) => {
+		const obj = data?.concepts?.[key]
+		if (obj) {
+			acc.push({ ...obj, name: key })
+		}
+		return acc
+	}, [] as Array<TLocalizeConceptArrayItem>)
+
+	const objects = Object.keys(data?.objects || {}).reduce((acc, key) => {
+		const obj = data?.objects?.[key]
+		if (obj) {
+			acc.push({ ...obj, name: key })
+		}
+		return acc
+	}, [] as Array<TLocalizeObjectArrayItem>)
+
+	const localized_entities: TLocalizationObject = [
+		{
+			title: 'Characters',
+			entities: characters,
+		},
+		{
+			title: 'Places',
+			entities: places,
+		},
+		{
+			title: 'Concepts',
+			entities: concepts,
+		},
+		{
+			title: 'Objects',
+			entities: objects,
+		},
+	] as const
+
+	return localized_entities
+}
+
+export function getSuggestionValue(suggestion: TLocalizeArrayItem) {
+	return 'localized_name' in suggestion
+		? suggestion.localized_name
+		: 'localized_concept' in suggestion
+			? suggestion.localized_concept
+			: 'localized_object' in suggestion
+				? suggestion.localized_object
+				: suggestion.localized_place
 }

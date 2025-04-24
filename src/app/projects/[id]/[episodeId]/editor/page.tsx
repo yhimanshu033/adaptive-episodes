@@ -1,5 +1,6 @@
 import React from 'react'
 import { EditorExtendedStateProvider } from '@/hooks/use-editor-extend-state'
+import { GlobalFindAndReplaceProvider } from '@/hooks/use-global-find-and-replace'
 import EpisodePlateEditor from '@/page-builders/plate-editor'
 
 export default async function Page({
@@ -10,7 +11,9 @@ export default async function Page({
 	const { episodeId } = await params
 	return (
 		<EditorExtendedStateProvider episodeId={Number(episodeId)}>
-			<EpisodePlateEditor />
+			<GlobalFindAndReplaceProvider>
+				<EpisodePlateEditor />
+			</GlobalFindAndReplaceProvider>
 		</EditorExtendedStateProvider>
 	)
 }

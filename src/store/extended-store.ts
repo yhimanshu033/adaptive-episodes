@@ -45,6 +45,28 @@ function useEditorExtendedStore() {
 		})
 	}
 
+	const setExtendedContentMap = (
+		episodeContentMap: EditorExtendedStore['episodeContentMap']
+	) => {
+		useEpisodeExtendedStoreUtil.setState(() => {
+			return { episodeContentMap }
+		})
+	}
+
+	const addExtendedContentMap = (
+		key: number,
+		episodeContent: EditorExtendedStore['episodeContentMap'][number]
+	) => {
+		useEpisodeExtendedStoreUtil.setState((state) => {
+			return {
+				episodeContentMap: {
+					...state.episodeContentMap,
+					[key]: episodeContent,
+				},
+			}
+		})
+	}
+
 	return {
 		store: useEpisodeExtendedStoreUtil,
 		setEpisodeMap,
@@ -52,6 +74,8 @@ function useEditorExtendedStore() {
 		updateExtended,
 		addEpisodeMap,
 		addEpisodeKey,
+		setExtendedContentMap,
+		addExtendedContentMap,
 	}
 }
 

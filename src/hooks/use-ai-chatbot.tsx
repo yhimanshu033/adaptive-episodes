@@ -9,7 +9,6 @@ import React, {
 import { useParams } from 'next/navigation'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
@@ -43,7 +42,7 @@ import {
 	IndexedCommentsResponse,
 	IndexedSFXResponse,
 } from '@/types/editor-types'
-import { EDualVIewMode } from '@/types/episode-type'
+import { EDualVIewMode, TGetEpisodeResponse } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
 type TChatbotContext = {
@@ -76,8 +75,10 @@ const ChatbotContext = createContext<TChatbotContext>({
 
 export function ChatbotProvider({
 	children: consumer,
+	episodeContent,
 }: {
 	children: React.ReactNode
+	episodeContent: TGetEpisodeResponse | null | undefined
 }) {
 	const [input, setInput] = useState('')
 	const [sfxStreaming, setSfxStreaming] = useState<string>('')
@@ -106,8 +107,6 @@ export function ChatbotProvider({
 	const prevValue = store((state) => state.prevValue)
 
 	const { responses, taskEnded } = useSocketStreaming()
-
-	const { data: episodeContent } = useEpisodeContent()
 	const { data: stories } = useStoriesData()
 
 	const editor = useEditorRef()

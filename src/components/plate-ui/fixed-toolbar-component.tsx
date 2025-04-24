@@ -1,4 +1,6 @@
 import React from 'react'
+import { useSearchParams } from 'next/navigation'
+import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import usePlateStore from '@/store/plate-store'
 
 import { FixedToolbar } from '@/components/plate-ui/fixed-toolbar'
@@ -14,6 +16,12 @@ export default function FixedToolbarComponent({
 }) {
 	const { store } = usePlateStore()
 	const plateFocusMode = store((state) => state.focusMode)
+	const searchParams = useSearchParams()
+	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
+
+	if (simplifiedEditor) {
+		return <hr />
+	}
 	return (
 		<div
 			className={cn(

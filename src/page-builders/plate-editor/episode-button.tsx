@@ -1,5 +1,6 @@
 import React from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import useSaving from '@/hooks/use-saving'
 import { CircleArrowLeft, CircleArrowRight } from 'lucide-react'
 
@@ -21,10 +22,17 @@ const EpisodeButton: React.FC<EpisodeButtonProps & ButtonProps> = ({
 	const { id } = useParams()
 	const { handleSave } = useSaving()
 
+	const searchParams = useSearchParams()
+	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
+
 	const handleEpisodeChange = async () => {
 		if (!episodeId) return
 		await handleSave({ startOverlayLoading: true })
 		router.push(`/projects/${Number(id)}/${episodeId}/editor`)
+	}
+
+	if (simplifiedEditor) {
+		return null
 	}
 
 	return (

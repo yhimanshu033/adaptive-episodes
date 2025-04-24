@@ -1,11 +1,15 @@
 import React, { useEffect, useMemo, useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
 	AFTER_PAGE_BREAK_CLASSNAME,
 	LINES,
 	TRANSITION_DURATION,
 } from '@/constants/editor-constants'
+import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
+import useGlobalFindAndReplace from '@/hooks/use-global-find-and-replace'
 import useSaving from '@/hooks/use-saving'
 import useAIStore from '@/store/ai-store'
+import useEditorExtendedStore from '@/store/extended-store'
 import useLaserStore from '@/store/laser-store'
 import useCustomPlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
@@ -14,16 +18,19 @@ import type { PlateContentProps } from '@udecode/plate-common/react'
 import {
 	focusEditor,
 	PlateContent,
+	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
 } from '@udecode/plate-common/react'
 import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
+import { isEqual } from 'lodash'
 import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import DiffView from '@/lib/plate/plugins/diff'
+import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { clearColors } from '@/lib/utils/plate'
 
 import { ESidebar } from '@/types/plate-types'
@@ -110,6 +117,14 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		const { children } = useEditorState()
 		const { setForceSave } = useSaving()
 
+		const { addExtendedContentMap } = useEditorExtendedStore()
+		const { options, replacedContentMap, setReplacedContentMap } =
+			useGlobalFindAndReplace()
+		const { setOptions, getOptions } = useEditorPlugin(FindReplacePlugin)
+
+		const searchParams = useSearchParams()
+		const globalLocalize = searchParams.get(GLOBAL_LOCALIZE)
+
 		const [debouncedSidebar] = useDebounceValue(
 			sidebar,
 			TRANSITION_DURATION * 2
@@ -181,6 +196,38 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 			collapseSelection(editor)
 			focusEditor(editor, currentTarget)
 		}, [children, editor])
+
+		useEffect(() => {
+			if (!globalLocalize) return
+			addExtendedContentMap(episodeId, { children })
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [children, episodeId, globalLocalize])
+
+		useEffect(() => {
+			const current = getOptions()
+
+			if (!globalLocalize || isEqual(current, options)) return
+			setOptions(options)
+
+			const updatedChildren = structuredClone(children)
+			editor.tf.setValue(updatedChildren)
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [options, globalLocalize, setOptions])
+
+		useEffect(() => {
+			if (!globalLocalize || !replacedContentMap[episodeId]) return
+			editor.tf.setValue(replacedContentMap[episodeId].children)
+			setReplacedContentMap((prev) => {
+				delete prev[episodeId]
+				return prev
+			})
+		}, [
+			replacedContentMap,
+			episodeId,
+			editor.tf,
+			setReplacedContentMap,
+			globalLocalize,
+		])
 
 		function handlePaste() {
 			isPasted.current = true
