@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { LSMappingGenders, LSMappingTypes } from '@/constants/ai-constants'
 import { Plus, Trash2 } from 'lucide-react'
 
@@ -13,7 +13,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
-import { parseInputLSMapping } from '@/lib/utils/helpers'
+import {
+	isInvalidLSMapping,
+	parseInputLSMapping,
+	parseOutputLSMapping,
+} from '@/lib/utils/helpers'
 
 import {
 	ELSMappingGender,
@@ -34,8 +38,12 @@ export default function LSTableEditor({
 		parseInputLSMapping(inputData)
 	)
 
+	const disabled = useMemo(() => isInvalidLSMapping(tableData), [tableData])
+
 	const handleSubmit = useCallback(() => {
-		onSubmit({ ls_mapping: tableData })
+		if (isInvalidLSMapping(tableData)) return
+		const refinedTableData = parseOutputLSMapping(tableData)
+		onSubmit({ ls_mapping: refinedTableData })
 	}, [tableData, onSubmit])
 
 	const addNewRow = () => {
@@ -121,6 +129,7 @@ export default function LSTableEditor({
 							<IfElse condition={item.type === ELSMappingType.PERSON}>
 								<If>
 									<Select
+										defaultValue={ELSMappingGender.MALE}
 										value={item.gender}
 										onValueChange={(value) =>
 											updateField(index, 'gender', value)
@@ -154,14 +163,16 @@ export default function LSTableEditor({
 
 					{tableData.length === 0 && (
 						<div className="p-4 text-center text-muted-foreground">
-							No data available. Parse JSON input or add rows manually.
+							No data available.
 						</div>
 					)}
 				</ScrollArea>
 			</div>
-			<Button onClick={handleSubmit} className="ml-auto">
-				Convert and Log Output
-			</Button>
+			<div className="flex justify-end">
+				<Button disabled={disabled} onClick={handleSubmit} className="ml-auto">
+					Adapt
+				</Button>
+			</div>
 		</div>
 	)
 }

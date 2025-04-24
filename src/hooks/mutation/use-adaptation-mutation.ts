@@ -62,7 +62,7 @@ export default function useAdaptationMutation() {
 				language,
 				projectId: String(projectId),
 			},
-			delay: 2000,
+			delay: 10000,
 			stop: (resp) => {
 				console.log(resp)
 				if (!resp.error && resp.data) {

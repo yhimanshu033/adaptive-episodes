@@ -99,7 +99,7 @@ export default function AdaptationDialog({
 									})
 								}
 							>
-								Adapt
+								Start Adaptation
 							</Button>
 						</DialogFooter>
 					</Case>

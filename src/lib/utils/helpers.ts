@@ -22,6 +22,7 @@ import {
 	ELSMappingType,
 	EStatus,
 	LSMappingInput,
+	LSMappingOutput,
 	LSMappingOutputItem,
 	STATUS_ORDER,
 } from '@/types/common'
@@ -538,4 +539,23 @@ export function parseInputLSMapping(input: LSMappingInput) {
 	}))
 
 	return tableItems
+}
+
+export function parseOutputLSMapping(data: LSMappingOutput['ls_mapping']) {
+	return data.map((item) => {
+		if (item.type !== ELSMappingType.PERSON) {
+			delete item.gender
+		}
+		return item
+	})
+}
+
+export function isInvalidLSMapping(data: LSMappingOutput['ls_mapping']) {
+	return data.some(
+		(item) =>
+			!item.original_name.trim() ||
+			!item.localised_name.trim() ||
+			!item.type ||
+			(item.type === ELSMappingType.PERSON && !item.gender)
+	)
 }
