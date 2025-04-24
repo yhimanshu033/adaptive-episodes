@@ -28,7 +28,6 @@ export enum EStatus {
 
 export enum ELanguage {
 	ENGLISH = 'english',
-	ENGLISH_US = 'english_us',
 	FRENCH = 'french',
 	GERMAN = 'german',
 	HINDI = 'hindi',

@@ -46,6 +46,7 @@ export const useEpisodeContentUtil = () => {
 	)
 	const { addEpisodeMap, addEpisodeKey } = useEditorExtendedStore()
 	const { data } = useEpisodeInfo()
+	console.log({ data })
 	const episodeId = useEpisodeId()
 	const { episode, latestStatus } = data
 		? getSelectedEpisode(data, selectedStatus)
