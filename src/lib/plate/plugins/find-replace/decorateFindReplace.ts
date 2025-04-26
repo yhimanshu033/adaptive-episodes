@@ -24,7 +24,7 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 	const { text } = node
 	const regex = new RegExp(
 		wholeWord
-			? `(\\b(${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$))`
+			? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
 			: `(${search})`,
 		caseSensitive ? 'g' : 'gi'
 	)

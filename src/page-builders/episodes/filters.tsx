@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useParams } from 'next/navigation'
 import {
 	GLOBAL_LOCALIZE,
+	HIDE_HEADER,
 	SIMPLIFIED_VIEWABLE_EDITOR,
 } from '@/constants/global-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { usePageState } from '@/hooks/use-page-state'
 import AdaptationDialog from '@/page-builders/episodes/adaptation-dialog'
+import MultiEpLocalizeDialog from '@/page-builders/episodes/multi-ep-localize-dialog'
 import { Table } from '@tanstack/react-table'
 import { Merge, Replace, Search, Split } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -39,7 +41,6 @@ const Filters = ({
 	const [fetchedSeqNumber, setFetchedSeqNumber] = useState<boolean>(false)
 	const { limit, setSearch, setCurrentPage, search, seqNumber } = usePageState()
 
-	const router = useRouter()
 	const { id } = useParams()
 
 	const selectedRowModel = table.getSelectedRowModel().rows
@@ -90,21 +91,19 @@ const Filters = ({
 		},
 	})
 
+	const url = useMemo(() => {
+		const episodeId = selectedRowData[0]?.id
+		const extended = selectedRowData.map((episode) => episode.id).join(',')
+
+		return `/projects/${String(id)}/${episodeId}/editor?extend=${extended}&${SIMPLIFIED_VIEWABLE_EDITOR}=true&${GLOBAL_LOCALIZE}=true&${HIDE_HEADER}=true`
+	}, [selectedRowData, id])
+
 	useEffect(() => {
 		if (!search || search === form.getValues('input')) return
 
 		form.setValue('input', search)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search])
-
-	const handleLocalize = useCallback(() => {
-		const episodeId = selectedRowData[0]?.id
-		const extended = selectedRowData.map((episode) => episode.id).join(',')
-
-		router.push(
-			`/projects/${String(id)}/${episodeId}/editor?extend=${extended}&${SIMPLIFIED_VIEWABLE_EDITOR}=true&${GLOBAL_LOCALIZE}=true`
-		)
-	}, [selectedRowData, id, router])
 
 	return (
 		<>
@@ -134,14 +133,14 @@ const Filters = ({
 				disabled={disabled || Object.keys(selectedRowData).length < 1}
 				selectedRowData={selectedRowData}
 			/>
-			<Button
+			<MultiEpLocalizeDialog
+				url={url}
 				size="icon"
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}
-				onClick={handleLocalize}
 				title="Localize episodes"
 			>
 				<Replace size={16} />
-			</Button>
+			</MultiEpLocalizeDialog>
 			<Button
 				size="icon"
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}
