@@ -175,6 +175,7 @@ export async function fetchAPI<
 				message,
 			}
 		}
+		console.log({ accessToken })
 		const responseData = (await response.json()) as ResponseDataT
 
 		if (sendLog) {

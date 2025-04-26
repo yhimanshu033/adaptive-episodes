@@ -155,7 +155,7 @@ export const SocketStreamingProvider = ({
 				BodyParamsT,
 				QueryParamsT & TSocketQueryParams
 			>({
-				...(baseUrl ? { baseUrl } : {}),
+				// ...(baseUrl ? { baseUrl } : {}),
 				...rest,
 				query: {
 					task_id: taskId,
@@ -166,7 +166,7 @@ export const SocketStreamingProvider = ({
 
 			return taskId
 		},
-		[fetchedData, baseUrl, session]
+		[fetchedData, session]
 	)
 
 	const getStreamedResponse = useCallback(

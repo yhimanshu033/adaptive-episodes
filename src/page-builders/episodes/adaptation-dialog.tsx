@@ -31,10 +31,15 @@ export default function AdaptationDialog({
 	selectedRowData,
 }: TAdaptationDialogProps) {
 	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
-		useState<ELanguage>(ELanguage.HINDI)
-	const currentLanguage = ELanguage.ENGLISH
-	const selectableLanguages = languages.filter(
-		(lang) => lang !== currentLanguage
+		useState<ELanguage>(ELanguage.MEXICAN_SPANISH)
+	const currentLanguage = useMemo(
+		() => selectedRowData[0]?.language || ELanguage.ENGLISH,
+		[selectedRowData]
+	)
+
+	const selectableLanguages = useMemo(
+		() => languages.filter((lang) => lang !== currentLanguage),
+		[currentLanguage]
 	)
 
 	const {
@@ -48,8 +53,9 @@ export default function AdaptationDialog({
 
 	const step = useMemo(() => {
 		if (sendLSData) return 4
+		if (sendLSPending) return 2
 		if (data?.ls_mapping) return 3
-		if (isPending || sendLSPending) return 2
+		if (isPending) return 2
 		return 1
 	}, [data, isPending, sendLSData, sendLSPending])
 

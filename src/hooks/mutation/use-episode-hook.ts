@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
+// import useLanguage from '@/hooks/use-language'
 import useSocket from '@/hooks/use-socket'
 import { saveContent } from '@/server-action/content-action'
 import {
@@ -18,7 +19,7 @@ import { TComment } from '@udecode/plate-comments'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 
-import { BASE_STATUS, EStatus } from '@/types/common'
+import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
 import { TEpisodeMergeParams } from '@/types/episode-type'
 
@@ -46,32 +47,46 @@ const useEpisodeHook = () => {
 			prevProps,
 			word_count,
 			resolvedComments,
+			language,
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
 			comments?: TComment[]
+			language?: ELanguage
 			prevProps?: Record<string, unknown>
 			resolvedComments?: TCustomComment[]
 			status: EStatus | typeof BASE_STATUS
 			text: string
 			word_count?: number
 		}) => {
-			if (status === BASE_STATUS && !updatedStatus) {
+			if (
+				status === BASE_STATUS &&
+				language === ELanguage.GERMAN_ORIGINAL &&
+				!updatedStatus
+			) {
 				setUpdatedStatus(true)
 				await saveContent({
 					episodeId: chapterId ?? Number(episodeId),
 					projectId: Number(id),
+					id: chapterId ?? Number(episodeId),
 					text,
 					status: EStatus.FIRST_DRAFT,
 				})
 			}
 			return saveContent({
-				episodeId: chapterId ?? Number(episodeId),
+				episodeId: Number(episodeId),
 				projectId: Number(id),
 				text,
-				status: status === BASE_STATUS ? EStatus.FIRST_DRAFT : status,
+				id: chapterId ?? Number(episodeId),
+				status:
+					language === ELanguage.GERMAN_ORIGINAL
+						? status === BASE_STATUS
+							? EStatus.FIRST_DRAFT
+							: status
+						: BASE_STATUS,
 				...(chapter_title ? { chapter_title } : {}),
 				word_count,
+				language,
 				props: {
 					...prevProps,
 					comments,
@@ -99,25 +114,30 @@ const useEpisodeHook = () => {
 	const onEpisodeInvent = async ({
 		chapter_title,
 		seq_number,
+		language,
 	}: {
 		chapter_title: string
+		language?: ELanguage
 		seq_number: number
 	}) => {
 		return inventEpisode({
 			project_id: Number(id),
 			chapter_title,
 			seq_number,
+			language,
 		})
 	}
 
 	const onStatusUpdate = ({
 		parent_id,
 		status,
+		language,
 	}: {
+		language?: ELanguage
 		parent_id: number
 		status: string
 	}) => {
-		return updateStatus(Number(id), parent_id, status)
+		return updateStatus(Number(id), parent_id, status, language)
 	}
 
 	const onMetadataSync = async (chapterId: number) => {

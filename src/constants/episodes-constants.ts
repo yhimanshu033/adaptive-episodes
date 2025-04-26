@@ -13,13 +13,14 @@ export const statuses: EStatus[] = [
 ]
 
 export const languages: ELanguage[] = [
-	ELanguage.ENGLISH,
 	ELanguage.FRENCH,
 	ELanguage.GERMAN,
-	ELanguage.HINDI,
 	ELanguage.ITALIAN,
 	ELanguage.MEXICAN_SPANISH,
+	ELanguage.ENGLISH_US,
 ]
+
+export const sourceLanguages: ELanguage[] = [ELanguage.ENGLISH, ELanguage.HINDI]
 
 export const titleToStatus: Partial<Record<EStatus, string>> = {
 	[EStatus.FIRST_DRAFT]: '🔴 1ST DRAFT',
@@ -35,6 +36,8 @@ export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.HINDI]: 'Hindi',
 	[ELanguage.ITALIAN]: 'Italian',
 	[ELanguage.MEXICAN_SPANISH]: 'Spanish (MX)',
+	[ELanguage.GERMAN_ORIGINAL]: 'DEUTSCH',
+	[ELanguage.ENGLISH_US]: 'English (US)',
 }
 
 export enum EpisodeActions {

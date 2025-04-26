@@ -34,6 +34,7 @@ export default function PlateEditor() {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content, latestStatus, imported } = useEpisodeContent()
 	const isChildEpisode = !!content?.chapter.is_deleted
+
 	const editor = useMyEditor({
 		content: content?.text || '',
 		comments: content?.chapter.props?.comments,

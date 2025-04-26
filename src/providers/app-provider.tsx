@@ -52,8 +52,8 @@ const AppProvider = ({
 	return (
 		<SessionProvider session={session}>
 			<NuqsAdapter>
-				<SocketProvider>
-					<SocketStreamingProvider>
+				<SocketProvider baseUrl="https://handled-split-setup-impression.trycloudflare.com">
+					<SocketStreamingProvider baseUrl="https://handled-split-setup-impression.trycloudflare.com">
 						<PollingProvider>
 							<QueryClientProvider client={queryClient}>
 								<ThemeProvider

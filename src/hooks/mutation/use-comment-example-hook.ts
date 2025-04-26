@@ -1,6 +1,7 @@
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { API_URLS } from '@/constants/global-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useLanguage from '@/hooks/use-language'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import { useMutation } from '@tanstack/react-query'
@@ -26,6 +27,8 @@ export default function useCommentExampleHook() {
 	const { api } = useEditorPlugin(CommentsPlugin)
 
 	const { removeActiveCommentExampleMap } = useAIStore()
+	const language = useLanguage()
+
 	const commentExampleMutation = async () => {
 		const { beforeText, afterText, text } = getCommentNode(
 			children,
@@ -51,6 +54,7 @@ export default function useCommentExampleHook() {
 				prev_paragraphs,
 				next_paragraphs,
 				context: episodeContent?.chapter?.props?.llm_memories?.context || '',
+				language,
 			},
 			onResponse: (resp?: string[]) => {
 				if (!resp?.length) return

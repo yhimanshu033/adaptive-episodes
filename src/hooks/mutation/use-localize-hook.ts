@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
 import { LOC_SHEET_QUERY_KEY } from '@/constants/query-constants'
+import useIsGerman from '@/hooks/use-is-german'
 import useSocket from '@/hooks/use-socket'
 import { updateLOCSheet } from '@/server-action/localization-action'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -17,26 +18,39 @@ import {
 	TLocalizeResponse,
 	TLocalizeUpdateRequest,
 } from '@/types/ai-types'
-import { TNoParams } from '@/types/common'
+import { ELanguage, TNoParams } from '@/types/common'
 
 const useLocalizeHook = ({
 	text,
 	episodeId,
+	language,
 }: {
 	episodeId: number
+	language?: ELanguage
 	text: string
 }) => {
 	const { id } = useParams()
 
 	const { startTask, getResponse } = useSocket()
+	const isGerman = useIsGerman()
 
 	const onLocalize = async () => {
+		const defaultData: TLocalizeResponse['result'] = {
+			characters: {},
+			concepts: {},
+			objects: {},
+			places: {},
+		}
+		if (!isGerman) {
+			return defaultData
+		}
 		const taskId = await startTask<TLocalizeBody>({
 			method: 'POST',
 			url: API_URLS.STREAM_LOCALIZATION,
 			body: {
 				text,
 				project_id: String(id),
+				language,
 			},
 			noCache: true,
 		})
@@ -57,10 +71,14 @@ export default useLocalizeHook
 export const useLocalizeMutation = () => {
 	const { id } = useParams()
 	const { startTask, getResponse } = useSocket()
+	const isGerman = useIsGerman()
 
 	const mutation = useMutation({
 		mutationKey: ['localize-update'],
 		mutationFn: async (params: TLocalizeUpdateRequest) => {
+			if (!isGerman) {
+				return
+			}
 			const taskId = await startTask<
 				TLocalizeUpdateRequest,
 				TNoParams,

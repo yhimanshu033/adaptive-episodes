@@ -12,7 +12,6 @@ import { immer } from 'zustand/middleware/immer'
 import { useShallow } from 'zustand/react/shallow'
 
 import { AIStoreType, EFocusSetting } from '@/types/ai-types'
-import { ELanguage } from '@/types/common'
 import { EDualVIewMode, EpisodeIdStoreType } from '@/types/episode-type'
 import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
@@ -65,7 +64,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	currentTitle: '',
 	dualViewMode: EDualVIewMode.US_TRANSLATION,
 	startOverlayLoading: false,
-	selectedLanguage: ELanguage.GERMAN,
+	selectedLanguage: undefined,
 }
 
 type EpisodeIdContextType = {

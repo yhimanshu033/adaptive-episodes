@@ -1,5 +1,6 @@
 import React from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
+import useIsGerman from '@/hooks/use-is-german'
 import useVersions from '@/hooks/use-versions'
 import { Eye } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -49,6 +50,12 @@ const Versions = ({
 		isChildEpisode,
 		latestStatus,
 	})
+
+	const isGerman = useIsGerman()
+
+	if (!isGerman) {
+		return null
+	}
 
 	if (statusUpdateMutation.isPending) return <Spinner size={24} />
 

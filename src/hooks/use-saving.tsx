@@ -18,7 +18,7 @@ import {
 	getWordCount,
 } from '@/lib/utils/plate'
 
-import { BASE_STATUS, EStatus } from '@/types/common'
+import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
 import {
 	SaveEpisodeParams,
@@ -118,13 +118,16 @@ export function SavingContextProvider({
 				const clearedLaser = clearLasers(children)
 				const text = JSON.stringify(clearedLaser)
 				let status = data?.chapter.status || BASE_STATUS
-				const chapterId = data?.chapter.parent || data?.chapter.id
+				const language = data?.chapter.language
+				const chapterId = data?.chapter.id
 				const dataToSave: SaveEpisodeParams = {
 					projectId: Number(id),
-					status,
-					episodeId: Number(chapterId),
+					status: BASE_STATUS,
+					episodeId: Number(data?.chapter.parent || chapterId),
+					id: Number(chapterId),
 					text,
 					word_count,
+					language,
 					props: {
 						...data?.chapter.props,
 						comments: cleanedComments,
@@ -134,10 +137,11 @@ export function SavingContextProvider({
 				}
 				void setValue(`${String(id)}_${String(chapterId)}`, dataToSave)
 
-				if (status === BASE_STATUS) {
+				if (language === ELanguage.GERMAN_ORIGINAL && status === BASE_STATUS) {
 					await statusUpdateMutation.mutateAsync({
 						parent_id: chapterId,
 						status,
+						language: data?.chapter.language,
 					})
 					status = EStatus.FIRST_DRAFT
 				}
@@ -149,6 +153,7 @@ export function SavingContextProvider({
 					word_count,
 					comments: cleanedComments,
 					prevProps: data?.chapter.props,
+					language,
 					resolvedComments,
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
@@ -182,13 +187,20 @@ export function SavingContextProvider({
 		const clearedLaser = clearLasers(children)
 		const text = JSON.stringify(clearedLaser)
 		const status = data?.chapter.status || BASE_STATUS
-		const chapterId = data?.chapter.parent
+		const chapterId = data?.chapter.id
 
 		const dataToSave: SaveEpisodeParams = {
 			projectId: Number(id),
-			status,
-			episodeId: Number(chapterId),
+			status:
+				data?.chapter.language === ELanguage.GERMAN_ORIGINAL
+					? status === BASE_STATUS
+						? EStatus.FIRST_DRAFT
+						: status
+					: BASE_STATUS,
+			episodeId: Number(data?.chapter.parent || chapterId),
 			text,
+			id: Number(chapterId),
+			language: data?.chapter.language,
 			props: {
 				...data?.chapter.props,
 				comments: cleanedComments,
@@ -196,6 +208,7 @@ export function SavingContextProvider({
 			},
 			chapter_title: currentTitle || data?.chapter.chapter_title,
 		}
+
 		addUnsavedEpisodeParams(
 			`${String(id)}_${String(chapterId)}_${pathname}`,
 			dataToSave

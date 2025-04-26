@@ -26,10 +26,19 @@ export enum EStatus {
 	SECOND_DRAFT = '2ND_DRAFT',
 }
 
+export enum EEpisodeType {
+	ADAPTED = 'ADAPTED',
+	INVENTED = 'INVENTED',
+	MERGED = 'MERGED',
+	ORIGINAL = 'ORIGINAL',
+}
+
 export enum ELanguage {
 	ENGLISH = 'english',
+	ENGLISH_US = 'english_us',
 	FRENCH = 'french',
 	GERMAN = 'german',
+	GERMAN_ORIGINAL = 'german_original',
 	HINDI = 'hindi',
 	ITALIAN = 'italian',
 	MEXICAN_SPANISH = 'mexican_spanish',

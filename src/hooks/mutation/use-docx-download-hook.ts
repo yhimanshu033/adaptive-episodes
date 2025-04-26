@@ -1,6 +1,7 @@
 import React from 'react'
 import { API_URLS } from '@/constants/global-constants'
 import useDocxHtml from '@/hooks/mutation/use-get-docx-hook'
+import useIsInternal from '@/hooks/use-is-internal'
 import useSocket from '@/hooks/use-socket'
 import { useMutation } from '@tanstack/react-query'
 
@@ -21,6 +22,7 @@ export default function useDocxDownloadHook({
 	const { startTask, getResponse } = useSocket()
 	const downloadedContentRef = React.useRef<string | null>(null)
 
+	const isInternal = useIsInternal()
 	async function downloadDocx() {
 		const { base64String, html, title } = await getDocxHtml()
 		const taskId = await startTask<TGetDocxFromHtmlBody>({
@@ -44,5 +46,5 @@ export default function useDocxDownloadHook({
 		mutationFn: downloadDocx,
 	})
 
-	return { showButton, ...mutation }
+	return { showButton: showButton || !isInternal, ...mutation }
 }

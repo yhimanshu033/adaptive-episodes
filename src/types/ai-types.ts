@@ -14,6 +14,7 @@ export interface LaserToolsParams {
 	context?: string
 	ep_number: string
 	ep_text: string
+	input_language?: ELanguage
 	last_answer?: string
 	nexttext?: string
 	prevtext?: string
@@ -42,6 +43,7 @@ export interface AIChatBotParams {
 		ep_text?: string
 		ep_text_json?: MinifiedValue
 		highlighted_text?: string
+		input_language?: ELanguage
 		loglines_array?: string[]
 		messages: {
 			content: string
@@ -134,6 +136,7 @@ export interface PlotExplorerParams {
 	ep_from: number
 	ep_number: string
 	ep_to: number
+	input_language?: ELanguage
 	loglines_array: Array<string>
 	mode: string
 	project_id: number
@@ -247,6 +250,7 @@ export interface CommentExampleParams {
 	comment: string
 	context?: string
 	highlighted_text?: string
+	language?: ELanguage
 	next_paragraphs?: string
 	prev_paragraphs?: string
 }
@@ -267,7 +271,11 @@ export type TTSAPIBody = {
 	ep_text: string
 }
 
-export type TLocalizeBody = { project_id: string; text: string }
+export type TLocalizeBody = {
+	language?: ELanguage
+	project_id: string
+	text: string
+}
 
 export type TSendAdaptationStartBody = {
 	author: string

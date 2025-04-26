@@ -4,7 +4,7 @@ import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
-import { TNoParams } from '@/types/common'
+import { ELanguage, TNoParams } from '@/types/common'
 import {
 	TEpisodeDeleteResponse,
 	TEpisodeDeleteURLParams,
@@ -28,6 +28,7 @@ export const getEpisodes = async ({
 	search = '',
 	limit,
 }: TGetEpisodesQueryParams) => {
+	// return sampleEpisodeDetails // DEV CHECK
 	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
 		TNoParams,
@@ -48,8 +49,10 @@ export const getEpisodes = async ({
 
 export const getEpisodeDetails = async (
 	project_id: number,
-	parent: number = 1
+	parent: number = 1,
+	internal: boolean = true
 ) => {
+	// return sampleEpisodeDetails // DEV CHECK
 	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
 		TNoParams,
@@ -63,6 +66,12 @@ export const getEpisodeDetails = async (
 			parent,
 		},
 	})
+
+	if (internal && episodes.data?.results.data) {
+		episodes.data.results.data = episodes.data.results.data.filter(
+			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+		)
+	}
 	return episodes.data
 }
 
@@ -85,8 +94,10 @@ export const inventEpisode = async ({
 	project_id,
 	chapter_title,
 	seq_number,
+	language,
 }: {
 	chapter_title: string
+	language?: ELanguage
 	project_id: number
 	seq_number: number
 }) => {
@@ -101,7 +112,8 @@ export const inventEpisode = async ({
 			project_id,
 			chapter_title,
 			seq_number,
-			content: 'demo',
+			content: 'Start typing here...',
+			language,
 		},
 	})
 	return res.data
@@ -121,8 +133,10 @@ export const deleteEpisode = async (chapter_id: number) => {
 export const updateStatus = async (
 	project_id: number,
 	parent_id: number,
-	status: string
+	status: string,
+	language?: ELanguage
 ) => {
+	if (language !== ELanguage.GERMAN_ORIGINAL) return
 	const res = await fetchAPI<
 		TStatusUpdateResponse,
 		TStatusUpdateURLParams,
@@ -136,6 +150,7 @@ export const updateStatus = async (
 		},
 		body: {
 			status,
+			language,
 		},
 	})
 	return res.data

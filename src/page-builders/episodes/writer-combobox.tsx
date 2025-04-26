@@ -3,6 +3,7 @@
 import * as React from 'react'
 import useWriterUpdateMutation from '@/hooks/mutation/use-writer-update-mutation'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
+import useIsGerman from '@/hooks/use-is-german'
 import UserInfo from '@/page-builders/episodes/user-info'
 import { Check, ChevronsUpDown } from 'lucide-react'
 
@@ -35,6 +36,7 @@ const WriterCombobox = ({
 	const [open, setOpen] = React.useState<boolean>(false)
 	const [value, setValue] = React.useState<string>(selectedMemberId || '')
 	const { mutate } = useWriterUpdateMutation(chapterId || '')
+	const isGerman = useIsGerman()
 
 	const { isWriter } = useProjectId()
 
@@ -44,6 +46,10 @@ const WriterCombobox = ({
 	const selectedMember = members?.find(
 		(member) => member.user.id === Number(value)
 	)
+
+	if (!isGerman) {
+		return null
+	}
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>

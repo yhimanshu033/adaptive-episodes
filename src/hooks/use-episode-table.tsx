@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Row, Table } from '@tanstack/react-table'
 import { useShallow } from 'zustand/react/shallow'
 
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
@@ -18,6 +19,7 @@ const useEpisodeTable = () => {
 	const router = useRouter()
 	const pathname = usePathname()
 	const queryClient = useQueryClient()
+	const { initialStoryData: storyData } = useEpisodeTableContext()
 
 	const { isWriter } = useProjectId()
 
@@ -145,6 +147,7 @@ const useEpisodeTable = () => {
 		episodeInventMutation.mutate({
 			chapter_title: data.title,
 			seq_number: (currentInventIndex || 0) + 2 + (currentPage - 1) * limit,
+			language: storyData?.parent_language,
 		})
 		setIsInventOpen(false)
 	}
@@ -179,6 +182,7 @@ const useEpisodeTable = () => {
 						await statusUpdateMutation.mutateAsync({
 							parent_id: episode.parent ?? episode.id,
 							status: BASE_STATUS,
+							language: storyData?.parent_language,
 						})
 					}
 					return statusUpdateMutation.mutateAsync({

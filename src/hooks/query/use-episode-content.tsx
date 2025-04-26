@@ -1,8 +1,9 @@
 'use client'
 
-import React, { createContext, useState } from 'react'
+import React, { createContext, useMemo, useState } from 'react'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
+import useIsInternal from '@/hooks/use-is-internal'
 import { getEpisodeContent } from '@/server-action/content-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
@@ -16,9 +17,12 @@ import { useShallow } from 'zustand/react/shallow'
 import { Button } from '@/components/ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
 import {
+	getAvailableLanguages,
+	getDisabledAvailableLanguages,
 	getEpisodeQueryResponseFromStoredData,
 	getSavedParamsFromEpisodeData,
 	getSelectedEpisode,
+	getSelectedEpisodeFromLanguage,
 } from '@/lib/utils/helpers'
 import { getValue, removeValue } from '@/lib/utils/indexed-db'
 import {
@@ -27,7 +31,7 @@ import {
 	jsonify,
 } from '@/lib/utils/plate'
 
-import { BASE_STATUS } from '@/types/common'
+import { BASE_STATUS, ELanguage } from '@/types/common'
 import { EDualVIewMode } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
@@ -41,19 +45,41 @@ import { ESidebar } from '@/types/plate-types'
 
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
+
+	const selectedLanguage = useEpisodeIdStoreContext(
+		useShallow((state) => state.selectedLanguage)
+	)
 	const { addEpisodeMap, addEpisodeKey } = useEditorExtendedStore()
 	const { data } = useEpisodeInfo()
-	console.log({ data })
+
 	const episodeId = useEpisodeId()
-	const { episode, latestStatus } = data
-		? getSelectedEpisode(data, selectedStatus)
-		: { episode: undefined, latestStatus: undefined }
+	const isInternal = useIsInternal()
+
+	const { episode, language, latestStatus } = useMemo(() => {
+		if (!data) {
+			return {
+				episode: undefined,
+				language: ELanguage.GERMAN_ORIGINAL,
+				latestStatus: undefined,
+			}
+		}
+		if (isInternal) {
+			return getSelectedEpisode(data, selectedStatus)
+		}
+		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
+	}, [data, selectedLanguage, selectedStatus, isInternal])
 	const [imported, setImported] = useState(false)
 
 	const dict = useTranslations('placeholders')
+	const languages = useMemo(() => getAvailableLanguages(data), [data])
+	const disabledLanguages = useMemo(
+		() => getDisabledAvailableLanguages(data),
+		[data]
+	)
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
 	const { setDualViewMode } = useEpisodeIdStore()
@@ -141,6 +167,9 @@ export const useEpisodeContentUtil = () => {
 	return {
 		...query,
 		latestStatus,
+		languages,
+		disabledLanguages,
+		language,
 		queryKey,
 		setImported,
 		imported,

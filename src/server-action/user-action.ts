@@ -1,11 +1,14 @@
 'use server'
 
 import { API_URLS, TIdParams } from '@/constants/global-constants'
+import { getServerSession } from 'next-auth'
 
 import { fetchAPI } from '@/lib/fetch-api'
+import { isInternalUser } from '@/lib/utils/helpers'
 
 import {
 	EProjectAccessActions,
+	ERole,
 	TGetAllUsersQueryParams,
 	TGetAllUsersResponse,
 	TGetMembersResponse,
@@ -16,14 +19,27 @@ import {
 import { TNoParams } from '@/types/common'
 
 export const getMembers = async (id: string) => {
+	const defaultData = { members: [] }
+	const session = await getServerSession()
+	if (!session) {
+		return defaultData
+	}
 	const resp = await fetchAPI<TGetMembersResponse, TIdParams>({
 		method: 'GET',
 		url: API_URLS.MEMBERS_GET,
-		defaultData: { members: [] },
+		defaultData,
 		urlParams: {
 			id,
 		},
 	})
+	const isInternal = isInternalUser(session)
+	if (
+		resp.data?.members &&
+		!isInternal &&
+		!resp.data.members.find((mem) => mem.user.id === session.user.id)
+	) {
+		resp.data.members.push({ role: ERole.ADMIN, user: session.user })
+	}
 	return resp.data
 }
 

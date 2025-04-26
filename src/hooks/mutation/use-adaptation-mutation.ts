@@ -41,7 +41,7 @@ export default function useAdaptationMutation() {
 					is_external: true,
 					project_id: projectId,
 					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang: ELanguage.ENGLISH,
+					source_lang: selectedRowData?.[0]?.language || ELanguage.ENGLISH,
 					target_lang: language,
 					type: 'ls_sheet_gen',
 				},
@@ -64,7 +64,6 @@ export default function useAdaptationMutation() {
 			},
 			delay: 10000,
 			stop: (resp) => {
-				console.log(resp)
 				if (!resp.error && resp.data) {
 					return true
 				}
@@ -105,13 +104,12 @@ export default function useAdaptationMutation() {
 					is_external: true,
 					project_id: projectId,
 					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang: ELanguage.ENGLISH,
+					source_lang: selectedRowData?.[0]?.language || ELanguage.ENGLISH,
 					target_lang: language,
 					type: 'adaptation',
 				},
 			}
 		)
-		console.log({ resp })
 		if (resp.error || !resp.data) {
 			throw new Error('Error during adaptation!')
 		}

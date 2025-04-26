@@ -6,6 +6,7 @@ import {
 	typeToLocalizedKey,
 } from '@/constants/ai-constants'
 import { useLocalizeMutation } from '@/hooks/mutation/use-localize-hook'
+import useIsGerman from '@/hooks/use-is-german'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -46,6 +47,8 @@ export default function AddForm({
 	setData: Dispatch<SetStateAction<TLocalizeResponse['result'] | undefined>>
 }) {
 	const { mutate, isPending } = useLocalizeMutation()
+	const isGerman = useIsGerman()
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -86,6 +89,9 @@ export default function AddForm({
 		}
 	}
 
+	if (!isGerman) {
+		return null
+	}
 	return (
 		<Form {...form}>
 			<form

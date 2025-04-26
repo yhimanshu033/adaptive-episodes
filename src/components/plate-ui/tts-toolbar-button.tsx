@@ -1,5 +1,6 @@
 import React from 'react'
 import useStreamedTTS from '@/hooks/mutation/use-streamed-tts'
+import useIsInternal from '@/hooks/use-is-internal'
 import { Headphones } from 'lucide-react'
 
 import IfElse from '@/components/if-else'
@@ -8,6 +9,11 @@ import Spinner from '@/components/ui/spinner'
 
 export default function TtsToolbarButton() {
 	const { mutate, isPending } = useStreamedTTS()
+	const isInternal = useIsInternal()
+
+	if (!isInternal) {
+		return null
+	}
 	return (
 		<ToolbarButton
 			tooltip="Listen"

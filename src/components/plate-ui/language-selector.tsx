@@ -14,6 +14,7 @@ import { ELanguage } from '@/types/common'
 
 interface TLanguageSelectorProps {
 	className?: string
+	disabledLanguages?: ELanguage[]
 	onChange: (language: ELanguage) => void
 	selectableLanguages?: ELanguage[]
 	value: ELanguage
@@ -23,6 +24,7 @@ const LanguageSelector = ({
 	value,
 	selectableLanguages = languages,
 	className,
+	disabledLanguages = [],
 }: TLanguageSelectorProps) => {
 	const handleSelect = useCallback(
 		(language: ELanguage) => {
@@ -38,8 +40,13 @@ const LanguageSelector = ({
 			</SelectTrigger>
 			<SelectContent>
 				{selectableLanguages.map((lang, index) => (
-					<SelectItem key={index} value={lang}>
-						{languageToTitle[lang]}
+					<SelectItem
+						key={index}
+						disabled={disabledLanguages.includes(lang)}
+						value={lang}
+					>
+						{languageToTitle[lang] +
+							(disabledLanguages.includes(lang) ? ' (adapting)' : '')}
 					</SelectItem>
 				))}
 			</SelectContent>

@@ -12,12 +12,15 @@ import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
 import { jsonrepair } from 'jsonrepair'
 import Negotiator from 'negotiator'
+import { Session } from 'next-auth'
 import { JWT } from 'next-auth/jwt'
 import { twMerge } from 'tailwind-merge'
 
 import { ERole, UserProject } from '@/types/admin-types'
 import {
 	BASE_STATUS,
+	EEpisodeType,
+	ELanguage,
 	ELSMappingGender,
 	ELSMappingType,
 	EStatus,
@@ -46,7 +49,11 @@ export function cn(...inputs: ClassValue[]) {
 export const getSelectedEpisode = (
 	data: TGetEpisodesResponse,
 	selectedStatus?: EStatus
-): { episode: TEpisode; latestStatus: EStatus | typeof BASE_STATUS } => {
+): {
+	episode: TEpisode
+	language: ELanguage
+	latestStatus: EStatus | typeof BASE_STATUS
+} => {
 	const prioritizedStatuses = [
 		EStatus.PUBLISHED,
 		EStatus.POLISH,
@@ -76,9 +83,82 @@ export const getSelectedEpisode = (
 			data.results.data.some((episode) => episode.status === status)
 		) ?? data.results.data[0].status
 
-	return { episode: selectedEpisode ?? data.results.data[0], latestStatus }
+	return {
+		episode: selectedEpisode ?? data.results.data[0],
+		latestStatus,
+		language: data?.results?.data?.[0]?.language as ELanguage,
+	}
 }
 
+export const getSelectedEpisodeFromLanguage = (
+	data: TGetEpisodesResponse,
+	selectedLanguage?: ELanguage
+): {
+	episode: TEpisode
+	language: ELanguage
+	latestStatus: EStatus | typeof BASE_STATUS
+} => {
+	const originalChapter = data.results.data.find(
+		(ep) =>
+			ep.type === EEpisodeType.ORIGINAL || ep.type === EEpisodeType.INVENTED
+	) as TEpisode
+
+	if (!selectedLanguage) {
+		return {
+			episode: originalChapter,
+			language: originalChapter?.language as ELanguage,
+			latestStatus: BASE_STATUS,
+		}
+	}
+
+	const langChapter = data.results.data.find(
+		(ep) => ep.language === selectedLanguage
+	) as TEpisode
+
+	return {
+		episode: langChapter || originalChapter || data.results.data[0],
+		language: selectedLanguage,
+		latestStatus: BASE_STATUS,
+	}
+}
+
+export function getAvailableLanguages(
+	data: TGetEpisodesResponse | null | undefined
+) {
+	if (!data) return []
+	const episodes = data.results.data
+
+	const languages = Array.from(
+		episodes.reduce(
+			(acc, curr) => {
+				if (curr.language) acc.add(curr.language)
+				return acc
+			},
+			new Set([] as ELanguage[])
+		)
+	)
+
+	return languages
+}
+
+export function getDisabledAvailableLanguages(
+	data: TGetEpisodesResponse | null | undefined
+) {
+	if (!data) return []
+	const episodes = data.results.data
+
+	const languages = Array.from(
+		episodes.reduce(
+			(acc, curr) => {
+				if (curr.language && !curr.file_url) acc.add(curr.language)
+				return acc
+			},
+			new Set([] as ELanguage[])
+		)
+	)
+
+	return languages
+}
 export function prettifyNumber(
 	num: number,
 	locale: string = 'de', // 'en-US' for English
@@ -199,7 +279,7 @@ export const buttonVariants = cva(
 )
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function log(data: any) {
-	// if (process.env.NODE_ENV === 'production') return
+	if (process.env.NODE_ENV === 'production') return
 	console.dir(data, { depth: null })
 }
 
@@ -260,6 +340,7 @@ export function isAuthorized({
 	requiredRole: ERole
 	userRole: ERole | null
 }) {
+	// console.log({ requiredRole, userRole }) // DEV CHECK
 	if (!userRole || !roleToData[userRole]) return false
 	return roleToData[userRole].priority <= roleToData[requiredRole].priority
 }
@@ -558,4 +639,9 @@ export function isInvalidLSMapping(data: LSMappingOutput['ls_mapping']) {
 			!item.type ||
 			(item.type === ELSMappingType.PERSON && !item.gender)
 	)
+}
+
+export function isInternalUser(session: Session | null) {
+	// return false
+	return !!session && session.user.email.includes('@pocketfm')
 }

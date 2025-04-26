@@ -30,7 +30,7 @@ import { Switch } from '@/components/ui/switch'
 import useProjectId from '@/providers/project-id-provider'
 import { formatDate } from '@/lib/format-date'
 
-import { BASE_STATUS, EStatus } from '@/types/common'
+import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
 export const useCreateTable = (episodes: TEpisode[]) => {
@@ -163,6 +163,8 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						? EStatus.FIRST_DRAFT
 						: row.getValue('status')
 				const latestIndex = statuses.indexOf(latestStatus)
+
+				if (row.original.language !== ELanguage.GERMAN_ORIGINAL) return null
 				if (row.depth) return latestStatus
 				return (
 					<Select

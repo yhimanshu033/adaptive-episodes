@@ -4,6 +4,7 @@ import useLocalizeHook, {
 	useLocalizeDownloadMutation,
 	useUpdateLOCSheetMutation,
 } from '@/hooks/mutation/use-localize-hook'
+import useLanguage from '@/hooks/use-language'
 import {
 	useEditorPlugin,
 	useEditorRef,
@@ -30,6 +31,7 @@ import useLOCSheetData from './query/use-loc-sheet-data'
 
 export default function useFindAndReplace() {
 	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
+	const language = useLanguage()
 
 	const search = useOption('search') || ''
 	const replace = useOption('replace') || ''
@@ -46,7 +48,7 @@ export default function useFindAndReplace() {
 		data: fetchedData,
 		refetch,
 		isFetching,
-	} = useLocalizeHook({ text, episodeId })
+	} = useLocalizeHook({ text, episodeId, language })
 	const { isPending, mutateAsync } = useLocalizeDownloadMutation()
 	const { isPending: updateLOCPending, mutateAsync: updateLOCMutateAsync } =
 		useUpdateLOCSheetMutation()

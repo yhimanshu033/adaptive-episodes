@@ -5,6 +5,7 @@ import { API_URLS } from '@/constants/global-constants'
 import { fetchAPI } from '@/lib/fetch-api'
 import { getWordCountFromString } from '@/lib/utils/plate'
 
+import { ELanguage } from '@/types/common'
 import {
 	SaveEpisodeParams,
 	TEpisode,
@@ -15,6 +16,7 @@ import {
 } from '@/types/episode-type'
 
 export const getEpisodeContent = async (chapterId: number) => {
+	// return getSampleGetEpisodeResponse(chapterId) // DEV CHECK
 	const episodeData = await fetchAPI<TGetEpisodeResponse, TGetEpisodeUrlParams>(
 		{
 			method: 'GET',
@@ -45,6 +47,7 @@ export const saveContent = async ({
 		body: {
 			...data,
 			...(word_count ? { word_count } : {}),
+			id: data.language === ELanguage.GERMAN_ORIGINAL ? 0 : data?.id,
 		},
 		urlParams: {
 			projectId,

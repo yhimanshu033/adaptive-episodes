@@ -79,6 +79,7 @@ export default function useVersions({
 				parent_id: chapterId,
 				status:
 					latestStatus === BASE_STATUS ? EStatus.FIRST_DRAFT : latestStatus,
+				language: data?.chapter.language,
 			})
 			await queryClient.invalidateQueries({
 				queryKey: [EPISODE_INFO_QUERY_KEY, episodeId, id],
