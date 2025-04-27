@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { rephraseMethods } from '@/constants/editor-constants'
+import { languageToTitle } from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useLaserToolsQuery from '@/hooks/query/use-lasertool-data'
 import useLanguage from '@/hooks/use-language'
@@ -49,7 +50,7 @@ export default function LaserRephrase({
 		ep_text: getText(children) || '',
 		prompt: promptInput,
 		style_template: '',
-		input_language: language,
+		input_language: languageToTitle[language],
 	}
 
 	if (key && triggerRephrase === key && lasersResponseMap[key]?.response) {

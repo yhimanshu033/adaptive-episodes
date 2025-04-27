@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { languageToTitle } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import useMetadataQuery from '@/hooks/query/use-metadata-query'
 import useLanguage from '@/hooks/use-language'
@@ -49,7 +50,7 @@ const useAIChatbotHook = ({
 				sources,
 				beatsheets_array,
 				loglines_array,
-				input_language: language,
+				input_language: languageToTitle[language],
 			},
 		})
 		return taskId
@@ -91,7 +92,7 @@ export const useAIChatbotQueryHook = (
 				...params.aiChatbotData,
 				beatsheets_array,
 				loglines_array,
-				input_language: language,
+				input_language: languageToTitle[language],
 			},
 		})
 		return taskId

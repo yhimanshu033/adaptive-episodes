@@ -14,7 +14,7 @@ export interface LaserToolsParams {
 	context?: string
 	ep_number: string
 	ep_text: string
-	input_language?: ELanguage
+	input_language?: string
 	last_answer?: string
 	nexttext?: string
 	prevtext?: string
@@ -43,7 +43,7 @@ export interface AIChatBotParams {
 		ep_text?: string
 		ep_text_json?: MinifiedValue
 		highlighted_text?: string
-		input_language?: ELanguage
+		input_language?: string
 		loglines_array?: string[]
 		messages: {
 			content: string
@@ -136,7 +136,7 @@ export interface PlotExplorerParams {
 	ep_from: number
 	ep_number: string
 	ep_to: number
-	input_language?: ELanguage
+	input_language?: string
 	loglines_array: Array<string>
 	mode: string
 	project_id: number
@@ -250,7 +250,7 @@ export interface CommentExampleParams {
 	comment: string
 	context?: string
 	highlighted_text?: string
-	language?: ELanguage
+	input_language?: string
 	next_paragraphs?: string
 	prev_paragraphs?: string
 }
@@ -292,3 +292,5 @@ export type TGetAdaptationLSUrlParams = {
 	language: ELanguage
 	projectId: string
 }
+
+export type TQuickPrompt = { text: string; title: string | null }

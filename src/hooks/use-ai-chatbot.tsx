@@ -273,7 +273,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.REVIEW,
-					content: 'Erstelle Review...',
+					content: 'Adding review...',
 				})
 			} else if (requestedAction === EChatMode.SFX) {
 				setOriginalChildren(children)
@@ -282,7 +282,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.CHANGES,
-					content: 'Erstelle MUSIC/SFX/AMBIENT Tags...',
+					content: 'Adding MUSIC/SFX/AMBIENT Tags...',
 				})
 			} else if (requestedAction === EChatMode.VOICE) {
 				setOriginalChildren(children)
@@ -290,7 +290,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.VOICE,
-					content: 'Voice Pass ist aktiv...',
+					content: 'Voice Pass ist active...',
 				})
 			} else {
 				handleBlock({ text: '', taskId: aiResponse })
@@ -384,7 +384,7 @@ export function ChatbotProvider({
 						...messages[lastIndex],
 						content:
 							responses[blockStreaming].join('') ||
-							'Tut mir leid, darauf habe ich im Moment keine Antwort.',
+							"Sorry, I don't have an answer to that at the moment.",
 					},
 					lastIndex
 				)

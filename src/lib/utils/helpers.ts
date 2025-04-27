@@ -340,7 +340,6 @@ export function isAuthorized({
 	requiredRole: ERole
 	userRole: ERole | null
 }) {
-	// console.log({ requiredRole, userRole }) // DEV CHECK
 	if (!userRole || !roleToData[userRole]) return false
 	return roleToData[userRole].priority <= roleToData[requiredRole].priority
 }

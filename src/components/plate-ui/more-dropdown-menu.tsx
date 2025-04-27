@@ -5,6 +5,7 @@ import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { Focus, Globe, Search } from 'lucide-react'
 
+import IfElse from '@/components/if-else'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -41,7 +42,11 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 					}}
 				>
 					<Globe className="mr-2 size-5" />
-					{isGerman ? 'Localization' : 'Find & Replace'}
+					<IfElse
+						condition={!!isGerman}
+						if={'Localization'}
+						else={'Find & Replace'}
+					/>
 				</DropdownMenuItem>
 				<DropdownMenuItem
 					disabled={isDisabled}

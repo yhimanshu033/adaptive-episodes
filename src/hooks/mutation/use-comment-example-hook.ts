@@ -1,4 +1,5 @@
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { languageToTitle } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useLanguage from '@/hooks/use-language'
@@ -54,7 +55,7 @@ export default function useCommentExampleHook() {
 				prev_paragraphs,
 				next_paragraphs,
 				context: episodeContent?.chapter?.props?.llm_memories?.context || '',
-				language,
+				input_language: languageToTitle[language],
 			},
 			onResponse: (resp?: string[]) => {
 				if (!resp?.length) return
@@ -65,7 +66,7 @@ export default function useCommentExampleHook() {
 							type: ParagraphPlugin.key,
 							children: [
 								{
-									text: 'Beispiel:\n\n' + resp.join(''),
+									text: 'Example:\n\n' + resp.join(''),
 								},
 							],
 						},

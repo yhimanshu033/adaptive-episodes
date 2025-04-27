@@ -8,6 +8,9 @@ import { isInternalUser } from '@/lib/utils/helpers'
 export default async function Page() {
 	const session = await getServerSession()
 
-	if (!isInternalUser(session)) redirect('/projects')
+	if (!isInternalUser(session)) {
+		redirect('/projects')
+	}
+
 	return <ManageProject />
 }

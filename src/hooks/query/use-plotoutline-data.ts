@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { languageToTitle } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import { PLOTOUTLINE_QUERY_KEY } from '@/constants/query-constants'
 import {
@@ -90,7 +91,7 @@ const usePlotOutlineQuery = ({
 				...extractedData,
 				current_ep: getText(children) || ' ',
 				search_query: instruction,
-				input_language: language,
+				input_language: languageToTitle[language],
 			}
 
 			const taskId = await startTask({

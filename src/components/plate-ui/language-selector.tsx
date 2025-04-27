@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react'
 import { languages, languageToTitle } from '@/constants/episodes-constants'
 
+import IfElse from '@/components/if-else'
 import {
 	Select,
 	SelectContent,
@@ -45,8 +46,11 @@ const LanguageSelector = ({
 						disabled={disabledLanguages.includes(lang)}
 						value={lang}
 					>
-						{languageToTitle[lang] +
-							(disabledLanguages.includes(lang) ? ' (adapting)' : '')}
+						<IfElse
+							condition={disabledLanguages.includes(lang)}
+							if={`${languageToTitle[lang]} (adapting)`}
+							else={languageToTitle[lang]}
+						/>
 					</SelectItem>
 				))}
 			</SelectContent>

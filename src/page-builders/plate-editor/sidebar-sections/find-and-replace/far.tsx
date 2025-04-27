@@ -85,7 +85,11 @@ export default function FindAndReplaceUI({
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
 			<h2 className="text-2xl font-bold">
-				{isGerman ? 'Localization' : 'Find and Replace'}
+				<IfElse
+					condition={!!isGerman}
+					if={'Localization'}
+					else={'Find & Replace'}
+				/>
 			</h2>
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
 				<TooltipComponent tooltip="Enable Replace">
