@@ -23,10 +23,14 @@ const Title = ({
 	const { data: episodeInfo } = useEpisodeInfo()
 
 	const updatedAt = useMemo(() => {
-		if (!episodeInfo?.results?.data) return null
+		if (!episodeInfo?.results?.data) {
+			return null
+		}
 		const latestEpisode = getSelectedEpisode(episodeInfo)
 		const updateTime = latestEpisode?.episode.update_time
-		if (!updateTime) return null
+		if (!updateTime) {
+			return null
+		}
 		const date = new Date(updateTime)
 		return date.toLocaleString()
 	}, [episodeInfo])

@@ -25,7 +25,9 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 	const { initialStoryData } = useEpisodeTableContext()
 
 	const defaultLink = useMemo(() => {
-		if (!initialStoryData) return ''
+		if (!initialStoryData) {
+			return ''
+		}
 
 		return folderType === EFolderType.BASE_SCRIPT
 			? initialStoryData.base_script_drive_folder_url || ''
@@ -45,7 +47,9 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 	const link = form.watch('link')
 
 	useEffect(() => {
-		if (!defaultLink) return
+		if (!defaultLink) {
+			return
+		}
 
 		form.setValue('link', defaultLink)
 		// eslint-disable-next-line react-hooks/exhaustive-deps

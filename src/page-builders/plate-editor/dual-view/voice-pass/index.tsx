@@ -46,7 +46,9 @@ export default function VoicePass({
 	})
 
 	const streamedData = useMemo(() => {
-		if (!data || !responses[data]) return []
+		if (!data || !responses[data]) {
+			return []
+		}
 
 		let concatenatedResponse = responses[data].join('')
 		if (voiceMode === EChatMode.VOICE2_XML) {

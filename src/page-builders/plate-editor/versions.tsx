@@ -57,7 +57,9 @@ const Versions = ({
 		return null
 	}
 
-	if (statusUpdateMutation.isPending) return <Spinner size={24} />
+	if (statusUpdateMutation.isPending) {
+		return <Spinner size={24} />
+	}
 
 	return (
 		<>

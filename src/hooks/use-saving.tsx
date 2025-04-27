@@ -68,7 +68,9 @@ export function SavingContextProvider({
 
 	const pathname = usePathname()
 	const isSaved = useMemo(() => {
-		if (forceSave) return false
+		if (forceSave) {
+			return false
+		}
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(cleanedComments)
 		const currentResolvedComments = JSON.stringify(resolvedComments)
@@ -100,7 +102,9 @@ export function SavingContextProvider({
 			startOverlayLoading = false,
 			stopOverlayLoading = false,
 		}: TSaveEpisodeParams = {}) => {
-			if (!data?.chapter || (!forced && isSaved)) return
+			if (!data?.chapter || (!forced && isSaved)) {
+				return
+			}
 			if (startOverlayLoading) {
 				setStartOverlayLoading(true)
 			}
@@ -183,7 +187,9 @@ export function SavingContextProvider({
 	)
 
 	const handleSaveGlobalStore = useCallback(() => {
-		if (!data?.chapter) return
+		if (!data?.chapter) {
+			return
+		}
 		const clearedLaser = clearLasers(children)
 		const text = JSON.stringify(clearedLaser)
 		const status = data?.chapter.status || BASE_STATUS
@@ -224,7 +230,9 @@ export function SavingContextProvider({
 	])
 
 	const handleRemoveGlobalStore = useCallback(() => {
-		if (!data?.chapter) return
+		if (!data?.chapter) {
+			return
+		}
 		const chapterId = data?.chapter.parent
 		removeUnsavedEpisodeParams(`${String(id)}_${String(chapterId)}_${pathname}`)
 	}, [data?.chapter, pathname, id])
@@ -249,7 +257,9 @@ export function SavingContextProvider({
 	}, [isSaved, handleSave])
 
 	useEffect(() => {
-		if (!data?.chapter) return
+		if (!data?.chapter) {
+			return
+		}
 		if (data.chapter.chapter_title) {
 			savedTitleRef.current = data.chapter.chapter_title
 			setCurrentTitle(data.chapter.chapter_title)

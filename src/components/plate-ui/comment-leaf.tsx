@@ -27,7 +27,9 @@ export function CommentLeaf({
 
 	const isActive = sidebar === ESidebar.COMMENTS && state.isActive
 
-	if (!state.commentCount) return <>{children}</>
+	if (!state.commentCount) {
+		return <>{children}</>
+	}
 
 	let aboveChildren = <>{children}</>
 

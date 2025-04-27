@@ -20,7 +20,9 @@ const useProjectIdUtil = () => {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 
 	const myRole = useMemo(() => {
-		if (!userData) return null
+		if (!userData) {
+			return null
+		}
 		const myUser = data?.members.find(
 			(member) => member.user.uid === userData?.uid
 		)
@@ -51,7 +53,9 @@ const useProjectIdUtil = () => {
 
 	const isAccessible = useCallback(
 		(role: ERole) => {
-			if (!myRole) return false
+			if (!myRole) {
+				return false
+			}
 			return isAuthorized({ requiredRole: role, userRole: myRole })
 		},
 		[myRole]

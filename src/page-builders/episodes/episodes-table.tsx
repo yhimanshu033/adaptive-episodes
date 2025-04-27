@@ -41,7 +41,9 @@ const EpisodesTable = () => {
 	useEffect(() => {
 		if (searchedRow && !isEpisodesLoading) {
 			const rowElement = document.getElementById(`row-${searchedRow - 1}`)
-			if (!rowElement) return
+			if (!rowElement) {
+				return
+			}
 			rowElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
 			const scrollDistance = Math.abs(
 				rowElement.getBoundingClientRect().top - window.innerHeight / 2

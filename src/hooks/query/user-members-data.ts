@@ -21,11 +21,14 @@ export default function useUserMembersQuery() {
 	})
 
 	const data = useMemo(() => {
-		if (!session || isInternal || !query.data) return query.data
+		if (!session || isInternal || !query.data) {
+			return query.data
+		}
 		const data = query.data
 
-		if (data.members.find((member) => member.user.id === session.user.id))
+		if (data.members.find((member) => member.user.id === session.user.id)) {
 			return data
+		}
 
 		data.members.push({
 			role: ERole.ADMIN,

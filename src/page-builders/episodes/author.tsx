@@ -9,7 +9,9 @@ const AuthorTitle = () => {
 	const { storyUpdateMutation } = useStoryUploadHook()
 
 	const updateAuthor = (author: string) => {
-		if (storyData?.author === author) return
+		if (storyData?.author === author) {
+			return
+		}
 		storyUpdateMutation.mutate({
 			author,
 		})

@@ -74,7 +74,9 @@ export const getSelectedEpisode = (
 			selectedEpisode = data.results.data.find(
 				(episode) => episode.status === status
 			)
-			if (selectedEpisode) break
+			if (selectedEpisode) {
+				break
+			}
 		}
 	}
 
@@ -125,13 +127,17 @@ export const getSelectedEpisodeFromLanguage = (
 export function getAvailableLanguages(
 	data: TGetEpisodesResponse | null | undefined
 ) {
-	if (!data) return []
+	if (!data) {
+		return []
+	}
 	const episodes = data.results.data
 
 	const languages = Array.from(
 		episodes.reduce(
 			(acc, curr) => {
-				if (curr.language) acc.add(curr.language)
+				if (curr.language) {
+					acc.add(curr.language)
+				}
 				return acc
 			},
 			new Set([] as ELanguage[])
@@ -144,13 +150,17 @@ export function getAvailableLanguages(
 export function getDisabledAvailableLanguages(
 	data: TGetEpisodesResponse | null | undefined
 ) {
-	if (!data) return []
+	if (!data) {
+		return []
+	}
 	const episodes = data.results.data
 
 	const languages = Array.from(
 		episodes.reduce(
 			(acc, curr) => {
-				if (curr.language && !curr.file_url) acc.add(curr.language)
+				if (curr.language && !curr.file_url) {
+					acc.add(curr.language)
+				}
 				return acc
 			},
 			new Set([] as ELanguage[])
@@ -236,7 +246,9 @@ export const getMetaDataRange = (
 }
 
 export const toPascalCase = (str: string | null) => {
-	if (!str) return ''
+	if (!str) {
+		return ''
+	}
 	return str.replace(
 		/\w+/g,
 		(w) => w[0].toUpperCase() + w.slice(1).toLowerCase()
@@ -279,7 +291,9 @@ export const buttonVariants = cva(
 )
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function log(data: any) {
-	if (process.env.NODE_ENV === 'production') return
+	if (process.env.NODE_ENV === 'production') {
+		return
+	}
 	console.dir(data, { depth: null })
 }
 
@@ -340,7 +354,9 @@ export function isAuthorized({
 	requiredRole: ERole
 	userRole: ERole | null
 }) {
-	if (!userRole || !roleToData[userRole]) return false
+	if (!userRole || !roleToData[userRole]) {
+		return false
+	}
 	return roleToData[userRole].priority <= roleToData[requiredRole].priority
 }
 
@@ -367,7 +383,9 @@ export function convertMetadata(
 	const convertedData: TGetMetadataResponse = {
 		data: {},
 	}
-	if (!data) return convertedData
+	if (!data) {
+		return convertedData
+	}
 	for (const key in data.data) {
 		const records = data.data[key]
 		const latestData = getLatestStatusData(records)
@@ -475,9 +493,15 @@ export function sortOpenedStories(
 		const indexA = openedIds.indexOf(a.id)
 		const indexB = openedIds.indexOf(b.id)
 
-		if (indexA === -1 && indexB === -1) return 0 // Both not in openedIds, keep relative order
-		if (indexA === -1) return 1 // A is not in openedIds, move to end
-		if (indexB === -1) return -1 // B is not in openedIds, move to end
+		if (indexA === -1 && indexB === -1) {
+			return 0
+		} // Both not in openedIds, keep relative order
+		if (indexA === -1) {
+			return 1
+		} // A is not in openedIds, move to end
+		if (indexB === -1) {
+			return -1
+		} // B is not in openedIds, move to end
 
 		return indexA - indexB
 	})

@@ -46,12 +46,13 @@ export default function PlateEditor() {
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
-	if (!content || !latestStatus)
+	if (!content || !latestStatus) {
 		return (
 			<div className="flex min-h-[80vh] flex-1 items-center justify-center">
 				<Loader />
 			</div>
 		)
+	}
 
 	return (
 		<Plate editor={editor}>

@@ -58,7 +58,9 @@ const SuggestionBlock = ({
 
 	const userTitle = user ? roleToData[user?.role]?.title : ''
 
-	if (!user) return null
+	if (!user) {
+		return null
+	}
 
 	return (
 		<div
@@ -73,7 +75,9 @@ const SuggestionBlock = ({
 				const elem = document.getElementById(
 					'suggestion-leaf-' + description.suggestionId
 				)
-				if (!elem) return
+				if (!elem) {
+					return
+				}
 				elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
 			}}
 		>

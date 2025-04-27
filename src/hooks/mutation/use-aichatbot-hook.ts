@@ -35,7 +35,9 @@ const useAIChatbotHook = ({
 	const language = useLanguage()
 
 	const onAiChatbotMutation = async (params: AIChatBotParams) => {
-		if (!metadataQueryData?.data) return
+		if (!metadataQueryData?.data) {
+			return
+		}
 
 		const { data: metadata } = metadataQueryData
 		const { beatsheets_array, loglines_array } = extractFromMetadata(metadata)
@@ -78,7 +80,9 @@ export const useAIChatbotQueryHook = (
 	const language = useLanguage()
 
 	const getChatbotResponse = async () => {
-		if (!metadataQueryData?.data) return
+		if (!metadataQueryData?.data) {
+			return
+		}
 
 		const { data: metadata } = metadataQueryData
 

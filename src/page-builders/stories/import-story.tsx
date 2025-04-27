@@ -135,7 +135,7 @@ export function ImportStory() {
 										<LanguageSelector
 											value={field.value as ELanguage}
 											selectableLanguages={sourceLanguages}
-											onChange={field.onChange}
+											onValueChange={field.onChange}
 										/>
 									</FormControl>
 									<FormMessage />

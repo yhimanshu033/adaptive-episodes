@@ -50,7 +50,9 @@ export default function DualViewSelector() {
 	}, [localDiffValue, data, isGerman])
 
 	useEffect(() => {
-		if (modes.includes(dualViewMode)) return
+		if (modes.includes(dualViewMode)) {
+			return
+		}
 
 		setDualViewMode(modes[0])
 	}, [modes, dualViewMode, setDualViewMode])

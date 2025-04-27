@@ -24,7 +24,9 @@ const handleUIRoutes = async (req: NextRequest, jwt: JWT | null) => {
 
 	if (MANAGE_PROJECT.test(req.nextUrl.pathname) && jwt) {
 		const isAdmin = await projectAdminCheck(req, jwt)
-		if (isAdmin) return NextResponse.next()
+		if (isAdmin) {
+			return NextResponse.next()
+		}
 		return NextResponse.redirect(afterAuth)
 	}
 }

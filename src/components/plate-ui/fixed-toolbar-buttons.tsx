@@ -76,7 +76,7 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 		)
 	}
 
-	if (simplified)
+	if (simplified) {
 		return (
 			<div className="flex">
 				<SimplifiedToolbar />
@@ -85,6 +85,7 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 				</ToolbarGroup>
 			</div>
 		)
+	}
 
 	return (
 		<div className="w-full overflow-hidden">

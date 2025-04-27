@@ -6,7 +6,9 @@ import { SuggestionUser } from '@udecode/plate-suggestion'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function SuggestionAvatar({ user }: { user: SuggestionUser | null }) {
-	if (!user) return null
+	if (!user) {
+		return null
+	}
 
 	return (
 		<Avatar className="size-5">

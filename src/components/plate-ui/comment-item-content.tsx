@@ -77,7 +77,9 @@ export default function CommentItemContent() {
 	const userTitle = roleToData[user?.role]?.title
 
 	const handleCopy = (data: string | null) => {
-		if (!data) return
+		if (!data) {
+			return
+		}
 		void navigator.clipboard.writeText(data)
 	}
 

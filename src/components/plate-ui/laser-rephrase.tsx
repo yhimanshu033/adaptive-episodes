@@ -66,7 +66,9 @@ export default function LaserRephrase({
 
 	useEffect(() => {
 		if (data && !isFetching) {
-			if (!key) return
+			if (!key) {
+				return
+			}
 			setResponseActive(key)
 			const laser = getLaser(key)
 			setLaser({

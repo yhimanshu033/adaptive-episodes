@@ -61,7 +61,9 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			const newSelection = { ...rowSelection }
 			for (let i = start; i <= end; i++) {
 				const rowId = table.getRowModel().rows[i]?.id
-				if (rowId) newSelection[rowId] = true
+				if (rowId) {
+					newSelection[rowId] = true
+				}
 			}
 			setRowSelection(newSelection)
 		} else {
@@ -164,8 +166,12 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						: row.getValue('status')
 				const latestIndex = statuses.indexOf(latestStatus)
 
-				if (row.original.language !== ELanguage.GERMAN_ORIGINAL) return null
-				if (row.depth) return latestStatus
+				if (row.original.language !== ELanguage.GERMAN_ORIGINAL) {
+					return null
+				}
+				if (row.depth) {
+					return latestStatus
+				}
 				return (
 					<Select
 						value={latestStatus}

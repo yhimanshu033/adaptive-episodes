@@ -26,7 +26,9 @@ export default function useStreamedTTS() {
 	)
 
 	function onTTSMutation() {
-		if (!text) return
+		if (!text) {
+			return
+		}
 		mutation.mutate({
 			info: infoData,
 			text,

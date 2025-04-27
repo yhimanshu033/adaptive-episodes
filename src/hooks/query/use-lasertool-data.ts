@@ -10,7 +10,9 @@ import { LaserToolsApiResponse, LaserToolsParams } from '@/types/ai-types'
 const useLaserToolsQuery = (key: string | null, params: LaserToolsParams) => {
 	const { startTask, getResponse } = useSocket()
 	async function onRephraseFn() {
-		if (!key) return
+		if (!key) {
+			return
+		}
 		const taskId = await startTask<LaserToolsParams>({
 			method: 'POST',
 			url: API_URLS.STREAM_LASER,

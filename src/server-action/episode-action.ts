@@ -67,6 +67,13 @@ export const getEpisodeDetails = async (
 		},
 	})
 
+	if (episodes.data?.results) {
+		episodes.data.results.data.forEach((ep) => {
+			if (!ep.language) {
+				ep.language = ELanguage.GERMAN_ORIGINAL
+			}
+		})
+	}
 	if (internal && episodes.data?.results.data) {
 		episodes.data.results.data = episodes.data.results.data.filter(
 			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
@@ -136,7 +143,9 @@ export const updateStatus = async (
 	status: string,
 	language?: ELanguage
 ) => {
-	if (language !== ELanguage.GERMAN_ORIGINAL) return
+	if (language !== ELanguage.GERMAN_ORIGINAL) {
+		return
+	}
 	const res = await fetchAPI<
 		TStatusUpdateResponse,
 		TStatusUpdateURLParams,
@@ -187,6 +196,8 @@ export const updateNotes = async ({
 		body: params,
 	})
 
-	if (!res.success) throw res.error
+	if (!res.success) {
+		throw res.error
+	}
 	return res.data
 }

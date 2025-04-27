@@ -97,7 +97,9 @@ export const SocketStreamingProvider = ({
 					setResponses((prev) => ({ ...prev, [task_id]: [] }))
 					responsesRef.current[task_id] = []
 				}
-				if (!payload.chunk) return
+				if (!payload.chunk) {
+					return
+				}
 				setResponses((prev) => ({
 					...prev,
 					[task_id]: [...(prev[task_id] || []), String(payload.chunk)],

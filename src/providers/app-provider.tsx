@@ -37,7 +37,9 @@ const AppProvider = ({
 		const selectedColor = localStorage.getItem(USER_SELECTED_COLOR) as
 			| TColorKey
 			| undefined
-		if (!selectedColor || !colorOptions[selectedColor]) return
+		if (!selectedColor || !colorOptions[selectedColor]) {
+			return
+		}
 
 		document.documentElement.style.setProperty(
 			'--primary',

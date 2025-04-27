@@ -18,7 +18,9 @@ export function ResolvedCommentLeaf({
 	const id = getResolvedCommentNodeKey(leaf)
 	const { isActive } = useResolvedComments()
 
-	if (!id) return null
+	if (!id) {
+		return null
+	}
 
 	return (
 		<PlateLeaf

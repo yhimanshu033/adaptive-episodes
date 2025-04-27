@@ -42,7 +42,9 @@ export default function useAiChatbotMessages() {
 	}
 	const handleAcceptResponse = useCallback(
 		(all: boolean = true, isSfx: boolean) => {
-			if (!value) return
+			if (!value) {
+				return
+			}
 			const newValue = structuredClone(value)
 			const currVal = newValue.map((node) => ({
 				...node,
@@ -73,8 +75,9 @@ export default function useAiChatbotMessages() {
 								child.text
 							) {
 								add = true
-								if (isSfx)
+								if (isSfx) {
 									child.text = String(child.text).replace(/\n+/, '') + '\n '
+								}
 							} else {
 								add = false
 							}

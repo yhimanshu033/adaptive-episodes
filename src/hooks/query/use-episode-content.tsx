@@ -93,12 +93,16 @@ export const useEpisodeContentUtil = () => {
 
 	async function fetchEpisodeContent() {
 		const resp = await getEpisodeContent(episode?.id || episodeId)
-		if (!resp) return resp
+		if (!resp) {
+			return resp
+		}
 
 		addEpisodeMap(episodeId, resp)
 		addEpisodeKey(episodeId, queryKey)
 		const oldData = await getValue(`${resp.chapter.project}_${episodeId}`)
-		if (!oldData) return resp
+		if (!oldData) {
+			return resp
+		}
 		if (imported) {
 			setLocalDiffValue(null)
 			setSidebar(null)

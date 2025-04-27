@@ -26,7 +26,9 @@ function usePlayerUtil() {
 	)
 
 	const setAudioUrl = useCallback((chunks: Uint8Array[]) => {
-		if (!audioRef.current) return
+		if (!audioRef.current) {
+			return
+		}
 		const blob = new Blob(chunks, { type: 'audio/mpeg' })
 		const audioUrl = URL.createObjectURL(blob)
 		const time = audioRef.current?.currentTime
@@ -80,11 +82,15 @@ function usePlayerUtil() {
 			while (!done) {
 				const { value, done: doneReading } = await reader.read()
 				done = doneReading
-				if (!value) continue
+				if (!value) {
+					continue
+				}
 				chunks.push(value)
 				const currNow = Date.now()
 				const diff = currNow - prevNow
-				if (diff < 3000 && !done) continue
+				if (diff < 3000 && !done) {
+					continue
+				}
 				prevNow = currNow
 				setAudioUrl(chunks)
 			}

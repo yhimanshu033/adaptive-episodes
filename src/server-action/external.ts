@@ -27,7 +27,9 @@ export async function elevenLabsTTS(value: string) {
 	while (!done) {
 		const { value, done: doneReading } = await reader.read()
 		done = doneReading
-		if (!value) continue
+		if (!value) {
+			continue
+		}
 		chunks.push(value)
 	}
 

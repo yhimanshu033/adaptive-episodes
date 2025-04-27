@@ -76,7 +76,9 @@ const WriterCombobox = ({
 									key={member.user.id}
 									value={String(member.user.fullname)}
 									onSelect={() => {
-										if (!isWriter) return
+										if (!isWriter) {
+											return
+										}
 										setValue(String(member.user.id))
 										mutate(member.user.id)
 										setOpen(false)

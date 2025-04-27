@@ -25,7 +25,9 @@ export function ColorPicker() {
 		const settingsPage = document.getElementById('settings-page') as
 			| HTMLDivElement
 			| undefined
-		if (!settingsPage) return
+		if (!settingsPage) {
+			return
+		}
 		document.documentElement.style.setProperty(
 			'--primary',
 			colorOptions[key].value

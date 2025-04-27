@@ -26,7 +26,7 @@ const Languages = () => {
 
 	return (
 		<LanguageSelector
-			onChange={handleSelect}
+			onValueChange={handleSelect}
 			selectableLanguages={languagesAvailable}
 			value={selectedLanguage}
 			disabledLanguages={disabledLanguages}

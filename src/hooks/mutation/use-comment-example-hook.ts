@@ -58,7 +58,9 @@ export default function useCommentExampleHook() {
 				input_language: languageToTitle[language],
 			},
 			onResponse: (resp?: string[]) => {
-				if (!resp?.length) return
+				if (!resp?.length) {
+					return
+				}
 				removeActiveCommentExampleMap(comment.id)
 				api.comment.addComment({
 					value: [

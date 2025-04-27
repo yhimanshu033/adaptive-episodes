@@ -15,12 +15,14 @@ import { useTranslations } from 'next-intl'
 import IfElse, { Else, If } from '@/components/if-else'
 import { Loader } from '@/components/loader'
 import { Button } from '@/components/ui/button'
+import ForEach from '@/components/ui/for-each'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { cn } from '@/lib/utils/helpers'
 
 import {
+	TLocalizeArrayItem,
 	TLocalizeCharacterArrayItem,
 	TLocalizeConceptArrayItem,
 	TLocalizeObjectArrayItem,
@@ -87,8 +89,8 @@ export default function FindAndReplaceUI({
 			<h2 className="text-2xl font-bold">
 				<IfElse
 					condition={!!isGerman}
-					if={'Localization'}
-					else={'Find & Replace'}
+					if="Localization"
+					else="Find & Replace"
 				/>
 			</h2>
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
@@ -191,27 +193,29 @@ export default function FindAndReplaceUI({
 				<If condition={isGerman}>
 					<Else>
 						<div className={cn('flex h-full flex-col')}>
-							{localized_entities.map(
-								(localized_entity, index) =>
-									!!localized_entity.entities.length && (
-										<React.Fragment key={index}>
-											<h4 className="my-2 rounded-md bg-muted p-2 text-lg font-semibold">
-												{localized_entity.title}
-											</h4>
-											<div className="flex flex-wrap gap-2">
-												{localized_entity.entities.map((character, index) => (
+							<ForEach data={localized_entities}>
+								{(localized_entity) => (
+									<If condition={!!localized_entity.entities.length}>
+										<h4 className="my-2 rounded-md bg-muted p-2 text-lg font-semibold">
+											{localized_entity.title}
+										</h4>
+										<div className="flex flex-wrap gap-2">
+											<ForEach
+												data={localized_entity.entities as TLocalizeArrayItem[]}
+											>
+												{(character) => (
 													<Button
 														onClick={() => handleSuggestionClick(character)}
-														key={index}
 														variant="outline"
 													>
 														{character.name}
 													</Button>
-												))}
-											</div>
-										</React.Fragment>
-									)
-							)}
+												)}
+											</ForEach>
+										</div>
+									</If>
+								)}
+							</ForEach>
 						</div>
 					</Else>
 				</If>

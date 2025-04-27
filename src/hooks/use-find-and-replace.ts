@@ -85,7 +85,9 @@ export default function useFindAndReplace() {
 	)
 
 	useEffect(() => {
-		if (!records[ptr]) return
+		if (!records[ptr]) {
+			return
+		}
 		setOptions({ currentId: records[ptr] })
 		const elem = document.getElementById(
 			`search-highlight-${records[ptr].join('-')}`
@@ -103,7 +105,9 @@ export default function useFindAndReplace() {
 		setOptions({ replaceEnabled: !replaceEnabled })
 	}
 	const onReplaceAll = useCallback(() => {
-		if (!search || !replaceEnabled || !editor) return
+		if (!search || !replaceEnabled || !editor) {
+			return
+		}
 		const updatedChildren = replaceAll({
 			caseSensitive,
 			children,
@@ -142,9 +146,9 @@ export default function useFindAndReplace() {
 	}
 
 	function toggleSearchMode(mode: farSearchModes) {
-		if (mode === farSearchModes.CASE_SENSITIVE)
+		if (mode === farSearchModes.CASE_SENSITIVE) {
 			setOptions({ caseSensitive: !caseSensitive })
-		else if (mode === farSearchModes.WHOLE_WORD) {
+		} else if (mode === farSearchModes.WHOLE_WORD) {
 			setOptions({ wholeWord: !wholeWord, genitive: !wholeWord })
 		}
 		const updatedChildren = structuredClone(children)
@@ -168,12 +172,16 @@ export default function useFindAndReplace() {
 
 	async function handleDownload() {
 		const url = await mutateAsync()
-		if (!url?.csv_sheet_url) return
+		if (!url?.csv_sheet_url) {
+			return
+		}
 		downloadFile(url.csv_sheet_url, `LOC_sheet.csv`)
 	}
 
 	async function handleScanEpisode() {
-		if (!isWriter) return
+		if (!isWriter) {
+			return
+		}
 		await updateLOCMutateAsync('')
 		void refetch()
 	}

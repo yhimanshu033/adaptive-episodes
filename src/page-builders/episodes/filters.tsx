@@ -77,8 +77,9 @@ const Filters = ({
 			!seqNumber ||
 			String(seqNumber) === search ||
 			totalEpisodes === 0
-		)
+		) {
 			return
+		}
 
 		setFetchedSeqNumber(true)
 		handleSearch({ input: String(seqNumber) })
@@ -99,7 +100,9 @@ const Filters = ({
 	}, [selectedRowData, id])
 
 	useEffect(() => {
-		if (!search || search === form.getValues('input')) return
+		if (!search || search === form.getValues('input')) {
+			return
+		}
 
 		form.setValue('input', search)
 		// eslint-disable-next-line react-hooks/exhaustive-deps

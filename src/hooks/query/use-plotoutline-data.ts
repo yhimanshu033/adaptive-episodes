@@ -50,7 +50,9 @@ const usePlotOutlineQuery = ({
 	const language = useLanguage()
 	const getPlotOutline =
 		useCallback(async (): Promise<PlotExplorerQueryResponse> => {
-			if (!action) return { content: [], taskId: '' }
+			if (!action) {
+				return { content: [], taskId: '' }
+			}
 			const metadataEntries = Object.values(metadata?.data?.data || {})
 
 			if ((action as PlotAction) === PlotAction.Summary) {

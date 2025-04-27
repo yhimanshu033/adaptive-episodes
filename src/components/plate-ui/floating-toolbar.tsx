@@ -57,7 +57,9 @@ export const FloatingToolbar = withRef<
 
 	const ref = useComposedRef<HTMLDivElement>(componentRef, floatingRef)
 
-	if (hidden) return null
+	if (hidden) {
+		return null
+	}
 
 	return (
 		<PortalBody>

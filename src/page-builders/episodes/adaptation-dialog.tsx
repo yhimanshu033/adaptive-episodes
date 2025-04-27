@@ -52,10 +52,19 @@ export default function AdaptationDialog({
 	} = useAdaptationMutation()
 
 	const step = useMemo(() => {
-		if (sendLSData) return 4
-		if (sendLSPending) return 2
-		if (data?.ls_mapping) return 3
-		if (isPending) return 2
+		return 3
+		if (sendLSData) {
+			return 4
+		}
+		if (sendLSPending) {
+			return 2
+		}
+		if (data?.ls_mapping) {
+			return 3
+		}
+		if (isPending) {
+			return 2
+		}
 		return 1
 	}, [data, isPending, sendLSData, sendLSPending])
 
@@ -92,7 +101,7 @@ export default function AdaptationDialog({
 							<ArrowRight size={24} />
 							<LanguageSelector
 								value={selectedAdaptingLanguage}
-								onChange={setSelectedAdaptingLanguage}
+								onValueChange={setSelectedAdaptingLanguage}
 								selectableLanguages={selectableLanguages}
 							/>
 						</div>

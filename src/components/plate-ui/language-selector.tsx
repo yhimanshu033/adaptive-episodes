@@ -1,7 +1,8 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { languages, languageToTitle } from '@/constants/episodes-constants'
 
 import IfElse from '@/components/if-else'
+import ForEach from '@/components/ui/for-each'
 import {
 	Select,
 	SelectContent,
@@ -16,43 +17,37 @@ import { ELanguage } from '@/types/common'
 interface TLanguageSelectorProps {
 	className?: string
 	disabledLanguages?: ELanguage[]
-	onChange: (language: ELanguage) => void
+	onValueChange: (language: ELanguage) => void
 	selectableLanguages?: ELanguage[]
 	value: ELanguage
 }
 const LanguageSelector = ({
-	onChange,
+	onValueChange,
 	value,
 	selectableLanguages = languages,
 	className,
 	disabledLanguages = [],
 }: TLanguageSelectorProps) => {
-	const handleSelect = useCallback(
-		(language: ELanguage) => {
-			onChange(language)
-		},
-		[onChange]
-	)
-
 	return (
-		<Select value={value} onValueChange={handleSelect}>
+		<Select value={value} onValueChange={onValueChange}>
 			<SelectTrigger className={cn('gap-2', className)}>
 				<SelectValue placeholder="Language" />
 			</SelectTrigger>
 			<SelectContent>
-				{selectableLanguages.map((lang, index) => (
-					<SelectItem
-						key={index}
-						disabled={disabledLanguages.includes(lang)}
-						value={lang}
-					>
-						<IfElse
-							condition={disabledLanguages.includes(lang)}
-							if={`${languageToTitle[lang]} (adapting)`}
-							else={languageToTitle[lang]}
-						/>
-					</SelectItem>
-				))}
+				<ForEach data={selectableLanguages}>
+					{(lang) => (
+						<SelectItem
+							disabled={disabledLanguages.includes(lang)}
+							value={lang}
+						>
+							<IfElse
+								condition={disabledLanguages.includes(lang)}
+								if={`${languageToTitle[lang]} (adapting)`}
+								else={languageToTitle[lang]}
+							/>
+						</SelectItem>
+					)}
+				</ForEach>
 			</SelectContent>
 		</Select>
 	)

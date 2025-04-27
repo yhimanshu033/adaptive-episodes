@@ -29,9 +29,8 @@ export function PromptsPopover({ children }: { children: React.ReactNode }) {
 			<PopoverTrigger asChild>{children}</PopoverTrigger>
 			<PopoverContent className="w-[400px]">
 				<div className="flex flex-col gap-2">
-					<ForEach
-						data={prompts}
-						render={({ title, text }, idx) => (
+					<ForEach data={prompts}>
+						{({ title, text }) => (
 							<Button
 								onClick={() =>
 									handleSuggestion({
@@ -41,12 +40,11 @@ export function PromptsPopover({ children }: { children: React.ReactNode }) {
 								}
 								variant="outline"
 								className="overflow-hidden"
-								key={idx}
 							>
 								{trim(title ?? text, 50)}
 							</Button>
 						)}
-					/>
+					</ForEach>
 				</div>
 			</PopoverContent>
 		</Popover>

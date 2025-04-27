@@ -45,11 +45,15 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	const { children: allChildren } = useEditorState()
 
 	useEffect(() => {
-		if (!key || !divRef?.current) return
+		if (!key || !divRef?.current) {
+			return
+		}
 		let laser = getLaser(key)
 		laser ??= { response: '', text: '' }
 		const rect = divRef.current?.getBoundingClientRect()
-		if (!rect) return
+		if (!rect) {
+			return
+		}
 		setLaser({
 			laser: {
 				...laser,
@@ -62,7 +66,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 
 	const { active: activeLaser } = laserStore()
 	const getSelectedText = useCallback(() => {
-		if (!key) return { text: leaf.text, prevtext: '', nexttext: '' }
+		if (!key) {
+			return { text: leaf.text, prevtext: '', nexttext: '' }
+		}
 		const { text } = leaf
 		let prevtext = ''
 		let nexttext = ''
@@ -103,7 +109,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 
 	const traverse = useCallback(
 		(node: TDescendant) => {
-			if (!key) return
+			if (!key) {
+				return
+			}
 			if (key in node) {
 				const keys = Object.keys(node).filter((key) => key.startsWith('laser'))
 				keys.forEach((key) => {
@@ -131,7 +139,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	}, [setActiveLaser])
 
 	function updateLaser() {
-		if (!key) return
+		if (!key) {
+			return
+		}
 		let laser = getLaser(key)
 		const rect = areaRef.current?.getBoundingClientRect()
 		laser = laser
@@ -155,7 +165,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 
 	const handleBlur = useCallback(
 		(e: React.FocusEvent) => {
-			if (activeLaser !== key) return
+			if (activeLaser !== key) {
+				return
+			}
 			const responseDiv = document.getElementById(`leaf-response-${key}`)
 			const responseInput = document.getElementById(
 				`leaf-response-editor-${key}`
@@ -163,8 +175,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			if (
 				document.activeElement === responseInput ||
 				responseDiv?.contains(e.relatedTarget)
-			)
+			) {
 				return
+			}
 			if (!areaRef.current?.contains(e.relatedTarget)) {
 				resetActive()
 			} else {
@@ -181,7 +194,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	}, [activeLaser, key])
 
 	const handleClick = useCallback(() => {
-		if (!key) return
+		if (!key) {
+			return
+		}
 		setActiveLaser(key)
 		if (responseMode) {
 			setResponseActive(key)
@@ -205,7 +220,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			<button
 				ref={btnRef}
 				onFocus={() => {
-					if (!key) return
+					if (!key) {
+						return
+					}
 					updateLaser()
 					setActiveLaser(key)
 				}}

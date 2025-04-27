@@ -75,6 +75,8 @@ export const updateProjectAccess = async (
 		},
 	})
 
-	if (!resp.success) throw resp.error
+	if (!resp.success) {
+		throw resp.error
+	}
 	return resp.data
 }

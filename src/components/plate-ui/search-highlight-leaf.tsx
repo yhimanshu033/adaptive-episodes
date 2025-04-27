@@ -47,7 +47,9 @@ export const SearchHighlightLeaf = ({
 
 	function setCurrent() {
 		setOption('currentId', id)
-		if (!globalLocalize) return
+		if (!globalLocalize) {
+			return
+		}
 		setOptions({ currentId: id })
 	}
 	function renderContent() {

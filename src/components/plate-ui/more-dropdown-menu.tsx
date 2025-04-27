@@ -44,8 +44,8 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 					<Globe className="mr-2 size-5" />
 					<IfElse
 						condition={!!isGerman}
-						if={'Localization'}
-						else={'Find & Replace'}
+						if="Localization"
+						else="Find & Replace"
 					/>
 				</DropdownMenuItem>
 				<DropdownMenuItem
