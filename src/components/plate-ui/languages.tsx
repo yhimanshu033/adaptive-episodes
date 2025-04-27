@@ -6,17 +6,11 @@ import useEpisodeIdStore from '@/store/episode-id-store'
 
 import LanguageSelector from '@/components/plate-ui/language-selector'
 
-import { ELanguage } from '@/types/common'
-
 const Languages = () => {
 	const { languages: languagesAvailable, disabledLanguages } =
 		useEpisodeContent()
 	const { setSelectedLanguage } = useEpisodeIdStore()
 	const selectedLanguage = useLanguage()
-
-	function handleSelect(language: ELanguage) {
-		setSelectedLanguage(language)
-	}
 
 	const isGerman = useIsGerman()
 
@@ -26,7 +20,7 @@ const Languages = () => {
 
 	return (
 		<LanguageSelector
-			onValueChange={handleSelect}
+			onValueChange={setSelectedLanguage}
 			selectableLanguages={languagesAvailable}
 			value={selectedLanguage}
 			disabledLanguages={disabledLanguages}

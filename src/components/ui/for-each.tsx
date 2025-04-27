@@ -5,11 +5,5 @@ export interface ForEachProps<T> {
 	data: T[]
 }
 export default function ForEach<T>({ data, children }: ForEachProps<T>) {
-	return (
-		<>
-			{data.map((item, index) => (
-				<React.Fragment key={index}>{children(item, index)}</React.Fragment>
-			))}
-		</>
-	)
+	return <>{data.map((item, index) => children(item, index))}</>
 }

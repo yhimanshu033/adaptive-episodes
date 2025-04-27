@@ -94,6 +94,7 @@ const LSTableEditor = memo(
 						<ForEach data={tableData}>
 							{(item, index) => (
 								<LSEditorRow
+									key={`table-row-${index}`}
 									index={index}
 									item={item}
 									removeRow={removeRow}

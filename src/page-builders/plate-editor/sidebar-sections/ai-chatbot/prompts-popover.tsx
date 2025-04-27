@@ -30,8 +30,9 @@ export function PromptsPopover({ children }: { children: React.ReactNode }) {
 			<PopoverContent className="w-[400px]">
 				<div className="flex flex-col gap-2">
 					<ForEach data={prompts}>
-						{({ title, text }) => (
+						{({ title, text }, idx) => (
 							<Button
+								key={`quick-prompt-${idx}`}
 								onClick={() =>
 									handleSuggestion({
 										action: EChatMode.PROMPTS,

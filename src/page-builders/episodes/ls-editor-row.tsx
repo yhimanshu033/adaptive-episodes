@@ -4,6 +4,7 @@ import { Trash2 } from 'lucide-react'
 
 import IfElse, { Else, If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
+import ForEach from '@/components/ui/for-each'
 import { Input } from '@/components/ui/input'
 import {
 	Select,
@@ -51,11 +52,13 @@ const LSEditorRow = memo(
 						<SelectValue placeholder="Type" />
 					</SelectTrigger>
 					<SelectContent>
-						{LSMappingTypes.map((type) => (
-							<SelectItem key={type} value={type}>
-								{type.toUpperCase()}
-							</SelectItem>
-						))}
+						<ForEach data={LSMappingTypes}>
+							{(type) => (
+								<SelectItem key={type} value={type}>
+									{type.toUpperCase()}
+								</SelectItem>
+							)}
+						</ForEach>
 					</SelectContent>
 				</Select>
 				<IfElse condition={item.type === ELSMappingType.PERSON}>
@@ -69,11 +72,13 @@ const LSEditorRow = memo(
 								<SelectValue placeholder="Gender" />
 							</SelectTrigger>
 							<SelectContent>
-								{LSMappingGenders.map((gender) => (
-									<SelectItem key={gender} value={gender}>
-										{gender}
-									</SelectItem>
-								))}
+								<ForEach data={LSMappingGenders}>
+									{(gender) => (
+										<SelectItem key={gender} value={gender}>
+											{gender}
+										</SelectItem>
+									)}
+								</ForEach>
 							</SelectContent>
 						</Select>
 					</If>

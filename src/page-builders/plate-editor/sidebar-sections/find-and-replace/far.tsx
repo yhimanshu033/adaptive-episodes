@@ -194,8 +194,11 @@ export default function FindAndReplaceUI({
 					<Else>
 						<div className={cn('flex h-full flex-col')}>
 							<ForEach data={localized_entities}>
-								{(localized_entity) => (
-									<If condition={!!localized_entity.entities.length}>
+								{(localized_entity, idx) => (
+									<If
+										key={`entity-${idx}`}
+										condition={!!localized_entity.entities.length}
+									>
 										<h4 className="my-2 rounded-md bg-muted p-2 text-lg font-semibold">
 											{localized_entity.title}
 										</h4>
@@ -203,8 +206,9 @@ export default function FindAndReplaceUI({
 											<ForEach
 												data={localized_entity.entities as TLocalizeArrayItem[]}
 											>
-												{(character) => (
+												{(character, idx) => (
 													<Button
+														key={`character-${idx}`}
 														onClick={() => handleSuggestionClick(character)}
 														variant="outline"
 													>
