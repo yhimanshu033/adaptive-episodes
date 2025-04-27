@@ -52,7 +52,6 @@ export default function AdaptationDialog({
 	} = useAdaptationMutation()
 
 	const step = useMemo(() => {
-		return 3
 		if (sendLSData) {
 			return 4
 		}
