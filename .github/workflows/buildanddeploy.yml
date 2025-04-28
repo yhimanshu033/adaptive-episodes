@@ -17,13 +17,13 @@ on:
   workflow_dispatch:
     inputs:
       build_with_cache:
-        description: "Build with cache?"
+        description: 'Build with cache?'
         required: true
-        default: "yes"
+        default: 'yes'
         type: choice
         options:
-          - "yes"
-          - "no"
+          - 'yes'
+          - 'no'
 
 jobs:
   debug:
@@ -38,9 +38,9 @@ jobs:
 
   build:
     needs: debug
-    if: |
-      github.ref == 'refs/heads/main' ||
-      github.ref == 'refs/heads/staging'
+    if:
+      ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+      || startsWith(github.ref, 'refs/heads/PF-')}}
     runs-on: self-hosted
     outputs:
       docker-tag: ${{ steps.set_tag.outputs.dockerTag }}
@@ -111,7 +111,7 @@ jobs:
           echo "Debug: dockerTag = ${{ env.dockerTag }}"
           echo "Debug: ENVIRONMENT = ${{ env.ENVIRONMENT }}"
           echo "Debug: BRANCH_NAME = ${{ env.BRANCH_NAME }}"
-      
+
       - name: Build and Push Multi-Architecture Image with Cache
         if: ${{ github.event.inputs.build_with_cache == 'yes' }}
         uses: docker/build-push-action@v5
@@ -121,8 +121,15 @@ jobs:
           push: true
           tags: |
             ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
-          cache-from: type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
-          cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
+          cache-from:
+            type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{
+            vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{
+            env.ENVIRONMENT }}:cache
+          cache-to:
+            mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{
+            vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION
+            }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT
+            }}:cache
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
 
@@ -136,10 +143,14 @@ jobs:
           tags: |
             ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
           no-cache: true
-          cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
+          cache-to:
+            mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{
+            vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION
+            }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT
+            }}:cache
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
-            
+
       - name: Check Docker Tag in ECR Repo
         env:
           AWS_REGION: ${{ vars.AWS_REGION }}
@@ -159,81 +170,81 @@ jobs:
           fi
 
   deploy:
-      needs: build
-      runs-on: self-hosted
-      env:
-        dockerTag: ${{ needs.build.outputs.docker-tag }}
-      steps:
-          - name: Debug Deploy Job
-            run: |
-              echo "Debug: Deploy job started"
+    needs: build
+    runs-on: self-hosted
+    env:
+      dockerTag: ${{ needs.build.outputs.docker-tag }}
+    steps:
+      - name: Debug Deploy Job
+        run: |
+          echo "Debug: Deploy job started"
 
-          - name: Test Secret Accessibility
-            run: |
-              echo "Debug: Testing secret accessibility"
-              if [ -n "${{ secrets.GIT_TOKEN }}" ]; then
-                echo "GIT_TOKEN is set and not empty"
-              else
-                echo "GIT_TOKEN is empty or not accessible"
-                exit 1
-              fi
+      - name: Test Secret Accessibility
+        run: |
+          echo "Debug: Testing secret accessibility"
+          if [ -n "${{ secrets.GIT_TOKEN }}" ]; then
+            echo "GIT_TOKEN is set and not empty"
+          else
+            echo "GIT_TOKEN is empty or not accessible"
+            exit 1
+          fi
 
-          - name: Checkout Infra Repo
-            uses: actions/checkout@v4
-            with:
-              repository: ${{ vars.INFRA_REPO }}
-              token: ${{ secrets.GIT_TOKEN }}
-              path: infra
-              fetch-depth: 0
+      - name: Checkout Infra Repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.INFRA_REPO }}
+          token: ${{ secrets.GIT_TOKEN }}
+          path: infra
+          fetch-depth: 0
 
-          - name: Fetch Commit Details from Workflow Repo
-            uses: actions/checkout@v3
-            with:
-              path: source-repo
+      - name: Fetch Commit Details from Workflow Repo
+        uses: actions/checkout@v3
+        with:
+          path: source-repo
 
-          - name: Extract Commit Information
-            id: commit_details
-            run: |
-              cd source-repo
-              COMMIT_HASH=$(git rev-parse --short HEAD)
-              COMMIT_AUTHOR_NAME=$(git log -1 --pretty=format:'%an')
-              COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
-              echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
-              echo "COMMIT_AUTHOR_NAME=$COMMIT_AUTHOR_NAME" >> $GITHUB_ENV
-              echo "COMMIT_AUTHOR_EMAIL=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_ENV
+      - name: Extract Commit Information
+        id: commit_details
+        run: |
+          cd source-repo
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_AUTHOR_NAME=$(git log -1 --pretty=format:'%an')
+          COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+          echo "COMMIT_AUTHOR_NAME=$COMMIT_AUTHOR_NAME" >> $GITHUB_ENV
+          echo "COMMIT_AUTHOR_EMAIL=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_ENV
 
-          - name: Update deployment.yaml
-            env:
-              COMMIT_HASH: ${{ env.COMMIT_HASH }}
-              dockerTag: ${{ env.dockerTag }}
-            run: |
-              cd infra
-              if [ "${{ env.ENVIRONMENT }}" == "prod" ]; then
-                DEPLOYMENT_PATH="overlays/co-writer/prod/deployment.yaml"
-              else
-                DEPLOYMENT_PATH="overlays/co-writer/qa/deployment.yaml"
-              fi
-              
-              # Debug echo statements
-              echo "Debug: BRANCH_NAME = ${{ env.BRANCH_NAME }}"
-              echo "Debug: IS_PRODUCTION = ${{ env.IS_PRODUCTION }}"
-              echo "Debug: ENVIRONMENT = ${{ env.ENVIRONMENT }}"
-              echo "Debug: dockerTag = $dockerTag"
-              echo "Debug: COMMIT_HASH = $COMMIT_HASH"
-              echo "Debug: DEPLOYMENT_PATH = $DEPLOYMENT_PATH"
-              
-              echo "Updating deployment for environment: ${{ env.ENVIRONMENT }}"
-              echo "Docker tag: $dockerTag"
-              echo "Deployment path: $DEPLOYMENT_PATH"
-              yq eval '.spec.template.spec.containers[0].image = "${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/" + env(ENVIRONMENT) + ":" + env(dockerTag)' -i "$DEPLOYMENT_PATH"
-              echo "Debug: Updated image in deployment file"
-              cat "$DEPLOYMENT_PATH"
-              git config user.name "${{ env.COMMIT_AUTHOR_NAME }}"
-              git config user.email "${{ env.COMMIT_AUTHOR_EMAIL }}"
-              git add "$DEPLOYMENT_PATH"
-              git commit -m "Update Docker tag to $dockerTag in ${{ env.ENVIRONMENT }} deployment"
-              git pull origin main
-              git push origin main
+      - name: Update deployment.yaml
+        env:
+          COMMIT_HASH: ${{ env.COMMIT_HASH }}
+          dockerTag: ${{ env.dockerTag }}
+        run: |
+          cd infra
+          if [ "${{ env.ENVIRONMENT }}" == "prod" ]; then
+            DEPLOYMENT_PATH="overlays/co-writer/prod/deployment.yaml"
+          else
+            DEPLOYMENT_PATH="overlays/co-writer/qa/deployment.yaml"
+          fi
+
+          # Debug echo statements
+          echo "Debug: BRANCH_NAME = ${{ env.BRANCH_NAME }}"
+          echo "Debug: IS_PRODUCTION = ${{ env.IS_PRODUCTION }}"
+          echo "Debug: ENVIRONMENT = ${{ env.ENVIRONMENT }}"
+          echo "Debug: dockerTag = $dockerTag"
+          echo "Debug: COMMIT_HASH = $COMMIT_HASH"
+          echo "Debug: DEPLOYMENT_PATH = $DEPLOYMENT_PATH"
+
+          echo "Updating deployment for environment: ${{ env.ENVIRONMENT }}"
+          echo "Docker tag: $dockerTag"
+          echo "Deployment path: $DEPLOYMENT_PATH"
+          yq eval '.spec.template.spec.containers[0].image = "${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/" + env(ENVIRONMENT) + ":" + env(dockerTag)' -i "$DEPLOYMENT_PATH"
+          echo "Debug: Updated image in deployment file"
+          cat "$DEPLOYMENT_PATH"
+          git config user.name "${{ env.COMMIT_AUTHOR_NAME }}"
+          git config user.email "${{ env.COMMIT_AUTHOR_EMAIL }}"
+          git add "$DEPLOYMENT_PATH"
+          git commit -m "Update Docker tag to $dockerTag in ${{ env.ENVIRONMENT }} deployment"
+          git pull origin main
+          git push origin main
 
   cleanup:
     needs: deploy
