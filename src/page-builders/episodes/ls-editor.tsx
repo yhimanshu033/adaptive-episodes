@@ -77,12 +77,14 @@ const LSTableEditor = memo(
 
 		return (
 			<div className="space-y-4">
-				<div className="flex items-center justify-between">
-					<h3 className="text-lg font-medium">Table Editor</h3>
-					<Button onClick={addNewRow} size="sm">
-						<Plus className="mr-2 size-4" /> Add Row
-					</Button>
-				</div>
+				<If condition={!viewOnly}>
+					<div className="flex items-center justify-between">
+						<h3 className="text-lg font-medium">Table Editor</h3>
+						<Button onClick={addNewRow} size="sm">
+							<Plus className="mr-2 size-4" /> Add Row
+						</Button>
+					</div>
+				</If>
 
 				<div className="rounded-md border">
 					<div className="grid grid-cols-5 gap-4 bg-muted p-4 font-medium">
@@ -90,7 +92,9 @@ const LSTableEditor = memo(
 						<div>localised_name</div>
 						<div>Type</div>
 						<div>Gender</div>
-						<div>Actions</div>
+						<If condition={!viewOnly}>
+							<div>Actions</div>
+						</If>
 					</div>
 					<ScrollArea className="h-96">
 						<ForEach data={tableData}>

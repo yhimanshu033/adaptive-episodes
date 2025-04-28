@@ -60,7 +60,6 @@ export async function fetchAPI<
 ): Promise<FetchResponseResult<ResponseDataT>> {
 	const session = (await getServerSession(authOptions)) as SessionData
 
-	console.log({ session })
 	const {
 		url,
 		method,
@@ -79,7 +78,7 @@ export async function fetchAPI<
 	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
 	const realIp = nextHeadersObj.get('x-real-ip')
 
-	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
+	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {
@@ -180,7 +179,6 @@ export async function fetchAPI<
 		}
 
 		const responseData = (await response.json()) as ResponseDataT
-		console.log({ responseData })
 
 		if (sendLog) {
 			const message = `${sendLog}: ${session.user.id} - ${resolvedUrl.split(BASE_URL)[1]} - ${new Date().toUTCString()}`

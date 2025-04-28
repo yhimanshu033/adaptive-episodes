@@ -71,9 +71,9 @@ export const getEpisodeDetails = async (
 		const isGerman = sentData?.results.data.find(
 			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
 		)
-		console.log({ isGerman })
+
 		if (!isGerman) {
-			return
+			return sentData
 		}
 
 		sentData.results.data = sentData?.results.data.filter(

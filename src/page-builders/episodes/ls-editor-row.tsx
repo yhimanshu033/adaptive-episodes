@@ -97,14 +97,16 @@ const LSEditorRow = memo(
 						<div />
 					</Else>
 				</IfElse>
-				<Button
-					disabled={disabled}
-					variant="destructive"
-					size="icon"
-					onClick={() => removeRow(index)}
-				>
-					<Trash2 className="size-4" />
-				</Button>
+				<If condition={!disabled}>
+					<Button
+						disabled={disabled}
+						variant="destructive"
+						size="icon"
+						onClick={() => removeRow(index)}
+					>
+						<Trash2 className="size-4" />
+					</Button>
+				</If>
 			</div>
 		)
 	}
