@@ -73,6 +73,7 @@ export async function fetchAPIClient<
 
 	const BASE_URL =
 		baseUrl ?? (PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL)
+
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {

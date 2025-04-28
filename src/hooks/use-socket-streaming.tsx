@@ -51,16 +51,16 @@ const SocketStreamingContext = createContext<TSocketStreamingContext>(undefined)
 
 export const SocketStreamingProvider = ({
 	children,
-	baseUrl,
+	// baseUrl,
 }: {
 	baseUrl?: string
 	children: React.ReactNode
 }) => {
-	const socketUrl =
-		baseUrl ||
-		PROMO_BACKEND_URL ||
-		process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL ||
-		''
+	const socketUrl = PROMO_BACKEND_URL
+	// baseUrl ||
+	// PROMO_BACKEND_URL ||
+	// process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL ||
+	// ''
 	const { data: session } = useSession()
 	const socket = useMemo(
 		() =>
