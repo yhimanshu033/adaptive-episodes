@@ -37,6 +37,7 @@ const LanguageSelector = ({
 				<ForEach data={selectableLanguages}>
 					{(lang) => (
 						<SelectItem
+							key={lang}
 							disabled={disabledLanguages.includes(lang)}
 							value={lang}
 						>

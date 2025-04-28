@@ -21,6 +21,7 @@ import {
 } from '@/types/common'
 
 interface LSEditorRowProps {
+	disabled?: boolean
 	index: number
 	item: LSMappingOutputItem
 	removeRow: (index: number) => void
@@ -31,20 +32,29 @@ interface LSEditorRowProps {
 	) => void
 }
 const LSEditorRow = memo(
-	({ item, index, removeRow, updateField }: LSEditorRowProps) => {
+	({
+		item,
+		index,
+		removeRow,
+		updateField,
+		disabled = false,
+	}: LSEditorRowProps) => {
 		return (
 			<div className="grid grid-cols-5 gap-4 border-t p-4">
 				<Input
+					disabled={disabled}
 					value={item['original_name']}
 					onChange={(e) => updateField(index, 'original_name', e.target.value)}
 					placeholder="original_name"
 				/>
 				<Input
+					disabled={disabled}
 					value={item['localised_name']}
 					onChange={(e) => updateField(index, 'localised_name', e.target.value)}
 					placeholder="localised_name"
 				/>
 				<Select
+					disabled={disabled}
 					value={item.type}
 					onValueChange={(value) => updateField(index, 'type', value)}
 				>
@@ -64,6 +74,7 @@ const LSEditorRow = memo(
 				<IfElse condition={item.type === ELSMappingType.PERSON}>
 					<If>
 						<Select
+							disabled={disabled}
 							defaultValue={ELSMappingGender.MALE}
 							value={item.gender}
 							onValueChange={(value) => updateField(index, 'gender', value)}
@@ -87,6 +98,7 @@ const LSEditorRow = memo(
 					</Else>
 				</IfElse>
 				<Button
+					disabled={disabled}
 					variant="destructive"
 					size="icon"
 					onClick={() => removeRow(index)}

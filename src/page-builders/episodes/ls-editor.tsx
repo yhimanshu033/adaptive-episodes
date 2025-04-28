@@ -22,11 +22,13 @@ import {
 
 const LSTableEditor = memo(
 	({
-		inputData,
-		onSubmit,
+		inputData = { ls_mapping: {} },
+		onSubmit = () => {},
+		viewOnly = false,
 	}: {
-		inputData: LSMappingInput
-		onSubmit: (data: LSMappingOutput) => void
+		inputData?: LSMappingInput
+		onSubmit?: (data: LSMappingOutput) => void
+		viewOnly?: boolean
 	}) => {
 		const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>(
 			parseInputLSMapping(inputData)
@@ -94,6 +96,7 @@ const LSTableEditor = memo(
 						<ForEach data={tableData}>
 							{(item, index) => (
 								<LSEditorRow
+									disabled={viewOnly}
 									key={`table-row-${index}`}
 									index={index}
 									item={item}
@@ -110,15 +113,17 @@ const LSTableEditor = memo(
 						</If>
 					</ScrollArea>
 				</div>
-				<div className="flex justify-end">
-					<Button
-						disabled={disabled}
-						onClick={handleSubmit}
-						className="ml-auto"
-					>
-						Adapt
-					</Button>
-				</div>
+				<If condition={!viewOnly}>
+					<div className="flex justify-end">
+						<Button
+							disabled={disabled}
+							onClick={handleSubmit}
+							className="ml-auto"
+						>
+							Adapt
+						</Button>
+					</div>
+				</If>
 			</div>
 		)
 	}

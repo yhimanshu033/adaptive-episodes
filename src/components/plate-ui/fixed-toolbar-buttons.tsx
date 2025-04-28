@@ -1,4 +1,5 @@
 import React from 'react'
+import ViewLS from '@/page-builders/episodes/view-ls'
 import usePlateStore from '@/store/plate-store'
 import {
 	BoldPlugin,
@@ -139,6 +140,7 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 
 							<ToolbarGroup>
 								<CommentToolbarButton />
+								<ViewLS />
 							</ToolbarGroup>
 
 							<ToolbarGroup>
