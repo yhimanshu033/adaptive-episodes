@@ -2,6 +2,7 @@
 
 import { headers as nextHeaders } from 'next/headers'
 import {
+	BE_API_KEY,
 	PROMO_BACKEND_URL,
 	validResponseStatuses,
 } from '@/constants/global-constants'
@@ -72,7 +73,7 @@ export async function fetchAPI<
 		headers = {},
 		defaultData,
 		throwOnError,
-		baseUrl,
+		// baseUrl,
 		noAuth,
 		sendLog,
 	} = params
@@ -81,9 +82,10 @@ export async function fetchAPI<
 	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
 	const realIp = nextHeadersObj.get('x-real-ip')
 
-	const BASE_URL =
-		baseUrl ?? (PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL)
-	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
+	const BASE_URL = PROMO_BACKEND_URL
+	// baseUrl ?? (PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL)
+	const API_KEY = BE_API_KEY
+	//   process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {
 		throw new Error('Backend URL not set in env!')

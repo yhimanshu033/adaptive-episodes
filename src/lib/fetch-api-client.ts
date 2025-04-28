@@ -1,4 +1,5 @@
 import {
+	BE_API_KEY,
 	PROMO_BACKEND_URL,
 	validResponseStatuses,
 } from '@/constants/global-constants'
@@ -65,16 +66,17 @@ export async function fetchAPIClient<
 		headers = {},
 		defaultData,
 		throwOnError,
-		baseUrl,
+		// baseUrl,
 		noAuth,
 		sendLog,
 		session,
 	} = params
 
-	const BASE_URL =
-		baseUrl ?? (PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL)
+	const BASE_URL = PROMO_BACKEND_URL
+	// baseUrl ?? (PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL)
 
-	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
+	const API_KEY = BE_API_KEY
+	//   process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {
 		throw new Error('Backend URL not set in env!')
