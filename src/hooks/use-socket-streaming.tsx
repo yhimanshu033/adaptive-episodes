@@ -13,6 +13,7 @@ import React, {
 	useState,
 } from 'react'
 import { ESocketStatus } from '@/constants/ai-constants'
+import { PROMO_BACKEND_URL } from '@/constants/global-constants'
 import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
@@ -55,7 +56,11 @@ export const SocketStreamingProvider = ({
 	baseUrl?: string
 	children: React.ReactNode
 }) => {
-	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL || ''
+	const socketUrl =
+		baseUrl ||
+		PROMO_BACKEND_URL ||
+		process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL ||
+		''
 	const { data: session } = useSession()
 	const socket = useMemo(
 		() =>

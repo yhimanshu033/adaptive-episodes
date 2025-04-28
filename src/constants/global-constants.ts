@@ -125,3 +125,6 @@ export const GDRIVE_SUCCESS_MESSAGE = 'gdrive-success'
 export const SIMPLIFIED_VIEWABLE_EDITOR = 'sve'
 export const GLOBAL_LOCALIZE = 'global-localize'
 export const HIDE_HEADER = 'hide-header'
+
+export const PROMO_BACKEND_URL =
+	'https://pocketfm-copilot-promo-api.pocketfm.com'
