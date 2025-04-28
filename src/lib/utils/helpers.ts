@@ -462,7 +462,7 @@ export async function projectAdminCheck(req: NextRequest, jwt: JWT) {
 	let data: { projects: UserProject[] } | null = null
 	try {
 		data = (await fetch(
-			`${process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL || PROMO_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
+			`${PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
 			{
 				headers: {
 					'Content-Type': 'application/json',

@@ -1,7 +1,10 @@
 'use server'
 
 import { headers as nextHeaders } from 'next/headers'
-import { validResponseStatuses } from '@/constants/global-constants'
+import {
+	PROMO_BACKEND_URL,
+	validResponseStatuses,
+} from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
 import { getServerSession } from 'next-auth'
 
@@ -78,8 +81,11 @@ export async function fetchAPI<
 	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
 	const realIp = nextHeadersObj.get('x-real-ip')
 
-	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL
+	const BASE_URL =
+		baseUrl ?? (PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL)
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
+
+	console.log(BASE_URL)
 
 	if (!BASE_URL) {
 		throw new Error('Backend URL not set in env!')
