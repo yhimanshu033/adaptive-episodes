@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
+	prioritizedStatuses,
 	PROPS_KEYS_TO_COMPARE,
 } from '@/constants/episodes-constants'
 import { API_URLS, roleToData } from '@/constants/global-constants'
@@ -54,13 +55,6 @@ export const getSelectedEpisode = (
 	language: ELanguage
 	latestStatus: EStatus | typeof BASE_STATUS
 } => {
-	const prioritizedStatuses = [
-		EStatus.PUBLISHED,
-		EStatus.POLISH,
-		EStatus.SECOND_DRAFT,
-		EStatus.FIRST_DRAFT,
-	]
-
 	let selectedEpisode: TEpisode | undefined
 
 	if (selectedStatus) {

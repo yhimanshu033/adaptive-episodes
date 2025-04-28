@@ -1,4 +1,4 @@
-import { ELanguage, EStatus } from '@/types/common'
+import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import {
 	ENotesAction,
 	SaveEpisodeParams,
@@ -83,3 +83,18 @@ export const notesMessages = {
 	[ENotesAction.UPDATE]: 'Hinweis erfolgreich aktualisiert!',
 	[ENotesAction.DELETE_ALL]: 'Alle Notizen erfolgreich gelöscht!',
 }
+
+export const prioritizedStatuses = [
+	EStatus.PUBLISHED,
+	EStatus.POLISH,
+	EStatus.SECOND_DRAFT,
+	EStatus.FIRST_DRAFT,
+]
+
+export const allPrioritizedStatuses = [
+	EStatus.PUBLISHED,
+	EStatus.POLISH,
+	EStatus.SECOND_DRAFT,
+	EStatus.FIRST_DRAFT,
+	BASE_STATUS,
+]
