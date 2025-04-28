@@ -83,7 +83,7 @@ export const getSelectedEpisode = (
 	const latestStatus =
 		prioritizedStatuses.find((status) =>
 			data.results.data.some((episode) => episode.status === status)
-		) ?? data.results.data[0].status
+		) ?? data.results.data[0]?.status
 
 	return {
 		episode: selectedEpisode ?? data.results.data[0],

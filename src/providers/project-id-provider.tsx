@@ -53,6 +53,7 @@ const useProjectIdUtil = () => {
 
 	const isAccessible = useCallback(
 		(role: ERole) => {
+			return true
 			if (!myRole) {
 				return false
 			}

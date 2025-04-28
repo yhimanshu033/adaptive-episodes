@@ -61,11 +61,11 @@ export const SocketStreamingProvider = ({
 		() =>
 			io(socketUrl, {
 				autoConnect: false,
-				extraHeaders: {
-					Authorization: `Bearer ${session?.accessToken}`,
-				},
+				// extraHeaders: {
+				// 	Authorization: `Bearer ${session?.accessToken}`,
+				// },
 			}),
-		[session, socketUrl]
+		[socketUrl]
 	)
 	const [responses, setResponses] = useState<Record<string, string[]>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
@@ -113,11 +113,11 @@ export const SocketStreamingProvider = ({
 		if (!session?.user.id) {
 			return
 		}
-		socket.on('connect', () => {
-			socket.emit('subscribe', String(session?.user.id))
-		})
+		// socket.on('connect', () => {
+		// 	socket.emit('subscribe', { "task_id": String(session?.user.id) })
+		// })
 		return () => {
-			socket.emit('unsubscribe', String(session?.user.id))
+			// socket.emit('unsubscribe', String(session?.user.id))
 			socket.disconnect()
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,14 +161,14 @@ export const SocketStreamingProvider = ({
 				...rest,
 				query: {
 					task_id: taskId,
-					room_id: String(session?.user.id),
+					// room_id: String(session?.user.id),
 					...(params.query as QueryParamsT),
 				},
 			})
 
 			return taskId
 		},
-		[fetchedData, session]
+		[fetchedData]
 	)
 
 	const getStreamedResponse = useCallback(

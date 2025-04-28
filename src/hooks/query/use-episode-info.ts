@@ -2,7 +2,6 @@
 
 import { useParams } from 'next/navigation'
 import { EPISODE_INFO_QUERY_KEY } from '@/constants/query-constants'
-import useIsInternal from '@/hooks/use-is-internal'
 import { getEpisodeDetails } from '@/server-action/episode-action'
 import { useQuery } from '@tanstack/react-query'
 
@@ -12,11 +11,9 @@ export const useEpisodeInfo = () => {
 	const episodeId = useEpisodeId()
 	const { id }: { id: string } = useParams()
 
-	const isInternal = useIsInternal()
-
 	const query = useQuery({
 		queryKey: [EPISODE_INFO_QUERY_KEY, episodeId, id],
-		queryFn: () => getEpisodeDetails(parseInt(id), episodeId, isInternal),
+		queryFn: () => getEpisodeDetails(parseInt(id), episodeId),
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,

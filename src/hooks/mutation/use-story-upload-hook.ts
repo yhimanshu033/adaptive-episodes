@@ -1,7 +1,6 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { languageToTitle } from '@/constants/episodes-constants'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
 import { StoryImportFormSchema } from '@/hooks/form-resolvers/story-import-resolver'
 import useSocket from '@/hooks/use-socket'
@@ -11,7 +10,7 @@ import { toast } from 'sonner'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
-import { ELanguage, TNoParams } from '@/types/common'
+import { TNoParams } from '@/types/common'
 import { StoryUploadParams } from '@/types/story-types'
 
 const useStoryUploadHook = () => {
@@ -37,7 +36,7 @@ const useStoryUploadHook = () => {
 
 	async function storyUpload(params: StoryImportFormSchema) {
 		try {
-			const { story_file, image_file, author, input_language, ...rest } = params
+			const { story_file, image_file, author, ...rest } = params
 
 			const [project_url, image] = await Promise.all([
 				uploadFile(story_file),
@@ -48,7 +47,6 @@ const useStoryUploadHook = () => {
 				project_url: project_url?.url ?? null,
 				image: image?.url ?? null,
 				author: author ?? null,
-				input_language: languageToTitle[input_language as ELanguage],
 			}
 
 			const taskId = await startTask<StoryUploadParams>({

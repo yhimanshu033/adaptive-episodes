@@ -49,8 +49,7 @@ export const getEpisodes = async ({
 
 export const getEpisodeDetails = async (
 	project_id: number,
-	parent: number = 1,
-	internal: boolean = true
+	parent: number = 1
 ) => {
 	// return sampleEpisodeDetails // DEV CHECK
 	const episodes = await fetchAPI<
@@ -67,19 +66,27 @@ export const getEpisodeDetails = async (
 		},
 	})
 
-	if (episodes.data?.results) {
-		episodes.data.results.data.forEach((ep) => {
-			if (!ep.language) {
-				ep.language = ELanguage.GERMAN_ORIGINAL
-			}
-		})
-	}
-	if (internal && episodes.data?.results.data) {
-		episodes.data.results.data = episodes.data.results.data.filter(
+	const sentData = episodes.data
+	if (sentData?.results.data) {
+		const isGerman = sentData?.results.data.find(
+			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+		)
+		console.log({ isGerman })
+		if (!isGerman) {
+			return
+		}
+
+		sentData.results.data = sentData?.results.data.filter(
 			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
 		)
 	}
-	return episodes.data
+
+	// if (internal && episodes.data?.results.data) {
+	// 	episodes.data.results.data = episodes.data.results.data.filter(
+	// 		(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+	// 	)
+	// }
+	return sentData
 }
 
 export const unmergeEpisodes = async (merged_chapter_id: number) => {

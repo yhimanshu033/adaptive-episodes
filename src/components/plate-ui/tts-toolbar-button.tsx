@@ -1,6 +1,6 @@
 import React from 'react'
 import useStreamedTTS from '@/hooks/mutation/use-streamed-tts'
-import useIsInternal from '@/hooks/use-is-internal'
+import useIsGerman from '@/hooks/use-is-german'
 import { Headphones } from 'lucide-react'
 
 import IfElse from '@/components/if-else'
@@ -9,9 +9,9 @@ import Spinner from '@/components/ui/spinner'
 
 export default function TtsToolbarButton() {
 	const { mutate, isPending } = useStreamedTTS()
-	const isInternal = useIsInternal()
+	const isGerman = useIsGerman()
 
-	if (!isInternal) {
+	if (!isGerman) {
 		return null
 	}
 	return (

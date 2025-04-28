@@ -3,7 +3,6 @@
 import React, { createContext, useMemo, useState } from 'react'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
-import useIsInternal from '@/hooks/use-is-internal'
 import { getEpisodeContent } from '@/server-action/content-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
@@ -57,7 +56,6 @@ export const useEpisodeContentUtil = () => {
 	const { data } = useEpisodeInfo()
 
 	const episodeId = useEpisodeId()
-	const isInternal = useIsInternal()
 
 	const { episode, language, latestStatus } = useMemo(() => {
 		if (!data) {
@@ -67,11 +65,14 @@ export const useEpisodeContentUtil = () => {
 				latestStatus: undefined,
 			}
 		}
-		if (isInternal) {
+		const isGerman = data.results.data.some(
+			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+		)
+		if (isGerman) {
 			return getSelectedEpisode(data, selectedStatus)
 		}
 		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
-	}, [data, selectedLanguage, selectedStatus, isInternal])
+	}, [data, selectedLanguage, selectedStatus])
 	const [imported, setImported] = useState(false)
 
 	const dict = useTranslations('placeholders')

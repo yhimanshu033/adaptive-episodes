@@ -61,11 +61,11 @@ export const SocketProvider = ({
 		() =>
 			io(socketUrl, {
 				autoConnect: false,
-				extraHeaders: {
-					Authorization: `Bearer ${session?.accessToken}`,
-				},
+				// extraHeaders: {
+				// 	Authorization: `Bearer ${session?.accessToken}`,
+				// },
 			}),
-		[session, socketUrl]
+		[socketUrl]
 	)
 	const responsesRef = useRef<Record<string, any>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
@@ -84,11 +84,11 @@ export const SocketProvider = ({
 		if (!session?.user.id) {
 			return
 		}
-		socket.on('connect', () => {
-			socket.emit('subscribe', String(session?.user.id))
-		})
+		// socket.on('connect', () => {
+		// 	socket.emit('subscribe', { "task_id": String(session?.user.id) })
+		// })
 		return () => {
-			socket.emit('unsubscribe', String(session?.user.id))
+			// socket.emit('unsubscribe', String(session?.user.id))
 			socket.disconnect()
 		}
 	}, [socket, session])
@@ -128,7 +128,7 @@ export const SocketProvider = ({
 				...restParams,
 				query: {
 					task_id: taskId,
-					room_id: String(session?.user.id),
+					// room_id: String(session?.user.id),
 					...(params.query as QueryParamsT),
 				},
 			})
@@ -141,7 +141,7 @@ export const SocketProvider = ({
 
 			return taskId
 		},
-		[fetchedData, session]
+		[fetchedData]
 	)
 
 	const getResponse = useCallback(<T,>(taskId: string) => {
