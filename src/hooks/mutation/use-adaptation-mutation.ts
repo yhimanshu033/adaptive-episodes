@@ -1,4 +1,3 @@
-import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
 import { useMutation } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
@@ -20,8 +19,6 @@ import {
 import { TEpisode } from '@/types/episode-type'
 
 export default function useAdaptationMutation(onSuccess = () => {}) {
-	const params = useParams()
-	const projectId = Number(params.id)
 	const { data: session } = useSession()
 
 	async function createAdaptation({
@@ -39,7 +36,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					author: session?.user?.fullname || '',
 					inputls: {},
 					is_external: true,
-					project_id: projectId,
+					project_id: selectedRowData?.[0]?.project,
 					seq_no: selectedRowData.map((item) => item.seq_number),
 					source_lang: selectedRowData?.[0]?.language || ELanguage.ENGLISH,
 					target_lang: language,
@@ -60,7 +57,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 			url: API_URLS.GET_ADAPTATION_LS,
 			urlParams: {
 				language,
-				projectId: String(projectId),
+				projectId: String(selectedRowData?.[0]?.project),
 			},
 			delay: 10000,
 			stop: (resp) => {
@@ -83,7 +80,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 		onError: () => {
 			toast.error('Localization failed!')
 		},
-		mutationKey: ['create-adaptation-ls', projectId],
+		mutationKey: ['create-adaptation-ls'],
 	})
 
 	async function sendAdaptationLS({
@@ -103,7 +100,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					author: session?.user?.fullname || '',
 					inputls,
 					is_external: true,
-					project_id: projectId,
+					project_id: selectedRowData?.[0]?.project,
 					seq_no: selectedRowData.map((item) => item.seq_number),
 					source_lang: selectedRowData?.[0]?.language || ELanguage.ENGLISH,
 					target_lang: language,
@@ -127,7 +124,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 		onError: () => {
 			toast.error('Adaptation failed!')
 		},
-		mutationKey: ['send-adaptation-ls', projectId],
+		mutationKey: ['send-adaptation-ls'],
 	})
 
 	return { createLSMutation, sendLSMutation }
