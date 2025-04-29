@@ -125,5 +125,3 @@ export const GDRIVE_SUCCESS_MESSAGE = 'gdrive-success'
 export const SIMPLIFIED_VIEWABLE_EDITOR = 'sve'
 export const GLOBAL_LOCALIZE = 'global-localize'
 export const HIDE_HEADER = 'hide-header'
-
-export const BE_API_KEY = '2n{WHwe2[V,VG\\K0A[!r.g1+[uar*d#w'

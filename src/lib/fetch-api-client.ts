@@ -1,4 +1,4 @@
-import { BE_API_KEY, validResponseStatuses } from '@/constants/global-constants'
+import { validResponseStatuses } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
 
 import { log } from '@/lib/utils/helpers'
@@ -70,8 +70,7 @@ export async function fetchAPIClient<
 
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL
 
-	const API_KEY = BE_API_KEY
-	//   process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
+	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {
 		throw new Error('Backend URL not set in env!')

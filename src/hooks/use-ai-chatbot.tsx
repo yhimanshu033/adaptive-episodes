@@ -279,6 +279,7 @@ export function ChatbotProvider({
 	}
 
 	useEffect(() => {
+		console.log({ isPending, aiResponse })
 		if (!isPending && aiResponse) {
 			if (requestedAction === EChatMode.REVIEW) {
 				setOriginalChildren(children)
@@ -401,6 +402,8 @@ export function ChatbotProvider({
 		taskEnded[reviewStreaming],
 		originalChildren,
 	])
+
+	console.log(responses[blockStreaming])
 
 	useEffect(() => {
 		if (!blockStreaming) {
