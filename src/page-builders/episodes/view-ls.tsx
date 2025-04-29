@@ -13,6 +13,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog'
+import { parseInputLSMapping } from '@/lib/utils/helpers'
 
 export default function ViewLS() {
 	const { data } = useLSSheetQuery()
@@ -32,7 +33,10 @@ export default function ViewLS() {
 				</DialogHeader>
 				<IfElse condition={!!data?.ls_mapping}>
 					<If>
-						<LSTableEditor inputData={data || undefined} viewOnly />
+						<LSTableEditor
+							tableData={data ? parseInputLSMapping(data) : []}
+							viewOnly
+						/>
 					</If>
 					<Else>
 						<DialogDescription>LS sheet not found!</DialogDescription>

@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useState } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
 import LSEditorRow from '@/page-builders/episodes/ls-editor-row'
 import { Plus } from 'lucide-react'
 
@@ -6,34 +6,29 @@ import { If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
 import ForEach from '@/components/ui/for-each'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-	isInvalidLSMapping,
-	parseInputLSMapping,
-	parseOutputLSMapping,
-} from '@/lib/utils/helpers'
+import { isInvalidLSMapping, parseOutputLSMapping } from '@/lib/utils/helpers'
 
 import {
 	ELSMappingGender,
 	ELSMappingType,
-	LSMappingInput,
 	LSMappingOutput,
 	LSMappingOutputItem,
 } from '@/types/common'
 
 const LSTableEditor = memo(
 	({
-		inputData = { ls_mapping: {} },
+		tableData = [],
+		setTableData = () => {},
 		onSubmit = () => {},
 		viewOnly = false,
 	}: {
-		inputData?: LSMappingInput
 		onSubmit?: (data: LSMappingOutput) => void
+		setTableData?: React.Dispatch<
+			React.SetStateAction<LSMappingOutput['ls_mapping']>
+		>
+		tableData?: LSMappingOutput['ls_mapping']
 		viewOnly?: boolean
 	}) => {
-		const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>(
-			parseInputLSMapping(inputData)
-		)
-
 		const disabled = useMemo(() => isInvalidLSMapping(tableData), [tableData])
 
 		const handleSubmit = useCallback(() => {

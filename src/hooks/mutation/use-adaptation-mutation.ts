@@ -19,7 +19,7 @@ import {
 } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
 
-export default function useAdaptationMutation() {
+export default function useAdaptationMutation(onSuccess = () => {}) {
 	const params = useParams()
 	const projectId = Number(params.id)
 	const { data: session } = useSession()
@@ -77,6 +77,7 @@ export default function useAdaptationMutation() {
 	const createLSMutation = useMutation({
 		mutationFn: createAdaptation,
 		onSuccess: () => {
+			onSuccess()
 			toast.success('Localization sheet fetched!')
 		},
 		onError: () => {
@@ -120,6 +121,7 @@ export default function useAdaptationMutation() {
 	const sendLSMutation = useMutation({
 		mutationFn: sendAdaptationLS,
 		onSuccess: () => {
+			onSuccess()
 			toast.success('Adaptation registered!')
 		},
 		onError: () => {

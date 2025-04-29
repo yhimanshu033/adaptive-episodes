@@ -17,7 +17,6 @@ export const languages: ELanguage[] = [
 	ELanguage.GERMAN,
 	ELanguage.ITALIAN,
 	ELanguage.MEXICAN_SPANISH,
-	ELanguage.ENGLISH_US,
 ]
 
 export const sourceLanguages: ELanguage[] = [ELanguage.ENGLISH, ELanguage.HINDI]

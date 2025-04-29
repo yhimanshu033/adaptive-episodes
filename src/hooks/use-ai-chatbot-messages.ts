@@ -32,9 +32,7 @@ export default function useAiChatbotMessages() {
 				taskId: nanoid(),
 				role: EMessenger.ASSISTANT,
 				action: EAction.ACCEPT,
-				content: all
-					? 'Alle Änderungen akzeptiert'
-					: 'Nur akzeptierte Änderungen übernommen',
+				content: all ? 'All changes accepted' : 'Only accepted changes adopted',
 			},
 			i
 		)

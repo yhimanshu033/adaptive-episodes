@@ -15,6 +15,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
+import { AdaptationProvider } from '@/providers/adaptation-provider'
 import { PlayerProvider } from '@/providers/player-provider'
 import { PollingProvider } from '@/providers/polling-provider'
 import { queryClient } from '@/lib/get-query-client'
@@ -69,12 +70,14 @@ const AppProvider = ({
 										delayDuration={500}
 										skipDelayDuration={0}
 									>
-										<NextTopLoader color="hsl(var(--primary))" />
-										<PlayerProvider>
-											<Player />
-											{children}
-										</PlayerProvider>
-										<Toaster />
+										<AdaptationProvider>
+											<NextTopLoader color="hsl(var(--primary))" />
+											<PlayerProvider>
+												<Player />
+												{children}
+											</PlayerProvider>
+											<Toaster />
+										</AdaptationProvider>
 										<ReactQueryDevtools />
 									</TooltipProvider>
 								</ThemeProvider>

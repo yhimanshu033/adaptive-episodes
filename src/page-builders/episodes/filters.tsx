@@ -7,10 +7,9 @@ import {
 } from '@/constants/global-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { usePageState } from '@/hooks/use-page-state'
-import AdaptationDialog from '@/page-builders/episodes/adaptation-dialog'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/multi-ep-localize-dialog'
 import { Table } from '@tanstack/react-table'
-import { Merge, Replace, Search, Split } from 'lucide-react'
+import { Languages, Merge, Replace, Search, Split } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -23,6 +22,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import useAdaptation from '@/providers/adaptation-provider'
 
 import { TEpisode, TEpisodeSearchForm } from '@/types/episode-type'
 
@@ -45,6 +45,12 @@ const Filters = ({
 
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
+
+	const {
+		setSelectedRowData,
+		setOpen,
+		selectedRowData: adaptationData,
+	} = useAdaptation()
 
 	const handleSearch = (data: TEpisodeSearchForm) => {
 		if (Number(data.input)) {
@@ -132,10 +138,19 @@ const Filters = ({
 					</Button>
 				</form>
 			</Form>
-			<AdaptationDialog
-				disabled={disabled || Object.keys(selectedRowData).length < 1}
-				selectedRowData={selectedRowData}
-			/>
+			<Button
+				disabled={disabled || selectedRowData.length < 1}
+				onClick={() => {
+					if (adaptationData.length === 0) {
+						setSelectedRowData(selectedRowData)
+					}
+					setOpen(true)
+				}}
+				size="icon"
+				tooltip="Adapt episodes"
+			>
+				<Languages size={16} />
+			</Button>
 			<MultiEpLocalizeDialog
 				url={url}
 				size="icon"

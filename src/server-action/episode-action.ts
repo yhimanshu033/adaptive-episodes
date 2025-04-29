@@ -4,7 +4,6 @@ import { allPrioritizedStatuses } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
-import { log } from '@/lib/utils/helpers'
 
 import { ELanguage, TNoParams } from '@/types/common'
 import {
@@ -106,8 +105,6 @@ export const getEpisodeDetails = async (
 			parent,
 		},
 	})
-
-	log({ episodes })
 
 	const sentData = episodes.data
 	if (sentData?.results.data) {

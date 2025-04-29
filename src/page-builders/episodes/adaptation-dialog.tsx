@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from 'react'
-import { languages, languageToTitle } from '@/constants/episodes-constants'
-import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
+import React, { useMemo } from 'react'
+import { languageToTitle } from '@/constants/episodes-constants'
 import LSTableEditor from '@/page-builders/episodes/ls-editor'
-import { ArrowRight, CheckCircle, Languages } from 'lucide-react'
+import { ArrowRight, CheckCircle } from 'lucide-react'
 
 import LanguageSelector from '@/components/plate-ui/language-selector'
 import SwitchCase, { Case } from '@/components/switch-case'
@@ -15,78 +14,67 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from '@/components/ui/dialog'
 import Spinner from '@/components/ui/spinner'
+import useAdaptation from '@/providers/adaptation-provider'
 
-import { ELanguage } from '@/types/common'
-import { TEpisode } from '@/types/episode-type'
+export default function AdaptationDialog() {
+	const {
+		currentLanguage,
+		mutate,
+		selectableLanguages,
+		open,
+		selectedAdaptingLanguage,
+		selectedRowData,
+		setOpen,
+		sendLS,
+		setSelectedAdaptingLanguage,
+		step,
+		tableData,
+		setTableData,
+	} = useAdaptation()
 
-interface TAdaptationDialogProps {
-	disabled?: boolean
-	selectedRowData: TEpisode[]
-}
-export default function AdaptationDialog({
-	disabled,
-	selectedRowData,
-}: TAdaptationDialogProps) {
-	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
-		useState<ELanguage>(ELanguage.MEXICAN_SPANISH)
-	const currentLanguage = useMemo(
-		() => selectedRowData[0]?.language || ELanguage.ENGLISH,
+	const selectedEpNo = useMemo(
+		() => [
+			selectedRowData?.[0]?.seq_number,
+			selectedRowData?.[selectedRowData.length - 1]?.seq_number,
+		],
 		[selectedRowData]
 	)
 
-	const selectableLanguages = useMemo(
-		() => languages.filter((lang) => lang !== currentLanguage),
-		[currentLanguage]
+	const project = useMemo(
+		() => selectedRowData?.[0]?.project,
+		[selectedRowData]
 	)
 
-	const {
-		createLSMutation: { mutate, isPending, data, reset },
-		sendLSMutation: {
-			mutate: sendLS,
-			data: sendLSData,
-			isPending: sendLSPending,
-		},
-	} = useAdaptationMutation()
-
-	const step = useMemo(() => {
-		if (sendLSData) {
-			return 4
-		}
-		if (sendLSPending) {
-			return 2
-		}
-		if (data?.ls_mapping) {
-			return 3
-		}
-		if (isPending) {
-			return 2
-		}
-		return 1
-	}, [data, isPending, sendLSData, sendLSPending])
+	if (!open && step > 1) {
+		return (
+			<Button
+				tooltip="Adaptation working..."
+				onClick={() => setOpen(true)}
+				size="icon"
+				className="fixed bottom-5 left-5 rounded-full"
+			>
+				<Spinner size={24} className="text-background" />
+			</Button>
+		)
+	}
 
 	return (
-		<Dialog onOpenChange={() => reset()}>
-			<DialogTrigger asChild>
-				<Button size="icon" disabled={disabled} title="Adapt episodes">
-					<Languages size={16} />
-				</Button>
-			</DialogTrigger>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogContent className="max-w-screen-lg">
 				<SwitchCase value={step}>
 					<DialogHeader>
-						<DialogTitle>Adapt the selected Episodes</DialogTitle>
+						<DialogTitle>
+							Adapt: Episodes {selectedEpNo.join('-')} of Project {project}
+						</DialogTitle>
 						<Case value={1}>
 							<DialogDescription>
 								Please select the language you want to adapt the episodes to.
 							</DialogDescription>
 						</Case>
 						<Case value={2}>
-							<DialogDescription>
-								Please wait for task registration.
-							</DialogDescription>
+							<DialogDescription>Please wait for processing.</DialogDescription>
 						</Case>
 						<Case value={3}>
 							<DialogDescription>
@@ -122,7 +110,8 @@ export default function AdaptationDialog({
 					</Case>
 					<Case value={3}>
 						<LSTableEditor
-							inputData={data || { ls_mapping: {} }}
+							tableData={tableData}
+							setTableData={setTableData}
 							onSubmit={(inputls) =>
 								sendLS({
 									inputls,
