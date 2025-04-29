@@ -126,7 +126,4 @@ export const SIMPLIFIED_VIEWABLE_EDITOR = 'sve'
 export const GLOBAL_LOCALIZE = 'global-localize'
 export const HIDE_HEADER = 'hide-header'
 
-export const PROMO_BACKEND_URL =
-	'https://pocketfm-copilot-promo-api.pocketfm.com'
-
 export const BE_API_KEY = '2n{WHwe2[V,VG\\K0A[!r.g1+[uar*d#w'

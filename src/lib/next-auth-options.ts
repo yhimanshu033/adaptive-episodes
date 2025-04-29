@@ -17,11 +17,8 @@ import { TNoParams } from '@/types/common'
 const authOptions = {
 	providers: [
 		GoogleProvider({
-			clientId:
-				'502615549061-bdl7i52pvfem2nk818hfbbdmufds5mm5.apps.googleusercontent.com',
-			clientSecret: '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',
-			// clientId: process.env.GOOGLE_CLIENT_ID!,
-			// clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+			clientId: process.env.GOOGLE_CLIENT_ID!,
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
 			authorization: {},
 		}),
 	],

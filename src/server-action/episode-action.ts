@@ -4,6 +4,7 @@ import { allPrioritizedStatuses } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
+import { log } from '@/lib/utils/helpers'
 
 import { ELanguage, TNoParams } from '@/types/common'
 import {
@@ -106,8 +107,16 @@ export const getEpisodeDetails = async (
 		},
 	})
 
+	log({ episodes })
+
 	const sentData = episodes.data
 	if (sentData?.results.data) {
+		const languageAvailable = sentData?.results.data.find((ep) => !!ep.language)
+		if (!languageAvailable) {
+			sentData.results.data.forEach(
+				(ep) => (ep.language = ELanguage.GERMAN_ORIGINAL)
+			)
+		}
 		const isGerman = sentData?.results.data.find(
 			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
 		)

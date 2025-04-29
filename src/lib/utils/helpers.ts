@@ -4,11 +4,7 @@ import {
 	prioritizedStatuses,
 	PROPS_KEYS_TO_COMPARE,
 } from '@/constants/episodes-constants'
-import {
-	API_URLS,
-	PROMO_BACKEND_URL,
-	roleToData,
-} from '@/constants/global-constants'
+import { API_URLS, roleToData } from '@/constants/global-constants'
 import { MANAGE_PROJECT } from '@/constants/route-constants'
 import { Locale } from '@/i18n/config'
 import { match } from '@formatjs/intl-localematcher'
@@ -462,8 +458,7 @@ export async function projectAdminCheck(req: NextRequest, jwt: JWT) {
 	let data: { projects: UserProject[] } | null = null
 	try {
 		data = (await fetch(
-			`${PROMO_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
-			// `${PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
+			`${process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
 			{
 				headers: {
 					'Content-Type': 'application/json',

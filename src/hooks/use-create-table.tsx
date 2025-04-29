@@ -166,7 +166,10 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						: row.getValue('status')
 				const latestIndex = statuses.indexOf(latestStatus)
 
-				if (row.original.language !== ELanguage.GERMAN_ORIGINAL) {
+				if (
+					row.original.language &&
+					row.original.language !== ELanguage.GERMAN_ORIGINAL
+				) {
 					return null
 				}
 				if (row.depth) {

@@ -1,11 +1,7 @@
 'use server'
 
 import { headers as nextHeaders } from 'next/headers'
-import {
-	BE_API_KEY,
-	PROMO_BACKEND_URL,
-	validResponseStatuses,
-} from '@/constants/global-constants'
+import { BE_API_KEY, validResponseStatuses } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
 import { getServerSession } from 'next-auth'
 
@@ -73,7 +69,7 @@ export async function fetchAPI<
 		headers = {},
 		defaultData,
 		throwOnError,
-		// baseUrl,
+		baseUrl,
 		noAuth,
 		sendLog,
 	} = params
@@ -82,8 +78,7 @@ export async function fetchAPI<
 	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
 	const realIp = nextHeadersObj.get('x-real-ip')
 
-	const BASE_URL = PROMO_BACKEND_URL
-	// baseUrl ?? (PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL)
+	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL
 	const API_KEY = BE_API_KEY
 	//   process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 

@@ -12,7 +12,6 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
-import { PROMO_BACKEND_URL } from '@/constants/global-constants'
 import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
@@ -51,16 +50,12 @@ const SocketContext = createContext<TSocketContext | undefined>(undefined)
 
 export const SocketProvider = ({
 	children,
-	// baseUrl,
+	baseUrl,
 }: {
 	baseUrl?: string
 	children: React.ReactNode
 }) => {
-	const socketUrl = PROMO_BACKEND_URL
-	// baseUrl ||
-	// PROMO_BACKEND_URL ||
-	// process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL ||
-	// ''
+	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL || ''
 	const { data: session } = useSession()
 	const socket = useMemo(
 		() =>

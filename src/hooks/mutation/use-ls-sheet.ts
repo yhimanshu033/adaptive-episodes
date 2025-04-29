@@ -17,7 +17,7 @@ export default function useLSSheetQuery() {
 	const { id: projectId } = useParams()
 	async function getLSData() {
 		if (language === parentLanguage) {
-			return
+			return null
 		}
 		const resp = await fetchAPI<LSMappingInput, TGetAdaptationLSUrlParams>({
 			method: 'GET',

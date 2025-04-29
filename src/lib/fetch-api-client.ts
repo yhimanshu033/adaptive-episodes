@@ -1,8 +1,4 @@
-import {
-	BE_API_KEY,
-	PROMO_BACKEND_URL,
-	validResponseStatuses,
-} from '@/constants/global-constants'
+import { BE_API_KEY, validResponseStatuses } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
 
 import { log } from '@/lib/utils/helpers'
@@ -66,14 +62,13 @@ export async function fetchAPIClient<
 		headers = {},
 		defaultData,
 		throwOnError,
-		// baseUrl,
+		baseUrl,
 		noAuth,
 		sendLog,
 		session,
 	} = params
 
-	const BASE_URL = PROMO_BACKEND_URL
-	// baseUrl ?? (PROMO_BACKEND_URL || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL)
+	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL
 
 	const API_KEY = BE_API_KEY
 	//   process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''

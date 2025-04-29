@@ -19,7 +19,7 @@ import useEpisodeId, {
 } from '@/providers/episode-id-provider'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 
-import { BASE_STATUS, EStatus } from '@/types/common'
+import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { ESidebar } from '@/types/plate-types'
 
 export default function useVersions({
@@ -79,7 +79,7 @@ export default function useVersions({
 				parent_id: chapterId,
 				status:
 					latestStatus === BASE_STATUS ? EStatus.FIRST_DRAFT : latestStatus,
-				language: data?.chapter.language,
+				language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
 			})
 			await queryClient.invalidateQueries({
 				queryKey: [EPISODE_INFO_QUERY_KEY, episodeId, id],

@@ -122,7 +122,7 @@ export function SavingContextProvider({
 				const clearedLaser = clearLasers(children)
 				const text = JSON.stringify(clearedLaser)
 				let status = data?.chapter.status || BASE_STATUS
-				const language = data?.chapter.language
+				const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
 				const chapterId = data?.chapter.id
 				const dataToSave: SaveEpisodeParams = {
 					projectId: Number(id),
@@ -145,7 +145,7 @@ export function SavingContextProvider({
 					await statusUpdateMutation.mutateAsync({
 						parent_id: chapterId,
 						status,
-						language: data?.chapter.language,
+						language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
 					})
 					status = EStatus.FIRST_DRAFT
 				}
@@ -198,6 +198,7 @@ export function SavingContextProvider({
 		const dataToSave: SaveEpisodeParams = {
 			projectId: Number(id),
 			status:
+				!data?.chapter.language ||
 				data?.chapter.language === ELanguage.GERMAN_ORIGINAL
 					? status === BASE_STATUS
 						? EStatus.FIRST_DRAFT
@@ -206,7 +207,7 @@ export function SavingContextProvider({
 			episodeId: Number(data?.chapter.parent || chapterId),
 			text,
 			id: Number(chapterId),
-			language: data?.chapter.language,
+			language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
 			props: {
 				...data?.chapter.props,
 				comments: cleanedComments,
