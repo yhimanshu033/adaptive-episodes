@@ -139,7 +139,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				>
 					{row.getCanExpand() && (
 						<Button
-							title={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
+							tooltip={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
 							variant="ghost"
 							size="icon"
 							onClick={(e) => {
