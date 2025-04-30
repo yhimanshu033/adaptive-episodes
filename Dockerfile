@@ -4,8 +4,7 @@ WORKDIR /usr/src/app
 COPY ./ ./
 RUN npm install
 
-RUN echo "GOOGLE_CLIENT_ID=502615549061-bdl7i52pvfem2nk818hfbbdmufds5mm5.apps.googleusercontent.com" > .env
-RUN echo "GOOGLE_CLIENT_SECRET=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" >> .env
+
 #RUN echo "NEXTAUTH_URL=https://copilot.pocketfm.com" >> .env
 RUN echo "NEXTAUTH_SECRET=TwmBgFrFU1DTsnrvm8pLBXt0yMPYFyT/EOCoX6AZo1s=" >> .env
 #RUN echo "NEXT_PUBLIC_BASE_URL=https://copilot.pocketfm.com" >> .env

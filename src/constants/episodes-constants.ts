@@ -31,12 +31,12 @@ export const titleToStatus: Partial<Record<EStatus, string>> = {
 export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.ENGLISH]: 'English',
 	[ELanguage.FRENCH]: 'French',
-	[ELanguage.GERMAN]: 'Deutsch',
+	[ELanguage.GERMAN]: 'German',
 	[ELanguage.HINDI]: 'Hindi',
 	[ELanguage.ITALIAN]: 'Italian',
-	[ELanguage.MEXICAN_SPANISH]: 'Spanish (MX)',
+	[ELanguage.MEXICAN_SPANISH]: 'Spanish',
 	[ELanguage.GERMAN_ORIGINAL]: 'German',
-	[ELanguage.ENGLISH_US]: 'English (US)',
+	[ELanguage.ENGLISH_US]: 'English',
 }
 
 export enum EpisodeActions {

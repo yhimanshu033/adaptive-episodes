@@ -385,6 +385,15 @@ export function convertMetadata(
 		const latestData = getLatestStatusData(records)
 		convertedData.data[key] = latestData
 	}
+
+	const keys = Object.keys(convertedData.data)
+	// Check if logline exists and assign it to loglines
+	for (const key of keys) {
+		const data = convertedData.data[key]
+		if (!data.loglines && data.logline) {
+			data.loglines = data.logline
+		}
+	}
 	return convertedData
 }
 
