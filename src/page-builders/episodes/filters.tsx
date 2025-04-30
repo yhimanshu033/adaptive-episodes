@@ -133,7 +133,7 @@ const Filters = ({
 				size="icon"
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}
 				onClick={handleLocalize}
-				title="Localize episodes"
+				tooltip="Localize episodes"
 				className="hidden"
 			>
 				{/* HIDDEN FOR NOW */}
@@ -143,7 +143,7 @@ const Filters = ({
 				size="icon"
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}
 				onClick={() => handleMerge(selectedRowData)}
-				title="Merge episodes"
+				tooltip="Merge episodes"
 			>
 				<Merge size={16} />
 			</Button>
@@ -151,7 +151,7 @@ const Filters = ({
 				size="icon"
 				disabled={disabled || selectedRowData.length !== 1}
 				onClick={() => handleUnmerge(selectedRowModel)}
-				title="Unmerge episodes"
+				tooltip="Unmerge episodes"
 			>
 				<Split size={16} />
 			</Button>

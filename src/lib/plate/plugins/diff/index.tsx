@@ -195,6 +195,7 @@ function DiffLeaf({
 							<Button
 								variant="outline"
 								size="sm"
+								tooltip="Accept Status"
 								onClick={() => handleStatusChange(DiffStatus.ACCEPTED)}
 							>
 								<Check size={16} />
@@ -202,6 +203,7 @@ function DiffLeaf({
 							<Button
 								variant="outline"
 								size="sm"
+								tooltip="Reject Status"
 								onClick={() => handleStatusChange(DiffStatus.REJECTED)}
 							>
 								<X size={16} />

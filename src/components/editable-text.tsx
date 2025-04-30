@@ -78,6 +78,7 @@ const EditableText = ({
 							variant="ghost"
 							size="icon"
 							className={btnClass}
+							tooltip="Accept"
 						>
 							<Check size={16} />
 						</Button>
@@ -86,6 +87,7 @@ const EditableText = ({
 							size="icon"
 							onClick={handleCross}
 							className={btnClass}
+							tooltip="Close"
 						>
 							<X size={16} />
 						</Button>

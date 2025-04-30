@@ -55,6 +55,7 @@ export function CommentResolveButton() {
 			variant="ghost"
 			{...deleteProps}
 			onClick={handleResolve}
+			title={comment.isResolved ? 'Refresh' : 'Accept'}
 			className={cn(
 				buttonVariants({ variant: 'ghost' }),
 				'h-6 p-1 text-muted-foreground'

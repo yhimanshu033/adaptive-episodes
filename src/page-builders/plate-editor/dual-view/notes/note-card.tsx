@@ -46,6 +46,7 @@ const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 					<IconLoader />
 				) : (
 					<Button
+						tooltip="Delete Note"
 						variant="outline"
 						size="icon"
 						onClick={(e) => {

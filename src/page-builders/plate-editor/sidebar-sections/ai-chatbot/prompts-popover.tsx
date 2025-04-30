@@ -21,6 +21,7 @@ export function PromptsPopover({ children }: { children: React.ReactNode }) {
 				<div className="flex flex-col gap-2">
 					{QUICK_PROMPTS.map(({ title, text }, idx) => (
 						<Button
+							tooltip="Quick Prompts"
 							onClick={() =>
 								handleSuggestion({
 									action: EChatMode.PROMPTS,

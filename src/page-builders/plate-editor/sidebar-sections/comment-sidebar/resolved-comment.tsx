@@ -86,6 +86,7 @@ export default function ResolvedCommentItem({
 					<div className="absolute -right-0.5 -top-0.5 flex space-x-1">
 						<Button
 							variant="ghost"
+							tooltip="Accept"
 							onClick={handleResolve}
 							className={cn(
 								buttonVariants({ variant: 'ghost' }),
@@ -95,6 +96,7 @@ export default function ResolvedCommentItem({
 							<Icons.check className="size-4" />
 						</Button>
 						<Button
+							tooltip="Refresh"
 							variant="ghost"
 							onClick={handleRestore}
 							className={cn(

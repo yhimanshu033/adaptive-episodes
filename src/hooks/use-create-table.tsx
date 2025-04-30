@@ -139,6 +139,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				>
 					{row.getCanExpand() && (
 						<Button
+							title={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
 							variant="ghost"
 							size="icon"
 							onClick={(e) => {
@@ -215,6 +216,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			cell: ({ row }) =>
 				row.original.props?.creation_timestamp && (
 					<Button
+						tooltip="Delete Episode"
 						disabled={!isWriter}
 						variant="ghost"
 						size="icon"

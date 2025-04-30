@@ -56,7 +56,11 @@ const NoteContent = ({
 				</div>
 				<div className="flex gap-2">
 					{'edit' in note && (
-						<Button size="icon" disabled={isPending}>
+						<Button
+							size="icon"
+							disabled={isPending}
+							tooltip={isPending ? null : 'Save'}
+						>
 							{isPending ? (
 								<Spinner size={16} />
 							) : (
@@ -65,6 +69,7 @@ const NoteContent = ({
 						</Button>
 					)}
 					<Button
+						tooltip="Back"
 						size="icon"
 						onClick={() => setActiveNoteId(null)}
 						className="mb-4 flex items-center space-x-2"

@@ -109,6 +109,7 @@ export default function PlayerAudio() {
 						onClick={handlePlayPause}
 						variant="ghost"
 						size="icon"
+						tooltip={isPlaying ? 'Pause' : 'Play'}
 					>
 						<IfElse condition={isPlaying} if={<Pause />} else={<Play />} />
 					</Button>

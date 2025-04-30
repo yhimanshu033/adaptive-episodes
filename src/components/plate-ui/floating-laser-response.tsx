@@ -160,6 +160,7 @@ export default function FloatingLaserResponse() {
 				/>
 				<div className="flex items-center justify-between">
 					<Button
+						title="Rephrase"
 						variant="ghost"
 						onClick={() => {
 							handleRephrase()
