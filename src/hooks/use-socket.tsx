@@ -13,7 +13,6 @@ import React, {
 	useState,
 } from 'react'
 import { nanoid } from 'nanoid'
-import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
 
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
@@ -56,7 +55,7 @@ export const SocketProvider = ({
 	children: React.ReactNode
 }) => {
 	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL || ''
-	const { data: session } = useSession()
+	// const { data: session } = useSession()
 	const socket = useMemo(
 		() =>
 			io(socketUrl, {
@@ -81,9 +80,9 @@ export const SocketProvider = ({
 			}
 			responsesRef.current[taskId] = data
 		})
-		if (!session?.user.id) {
-			return
-		}
+		// if (!session?.user.id) {
+		// 	return
+		// }
 		// socket.on('connect', () => {
 		// 	socket.emit('subscribe', { "task_id": String(session?.user.id) })
 		// })
@@ -91,7 +90,7 @@ export const SocketProvider = ({
 			// socket.emit('unsubscribe', String(session?.user.id))
 			socket.disconnect()
 		}
-	}, [socket, session])
+	}, [socket])
 
 	const startTask: TSocketContext['startTask'] = useCallback(
 		async <
