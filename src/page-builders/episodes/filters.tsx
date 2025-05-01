@@ -124,7 +124,7 @@ const Filters = ({
 							</FormItem>
 						)}
 					/>
-					<Button size="icon">
+					<Button tooltip="Search" size="icon">
 						<Search size={16} />
 					</Button>
 				</form>
