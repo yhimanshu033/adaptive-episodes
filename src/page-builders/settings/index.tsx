@@ -15,7 +15,7 @@ export default function SettingsPage() {
 	return (
 		<div id="settings-page" className="container mx-auto space-y-8 p-6">
 			<div className="flex gap-2">
-				<Button tooltip="Go Back" variant="ghost" onClick={() => router.back()}>
+				<Button variant="ghost" onClick={() => router.back()} tooltip="Go back">
 					<ArrowLeft />
 				</Button>
 				<h1 className="mb-6 text-3xl font-bold">User Settings</h1>

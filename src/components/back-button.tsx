@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 export default function BackButton() {
 	const router = useRouter()
 	return (
-		<Button onClick={() => router.back()} tooltip="Back">
+		<Button onClick={() => router.back()} tooltip="Go back">
 			<ChevronLeft />
 		</Button>
 	)
