@@ -2,7 +2,7 @@ import React from 'react'
 import { roleToData } from '@/constants/global-constants'
 import useComments from '@/hooks/plate/use-comments'
 import { formatDistance } from 'date-fns'
-import { ReplyIcon } from 'lucide-react'
+import { ReplyIcon, Undo } from 'lucide-react'
 
 import { Icons } from '@/components/icons'
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
@@ -96,7 +96,7 @@ export default function ResolvedCommentItem({
 							<Icons.check className="size-4" />
 						</Button>
 						<Button
-							tooltip="Refresh"
+							tooltip="Unresolve"
 							variant="ghost"
 							onClick={handleRestore}
 							className={cn(
@@ -104,7 +104,7 @@ export default function ResolvedCommentItem({
 								'h-6 p-1 text-muted-foreground'
 							)}
 						>
-							<Icons.refresh className="size-4" />
+							<Undo className="size-4" />
 						</Button>
 					</div>
 				</div>
