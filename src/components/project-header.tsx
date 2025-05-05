@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { SAVE_EPISODE_BUTTON_ID } from '@/constants/editor-constants'
+import { HIDE_HEADER } from '@/constants/global-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEditorExtendedStore from '@/store/extended-store'
 import { useQueryClient } from '@tanstack/react-query'
@@ -25,6 +26,7 @@ const ProjectHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 	const queryClient = useQueryClient()
 	const { store } = useEditorExtendedStore()
 	const extendedEpisodeIds = store(useShallow((state) => state.extended))
+	const hideHeader = useSearchParams().get(HIDE_HEADER)
 
 	useEffect(() => {
 		if (!initialSeqNumber || !id) return
@@ -49,6 +51,10 @@ const ProjectHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 		await queryClient.invalidateQueries({
 			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
 		})
+	}
+
+	if (hideHeader) {
+		return null
 	}
 
 	return (

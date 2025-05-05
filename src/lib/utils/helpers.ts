@@ -495,25 +495,30 @@ export function getAcceptLanguageLocale<AppLocales extends Locale[]>(
 }
 
 export function splitStringByLength(input: string, maxLen: number): string[] {
-	const words = input.split(' ')
+	const sentenceRegex = /[^.!?]+[.!?]+["')\]]*\s*/g
+	const sentences = input.match(sentenceRegex) || []
 	const result: string[] = []
-	let currentLine = ''
+	let currentChunk = ''
 
-	for (const word of words) {
-		if (word.length > maxLen) {
-			throw new Error(`Word "${word}" exceeds the max length of ${maxLen}`)
+	for (const sentence of sentences) {
+		const trimmedSentence = sentence.trim()
+
+		if (trimmedSentence.length > maxLen) {
+			throw new Error(
+				`Sentence "${trimmedSentence}" exceeds the max length of ${maxLen}`
+			)
 		}
 
-		if (currentLine.length + word.length + (currentLine ? 1 : 0) <= maxLen) {
-			currentLine += (currentLine ? ' ' : '') + word
+		if (currentChunk.length + trimmedSentence.length + 1 <= maxLen) {
+			currentChunk += (currentChunk ? ' ' : '') + trimmedSentence
 		} else {
-			result.push(currentLine)
-			currentLine = word
+			result.push(currentChunk)
+			currentChunk = trimmedSentence
 		}
 	}
 
-	if (currentLine) {
-		result.push(currentLine)
+	if (currentChunk) {
+		result.push(currentChunk)
 	}
 
 	return result
