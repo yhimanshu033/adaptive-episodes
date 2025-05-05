@@ -14,9 +14,18 @@ const StoryExplorer = () => {
 	})
 
 	const handleEpisodeChange = (type: 'start' | 'end', value: string) => {
+		const parsedValue = parseInt(value)
+
+		if (isNaN(parsedValue) || episodeRange[type] === parsedValue) return
+
+		const clampedValue =
+			type === 'start'
+				? Math.max(Math.min(parsedValue, episodeRange.end), 1)
+				: Math.max(Math.min(parsedValue, Infinity), episodeRange.start)
+
 		setEpisodeRange((prevRange) => ({
 			...prevRange,
-			[type]: parseInt(value),
+			[type]: clampedValue,
 		}))
 	}
 
@@ -32,7 +41,7 @@ const StoryExplorer = () => {
 						max={episodeRange.end}
 						value={episodeRange.start}
 						onChange={(e) => handleEpisodeChange('start', e.target.value)}
-						className="w-16 text-center"
+						className="w-24 text-center"
 					/>
 					<span>-</span>
 					<Input
@@ -40,7 +49,7 @@ const StoryExplorer = () => {
 						min={episodeRange.start}
 						value={episodeRange.end}
 						onChange={(e) => handleEpisodeChange('end', e.target.value)}
-						className="w-16 text-center"
+						className="w-24 text-center"
 					/>
 				</div>
 			</div>

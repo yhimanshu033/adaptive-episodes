@@ -132,7 +132,7 @@ const Filters = ({
 				url={url}
 				size="icon"
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}
-        tooltip="Localize episodes"
+				tooltip="Localize episodes"
 			>
 				<Replace size={16} />
 			</MultiEpLocalizeDialog>
