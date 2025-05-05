@@ -10,6 +10,7 @@ import {
 	useCommentDeleteButton,
 	useCommentDeleteButtonState,
 } from '@udecode/plate-comments/react'
+import { Undo } from 'lucide-react'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/plate-ui/button'
@@ -55,14 +56,14 @@ export function CommentResolveButton() {
 			variant="ghost"
 			{...deleteProps}
 			onClick={handleResolve}
-			title={comment.isResolved ? 'Refresh' : 'Accept'}
+			title={comment.isResolved ? 'Unresolve' : 'Resolve'}
 			className={cn(
 				buttonVariants({ variant: 'ghost' }),
 				'h-6 p-1 text-muted-foreground'
 			)}
 		>
 			{comment.isResolved ? (
-				<Icons.refresh className="size-4" />
+				<Undo className="size-4" />
 			) : (
 				<Icons.check className="size-4" />
 			)}
