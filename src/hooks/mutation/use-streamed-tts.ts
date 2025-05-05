@@ -9,7 +9,7 @@ import { getText } from '@/lib/utils/plate'
 
 export default function useStreamedTTS() {
 	const { children } = useEditorState()
-	const text = useMemo(() => getText(children, '.\n'), [children])
+	const text = useMemo(() => getText(children, '\n'), [children])
 	const { initialStoryData } = useEpisodeTableContext()
 	const { store: episodeStore } = useEpisodeIdStore()
 	const episodeTitle = episodeStore(useShallow((state) => state.currentTitle))
