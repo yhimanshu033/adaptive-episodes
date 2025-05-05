@@ -14,10 +14,9 @@ import { clsx, type ClassValue } from 'clsx'
 import { jsonrepair } from 'jsonrepair'
 import Negotiator from 'negotiator'
 import { Session } from 'next-auth'
-import { JWT } from 'next-auth/jwt'
 import { twMerge } from 'tailwind-merge'
 
-import { ERole, UserProject } from '@/types/admin-types'
+import { ERole, SessionData, UserProject } from '@/types/admin-types'
 import {
 	BASE_STATUS,
 	EEpisodeType,
@@ -463,7 +462,10 @@ export function downloadBlob(blob: Blob, fileName: string) {
 	URL.revokeObjectURL(url)
 }
 
-export async function projectAdminCheck(req: NextRequest, jwt: JWT) {
+export async function projectAdminCheck(
+	req: NextRequest,
+	session: SessionData
+) {
 	let data: { projects: UserProject[] } | null = null
 	try {
 		data = (await fetch(
@@ -471,7 +473,7 @@ export async function projectAdminCheck(req: NextRequest, jwt: JWT) {
 			{
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${jwt.accessToken}`,
+					Authorization: `Bearer ${session.accessToken}`,
 				},
 			}
 		).then((res) => res.json())) as { projects: UserProject[] }
