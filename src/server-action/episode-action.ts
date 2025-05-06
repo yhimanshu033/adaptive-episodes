@@ -1,11 +1,13 @@
 'use server'
 
+import { allPrioritizedStatuses } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
 import { ELanguage, TNoParams } from '@/types/common'
 import {
+	TEpisode,
 	TEpisodeDeleteResponse,
 	TEpisodeDeleteURLParams,
 	TEpisodeInventParams,
@@ -29,7 +31,7 @@ export const getEpisodes = async ({
 	limit,
 }: TGetEpisodesQueryParams) => {
 	// return sampleEpisodeDetails // DEV CHECK
-	const response = await fetchAPI<
+	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
 		TNoParams,
 		TNoParams,
@@ -45,7 +47,44 @@ export const getEpisodes = async ({
 		},
 	})
 
-	return response.data
+	if (!episodes.data) {
+		return
+	}
+
+	const episodeMap = episodes.data.results.data.reduce(
+		(acc, curr) => {
+			const id = curr.parent || curr.id
+			const existingEpisode = acc[id]
+			if (existingEpisode) {
+				const existingIdx = allPrioritizedStatuses.findIndex(
+					(status) => status === String(existingEpisode.status)
+				)
+				const currIdx = allPrioritizedStatuses.findIndex(
+					(status) => status === String(curr.status)
+				)
+
+				if (currIdx < existingIdx) {
+					acc[id] = curr
+				}
+			} else {
+				acc[id] = curr
+			}
+			return acc
+		},
+		{} as Record<number, TEpisode>
+	)
+
+	const episodesData = Object.values(episodeMap)
+
+	const response: TGetEpisodesResponse = {
+		...episodes.data,
+		results: {
+			...episodes.data.results,
+			data: episodesData,
+		},
+	}
+
+	return response
 }
 
 export const getEpisodeDetails = async (
