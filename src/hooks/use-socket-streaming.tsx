@@ -14,6 +14,7 @@ import React, {
 } from 'react'
 import { ESocketStatus } from '@/constants/ai-constants'
 import { nanoid } from 'nanoid'
+import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
 
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
@@ -55,16 +56,16 @@ export const SocketStreamingProvider = ({
 	children: React.ReactNode
 }) => {
 	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL || ''
-	// const { data: session } = useSession()
+	const { data: session } = useSession()
 	const socket = useMemo(
 		() =>
 			io(socketUrl, {
 				autoConnect: false,
-				// extraHeaders: {
-				// 	Authorization: `Bearer ${session?.accessToken}`,
-				// },
+				extraHeaders: {
+					Authorization: `Bearer ${session?.accessToken}`,
+				},
 			}),
-		[socketUrl]
+		[socketUrl, session]
 	)
 	const [responses, setResponses] = useState<Record<string, string[]>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
@@ -116,7 +117,6 @@ export const SocketStreamingProvider = ({
 		// 	socket.emit('subscribe', { "task_id": String(session?.user.id) })
 		// })
 		return () => {
-			// socket.emit('unsubscribe', String(session?.user.id))
 			socket.disconnect()
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -150,6 +150,7 @@ export const SocketStreamingProvider = ({
 				taskCallbacksRef.current[taskId] = onResponse
 			}
 
+			socket.emit('subscribe', { task_id: String(session?.user.id) })
 			await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
@@ -160,14 +161,14 @@ export const SocketStreamingProvider = ({
 				...rest,
 				query: {
 					task_id: taskId,
-					// room_id: String(session?.user.id),
+					room_id: String(session?.user.id),
 					...(params.query as QueryParamsT),
 				},
 			})
 
 			return taskId
 		},
-		[fetchedData]
+		[fetchedData, session, socket]
 	)
 
 	const getStreamedResponse = useCallback(

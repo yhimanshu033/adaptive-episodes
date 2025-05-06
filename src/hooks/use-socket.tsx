@@ -13,6 +13,7 @@ import React, {
 	useState,
 } from 'react'
 import { nanoid } from 'nanoid'
+import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
 
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
@@ -55,16 +56,16 @@ export const SocketProvider = ({
 	children: React.ReactNode
 }) => {
 	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL || ''
-	// const { data: session } = useSession()
+	const { data: session } = useSession()
 	const socket = useMemo(
 		() =>
 			io(socketUrl, {
 				autoConnect: false,
-				// extraHeaders: {
-				// 	Authorization: `Bearer ${session?.accessToken}`,
-				// },
+				extraHeaders: {
+					Authorization: `Bearer ${session?.accessToken}`,
+				},
 			}),
-		[socketUrl]
+		[socketUrl, session]
 	)
 	const responsesRef = useRef<Record<string, any>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
@@ -117,6 +118,7 @@ export const SocketProvider = ({
 				taskCallbacksRef.current[taskId] = onResponse
 			}
 
+			socket.emit('subscribe', { task_id: String(session?.user.id) })
 			const resp = await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
@@ -127,7 +129,7 @@ export const SocketProvider = ({
 				...restParams,
 				query: {
 					task_id: taskId,
-					// room_id: String(session?.user.id),
+					room_id: String(session?.user.id),
 					...(params.query as QueryParamsT),
 				},
 			})
@@ -140,7 +142,7 @@ export const SocketProvider = ({
 
 			return taskId
 		},
-		[fetchedData]
+		[fetchedData, session, socket]
 	)
 
 	const getResponse = useCallback(<T,>(taskId: string) => {
