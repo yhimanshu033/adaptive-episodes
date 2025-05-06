@@ -235,7 +235,7 @@ export function ImportStory() {
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel htmlFor="story">
-										Upload Story Files<sup>*</sup>
+										Upload Story Files (optional)
 									</FormLabel>
 									<FormControl>
 										<div
@@ -286,8 +286,14 @@ export function ImportStory() {
 								</FormItem>
 							)}
 						/>
-						<Button type="submit" disabled={storyUploadMutation.isPending}>
-							{storyUploadMutation.isPending ? 'Uploading' : 'Upload Story'}
+						<Button
+							className="mx-auto w-full"
+							type="submit"
+							disabled={storyUploadMutation.isPending}
+						>
+							{storyUploadMutation.isPending
+								? 'Uploading'
+								: 'Upload or Create New Story'}
 						</Button>
 					</form>
 				</Form>

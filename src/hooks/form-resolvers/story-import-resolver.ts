@@ -32,6 +32,7 @@ export const storyImportFormSchema = z.object({
 		),
 	story_file: z
 		.instanceof(File)
+		.optional()
 		.refine(
 			(file) => file && file.size <= MAX_DOCX_FILE_SIZE,
 			`Max document size is 10MB.`

@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
+import useBaseExtensionMutation from '@/hooks/mutation/use-base-extension-mutation'
 import useBaseExtensionQuery from '@/hooks/query/use-base-extension-data'
-import { FileIcon, FileWarningIcon, Loader2, RotateCcw } from 'lucide-react'
+import {
+	AlertTriangle,
+	CheckCircle2,
+	FileIcon,
+	FileWarningIcon,
+	RotateCcw,
+} from 'lucide-react'
 
 import IfElse, { Else, If } from '@/components/if-else'
 import { Loader } from '@/components/loader'
@@ -16,8 +23,10 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { formatDate } from '@/lib/format-date'
 
 import BaseExtensionForm from './base-extension-form'
+import BaseScriptStatus from './base-script-status'
 
 const BaseScriptExtension = () => {
 	const [queryEnabled, setQueryEnabled] = useState(false)
@@ -25,9 +34,15 @@ const BaseScriptExtension = () => {
 		useBaseExtensionQuery(queryEnabled)
 	const { initialStoryData } = useEpisodeTableContext()
 
+	const baseExtensionMutation = useBaseExtensionMutation()
+	const { data: taskId } = baseExtensionMutation
+
 	const extendableRange = !(data && 'message' in data)
 		? (data?.ranges?.de_end ?? 0) - (data?.ranges?.de_start ?? 1) + 1
 		: 0
+
+	const baseTaskId =
+		taskId || (data && 'taskId' in data ? data.taskId : undefined)
 
 	return (
 		<Dialog open={queryEnabled} onOpenChange={setQueryEnabled}>
@@ -47,87 +62,117 @@ const BaseScriptExtension = () => {
 						Please verify the extracted info and initiate base script extension.
 					</DialogDescription>
 				</DialogHeader>
-				<IfElse condition={isFetching || isLoading}>
-					<If>
-						<Loader
-							loaderClass="mx-auto mt-4"
-							text="Extracting file information..."
-						/>
-					</If>
-					<Else>
-						{data && 'message' in data ? (
-							<Card className="mx-auto w-1/2 border border-muted bg-muted/50 shadow-sm">
-								<CardContent className="flex items-center gap-3 p-4 text-sm text-muted-foreground">
-									<Loader2 className="size-4 animate-spin text-primary" />
-									<span>{data.message}</span>
-								</CardContent>
-							</Card>
-						) : (
-							<div className="mx-auto w-1/2 space-y-2">
-								<Card className="relative">
-									<IfElse condition={!!data?.file_found}>
-										<If>
-											<CardHeader className="flex flex-row items-center gap-2">
-												<FileIcon size={16} />
-												<CardTitle className="truncate text-base font-semibold">
-													{data?.file_name}
-												</CardTitle>
-											</CardHeader>
-											<CardContent className="space-y-4 text-sm">
-												<div className="flex flex-col gap-2">
-													<div>
-														<span className="font-medium">
-															Extendable DE Range:{' '}
-														</span>{' '}
-														<Badge variant="outline">
-															{data?.ranges?.de_start || 0}
-														</Badge>{' '}
-														-{' '}
-														<Badge variant="outline">
-															{data?.ranges?.de_end || 0}
-														</Badge>
+
+				{baseTaskId ? (
+					<BaseScriptStatus taskId={baseTaskId} />
+				) : (
+					<IfElse condition={isFetching || isLoading}>
+						<If>
+							<Loader
+								loaderClass="mx-auto mt-4"
+								text="Extracting file information..."
+							/>
+						</If>
+
+						<Else>
+							{!(data && 'message' in data) && (
+								<div className="mx-auto w-1/2 space-y-2">
+									<Card className="relative">
+										<IfElse condition={!!data?.file_found}>
+											<If>
+												<CardHeader className="flex flex-row items-center gap-2">
+													<FileIcon size={16} />
+													<CardTitle className="truncate text-base font-semibold">
+														{data?.file_name}
+													</CardTitle>
+												</CardHeader>
+												<CardContent className="space-y-4 text-sm">
+													<div className="flex flex-col gap-2">
+														<div>
+															<span className="font-medium">
+																Extendable DE Range:{' '}
+															</span>{' '}
+															<Badge variant="outline">
+																{data?.ranges?.de_start || 0}
+															</Badge>{' '}
+															-{' '}
+															<Badge variant="outline">
+																{data?.ranges?.de_end || 0}
+															</Badge>
+														</div>
+														<div className="text-muted-foreground">
+															Total episodes available to extend:{' '}
+															<strong>{extendableRange}</strong>
+														</div>
 													</div>
-													<div className="text-muted-foreground">
-														Total episodes available to extend:{' '}
-														<strong>{extendableRange}</strong>
-													</div>
+												</CardContent>
+											</If>
+											<Else>
+												<CardHeader className="pb-2">
+													<CardTitle className="flex items-center gap-2 text-base font-semibold text-red-600">
+														<FileWarningIcon size={16} /> File Not Found
+													</CardTitle>
+												</CardHeader>
+												<CardContent className="mb-5">
+													<p className="text-sm text-muted-foreground">
+														The file for base script extension couldn&apos;t be
+														located.
+													</p>
+												</CardContent>
+											</Else>
+										</IfElse>
+										<div className="absolute bottom-1 right-1">
+											<Button
+												variant="ghost"
+												size="icon"
+												onClick={() => void refetch()}
+											>
+												<RotateCcw size={16} />
+											</Button>
+										</div>
+									</Card>
+									<If condition={!!data?.file_found}>
+										<BaseExtensionForm
+											totalEpisodes={extendableRange}
+											data={data ?? undefined}
+											baseExtensionMutation={baseExtensionMutation}
+										/>
+									</If>
+									<If condition={!!data?.previous_extension_status}>
+										<Card
+											className={`w-full ${
+												data?.previous_extension_status.status === 'success'
+													? 'text-green-700'
+													: 'text-red-700'
+											}`}
+										>
+											<CardContent className="flex items-start gap-2 px-4 py-3 text-sm">
+												{data?.previous_extension_status.status ===
+												'success' ? (
+													<CheckCircle2 className="mt-0.5 size-4" />
+												) : (
+													<AlertTriangle className="mt-0.5 size-4" />
+												)}
+
+												<div className="flex flex-col">
+													<p className="font-medium">
+														{data?.previous_extension_status.message}
+													</p>
+													<span className="text-xs text-muted-foreground">
+														{formatDate(
+															data?.previous_extension_status.timestamp || '',
+															true
+														)}
+													</span>
 												</div>
 											</CardContent>
-										</If>
-										<Else>
-											<CardHeader className="pb-2">
-												<CardTitle className="flex items-center gap-2 text-base font-semibold text-red-600">
-													<FileWarningIcon size={16} /> File Not Found
-												</CardTitle>
-											</CardHeader>
-											<CardContent className="mb-5">
-												<p className="text-sm text-muted-foreground">
-													The file for base script extension couldn&apos;t be
-													located.
-												</p>
-											</CardContent>
-										</Else>
-									</IfElse>
-									<div className="absolute bottom-1 right-1">
-										<Button
-											variant="ghost"
-											size="icon"
-											onClick={() => void refetch()}
-										>
-											<RotateCcw size={16} />
-										</Button>
-									</div>
-								</Card>
-								<If condition={!!data?.file_found}>
-									<BaseExtensionForm
-										totalEpisodes={extendableRange}
-										data={data ?? undefined}
-									/>
-								</If>
-							</div>
-						)}
-					</Else>
-				</IfElse>
+										</Card>
+									</If>
+								</div>
+							)}
+						</Else>
+					</IfElse>
+				)}
 			</DialogContent>
 		</Dialog>
 	)

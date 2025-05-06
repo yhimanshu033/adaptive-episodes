@@ -37,9 +37,10 @@ const useBaseExtensionQuery = (enabled: boolean) => {
 			if (resp.status === 401) {
 				await redirectToGDriveAuth()
 			}
-			if (resp.status === 400) {
+			if (resp.status === 400 && !resp.success) {
 				return {
 					message: 'Base script extension is currently running in background',
+					taskId: resp?.message?.task_id,
 				}
 			}
 			return resp.data

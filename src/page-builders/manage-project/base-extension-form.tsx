@@ -21,7 +21,9 @@ import { TBaseScriptExtensionResponse } from '@/types/admin-types'
 const BaseExtensionForm = ({
 	totalEpisodes,
 	data,
+	baseExtensionMutation,
 }: {
+	baseExtensionMutation: ReturnType<typeof useBaseExtensionMutation>
 	data?: TBaseScriptExtensionResponse
 	totalEpisodes: number
 }) => {
@@ -29,8 +31,6 @@ const BaseExtensionForm = ({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { form, baseExtensionFormSchema } =
 		useBaseExtensionResolver(totalEpisodes)
-
-	const baseExtensionMutation = useBaseExtensionMutation()
 
 	const handleBaseExtension = ({
 		episodes,
