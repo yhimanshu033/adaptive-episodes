@@ -68,7 +68,7 @@ export async function fetchAPIClient<
 		session,
 	} = params
 
-	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL
+	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
 
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 

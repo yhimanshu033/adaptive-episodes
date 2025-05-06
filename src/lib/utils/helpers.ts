@@ -469,7 +469,7 @@ export async function projectAdminCheck(
 	let data: { projects: UserProject[] } | null = null
 	try {
 		data = (await fetch(
-			`${process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
+			`${process.env.NEXT_PUBLIC_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
 			{
 				headers: {
 					'Content-Type': 'application/json',
