@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { COPILOT_LOGO_URL, DEFAULT_USER } from '@/constants/global-constants'
 import userMembersQuery from '@/hooks/query/user-members-data'
+import useParentLanguage from '@/hooks/use-parent-language'
 import { useGlobalStore } from '@/store/global-store'
 import { SuggestionUser } from '@udecode/plate-suggestion'
 import { useShallow } from 'zustand/react/shallow'
@@ -13,12 +14,14 @@ import { isAuthorized } from '@/lib/utils/helpers'
 import { getOpenedStories, setOpenedStories } from '@/lib/utils/indexed-db'
 
 import { ERole } from '@/types/admin-types'
+import { ELanguage } from '@/types/common'
 
 const useProjectIdUtil = () => {
 	const { id } = useParams()
 	const { data } = userMembersQuery()
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 
+	const parentLanguage = useParentLanguage()
 	const myRole = useMemo(() => {
 		if (!userData) {
 			return null
@@ -53,13 +56,15 @@ const useProjectIdUtil = () => {
 
 	const isAccessible = useCallback(
 		(role: ERole) => {
-			return true
+			if (parentLanguage && parentLanguage !== ELanguage.GERMAN_ORIGINAL) {
+				return true
+			}
 			if (!myRole) {
 				return false
 			}
 			return isAuthorized({ requiredRole: role, userRole: myRole })
 		},
-		[myRole]
+		[myRole, parentLanguage]
 	)
 
 	const isWriter = useMemo(() => {

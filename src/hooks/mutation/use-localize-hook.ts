@@ -50,7 +50,7 @@ const useLocalizeHook = ({
 			body: {
 				text,
 				project_id: String(id),
-				language,
+				input_language: language,
 			},
 			noCache: true,
 		})

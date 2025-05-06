@@ -1,9 +1,17 @@
-import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { useMemo } from 'react'
+import { useParams } from 'next/navigation'
+import { useStoriesData } from '@/hooks/query/use-story-data'
 
 import { ELanguage } from '@/types/common'
 
 export default function useParentLanguage() {
-	const { initialStoryData: storyData } = useEpisodeTableContext()
+	const { data } = useStoriesData()
+	const { id } = useParams()
 
-	return storyData?.parent_language || ELanguage.GERMAN_ORIGINAL
+	const initialStoryData = useMemo(
+		() => data?.find((story) => story.id === parseInt(id as string)),
+		[data, id]
+	)
+
+	return initialStoryData?.parent_language || ELanguage.GERMAN_ORIGINAL
 }

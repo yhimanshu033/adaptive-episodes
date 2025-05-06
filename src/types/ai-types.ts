@@ -272,7 +272,7 @@ export type TTSAPIBody = {
 }
 
 export type TLocalizeBody = {
-	language?: ELanguage
+	input_language?: ELanguage
 	project_id: string
 	text: string
 }
