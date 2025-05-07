@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Row, Table } from '@tanstack/react-table'
 import { useShallow } from 'zustand/react/shallow'
 
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
@@ -18,6 +19,7 @@ const useEpisodeTable = () => {
 	const router = useRouter()
 	const pathname = usePathname()
 	const queryClient = useQueryClient()
+	const { initialStoryData: storyData } = useEpisodeTableContext()
 
 	const { isWriter } = useProjectId()
 
@@ -55,7 +57,9 @@ const useEpisodeTable = () => {
 		status: EStatus,
 		table: Table<TEpisode>
 	) => {
-		if (!isWriter) return
+		if (!isWriter) {
+			return
+		}
 		const selectedRows = table
 			.getSelectedRowModel()
 			.rows.map((row) => row.original)
@@ -83,7 +87,9 @@ const useEpisodeTable = () => {
 	}
 
 	const handleMerge = (selectedRowData: TEpisode[]) => {
-		if (!isWriter) return
+		if (!isWriter) {
+			return
+		}
 		const { isStatusSame, isContinuous } = selectedRowData.reduce(
 			(acc, row, index) => ({
 				isStatusSame:
@@ -122,7 +128,9 @@ const useEpisodeTable = () => {
 	}
 
 	const handleUnmerge = (selectedRowModel: Row<TEpisode>[]) => {
-		if (!isWriter) return
+		if (!isWriter) {
+			return
+		}
 		if (!selectedRowModel[0].getCanExpand()) {
 			setAlertInfo({
 				description: 'Please select a merged episode',
@@ -141,16 +149,21 @@ const useEpisodeTable = () => {
 	}
 
 	const handleAddEpisode = (data: TEpisodeInventForm) => {
-		if (!isWriter) return
+		if (!isWriter) {
+			return
+		}
 		episodeInventMutation.mutate({
 			chapter_title: data.title,
 			seq_number: (currentInventIndex || 0) + 2 + (currentPage - 1) * limit,
+			language: storyData?.parent_language,
 		})
 		setIsInventOpen(false)
 	}
 
 	const handleDeleteEpisode = (episodeId: number) => {
-		if (!isWriter) return
+		if (!isWriter) {
+			return
+		}
 		setAlertInfo({
 			description: 'Selected episode will get permanently deleted',
 			action: EpisodeActions.DELETE,
@@ -160,7 +173,9 @@ const useEpisodeTable = () => {
 	}
 
 	const handleConfirm = async () => {
-		if (!alertInfo || !isWriter) return
+		if (!alertInfo || !isWriter) {
+			return
+		}
 		if (alertInfo.action === EpisodeActions.MERGE && selectedEpisodes) {
 			episodesMergeMutation.mutate(
 				selectedEpisodes.episodes.map((episode) => episode.id) || []
@@ -179,6 +194,7 @@ const useEpisodeTable = () => {
 						await statusUpdateMutation.mutateAsync({
 							parent_id: episode.parent ?? episode.id,
 							status: BASE_STATUS,
+							language: storyData?.parent_language,
 						})
 					}
 					return statusUpdateMutation.mutateAsync({

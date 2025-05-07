@@ -42,7 +42,9 @@ export default function FloatingLaserResponse() {
 
 	const setVal = useCallback(
 		(val: string) => {
-			if (!activeLaser || !laser) return
+			if (!activeLaser || !laser) {
+				return
+			}
 			setLaser({ id: activeLaser, laser: { ...laser, response: val } })
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,7 +59,9 @@ export default function FloatingLaserResponse() {
 
 	const onRephrase = useCallback(
 		(text: string) => {
-			if (!key) return
+			if (!key) {
+				return
+			}
 			try {
 				const val = structuredClone(editor.children)
 
@@ -77,7 +81,9 @@ export default function FloatingLaserResponse() {
 	)
 
 	const onResetLeaf = useCallback(() => {
-		if (!key) return
+		if (!key) {
+			return
+		}
 		try {
 			const val = structuredClone(editor.children)
 			const newVal = keyNodeOperationOnce(
@@ -108,12 +114,16 @@ export default function FloatingLaserResponse() {
 		setResponseActive(null)
 	}
 
-	if (!laser) return null
+	if (!laser) {
+		return null
+	}
 
 	return (
 		<div
 			onBlur={(e) => {
-				if (e.currentTarget.contains(e.relatedTarget)) return
+				if (e.currentTarget.contains(e.relatedTarget)) {
+					return
+				}
 				setActiveLaser(null)
 			}}
 			className={cn(

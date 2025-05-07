@@ -116,7 +116,9 @@ export const Draggable = withRef<'div', DraggableProps>(
 		}: any = useDraggable(state)
 
 		useEffect(() => {
-			if (!previewRef.current) return
+			if (!previewRef.current) {
+				return
+			}
 			const selection = window.getSelection()
 			selection?.removeAllRanges() // Clear any existing selection
 			const range = document.createRange()

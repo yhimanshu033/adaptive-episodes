@@ -32,7 +32,9 @@ const SearchUser = ({
 	const addMemberQuery = useAdminStore((state) => state.addMemberQuery)
 
 	const users = React.useMemo(() => {
-		if (!data || !membersData) return []
+		if (!data || !membersData) {
+			return []
+		}
 
 		const memberIds = new Set(
 			membersData.members.map((member) => member.user.id)
@@ -42,7 +44,9 @@ const SearchUser = ({
 
 	const handleValueChange = (value: string) => {
 		setMemberQuery(value)
-		if (selectedValue) onUserSelect('')
+		if (selectedValue) {
+			onUserSelect('')
+		}
 	}
 
 	const handleSelect = (user: UserData) => {

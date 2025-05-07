@@ -4,13 +4,13 @@ WORKDIR /usr/src/app
 COPY ./ ./
 RUN npm install
 
-#RUN echo "GOOGLE_CLIENT_ID=486778135608-vp84uv9oiduciqalnt6fdit32il4jsp4.apps.googleusercontent.com" > .env
-#RUN echo "GOOGLE_CLIENT_SECRET=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" >> .env
+
 #RUN echo "NEXTAUTH_URL=https://copilot.pocketfm.com" >> .env
 RUN echo "NEXTAUTH_SECRET=TwmBgFrFU1DTsnrvm8pLBXt0yMPYFyT/EOCoX6AZo1s=" >> .env
 #RUN echo "NEXT_PUBLIC_BASE_URL=https://copilot.pocketfm.com" >> .env
 RUN echo "NEXT_PUBLIC_LASERTOOLS_API_KEY=JHvCML1yir-6d6JcYVlsEeHd8QzAhZMy98Rc62plmHI" >> .env
 RUN echo "NEXT_PUBLIC_BACKEND_URL=https://pocketfm-copilot-api.pocketfm.com" >> .env
+RUN echo "NEXT_PUBLIC_PROMOS_BACKEND_URL=https://pocketfm-copilot-promo-api.pocketfm.com" >> .env
 RUN echo "NEXT_PUBLIC_BACKEND_API_KEY='2n{WHwe2[V,VG\K0A[!r.g1+[uar*d#w'" >> .env
 RUN echo "NEXT_PUBLIC_SENTRY_DSN_URL=https://5c0b78d4ba827ea668db896758cc968a@o456578.ingest.us.sentry.io/4508737589018624" >> .env
 

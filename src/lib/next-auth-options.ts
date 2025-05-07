@@ -59,6 +59,7 @@ const authOptions = {
 						Authorization: `Bearer ${resp.data?.data.access_token}`,
 					},
 				})
+
 				if (userData.data?.data) {
 					token.user = {
 						...userData.data.data,

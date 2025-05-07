@@ -1,5 +1,6 @@
 'use server'
 
+import { headers as nextHeaders } from 'next/headers'
 import { validResponseStatuses } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
 import { getServerSession } from 'next-auth'
@@ -58,6 +59,7 @@ export async function fetchAPI<
 	>
 ): Promise<FetchResponseResult<ResponseDataT>> {
 	const session = (await getServerSession(authOptions)) as SessionData
+
 	const {
 		url,
 		method,
@@ -71,6 +73,10 @@ export async function fetchAPI<
 		noAuth,
 		sendLog,
 	} = params
+
+	const nextHeadersObj = await nextHeaders()
+	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
+	const realIp = nextHeadersObj.get('x-real-ip')
 
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
@@ -100,6 +106,7 @@ export async function fetchAPI<
 		resolvedUrl += `?${queryStr}`
 	}
 	const accessToken = session?.accessToken || ''
+	// 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJmMGFkMGVlOC00NTdiLTQzNDAtYjljZi02OTZlNzdiMzhkNTAiLCJmdWxsbmFtZSI6IlZhcmFkIFByYWJodSIsImVtYWlsIjoidmFyYWQucHJhYmh1QHBvY2tldGZtLmNvbSIsImV4cCI6MTc2MTM4MDc5NywiaWF0IjoxNzQ1ODI4Nzk3fQ.SRxPnyHMEVuwE3vP0Ax7rVfs47E8RjuULaORzp_1Xu4'
 
 	const defaultSentryData: Record<string, string> = {
 		user: JSON.stringify(session?.user),
@@ -131,6 +138,8 @@ export async function fetchAPI<
 				'API-Key': API_KEY,
 				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
 				...headers,
+				'x-forwarded-for': forwardedFor || '',
+				'x-real-ip': realIp || '',
 			},
 			...(method !== 'GET' && method !== 'DELETE'
 				? { body: isFormData ? body : JSON.stringify(body) }
@@ -168,6 +177,7 @@ export async function fetchAPI<
 				message,
 			}
 		}
+
 		const responseData = (await response.json()) as ResponseDataT
 
 		if (sendLog) {

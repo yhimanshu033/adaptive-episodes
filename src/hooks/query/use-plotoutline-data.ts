@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { languageToTitle } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import { PLOTOUTLINE_QUERY_KEY } from '@/constants/query-constants'
 import {
@@ -9,6 +10,7 @@ import {
 	PlotAction,
 } from '@/constants/story-explorer-constants'
 import useMetadataQuery from '@/hooks/query/use-metadata-query'
+import useLanguage from '@/hooks/use-language'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useQuery } from '@tanstack/react-query'
 import { useEditorState } from '@udecode/plate-common/react'
@@ -45,9 +47,12 @@ const usePlotOutlineQuery = ({
 		end
 	)
 
+	const language = useLanguage()
 	const getPlotOutline =
 		useCallback(async (): Promise<PlotExplorerQueryResponse> => {
-			if (!action) return { content: [], taskId: '' }
+			if (!action) {
+				return { content: [], taskId: '' }
+			}
 			const metadataEntries = Object.values(metadata?.data?.data || {})
 
 			if ((action as PlotAction) === PlotAction.Summary) {
@@ -88,7 +93,10 @@ const usePlotOutlineQuery = ({
 				...extractedData,
 				current_ep: getText(children) || ' ',
 				search_query: instruction,
+				input_language: languageToTitle[language],
 			}
+
+			console.log({ params })
 
 			const taskId = await startTask({
 				method: 'POST',
@@ -110,6 +118,7 @@ const usePlotOutlineQuery = ({
 			children,
 			instruction,
 			startTask,
+			language,
 		])
 
 	const plotOutlineQuery = useQuery({

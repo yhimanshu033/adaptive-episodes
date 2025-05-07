@@ -27,9 +27,11 @@ export function CommentLeaf({
 
 	const isActive = sidebar === ESidebar.COMMENTS && state.isActive
 
-	if (!state.commentCount) return <>{children}</>
+	if (!state.commentCount) {
+		return children as React.ReactNode
+	}
 
-	let aboveChildren = <>{children}</>
+	let aboveChildren = children as React.ReactNode
 
 	if (!isActive) {
 		for (let i = 1; i < state.commentCount; i++) {

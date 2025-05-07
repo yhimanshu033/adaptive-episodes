@@ -32,14 +32,18 @@ export default function VideoUpload() {
 	const { responses, taskEnded } = useSocketStreaming()
 
 	const translatedData = useMemo(() => {
-		if (!data || !responses[data]) return ''
+		if (!data || !responses[data]) {
+			return ''
+		}
 
 		const concatenatedResponse = responses[data].join('')
 		return concatenatedResponse
 	}, [data, responses])
 
 	const isEnded = useMemo(() => {
-		if (!data) return false
+		if (!data) {
+			return false
+		}
 		return taskEnded[data]
 	}, [data, taskEnded])
 
@@ -93,7 +97,9 @@ export default function VideoUpload() {
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		if (!file) return
+		if (!file) {
+			return
+		}
 
 		if (data) {
 			resetState()

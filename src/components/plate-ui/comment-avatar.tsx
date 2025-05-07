@@ -10,7 +10,9 @@ export function CommentAvatar({ userId }: { userId: string | null }) {
 	const { useOption } = useEditorPlugin(CommentsPlugin)
 	const user = useOption('userById', userId)
 
-	if (!user) return null
+	if (!user) {
+		return null
+	}
 
 	return (
 		<Avatar className="size-5">

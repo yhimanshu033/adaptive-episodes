@@ -21,6 +21,7 @@ export default function RenderContent({
 	if (!content || content === '' || !content?.length) {
 		return <p>Content not found 😢</p>
 	}
+
 	if (typeof content === 'string') {
 		return (
 			<div

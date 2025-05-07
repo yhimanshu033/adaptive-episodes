@@ -14,7 +14,9 @@ import { getOpenedStories } from '@/lib/utils/indexed-db'
 export const useStoriesData = () => {
 	const path = usePathname()
 	const sortStories = async () => {
-		if (!data) return { sortedStories: [], openedStories: [] }
+		if (!data) {
+			return { sortedStories: [], openedStories: [] }
+		}
 		const openedStories = (await getOpenedStories()) || []
 		return {
 			sortedStories: sortOpenedStories(openedStories, Array.from(data)),
@@ -24,6 +26,7 @@ export const useStoriesData = () => {
 	const query = useQuery({
 		queryKey: [STORIES_QUERY_KEY],
 		queryFn: getStories,
+		staleTime: Infinity,
 	})
 
 	const { data } = query

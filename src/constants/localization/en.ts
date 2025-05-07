@@ -32,7 +32,7 @@ const EN_LANG = {
 		localChanges: 'Local Changes',
 		contentChanged: 'The content appears to have changed',
 		thinking: 'Thinking...',
-		example: 'Example:',
+		example: 'Example',
 		words: 'Words',
 	},
 	toasts: {

@@ -21,7 +21,9 @@ import { TBaseScriptExtensionResponse } from '@/types/admin-types'
 const BaseExtensionForm = ({
 	totalEpisodes,
 	data,
+	baseExtensionMutation,
 }: {
+	baseExtensionMutation: ReturnType<typeof useBaseExtensionMutation>
 	data?: TBaseScriptExtensionResponse
 	totalEpisodes: number
 }) => {
@@ -30,12 +32,12 @@ const BaseExtensionForm = ({
 	const { form, baseExtensionFormSchema } =
 		useBaseExtensionResolver(totalEpisodes)
 
-	const baseExtensionMutation = useBaseExtensionMutation()
-
 	const handleBaseExtension = ({
 		episodes,
 	}: z.infer<typeof baseExtensionFormSchema>) => {
-		if (!data) return
+		if (!data) {
+			return
+		}
 
 		const { file_id, ranges } = data
 		const { de_start, us_start } = ranges

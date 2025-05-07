@@ -1,8 +1,10 @@
-import React from 'react'
-import { QUICK_PROMPTS } from '@/constants/ai-constants'
+import React, { useMemo } from 'react'
+import { QUICK_PROMPTS, QUICK_PROMPTS_EN } from '@/constants/ai-constants'
 import useAIChatbot from '@/hooks/use-ai-chatbot'
+import useIsGerman from '@/hooks/use-is-german'
 
 import { Button } from '@/components/ui/button'
+import ForEach from '@/components/ui/for-each'
 import {
 	Popover,
 	PopoverContent,
@@ -14,27 +16,37 @@ import { EChatMode } from '@/types/ai-types'
 
 export function PromptsPopover({ children }: { children: React.ReactNode }) {
 	const { handleSuggestion } = useAIChatbot()
+	const isGerman = useIsGerman()
+
+	const prompts = useMemo(() => {
+		if (!isGerman) {
+			return QUICK_PROMPTS_EN
+		}
+		return QUICK_PROMPTS
+	}, [isGerman])
 	return (
 		<Popover>
 			<PopoverTrigger asChild>{children}</PopoverTrigger>
 			<PopoverContent className="w-[400px]">
 				<div className="flex flex-col gap-2">
-					{QUICK_PROMPTS.map(({ title, text }, idx) => (
-						<Button
-							tooltip="Quick Prompts"
-							onClick={() =>
-								handleSuggestion({
-									action: EChatMode.PROMPTS,
-									value: text,
-								})
-							}
-							variant="outline"
-							className="overflow-hidden"
-							key={idx}
-						>
-							{trim(title ?? text, 50)}
-						</Button>
-					))}
+					<ForEach data={prompts}>
+						{({ title, text }, idx) => (
+							<Button
+                tooltip="Quick Prompts"
+								key={`quick-prompt-${idx}`}
+								onClick={() =>
+									handleSuggestion({
+										action: EChatMode.PROMPTS,
+										value: text,
+									})
+								}
+								variant="outline"
+								className="overflow-hidden"
+							>
+								{trim(title ?? text, 50)}
+							</Button>
+						)}
+					</ForEach>
 				</div>
 			</PopoverContent>
 		</Popover>

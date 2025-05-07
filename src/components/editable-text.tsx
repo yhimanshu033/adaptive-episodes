@@ -35,9 +35,13 @@ const EditableText = ({
 
 	const handleComplete = () => {
 		setIsEditing(false)
-		if (text === defaultText) return
+		if (text === defaultText) {
+			return
+		}
 		onComplete?.(text || defaultText)
-		if (!text) setText(defaultText)
+		if (!text) {
+			setText(defaultText)
+		}
 	}
 
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -48,7 +52,9 @@ const EditableText = ({
 	useOnClickOutside(ref, handleComplete)
 
 	const handleTextClick = () => {
-		if (!isEditable) return
+		if (!isEditable) {
+			return
+		}
 		setIsEditing(true)
 	}
 

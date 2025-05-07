@@ -28,12 +28,16 @@ const NoteContent = ({
 	const editorRef = useRef<Value | null>(null)
 
 	const onClickSave = () => {
-		if (!editorRef.current) return
+		if (!editorRef.current) {
+			return
+		}
 		handleUpdateNotes(activeNoteId, { edit: JSON.stringify(editorRef.current) })
 		editorRef.current = null
 	}
 
-	if (!note) return null
+	if (!note) {
+		return null
+	}
 
 	return (
 		<div>

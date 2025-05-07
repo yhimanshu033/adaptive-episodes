@@ -141,7 +141,9 @@ export function mergeElementNodes(ogVal: TElement): TElement {
 }
 
 export function getRecord(comments?: TComment[]) {
-	if (!comments) return {}
+	if (!comments) {
+		return {}
+	}
 	const records: Record<string, TComment> = comments.reduce(
 		(prev, curr) => {
 			return { ...prev, [curr.id]: curr }
@@ -159,7 +161,9 @@ export function clearLaserNode(ogVal: Value, key: string, pluginKey: string) {
 			const filteredKeys = keys.filter(
 				(item) => item !== key && item !== pluginKey && item !== 'text'
 			)
-			if (!filteredKeys.length) return
+			if (!filteredKeys.length) {
+				return
+			}
 			for (const anyKey of filteredKeys) {
 				delete node[anyKey]
 			}
@@ -253,9 +257,12 @@ export function mergeBlocks(
 				: childrenToMerge
 						.map((child, index) => {
 							const text = (child as TText).text
-							if (index === 0) return text.slice(start.offset)
-							if (index === childrenToMerge.length - 1)
+							if (index === 0) {
+								return text.slice(start.offset)
+							}
+							if (index === childrenToMerge.length - 1) {
 								return text.slice(0, end.offset)
+							}
 							return text
 						})
 						.join('')
@@ -385,7 +392,9 @@ export function getText(val: Value, separator?: string) {
 		}
 	}
 	val.forEach((node, i) => {
-		if (i > 0) text += separator || '\n'
+		if (i > 0) {
+			text += separator || '\n'
+		}
 		getTextFromNode(node)
 	})
 	return text
@@ -402,7 +411,9 @@ export function breakDownValue(ogVal: Value | string): Value {
 			}
 		}
 	} else {
-		if (!ogVal.length) return ogVal
+		if (!ogVal.length) {
+			return ogVal
+		}
 		const val = structuredClone(ogVal)
 
 		for (const block of val) {
@@ -671,7 +682,9 @@ export function keyNodeOperationOnce(
 	foundNodeOperation: (node: TDescendant) => TDescendant,
 	nodeOperation: (node: TDescendant) => TDescendant = (node) => node
 ) {
-	if (!key) return children
+	if (!key) {
+		return children
+	}
 
 	let found = false
 	const traverse = (node: TDescendant) => {
@@ -688,7 +701,9 @@ export function keyNodeOperationOnce(
 	}
 
 	children.forEach((node) => {
-		if (found) return
+		if (found) {
+			return
+		}
 		traverse(node)
 	})
 
@@ -703,7 +718,9 @@ export function getUniqueAllComments(children: Value, allComments: TComment[]) {
 			const keys = Object.keys(child)
 			const commentKey = keys.find((key) => key.startsWith('comment_'))
 			const commentId = commentKey?.replace('comment_', '')
-			if (!commentId) return
+			if (!commentId) {
+				return
+			}
 			uniqueChildrenCommentIds[commentId] = true
 		}
 		if (child.children) {

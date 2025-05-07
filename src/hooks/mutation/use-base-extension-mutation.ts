@@ -9,10 +9,10 @@ import { toast } from 'sonner'
 
 import { TBaseScriptExtensionBody } from '@/types/admin-types'
 
-import useSocket from '../use-socket'
+import useSocketStreaming from '../use-socket-streaming'
 
 const useBaseExtensionMutation = () => {
-	const { startTask, getResponse } = useSocket()
+	const { startTask } = useSocketStreaming()
 	const { id } = useParams()
 	const queryClient = useQueryClient()
 
@@ -32,8 +32,7 @@ const useBaseExtensionMutation = () => {
 			url: API_URLS.EXTEND_BASE_SCRIPT,
 			body: params,
 		})
-		const resp = await getResponse<{ message: string }>(taskId)
-		return resp
+		return taskId
 	}
 
 	const baseExtensionMutation = useMutation({

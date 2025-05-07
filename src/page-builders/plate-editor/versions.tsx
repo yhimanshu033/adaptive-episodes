@@ -1,5 +1,6 @@
 import React from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
+import useIsGerman from '@/hooks/use-is-german'
 import useVersions from '@/hooks/use-versions'
 import { Eye } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -50,7 +51,15 @@ const Versions = ({
 		latestStatus,
 	})
 
-	if (statusUpdateMutation.isPending) return <Spinner size={24} />
+	const isGerman = useIsGerman()
+
+	if (!isGerman) {
+		return null
+	}
+
+	if (statusUpdateMutation.isPending) {
+		return <Spinner size={24} />
+	}
 
 	return (
 		<>
@@ -59,7 +68,7 @@ const Versions = ({
 				onValueChange={handleSelect}
 			>
 				<SelectTrigger className="gap-2">
-					<SelectValue placeholder="Version" />
+					<SelectValue className="" placeholder="Version" />
 				</SelectTrigger>
 				<SelectContent>
 					{statuses.map((status, index) => (

@@ -8,16 +8,18 @@ import React, {
 	useCallback,
 	useContext,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from 'react'
 import { ESocketStatus } from '@/constants/ai-constants'
 import { nanoid } from 'nanoid'
+import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
 
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 
-import { TNoParams } from '@/types/common'
+import { TNoParams, TSocketQueryParams } from '@/types/common'
 
 type TSocketStreamingContext =
 	| {
@@ -54,10 +56,16 @@ export const SocketStreamingProvider = ({
 	children: React.ReactNode
 }) => {
 	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_BACKEND_URL || ''
-	const [socket] = useState(() =>
-		io(socketUrl, {
-			autoConnect: false,
-		})
+	const { data: session } = useSession()
+	const socket = useMemo(
+		() =>
+			io(socketUrl, {
+				autoConnect: false,
+				extraHeaders: {
+					Authorization: `Bearer ${session?.accessToken}`,
+				},
+			}),
+		[socketUrl, session]
 	)
 	const [responses, setResponses] = useState<Record<string, string[]>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
@@ -71,7 +79,11 @@ export const SocketStreamingProvider = ({
 		socket.onAny(
 			(
 				task_id: string,
-				payload: { chunk?: string; status: ESocketStatus; task_id: string }
+				payload: {
+					chunk?: Record<string, string> | string
+					status: ESocketStatus
+					task_id: string
+				}
 			) => {
 				if (payload.status) {
 					if (payload.status === ESocketStatus.STARTED) {
@@ -89,18 +101,29 @@ export const SocketStreamingProvider = ({
 					setResponses((prev) => ({ ...prev, [task_id]: [] }))
 					responsesRef.current[task_id] = []
 				}
-				if (!payload.chunk) return
+				if (!payload.chunk) {
+					return
+				}
+				let chunk = payload.chunk
+				if (typeof chunk === 'object') {
+					chunk = JSON.stringify(chunk)
+				}
 				setResponses((prev) => ({
 					...prev,
-					[task_id]: [...(prev[task_id] || []), String(payload.chunk)],
+					[task_id]: [...(prev[task_id] || []), String(chunk)],
 				}))
 				responsesRef.current[task_id] = [
 					...(responsesRef.current[task_id] || []),
-					String(payload.chunk),
+					String(chunk),
 				]
 			}
 		)
-
+		// if (!session?.user.id) {
+		// 	return
+		// }
+		// socket.on('connect', () => {
+		// 	socket.emit('subscribe', { "task_id": String(session?.user.id) })
+		// })
 		return () => {
 			socket.disconnect()
 		}
@@ -135,20 +158,25 @@ export const SocketStreamingProvider = ({
 				taskCallbacksRef.current[taskId] = onResponse
 			}
 
+			socket.emit('subscribe', { task_id: String(session?.user.id) })
 			await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
 				BodyParamsT,
-				QueryParamsT & { task_id: string }
+				QueryParamsT & TSocketQueryParams
 			>({
-				...(baseUrl ? { baseUrl } : {}),
+				// ...(baseUrl ? { baseUrl } : {}),
 				...rest,
-				query: { task_id: taskId, ...(params.query as QueryParamsT) },
+				query: {
+					task_id: taskId,
+					room_id: String(session?.user.id),
+					...(params.query as QueryParamsT),
+				},
 			})
 
 			return taskId
 		},
-		[fetchedData, baseUrl]
+		[fetchedData, session, socket]
 	)
 
 	const getStreamedResponse = useCallback(

@@ -9,7 +9,9 @@ import { EMessenger, TMessage } from '@/types/ai-types'
 export function UserLogo({ message }: { message: TMessage }) {
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 
-	if (message.role !== EMessenger.USER) return null
+	if (message.role !== EMessenger.USER) {
+		return null
+	}
 
 	return (
 		<Avatar className="ml-2">

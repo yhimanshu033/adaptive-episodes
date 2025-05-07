@@ -1,7 +1,7 @@
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
 
-import { BASE_STATUS, EStatus } from '@/types/common'
+import { BASE_STATUS, EEpisodeType, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
 import { TNote } from '@/types/plate-types'
 
@@ -38,6 +38,7 @@ export type TEpisode = {
 	file_url: string
 	id: number
 	is_deleted: boolean
+	language?: ELanguage
 	latest_version: number
 	original_seq_number: number
 	parent: number | null
@@ -53,7 +54,7 @@ export type TEpisode = {
 	seq_number: number
 	status: EStatus | typeof BASE_STATUS
 	translation_url: string | null
-	type: string
+	type: EEpisodeType
 	update_time: string
 	word_count: number
 	writer?: number
@@ -135,6 +136,7 @@ export type TEpisodeUnmergeResponse = {
 export type TEpisodeInventParams = {
 	chapter_title: string
 	content: string
+	language?: ELanguage
 	project_id: number
 	seq_number: number
 }
@@ -163,6 +165,7 @@ export type TStatusUpdateURLParams = {
 }
 
 export type TStatusUpdateBody = {
+	language?: ELanguage
 	status: string
 }
 
@@ -184,6 +187,7 @@ export type EpisodeIdStoreType = {
 	dualViewMode: EDualVIewMode
 	episodeId: number
 	resolvedComments: TCustomComment[]
+	selectedLanguage: ELanguage | undefined
 	selectedStatus: EStatus | undefined
 	startOverlayLoading: boolean
 }

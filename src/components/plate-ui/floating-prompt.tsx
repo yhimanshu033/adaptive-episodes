@@ -24,7 +24,9 @@ export default function FloatingPrompt() {
 
 	const traverse = useCallback(
 		(node: TDescendant, intoLaser: boolean) => {
-			if (!promptActive) return
+			if (!promptActive) {
+				return
+			}
 			if (promptActive in node) {
 				const keys = Object.keys(node).filter((key) =>
 					key.startsWith('floating-prompt')
@@ -68,12 +70,16 @@ export default function FloatingPrompt() {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const name = useMemo(nanoid, [promptActive])
 
-	if (!promptActive || !promptActive.startsWith('floating')) return null
+	if (!promptActive || !promptActive.startsWith('floating')) {
+		return null
+	}
 
 	return (
 		<div
 			onBlur={(e) => {
-				if (e.currentTarget.contains(e.relatedTarget)) return
+				if (e.currentTarget.contains(e.relatedTarget)) {
+					return
+				}
 				onResetLeaf()
 			}}
 			className={cn(
@@ -111,7 +117,9 @@ export default function FloatingPrompt() {
 				onClick={(e) => {
 					e.stopPropagation()
 					e.preventDefault()
-					if (!val.trim()) return
+					if (!val.trim()) {
+						return
+					}
 					onResetLeaf(true)
 				}}
 			>

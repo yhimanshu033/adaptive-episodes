@@ -3,6 +3,7 @@
 
 import React, { useRef, useState } from 'react'
 import Image from 'next/image'
+import { sourceLanguages } from '@/constants/episodes-constants'
 import {
 	StoryImportFormSchema,
 	useStoryImportFormResolver,
@@ -13,6 +14,7 @@ import { ImageIcon, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { FullScreenLoader } from '@/components/loader'
+import LanguageSelector from '@/components/plate-ui/language-selector'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -24,6 +26,8 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+
+import { ELanguage } from '@/types/common'
 
 export function ImportStory() {
 	const [isDragging, setIsDragging] = useState(false)
@@ -114,6 +118,24 @@ export function ImportStory() {
 											placeholder="Enter Author name"
 											id="author"
 											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="input_language"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor="language">Language</FormLabel>
+									<FormControl>
+										<LanguageSelector
+											value={field.value as ELanguage}
+											selectableLanguages={sourceLanguages}
+											onValueChange={field.onChange}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -235,7 +257,7 @@ export function ImportStory() {
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel htmlFor="story">
-										Upload Story Files<sup>*</sup>
+										Upload Story Files (optional)
 									</FormLabel>
 									<FormControl>
 										<div
@@ -286,8 +308,14 @@ export function ImportStory() {
 								</FormItem>
 							)}
 						/>
-						<Button type="submit" disabled={storyUploadMutation.isPending}>
-							{storyUploadMutation.isPending ? 'Uploading' : 'Upload Story'}
+						<Button
+							className="mx-auto w-full"
+							type="submit"
+							disabled={storyUploadMutation.isPending}
+						>
+							{storyUploadMutation.isPending
+								? 'Uploading'
+								: 'Upload or Create New Story'}
 						</Button>
 					</form>
 				</Form>
