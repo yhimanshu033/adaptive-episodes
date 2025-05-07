@@ -75,6 +75,7 @@ export const API_URLS = {
 	UPDATE_STATUS: '/chapter/update_status/:project_id/:parent_id/',
 	FILE_UPLOAD: '/project/file-upload/',
 	GET_METADATA: '/adapted-metadata/:projectId/:startSequence/:endSequence/',
+	GET_METADATA_BASE: '/metadata/:projectId/:startSequence/:endSequence/',
 	GET_STORIES: '/projects/',
 	STREAM_CHATBOT: '/aicopilot/chatbot',
 	STREAM_COMMENT_EXAMPLE: '/aicopilot/review-example',

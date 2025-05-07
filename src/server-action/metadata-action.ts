@@ -18,6 +18,10 @@ export const getMetadata = async (
 	endSequence: number,
 	input_language: ELanguage = ELanguage.GERMAN_ORIGINAL
 ) => {
+	const url =
+		input_language === ELanguage.GERMAN_ORIGINAL
+			? API_URLS.GET_METADATA
+			: API_URLS.GET_METADATA_BASE
 	const metadata = await fetchAPI<
 		TGetMetadataAPIResponse,
 		TMetadataUrlParams,
@@ -25,7 +29,7 @@ export const getMetadata = async (
 		TLanguageQueryParams
 	>({
 		method: 'GET',
-		url: API_URLS.GET_METADATA,
+		url,
 		defaultData: {
 			data: {},
 		},

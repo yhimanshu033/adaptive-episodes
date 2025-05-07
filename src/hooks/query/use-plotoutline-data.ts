@@ -96,6 +96,8 @@ const usePlotOutlineQuery = ({
 				input_language: languageToTitle[language],
 			}
 
+			console.log({ params })
+
 			const taskId = await startTask({
 				method: 'POST',
 				url: API_URLS.STREAM_EXPLORER,

@@ -361,13 +361,8 @@ export function getLatestStatusData(
 			return data[status]
 		}
 	}
-	return {
-		beatsheet: '',
-		context: '',
-		loglines: '',
-		summary: '',
-		chapter_title: '',
-	}
+	// the data does not have any status as a key
+	return data as unknown as TMetadata
 }
 
 export function convertMetadata(
