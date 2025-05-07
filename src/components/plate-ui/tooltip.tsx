@@ -50,7 +50,7 @@ export function withTooltip<
 
 		if (tooltip && mounted) {
 			return (
-				<Tooltip {...tooltipProps}>
+				<Tooltip delayDuration={200} {...tooltipProps}>
 					<TooltipTrigger asChild>{component}</TooltipTrigger>
 
 					<TooltipPortal>
