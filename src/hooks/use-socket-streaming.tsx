@@ -79,7 +79,11 @@ export const SocketStreamingProvider = ({
 		socket.onAny(
 			(
 				task_id: string,
-				payload: { chunk?: string; status: ESocketStatus; task_id: string }
+				payload: {
+					chunk?: Record<string, string> | string
+					status: ESocketStatus
+					task_id: string
+				}
 			) => {
 				if (payload.status) {
 					if (payload.status === ESocketStatus.STARTED) {
@@ -100,13 +104,17 @@ export const SocketStreamingProvider = ({
 				if (!payload.chunk) {
 					return
 				}
+				let chunk = payload.chunk
+				if (typeof chunk === 'object') {
+					chunk = JSON.stringify(chunk)
+				}
 				setResponses((prev) => ({
 					...prev,
-					[task_id]: [...(prev[task_id] || []), String(payload.chunk)],
+					[task_id]: [...(prev[task_id] || []), String(chunk)],
 				}))
 				responsesRef.current[task_id] = [
 					...(responsesRef.current[task_id] || []),
-					String(payload.chunk),
+					String(chunk),
 				]
 			}
 		)

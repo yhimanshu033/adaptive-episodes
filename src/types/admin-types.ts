@@ -140,6 +140,11 @@ export type TBaseScriptExtensionResponse = {
 	file_found: boolean
 	file_id: string
 	file_name: string
+	previous_extension_status: {
+		message: string
+		status: string
+		timestamp: string
+	}
 	ranges: {
 		de_end: number
 		de_start: number
