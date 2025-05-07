@@ -32,7 +32,9 @@ export default function Translation({ translatedContent }: TranslationProps) {
 		id: TRANSLATION_EDITOR_ID,
 	})
 
-	if (!showTranslation) return null
+	if (!showTranslation) {
+		return null
+	}
 	return (
 		<Plate editor={editor}>
 			<Editor

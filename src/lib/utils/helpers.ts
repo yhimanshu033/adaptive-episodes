@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
+	prioritizedStatuses,
 	PROPS_KEYS_TO_COMPARE,
 } from '@/constants/episodes-constants'
 import { API_URLS, roleToData } from '@/constants/global-constants'
@@ -12,11 +13,22 @@ import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
 import { jsonrepair } from 'jsonrepair'
 import Negotiator from 'negotiator'
-import { JWT } from 'next-auth/jwt'
+import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
 
-import { ERole, UserProject } from '@/types/admin-types'
-import { BASE_STATUS, EStatus, STATUS_ORDER } from '@/types/common'
+import { ERole, SessionData, UserProject } from '@/types/admin-types'
+import {
+	BASE_STATUS,
+	EEpisodeType,
+	ELanguage,
+	ELSMappingGender,
+	ELSMappingType,
+	EStatus,
+	LSMappingInput,
+	LSMappingOutput,
+	LSMappingOutputItem,
+	STATUS_ORDER,
+} from '@/types/common'
 import {
 	TGetMetadataAPIResponse,
 	TGetMetadataResponse,
@@ -37,14 +49,11 @@ export function cn(...inputs: ClassValue[]) {
 export const getSelectedEpisode = (
 	data: TGetEpisodesResponse,
 	selectedStatus?: EStatus
-): { episode: TEpisode; latestStatus: EStatus | typeof BASE_STATUS } => {
-	const prioritizedStatuses = [
-		EStatus.PUBLISHED,
-		EStatus.POLISH,
-		EStatus.SECOND_DRAFT,
-		EStatus.FIRST_DRAFT,
-	]
-
+): {
+	episode: TEpisode
+	language: ELanguage
+	latestStatus: EStatus | typeof BASE_STATUS
+} => {
 	let selectedEpisode: TEpisode | undefined
 
 	if (selectedStatus) {
@@ -58,18 +67,101 @@ export const getSelectedEpisode = (
 			selectedEpisode = data.results.data.find(
 				(episode) => episode.status === status
 			)
-			if (selectedEpisode) break
+			if (selectedEpisode) {
+				break
+			}
 		}
 	}
 
 	const latestStatus =
 		prioritizedStatuses.find((status) =>
 			data.results.data.some((episode) => episode.status === status)
-		) ?? data.results.data[0].status
+		) ?? data.results.data[0]?.status
 
-	return { episode: selectedEpisode ?? data.results.data[0], latestStatus }
+	return {
+		episode: selectedEpisode ?? data.results.data[0],
+		latestStatus,
+		language: data?.results?.data?.[0]?.language as ELanguage,
+	}
 }
 
+export const getSelectedEpisodeFromLanguage = (
+	data: TGetEpisodesResponse,
+	selectedLanguage?: ELanguage
+): {
+	episode: TEpisode
+	language: ELanguage
+	latestStatus: EStatus | typeof BASE_STATUS
+} => {
+	const originalChapter = data.results.data.find(
+		(ep) =>
+			ep.type === EEpisodeType.ORIGINAL || ep.type === EEpisodeType.INVENTED
+	) as TEpisode
+
+	if (!selectedLanguage) {
+		return {
+			episode: originalChapter,
+			language: originalChapter?.language as ELanguage,
+			latestStatus: BASE_STATUS,
+		}
+	}
+
+	const langChapter = data.results.data.find(
+		(ep) => ep.language === selectedLanguage
+	) as TEpisode
+
+	return {
+		episode: langChapter || originalChapter || data.results.data[0],
+		language: selectedLanguage,
+		latestStatus: BASE_STATUS,
+	}
+}
+
+export function getAvailableLanguages(
+	data: TGetEpisodesResponse | null | undefined
+) {
+	if (!data) {
+		return []
+	}
+	const episodes = data.results.data
+
+	const languages = Array.from(
+		episodes.reduce(
+			(acc, curr) => {
+				if (curr.language) {
+					acc.add(curr.language)
+				}
+				return acc
+			},
+			new Set([] as ELanguage[])
+		)
+	)
+
+	return languages
+}
+
+export function getDisabledAvailableLanguages(
+	data: TGetEpisodesResponse | null | undefined
+) {
+	if (!data) {
+		return []
+	}
+	const episodes = data.results.data
+
+	const languages = Array.from(
+		episodes.reduce(
+			(acc, curr) => {
+				if (curr.language && !curr.file_url) {
+					acc.add(curr.language)
+				}
+				return acc
+			},
+			new Set([] as ELanguage[])
+		)
+	)
+
+	return languages
+}
 export function prettifyNumber(
 	num: number,
 	locale: string = 'de', // 'en-US' for English
@@ -147,7 +239,9 @@ export const getMetaDataRange = (
 }
 
 export const toPascalCase = (str: string | null) => {
-	if (!str) return ''
+	if (!str) {
+		return ''
+	}
 	return str.replace(
 		/\w+/g,
 		(w) => w[0].toUpperCase() + w.slice(1).toLowerCase()
@@ -190,7 +284,9 @@ export const buttonVariants = cva(
 )
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function log(data: any) {
-	// if (process.env.NODE_ENV === 'production') return
+	if (process.env.NODE_ENV === 'production') {
+		return
+	}
 	console.dir(data, { depth: null })
 }
 
@@ -251,7 +347,9 @@ export function isAuthorized({
 	requiredRole: ERole
 	userRole: ERole | null
 }) {
-	if (!userRole || !roleToData[userRole]) return false
+	if (!userRole || !roleToData[userRole]) {
+		return false
+	}
 	return roleToData[userRole].priority <= roleToData[requiredRole].priority
 }
 
@@ -263,13 +361,8 @@ export function getLatestStatusData(
 			return data[status]
 		}
 	}
-	return {
-		beatsheet: '',
-		context: '',
-		loglines: '',
-		summary: '',
-		chapter_title: '',
-	}
+	// the data does not have any status as a key
+	return data as unknown as TMetadata
 }
 
 export function convertMetadata(
@@ -278,11 +371,22 @@ export function convertMetadata(
 	const convertedData: TGetMetadataResponse = {
 		data: {},
 	}
-	if (!data) return convertedData
+	if (!data) {
+		return convertedData
+	}
 	for (const key in data.data) {
 		const records = data.data[key]
 		const latestData = getLatestStatusData(records)
 		convertedData.data[key] = latestData
+	}
+
+	const keys = Object.keys(convertedData.data)
+	// Check if logline exists and assign it to loglines
+	for (const key of keys) {
+		const data = convertedData.data[key]
+		if (!data.loglines && data.logline) {
+			data.loglines = data.logline
+		}
 	}
 	return convertedData
 }
@@ -353,7 +457,10 @@ export function downloadBlob(blob: Blob, fileName: string) {
 	URL.revokeObjectURL(url)
 }
 
-export async function projectAdminCheck(req: NextRequest, jwt: JWT) {
+export async function projectAdminCheck(
+	req: NextRequest,
+	session: SessionData
+) {
 	let data: { projects: UserProject[] } | null = null
 	try {
 		data = (await fetch(
@@ -361,7 +468,7 @@ export async function projectAdminCheck(req: NextRequest, jwt: JWT) {
 			{
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${jwt.accessToken}`,
+					Authorization: `Bearer ${session.accessToken}`,
 				},
 			}
 		).then((res) => res.json())) as { projects: UserProject[] }
@@ -386,9 +493,15 @@ export function sortOpenedStories(
 		const indexA = openedIds.indexOf(a.id)
 		const indexB = openedIds.indexOf(b.id)
 
-		if (indexA === -1 && indexB === -1) return 0 // Both not in openedIds, keep relative order
-		if (indexA === -1) return 1 // A is not in openedIds, move to end
-		if (indexB === -1) return -1 // B is not in openedIds, move to end
+		if (indexA === -1 && indexB === -1) {
+			return 0
+		} // Both not in openedIds, keep relative order
+		if (indexA === -1) {
+			return 1
+		} // A is not in openedIds, move to end
+		if (indexB === -1) {
+			return -1
+		} // B is not in openedIds, move to end
 
 		return indexA - indexB
 	})
@@ -522,4 +635,41 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	}
 
 	return result
+}
+
+export function parseInputLSMapping(input: LSMappingInput) {
+	const tableItems: LSMappingOutputItem[] = Object.entries(
+		input.ls_mapping
+	).map(([key, value]) => ({
+		original_name: key,
+		localised_name: value['localised_name'] || '',
+		type: value.type || ELSMappingType.ENTITY,
+		gender: value.gender || ELSMappingGender.MALE,
+	}))
+
+	return tableItems
+}
+
+export function parseOutputLSMapping(data: LSMappingOutput['ls_mapping']) {
+	return data.map((item) => {
+		if (item.type !== ELSMappingType.PERSON) {
+			delete item.gender
+		}
+		return item
+	})
+}
+
+export function isInvalidLSMapping(data: LSMappingOutput['ls_mapping']) {
+	return data.some(
+		(item) =>
+			!item.original_name.trim() ||
+			!item.localised_name.trim() ||
+			!item.type ||
+			(item.type === ELSMappingType.PERSON && !item.gender)
+	)
+}
+
+export function isInternalUser(session: Session | null) {
+	// return false
+	return !!session && session.user.email.includes('@pocketfm')
 }

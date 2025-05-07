@@ -99,7 +99,9 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 					className="flex flex-col gap-0.5"
 					value={value}
 					onValueChange={(newValue) => {
-						if (!isWriter || !!simplifiedEditor) return
+						if (!isWriter || !!simplifiedEditor) {
+							return
+						}
 						setReadOnly(newValue === EditorModes.viewing)
 						setOption('isSuggesting', newValue === EditorModes.suggesting)
 

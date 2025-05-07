@@ -35,7 +35,9 @@ const BaseExtensionForm = ({
 	const handleBaseExtension = ({
 		episodes,
 	}: z.infer<typeof baseExtensionFormSchema>) => {
-		if (!data) return
+		if (!data) {
+			return
+		}
 
 		const { file_id, ranges } = data
 		const { de_start, us_start } = ranges

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useState } from 'react'
+import React, { createContext, useMemo, useState } from 'react'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
@@ -16,9 +16,12 @@ import { useShallow } from 'zustand/react/shallow'
 import { Button } from '@/components/ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
 import {
+	getAvailableLanguages,
+	getDisabledAvailableLanguages,
 	getEpisodeQueryResponseFromStoredData,
 	getSavedParamsFromEpisodeData,
 	getSelectedEpisode,
+	getSelectedEpisodeFromLanguage,
 } from '@/lib/utils/helpers'
 import { getValue, removeValue } from '@/lib/utils/indexed-db'
 import {
@@ -27,7 +30,7 @@ import {
 	jsonify,
 } from '@/lib/utils/plate'
 
-import { BASE_STATUS } from '@/types/common'
+import { BASE_STATUS, ELanguage } from '@/types/common'
 import { EDualVIewMode } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
@@ -41,18 +44,43 @@ import { ESidebar } from '@/types/plate-types'
 
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
+
+	const selectedLanguage = useEpisodeIdStoreContext(
+		useShallow((state) => state.selectedLanguage)
+	)
 	const { addEpisodeMap, addEpisodeKey } = useEditorExtendedStore()
 	const { data } = useEpisodeInfo()
+
 	const episodeId = useEpisodeId()
-	const { episode, latestStatus } = data
-		? getSelectedEpisode(data, selectedStatus)
-		: { episode: undefined, latestStatus: undefined }
+
+	const { episode, language, latestStatus } = useMemo(() => {
+		if (!data) {
+			return {
+				episode: undefined,
+				language: ELanguage.GERMAN_ORIGINAL,
+				latestStatus: undefined,
+			}
+		}
+		const isGerman = data.results.data.some(
+			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+		)
+		if (isGerman) {
+			return getSelectedEpisode(data, selectedStatus)
+		}
+		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
+	}, [data, selectedLanguage, selectedStatus])
 	const [imported, setImported] = useState(false)
 
 	const dict = useTranslations('placeholders')
+	const languages = useMemo(() => getAvailableLanguages(data), [data])
+	const disabledLanguages = useMemo(
+		() => getDisabledAvailableLanguages(data),
+		[data]
+	)
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
 	const { setDualViewMode } = useEpisodeIdStore()
@@ -66,12 +94,16 @@ export const useEpisodeContentUtil = () => {
 
 	async function fetchEpisodeContent() {
 		const resp = await getEpisodeContent(episode?.id || episodeId)
-		if (!resp) return resp
+		if (!resp) {
+			return resp
+		}
 
 		addEpisodeMap(episodeId, resp)
 		addEpisodeKey(episodeId, queryKey)
 		const oldData = await getValue(`${resp.chapter.project}_${episodeId}`)
-		if (!oldData) return resp
+		if (!oldData) {
+			return resp
+		}
 		if (imported) {
 			setLocalDiffValue(null)
 			setSidebar(null)
@@ -140,6 +172,9 @@ export const useEpisodeContentUtil = () => {
 	return {
 		...query,
 		latestStatus,
+		languages,
+		disabledLanguages,
+		language,
 		queryKey,
 		setImported,
 		imported,

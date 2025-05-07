@@ -45,7 +45,9 @@ export const format = (editor: SlateEditor, customFormatting: () => void) => {
 	if (editor.selection) {
 		const parentEntry = getParentNode(editor, editor.selection)
 
-		if (!parentEntry) return
+		if (!parentEntry) {
+			return
+		}
 
 		const [node] = parentEntry
 

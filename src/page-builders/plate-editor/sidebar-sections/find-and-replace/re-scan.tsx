@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import useIsGerman from '@/hooks/use-is-german'
 import { Eye, Search } from 'lucide-react'
 
 import IfElse, { Else, If } from '@/components/if-else'
@@ -21,6 +22,10 @@ export default function ReScan({
 	sheetURL,
 	updateLOCPending,
 }: IReScanProps) {
+	const isGerman = useIsGerman()
+	if (!isGerman) {
+		return null
+	}
 	return (
 		<div className="flex items-center justify-end gap-2 p-4">
 			<If condition={!!sheetURL && isWriter}>

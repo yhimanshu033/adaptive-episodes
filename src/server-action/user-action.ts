@@ -16,10 +16,11 @@ import {
 import { TNoParams } from '@/types/common'
 
 export const getMembers = async (id: string) => {
+	const defaultData = { members: [] }
 	const resp = await fetchAPI<TGetMembersResponse, TIdParams>({
 		method: 'GET',
 		url: API_URLS.MEMBERS_GET,
-		defaultData: { members: [] },
+		defaultData,
 		urlParams: {
 			id,
 		},
@@ -74,6 +75,8 @@ export const updateProjectAccess = async (
 		},
 	})
 
-	if (!resp.success) throw resp.error
+	if (!resp.success) {
+		throw resp.error
+	}
 	return resp.data
 }

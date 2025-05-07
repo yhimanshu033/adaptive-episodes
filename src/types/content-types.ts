@@ -1,9 +1,10 @@
-import { TStatus } from '@/types/common'
+import { ELanguage, TStatus } from '@/types/common'
 
 export type TMetadata = {
 	beatsheet: string
 	chapter_title?: string
 	context: string
+	logline?: string
 	loglines: string
 	summary: string
 }
@@ -20,6 +21,10 @@ export type TMetadataUrlParams = {
 	endSequence: number
 	projectId: number
 	startSequence: number
+}
+
+export type TLanguageQueryParams = {
+	input_language?: ELanguage
 }
 
 export type TPushToGDriveBody = {

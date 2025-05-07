@@ -24,12 +24,13 @@ const Stories = () => {
 		openedStories,
 	} = useStoriesData()
 
-	if (isLoading)
+	if (isLoading) {
 		return (
 			<div className="flex flex-1 items-center justify-center">
 				<Loader />
 			</div>
 		)
+	}
 	return (
 		<section className="container my-6 grid grid-cols-1 justify-items-center gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 			<ImportStoryCard />

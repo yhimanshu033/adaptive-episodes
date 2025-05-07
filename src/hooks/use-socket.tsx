@@ -8,15 +8,17 @@ import React, {
 	useCallback,
 	useContext,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from 'react'
 import { nanoid } from 'nanoid'
+import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
 
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 
-import { TNoParams } from '@/types/common'
+import { TNoParams, TSocketQueryParams } from '@/types/common'
 
 type StartTaskParams<
 	BodyParamsT = TNoParams,
@@ -54,10 +56,16 @@ export const SocketProvider = ({
 	children: React.ReactNode
 }) => {
 	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_BACKEND_URL || ''
-	const [socket] = useState(() =>
-		io(socketUrl, {
-			autoConnect: false,
-		})
+	const { data: session } = useSession()
+	const socket = useMemo(
+		() =>
+			io(socketUrl, {
+				autoConnect: false,
+				extraHeaders: {
+					Authorization: `Bearer ${session?.accessToken}`,
+				},
+			}),
+		[socketUrl, session]
 	)
 	const responsesRef = useRef<Record<string, any>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
@@ -73,7 +81,14 @@ export const SocketProvider = ({
 			}
 			responsesRef.current[taskId] = data
 		})
+		// if (!session?.user.id) {
+		// 	return
+		// }
+		// socket.on('connect', () => {
+		// 	socket.emit('subscribe', { "task_id": String(session?.user.id) })
+		// })
 		return () => {
+			// socket.emit('unsubscribe', String(session?.user.id))
 			socket.disconnect()
 		}
 	}, [socket])
@@ -103,15 +118,20 @@ export const SocketProvider = ({
 				taskCallbacksRef.current[taskId] = onResponse
 			}
 
+			socket.emit('subscribe', { task_id: String(session?.user.id) })
 			const resp = await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
 				BodyParamsT,
-				QueryParamsT & { task_id: string }
+				QueryParamsT & TSocketQueryParams
 			>({
-				...(baseUrl ? { baseUrl } : {}),
+				// ...(baseUrl ? { baseUrl } : {}),
 				...restParams,
-				query: { task_id: taskId, ...(params.query as QueryParamsT) },
+				query: {
+					task_id: taskId,
+					room_id: String(session?.user.id),
+					...(params.query as QueryParamsT),
+				},
 			})
 
 			if (!resp.success) {
@@ -122,7 +142,7 @@ export const SocketProvider = ({
 
 			return taskId
 		},
-		[fetchedData, baseUrl]
+		[fetchedData, session, socket]
 	)
 
 	const getResponse = useCallback(<T,>(taskId: string) => {

@@ -7,12 +7,14 @@ import {
 } from '@/constants/global-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { usePageState } from '@/hooks/use-page-state'
+import useParentLanguage from '@/hooks/use-parent-language'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/multi-ep-localize-dialog'
 import { Table } from '@tanstack/react-table'
-import { Merge, Replace, Search, Split } from 'lucide-react'
+import { Languages, Merge, Replace, Search, Split } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
+import { If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
 import {
 	Form,
@@ -22,7 +24,9 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import useAdaptation from '@/providers/adaptation-provider'
 
+import { ELanguage } from '@/types/common'
 import { TEpisode, TEpisodeSearchForm } from '@/types/episode-type'
 
 const Filters = ({
@@ -44,6 +48,14 @@ const Filters = ({
 
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
+
+	const language = useParentLanguage()
+
+	const {
+		setSelectedRowData,
+		setOpen,
+		selectedRowData: adaptationData,
+	} = useAdaptation()
 
 	const handleSearch = (data: TEpisodeSearchForm) => {
 		if (Number(data.input)) {
@@ -76,8 +88,9 @@ const Filters = ({
 			!seqNumber ||
 			String(seqNumber) === search ||
 			totalEpisodes === 0
-		)
+		) {
 			return
+		}
 
 		setFetchedSeqNumber(true)
 		handleSearch({ input: String(seqNumber) })
@@ -98,7 +111,9 @@ const Filters = ({
 	}, [selectedRowData, id])
 
 	useEffect(() => {
-		if (!search || search === form.getValues('input')) return
+		if (!search || search === form.getValues('input')) {
+			return
+		}
 
 		form.setValue('input', search)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -128,6 +143,21 @@ const Filters = ({
 					</Button>
 				</form>
 			</Form>
+			<If condition={language !== ELanguage.GERMAN_ORIGINAL}>
+				<Button
+					disabled={disabled || selectedRowData.length < 1}
+					onClick={() => {
+						if (adaptationData.length === 0) {
+							setSelectedRowData(selectedRowData)
+						}
+						setOpen(true)
+					}}
+					size="icon"
+					tooltip="Adapt episodes"
+				>
+					<Languages size={16} />
+				</Button>
+			</If>
 			<MultiEpLocalizeDialog
 				url={url}
 				size="icon"
@@ -136,22 +166,24 @@ const Filters = ({
 			>
 				<Replace size={16} />
 			</MultiEpLocalizeDialog>
-			<Button
-				size="icon"
-				disabled={disabled || Object.keys(selectedRowData).length <= 1}
-				onClick={() => handleMerge(selectedRowData)}
-				title="Merge episodes"
-			>
-				<Merge size={16} />
-			</Button>
-			<Button
-				size="icon"
-				disabled={disabled || selectedRowData.length !== 1}
-				onClick={() => handleUnmerge(selectedRowModel)}
-				title="Unmerge episodes"
-			>
-				<Split size={16} />
-			</Button>
+			<If condition={!language || language === ELanguage.GERMAN_ORIGINAL}>
+				<Button
+					size="icon"
+					disabled={disabled || Object.keys(selectedRowData).length <= 1}
+					onClick={() => handleMerge(selectedRowData)}
+					title="Merge episodes"
+				>
+					<Merge size={16} />
+				</Button>
+				<Button
+					size="icon"
+					disabled={disabled || selectedRowData.length !== 1}
+					onClick={() => handleUnmerge(selectedRowModel)}
+					title="Unmerge episodes"
+				>
+					<Split size={16} />
+				</Button>
+			</If>
 		</>
 	)
 }

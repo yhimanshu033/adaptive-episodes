@@ -145,7 +145,9 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 
 		useEffect(() => {
 			const editorDiv = contentRef.current
-			if (!editorDiv || readOnly || isDiff) return
+			if (!editorDiv || readOnly || isDiff) {
+				return
+			}
 
 			let height = 0
 			let newPages = 1
@@ -173,22 +175,30 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		}, [children, readOnly, scale, focusMode, debouncedSidebar, isDiff])
 
 		useEffect(() => {
-			if (!contentRef.current) return
+			if (!contentRef.current) {
+				return
+			}
 			const rect = contentRef.current?.getBoundingClientRect()
 
-			if (!rect) return
+			if (!rect) {
+				return
+			}
 			setEditorCoords(rect.x, rect.y)
 
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [contentRef])
 
 		useEffect(() => {
-			if (!isPasted.current) return
+			if (!isPasted.current) {
+				return
+			}
 
 			isPasted.current = false
 			const clearedColors = clearColors(children)
 
-			if (JSON.stringify(clearedColors) === JSON.stringify(children)) return
+			if (JSON.stringify(clearedColors) === JSON.stringify(children)) {
+				return
+			}
 
 			const currentTarget = editor.selection?.anchor
 			editor.tf.setValue(clearedColors)
@@ -198,7 +208,9 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		}, [children, editor])
 
 		useEffect(() => {
-			if (!globalLocalize) return
+			if (!globalLocalize) {
+				return
+			}
 			addExtendedContentMap(episodeId, { children })
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [children, episodeId, globalLocalize])
@@ -206,7 +218,9 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		useEffect(() => {
 			const current = getOptions()
 
-			if (!globalLocalize || isEqual(current, options)) return
+			if (!globalLocalize || isEqual(current, options)) {
+				return
+			}
 			setOptions(options)
 
 			const updatedChildren = structuredClone(children)
@@ -215,7 +229,9 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		}, [options, globalLocalize, setOptions])
 
 		useEffect(() => {
-			if (!globalLocalize || !replacedContentMap[episodeId]) return
+			if (!globalLocalize || !replacedContentMap[episodeId]) {
+				return
+			}
 			editor.tf.setValue(replacedContentMap[episodeId].children)
 			setReplacedContentMap((prev) => {
 				delete prev[episodeId]

@@ -27,7 +27,9 @@ const BaseScriptStatus = ({
 		return (
 			responses[taskId]?.reduce<Record<string, string[]>>((acc, status) => {
 				const { header, message } = JSON.parse(status) as TBaseStatus
-				if (!acc[header]) acc[header] = []
+				if (!acc[header]) {
+					acc[header] = []
+				}
 				acc[header].push(message)
 				return acc
 			}, {}) || {

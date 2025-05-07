@@ -15,7 +15,9 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
+import { AdaptationProvider } from '@/providers/adaptation-provider'
 import { PlayerProvider } from '@/providers/player-provider'
+import { PollingProvider } from '@/providers/polling-provider'
 import { queryClient } from '@/lib/get-query-client'
 
 import { SessionData } from '@/types/admin-types'
@@ -36,7 +38,9 @@ const AppProvider = ({
 		const selectedColor = localStorage.getItem(USER_SELECTED_COLOR) as
 			| TColorKey
 			| undefined
-		if (!selectedColor || !colorOptions[selectedColor]) return
+		if (!selectedColor || !colorOptions[selectedColor]) {
+			return
+		}
 
 		document.documentElement.style.setProperty(
 			'--primary',
@@ -53,28 +57,32 @@ const AppProvider = ({
 			<NuqsAdapter>
 				<SocketProvider>
 					<SocketStreamingProvider>
-						<QueryClientProvider client={queryClient}>
-							<ThemeProvider
-								attribute="class"
-								defaultTheme="dark"
-								enableSystem
-								disableTransitionOnChange
-							>
-								<TooltipProvider
-									disableHoverableContent
-									delayDuration={500}
-									skipDelayDuration={0}
+						<PollingProvider>
+							<QueryClientProvider client={queryClient}>
+								<ThemeProvider
+									attribute="class"
+									defaultTheme="dark"
+									enableSystem
+									disableTransitionOnChange
 								>
-									<NextTopLoader color="hsl(var(--primary))" />
-									<PlayerProvider>
-										<Player />
-										{children}
-									</PlayerProvider>
-									<Toaster />
-									<ReactQueryDevtools />
-								</TooltipProvider>
-							</ThemeProvider>
-						</QueryClientProvider>
+									<TooltipProvider
+										disableHoverableContent
+										delayDuration={500}
+										skipDelayDuration={0}
+									>
+										<AdaptationProvider>
+											<NextTopLoader color="hsl(var(--primary))" />
+											<PlayerProvider>
+												<Player />
+												{children}
+											</PlayerProvider>
+											<Toaster />
+										</AdaptationProvider>
+										<ReactQueryDevtools />
+									</TooltipProvider>
+								</ThemeProvider>
+							</QueryClientProvider>
+						</PollingProvider>
 					</SocketStreamingProvider>
 				</SocketProvider>
 			</NuqsAdapter>

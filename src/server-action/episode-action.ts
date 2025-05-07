@@ -1,11 +1,13 @@
 'use server'
 
+import { allPrioritizedStatuses } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
-import { TNoParams } from '@/types/common'
+import { ELanguage, TNoParams } from '@/types/common'
 import {
+	TEpisode,
 	TEpisodeDeleteResponse,
 	TEpisodeDeleteURLParams,
 	TEpisodeInventParams,
@@ -28,6 +30,7 @@ export const getEpisodes = async ({
 	search = '',
 	limit,
 }: TGetEpisodesQueryParams) => {
+	// return sampleEpisodeDetails // DEV CHECK
 	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
 		TNoParams,
@@ -43,13 +46,52 @@ export const getEpisodes = async ({
 			limit,
 		},
 	})
-	return episodes.data
+
+	if (!episodes.data) {
+		return
+	}
+
+	const episodeMap = episodes.data.results.data.reduce(
+		(acc, curr) => {
+			const id = curr.parent || curr.id
+			const existingEpisode = acc[id]
+			if (existingEpisode) {
+				const existingIdx = allPrioritizedStatuses.findIndex(
+					(status) => status === String(existingEpisode.status)
+				)
+				const currIdx = allPrioritizedStatuses.findIndex(
+					(status) => status === String(curr.status)
+				)
+
+				if (currIdx < existingIdx) {
+					acc[id] = curr
+				}
+			} else {
+				acc[id] = curr
+			}
+			return acc
+		},
+		{} as Record<number, TEpisode>
+	)
+
+	const episodesData = Object.values(episodeMap)
+
+	const response: TGetEpisodesResponse = {
+		...episodes.data,
+		results: {
+			...episodes.data.results,
+			data: episodesData,
+		},
+	}
+
+	return response
 }
 
 export const getEpisodeDetails = async (
 	project_id: number,
 	parent: number = 1
 ) => {
+	// return sampleEpisodeDetails // DEV CHECK
 	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
 		TNoParams,
@@ -63,7 +105,34 @@ export const getEpisodeDetails = async (
 			parent,
 		},
 	})
-	return episodes.data
+
+	const sentData = episodes.data
+	if (sentData?.results.data) {
+		const languageAvailable = sentData?.results.data.find((ep) => !!ep.language)
+		if (!languageAvailable) {
+			sentData.results.data.forEach(
+				(ep) => (ep.language = ELanguage.GERMAN_ORIGINAL)
+			)
+		}
+		const isGerman = sentData?.results.data.find(
+			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+		)
+
+		if (!isGerman) {
+			return sentData
+		}
+
+		sentData.results.data = sentData?.results.data.filter(
+			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+		)
+	}
+
+	// if (internal && episodes.data?.results.data) {
+	// 	episodes.data.results.data = episodes.data.results.data.filter(
+	// 		(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+	// 	)
+	// }
+	return sentData
 }
 
 export const unmergeEpisodes = async (merged_chapter_id: number) => {
@@ -85,8 +154,10 @@ export const inventEpisode = async ({
 	project_id,
 	chapter_title,
 	seq_number,
+	language,
 }: {
 	chapter_title: string
+	language?: ELanguage
 	project_id: number
 	seq_number: number
 }) => {
@@ -101,7 +172,8 @@ export const inventEpisode = async ({
 			project_id,
 			chapter_title,
 			seq_number,
-			content: 'demo',
+			content: 'Start typing here...',
+			language,
 		},
 	})
 	return res.data
@@ -121,8 +193,12 @@ export const deleteEpisode = async (chapter_id: number) => {
 export const updateStatus = async (
 	project_id: number,
 	parent_id: number,
-	status: string
+	status: string,
+	language?: ELanguage
 ) => {
+	if (language !== ELanguage.GERMAN_ORIGINAL) {
+		return
+	}
 	const res = await fetchAPI<
 		TStatusUpdateResponse,
 		TStatusUpdateURLParams,
@@ -136,6 +212,7 @@ export const updateStatus = async (
 		},
 		body: {
 			status,
+			language,
 		},
 	})
 	return res.data
@@ -172,6 +249,8 @@ export const updateNotes = async ({
 		body: params,
 	})
 
-	if (!res.success) throw res.error
+	if (!res.success) {
+		throw res.error
+	}
 	return res.data
 }

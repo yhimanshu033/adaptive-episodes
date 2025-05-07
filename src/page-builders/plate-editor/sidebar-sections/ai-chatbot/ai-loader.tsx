@@ -5,7 +5,9 @@ import { Loader } from '@/components/loader'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function AILoader({ isPending }: { isPending: boolean }) {
-	if (!isPending) return null
+	if (!isPending) {
+		return null
+	}
 
 	return (
 		<div className="mb-4 flex items-center justify-start">

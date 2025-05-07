@@ -1,6 +1,8 @@
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { languageToTitle } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useLanguage from '@/hooks/use-language'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import { useMutation } from '@tanstack/react-query'
@@ -26,6 +28,8 @@ export default function useCommentExampleHook() {
 	const { api } = useEditorPlugin(CommentsPlugin)
 
 	const { removeActiveCommentExampleMap } = useAIStore()
+	const language = useLanguage()
+
 	const commentExampleMutation = async () => {
 		const { beforeText, afterText, text } = getCommentNode(
 			children,
@@ -51,9 +55,12 @@ export default function useCommentExampleHook() {
 				prev_paragraphs,
 				next_paragraphs,
 				context: episodeContent?.chapter?.props?.llm_memories?.context || '',
+				input_language: languageToTitle[language],
 			},
 			onResponse: (resp?: string[]) => {
-				if (!resp?.length) return
+				if (!resp?.length) {
+					return
+				}
 				removeActiveCommentExampleMap(comment.id)
 				api.comment.addComment({
 					value: [
@@ -61,7 +68,7 @@ export default function useCommentExampleHook() {
 							type: ParagraphPlugin.key,
 							children: [
 								{
-									text: 'Beispiel:\n\n' + resp.join(''),
+									text: 'Example:\n\n' + resp.join(''),
 								},
 							],
 						},

@@ -28,7 +28,9 @@ export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 		}
 	}
 
-	if (readOnly) return null
+	if (readOnly) {
+		return null
+	}
 
 	return (
 		<div className="flex w-full space-x-2 p-2">

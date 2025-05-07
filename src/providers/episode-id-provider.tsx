@@ -64,6 +64,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	currentTitle: '',
 	dualViewMode: EDualVIewMode.US_TRANSLATION,
 	startOverlayLoading: false,
+	selectedLanguage: undefined,
 }
 
 type EpisodeIdContextType = {

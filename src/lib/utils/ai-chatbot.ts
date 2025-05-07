@@ -118,7 +118,9 @@ export function convertReviewResponse(
 				const sortedMatchingValues = response
 					.filter((item) => item.id === nodeId && !!item.path)
 					.sort((a, b) => {
-						if (!a.path || !b.path) return 0
+						if (!a.path || !b.path) {
+							return 0
+						}
 						if (a.path.start !== b.path.start) {
 							return a.path.start - b.path.start
 						}
@@ -129,7 +131,9 @@ export function convertReviewResponse(
 				let lastAcceptedEnd = -Infinity
 
 				for (const comment of sortedMatchingValues) {
-					if (!comment.path) continue
+					if (!comment.path) {
+						continue
+					}
 					if (comment.path.start >= lastAcceptedEnd) {
 						matchingValues.push(comment)
 						lastAcceptedEnd = comment.path.end
@@ -141,10 +145,13 @@ export function convertReviewResponse(
 						!matchingValue.path ||
 						matchingValue.path.end === -1 ||
 						matchingValue.path.start === -1
-					)
+					) {
 						continue
+					}
 					const { start, end } = matchingValue.path
-					if (idPathMap.has(`${matchingValue.id}-${start}-${end}`)) continue
+					if (idPathMap.has(`${matchingValue.id}-${start}-${end}`)) {
+						continue
+					}
 					idPathMap.add(`${matchingValue.id}-${start}-${end}`)
 
 					if (lastIndex < start) {
@@ -213,7 +220,7 @@ export const extractFromMetadata = (
 
 export const extractScenesFromBeatsheet = (beatsheet: string) => {
 	const sceneStart = beatsheet?.match(
-		/Szenen\s*\(Version 2\)\s*:|Szenen\s+Breakdown\s*:/
+		/Szenen\s*\(Version 2\)\s*:|Szenen\s+Breakdown\s*:|Scene\s+Breakdown\s*:|Scene\s*\(Version 2\)\s*:/
 	)
 
 	if (!sceneStart) {
@@ -282,12 +289,13 @@ export function addSFX(
 							text: text.slice(currentIndex, matchIndex),
 						})
 					}
-					if (matchingValue.sfx)
+					if (matchingValue.sfx) {
 						segments.push({
 							type: key,
 							text: `\n${matchingValue.sfx.replace(/\[!/g, '[').replace(/\]\s*\[/g, ']\n[')}\n`,
 							bold: true,
 						})
+					}
 
 					currentIndex = matchIndex
 				})
@@ -340,7 +348,7 @@ export function addVoicePass(
 					if (!text.includes(matchingValue.match_string)) {
 						return
 					}
-					if (matchingValue.rewrite)
+					if (matchingValue.rewrite) {
 						segments.push({
 							...node,
 							text: text.replace(
@@ -348,6 +356,7 @@ export function addVoicePass(
 								matchingValue.rewrite
 							),
 						})
+					}
 				})
 				return segments
 			} else if ('children' in node) {
@@ -429,7 +438,9 @@ export function replaceAll({
 	const updatedChildren = structuredClone(children)
 	function processNode(node: TElement | TText): void {
 		if ('text' in node) {
-			if (!replaceEnabled || !search) return
+			if (!replaceEnabled || !search) {
+				return
+			}
 			const regex = new RegExp(
 				wholeWord
 					? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`

@@ -1,4 +1,5 @@
 import { Writer } from '@/types/admin-types'
+import { EEpisodeType } from '@/types/common'
 import { TEpisode, TGetEpisodeResponse } from '@/types/episode-type'
 
 export const MOCK_WRITERS: Writer[] = [
@@ -176,7 +177,7 @@ export const MOCK_CHAPTER: TEpisode = {
 				seq_number: 1,
 				status: 'BASE',
 				translation_url: null,
-				type: 'draft',
+				type: EEpisodeType.ORIGINAL,
 				update_time: '2024-12-01T08:30:00Z',
 				word_count: 1100,
 			},
@@ -185,7 +186,7 @@ export const MOCK_CHAPTER: TEpisode = {
 	seq_number: 1,
 	status: 'BASE',
 	translation_url: 'https://example.com/files/episode1_fr.txt',
-	type: 'main',
+	type: EEpisodeType.ORIGINAL,
 	update_time: '2025-04-17T12:00:00Z',
 	word_count: 2500,
 	writer: 200,

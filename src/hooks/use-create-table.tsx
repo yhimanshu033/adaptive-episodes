@@ -30,7 +30,7 @@ import { Switch } from '@/components/ui/switch'
 import useProjectId from '@/providers/project-id-provider'
 import { formatDate } from '@/lib/format-date'
 
-import { BASE_STATUS, EStatus } from '@/types/common'
+import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
 export const useCreateTable = (episodes: TEpisode[]) => {
@@ -61,7 +61,9 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			const newSelection = { ...rowSelection }
 			for (let i = start; i <= end; i++) {
 				const rowId = table.getRowModel().rows[i]?.id
-				if (rowId) newSelection[rowId] = true
+				if (rowId) {
+					newSelection[rowId] = true
+				}
 			}
 			setRowSelection(newSelection)
 		} else {
@@ -163,7 +165,16 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						? EStatus.FIRST_DRAFT
 						: row.getValue('status')
 				const latestIndex = statuses.indexOf(latestStatus)
-				if (row.depth) return latestStatus
+
+				if (
+					row.original.language &&
+					row.original.language !== ELanguage.GERMAN_ORIGINAL
+				) {
+					return null
+				}
+				if (row.depth) {
+					return latestStatus
+				}
 				return (
 					<Select
 						value={latestStatus}

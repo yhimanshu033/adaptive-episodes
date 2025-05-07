@@ -16,7 +16,9 @@ const useNotes = () => {
 
 	const handleUpdateNotes = (noteId: string, params: Partial<TNote>) => {
 		const targetedNote = notes.find((note) => note.id === noteId)
-		if (!targetedNote) return
+		if (!targetedNote) {
+			return
+		}
 		updateNote(noteId, params)
 		updateNotesMutation.mutate({
 			action: ENotesAction.UPDATE,

@@ -26,7 +26,9 @@ const EpisodeButton: React.FC<EpisodeButtonProps & ButtonProps> = ({
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
 	const handleEpisodeChange = async () => {
-		if (!episodeId) return
+		if (!episodeId) {
+			return
+		}
 		await handleSave({ startOverlayLoading: true })
 		router.push(`/projects/${Number(id)}/${episodeId}/editor`)
 	}

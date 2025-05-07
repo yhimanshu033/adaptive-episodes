@@ -14,7 +14,9 @@ const Header = () => {
 		path.includes(part)
 	)
 
-	if (isExcluded) return null
+	if (isExcluded) {
+		return null
+	}
 
 	return (
 		<div className="sticky left-0 top-0 z-50 animate-fade-in-down border-b bg-background">

@@ -43,7 +43,9 @@ export default function WritersRoom() {
 	)
 
 	useEffect(() => {
-		if (data) setSelectedStory(data[0])
+		if (data) {
+			setSelectedStory(data[0])
+		}
 	}, [data])
 
 	const handleStorySelect = (story: TStory) => {
