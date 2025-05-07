@@ -16,7 +16,6 @@ import {
 } from '@/types/episode-type'
 
 export const getEpisodeContent = async (chapterId: number) => {
-	// return getSampleGetEpisodeResponse(chapterId) // DEV CHECK
 	const episodeData = await fetchAPI<TGetEpisodeResponse, TGetEpisodeUrlParams>(
 		{
 			method: 'GET',

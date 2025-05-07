@@ -118,12 +118,6 @@ export const SocketStreamingProvider = ({
 				]
 			}
 		)
-		// if (!session?.user.id) {
-		// 	return
-		// }
-		// socket.on('connect', () => {
-		// 	socket.emit('subscribe', { "task_id": String(session?.user.id) })
-		// })
 		return () => {
 			socket.disconnect()
 		}
@@ -165,7 +159,6 @@ export const SocketStreamingProvider = ({
 				BodyParamsT,
 				QueryParamsT & TSocketQueryParams
 			>({
-				// ...(baseUrl ? { baseUrl } : {}),
 				...rest,
 				query: {
 					task_id: taskId,

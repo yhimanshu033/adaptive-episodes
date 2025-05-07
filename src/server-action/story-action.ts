@@ -7,7 +7,6 @@ import { fetchAPI } from '@/lib/fetch-api'
 import { TGetStoriesResponse } from '@/types/story-types'
 
 export const getStories = async () => {
-	// return sampleStories
 	const stories = await fetchAPI<TGetStoriesResponse>({
 		method: 'GET',
 		url: API_URLS.GET_STORIES,
