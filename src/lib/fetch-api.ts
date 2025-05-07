@@ -106,7 +106,6 @@ export async function fetchAPI<
 		resolvedUrl += `?${queryStr}`
 	}
 	const accessToken = session?.accessToken || ''
-	// 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJmMGFkMGVlOC00NTdiLTQzNDAtYjljZi02OTZlNzdiMzhkNTAiLCJmdWxsbmFtZSI6IlZhcmFkIFByYWJodSIsImVtYWlsIjoidmFyYWQucHJhYmh1QHBvY2tldGZtLmNvbSIsImV4cCI6MTc2MTM4MDc5NywiaWF0IjoxNzQ1ODI4Nzk3fQ.SRxPnyHMEVuwE3vP0Ax7rVfs47E8RjuULaORzp_1Xu4'
 
 	const defaultSentryData: Record<string, string> = {
 		user: JSON.stringify(session?.user),
