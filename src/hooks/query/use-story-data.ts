@@ -26,6 +26,7 @@ export const useStoriesData = () => {
 	const query = useQuery({
 		queryKey: [STORIES_QUERY_KEY],
 		queryFn: getStories,
+		staleTime: Infinity,
 	})
 
 	const { data } = query
