@@ -97,6 +97,9 @@ export default function CommentSidebar() {
 				variant={showResolved ? 'default' : 'outline'}
 				size="icon"
 				onClick={() => setResolved(true, true)}
+				tooltip={
+					showResolved ? 'Show Unresolved Comments' : 'Show Resolved Comments'
+				}
 			>
 				<CheckCheck size={16} />
 			</Button>

@@ -182,6 +182,7 @@ export default function VideoUpload() {
 												</span>
 											</div>
 											<Button
+												tooltip="Reset"
 												type="button"
 												variant="ghost"
 												size="icon"
@@ -221,6 +222,7 @@ export default function VideoUpload() {
 										<Spinner size={20} />
 									</If>
 									<Button
+										tooltip="Copy"
 										type="button"
 										variant="ghost"
 										size="icon"

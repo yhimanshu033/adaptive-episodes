@@ -13,7 +13,7 @@ export function SfxInfoComponent() {
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
-				<Button size="sm" variant="ghost">
+				<Button tooltip="Information" size="sm" variant="ghost">
 					<Info />
 				</Button>
 			</PopoverTrigger>

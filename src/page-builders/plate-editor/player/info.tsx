@@ -31,7 +31,12 @@ export default function PlayerInfo() {
 					{info.chapter}
 				</h5>
 			</div>
-			<Button variant="ghost" size="icon" onClick={handleDownload}>
+			<Button
+				tooltip="Download"
+				variant="ghost"
+				size="icon"
+				onClick={handleDownload}
+			>
 				<Download />
 			</Button>
 		</div>

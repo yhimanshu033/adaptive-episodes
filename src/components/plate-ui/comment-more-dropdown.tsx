@@ -30,7 +30,11 @@ export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" className={cn('h-6 p-1 text-muted-foreground')}>
+				<Button
+					tooltip="More"
+					variant="ghost"
+					className={cn('h-6 p-1 text-muted-foreground')}
+				>
 					<Icons.more className="size-4" />
 				</Button>
 			</DropdownMenuTrigger>

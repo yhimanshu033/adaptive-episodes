@@ -14,9 +14,22 @@ const StoryExplorer = () => {
 	})
 
 	const handleEpisodeChange = (type: 'start' | 'end', value: string) => {
+		const parsedValue = parseInt(value)
+
+		if (
+			(value !== '' && isNaN(parsedValue)) ||
+			episodeRange[type] === parsedValue
+		)
+			return
+
+		const clampedValue =
+			type === 'start'
+				? Math.max(Math.min(parsedValue, episodeRange.end), 1)
+				: Math.max(Math.min(parsedValue, Infinity), episodeRange.start)
+
 		setEpisodeRange((prevRange) => ({
 			...prevRange,
-			[type]: parseInt(value),
+			[type]: clampedValue,
 		}))
 	}
 
@@ -29,18 +42,28 @@ const StoryExplorer = () => {
 					<Input
 						type="number"
 						min={1}
+						onBlur={(e) => {
+							if (isNaN(parseInt(e.target.value))) {
+								handleEpisodeChange('start', '1')
+							}
+						}}
 						max={episodeRange.end}
 						value={episodeRange.start}
 						onChange={(e) => handleEpisodeChange('start', e.target.value)}
-						className="w-16 text-center"
+						className="w-24 text-center"
 					/>
 					<span>-</span>
 					<Input
 						type="number"
+						onBlur={(e) => {
+							if (isNaN(parseInt(e.target.value))) {
+								handleEpisodeChange('end', '1')
+							}
+						}}
 						min={episodeRange.start}
 						value={episodeRange.end}
 						onChange={(e) => handleEpisodeChange('end', e.target.value)}
-						className="w-16 text-center"
+						className="w-24 text-center"
 					/>
 				</div>
 			</div>

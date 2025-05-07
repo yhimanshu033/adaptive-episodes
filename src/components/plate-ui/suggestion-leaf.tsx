@@ -50,6 +50,7 @@ export default function SuggestionLeaf({
 					<Button
 						variant="outline"
 						size="sm"
+						tooltip="Accept"
 						onClick={(e) => {
 							e.stopPropagation()
 							suggestionAction(SuggestionActions.ACCEPT)
@@ -59,6 +60,7 @@ export default function SuggestionLeaf({
 					</Button>
 					<Button
 						variant="outline"
+						tooltip="Reject"
 						size="sm"
 						onClick={(e) => {
 							e.stopPropagation()
