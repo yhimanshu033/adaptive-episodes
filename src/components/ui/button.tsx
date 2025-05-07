@@ -11,6 +11,7 @@ export interface ButtonProps
 	extends React.ButtonHTMLAttributes<HTMLButtonElement>,
 		VariantProps<typeof buttonVariants> {
 	asChild?: boolean
+	tooltip?: string | null
 }
 
 const Button = withTooltip(

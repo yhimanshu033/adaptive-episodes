@@ -100,9 +100,7 @@ export default function LaserRephrase({
 			<Button variant="ghost" size="sm" onClick={onResetLeaf}>
 				<X size={16} />
 			</Button>
-			<h4>
-				{rephraseMethods.find((m) => m.id === methodId)?.method} working...
-			</h4>
+			<h4>{rephraseMethods.find((m) => m.id === methodId)?.status}</h4>
 			<Spinner size={24} />
 		</div>
 	)

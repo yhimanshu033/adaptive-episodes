@@ -57,6 +57,7 @@ const ManageProject = () => {
 							<Button
 								variant="ghost"
 								size="icon"
+								tooltip="Copy"
 								asChild
 								className="hover:cursor-pointer"
 								onClick={handleCopy}

@@ -279,6 +279,7 @@ export function ImportStory() {
 															: 'Drag and drop your story file here'}
 													</p>
 													<Button
+														type="button"
 														variant="link"
 														className="mt-2"
 														onClick={() => storyInputRef.current?.click()}

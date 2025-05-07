@@ -670,6 +670,5 @@ export function isInvalidLSMapping(data: LSMappingOutput['ls_mapping']) {
 }
 
 export function isInternalUser(session: Session | null) {
-	// return false
 	return !!session && session.user.email.includes('@pocketfm')
 }

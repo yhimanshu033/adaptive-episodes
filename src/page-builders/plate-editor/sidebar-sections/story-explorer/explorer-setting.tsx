@@ -26,7 +26,7 @@ export function ExplorerSettings() {
 				asChild
 				className="absolute -right-1 translate-x-full"
 			>
-				<Button variant="outline" size="icon">
+				<Button tooltip="Configurations" variant="outline" size="icon">
 					<Settings />
 				</Button>
 			</DropdownMenuTrigger>

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { EImportStatus } from '@/constants/story-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import { usePageState } from '@/hooks/use-page-state'
@@ -21,6 +22,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
 
 import { EEpisodeHeaderKeys } from '@/types/episode-type'
@@ -28,6 +30,7 @@ import { EEpisodeHeaderKeys } from '@/types/episode-type'
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const { setInventIndex, setIsInventOpen } = useEpisodeStore()
+	const { initialStoryData } = useEpisodeTableContext()
 	const { currentPage, search, limit } = usePageState()
 	const [searchedRow, setSearchedRow] = useState<number | null>(null)
 	const { data, isLoading: isEpisodesLoading } = useEpisodesData(
@@ -167,7 +170,18 @@ const EpisodesTable = () => {
 								<Else>
 									<TableRow className="p-5 text-center">
 										<TableCell colSpan={columnSize + 1}>
-											<p className="text-gray-500">No Episodes found</p>
+											{initialStoryData?.status === EImportStatus.IMPORTING ? (
+												<p>Importing Story ...</p>
+											) : (
+												<Button
+													onClick={() => {
+														setIsInventOpen(true)
+														setInventIndex(-1)
+													}}
+												>
+													Create New Episode
+												</Button>
+											)}
 										</TableCell>
 									</TableRow>
 								</Else>

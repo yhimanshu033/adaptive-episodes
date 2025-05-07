@@ -41,6 +41,7 @@ export default function RenderMessage({
 			return (
 				<div className="flex max-w-[70%] items-center gap-2 rounded-lg p-3">
 					<Button
+						tooltip="Accept"
 						variant="outline"
 						onClick={() =>
 							handleAccept(index, true, message.action === EAction.CHANGES)
@@ -50,6 +51,7 @@ export default function RenderMessage({
 					</Button>
 					<Button
 						variant="outline"
+						tooltip="Reject"
 						onClick={() =>
 							handleAccept(index, false, message.action === EAction.CHANGES)
 						}

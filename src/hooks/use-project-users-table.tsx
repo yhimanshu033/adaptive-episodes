@@ -91,6 +91,7 @@ export const useProjectUsersTable = (members: MemberData[]) => {
 			cell: ({ row }) =>
 				row.original.role !== ERole.ADMIN ? (
 					<Button
+						tooltip="Revoke access"
 						variant="ghost"
 						size="icon"
 						onClick={() => setDeleteMemberMail(row.original.user.email)}

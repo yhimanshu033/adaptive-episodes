@@ -32,6 +32,7 @@ export function PromptsPopover({ children }: { children: React.ReactNode }) {
 					<ForEach data={prompts}>
 						{({ title, text }, idx) => (
 							<Button
+								tooltip="Quick Prompts"
 								key={`quick-prompt-${idx}`}
 								onClick={() =>
 									handleSuggestion({

@@ -138,7 +138,7 @@ const Filters = ({
 							</FormItem>
 						)}
 					/>
-					<Button size="icon">
+					<Button tooltip="Search" size="icon">
 						<Search size={16} />
 					</Button>
 				</form>
@@ -162,7 +162,7 @@ const Filters = ({
 				url={url}
 				size="icon"
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}
-				title="Localize episodes"
+				tooltip="Localize episodes"
 			>
 				<Replace size={16} />
 			</MultiEpLocalizeDialog>
@@ -171,7 +171,7 @@ const Filters = ({
 					size="icon"
 					disabled={disabled || Object.keys(selectedRowData).length <= 1}
 					onClick={() => handleMerge(selectedRowData)}
-					title="Merge episodes"
+					tooltip="Merge episodes"
 				>
 					<Merge size={16} />
 				</Button>
@@ -179,7 +179,7 @@ const Filters = ({
 					size="icon"
 					disabled={disabled || selectedRowData.length !== 1}
 					onClick={() => handleUnmerge(selectedRowModel)}
-					title="Unmerge episodes"
+					tooltip="Unmerge episodes"
 				>
 					<Split size={16} />
 				</Button>

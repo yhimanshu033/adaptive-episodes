@@ -30,7 +30,6 @@ export const getEpisodes = async ({
 	search = '',
 	limit,
 }: TGetEpisodesQueryParams) => {
-	// return sampleEpisodeDetails // DEV CHECK
 	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
 		TNoParams,
@@ -91,7 +90,6 @@ export const getEpisodeDetails = async (
 	project_id: number,
 	parent: number = 1
 ) => {
-	// return sampleEpisodeDetails // DEV CHECK
 	const episodes = await fetchAPI<
 		TGetEpisodesResponse,
 		TNoParams,
@@ -127,11 +125,6 @@ export const getEpisodeDetails = async (
 		)
 	}
 
-	// if (internal && episodes.data?.results.data) {
-	// 	episodes.data.results.data = episodes.data.results.data.filter(
-	// 		(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
-	// 	)
-	// }
 	return sentData
 }
 

@@ -14,7 +14,7 @@ export default function SplitButton(
 		return null
 	}
 	return (
-		<Button size="icon" variant="ghost" {...props}>
+		<Button tooltip="Split" size="icon" variant="ghost" {...props}>
 			<SeparatorHorizontal />
 		</Button>
 	)

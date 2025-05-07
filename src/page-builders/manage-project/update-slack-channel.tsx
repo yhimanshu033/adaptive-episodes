@@ -90,6 +90,7 @@ const UpdateSlackChannel = () => {
 					)}
 				/>
 				<Button
+					tooltip="Copy"
 					size="icon"
 					variant="outline"
 					type="button"
