@@ -4,6 +4,7 @@ import { useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { DASHBOARD } from '@/constants/route-constants'
 import { signIn, useSession } from 'next-auth/react'
+import { toast } from 'sonner'
 
 const useAuth = () => {
 	const session = useSession()
@@ -14,12 +15,12 @@ const useAuth = () => {
 	const onSignInWithGoogle = useCallback(() => {
 		void (async () => {
 			try {
-				const status = await signIn('google', {
+				await signIn('google', {
 					redirect: true,
 					callbackUrl,
 				})
 
-				console.log(status)
+				toast.success('Sign in successful!')
 			} catch (err) {
 				console.error(err)
 			}

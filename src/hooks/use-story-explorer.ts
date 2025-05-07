@@ -44,13 +44,17 @@ export default function useStoryExplorer({
 	const { responses, taskEnded } = useSocketStreaming()
 
 	const handleTabChange = (mode: ExplorerModeId) => {
-		if (mode === activeExplorerMode) return
+		if (mode === activeExplorerMode) {
+			return
+		}
 		setActiveExplorerMode(mode)
 	}
 
 	const handleRequest = useCallback(
 		(action: ExplorerActionType | string | null) => {
-			if (!action) return
+			if (!action) {
+				return
+			}
 			setActiveExplorerActions(activeExplorerMode, action)
 		},
 		[activeExplorerMode, setActiveExplorerActions]
@@ -75,7 +79,9 @@ export default function useStoryExplorer({
 	}, [data, isFetching])
 
 	useEffect(() => {
-		if (!taskId || isLoading) return
+		if (!taskId || isLoading) {
+			return
+		}
 		if (responses[taskId]) {
 			const jsonStr = responses[taskId].join('')
 			const arrayStartIndex = jsonStr.indexOf('[')
@@ -84,7 +90,9 @@ export default function useStoryExplorer({
 			try {
 				const data =
 					parseOptimistically<PlotExplorerApiResponse['data']>(cleanedJsonStr)
-				if (!data) return
+				if (!data) {
+					return
+				}
 				setContent(data)
 			} catch (error) {
 				console.log(error)

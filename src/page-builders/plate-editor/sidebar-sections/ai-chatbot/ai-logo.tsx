@@ -6,7 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { EMessenger, TMessage } from '@/types/ai-types'
 
 export function AILogo({ message }: { message: TMessage }) {
-	if (message.role !== EMessenger.ASSISTANT) return null
+	if (message.role !== EMessenger.ASSISTANT) {
+		return null
+	}
 
 	return (
 		<Avatar className="mr-2">

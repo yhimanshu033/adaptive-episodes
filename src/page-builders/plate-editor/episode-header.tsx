@@ -11,6 +11,7 @@ import useEditorExtendedStore from '@/store/extended-store'
 import AuthWrapper from '@/components/auth-wrapper'
 import { If } from '@/components/if-else'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
+import Languages from '@/components/plate-ui/languages'
 import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
 import useEpisodeId from '@/providers/episode-id-provider'
 
@@ -73,6 +74,7 @@ const EpisodeHeader = ({
 						}
 					/>
 				</If>
+				<Languages />
 				<AuthWrapper role={ERole.WRITER}>
 					<Versions
 						isChildEpisode={isChildEpisode}

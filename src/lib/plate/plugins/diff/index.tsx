@@ -69,10 +69,12 @@ const describeUpdate = ({ newProperties, properties }: DiffUpdate) => {
 	)
 
 	const descriptionParts = []
-	if (addedProps.length > 0)
+	if (addedProps.length > 0) {
 		descriptionParts.push(`Added ${addedProps.join(', ')}`)
-	if (removedProps.length > 0)
+	}
+	if (removedProps.length > 0) {
 		descriptionParts.push(`Removed ${removedProps.join(', ')}`)
+	}
 	if (updatedProps.length > 0) {
 		updatedProps.forEach((key) => {
 			descriptionParts.push(
@@ -98,7 +100,9 @@ export const DiffPlugin = toPlatePlugin(
 			aboveNodes:
 				() =>
 				({ children, editor, element }) => {
-					if (!element.diff) return children as React.ReactNode
+					if (!element.diff) {
+						return children as React.ReactNode
+					}
 
 					const diffOperation = element.diffOperation as DiffOperation
 					const label = {
@@ -175,7 +179,9 @@ function DiffLeaf({
 	return (
 		<PlateLeaf
 			onClick={() => {
-				if (readonly) return
+				if (readonly) {
+					return
+				}
 				setActiveDiffId(leaf.diff_id)
 			}}
 			{...props}
@@ -277,7 +283,9 @@ export const useDiffEditor = ({
 			plugins,
 			id: 'diff-editor',
 		})
-		if (!previous || !current) return []
+		if (!previous || !current) {
+			return []
+		}
 		return computeDiff(structuredClone(previous), structuredClone(current), {
 			isInline: editor.isInline,
 			getInsertProps,
@@ -288,7 +296,9 @@ export const useDiffEditor = ({
 	const { setAcceptedValue } = useAIStore()
 
 	useEffect(() => {
-		if (readonly) return
+		if (readonly) {
+			return
+		}
 		setAcceptedValue(diffValue)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [diffValue, readonly])
@@ -320,7 +330,9 @@ export function DiffView({
 }: DiffViewProps) {
 	const editor = useDiffEditor({ current, previous, plugins, readonly })
 
-	if (!previous || !current) return null
+	if (!previous || !current) {
+		return null
+	}
 	return (
 		<Plate editor={editor} readOnly>
 			<PlateContent className={cn('rounded-md border p-3', className)} />

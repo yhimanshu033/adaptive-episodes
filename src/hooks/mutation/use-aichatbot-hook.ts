@@ -1,8 +1,10 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { languageToTitle } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import useMetadataQuery from '@/hooks/query/use-metadata-query'
+import useLanguage from '@/hooks/use-language'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -30,8 +32,12 @@ const useAIChatbotHook = ({
 	const [start, end] = getMetaDataRange(episodeNumber, episodesCount)
 	const { data: metadataQueryData } = useMetadataQuery(start, end)
 
+	const language = useLanguage()
+
 	const onAiChatbotMutation = async (params: AIChatBotParams) => {
-		if (!metadataQueryData?.data) return
+		if (!metadataQueryData?.data) {
+			return
+		}
 
 		const { data: metadata } = metadataQueryData
 		const { beatsheets_array, loglines_array } = extractFromMetadata(metadata)
@@ -46,6 +52,7 @@ const useAIChatbotHook = ({
 				sources,
 				beatsheets_array,
 				loglines_array,
+				input_language: languageToTitle[language],
 			},
 		})
 		return taskId
@@ -70,8 +77,12 @@ export const useAIChatbotQueryHook = (
 	)
 	const { data: metadataQueryData } = useMetadataQuery(start, end)
 
+	const language = useLanguage()
+
 	const getChatbotResponse = async () => {
-		if (!metadataQueryData?.data) return
+		if (!metadataQueryData?.data) {
+			return
+		}
 
 		const { data: metadata } = metadataQueryData
 
@@ -85,6 +96,7 @@ export const useAIChatbotQueryHook = (
 				...params.aiChatbotData,
 				beatsheets_array,
 				loglines_array,
+				input_language: languageToTitle[language],
 			},
 		})
 		return taskId

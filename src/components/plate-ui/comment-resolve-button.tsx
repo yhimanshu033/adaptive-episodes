@@ -38,7 +38,9 @@ export function CommentResolveButton() {
 			removeResolvedComment(comment.id)
 			return
 		}
-		if (!currentComment) return
+		if (!currentComment) {
+			return
+		}
 		addResolvedComment(currentComment)
 		deleteProps.onClick()
 	}, [

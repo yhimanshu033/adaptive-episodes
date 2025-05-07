@@ -1,4 +1,4 @@
-import { EStatus } from '@/types/common'
+import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import {
 	ENotesAction,
 	SaveEpisodeParams,
@@ -12,11 +12,31 @@ export const statuses: EStatus[] = [
 	EStatus.PUBLISHED,
 ]
 
+export const languages: ELanguage[] = [
+	ELanguage.FRENCH,
+	ELanguage.GERMAN,
+	ELanguage.ITALIAN,
+	ELanguage.MEXICAN_SPANISH,
+]
+
+export const sourceLanguages: ELanguage[] = [ELanguage.ENGLISH, ELanguage.HINDI]
+
 export const titleToStatus: Partial<Record<EStatus, string>> = {
 	[EStatus.FIRST_DRAFT]: '🔴 1ST DRAFT',
 	[EStatus.SECOND_DRAFT]: '🟡 REVIEW',
 	[EStatus.POLISH]: '🟠 2ND DRAFT',
 	[EStatus.PUBLISHED]: '🟢 CMS READY',
+}
+
+export const languageToTitle: Record<ELanguage, string> = {
+	[ELanguage.ENGLISH]: 'English',
+	[ELanguage.FRENCH]: 'French',
+	[ELanguage.GERMAN]: 'German',
+	[ELanguage.HINDI]: 'Hindi',
+	[ELanguage.ITALIAN]: 'Italian',
+	[ELanguage.MEXICAN_SPANISH]: 'Spanish',
+	[ELanguage.GERMAN_ORIGINAL]: 'German',
+	[ELanguage.ENGLISH_US]: 'English',
 }
 
 export enum EpisodeActions {
@@ -62,3 +82,18 @@ export const notesMessages = {
 	[ENotesAction.UPDATE]: 'Hinweis erfolgreich aktualisiert!',
 	[ENotesAction.DELETE_ALL]: 'Alle Notizen erfolgreich gelöscht!',
 }
+
+export const prioritizedStatuses = [
+	EStatus.PUBLISHED,
+	EStatus.POLISH,
+	EStatus.SECOND_DRAFT,
+	EStatus.FIRST_DRAFT,
+]
+
+export const allPrioritizedStatuses = [
+	EStatus.PUBLISHED,
+	EStatus.POLISH,
+	EStatus.SECOND_DRAFT,
+	EStatus.FIRST_DRAFT,
+	BASE_STATUS,
+]

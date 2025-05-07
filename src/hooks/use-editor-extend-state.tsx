@@ -47,6 +47,7 @@ export const EditorExtendedStateProvider = ({
 	const useEpisodeExtendedStoreUtil = create(
 		devtools(immer(() => extendedState))
 	)
+
 	return (
 		<EditorExtendedContext.Provider value={{ useEpisodeExtendedStoreUtil }}>
 			{children}

@@ -1,9 +1,11 @@
 import React from 'react'
 import useDisableTools from '@/hooks/use-disable-tools'
+import useIsGerman from '@/hooks/use-is-german'
 import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { Focus, Globe, Search } from 'lucide-react'
 
+import IfElse from '@/components/if-else'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -19,6 +21,8 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 	const { setSidebar, setFocusMode } = usePlateStore()
 	const openState = useOpenState()
 	const { isDisabled } = useDisableTools()
+	const isGerman = useIsGerman()
+
 	return (
 		<DropdownMenu modal={false} {...openState} {...props}>
 			<DropdownMenuTrigger asChild>
@@ -38,7 +42,11 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
 					}}
 				>
 					<Globe className="mr-2 size-5" />
-					Localization
+					<IfElse
+						condition={!!isGerman}
+						if="Localization"
+						else="Find & Replace"
+					/>
 				</DropdownMenuItem>
 				<DropdownMenuItem
 					disabled={isDisabled}

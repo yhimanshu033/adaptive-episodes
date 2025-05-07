@@ -9,6 +9,7 @@ export default async function Page({
 	params: Promise<{ episodeId: string }>
 }) {
 	const { episodeId } = await params
+
 	return (
 		<EditorExtendedStateProvider episodeId={Number(episodeId)}>
 			<GlobalFindAndReplaceProvider>

@@ -101,7 +101,9 @@ const useSuggestions = () => {
 		return findAllSuggestionNodes(editor).reduce<TSuggestionDescription[]>(
 			(descriptions, { node }) => {
 				const suggestionId = node.suggestionId!
-				if (processedSuggestionIds.has(suggestionId)) return descriptions
+				if (processedSuggestionIds.has(suggestionId)) {
+					return descriptions
+				}
 
 				processedSuggestionIds.add(suggestionId)
 
@@ -119,7 +121,9 @@ const useSuggestions = () => {
 						nodes,
 					})
 
-					if (description) descriptions.push(description)
+					if (description) {
+						descriptions.push(description)
+					}
 				})
 
 				return descriptions

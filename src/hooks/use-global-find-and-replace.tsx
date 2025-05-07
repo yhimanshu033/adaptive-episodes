@@ -46,7 +46,9 @@ function useGlobalFindAndReplaceUtil() {
 
 	const extended = useExtendedStore(useShallow((state) => state.extended))
 	const text = useMemo(() => {
-		if (extended.length > Object.keys(contentMap).length) return ''
+		if (extended.length > Object.keys(contentMap).length) {
+			return ''
+		}
 		return Object.keys(contentMap).reduce((acc, key) => {
 			const obj = contentMap[Number(key)]
 			if (obj) {
@@ -114,7 +116,9 @@ function useGlobalFindAndReplaceUtil() {
 	}, [setDebouncedOptions, options])
 
 	useEffect(() => {
-		if (!records[ptr]) return
+		if (!records[ptr]) {
+			return
+		}
 		setOptions({ currentId: records[ptr].slice(1) })
 		const elem = document.getElementById(
 			`search-highlight-${records[ptr].join('-')}`
@@ -132,7 +136,9 @@ function useGlobalFindAndReplaceUtil() {
 		setOptions({ replaceEnabled: !replaceEnabled })
 	}
 	const onReplaceAll = useCallback(() => {
-		if (!search || !replaceEnabled) return
+		if (!search || !replaceEnabled) {
+			return
+		}
 		const replacedContent = Object.keys(contentMap).reduce(
 			(acc, key) => {
 				const children = contentMap[Number(key)].children
@@ -180,9 +186,9 @@ function useGlobalFindAndReplaceUtil() {
 	}
 
 	function toggleSearchMode(mode: farSearchModes) {
-		if (mode === farSearchModes.CASE_SENSITIVE)
+		if (mode === farSearchModes.CASE_SENSITIVE) {
 			setOptions({ caseSensitive: !caseSensitive })
-		else if (mode === farSearchModes.WHOLE_WORD) {
+		} else if (mode === farSearchModes.WHOLE_WORD) {
 			setOptions({ wholeWord: !wholeWord, genitive: !wholeWord })
 		}
 	}

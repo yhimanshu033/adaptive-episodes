@@ -14,7 +14,9 @@ export function CommentItem({ commentId }: PlateCommentProps) {
 	const { useOption } = useEditorPlugin(CommentsPlugin)
 	const comment = useOption('commentById', commentId)
 
-	if (!comment) return null
+	if (!comment) {
+		return null
+	}
 
 	return (
 		<CommentProvider id={commentId} key={commentId}>

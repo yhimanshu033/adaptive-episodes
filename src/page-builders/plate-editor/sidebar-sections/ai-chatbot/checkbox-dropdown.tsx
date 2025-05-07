@@ -36,21 +36,21 @@ export function CheckboxDropdown() {
 						onCheckedChange={(val) =>
 							setStoryExplorerConfigurationValue('current_ep', !!val)
 						}
-						label="Aktuelle Episode"
+						label="Current episode"
 					/>
 					<CheckboxComponent
 						checked={storyExplorerConfiguration.prev_eps}
 						onCheckedChange={(val) =>
 							setStoryExplorerConfigurationValue('prev_eps', !!val)
 						}
-						label="Fokus: Vorherige Episoden"
+						label="Focus: Previous Episodes"
 					/>
 					<CheckboxComponent
 						checked={storyExplorerConfiguration.next_eps}
 						onCheckedChange={(val) =>
 							setStoryExplorerConfigurationValue('next_eps', !!val)
 						}
-						label="Fokus: Kommende Episoden"
+						label="Focus: Upcoming episodes"
 					/>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>

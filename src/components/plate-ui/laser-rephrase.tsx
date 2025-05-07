@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
 import { rephraseMethods } from '@/constants/editor-constants'
+import { languageToTitle } from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useLaserToolsQuery from '@/hooks/query/use-lasertool-data'
+import useLanguage from '@/hooks/use-language'
 import useLaserStore from '@/store/laser-store'
 import { useEditorState } from '@udecode/plate-common/react'
 import { X } from 'lucide-react'
@@ -39,6 +41,7 @@ export default function LaserRephrase({
 	const responseActive = laserStore(useShallow((state) => state.responseActive))
 	const lasersResponseMap = laserStore(useShallow((state) => state.lasers))
 
+	const language = useLanguage()
 	const params: LaserToolsParams = {
 		action: methodId,
 		...getSelectedText(),
@@ -47,6 +50,7 @@ export default function LaserRephrase({
 		ep_text: getText(children) || '',
 		prompt: promptInput,
 		style_template: '',
+		input_language: languageToTitle[language],
 	}
 
 	if (key && triggerRephrase === key && lasersResponseMap[key]?.response) {
@@ -62,7 +66,9 @@ export default function LaserRephrase({
 
 	useEffect(() => {
 		if (data && !isFetching) {
-			if (!key) return
+			if (!key) {
+				return
+			}
 			setResponseActive(key)
 			const laser = getLaser(key)
 			setLaser({

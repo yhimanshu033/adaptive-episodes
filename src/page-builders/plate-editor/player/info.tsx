@@ -12,7 +12,9 @@ export default function PlayerInfo() {
 	const info = playingEpisode?.info
 
 	const handleDownload = useCallback(() => {
-		if (!audioRef.current) return toast.error('Audio not found!')
+		if (!audioRef.current) {
+			return toast.error('Audio not found!')
+		}
 		const src = audioRef.current?.src
 		downloadBlobUrl(src, `${info?.chapter} - ${info?.episode}.mp3`)
 	}, [info, audioRef])

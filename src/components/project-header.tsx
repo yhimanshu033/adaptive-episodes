@@ -29,7 +29,9 @@ const ProjectHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 	const hideHeader = useSearchParams().get(HIDE_HEADER)
 
 	useEffect(() => {
-		if (!initialSeqNumber || !id) return
+		if (!initialSeqNumber || !id) {
+			return
+		}
 		void addOpenedEpisodeList({
 			data: {
 				seqNumber: initialSeqNumber,
