@@ -57,7 +57,7 @@ const StoryExplorer = () => {
 						type="number"
 						onBlur={(e) => {
 							if (isNaN(parseInt(e.target.value))) {
-								handleEpisodeChange('end', episodeRange.end.toString())
+								handleEpisodeChange('end', '1')
 							}
 						}}
 						min={episodeRange.start}
