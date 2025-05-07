@@ -79,11 +79,15 @@ export const DragOverCursorPlugin = createPlatePlugin({
 			editor.setOption(plugin, 'cursors', {})
 		},
 		onDragOver: ({ editor, event, plugin }) => {
-			if (editor.getOptions(DndPlugin).isDragging) return
+			if (editor.getOptions(DndPlugin).isDragging) {
+				return
+			}
 
 			const range = findEventRange(editor, event)
 
-			if (!range) return
+			if (!range) {
+				return
+			}
 
 			editor.setOption(plugin, 'cursors', {
 				drag: {

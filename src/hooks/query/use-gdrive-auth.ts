@@ -27,7 +27,9 @@ const useGDriveAuth = () => {
 			},
 		})
 
-		if (!resp.data?.auth_url) return
+		if (!resp.data?.auth_url) {
+			return
+		}
 
 		window.open(resp.data.auth_url, '_blank')
 	}

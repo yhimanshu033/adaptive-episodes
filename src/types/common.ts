@@ -1,6 +1,8 @@
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
 import { LucideProps } from 'lucide-react'
 
+import { FetchRequestParams, FetchResponseResult } from '@/lib/fetch-api'
+
 import { SessionData } from '@/types/admin-types'
 import { SaveEpisodeParams } from '@/types/episode-type'
 
@@ -23,6 +25,26 @@ export enum EStatus {
 	REOPENED = 'REOPENED',
 	SECOND_DRAFT = '2ND_DRAFT',
 }
+
+export enum EEpisodeType {
+	ADAPTED = 'ADAPTED',
+	INVENTED = 'INVENTED',
+	MERGED = 'MERGED',
+	ORIGINAL = 'ORIGINAL',
+}
+
+export enum ELanguage {
+	ENGLISH = 'english',
+	ENGLISH_US = 'english_us',
+	FRENCH = 'french',
+	GERMAN = 'german',
+	GERMAN_ORIGINAL = 'german_original',
+	HINDI = 'hindi',
+	ITALIAN = 'italian',
+	MEXICAN_SPANISH = 'mexican_spanish',
+}
+
+export type TSourceLanguage = ELanguage.ENGLISH | ELanguage.HINDI
 
 export const BASE_STATUS = 'BASE'
 
@@ -53,3 +75,49 @@ export type TOpenedStoryPage = {
 export type TOpenedEpisodeList = Record<number, TOpenedStoryPage>
 
 export type MinifiedValue = Array<IndexedText>
+
+export type TSocketQueryParams = { room_id?: string; task_id: string }
+
+export enum ELSMappingType {
+	ENTITY = 'entity',
+	PERSON = 'person',
+}
+
+export enum ELSMappingGender {
+	FEMALE = 'Female',
+	MALE = 'Male',
+}
+
+export type LSMappingCommon = {
+	gender?: ELSMappingGender
+	type: ELSMappingType
+}
+
+export interface LSMappingOutputItem extends LSMappingCommon {
+	localised_name: string
+	original_name: string
+}
+
+export interface LSMappingInputItem {
+	[key: string]: {
+		localised_name: string
+	} & LSMappingCommon
+}
+
+export interface LSMappingInput {
+	ls_mapping: LSMappingInputItem
+}
+
+export interface LSMappingOutput {
+	ls_mapping: LSMappingOutputItem[]
+}
+
+export type StartPollingParams<
+	BodyParamsT = TNoParams,
+	ResponseDataT = TNoParams,
+	UrlParamsT = TNoParams,
+	QueryParamsT = TNoParams,
+> = FetchRequestParams<ResponseDataT, UrlParamsT, BodyParamsT, QueryParamsT> & {
+	delay: number
+	stop: (data: FetchResponseResult<ResponseDataT>) => boolean
+}

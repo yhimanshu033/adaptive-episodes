@@ -116,11 +116,15 @@ const InlineCombobox = ({
 	useEffect(() => {
 		const path = findNodePath(editor, element)
 
-		if (!path) return
+		if (!path) {
+			return
+		}
 
 		const point = getPointBefore(editor, path)
 
-		if (!point) return
+		if (!point) {
+			return
+		}
 
 		const pointRef = createPointRef(editor, point)
 		setInsertPoint(pointRef)
@@ -311,7 +315,9 @@ const InlineComboboxItem = ({
 		[filter, value, keywords, search]
 	)
 
-	if (!visible) return null
+	if (!visible) {
+		return null
+	}
 
 	return (
 		<ComboboxItem
@@ -341,7 +347,9 @@ const InlineComboboxEmpty = ({
 		}
 	}, [setHasEmpty])
 
-	if (items.length > 0) return null
+	if (items.length > 0) {
+		return null
+	}
 
 	return (
 		<div

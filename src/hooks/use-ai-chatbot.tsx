@@ -128,7 +128,9 @@ export function ChatbotProvider({
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
-		if (!input.trim()) return
+		if (!input.trim()) {
+			return
+		}
 		aiChatbotMutation.mutate({
 			aiChatbotData: {
 				messages: messages.map((message) => ({
@@ -148,7 +150,9 @@ export function ChatbotProvider({
 
 	const addComment = (value: TComment) => {
 		const id = value.id ?? nanoid()
-		if (!value) return
+		if (!value) {
+			return
+		}
 		const newComment: WithPartial<TComment, 'userId'> = {
 			...value,
 		}
@@ -222,11 +226,17 @@ export function ChatbotProvider({
 	}
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
 		const children = originalChildren
-		if (!children) return
+		if (!children) {
+			return
+		}
 		const resp = convertReviewResponse(reviewResponse, children)
-		if (!resp.comments.length) return
+		if (!resp.comments.length) {
+			return
+		}
 		resp.comments.forEach((comment) => {
-			if (!comment?.id || !comment?.text) return
+			if (!comment?.id || !comment?.text) {
+				return
+			}
 			addComment({
 				value: [
 					{
@@ -251,12 +261,16 @@ export function ChatbotProvider({
 	}
 
 	function removeReview() {
-		if (!reviewStreaming || !responses[reviewStreaming]) return
+		if (!reviewStreaming || !responses[reviewStreaming]) {
+			return
+		}
 		const reviewResponse = parse(
 			jsonrepair(responses[reviewStreaming].join(''))
 		) as IndexedCommentsResponse[]
 		const children = originalChildren
-		if (!children) return
+		if (!children) {
+			return
+		}
 		const resp = convertReviewResponse(reviewResponse, children)
 		resp.comments.forEach((comment) => {
 			api.comment.removeComment(comment.id)
@@ -273,7 +287,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.REVIEW,
-					content: 'Erstelle Review...',
+					content: 'Adding review...',
 				})
 			} else if (requestedAction === EChatMode.SFX) {
 				setOriginalChildren(children)
@@ -282,7 +296,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.CHANGES,
-					content: 'Erstelle MUSIC/SFX/AMBIENT Tags...',
+					content: 'Adding MUSIC/SFX/AMBIENT Tags...',
 				})
 			} else if (requestedAction === EChatMode.VOICE) {
 				setOriginalChildren(children)
@@ -290,7 +304,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.VOICE,
-					content: 'Voice Pass ist aktiv...',
+					content: 'Voice Pass ist active...',
 				})
 			} else {
 				handleBlock({ text: '', taskId: aiResponse })
@@ -300,19 +314,25 @@ export function ChatbotProvider({
 	}, [aiResponse, isPending])
 
 	useEffect(() => {
-		if (!sfxStreaming || !originalChildren) return
+		if (!sfxStreaming || !originalChildren) {
+			return
+		}
 		if (taskEnded[sfxStreaming]) {
 			setSfxStreaming('')
 			setOriginalChildren(undefined)
 			return
 		}
-		if (!responses[sfxStreaming]) return
+		if (!responses[sfxStreaming]) {
+			return
+		}
 
 		try {
 			let parsedResponse = parseOptimistically<IndexedSFXResponse>(
 				responses[sfxStreaming].join('')
 			)
-			if (!parsedResponse) return
+			if (!parsedResponse) {
+				return
+			}
 			parsedResponse = parsedResponse
 				.filter((item) => {
 					const keys = Object.keys(item)
@@ -323,7 +343,9 @@ export function ChatbotProvider({
 						: null
 				})
 				.filter(Boolean)
-			if (!parsedResponse.length) return
+			if (!parsedResponse.length) {
+				return
+			}
 			const responseValue = addSFX(
 				parsedResponse,
 				originalChildren,
@@ -342,7 +364,9 @@ export function ChatbotProvider({
 	])
 
 	useEffect(() => {
-		if (!reviewStreaming || !originalChildren) return
+		if (!reviewStreaming || !originalChildren) {
+			return
+		}
 		if (taskEnded[reviewStreaming]) {
 			setReviewStreaming('')
 			updateMessages(
@@ -357,12 +381,16 @@ export function ChatbotProvider({
 			setOriginalChildren(undefined)
 			return
 		}
-		if (!responses[reviewStreaming]) return
+		if (!responses[reviewStreaming]) {
+			return
+		}
 		try {
 			const parsedResponse = parseOptimistically<IndexedCommentsResponse[]>(
 				responses[reviewStreaming].join('')
 			)
-			if (!parsedResponse) return
+			if (!parsedResponse) {
+				return
+			}
 			addReview(parsedResponse)
 		} catch (error) {
 			console.error(error)
@@ -375,7 +403,9 @@ export function ChatbotProvider({
 	])
 
 	useEffect(() => {
-		if (!blockStreaming) return
+		if (!blockStreaming) {
+			return
+		}
 		if (taskEnded[blockStreaming]) {
 			const lastIndex = messages.length - 1
 			if (lastIndex >= 0) {
@@ -384,7 +414,7 @@ export function ChatbotProvider({
 						...messages[lastIndex],
 						content:
 							responses[blockStreaming].join('') ||
-							'Tut mir leid, darauf habe ich im Moment keine Antwort.',
+							"Sorry, I don't have an answer to that at the moment.",
 					},
 					lastIndex
 				)

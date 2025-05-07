@@ -16,7 +16,9 @@ const SaveEpisode = () => {
 	const handleKeyDown = useEventCallback(async (event: KeyboardEvent) => {
 		if ((event.metaKey || event.ctrlKey) && event.key === 's') {
 			event.preventDefault()
-			if (isSaved) return
+			if (isSaved) {
+				return
+			}
 			await handleSave()
 		}
 	})
@@ -29,7 +31,9 @@ const SaveEpisode = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
-	if (readOnly) return null
+	if (readOnly) {
+		return null
+	}
 
 	return (
 		<div className="flex gap-2">

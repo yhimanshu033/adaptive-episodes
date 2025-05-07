@@ -33,7 +33,9 @@ export const usePageState = () => {
 	const id = Number(paramId)
 
 	async function getOpenedEpisodePage(id: number | undefined) {
-		if (!id) return
+		if (!id) {
+			return
+		}
 		const map = (await getOpenedEpisodeList()) || {}
 		void setSearch((prev) => map[id]?.search || prev)
 		void setCurrentPage((prev) => (prev === 1 ? map[id]?.page || 1 : prev))
@@ -61,8 +63,9 @@ export const usePageState = () => {
 			currentPage === data?.page &&
 			search === data?.search &&
 			limit === data?.limit
-		)
+		) {
 			return false
+		}
 		void addOpenedEpisodeList({
 			project: id,
 			data: { page: currentPage, search, limit, seqNumber: undefined },

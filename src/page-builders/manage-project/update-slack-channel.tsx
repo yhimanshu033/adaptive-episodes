@@ -50,7 +50,9 @@ const UpdateSlackChannel = () => {
 	}, [slack_channel_id])
 
 	useEffect(() => {
-		if (!defaultChannelId) return
+		if (!defaultChannelId) {
+			return
+		}
 
 		form.setValue('slack_channel_id', defaultChannelId)
 		// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -34,7 +34,7 @@ const DE_LANG: TLocaleDict = {
 		localChanges: 'Lokal Ansehen',
 		contentChanged: 'Der Inhalt scheint geändert zu sein',
 		thinking: 'Denke nach...',
-		example: 'Beispiel:',
+		example: 'Beispiel',
 		words: 'Worte',
 	},
 	toasts: {

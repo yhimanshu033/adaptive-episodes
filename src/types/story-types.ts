@@ -1,5 +1,7 @@
 import { EImportStatus } from '@/constants/story-constants'
 
+import { ELanguage } from '@/types/common'
+
 export type TStoryStoreState = {
 	isFormOpen: boolean
 }
@@ -14,6 +16,7 @@ export type TStory = {
 	episode_count: number
 	id: number
 	image: string
+	parent_language?: ELanguage
 	project_title: string
 	props: Record<string, unknown>
 	status: EImportStatus
@@ -26,6 +29,7 @@ export type StoryUploadParams = {
 		author: string | null
 		end_ep: number
 		image: string | null
+		input_language: string
 		project_url: string | null
 		start_ep: number
 		title: string

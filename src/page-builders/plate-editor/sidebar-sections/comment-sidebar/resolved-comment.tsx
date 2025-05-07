@@ -51,7 +51,9 @@ export default function ResolvedCommentItem({
 				const elem = document.getElementById(
 					'resolved-comment-leaf-' + resolvedComment.id
 				)
-				if (!elem) return
+				if (!elem) {
+					return
+				}
 				elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
 			}}
 			className={cn(

@@ -134,7 +134,9 @@ export function CodeBlockCombobox() {
 	const [open, setOpen] = useState(false)
 	const [value, setValue] = useState('')
 
-	if (state.readOnly) return null
+	if (state.readOnly) {
+		return null
+	}
 
 	const items = languages.filter(
 		(language) =>

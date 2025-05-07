@@ -67,6 +67,12 @@ function useEpisodeIdStore() {
 		useEpisodeIdStoreContext.setState({ activeNoteId })
 	}
 
+	const setSelectedLanguage = (
+		selectedLanguage: EpisodeIdStoreType['selectedLanguage']
+	) => {
+		useEpisodeIdStoreContext.setState({ selectedLanguage })
+	}
+
 	return {
 		store: useEpisodeIdStoreContext,
 		setSelectedStatus,
@@ -77,6 +83,7 @@ function useEpisodeIdStore() {
 		setResolvedComments,
 		removeResolvedComment,
 		setActiveNoteId,
+		setSelectedLanguage,
 	}
 }
 

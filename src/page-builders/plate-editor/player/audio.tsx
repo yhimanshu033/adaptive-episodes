@@ -25,7 +25,9 @@ export default function PlayerAudio() {
 	const handleTimeUpdate = useCallback(
 		(time: number) => {
 			const audioElem = audioRef.current
-			if (!audioElem) return
+			if (!audioElem) {
+				return
+			}
 
 			audioElem.currentTime = time
 		},
@@ -34,7 +36,9 @@ export default function PlayerAudio() {
 
 	const handlePlayPause = useCallback(() => {
 		const audioElem = audioRef.current
-		if (!audioElem) return
+		if (!audioElem) {
+			return
+		}
 
 		if (isPlaying) {
 			audioElem.pause()
