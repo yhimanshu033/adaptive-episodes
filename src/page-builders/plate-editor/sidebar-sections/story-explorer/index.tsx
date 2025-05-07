@@ -19,8 +19,9 @@ const StoryExplorer = () => {
 		if (
 			(value !== '' && isNaN(parsedValue)) ||
 			episodeRange[type] === parsedValue
-		)
+		) {
 			return
+		}
 
 		const clampedValue =
 			type === 'start'
