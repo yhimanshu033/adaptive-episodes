@@ -35,7 +35,7 @@ const BaseScriptExtension = () => {
 	const { initialStoryData } = useEpisodeTableContext()
 
 	const baseExtensionMutation = useBaseExtensionMutation()
-	const { data: taskId } = baseExtensionMutation
+	const { data: taskId, reset } = baseExtensionMutation
 
 	const extendableRange = !(data && 'message' in data)
 		? (data?.ranges?.de_end ?? 0) - (data?.ranges?.de_start ?? 1) + 1
@@ -64,7 +64,7 @@ const BaseScriptExtension = () => {
 				</DialogHeader>
 
 				{baseTaskId ? (
-					<BaseScriptStatus taskId={baseTaskId} />
+					<BaseScriptStatus taskId={baseTaskId} reset={reset} />
 				) : (
 					<IfElse condition={isFetching || isLoading}>
 						<If>
@@ -142,8 +142,8 @@ const BaseScriptExtension = () => {
 										<Card
 											className={`w-full ${
 												data?.previous_extension_status.status === 'success'
-													? 'text-green-700'
-													: 'text-red-700'
+													? 'text-success'
+													: 'text-destructive'
 											}`}
 										>
 											<CardContent className="flex items-start gap-2 px-4 py-3 text-sm">

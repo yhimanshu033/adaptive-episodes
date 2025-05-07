@@ -34,11 +34,11 @@ export const storyImportFormSchema = z.object({
 		.instanceof(File)
 		.optional()
 		.refine(
-			(file) => file && file.size <= MAX_DOCX_FILE_SIZE,
+			(file) => !file || (file && file.size <= MAX_DOCX_FILE_SIZE),
 			`Max document size is 10MB.`
 		)
 		.refine(
-			(file) => file && ACCEPTED_DOCX_TYPES.includes(file.type),
+			(file) => !file || (file && ACCEPTED_DOCX_TYPES.includes(file.type)),
 			'Only .docx format is supported.'
 		),
 })
