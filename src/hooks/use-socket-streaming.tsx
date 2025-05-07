@@ -55,7 +55,7 @@ export const SocketStreamingProvider = ({
 	baseUrl?: string
 	children: React.ReactNode
 }) => {
-	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL || ''
+	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_BACKEND_URL || ''
 	const { data: session } = useSession()
 	const socket = useMemo(
 		() =>

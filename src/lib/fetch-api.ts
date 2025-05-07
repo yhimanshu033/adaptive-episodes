@@ -78,7 +78,7 @@ export async function fetchAPI<
 	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
 	const realIp = nextHeadersObj.get('x-real-ip')
 
-	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_PROMOS_BACKEND_URL
+	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {
