@@ -194,7 +194,7 @@ const useEpisodeTable = () => {
 						await statusUpdateMutation.mutateAsync({
 							parent_id: episode.parent ?? episode.id,
 							status: BASE_STATUS,
-							language: storyData?.parent_language,
+							language: episode.language,
 						})
 					}
 					return statusUpdateMutation.mutateAsync({
@@ -203,6 +203,7 @@ const useEpisodeTable = () => {
 							episode.status === BASE_STATUS
 								? EStatus.FIRST_DRAFT
 								: episode.status,
+						language: episode.language,
 					})
 				})
 			)
