@@ -29,9 +29,10 @@ export function openDB(): Promise<IDBDatabase> {
 			request.onupgradeneeded = (event) => {
 				const db = (event.target as IDBOpenDBRequest).result
 				STORES.forEach((store) => {
-					if (!db.objectStoreNames.contains(store)) {
-						db.createObjectStore(store)
+					if (db.objectStoreNames.contains(store)) {
+						db.deleteObjectStore(store)
 					}
+					db.createObjectStore(store)
 				})
 			}
 
