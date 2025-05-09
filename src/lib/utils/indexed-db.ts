@@ -28,12 +28,7 @@ export function openDB(): Promise<IDBDatabase> {
 
 			request.onupgradeneeded = (event) => {
 				const db = (event.target as IDBOpenDBRequest).result
-				STORES.forEach((store) => {
-					if (db.objectStoreNames.contains(store)) {
-						db.deleteObjectStore(store)
-					}
-					db.createObjectStore(store)
-				})
+				clearDB(db)
 			}
 
 			request.onsuccess = () => {
@@ -47,6 +42,22 @@ export function openDB(): Promise<IDBDatabase> {
 			reject(error)
 		}
 	})
+}
+
+export const resetDB = async () => {
+	const db = await openDB()
+	clearDB(db)
+}
+
+const clearDB = (db: IDBDatabase) => {
+	try {
+		STORES.forEach((store) => {
+			const tnx = db.transaction(store, 'readwrite').objectStore(store)
+			tnx.clear()
+		})
+	} catch (error) {
+		console.log(error)
+	}
 }
 
 export const clearOldEntries = (db: IDBDatabase) => {
