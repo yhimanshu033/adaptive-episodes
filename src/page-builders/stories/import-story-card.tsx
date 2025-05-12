@@ -19,10 +19,10 @@ const ImportStoryCard = () => {
 	return (
 		<Dialog open={isFormOpen} onOpenChange={setFormOpen}>
 			<DialogTrigger asChild>
-				<Card className="w-64 cursor-pointer border-dashed bg-transparent">
+				<Card className="w-64 cursor-pointer rounded-none border bg-transparent">
 					<Button variant="ghost" asChild>
 						<CardContent className="flex h-full items-center justify-center gap-2">
-							<Plus size={16} /> Add Story
+							<Plus size={64} className="rounded-full border p-4" />
 						</CardContent>
 					</Button>
 				</Card>

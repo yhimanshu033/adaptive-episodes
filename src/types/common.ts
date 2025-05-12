@@ -1,4 +1,4 @@
-import { ForwardRefExoticComponent, RefAttributes } from 'react'
+import React, { ForwardRefExoticComponent, RefAttributes } from 'react'
 import { LucideProps } from 'lucide-react'
 
 import { FetchRequestParams, FetchResponseResult } from '@/lib/fetch-api'
@@ -9,6 +9,10 @@ import { SaveEpisodeParams } from '@/types/episode-type'
 export type LucideComponent = ForwardRefExoticComponent<
 	Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
 >
+
+export type IconComponent = (
+	props: React.SVGProps<SVGSVGElement>
+) => React.ReactNode
 
 export interface GlobalStoreState {
 	isFullScreenLoading: boolean

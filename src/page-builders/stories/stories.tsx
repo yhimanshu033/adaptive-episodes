@@ -35,7 +35,7 @@ const Stories = () => {
 		<section className="container my-6 grid grid-cols-1 justify-items-center gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 			<ImportStoryCard />
 			{(sortedStories || stories)?.map((story) => (
-				<Card key={story.id} className="w-64 overflow-hidden">
+				<Card key={story.id} className="w-64 overflow-hidden rounded-none">
 					<Link href={`/projects/${story.id}`}>
 						<div className="relative aspect-square">
 							<If condition={openedStories?.slice(0, 5).includes(story.id)}>

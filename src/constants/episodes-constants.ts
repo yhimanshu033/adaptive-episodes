@@ -103,3 +103,24 @@ export const DEFAULT_PAGE = 1
 export const PAGE_PADDING = 3
 
 export const PAGES_TO_SHOW = 5
+
+export enum ImportStoryType {
+	EMPTY = 'empty',
+	IMPORT = 'import',
+}
+
+export enum ImportStoryStep {
+	CHOOSE_TYPE = 'choose-type',
+	CONTENT = 'content',
+	DETAILS = 'details',
+}
+
+export const storySteps = [
+	ImportStoryStep.CHOOSE_TYPE,
+	ImportStoryStep.DETAILS,
+	ImportStoryStep.CONTENT,
+] as const
+export const switchableStepsInfo: { title: string; type: ImportStoryStep }[] = [
+	{ type: ImportStoryStep.DETAILS, title: 'Set up name' },
+	{ type: ImportStoryStep.CONTENT, title: 'Import content' },
+]

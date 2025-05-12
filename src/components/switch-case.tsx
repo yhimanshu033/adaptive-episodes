@@ -35,12 +35,19 @@ export function Case({
 	value: caseValue,
 }: {
 	children: React.ReactNode
-	value?: SwitchCaseValueType
+	value?: SwitchCaseValueType | SwitchCaseValueType[]
 }) {
 	const context = React.useContext(SwitchCaseContext)
 
 	if (!context) {
 		throw new Error('Case must be used within a SwitchCase component')
+	}
+
+	if (Array.isArray(caseValue)) {
+		if (caseValue.includes(context.value)) {
+			return children
+		}
+		return null
 	}
 
 	const condition = context.value === caseValue
