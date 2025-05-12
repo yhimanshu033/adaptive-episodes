@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import EpisodesTable from '@/page-builders/episodes/episodes-table'
+import EpisodesTable from '@/page-builders/episodes/table/episodes-table'
 
 export default function EpisodeListPage() {
 	return (

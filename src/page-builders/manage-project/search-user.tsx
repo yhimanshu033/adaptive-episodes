@@ -18,7 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 import { UserData } from '@/types/admin-types'
 
-import UserInfo from '../episodes/user-info'
+import UserInfo from '../episodes/info/user-info'
 
 const SearchUser = ({
 	selectedValue,

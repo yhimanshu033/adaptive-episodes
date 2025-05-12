@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { languages } from '@/constants/episodes-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
-import AdaptationDialog from '@/page-builders/episodes/adaptation-dialog'
+import AdaptationDialog from '@/page-builders/episodes/dialogs/adaptation-dialog'
 
 import { parseInputLSMapping } from '@/lib/utils/helpers'
 

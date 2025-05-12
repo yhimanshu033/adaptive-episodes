@@ -2,15 +2,16 @@
 
 import React from 'react'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
-import AuthorTitle from '@/page-builders/episodes/author'
-import StoryTitle from '@/page-builders/episodes/story-title'
+import EditProjectDialog from '@/page-builders/episodes/dialogs/edit-project-dialog'
+import AuthorTitle from '@/page-builders/episodes/info/author'
+import { Edit } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import Image from '@/components/ui/image'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
 
 interface StoryDetailsProps {
-	editable?: boolean
 	handleClick?: () => void
 	hideAuthor?: boolean
 	imageClassname?: string
@@ -23,7 +24,6 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 	imageClassname,
 	imageSize = 80,
 	hideAuthor,
-	editable = false,
 	handleClick = () => {},
 }) => {
 	const { initialStoryData: storyData } = useEpisodeTableContext()
@@ -43,11 +43,16 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 				/>
 			</div>
 			<div>
-				<StoryTitle
-					isEditable={editable}
-					text={storyData?.project_title || ''}
-					textClass={cn('text-3xl font-bold', titleClassname)}
-				/>
+				<div className="flex gap-2">
+					<h2 className={cn('text-3xl font-bold', titleClassname)}>
+						{storyData?.project_title}
+					</h2>
+					<EditProjectDialog>
+						<Button variant="ghost" size="icon">
+							<Edit />
+						</Button>
+					</EditProjectDialog>
+				</div>
 				{!hideAuthor && <AuthorTitle />}
 			</div>
 		</div>

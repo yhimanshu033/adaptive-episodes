@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
+import { STORIES_QUERY_KEY } from '@/constants/query-constants'
 import { StoryImportFormSchema } from '@/hooks/form-resolvers/story-import-resolver'
 import useSocket from '@/hooks/use-socket'
 import { uploadFile } from '@/server-action/file-upload'
@@ -11,21 +12,20 @@ import { toast } from 'sonner'
 import { fetchAPI } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
-import { StoryUploadParams } from '@/types/story-types'
+import { StoryUploadParams, TStory } from '@/types/story-types'
 
 const useStoryUploadHook = () => {
 	const { startTask } = useSocket()
 	const queryClient = useQueryClient()
 	const { id } = useParams()
 
-	const onSuccess = () => {
+	const onSuccess = async () => {
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
-		setTimeout(async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['stories'],
-				type: 'all',
-			})
-		}, 3000)
+		await queryClient.invalidateQueries({
+			queryKey: [STORIES_QUERY_KEY],
+			type: 'all',
+		})
+		toast.success('Story details updated successfully')
 	}
 
 	const onError = (error: Error) => {
@@ -71,11 +71,11 @@ const useStoryUploadHook = () => {
 		onSuccess,
 	})
 
-	async function storyUpdate({ author }: { author: string }) {
-		const resp = await fetchAPI<TNoParams, TIdParams, { author: string }>({
+	async function storyUpdate(body: Partial<TStory>) {
+		const resp = await fetchAPI<TNoParams, TIdParams, Partial<TStory>>({
 			method: 'PATCH',
 			url: API_URLS.PROJECT_UPDATE,
-			body: { author },
+			body,
 			urlParams: { id: String(id) },
 		})
 		return resp.data

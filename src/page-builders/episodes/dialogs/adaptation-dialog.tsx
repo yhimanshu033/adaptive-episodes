@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { languageToTitle } from '@/constants/episodes-constants'
-import LSTableEditor from '@/page-builders/episodes/ls-editor'
+import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
 import { ArrowRight, CheckCircle } from 'lucide-react'
 
 import LanguageSelector from '@/components/plate-ui/language-selector'

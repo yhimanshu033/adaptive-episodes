@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react'
 import { DEFAULT_PAGE, PAGES_TO_SHOW } from '@/constants/episodes-constants'
 import { usePageState } from '@/hooks/use-page-state'
-import PaginationNavigation from '@/page-builders/episodes/pagination-navigation'
-import RenderPageButtons from '@/page-builders/episodes/render-page-btns'
+import PaginationNavigation from '@/page-builders/episodes/pagination/pagination-navigation'
+import RenderPageButtons from '@/page-builders/episodes/pagination/render-page-btns'
 
 interface PaginationButtonsProps {
 	totalPages: number

@@ -1,6 +1,6 @@
 import React from 'react'
 import useLSSheetQuery from '@/hooks/mutation/use-ls-sheet'
-import LSTableEditor from '@/page-builders/episodes/ls-editor'
+import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
 import { Sheet } from 'lucide-react'
 
 import IfElse, { Else, If } from '@/components/if-else'

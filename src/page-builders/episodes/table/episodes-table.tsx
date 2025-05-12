@@ -3,11 +3,12 @@ import { EImportStatus } from '@/constants/story-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import { usePageState } from '@/hooks/use-page-state'
-import ActionAlert from '@/page-builders/episodes/action-alert'
-import SkeletonBuilder from '@/page-builders/episodes/episode-skeleton'
-import Filters from '@/page-builders/episodes/filters'
-import InventForm from '@/page-builders/episodes/invent-form'
-import EpisodesPagination from '@/page-builders/episodes/pagination'
+import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
+import InventForm from '@/page-builders/episodes/dialogs/invent-form'
+import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
+import SkeletonBuilder from '@/page-builders/episodes/table/episode-skeleton'
+import Filters from '@/page-builders/episodes/table/filters'
+import SelectionActions from '@/page-builders/episodes/table/selection-actions'
 import { useEpisodeStore } from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
@@ -30,7 +31,7 @@ import { cn } from '@/lib/utils/helpers'
 import { ERole } from '@/types/admin-types'
 import { EEpisodeHeaderKeys } from '@/types/episode-type'
 
-import AdminManageProject from './admin-manage-project'
+import AdminManageProject from '../buttons/admin-manage-project'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
@@ -71,15 +72,9 @@ const EpisodesTable = () => {
 	return (
 		<>
 			<div className="mb-4 flex items-center justify-between">
-				<StoryDetails
-					titleClassname="text-xl"
-					imageSize={60}
-					editable={isWriter}
-				/>
+				<StoryDetails titleClassname="text-xl" imageSize={60} />
 				<div className="flex gap-2">
 					<Filters
-						disabled={!isWriter}
-						table={table}
 						totalEpisodes={data?.count}
 						setSearchedRow={setSearchedRow}
 					/>
@@ -88,7 +83,7 @@ const EpisodesTable = () => {
 					</AuthWrapper>
 				</div>
 			</div>
-			<div className="flex gap-3"></div>
+			<SelectionActions table={table} />
 			<Table className="rounded-md">
 				<TableHeader className="sticky top-14 z-10 bg-card">
 					{table.getHeaderGroups().map((headerGroup) => (

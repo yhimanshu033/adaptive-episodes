@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
-import WriterCombobox from '@/page-builders/episodes/writer-combobox'
+import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 

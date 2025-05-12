@@ -4,7 +4,7 @@ import * as React from 'react'
 import useWriterUpdateMutation from '@/hooks/mutation/use-writer-update-mutation'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useIsGerman from '@/hooks/use-is-german'
-import UserInfo from '@/page-builders/episodes/user-info'
+import UserInfo from '@/page-builders/episodes/info/user-info'
 import { Check, ChevronsUpDown } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'

@@ -1,6 +1,6 @@
 import React from 'react'
-import EpisodesLimit from '@/page-builders/episodes/episodes-limit'
-import PaginationButtons from '@/page-builders/episodes/pagination-buttons'
+import EpisodesLimit from '@/page-builders/episodes/pagination/episodes-limit'
+import PaginationButtons from '@/page-builders/episodes/pagination/pagination-buttons'
 
 const EpisodesPagination = ({ totalPages }: { totalPages: number }) => {
 	if (!totalPages) {

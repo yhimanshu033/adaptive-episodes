@@ -1,5 +1,5 @@
 import React from 'react'
-import ViewLS from '@/page-builders/episodes/view-ls'
+import ViewLS from '@/page-builders/episodes/info/view-ls'
 import usePlateStore from '@/store/plate-store'
 import {
 	BoldPlugin,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
-import WriterCombobox from '@/page-builders/episodes/writer-combobox'
+import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
 import { HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
 import {
 	ColumnDef,

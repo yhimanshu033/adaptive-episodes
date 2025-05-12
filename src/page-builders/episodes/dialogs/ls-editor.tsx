@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react'
-import LSEditorRow from '@/page-builders/episodes/ls-editor-row'
+import LSEditorRow from '@/page-builders/episodes/dialogs/ls-editor-row'
 import { Plus } from 'lucide-react'
 
 import { If } from '@/components/if-else'
