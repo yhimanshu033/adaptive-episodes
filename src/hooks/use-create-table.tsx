@@ -14,10 +14,21 @@ import {
 	SortingState,
 	useReactTable,
 } from '@tanstack/react-table'
-import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
+import {
+	ChevronDown,
+	ChevronRight,
+	EllipsisVertical,
+	Trash2,
+} from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { HoverCard } from '@/components/ui/hover-card'
 import {
 	Select,
@@ -78,6 +89,30 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			setLastSelectedRowIndex(rowIndex)
 		}
 	}
+
+	const writerOnlyColumns: ColumnDef<TEpisode>[] = [
+		{
+			accessorKey: EEpisodeHeaderKeys.ACTIONS,
+			header: 'Actions',
+			cell: ({ row }) => (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button size="icon" variant="ghost">
+							<EllipsisVertical />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent className="min-w-0">
+						<DropdownMenuItem
+							disabled={!isWriter || !row.original.props?.creation_timestamp}
+							onClick={() => handleDeleteEpisode(row.original.id)}
+						>
+							Delete <Trash2 size={16} className="ml-2" />
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			),
+		},
+	]
 
 	const columns: ColumnDef<TEpisode>[] = [
 		{
@@ -152,7 +187,21 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							{row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
 						</Button>
 					)}
-					{row.getValue('chapter_title')} ({row.original.word_count} words)
+					{row.getValue('chapter_title')}
+				</div>
+			),
+		},
+		{
+			accessorKey: EEpisodeHeaderKeys.WORD_COUNT,
+			header: 'Word Count',
+			cell: ({ row }) => (
+				<div
+					className="flex cursor-pointer items-center gap-2 font-medium"
+					onClick={() =>
+						handleTitleClick(row.original.parent || row.original.id)
+					}
+				>
+					{row.original.word_count}
 				</div>
 			),
 		},
@@ -221,22 +270,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			header: 'Last Updated',
 			cell: ({ row }) => formatDate(row.original.update_time),
 		},
-		{
-			accessorKey: EEpisodeHeaderKeys.DELETE,
-			header: 'Delete',
-			cell: ({ row }) =>
-				row.original.props?.creation_timestamp && (
-					<Button
-						tooltip="Delete Episode"
-						disabled={!isWriter}
-						variant="ghost"
-						size="icon"
-						onClick={() => handleDeleteEpisode(row.original.id)}
-					>
-						<Trash2 size={16} />
-					</Button>
-				),
-		},
+		...(isWriter ? writerOnlyColumns : []),
 	]
 
 	const table = useReactTable({

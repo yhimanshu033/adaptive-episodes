@@ -1,0 +1,44 @@
+import React, { useCallback } from 'react'
+import { DEFAULT_PAGE, PAGES_TO_SHOW } from '@/constants/episodes-constants'
+import { usePageState } from '@/hooks/use-page-state'
+import PaginationNavigation from '@/page-builders/episodes/pagination-navigation'
+import RenderPageButtons from '@/page-builders/episodes/render-page-btns'
+
+interface PaginationButtonsProps {
+	totalPages: number
+}
+export default function PaginationButtons({
+	totalPages,
+}: PaginationButtonsProps) {
+	const { currentPage, setCurrentPage } = usePageState()
+
+	const handlePageChange = useCallback(
+		(page?: number) => {
+			void setCurrentPage(page ?? DEFAULT_PAGE)
+		},
+		[setCurrentPage]
+	)
+
+	if (totalPages <= PAGES_TO_SHOW) {
+		return (
+			<RenderPageButtons
+				currentPage={currentPage}
+				handlePageChange={handlePageChange}
+				totalPages={totalPages}
+			/>
+		)
+	}
+
+	return (
+		<PaginationNavigation
+			totalPages={totalPages}
+			handlePageChange={handlePageChange}
+		>
+			<RenderPageButtons
+				currentPage={currentPage}
+				handlePageChange={handlePageChange}
+				totalPages={totalPages}
+			/>
+		</PaginationNavigation>
+	)
+}

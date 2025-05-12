@@ -21,7 +21,7 @@ const Header = () => {
 	return (
 		<div className="sticky left-0 top-0 z-50 animate-fade-in-down border-b bg-background">
 			<header className="container flex h-14 animate-fade-in-down items-center justify-between">
-				<Logo className="text-2xl font-bold" />
+				<Logo />
 				<div className="flex items-center gap-2">
 					<ThemeToggle />
 					<SettingsButton />

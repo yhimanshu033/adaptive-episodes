@@ -97,3 +97,9 @@ export const allPrioritizedStatuses = [
 	EStatus.FIRST_DRAFT,
 	BASE_STATUS,
 ]
+
+export const DEFAULT_PAGE = 1
+
+export const PAGE_PADDING = 3
+
+export const PAGES_TO_SHOW = 5

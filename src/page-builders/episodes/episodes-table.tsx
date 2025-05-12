@@ -12,7 +12,9 @@ import { useEpisodeStore } from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 
+import AuthWrapper from '@/components/auth-wrapper'
 import IfElse, { Else, If } from '@/components/if-else'
+import StoryDetails from '@/components/story-details'
 import { Button } from '@/components/ui/button'
 import {
 	Table,
@@ -25,7 +27,10 @@ import {
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
 
+import { ERole } from '@/types/admin-types'
 import { EEpisodeHeaderKeys } from '@/types/episode-type'
+
+import AdminManageProject from './admin-manage-project'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
@@ -65,24 +70,32 @@ const EpisodesTable = () => {
 
 	return (
 		<>
-			<div className="flex gap-3">
-				<Filters
-					disabled={!isWriter}
-					table={table}
-					totalEpisodes={data?.count}
-					setSearchedRow={setSearchedRow}
+			<div className="mb-4 flex items-center justify-between">
+				<StoryDetails
+					titleClassname="text-xl"
+					imageSize={60}
+					editable={isWriter}
 				/>
+				<div className="flex gap-2">
+					<Filters
+						disabled={!isWriter}
+						table={table}
+						totalEpisodes={data?.count}
+						setSearchedRow={setSearchedRow}
+					/>
+					<AuthWrapper role={ERole.ADMIN}>
+						<AdminManageProject />
+					</AuthWrapper>
+				</div>
 			</div>
-			<Table className="rounded-md border">
-				<TableHeader className="sticky top-14 z-10 bg-background">
+			<div className="flex gap-3"></div>
+			<Table className="rounded-md">
+				<TableHeader className="sticky top-14 z-10 bg-card">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header) => {
 								return (
-									<TableHead
-										key={header.id}
-										className="after:absolute after:bottom-0 after:left-0 after:w-full after:border-b after:border-border"
-									>
+									<TableHead key={header.id} className="">
 										<If condition={!header.isPlaceholder}>
 											<div
 												className={cn(
@@ -128,7 +141,10 @@ const EpisodesTable = () => {
 										<React.Fragment key={row.id}>
 											<TableRow
 												id={`row-${row.id}`}
-												className={cn({ selected: row.getIsSelected() })}
+												className={cn(
+													{ selected: row.getIsSelected() },
+													'data-row'
+												)}
 											>
 												{row.getVisibleCells().map((cell) => (
 													<TableCell

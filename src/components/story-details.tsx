@@ -3,12 +3,14 @@
 import React from 'react'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import AuthorTitle from '@/page-builders/episodes/author'
+import StoryTitle from '@/page-builders/episodes/story-title'
 
 import Image from '@/components/ui/image'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
 
 interface StoryDetailsProps {
+	editable?: boolean
 	handleClick?: () => void
 	hideAuthor?: boolean
 	imageClassname?: string
@@ -21,6 +23,7 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 	imageClassname,
 	imageSize = 80,
 	hideAuthor,
+	editable = false,
 	handleClick = () => {},
 }) => {
 	const { initialStoryData: storyData } = useEpisodeTableContext()
@@ -40,9 +43,11 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 				/>
 			</div>
 			<div>
-				<h1 className={cn('text-3xl font-bold', titleClassname)}>
-					{storyData?.project_title}
-				</h1>
+				<StoryTitle
+					isEditable={editable}
+					text={storyData?.project_title || ''}
+					textClass={cn('text-3xl font-bold', titleClassname)}
+				/>
 				{!hideAuthor && <AuthorTitle />}
 			</div>
 		</div>

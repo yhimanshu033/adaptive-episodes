@@ -16,7 +16,7 @@ const Hero = async () => {
 				height={300}
 				unoptimized
 			/>
-			<h1 className="font-display text-center text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
+			<h1 className="text-center font-display text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
 				{dict('title')}
 			</h1>
 			<p className="max-w-[700px] text-center text-xl font-light opacity-80 md:text-2xl">

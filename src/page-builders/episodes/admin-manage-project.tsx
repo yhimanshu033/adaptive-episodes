@@ -2,7 +2,9 @@ import React from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import useIsGerman from '@/hooks/use-is-german'
+import { Settings } from 'lucide-react'
 
+import { TooltipComponent } from '@/components/ui/tooltip-component'
 import useProjectId from '@/providers/project-id-provider'
 import { buttonVariants, cn } from '@/lib/utils/helpers'
 
@@ -15,12 +17,14 @@ const AdminManageProject = () => {
 		return null
 	}
 	return (
-		<Link
-			className={cn(buttonVariants({ variant: 'outline' }))}
-			href={`/projects/${id as string}/manage-project`}
-		>
-			Manage Project
-		</Link>
+		<TooltipComponent side="bottom" tooltip="Manage Project">
+			<Link
+				className={cn(buttonVariants({ variant: 'outline', size: 'icon' }))}
+				href={`/projects/${id as string}/manage-project`}
+			>
+				<Settings />
+			</Link>
+		</TooltipComponent>
 	)
 }
 

@@ -240,12 +240,13 @@ export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
 export type TranslationProps = { translatedContent: string }
 
 export enum EEpisodeHeaderKeys {
+	ACTIONS = 'actions',
 	CHAPTER_TITLE = 'chapter_title',
-	DELETE = 'delete',
 	SELECT_COL = 'select-col',
 	SERIAL_NUMBER = 'serialNumber',
 	STATUS = 'status',
 	UPDATE_TIME = 'update_time',
+	WORD_COUNT = 'word_count',
 	WRITER = 'writer',
 }
 

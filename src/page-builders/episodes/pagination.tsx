@@ -1,28 +1,19 @@
 import React from 'react'
-import { usePageState } from '@/hooks/use-page-state'
 import EpisodesLimit from '@/page-builders/episodes/episodes-limit'
-import RenderPageButtons from '@/page-builders/episodes/render-page-btns'
+import PaginationButtons from '@/page-builders/episodes/pagination-buttons'
 
 const EpisodesPagination = ({ totalPages }: { totalPages: number }) => {
-	const { currentPage, setCurrentPage } = usePageState()
-
-	const handlePageChange = (page?: number) => {
-		void setCurrentPage(page ?? 0)
+	if (!totalPages) {
+		return null
 	}
 
 	return (
-		!!totalPages && (
-			<div className="mt-2 flex justify-between">
-				<div className="flex gap-2">
-					<RenderPageButtons
-						currentPage={currentPage}
-						handlePageChange={handlePageChange}
-						totalPages={totalPages}
-					/>
-				</div>
-				<EpisodesLimit />
+		<div className="mt-2 flex justify-between">
+			<EpisodesLimit />
+			<div className="flex gap-2">
+				<PaginationButtons totalPages={totalPages} />
 			</div>
-		)
+		</div>
 	)
 }
 

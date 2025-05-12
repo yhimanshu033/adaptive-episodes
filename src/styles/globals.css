@@ -2,8 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+	font-family: supply-sans;
+	src: url(/fonts/pp-supply-sans.otf);
+}
+
+@font-face {
+	font-family: lab-grotesque;
+	src: url(/fonts/lab-grotesque.ttf);
+}
+
 @layer base {
 	:root {
+		--font-body: lab-grotesque;
+		--font-display: supply-sans;
 		/* Background and Foreground */
 		--background: 0 0% 95%; /* Light, almost white */
 		--editor-background: 0 0% 100%; /* Pure white for editor */
@@ -30,9 +42,6 @@
 		/* Destructive */
 		--destructive: 0 70% 50%; /* Red for destructive actions */
 		--destructive-foreground: 0 0% 100%; /* White for contrast */
-
-		/* Success */
-		--success: 142, 71%, 45%; /* Green for success */
 
 		/* Borders, Inputs, Rings */
 		--border: 210 15% 70%; /* Darker gray for better contrast with background */
@@ -71,17 +80,17 @@
 		--font-impact: Impact, Charcoal, sans-serif;
 
 		/* Default Font */
-		--font-default: 'Inter', 'Inter Fallback'; /* CHECK WITH LAYOUT.TSX */
+		/* --font-default: 'Inter', 'Inter Fallback'; CHECK WITH LAYOUT.TSX */
 	}
 
 	.dark {
 		/* Dark theme remains largely the same */
-		--background: 222.2 24% 9%; /* Dark background */
+		--background: 0 0% 0%; /* Dark background */
 		--editor-background: 222.2 24% 14%; /* Slightly lighter than body */
 		--foreground: 0 0% 100%; /* White text */
 
 		/* Cards and Popover */
-		--card: 222.2 24% 15%; /* Slightly lighter than background */
+		--card: 0 0% 4%; /* Slightly lighter than background */
 		--card-foreground: 0 0% 90%; /* Light gray text */
 		--popover: 222.2 24% 15%; /* Matches card background */
 		--popover-foreground: 0 0% 90%; /* Consistent with card text */

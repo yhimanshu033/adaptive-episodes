@@ -10,7 +10,7 @@ import { usePageState } from '@/hooks/use-page-state'
 import useParentLanguage from '@/hooks/use-parent-language'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/multi-ep-localize-dialog'
 import { Table } from '@tanstack/react-table'
-import { Languages, Merge, Replace, Search, Split } from 'lucide-react'
+import { Languages, Merge, Replace, Split } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -132,57 +132,60 @@ const Filters = ({
 						render={({ field }) => (
 							<FormItem className="flex-1">
 								<FormControl>
-									<Input placeholder="Search Episode" {...field} />
+									<Input
+										placeholder="Search Episode"
+										{...field}
+										className="min-w-96"
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
 						)}
 					/>
-					<Button tooltip="Search" size="icon">
-						<Search size={16} />
-					</Button>
 				</form>
 			</Form>
-			<If condition={language !== ELanguage.GERMAN_ORIGINAL}>
-				<Button
-					disabled={disabled || selectedRowData.length < 1}
-					onClick={() => {
-						if (adaptationData.length === 0) {
-							setSelectedRowData(selectedRowData)
-						}
-						setOpen(true)
-					}}
-					size="icon"
-					tooltip="Adapt episodes"
-				>
-					<Languages size={16} />
-				</Button>
-			</If>
-			<MultiEpLocalizeDialog
-				url={url}
-				size="icon"
-				disabled={disabled || Object.keys(selectedRowData).length <= 1}
-				tooltip="Localize episodes"
-			>
-				<Replace size={16} />
-			</MultiEpLocalizeDialog>
-			<If condition={!language || language === ELanguage.GERMAN_ORIGINAL}>
-				<Button
+			<If condition={!disabled}>
+				<If condition={language !== ELanguage.GERMAN_ORIGINAL}>
+					<Button
+						disabled={disabled || selectedRowData.length < 1}
+						onClick={() => {
+							if (adaptationData.length === 0) {
+								setSelectedRowData(selectedRowData)
+							}
+							setOpen(true)
+						}}
+						size="icon"
+						tooltip="Adapt episodes"
+					>
+						<Languages size={16} />
+					</Button>
+				</If>
+				<MultiEpLocalizeDialog
+					url={url}
 					size="icon"
 					disabled={disabled || Object.keys(selectedRowData).length <= 1}
-					onClick={() => handleMerge(selectedRowData)}
-					tooltip="Merge episodes"
+					tooltip="Localize episodes"
 				>
-					<Merge size={16} />
-				</Button>
-				<Button
-					size="icon"
-					disabled={disabled || selectedRowData.length !== 1}
-					onClick={() => handleUnmerge(selectedRowModel)}
-					tooltip="Unmerge episodes"
-				>
-					<Split size={16} />
-				</Button>
+					<Replace size={16} />
+				</MultiEpLocalizeDialog>
+				<If condition={!language || language === ELanguage.GERMAN_ORIGINAL}>
+					<Button
+						size="icon"
+						disabled={disabled || Object.keys(selectedRowData).length <= 1}
+						onClick={() => handleMerge(selectedRowData)}
+						tooltip="Merge episodes"
+					>
+						<Merge size={16} />
+					</Button>
+					<Button
+						size="icon"
+						disabled={disabled || selectedRowData.length !== 1}
+						onClick={() => handleUnmerge(selectedRowModel)}
+						tooltip="Unmerge episodes"
+					>
+						<Split size={16} />
+					</Button>
+				</If>
 			</If>
 		</>
 	)
