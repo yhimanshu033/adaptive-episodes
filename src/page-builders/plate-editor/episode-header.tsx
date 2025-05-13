@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
-import EpisodeButton from '@/page-builders/plate-editor/episode-button'
-import SaveEpisode from '@/page-builders/plate-editor/save-episode'
+import EpisodeButton from '@/page-builders/plate-editor/buttons/episode-button'
+import HomeButton from '@/page-builders/plate-editor/buttons/home-button'
+import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
+import Versions from '@/page-builders/plate-editor/buttons/versions'
 import SplitButton from '@/page-builders/plate-editor/split-editor/split-button'
 import Title from '@/page-builders/plate-editor/title'
-import Versions from '@/page-builders/plate-editor/versions'
 import useEditorExtendedStore from '@/store/extended-store'
 
 import AuthWrapper from '@/components/auth-wrapper'
@@ -52,12 +53,9 @@ const EpisodeHeader = ({
 	}
 
 	return (
-		<div className="flex animate-fade-in-up items-center justify-between">
+		<div className="-my-4 flex animate-fade-in-up items-center justify-between border-l py-4 pl-10">
 			<div className="flex items-center gap-2">
-				<EpisodeButton
-					direction="previous"
-					episodeId={content?.previous_parent_id}
-				/>
+				<HomeButton />
 				<Title
 					chapterId={String(content?.chapter?.id)}
 					memberId={String(content?.chapter?.writer)}

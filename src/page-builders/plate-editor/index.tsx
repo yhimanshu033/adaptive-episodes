@@ -11,21 +11,16 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useShallow } from 'zustand/react/shallow'
 
 import { If } from '@/components/if-else'
-import ProjectHeader from '@/components/project-header'
 
 const EpisodePlateEditor = () => {
 	const { store: extendStore } = useEditorExtendedStore()
 	const extended = extendStore(useShallow((state) => state.extended))
-	const episodeMap = extendStore(useShallow((state) => state.episodeMap))
 	const searchParams = useSearchParams()
 	const globalLocalize = searchParams.get(GLOBAL_LOCALIZE)
 
 	return (
 		<main className="flex flex-1 flex-col">
 			<DndProvider backend={HTML5Backend}>
-				<ProjectHeader
-					initialSeqNumber={episodeMap[extended[0]]?.chapter?.seq_number}
-				/>
 				<div className="flex">
 					<div className="relative w-full">
 						{extended.map((episodeId) => (

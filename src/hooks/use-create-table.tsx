@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
+import useParentLanguage from '@/hooks/use-parent-language'
 import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
 import { HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
 import {
@@ -57,6 +58,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		useEpisodeTable()
 
 	const { isWriter } = useProjectId()
+	const language = useParentLanguage()
 
 	const handleRowSelection = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -111,6 +113,69 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 					</DropdownMenuContent>
 				</DropdownMenu>
 			),
+		},
+	]
+
+	const languageDependentColumns: ColumnDef<TEpisode>[] = [
+		{
+			accessorKey: EEpisodeHeaderKeys.STATUS,
+			header: 'Status',
+			cell: ({ row, table }) => {
+				const isSelected = !!rowSelection[row.id]
+				const latestStatus: EStatus =
+					row.getValue('status') === BASE_STATUS
+						? EStatus.FIRST_DRAFT
+						: row.getValue('status')
+				const latestIndex = statuses.indexOf(latestStatus)
+
+				if (
+					row.original.language &&
+					row.original.language !== ELanguage.GERMAN_ORIGINAL
+				) {
+					return null
+				}
+				if (row.depth) {
+					return latestStatus
+				}
+				return (
+					<Select
+						value={latestStatus}
+						onValueChange={(value) =>
+							handleStatusChange(row.original, value as EStatus, table)
+						}
+						disabled={!isSelected && Object.keys(rowSelection).length > 0}
+					>
+						<SelectTrigger disabled={!isWriter} className="w-36">
+							<SelectValue>{titleToStatus[latestStatus]}</SelectValue>
+						</SelectTrigger>
+						<SelectContent>
+							{statuses.map((status, index) => (
+								<SelectItem
+									disabled={index < latestIndex || index > latestIndex + 1}
+									key={status}
+									value={status}
+								>
+									{titleToStatus[status]}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				)
+			},
+		},
+		{
+			accessorKey: EEpisodeHeaderKeys.WRITER,
+			header: 'Writer',
+			cell: ({ row }) =>
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				!row.depth ? (
+					<WriterCombobox
+						chapterId={String(row.original.id)}
+						selectedMemberId={String(row.original.writer || '')}
+					/>
+				) : (
+					row.getValue('writer') || 'Anonymous'
+				),
 		},
 	]
 
@@ -205,66 +270,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				</div>
 			),
 		},
-		{
-			accessorKey: EEpisodeHeaderKeys.STATUS,
-			header: 'Status',
-			cell: ({ row, table }) => {
-				const isSelected = !!rowSelection[row.id]
-				const latestStatus: EStatus =
-					row.getValue('status') === BASE_STATUS
-						? EStatus.FIRST_DRAFT
-						: row.getValue('status')
-				const latestIndex = statuses.indexOf(latestStatus)
-
-				if (
-					row.original.language &&
-					row.original.language !== ELanguage.GERMAN_ORIGINAL
-				) {
-					return null
-				}
-				if (row.depth) {
-					return latestStatus
-				}
-				return (
-					<Select
-						value={latestStatus}
-						onValueChange={(value) =>
-							handleStatusChange(row.original, value as EStatus, table)
-						}
-						disabled={!isSelected && Object.keys(rowSelection).length > 0}
-					>
-						<SelectTrigger disabled={!isWriter} className="w-36">
-							<SelectValue>{titleToStatus[latestStatus]}</SelectValue>
-						</SelectTrigger>
-						<SelectContent>
-							{statuses.map((status, index) => (
-								<SelectItem
-									disabled={index < latestIndex || index > latestIndex + 1}
-									key={status}
-									value={status}
-								>
-									{titleToStatus[status]}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				)
-			},
-		},
-		{
-			accessorKey: EEpisodeHeaderKeys.WRITER,
-			header: 'Writer',
-			cell: ({ row }) =>
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-				!row.depth ? (
-					<WriterCombobox
-						chapterId={String(row.original.id)}
-						selectedMemberId={String(row.original.writer || '')}
-					/>
-				) : (
-					row.getValue('writer') || 'Anonymous'
-				),
-		},
+		...(language === ELanguage.GERMAN_ORIGINAL ? languageDependentColumns : []),
 		{
 			accessorKey: EEpisodeHeaderKeys.UPDATE_TIME,
 			header: 'Last Updated',

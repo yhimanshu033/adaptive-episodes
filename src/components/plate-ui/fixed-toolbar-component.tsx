@@ -32,7 +32,9 @@ export default function FixedToolbarComponent({
 				className
 			)}
 		>
-			<FixedToolbar className={cn({ 'rounded-2xl': plateFocusMode })}>
+			<FixedToolbar
+				className={cn(plateFocusMode ? 'rounded-2xl' : 'rounded-none py-2')}
+			>
 				<FixedToolbarButtons {...{ simplified }} />
 			</FixedToolbar>
 		</div>

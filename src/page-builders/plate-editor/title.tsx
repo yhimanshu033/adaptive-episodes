@@ -47,7 +47,7 @@ const Title = ({
 				</If>
 
 				<div className="flex items-center gap-2">
-					<p className="text-xl">{episodeContent?.chapter.seq_number}.</p>
+					<p className="text-xl">E{episodeContent?.chapter.seq_number}.</p>
 					<EditableText
 						key={episodeContent?.chapter.chapter_title}
 						text={episodeContent?.chapter.chapter_title || ''}

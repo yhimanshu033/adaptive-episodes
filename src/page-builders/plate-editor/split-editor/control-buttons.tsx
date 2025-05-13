@@ -6,7 +6,7 @@ import useEditorExtendedStore from '@/store/extended-store'
 import { Separator } from '@/components/ui/separator'
 import useEpisodeId from '@/providers/episode-id-provider'
 
-import EpisodeButton from '../episode-button'
+import EpisodeButton from '../buttons/episode-button'
 
 export default function ControlButtons() {
 	const { store: extendStore, updateExtended } = useEditorExtendedStore()

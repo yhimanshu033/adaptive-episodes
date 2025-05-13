@@ -10,6 +10,7 @@ import useMyEditor from '@/hooks/use-my-editor'
 import { SavingContextProvider } from '@/hooks/use-saving'
 import DualView from '@/page-builders/plate-editor/dual-view'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
+import EpisodeNavigation from '@/page-builders/plate-editor/episode-navigation'
 import FocusEditorWrapper from '@/page-builders/plate-editor/focus-mode/editor-wrapper'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import ControlButtons from '@/page-builders/plate-editor/split-editor/control-buttons'
@@ -61,58 +62,67 @@ export default function PlateEditor() {
 					<FocusEditorWrapper>
 						<div className="container p-4">
 							<EditorOverlayLoader />
-							<EpisodeHeader {...{ content, isChildEpisode, latestStatus }} />
-							<div
-								ref={containerRef}
-								className={cn(
-									'relative mt-4 animate-fade-in-up rounded',
-									// Block selection
-									'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
-								)}
-							>
-								<FixedToolbarComponent />
-								<ResizablePanelGroup
-									direction="horizontal"
-									className="flex size-full !overflow-visible"
-								>
-									<ResizablePanel
-										minSize={30}
-										order={1}
-										className="w-full flex-1"
+							<div className="flex">
+								<EpisodeNavigation />
+								<div>
+									<EpisodeHeader
+										{...{ content, isChildEpisode, latestStatus }}
+									/>
+									<div
+										ref={containerRef}
+										className={cn(
+											'relative mt-4 animate-fade-in-up',
+											// Block selection
+											'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
+										)}
 									>
+										<FixedToolbarComponent />
 										<ResizablePanelGroup
 											direction="horizontal"
-											className="flex h-full"
+											className="flex size-full !overflow-visible"
 										>
 											<ResizablePanel
 												minSize={30}
 												order={1}
-												className="flex w-full"
+												className="w-full flex-1"
 											>
-												<Editor
-													className="size-full rounded-none"
-													autoFocus
-													readOnly={!!simplifiedEditor}
-													focusRing={false}
-													variant="ghost"
-													size="md"
-												/>
+												<ResizablePanelGroup
+													direction="horizontal"
+													className="flex h-full"
+												>
+													<ResizablePanel
+														minSize={30}
+														order={1}
+														className="flex w-full"
+													>
+														<Editor
+															className="size-full rounded-none"
+															autoFocus
+															readOnly={!!simplifiedEditor}
+															focusRing={false}
+															variant="ghost"
+															size="md"
+														/>
 
-												<FloatingToolbar>
-													<FloatingToolbarButtons />
-												</FloatingToolbar>
+														<FloatingToolbar>
+															<FloatingToolbarButtons />
+														</FloatingToolbar>
 
-												<CursorOverlay containerRef={containerRef} />
+														<CursorOverlay containerRef={containerRef} />
+													</ResizablePanel>
+													<DualView
+														translatedContent={content.translation_text}
+													/>
+												</ResizablePanelGroup>
 											</ResizablePanel>
-											<DualView translatedContent={content.translation_text} />
+											<Sidebar />
 										</ResizablePanelGroup>
-									</ResizablePanel>
-									<Sidebar />
-								</ResizablePanelGroup>
+									</div>
+									<ControlButtons />
+									<FloatingPrompt />
+									<FloatingLaserResponse />
+								</div>
 							</div>
-							<ControlButtons />
-							<FloatingPrompt />
-							<FloatingLaserResponse />
 						</div>
 					</FocusEditorWrapper>
 				</ChatbotProvider>
