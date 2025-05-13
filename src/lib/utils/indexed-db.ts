@@ -52,8 +52,12 @@ export const resetDB = async () => {
 const clearDB = (db: IDBDatabase) => {
 	try {
 		STORES.forEach((store) => {
-			const tnx = db.transaction(store, 'readwrite').objectStore(store)
-			tnx.clear()
+			if (db.objectStoreNames.contains(store)) {
+				const tnx = db.transaction(store, 'readwrite').objectStore(store)
+				tnx.clear()
+			} else {
+				db.createObjectStore(store)
+			}
 		})
 	} catch (error) {
 		console.log(error)
