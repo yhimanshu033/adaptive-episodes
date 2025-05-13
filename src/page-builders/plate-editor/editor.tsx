@@ -60,7 +60,7 @@ export default function PlateEditor() {
 			<SavingContextProvider data={content} initialForceSave={imported}>
 				<ChatbotProvider episodeContent={content}>
 					<FocusEditorWrapper>
-						<div className="container p-4">
+						<div className="container px-4">
 							<EditorOverlayLoader />
 							<div className="flex">
 								<EpisodeNavigation />
@@ -71,7 +71,7 @@ export default function PlateEditor() {
 									<div
 										ref={containerRef}
 										className={cn(
-											'relative mt-4 animate-fade-in-up',
+											'relative animate-fade-in-up',
 											// Block selection
 											'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 										)}

@@ -1,31 +1,19 @@
 import React from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { SAVE_EPISODE_BUTTON_ID } from '@/constants/editor-constants'
+import { useParams } from 'next/navigation'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
-import useEditorExtendedStore from '@/store/extended-store'
-import { useQueryClient } from '@tanstack/react-query'
+import useExtendedSaving from '@/hooks/use-extended-saving'
 import { Home } from 'lucide-react'
-import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/ui/button'
 
 export default function HomeButton() {
-	const { store } = useEditorExtendedStore()
-	const extendedEpisodeIds = store(useShallow((state) => state.extended))
-	const router = useRouter()
-	const queryClient = useQueryClient()
 	const { id } = useParams()
+	const { handleExitBySaving } = useExtendedSaving()
 
 	const handleClick = async () => {
-		extendedEpisodeIds.forEach((episodeId) => {
-			const saveButtonElement = document.getElementById(
-				`${SAVE_EPISODE_BUTTON_ID}-${episodeId}`
-			)
-			saveButtonElement?.click()
-		})
-		router.replace(`/projects/${String(id)}`)
-		await queryClient.invalidateQueries({
-			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
+		await handleExitBySaving({
+			route: `/projects/${String(id)}`,
+			invalidate: [[EPISODE_LIST_QUERY_KEY, Number(id)]],
 		})
 	}
 

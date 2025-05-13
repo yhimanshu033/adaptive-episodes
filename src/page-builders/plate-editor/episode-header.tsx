@@ -53,7 +53,7 @@ const EpisodeHeader = ({
 	}
 
 	return (
-		<div className="-my-4 flex animate-fade-in-up items-center justify-between border-l py-4 pl-10">
+		<div className="flex animate-fade-in-up items-center justify-between border-l py-4 pl-10">
 			<div className="flex items-center gap-2">
 				<HomeButton />
 				<Title

@@ -136,10 +136,10 @@ const EpisodesTable = () => {
 										<React.Fragment key={row.id}>
 											<TableRow
 												id={`row-${row.id}`}
-												className={cn(
-													{ selected: row.getIsSelected() },
-													'data-row'
-												)}
+												className={cn({
+													selected: row.getIsSelected(),
+													'bg-card': rowIndex % 2,
+												})}
 											>
 												{row.getVisibleCells().map((cell) => (
 													<TableCell
@@ -163,6 +163,7 @@ const EpisodesTable = () => {
 													<TableCell className="relative p-0">
 														<Button
 															title="Invent episode"
+															tooltip="Invent episode"
 															className="absolute z-10 h-auto -translate-y-1/2 rounded-full bg-primary p-1"
 															disabled={!isWriter}
 															onClick={() => {

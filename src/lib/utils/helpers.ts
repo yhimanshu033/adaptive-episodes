@@ -1,5 +1,9 @@
 import { NextRequest } from 'next/server'
 import {
+	DEFAULT_INITIAL_PAGE,
+	DEFAULT_NAVIGATION_PAGE_LIMIT,
+} from '@/constants/editor-constants'
+import {
 	PRIMARY_KEYS_TO_COMPARE,
 	prioritizedStatuses,
 	PROPS_KEYS_TO_COMPARE,
@@ -671,4 +675,14 @@ export function isInvalidLSMapping(data: LSMappingOutput['ls_mapping']) {
 
 export function isInternalUser(session: Session | null) {
 	return !!session && session.user.email.includes('@pocketfm')
+}
+
+export function getPageFromEpisode(
+	episode: TEpisode | null | undefined,
+	limit = DEFAULT_NAVIGATION_PAGE_LIMIT
+) {
+	if (!episode) {
+		return DEFAULT_INITIAL_PAGE
+	}
+	return Math.ceil(episode?.seq_number / limit)
 }

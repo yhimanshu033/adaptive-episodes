@@ -1,14 +1,16 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import { useDebouncedObserver } from '@/hooks/use-debounced-observer'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import {
+	GetNextPageParamFunction,
+	GetPreviousPageParamFunction,
+	useInfiniteQuery,
+} from '@tanstack/react-query'
 
 export type PaginationParams = { pageSize?: number; searchPage?: number }
 
 export type UsePaginatedAPIArgs<ResponseT = unknown> = {
-	getNextPage: (
-		lastPage: ResponseT,
-		allPages: ResponseT[]
-	) => number | undefined
+	getNextPageParam: GetNextPageParamFunction<number, ResponseT>
+	getPreviousPageParam?: GetPreviousPageParamFunction<number, ResponseT>
 	initialPage?: number
 	queryFn: (pageParam: number) => Promise<ResponseT>
 	queryKey: (pageParam: number) => unknown[]
@@ -33,22 +35,26 @@ export const usePaginatedAPI = <ResponseT = unknown,>({
 	queryKey,
 	queryFn,
 	initialPage = 1,
-	getNextPage,
+	getNextPageParam,
+	getPreviousPageParam,
 }: UsePaginatedAPIArgs<ResponseT>): UsePaginatedAPIRet<ResponseT> => {
 	const {
 		data,
 		fetchNextPage,
 		hasNextPage: canFetchNext,
+		hasPreviousPage: canFetchPrev,
+		fetchPreviousPage,
+		isFetchingPreviousPage,
 		isFetchingNextPage,
 		refetch,
 	} = useInfiniteQuery({
 		queryKey: queryKey(initialPage),
 		queryFn: async ({ pageParam = initialPage }) => queryFn(pageParam),
-		getNextPageParam: (lastPage, allPages) => getNextPage(lastPage, allPages),
+		getNextPageParam,
+		getPreviousPageParam,
 		initialPageParam: initialPage,
 	})
 
-	console.log({ data, canFetchNext })
 	const reset = useCallback(() => {
 		void refetch()
 	}, [refetch])
@@ -63,10 +69,12 @@ export const usePaginatedAPI = <ResponseT = unknown,>({
 		children?: React.ReactNode
 		skeleton?: React.ReactNode
 	} & React.HTMLAttributes<HTMLDivElement>) => {
-		const observerRef = useRef<IntersectionObserver | null>(null)
+		const bottomObserverRef = useRef<IntersectionObserver | null>(null)
+		const topObserverRef = useRef<IntersectionObserver | null>(null)
 		const bottomRef = useRef<HTMLDivElement | null>(null)
+		const topRef = useRef<HTMLDivElement | null>(null)
 
-		const handleObserver = useCallback(
+		const handleBottomObserver = useCallback(
 			(entries: IntersectionObserverEntry[]) => {
 				const [entry] = entries
 				if (entry.isIntersecting && canFetchNext) {
@@ -76,28 +84,65 @@ export const usePaginatedAPI = <ResponseT = unknown,>({
 			[]
 		)
 
-		const debouncedObserver = useDebouncedObserver(handleObserver, 500)
+		const handleTopObserver = useCallback(
+			(entries: IntersectionObserverEntry[]) => {
+				const [entry] = entries
+				if (entry.isIntersecting && canFetchPrev) {
+					void fetchPreviousPage()
+				}
+			},
+			[]
+		)
+
+		const bottomDebouncedObserver = useDebouncedObserver(
+			handleBottomObserver,
+			500
+		)
+		const topDebouncedObserver = useDebouncedObserver(handleTopObserver, 500)
 
 		useEffect(() => {
-			if (observerRef.current) {
-				observerRef.current.disconnect()
+			if (bottomObserverRef.current) {
+				bottomObserverRef.current.disconnect()
 			}
 
-			observerRef.current = new IntersectionObserver(debouncedObserver, {
+			bottomObserverRef.current = new IntersectionObserver(
+				bottomDebouncedObserver,
+				{
+					root: null,
+					rootMargin: '100px',
+					threshold: 1.0,
+				}
+			)
+
+			if (bottomRef.current) {
+				bottomObserverRef.current.observe(bottomRef.current)
+			}
+
+			return () => bottomObserverRef.current?.disconnect()
+		}, [bottomDebouncedObserver])
+
+		useEffect(() => {
+			if (topObserverRef.current) {
+				topObserverRef.current.disconnect()
+			}
+
+			topObserverRef.current = new IntersectionObserver(topDebouncedObserver, {
 				root: null,
 				rootMargin: '100px',
 				threshold: 1.0,
 			})
 
-			if (bottomRef.current) {
-				observerRef.current.observe(bottomRef.current)
+			if (topRef.current) {
+				topObserverRef.current.observe(topRef.current)
 			}
 
-			return () => observerRef.current?.disconnect()
-		}, [debouncedObserver])
+			return () => topObserverRef.current?.disconnect()
+		}, [topDebouncedObserver])
 
 		return (
 			<div {...props}>
+				<div ref={topRef} className="invisible h-0.5" />
+				{isFetchingPreviousPage && skeleton}
 				{children}
 				{isFetchingNextPage && skeleton}
 				<div ref={bottomRef} className="invisible h-0.5" />

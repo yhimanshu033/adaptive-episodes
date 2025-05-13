@@ -152,7 +152,6 @@ export function ImportStory() {
 		}
 	}
 
-	console.log({ step, storyType })
 	return (
 		<div className="overflow-y-auto py-2">
 			<If condition={storyUploadMutation.isPending}>
