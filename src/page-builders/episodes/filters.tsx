@@ -104,8 +104,10 @@ const Filters = ({
 	})
 
 	const url = useMemo(() => {
-		const episodeId = selectedRowData[0]?.id
-		const extended = selectedRowData.map((episode) => episode.id).join(',')
+		const episodeId = selectedRowData[0]?.parent || selectedRowData[0]?.id
+		const extended = selectedRowData
+			.map((episode) => episode.parent || episode.id)
+			.join(',')
 
 		return `/projects/${String(id)}/${episodeId}/editor?extend=${extended}&${SIMPLIFIED_VIEWABLE_EDITOR}=true&${GLOBAL_LOCALIZE}=true&${HIDE_HEADER}=true`
 	}, [selectedRowData, id])
