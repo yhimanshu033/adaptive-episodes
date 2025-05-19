@@ -3,10 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { INITIAL_FAR_OPTIONS } from '@/constants/ai-constants'
-import {
-	farSearchModes,
-	SAVE_EPISODE_BUTTON_ID,
-} from '@/constants/editor-constants'
+import { farSearchModes } from '@/constants/editor-constants'
 import useLocalizeHook from '@/hooks/mutation/use-localize-hook'
 import useEditorExtendedStore from '@/store/extended-store'
 import { Value } from '@udecode/plate'
@@ -43,9 +40,6 @@ function useGlobalFindAndReplaceUtil() {
 
 	const [ptr, setPtr] = useState(0)
 	const { store: useExtendedStore } = useEditorExtendedStore()
-	const extendedEpisodeIds = useExtendedStore(
-		useShallow((state) => state.extended)
-	)
 	const contentMap = useExtendedStore(
 		useShallow((state) => state.episodeContentMap)
 	)
@@ -84,17 +78,6 @@ function useGlobalFindAndReplaceUtil() {
 			}),
 		[wholeWord, genitive, search, caseSensitive]
 	)
-
-	const triggerSave = useCallback(() => {
-		setTimeout(() => {
-			extendedEpisodeIds.forEach((episodeId) => {
-				const saveButtonElement = document.getElementById(
-					`${SAVE_EPISODE_BUTTON_ID}-${episodeId}`
-				)
-				saveButtonElement?.click()
-			})
-		}, 200)
-	}, [extendedEpisodeIds])
 
 	const getRecords = useCallback(
 		(children: Value) =>
@@ -174,10 +157,8 @@ function useGlobalFindAndReplaceUtil() {
 		)
 
 		setReplacedContentMap(replacedContent)
-		triggerSave()
 	}, [
 		search,
-		triggerSave,
 		replaceEnabled,
 		wholeWord,
 		genitive,
@@ -194,16 +175,7 @@ function useGlobalFindAndReplaceUtil() {
 			...prev,
 			[episodeId]: { children: updatedChildren },
 		}))
-		triggerSave()
-	}, [
-		ptr,
-		records,
-		replace,
-		search,
-		contentMap,
-		setReplacedContentMap,
-		triggerSave,
-	])
+	}, [ptr, records, replace, search, contentMap, setReplacedContentMap])
 
 	function handlePrev() {
 		setPtr(ptr > 0 ? ptr - 1 : ptr)
