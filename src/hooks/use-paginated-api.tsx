@@ -9,6 +9,7 @@ import {
 export type PaginationParams = { pageSize?: number; searchPage?: number }
 
 export type UsePaginatedAPIArgs<ResponseT = unknown> = {
+	enabled?: boolean
 	getNextPageParam: GetNextPageParamFunction<number, ResponseT>
 	getPreviousPageParam?: GetPreviousPageParamFunction<number, ResponseT>
 	initialPage?: number
@@ -37,6 +38,7 @@ export const usePaginatedAPI = <ResponseT = unknown,>({
 	initialPage = 1,
 	getNextPageParam,
 	getPreviousPageParam,
+	enabled = true,
 }: UsePaginatedAPIArgs<ResponseT>): UsePaginatedAPIRet<ResponseT> => {
 	const {
 		data,
@@ -53,6 +55,7 @@ export const usePaginatedAPI = <ResponseT = unknown,>({
 		getNextPageParam,
 		getPreviousPageParam,
 		initialPageParam: initialPage,
+		enabled,
 	})
 
 	const reset = useCallback(() => {

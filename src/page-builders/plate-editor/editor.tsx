@@ -10,7 +10,6 @@ import useMyEditor from '@/hooks/use-my-editor'
 import { SavingContextProvider } from '@/hooks/use-saving'
 import DualView from '@/page-builders/plate-editor/dual-view'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
-import EpisodeNavigation from '@/page-builders/plate-editor/episode-navigation'
 import FocusEditorWrapper from '@/page-builders/plate-editor/focus-mode/editor-wrapper'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import ControlButtons from '@/page-builders/plate-editor/split-editor/control-buttons'
@@ -60,69 +59,60 @@ export default function PlateEditor() {
 			<SavingContextProvider data={content} initialForceSave={imported}>
 				<ChatbotProvider episodeContent={content}>
 					<FocusEditorWrapper>
-						<div className="container px-4">
+						<div className="container pb-6 pl-0">
 							<EditorOverlayLoader />
-							<div className="flex">
-								<EpisodeNavigation />
-								<div>
-									<EpisodeHeader
-										{...{ content, isChildEpisode, latestStatus }}
-									/>
-									<div
-										ref={containerRef}
-										className={cn(
-											'relative animate-fade-in-up',
-											// Block selection
-											'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
-										)}
+							<EpisodeHeader {...{ content, isChildEpisode, latestStatus }} />
+							<div
+								ref={containerRef}
+								className={cn(
+									'relative animate-fade-in-up',
+									// Block selection
+									'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
+								)}
+							>
+								<FixedToolbarComponent />
+								<ResizablePanelGroup
+									direction="horizontal"
+									className="flex size-full !overflow-visible"
+								>
+									<ResizablePanel
+										minSize={30}
+										order={1}
+										className="w-full flex-1"
 									>
-										<FixedToolbarComponent />
 										<ResizablePanelGroup
 											direction="horizontal"
-											className="flex size-full !overflow-visible"
+											className="flex h-full"
 										>
 											<ResizablePanel
 												minSize={30}
 												order={1}
-												className="w-full flex-1"
+												className="flex w-full"
 											>
-												<ResizablePanelGroup
-													direction="horizontal"
-													className="flex h-full"
-												>
-													<ResizablePanel
-														minSize={30}
-														order={1}
-														className="flex w-full"
-													>
-														<Editor
-															className="size-full rounded-none"
-															autoFocus
-															readOnly={!!simplifiedEditor}
-															focusRing={false}
-															variant="ghost"
-															size="md"
-														/>
+												<Editor
+													className="size-full rounded-none"
+													autoFocus
+													readOnly={!!simplifiedEditor}
+													focusRing={false}
+													variant="ghost"
+													size="md"
+												/>
 
-														<FloatingToolbar>
-															<FloatingToolbarButtons />
-														</FloatingToolbar>
+												<FloatingToolbar>
+													<FloatingToolbarButtons />
+												</FloatingToolbar>
 
-														<CursorOverlay containerRef={containerRef} />
-													</ResizablePanel>
-													<DualView
-														translatedContent={content.translation_text}
-													/>
-												</ResizablePanelGroup>
+												<CursorOverlay containerRef={containerRef} />
 											</ResizablePanel>
-											<Sidebar />
+											<DualView translatedContent={content.translation_text} />
 										</ResizablePanelGroup>
-									</div>
-									<ControlButtons />
-									<FloatingPrompt />
-									<FloatingLaserResponse />
-								</div>
+									</ResizablePanel>
+									<Sidebar />
+								</ResizablePanelGroup>
 							</div>
+							<ControlButtons />
+							<FloatingPrompt />
+							<FloatingLaserResponse />
 						</div>
 					</FocusEditorWrapper>
 				</ChatbotProvider>

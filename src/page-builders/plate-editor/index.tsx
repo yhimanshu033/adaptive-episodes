@@ -3,6 +3,7 @@
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
 import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
+import EpisodeNavigation from '@/page-builders/plate-editor/episode-navigation'
 import GlobalLocalize from '@/page-builders/plate-editor/sidebar-sections/global-localize'
 import EditorChild from '@/page-builders/plate-editor/split-editor/editor-child'
 import useEditorExtendedStore from '@/store/extended-store'
@@ -22,6 +23,10 @@ const EpisodePlateEditor = () => {
 		<main className="flex flex-1 flex-col">
 			<DndProvider backend={HTML5Backend}>
 				<div className="flex">
+					<If condition={!globalLocalize}>
+						<EpisodeNavigation />
+					</If>
+
 					<div className="relative w-full">
 						{extended.map((episodeId) => (
 							<EditorChild key={episodeId} episodeId={episodeId} />

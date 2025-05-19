@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useInfiniteEpisodesData } from '@/hooks/query/use-episode-data'
 import useExtendedSaving from '@/hooks/use-extended-saving'
+import useEditorExtendedStore from '@/store/extended-store'
 import { Sidebar } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/ui/button'
 import ForEach from '@/components/ui/for-each'
@@ -19,10 +20,23 @@ export default function EpisodeNavigation() {
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
-	const { data: episodeData } = useEpisodeContent()
-	const { InfiniteScrollWithDebouncing, data } = useInfiniteEpisodesData(
-		getPageFromEpisode(episodeData?.chapter)
+	const { store: extendStore } = useEditorExtendedStore()
+	const extended = extendStore(useShallow((state) => state.extended))
+	const episodeMap = extendStore(useShallow((state) => state.episodeMap))
+
+	const firstEpisode = useMemo(
+		() => episodeMap?.[extended[0]],
+		[extended, episodeMap]
 	)
+
+	const page = useMemo(
+		() => getPageFromEpisode(firstEpisode?.chapter),
+		[firstEpisode]
+	)
+
+	const { InfiniteScrollWithDebouncing, data } = useInfiniteEpisodesData(page)
+
+	console.log({ firstEpisode, extended, episodeMap })
 
 	const { handleExitBySaving } = useExtendedSaving()
 	const { id } = useParams()
@@ -48,25 +62,28 @@ export default function EpisodeNavigation() {
 
 	useEffect(() => {
 		const elem = document.getElementById(
-			`ep-btn-${episodeData?.chapter?.seq_number}`
+			`ep-btn-${firstEpisode?.chapter?.seq_number}`
 		)
 		if (!openNavigation || !elem) {
 			return
 		}
 		elem.scrollIntoView({ behavior: 'smooth' })
-	}, [openNavigation, episodeData])
+	}, [openNavigation, firstEpisode])
 
 	const toggleOpenNavigation = useCallback(() => {
 		setOpenNavigation((p) => !p)
 	}, [setOpenNavigation])
 
-	if (simplifiedEditor) {
+	if (simplifiedEditor || !page) {
 		return null
 	}
 	return (
 		<div className="relative">
 			<Button
-				className="absolute -right-5 z-10 mt-4 rounded-full"
+				className={cn(
+					'absolute z-10 mt-4 rounded-full transition-all',
+					openNavigation ? '-right-5' : '-right-14'
+				)}
 				variant="outline"
 				size="icon"
 				onClick={toggleOpenNavigation}
@@ -95,7 +112,7 @@ export default function EpisodeNavigation() {
 										variant="ghost"
 										className={cn('h-auto justify-start py-4', {
 											'bg-primary/40':
-												item.seq_number === episodeData?.chapter?.seq_number,
+												item.seq_number === firstEpisode?.chapter?.seq_number,
 										})}
 										id={`ep-btn-${item.seq_number}`}
 										key={idx}

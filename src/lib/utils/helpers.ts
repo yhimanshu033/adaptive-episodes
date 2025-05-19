@@ -1,8 +1,5 @@
 import { NextRequest } from 'next/server'
-import {
-	DEFAULT_INITIAL_PAGE,
-	DEFAULT_NAVIGATION_PAGE_LIMIT,
-} from '@/constants/editor-constants'
+import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
 	prioritizedStatuses,
@@ -682,7 +679,7 @@ export function getPageFromEpisode(
 	limit = DEFAULT_NAVIGATION_PAGE_LIMIT
 ) {
 	if (!episode) {
-		return DEFAULT_INITIAL_PAGE
+		return null
 	}
-	return Math.ceil(episode?.seq_number / limit)
+	return Math.ceil(episode?.seq_number / limit) + 1
 }

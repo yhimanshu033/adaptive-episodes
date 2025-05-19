@@ -32,12 +32,14 @@ export const useEpisodesData = (
 	return query
 }
 
-export const useInfiniteEpisodesData = (page = DEFAULT_INITIAL_PAGE) => {
+export const useInfiniteEpisodesData = (
+	page: number | null = DEFAULT_INITIAL_PAGE
+) => {
 	const { id } = useParams()
 	const storyId = Number(id)
 
 	const query = usePaginatedAPI({
-		initialPage: page,
+		initialPage: page || DEFAULT_INITIAL_PAGE,
 		queryKey: () => [EPISODE_LIST_QUERY_KEY, storyId],
 		queryFn: (pageParam) =>
 			getEpisodes({
@@ -49,9 +51,10 @@ export const useInfiniteEpisodesData = (page = DEFAULT_INITIAL_PAGE) => {
 		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
 			return lastPage?.next ? lastPageParam + 1 : undefined
 		},
-		getPreviousPageParam: (firstPage, allPages, firstPageParam) => {
+		getPreviousPageParam: (_firstPage, _allPages, firstPageParam) => {
 			return firstPageParam <= 1 ? undefined : firstPageParam - 1
 		},
+		enabled: page !== null,
 	})
 
 	return query
