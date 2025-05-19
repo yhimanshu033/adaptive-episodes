@@ -122,7 +122,7 @@ export const SocketProvider = ({
 				...restParams,
 				query: {
 					task_id: taskId,
-					room_id: true,
+					room_id: String(session?.user.id),
 					...(params.query as QueryParamsT),
 				},
 			})
