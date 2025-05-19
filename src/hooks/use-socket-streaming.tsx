@@ -162,7 +162,7 @@ export const SocketStreamingProvider = ({
 				...rest,
 				query: {
 					task_id: taskId,
-					room_id: String(session?.user.id),
+					room_id: true,
 					...(params.query as QueryParamsT),
 				},
 			})
