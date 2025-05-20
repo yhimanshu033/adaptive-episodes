@@ -103,6 +103,7 @@ export const API_URLS = {
 	GET_SLACK_CHANNEL: '/project/:projectId/get-slack-channel-info/',
 	SEND_TASK_TO_ADAPTATION: '/project/send-task-to-adaptation',
 	GET_ADAPTATION_LS: '/project/:projectId/:language/get_ls_sheet',
+	GET_STORY_DETAILS: '/project/:storyId/get-project-details/',
 }
 
 export const INDEXED_DB_KEYS = {

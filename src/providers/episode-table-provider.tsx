@@ -1,8 +1,7 @@
 'use client'
 
-import React, { createContext, useContext, useMemo } from 'react'
-import { useParams } from 'next/navigation'
-import { useStoriesData } from '@/hooks/query/use-story-data'
+import React, { createContext, useContext } from 'react'
+import { useStoryIdData } from '@/hooks/query/use-story-data'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -24,17 +23,11 @@ const initialState: EpisodeStoreState = {
 function useEpisodeContextUtil() {
 	const useEpisodeStoreUtil = create(devtools(immer(() => initialState)))
 
-	const { id } = useParams()
-	const { data } = useStoriesData()
-
-	const initialStoryData = useMemo(
-		() => data?.find((story) => story.id === parseInt(id as string)),
-		[data, id]
-	)
+	const { data } = useStoryIdData()
 
 	return {
 		useEpisodeStoreUtil,
-		initialStoryData,
+		initialStoryData: data,
 	}
 }
 
