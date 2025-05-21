@@ -60,6 +60,7 @@ export function SavingContextProvider({
 		JSON.stringify(data?.chapter.props?.resolvedComments || [])
 	)
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
+	const [lastSaved, setLastSaved] = React.useState<Date>()
 
 	const { cleanedComments, cleanedCommentsRecord } = useMemo(
 		() => getUniqueAllComments(children, allComments),
@@ -149,7 +150,7 @@ export function SavingContextProvider({
 					})
 					status = EStatus.FIRST_DRAFT
 				}
-
+				setLastSaved(new Date())
 				await saveEpisodeMutation.mutateAsync({
 					status,
 					chapterId,
@@ -183,6 +184,7 @@ export function SavingContextProvider({
 			resolvedComments,
 			saveEpisodeMutation,
 			statusUpdateMutation,
+			setLastSaved,
 		]
 	)
 
@@ -293,6 +295,7 @@ export function SavingContextProvider({
 		isSaved,
 		isPending: saveEpisodeMutation.isPending,
 		setForceSave,
+		lastSaved,
 	}
 
 	return (

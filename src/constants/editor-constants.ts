@@ -48,10 +48,10 @@ export const SuggestionTypesMap: Record<SuggestionTypes, string> = {
 	replacement: 'Replace',
 }
 
-export const EditorModes = {
-	editing: 'editing',
-	suggesting: 'suggesting',
-	viewing: 'viewing',
+export enum EditorModes {
+	editing = 'editing',
+	suggesting = 'suggesting',
+	viewing = 'viewing',
 }
 
 export const MAIN_EDITOR_ID = 'main-editor'

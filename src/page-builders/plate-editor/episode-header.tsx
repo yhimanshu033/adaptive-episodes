@@ -1,20 +1,23 @@
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
-import EpisodeButton from '@/page-builders/plate-editor/buttons/episode-button'
 import HomeButton from '@/page-builders/plate-editor/buttons/home-button'
 import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
 import Versions from '@/page-builders/plate-editor/buttons/versions'
 import Title from '@/page-builders/plate-editor/title'
 
 import AuthWrapper from '@/components/auth-wrapper'
+import { Icons } from '@/components/icons'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import Languages from '@/components/plate-ui/languages'
+import { ModeDropdown } from '@/components/plate-ui/mode-dropdown'
 import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
+import { SidebarToggleButton } from '@/components/plate-ui/sidebar-toggle-button'
 
 import { ERole } from '@/types/admin-types'
 import { EStatus } from '@/types/common'
 import { TGetEpisodeResponse } from '@/types/episode-type'
+import { ESidebar } from '@/types/plate-types'
 
 const EpisodeHeader = ({
 	content,
@@ -25,18 +28,8 @@ const EpisodeHeader = ({
 	isChildEpisode: boolean
 	latestStatus: EStatus | 'BASE'
 }) => {
-	// UNCOMMENT IF WE ENABLE SPLIT EDITOR
-	// const { store: extendStore } = useEditorExtendedStore()
-	// const { extended } = extendStore()
-	// const episodeId = useEpisodeId()
-
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
-
-	// const isFirst = useMemo(
-	// 	() => episodeId === extended[0],
-	// 	[episodeId, extended]
-	// )
 
 	if (simplifiedEditor) {
 		return (
@@ -59,17 +52,13 @@ const EpisodeHeader = ({
 				/>
 			</div>
 			<div className="flex items-center gap-2">
-				{/* UNCOMMENT IF WE ENABLE EPISODE EXTENSION AGAIN */}
-				{/* <If condition={isFirst}>
-					<SplitButton
-						tooltip="Previous Episode Extension"
-						className="px-2"
-						disabled={!content?.previous_parent_id}
-						onClick={() =>
-							updateExtended(Number(content?.previous_parent_id), 'prev')
-						}
-					/>
-				</If> */}
+				<SaveEpisode />
+				<SidebarToggleButton sidebar={ESidebar.COMMENTS} tooltip="Comments">
+					<Icons.comment />
+				</SidebarToggleButton>
+				<SidebarToggleButton sidebar={ESidebar.NOTES} tooltip="Notes">
+					<Icons.attachment />
+				</SidebarToggleButton>
 				<Languages />
 				<AuthWrapper role={ERole.WRITER}>
 					<Versions
@@ -79,8 +68,7 @@ const EpisodeHeader = ({
 					<DownloadDocxButton latestStatus={latestStatus} />
 					<UploadDocxButton latestStatus={latestStatus} />
 				</AuthWrapper>
-				<SaveEpisode />
-				<EpisodeButton direction="next" episodeId={content?.next_parent_id} />
+				<ModeDropdown />
 			</div>
 		</div>
 	)

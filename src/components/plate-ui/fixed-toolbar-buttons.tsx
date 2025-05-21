@@ -1,5 +1,4 @@
 import React from 'react'
-import ViewLS from '@/page-builders/episodes/info/view-ls'
 import usePlateStore from '@/store/plate-store'
 import {
 	BoldPlugin,
@@ -19,11 +18,9 @@ import IfElse, { Else, If } from '@/components/if-else'
 import { AlignDropdownMenu } from '@/components/plate-ui/align-dropdown-menu'
 import { ChatbotToolbarButton } from '@/components/plate-ui/chatbot-toggle-button'
 import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
-import { CommentToolbarButton } from '@/components/plate-ui/comment-toolbar-button'
 import { FontDropdownMenu } from '@/components/plate-ui/font-dropdown-menu'
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
 import { MarkToolbarButton } from '@/components/plate-ui/mark-toolbar-button'
-import { ModeDropdownMenu } from '@/components/plate-ui/mode-dropdown-menu'
 import { MoreDropdownMenu } from '@/components/plate-ui/more-dropdown-menu'
 import { ToolbarGroup } from '@/components/plate-ui/toolbar'
 import TranslationToggleButton from '@/components/plate-ui/translation-toggle-button'
@@ -136,15 +133,6 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 								<ChatbotToolbarButton />
 								<TtsToolbarButton />
 								<MoreDropdownMenu />
-							</ToolbarGroup>
-
-							<ToolbarGroup>
-								<CommentToolbarButton />
-								<ViewLS />
-							</ToolbarGroup>
-
-							<ToolbarGroup>
-								<ModeDropdownMenu />
 							</ToolbarGroup>
 						</div>
 					</Else>

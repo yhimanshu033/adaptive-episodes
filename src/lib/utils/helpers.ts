@@ -12,6 +12,7 @@ import { match } from '@formatjs/intl-localematcher'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
+import { formatDistanceToNow } from 'date-fns'
 import { jsonrepair } from 'jsonrepair'
 import Negotiator from 'negotiator'
 import { Session } from 'next-auth'
@@ -683,4 +684,9 @@ export function getPageFromEpisode(
 
 export function getQueryKeysFromObject(obj: Record<string, unknown>) {
 	return Object.values(obj).map(String)
+}
+
+export function formatRelativeTime(date: Date): string {
+	const distance = formatDistanceToNow(date, { addSuffix: true })
+	return distance === 'less than a minute ago' ? 'now' : distance
 }

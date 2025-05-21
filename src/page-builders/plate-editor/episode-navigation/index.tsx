@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import { useInfiniteEpisodesData } from '@/hooks/query/use-episode-data'
@@ -16,13 +16,16 @@ import { cn, getPageFromEpisode } from '@/lib/utils/helpers'
 import { TGetEpisodesResponse } from '@/types/episode-type'
 
 export default function EpisodeNavigation() {
-	const [openNavigation, setOpenNavigation] = useState(false)
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
-	const { store: extendStore } = useEditorExtendedStore()
+	const { store: extendStore, toggleEpisodeNavigationOpen } =
+		useEditorExtendedStore()
 	const extended = extendStore(useShallow((state) => state.extended))
 	const episodeMap = extendStore(useShallow((state) => state.episodeMap))
+	const episodeNavigationOpen = extendStore(
+		useShallow((state) => state.episodeNavigationOpen)
+	)
 
 	const firstEpisode = useMemo(
 		() => episodeMap?.[extended[0]],
@@ -64,25 +67,25 @@ export default function EpisodeNavigation() {
 		const elem = document.getElementById(
 			`ep-btn-${firstEpisode?.chapter?.seq_number}`
 		)
-		if (!openNavigation || !elem) {
+		if (!episodeNavigationOpen || !elem) {
 			return
 		}
 		elem.scrollIntoView({ behavior: 'smooth' })
-	}, [openNavigation, firstEpisode])
+	}, [episodeNavigationOpen, firstEpisode])
 
 	const toggleOpenNavigation = useCallback(() => {
-		setOpenNavigation((p) => !p)
-	}, [setOpenNavigation])
+		toggleEpisodeNavigationOpen()
+	}, [toggleEpisodeNavigationOpen])
 
 	if (simplifiedEditor || !page) {
 		return null
 	}
 	return (
-		<div className="relative">
+		<div className="relative z-10 animate-fade-in-up">
 			<Button
 				className={cn(
 					'absolute z-10 mt-4 rounded-full transition-all',
-					openNavigation ? '-right-5' : '-right-14'
+					episodeNavigationOpen ? '-right-5' : '-right-14'
 				)}
 				variant="outline"
 				size="icon"
@@ -93,7 +96,7 @@ export default function EpisodeNavigation() {
 			<div
 				className={cn(
 					'sticky top-0 text-clip transition-all',
-					openNavigation ? 'w-24' : 'w-0'
+					episodeNavigationOpen ? 'w-24' : 'w-0'
 				)}
 			>
 				<ScrollArea className="h-svh">

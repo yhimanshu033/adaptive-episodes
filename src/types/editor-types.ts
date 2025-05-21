@@ -61,6 +61,7 @@ export type EditorExtendedStore = {
 	episodeContentMap: Record<number, { children: Value }>
 	episodeKeys: Record<number, (string | number | boolean)[]>
 	episodeMap: Record<number, TGetEpisodeResponse>
+	episodeNavigationOpen: boolean
 	extended: number[]
 }
 

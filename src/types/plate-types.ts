@@ -43,6 +43,7 @@ export enum ESidebar {
 	COMMENTS = 'comments',
 	DUAL_VIEW = 'dual-view',
 	FAR = 'far',
+	NOTES = 'notes',
 	OUTLINE = 'outline',
 }
 export type PlateStoreData = {

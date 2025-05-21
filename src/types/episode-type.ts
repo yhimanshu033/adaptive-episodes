@@ -202,6 +202,7 @@ export type TSavingContext = {
 	handleSave: (params?: TSaveEpisodeParams) => Promise<void>
 	isPending: boolean
 	isSaved: boolean
+	lastSaved: Date | undefined
 	setForceSave: React.Dispatch<React.SetStateAction<boolean>>
 }
 

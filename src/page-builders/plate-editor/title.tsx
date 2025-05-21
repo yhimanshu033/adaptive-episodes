@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
@@ -8,7 +7,6 @@ import { useEditorReadOnly } from '@udecode/plate-common/react'
 import EditableText from '@/components/editable-text'
 import { If } from '@/components/if-else'
 import Spinner from '@/components/ui/spinner'
-import { getSelectedEpisode } from '@/lib/utils/helpers'
 
 const Title = ({
 	chapterId,
@@ -20,20 +18,15 @@ const Title = ({
 	const { data: episodeContent } = useEpisodeContent()
 	const readOnly = useEditorReadOnly()
 	const { setCurrentTitle } = useEpisodeIdStore()
-	const { data: episodeInfo } = useEpisodeInfo()
 
 	const updatedAt = useMemo(() => {
-		if (!episodeInfo?.results?.data) {
-			return null
-		}
-		const latestEpisode = getSelectedEpisode(episodeInfo)
-		const updateTime = latestEpisode?.episode.update_time
+		const updateTime = episodeContent?.chapter.update_time
 		if (!updateTime) {
 			return null
 		}
 		const date = new Date(updateTime)
 		return date.toLocaleString()
-	}, [episodeInfo])
+	}, [episodeContent])
 
 	const updateChapterTitle = (chapter_title: string) => {
 		setCurrentTitle(chapter_title)

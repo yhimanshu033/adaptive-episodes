@@ -11,7 +11,7 @@ const useSaveEpisode = () => {
 	const readOnly = useEditorReadOnly()
 	const { setCurrentDiffValue } = usePlateStore()
 
-	const { handleSave, isSaved, isPending } = useSaving()
+	const { handleSave, isSaved, isPending, lastSaved } = useSaving()
 
 	useEffect(() => {
 		setCurrentDiffValue(structuredClone(children))
@@ -19,7 +19,7 @@ const useSaveEpisode = () => {
 	}, [children])
 
 	useEffect(() => {
-		const intervalId = setInterval(handleSave, 5000)
+		const intervalId = setInterval(handleSave, 2000)
 		return () => clearInterval(intervalId)
 	}, [handleSave])
 
@@ -28,6 +28,7 @@ const useSaveEpisode = () => {
 		isSaved,
 		readOnly,
 		isPending,
+		lastSaved,
 	}
 }
 

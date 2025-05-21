@@ -22,6 +22,7 @@ const renderSidebar: Record<ESidebar, React.ReactNode> = {
 	[ESidebar.FAR]: <FindAndReplace />,
 	[ESidebar.CHATBOT]: <AiChatbot />,
 	[ESidebar.DUAL_VIEW]: null,
+	[ESidebar.NOTES]: null,
 }
 
 const Sidebar = () => {
