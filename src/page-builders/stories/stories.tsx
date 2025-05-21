@@ -4,7 +4,6 @@ import React from 'react'
 import Link from 'next/link'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import { EImportStatus } from '@/constants/story-constants'
-import { useStoriesData } from '@/hooks/query/use-story-data'
 import ImportStoryCard from '@/page-builders/stories/import-story-card'
 import { BookOpen, Clock, User } from 'lucide-react'
 
@@ -16,14 +15,22 @@ import Image from '@/components/ui/image'
 import { formatDate } from '@/lib/format-date'
 import { cn } from '@/lib/utils/helpers'
 
-const Stories = () => {
-	const {
-		data: stories,
-		isLoading,
-		sortedStories,
-		openedStories,
-	} = useStoriesData()
+import { TOpenedStories } from '@/types/common'
+import { TStory } from '@/types/story-types'
 
+interface IStories {
+	isLoading: boolean
+	openedStories: TOpenedStories | undefined
+	sortedStories: TStory[] | undefined
+	stories: TStory[] | undefined
+}
+
+const Stories = ({
+	isLoading,
+	openedStories,
+	sortedStories,
+	stories,
+}: IStories) => {
 	if (isLoading) {
 		return (
 			<div className="flex flex-1 items-center justify-center">
@@ -32,9 +39,9 @@ const Stories = () => {
 		)
 	}
 	return (
-		<section className="container my-6 grid grid-cols-1 justify-items-center gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+		<section className="my-6 grid flex-1 grid-cols-1 justify-items-center gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 			<ImportStoryCard />
-			{(sortedStories || stories)?.map((story) => (
+			{(sortedStories || stories || [])?.map((story) => (
 				<Card key={story.id} className="w-64 overflow-hidden rounded-none">
 					<Link href={`/projects/${story.id}`}>
 						<div className="relative aspect-square">

@@ -20,7 +20,7 @@ const useAuth = () => {
 					callbackUrl,
 				})
 
-				toast.success('Sign in successful!')
+				toast.success('Signing in with google!')
 			} catch (err) {
 				console.error(err)
 			}

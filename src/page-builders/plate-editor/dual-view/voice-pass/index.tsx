@@ -1,14 +1,13 @@
 import React, { useMemo } from 'react'
-import { useParams } from 'next/navigation'
 import { useAIChatbotQueryHook } from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { useStoriesData } from '@/hooks/query/use-story-data'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import DualViewLoader from '@/page-builders/plate-editor/dual-view/dual-view-loader'
 import Block from '@/page-builders/plate-editor/dual-view/voice-pass/block'
 import CopyAll from '@/page-builders/plate-editor/dual-view/voice-pass/copy-all'
 import { useEditorState } from '@udecode/plate-common/react'
 
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { minify } from '@/lib/utils/ai-chatbot'
 import { pretifyVoiceXMLData } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
@@ -20,15 +19,14 @@ export default function VoicePass({
 }: {
 	voiceMode: EChatMode.VOICE | EChatMode.VOICE2 | EChatMode.VOICE2_XML
 }) {
-	const { id } = useParams()
 	const { data: episodeContent } = useEpisodeContent()
-	const { data: stories } = useStoriesData()
+	const { initialStoryData } = useEpisodeTableContext()
 
 	const { responses } = useSocketStreaming()
 
 	const episodesCount = useMemo(() => {
-		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
-	}, [stories, id])
+		return initialStoryData?.episode_count || 0
+	}, [initialStoryData])
 
 	const { children } = useEditorState()
 

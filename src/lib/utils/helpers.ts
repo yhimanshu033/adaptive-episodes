@@ -41,7 +41,7 @@ import {
 	TGetEpisodeResponse,
 	TGetEpisodesResponse,
 } from '@/types/episode-type'
-import { TGetStoriesResponse } from '@/types/story-types'
+import { TStory } from '@/types/story-types'
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
@@ -486,10 +486,7 @@ export async function projectAdminCheck(
 		: false
 }
 
-export function sortOpenedStories(
-	openedIds: number[],
-	projects: TGetStoriesResponse
-) {
+export function sortOpenedStories(openedIds: number[], projects: TStory[]) {
 	const sortedProjects = [...projects].sort((a, b) => {
 		const indexA = openedIds.indexOf(a.id)
 		const indexB = openedIds.indexOf(b.id)
@@ -682,4 +679,8 @@ export function getPageFromEpisode(
 		return null
 	}
 	return Math.ceil(episode?.seq_number / limit) + 1
+}
+
+export function getQueryKeysFromObject(obj: Record<string, unknown>) {
+	return Object.values(obj).map(String)
 }

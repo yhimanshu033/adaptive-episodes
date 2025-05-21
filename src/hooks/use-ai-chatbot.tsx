@@ -6,10 +6,8 @@ import React, {
 	useMemo,
 	useState,
 } from 'react'
-import { useParams } from 'next/navigation'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
-import { useStoriesData } from '@/hooks/query/use-story-data'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
@@ -28,6 +26,7 @@ import { parse } from 'best-effort-json-parser'
 import { jsonrepair } from 'jsonrepair'
 import { nanoid } from 'nanoid'
 
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { addSFX, convertReviewResponse, minify } from '@/lib/utils/ai-chatbot'
 import { parseOptimistically } from '@/lib/utils/helpers'
 import { breakDownValue, getText } from '@/lib/utils/plate'
@@ -86,7 +85,6 @@ export function ChatbotProvider({
 	const [originalChildren, setOriginalChildren] = useState<Value>()
 	const [blockStreaming, setBlockStreaming] = useState<string>('')
 
-	const { id } = useParams()
 	const {
 		store,
 		addMessages,
@@ -107,7 +105,7 @@ export function ChatbotProvider({
 	const prevValue = store((state) => state.prevValue)
 
 	const { responses, taskEnded } = useSocketStreaming()
-	const { data: stories } = useStoriesData()
+	const { initialStoryData } = useEpisodeTableContext()
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
@@ -116,8 +114,8 @@ export function ChatbotProvider({
 	const changesPending = prevValue && value
 
 	const episodesCount = useMemo(() => {
-		return stories?.find((data) => data?.id === Number(id))?.episode_count || 0
-	}, [stories, id])
+		return initialStoryData?.episode_count || 0
+	}, [initialStoryData])
 
 	const { aiChatbotMutation } = useAIChatbotHook({
 		episodeNumber: episodeContent?.chapter.seq_number || 0,
