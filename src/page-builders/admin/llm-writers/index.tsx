@@ -33,9 +33,9 @@ import Spinner from '@/components/ui/spinner'
 import { TStory } from '@/types/story-types'
 
 export default function WritersRoom() {
-	const { data } = useStoriesData()
+	const { stories } = useStoriesData()
 	const [selectedStory, setSelectedStory] = useState<TStory | null>(
-		data?.[0] || null
+		stories?.[0] || null
 	)
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedMode, setSelectedMode] = useState<ELlmWriterMode>(
@@ -43,10 +43,10 @@ export default function WritersRoom() {
 	)
 
 	useEffect(() => {
-		if (data) {
-			setSelectedStory(data[0])
+		if (stories) {
+			setSelectedStory(stories[0])
 		}
-	}, [data])
+	}, [stories])
 
 	const handleStorySelect = (story: TStory) => {
 		setSelectedStory(story)
@@ -111,7 +111,7 @@ export default function WritersRoom() {
 											<DialogTitle>Select a Story</DialogTitle>
 										</DialogHeader>
 										<StoryGrid
-											stories={data || []}
+											stories={stories || []}
 											onSelect={handleStorySelect}
 										/>
 									</DialogContent>

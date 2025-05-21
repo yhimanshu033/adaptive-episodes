@@ -33,7 +33,7 @@ export const getStories = async (params: TGetStoriesQueryParams) => {
 		query: params,
 	})
 
-	return stories.data?.results?.data || []
+	return stories.data
 }
 
 export const getStoryData = async (

@@ -50,6 +50,8 @@ export type TGetStoriesQueryParams = {
 	search?: string
 }
 
+export type TGetStoriesQueryParamsKey = keyof TGetStoriesQueryParams
+
 export type TGetStoryDataResponse = {
 	data?: TStory
 	message: string

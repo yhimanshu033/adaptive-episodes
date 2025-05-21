@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import {
 	STORIES_QUERY_KEY,
@@ -17,12 +18,12 @@ import { TGetStoriesQueryParams } from '@/types/story-types'
 export const useStoriesData = (params: TGetStoriesQueryParams = {}) => {
 	const path = usePathname()
 	const sortStories = async () => {
-		if (!data) {
+		if (!stories.length) {
 			return { sortedStories: [], openedStories: [] }
 		}
 		const openedStories = (await getOpenedStories()) || []
 		return {
-			sortedStories: sortOpenedStories(openedStories, Array.from(data)),
+			sortedStories: sortOpenedStories(openedStories, Array.from(stories)),
 			openedStories,
 		}
 	}
@@ -35,15 +36,17 @@ export const useStoriesData = (params: TGetStoriesQueryParams = {}) => {
 
 	const { data } = query
 
+	const stories = useMemo(() => data?.results?.data || [], [data])
+
 	const { data: openedStoryData } = useQuery({
-		queryKey: [STORIES_SORT_QUERY_KEY, data?.length, path],
+		queryKey: [STORIES_SORT_QUERY_KEY, stories?.length, path, ...paramValues],
 		queryFn: sortStories,
 		enabled: !!data,
 		staleTime: 0,
 		gcTime: 0,
 	})
 
-	return { ...query, ...openedStoryData }
+	return { ...query, ...openedStoryData, stories }
 }
 
 export const useStoryIdData = () => {
