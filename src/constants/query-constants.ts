@@ -1,6 +1,7 @@
 //Query Keys
 
 export const STORIES_QUERY_KEY = 'stories'
+export const STORY_ID_QUERY_KEY = 'story-details'
 export const STORIES_SORT_QUERY_KEY = 'stories-sort'
 
 export const USER_LIST_QUERY_KEY = 'user-list'
