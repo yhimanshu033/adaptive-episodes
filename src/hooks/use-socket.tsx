@@ -55,7 +55,11 @@ export const SocketProvider = ({
 	baseUrl?: string
 	children: React.ReactNode
 }) => {
-	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_BACKEND_URL || ''
+	const socketUrl =
+		baseUrl ||
+		process.env.NEXT_PUBLIC_SOCKET_URL ||
+		process.env.NEXT_PUBLIC_BACKEND_URL ||
+		''
 	const { data: session } = useSession()
 	const socket = useMemo(
 		() =>
@@ -63,6 +67,10 @@ export const SocketProvider = ({
 				autoConnect: false,
 				extraHeaders: {
 					Authorization: `Bearer ${session?.accessToken}`,
+				},
+				transports: ['websocket'],
+				auth: {
+					token: `${session?.accessToken}`,
 				},
 			}),
 		[socketUrl, session]
