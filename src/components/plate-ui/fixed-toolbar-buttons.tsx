@@ -21,7 +21,6 @@ import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
 import { FontDropdownMenu } from '@/components/plate-ui/font-dropdown-menu'
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
 import { MarkToolbarButton } from '@/components/plate-ui/mark-toolbar-button'
-import { MoreDropdownMenu } from '@/components/plate-ui/more-dropdown-menu'
 import { ToolbarGroup } from '@/components/plate-ui/toolbar'
 import TranslationToggleButton from '@/components/plate-ui/translation-toggle-button'
 import TtsToolbarButton from '@/components/plate-ui/tts-toolbar-button'
@@ -30,6 +29,8 @@ import UndoRedoButtons from '@/components/plate-ui/undo-redo-buttons'
 import { ZoomDropdownMenu } from '@/components/plate-ui/zoom-dropdown'
 import { Switch } from '@/components/ui/switch'
 
+import { ESidebar } from '@/types/plate-types'
+
 import { IndentListToolbarButton } from './indent-list-toolbar-button'
 import WordCountButton from './word-count-button'
 
@@ -37,6 +38,7 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 	const readOnly = useEditorReadOnly()
 	const { store: usePlateContextStore, setFocusMode } = usePlateStore()
 	const focusMode = usePlateContextStore(useShallow((state) => state.focusMode))
+	const sidebar = usePlateContextStore(useShallow((state) => state.sidebar))
 
 	const SimplifiedToolbar = () => {
 		return (
@@ -93,7 +95,7 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 					transform: 'translateX(calc(-1px))',
 				}}
 			>
-				<If condition={!readOnly}>
+				<If condition={!readOnly && sidebar !== ESidebar.DUAL_VIEW}>
 					<div className="flex">
 						<ToolbarGroup noSeparator>
 							<WordCountButton />
@@ -129,10 +131,10 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 					<Else>
 						<div className="flex">
 							<ToolbarGroup noSeparator>
+								<TtsToolbarButton />
 								<TranslationToggleButton />
 								<ChatbotToolbarButton />
-								<TtsToolbarButton />
-								<MoreDropdownMenu />
+								{/* <MoreDropdownMenu /> */}
 							</ToolbarGroup>
 						</div>
 					</Else>

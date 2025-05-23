@@ -70,13 +70,12 @@ export default function PlateEditor() {
 									'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 								)}
 							>
-								<FixedToolbarComponent />
 								<ResizablePanelGroup
 									direction="horizontal"
 									className="flex size-full !overflow-visible"
 								>
 									<ResizablePanel
-										minSize={30}
+										minSize={50}
 										order={1}
 										className="w-full flex-1"
 									>
@@ -87,8 +86,9 @@ export default function PlateEditor() {
 											<ResizablePanel
 												minSize={30}
 												order={1}
-												className="flex w-full"
+												className="flex w-full flex-col"
 											>
+												<FixedToolbarComponent />
 												<Editor
 													className="size-full rounded-none"
 													autoFocus

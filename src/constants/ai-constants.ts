@@ -8,6 +8,7 @@ import {
 	TQuickPrompt,
 } from '@/types/ai-types'
 import { ELSMappingGender, ELSMappingType } from '@/types/common'
+import { ESidebar } from '@/types/plate-types'
 
 export const aiInitialMessage: TMessage[] = [
 	{
@@ -163,3 +164,14 @@ export const INITIAL_FAR_OPTIONS: FindReplaceConfig['options'] = {
 export const LSMappingGenders = [ELSMappingGender.MALE, ELSMappingGender.FEMALE]
 
 export const LSMappingTypes = [ELSMappingType.PERSON, ELSMappingType.ENTITY]
+
+export const sidebarToTitle: Record<ESidebar, string> = {
+	[ESidebar.CHATBOT]: 'StoryChat',
+	[ESidebar.COMMENTS]: 'Comments',
+	[ESidebar.DUAL_VIEW]: '',
+	[ESidebar.FAR]: 'Find and Replace',
+	[ESidebar.NOTES]: 'Notes',
+	[ESidebar.OUTLINE]: 'Story Explorer',
+}
+
+export const sidebarButtons: ESidebar[] = [ESidebar.CHATBOT, ESidebar.OUTLINE]

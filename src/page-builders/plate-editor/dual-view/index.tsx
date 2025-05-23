@@ -3,7 +3,6 @@ import { TRANSITION_DURATION } from '@/constants/editor-constants'
 import DualViewSelector from '@/page-builders/plate-editor/dual-view/dual-view-selector'
 import LocalDiffSection from '@/page-builders/plate-editor/dual-view/local-diff'
 import NextEpisode from '@/page-builders/plate-editor/dual-view/next-episode'
-import Notes from '@/page-builders/plate-editor/dual-view/notes'
 import PreviousEpisode from '@/page-builders/plate-editor/dual-view/prev-episode'
 import Translation from '@/page-builders/plate-editor/dual-view/translation'
 import VoicePass from '@/page-builders/plate-editor/dual-view/voice-pass'
@@ -36,7 +35,6 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			[EDualVIewMode.BASE_SCRIPT]: <BaseScript />,
 			[EDualVIewMode.PREV_EP]: <PreviousEpisode />,
 			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
-			[EDualVIewMode.NOTES]: <Notes />,
 			[EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
 			[EDualVIewMode.VOICE_PASS]: (
 				<VoicePass voiceMode={EChatMode.VOICE2_XML} />
@@ -67,19 +65,21 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			<ResizableHandle />
 			<ResizablePanel
 				minSize={30}
+				defaultSize={50}
+				maxSize={50}
 				order={2}
 				style={{
 					transitionDuration: `${isTransitioning ? TRANSITION_DURATION : 0}ms`,
 				}}
 				className={cn(
-					'relative flex w-full max-w-full flex-col border transition-all',
+					'first-line relative flex w-full max-w-full flex-col border transition-all',
 					!showDualView && 'max-w-0'
 				)}
 			>
 				<div className="absolute right-0 top-0 z-20 w-fit pr-4 pt-4">
 					<DualViewSelector />
 				</div>
-				{modeToComponent[dualViewMode]}
+				<div className="opacity-75">{modeToComponent[dualViewMode]}</div>
 			</ResizablePanel>
 		</>
 	)
