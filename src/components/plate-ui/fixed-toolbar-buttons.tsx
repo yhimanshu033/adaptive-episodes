@@ -21,6 +21,7 @@ import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
 import { FontDropdownMenu } from '@/components/plate-ui/font-dropdown-menu'
 import { LineHeightDropdownMenu } from '@/components/plate-ui/line-height-dropdown-menu'
 import { MarkToolbarButton } from '@/components/plate-ui/mark-toolbar-button'
+import ToggleFindAndReplace from '@/components/plate-ui/toggle-find-and-replace'
 import { ToolbarGroup } from '@/components/plate-ui/toolbar'
 import TranslationToggleButton from '@/components/plate-ui/translation-toggle-button'
 import TtsToolbarButton from '@/components/plate-ui/tts-toolbar-button'
@@ -132,9 +133,9 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 						<div className="flex">
 							<ToolbarGroup noSeparator>
 								<TtsToolbarButton />
+								<ToggleFindAndReplace />
 								<TranslationToggleButton />
 								<ChatbotToolbarButton />
-								{/* <MoreDropdownMenu /> */}
 							</ToolbarGroup>
 						</div>
 					</Else>

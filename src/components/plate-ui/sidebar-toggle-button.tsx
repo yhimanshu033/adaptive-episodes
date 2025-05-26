@@ -15,7 +15,7 @@ export function SidebarToggleButton({
 	const currentSidebar = store((state) => state.sidebar)
 	return (
 		<Button
-			variant={currentSidebar === sidebar ? 'default' : 'outline'}
+			variant={currentSidebar === sidebar ? 'default' : 'ghost'}
 			className="px-2"
 			onClick={() => setSidebar(sidebar, true)}
 			{...props}

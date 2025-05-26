@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useSearchParams } from 'next/navigation'
 import { TRANSITION_DURATION } from '@/constants/editor-constants'
 import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
@@ -8,10 +8,8 @@ import FindAndReplace from '@/page-builders/plate-editor/sidebar-sections/find-a
 import Notes from '@/page-builders/plate-editor/sidebar-sections/notes'
 import StoryExplorer from '@/page-builders/plate-editor/sidebar-sections/story-explorer'
 import SidebarTopBar from '@/page-builders/plate-editor/sidebar-sections/top-bar'
-import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
 import { useDebounceValue } from 'usehooks-ts'
-import { useShallow } from 'zustand/react/shallow'
 
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -29,16 +27,10 @@ const renderSidebar: Record<ESidebar, React.ReactNode> = {
 }
 
 const Sidebar = () => {
-	const { store, setSidebar } = usePlateStore()
+	const { store } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	const focusMode = store((state) => state.focusMode)
 	const showSidebar = sidebar && sidebar !== ESidebar.DUAL_VIEW && !focusMode
-	const { setEpisodeNavigationOpen, store: editorExtendedStore } =
-		useEditorExtendedStore()
-	const episodeNavigationOpen = editorExtendedStore(
-		useShallow((state) => state.episodeNavigationOpen)
-	)
-
 	const globalLocalize = useSearchParams().get(GLOBAL_LOCALIZE)
 
 	const [debouncedShowSidebarView] = useDebounceValue(
@@ -51,20 +43,6 @@ const Sidebar = () => {
 		(!debouncedShowSidebarView && showSidebar) || !showSidebar
 
 	const sidebarToDisplay = showSidebar ? sidebar : debouncedSidebar
-
-	useEffect(() => {
-		if (!sidebar) {
-			return
-		}
-		setEpisodeNavigationOpen(false)
-	}, [sidebar, setEpisodeNavigationOpen])
-
-	useEffect(() => {
-		if (!episodeNavigationOpen) {
-			return
-		}
-		setSidebar(null)
-	}, [episodeNavigationOpen, setSidebar])
 
 	if (
 		!!globalLocalize ||

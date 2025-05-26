@@ -39,8 +39,6 @@ export default function EpisodeNavigation() {
 
 	const { InfiniteScrollWithDebouncing, data } = useInfiniteEpisodesData(page)
 
-	console.log({ firstEpisode, extended, episodeMap })
-
 	const { handleExitBySaving } = useExtendedSaving()
 	const { id } = useParams()
 

@@ -2,7 +2,7 @@
 
 import React from 'react'
 import usePlateStore from '@/store/plate-store'
-import { Bot } from 'lucide-react'
+import { Sidebar } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
@@ -18,7 +18,7 @@ export function ChatbotToolbarButton() {
 			tooltip="StoryChat"
 			onClick={() => setSidebar(ESidebar.CHATBOT, true)}
 		>
-			<Bot />
+			<Sidebar />
 		</ToolbarButton>
 	)
 }
