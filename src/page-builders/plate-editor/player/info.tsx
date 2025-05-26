@@ -27,7 +27,7 @@ export default function PlayerInfo() {
 		<div className="flex w-full justify-between">
 			<div>
 				<h4 className="text-sm font-medium">{info.episode}</h4>
-				<h5 className="text-xs font-light text-muted-foreground">
+				<h5 className="text-muted-foreground text-xs font-light">
 					{info.chapter}
 				</h5>
 			</div>

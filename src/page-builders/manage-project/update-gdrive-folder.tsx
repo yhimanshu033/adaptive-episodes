@@ -79,7 +79,7 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 				<a
 					href={link}
 					target="_blank"
-					className={buttonVariants({ size: 'icon', variant: 'outline' })}
+					className={buttonVariants({ size: 'icon', variant: 'outline-solid' })}
 					rel="noreferrer"
 				>
 					<ArrowUpRight size={16} />

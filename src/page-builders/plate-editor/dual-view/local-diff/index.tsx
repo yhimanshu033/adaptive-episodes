@@ -55,11 +55,11 @@ export default function LocalDiffSection() {
 						editorVariants({
 							focused: false,
 						}),
-						'rounded-none border-none bg-background px-6 py-5'
+						'bg-background rounded-none border-none px-6 py-5'
 					)}
 				/>
 			</Plate>
-			<div className="sticky bottom-0 z-50 flex w-full justify-end gap-4 bg-background/60 px-6 py-2 backdrop-blur-[1px]">
+			<div className="bg-background/60 sticky bottom-0 z-50 flex w-full justify-end gap-4 px-6 py-2 backdrop-blur-[1px]">
 				<Button tooltip="Import Local Changes" onClick={handleAccept}>
 					<Check />
 				</Button>

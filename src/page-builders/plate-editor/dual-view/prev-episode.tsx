@@ -26,7 +26,7 @@ export default function PreviousEpisode() {
 				readOnly
 				variant="ghost"
 				size="md"
-				className="!pt-0"
+				className="pt-0!"
 			/>
 		</Plate>
 	)

@@ -49,13 +49,13 @@ const SaveEpisode = () => {
 	}
 
 	return (
-		<div className="flex gap-2 text-sm text-muted-foreground">
+		<div className="text-muted-foreground flex gap-2 text-sm">
 			<IfElse condition={isPending}>
 				<If>
 					<p className="font-display uppercase">Saving...</p>
 				</If>
 				<Else>
-					<p className="whitespace-nowrap font-display uppercase">
+					<p className="font-display whitespace-nowrap uppercase">
 						Updated {updatedAt}
 					</p>
 					<Button

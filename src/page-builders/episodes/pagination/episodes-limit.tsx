@@ -22,7 +22,7 @@ const EpisodesLimit = () => {
 
 	return (
 		<div className="flex items-center justify-between gap-2 text-xs">
-			<p className="font-display uppercase text-muted-foreground">Page Size</p>
+			<p className="font-display text-muted-foreground uppercase">Page Size</p>
 			<Select value={String(limit)} onValueChange={handleChange}>
 				<SelectTrigger className="w-16">
 					<SelectValue>{limit}</SelectValue>

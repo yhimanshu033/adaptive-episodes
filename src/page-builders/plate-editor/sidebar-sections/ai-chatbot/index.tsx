@@ -43,14 +43,14 @@ const AIChatbot = () => {
 	}, [])
 	return (
 		<>
-			<div className="flex flex-1 flex-col text-clip px-4 pt-4">
+			<div className="flex flex-1 flex-col px-4 pt-4 text-clip">
 				<CheckboxDropdown />
 				<MessagesList isPending={isPending} />
 				<Suggestions />
 				<div className="flex flex-[0_0_auto] items-end gap-1">
 					<form
 						onSubmit={handleSendMessage}
-						className="flex flex-1 items-end space-x-2 rounded-md border bg-background"
+						className="bg-background flex flex-1 items-end space-x-2 rounded-md border"
 					>
 						<Textarea
 							ref={textareaRef}
@@ -59,7 +59,7 @@ const AIChatbot = () => {
 							value={input}
 							onChange={(e) => setInput(e.target.value)}
 							onKeyDown={handleKeyDown}
-							className="grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+							className="grow resize-none overflow-y-auto border-none bg-transparent px-3 py-2 leading-relaxed outline-hidden focus-visible:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
 						/>
 						{disabled ? (
 							<Button

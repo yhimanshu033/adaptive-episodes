@@ -96,7 +96,7 @@ export default function RenderMessage({
 								.replace(/<\/text>/g, '</span>'),
 						}}
 						className={cn(
-							'max-w-[70%] flex-1 rounded-lg p-3 transition-transform *:animate-in active:scale-[0.995]',
+							'*:animate-in max-w-[70%] flex-1 rounded-lg p-3 transition-transform active:scale-[0.995]',
 							message.role === EMessenger.ASSISTANT
 								? 'bg-background'
 								: 'bg-primary'
@@ -117,7 +117,7 @@ export default function RenderMessage({
 								)
 							}}
 							variant="ghost"
-							className="sticky top-1 m-1 size-6 !p-1 transition-all hover:scale-105 active:scale-75"
+							className="sticky top-1 m-1 size-6 p-1! transition-all hover:scale-105 active:scale-75"
 						>
 							<Copy size={16} />
 						</Button>
@@ -125,7 +125,7 @@ export default function RenderMessage({
 				</div>
 			) : (
 				<StoryAccordion
-					className="max-w-[70%] flex-1 rounded-lg p-3 transition-transform *:animate-in active:scale-[0.995]"
+					className="*:animate-in max-w-[70%] flex-1 rounded-lg p-3 transition-transform active:scale-[0.995]"
 					explorerData={
 						parseOptimistically<PlotExplorerApiResponse['data']>(
 							handleToolTags(responses[message.taskId])

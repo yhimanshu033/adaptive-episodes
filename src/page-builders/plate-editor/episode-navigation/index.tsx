@@ -79,7 +79,7 @@ export default function EpisodeNavigation() {
 		return null
 	}
 	return (
-		<div className="relative z-10 animate-fade-in-up">
+		<div className="animate-fade-in-up relative z-10">
 			<Button
 				className={cn(
 					'absolute z-10 mt-4 rounded-full transition-all',

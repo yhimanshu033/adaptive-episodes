@@ -62,7 +62,7 @@ export default function AdaptationDialog() {
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogContent className="max-w-screen-lg">
+			<DialogContent className="max-w-(--breakpoint-lg)">
 				<SwitchCase value={step}>
 					<DialogHeader>
 						<DialogTitle>

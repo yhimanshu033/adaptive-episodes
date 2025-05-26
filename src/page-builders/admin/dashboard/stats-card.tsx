@@ -9,11 +9,11 @@ export function StatsCards() {
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle className="text-sm font-medium">Total Writers</CardTitle>
-					<Users className="size-4 text-muted-foreground" />
+					<Users className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
 					<div className="text-2xl font-bold">17</div>
-					<p className="text-xs text-muted-foreground">
+					<p className="text-muted-foreground text-xs">
 						Active writers this month
 					</p>
 				</CardContent>
@@ -23,31 +23,31 @@ export function StatsCards() {
 					<CardTitle className="text-sm font-medium">
 						Avg. Scripts/Day
 					</CardTitle>
-					<FileText className="size-4 text-muted-foreground" />
+					<FileText className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
 					<div className="text-2xl font-bold">3.1</div>
-					<p className="text-xs text-muted-foreground">+2.1% from last month</p>
+					<p className="text-muted-foreground text-xs">+2.1% from last month</p>
 				</CardContent>
 			</Card>
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle className="text-sm font-medium">Total Hours</CardTitle>
-					<Clock className="size-4 text-muted-foreground" />
+					<Clock className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
 					<div className="text-2xl font-bold">142.5</div>
-					<p className="text-xs text-muted-foreground">Hours this week</p>
+					<p className="text-muted-foreground text-xs">Hours this week</p>
 				</CardContent>
 			</Card>
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle className="text-sm font-medium">AI Usage</CardTitle>
-					<Brain className="size-4 text-muted-foreground" />
+					<Brain className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
 					<div className="text-2xl font-bold">24%</div>
-					<p className="text-xs text-muted-foreground">
+					<p className="text-muted-foreground text-xs">
 						Average AI content ratio
 					</p>
 				</CardContent>

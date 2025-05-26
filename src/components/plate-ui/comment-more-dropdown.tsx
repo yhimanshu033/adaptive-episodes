@@ -33,7 +33,7 @@ export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 				<Button
 					tooltip="More"
 					variant="ghost"
-					className={cn('h-6 p-1 text-muted-foreground')}
+					className={cn('text-muted-foreground h-6 p-1')}
 				>
 					<Icons.more className="size-4" />
 				</Button>

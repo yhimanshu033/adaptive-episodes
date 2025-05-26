@@ -17,7 +17,7 @@ export function CommentValue() {
 
 			<div className="flex space-x-2">
 				<CommentEditActions.CancelButton
-					className={buttonVariants({ size: 'xs', variant: 'outline' })}
+					className={buttonVariants({ size: 'xs', variant: 'outline-solid' })}
 				>
 					Cancel
 				</CommentEditActions.CancelButton>

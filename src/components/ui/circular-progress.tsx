@@ -103,7 +103,7 @@ export function CircularProgressBar({
 			</svg>
 			<span
 				data-current-value={isNaN(currentPercent) ? 0 : currentPercent}
-				className="absolute inset-0 m-auto size-fit ease-linear animate-in fade-in"
+				className="animate-in fade-in absolute inset-0 m-auto size-fit ease-linear"
 				style={{
 					transitionDuration: 'var(--transition-length)',
 					transitionDelay: 'var(--delay)',

@@ -19,7 +19,9 @@ const AdminManageProject = () => {
 	return (
 		<TooltipComponent side="bottom" tooltip="Manage Project">
 			<Link
-				className={cn(buttonVariants({ variant: 'outline', size: 'icon' }))}
+				className={cn(
+					buttonVariants({ variant: 'outline-solid', size: 'icon' })
+				)}
 				href={`/projects/${id as string}/manage-project`}
 			>
 				<Settings />

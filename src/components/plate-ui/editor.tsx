@@ -38,16 +38,16 @@ import { ESidebar } from '@/types/plate-types'
 const editorVariants = cva(
 	cn(
 		'relative overflow-x-auto whitespace-pre-wrap break-words',
-		'w-full rounded-md ~px-6 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
-		'[&_[data-slate-placeholder]]:text-muted-foreground [&_[data-slate-placeholder]]:!opacity-100',
-		'[&_[data-slate-placeholder]]:top-[auto_!important]',
+		'w-full rounded-md ~px-6 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden',
+		'**:data-slate-placeholder:text-muted-foreground **:data-slate-placeholder:opacity-100!',
+		'**:data-slate-placeholder:top-[auto_!important]',
 		'[&_strong]:font-bold'
 	),
 	{
 		defaultVariants: {
 			focusRing: true,
 			size: 'sm',
-			variant: 'outline',
+			variant: 'outline-solid',
 		},
 		variants: {
 			disabled: {
@@ -325,9 +325,9 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 									size,
 									variant,
 								}),
-								'h-fit origin-top-left *:px-6 first-of-type:*:pt-[var(--editor-break-padding)]',
+								'h-fit origin-top-left *:px-6 *:first-of-type:pt-(--editor-break-padding)',
 								{
-									'px-6 first-of-type:*:-mx-6 first-of-type:*:px-6':
+									'px-6 *:first-of-type:-mx-6 *:first-of-type:px-6':
 										isEmpty && !focusMode,
 									'counter-parent first-of-type:*:pt-[var(--editor-break-padding) bg-background-editor':
 										focusMode,
@@ -356,7 +356,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						{focusMode && (
 							<div
 								style={{ minHeight: `${remainingHeight}px` }}
-								className="last-padding-div mb-6 bg-background-editor pb-[var(--editor-break-padding)]"
+								className="last-padding-div bg-background-editor mb-6 pb-(--editor-break-padding)"
 							/>
 						)}
 					</>

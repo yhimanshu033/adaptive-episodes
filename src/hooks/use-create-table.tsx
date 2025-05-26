@@ -217,7 +217,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			header: () => (
 				<HoverCard openDelay={0}>
 					<HoverCardTrigger> {`DE${checked ? '/US' : ''}`} </HoverCardTrigger>
-					<HoverCardContent className="w-38 b</HoverCard>order z-[100] mt-2 rounded-md bg-background p-2">
+					<HoverCardContent className="b</HoverCard>order bg-background z-100 mt-2 w-38 rounded-md p-2">
 						<div className="flex items-center justify-center gap-2">
 							<p>US Index:</p>
 							<Switch checked={checked} onCheckedChange={setChecked} />

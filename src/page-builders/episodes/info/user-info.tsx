@@ -50,7 +50,7 @@ export default function UserInfo({
 			{showEmail && (
 				<p
 					onClick={(e) => handleEmailCopy(e, user.email)}
-					className="text-sm text-muted-foreground transition-transform hover:scale-95"
+					className="text-muted-foreground text-sm transition-transform hover:scale-95"
 				>
 					{user.email}
 				</p>

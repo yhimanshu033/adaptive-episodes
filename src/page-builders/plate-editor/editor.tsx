@@ -65,14 +65,14 @@ export default function PlateEditor() {
 							<div
 								ref={containerRef}
 								className={cn(
-									'relative animate-fade-in-up',
+									'animate-fade-in-up relative',
 									// Block selection
-									'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
+									'[&_.slate-start-area-left]:w-[64px]! [&_.slate-start-area-right]:w-[64px]! [&_.slate-start-area-top]:h-4!'
 								)}
 							>
 								<ResizablePanelGroup
 									direction="horizontal"
-									className="flex size-full !overflow-visible"
+									className="flex size-full overflow-visible!"
 								>
 									<ResizablePanel
 										minSize={50}

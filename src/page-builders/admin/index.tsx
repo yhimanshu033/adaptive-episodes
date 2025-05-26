@@ -23,7 +23,7 @@ export default function AdminPanel() {
 				</div>
 				<Link
 					href="/projects"
-					className="inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
+					className="text-muted-foreground hover:text-foreground inline-flex items-center text-sm transition-colors"
 				>
 					<ArrowLeft className="mr-2 size-4" />
 					Go back to Stories
@@ -32,19 +32,19 @@ export default function AdminPanel() {
 
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				<Link href="/admin/dashboard">
-					<Card className="cursor-pointer p-6 transition-colors hover:bg-muted/50">
+					<Card className="hover:bg-muted/50 cursor-pointer p-6 transition-colors">
 						<h2 className="text-xl font-medium">Dashboard</h2>
 					</Card>
 				</Link>
 
 				<Link href="/admin/internationalization">
-					<Card className="cursor-pointer p-6 transition-colors hover:bg-muted/50">
+					<Card className="hover:bg-muted/50 cursor-pointer p-6 transition-colors">
 						<h2 className="text-xl font-medium">Internationalization</h2>
 					</Card>
 				</Link>
 
 				<Link href="/admin/llm-writers">
-					<Card className="cursor-pointer p-6 transition-colors hover:bg-muted/50">
+					<Card className="hover:bg-muted/50 cursor-pointer p-6 transition-colors">
 						<h2 className="text-xl font-medium">LLM Writers</h2>
 					</Card>
 				</Link>

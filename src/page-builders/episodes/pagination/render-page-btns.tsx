@@ -30,7 +30,7 @@ export default function RenderPageButtons({
 	return Array.from({ length: lastPage - startPage + 1 }).map((_, i) => (
 		<Button
 			key={i + 1}
-			variant={currentPage === startPage + i ? 'default' : 'outline'}
+			variant={currentPage === startPage + i ? 'default' : 'outline-solid'}
 			onClick={() => handlePageChange(startPage + i)}
 			className="size-10"
 		>

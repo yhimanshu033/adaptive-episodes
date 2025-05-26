@@ -14,7 +14,7 @@ const Sidebar = () => {
 	return (
 		<Plate editor={createPlateEditor()}>
 			<ChatbotProvider episodeContent={MOCK_EPISODE}>
-				<div className="absolute right-0 top-0 z-10 flex bg-background py-8 pl-8">
+				<div className="bg-background absolute top-0 right-0 z-10 flex py-8 pl-8">
 					<Button size="icon" onClick={() => setOpen((prev) => !prev)}>
 						<Bot size={24} />
 					</Button>

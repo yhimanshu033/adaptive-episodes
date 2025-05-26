@@ -85,7 +85,7 @@ export default function CommentSidebar() {
 
 	return (
 		<div className="relative">
-			<div className="pb-8 pt-4">
+			<div className="pt-4 pb-8">
 				<h1 className="w-full text-center">
 					{!commentCount && (!myUserId || !activeCommentId)
 						? `No ${showResolved ? 'resolved' : 'unresolved'} comments`
@@ -93,8 +93,8 @@ export default function CommentSidebar() {
 				</h1>
 			</div>
 			<Button
-				className="absolute left-2 top-1 z-50"
-				variant={showResolved ? 'default' : 'outline'}
+				className="absolute top-1 left-2 z-50"
+				variant={showResolved ? 'default' : 'outline-solid'}
 				size="icon"
 				onClick={() => setResolved(true, true)}
 				tooltip={
