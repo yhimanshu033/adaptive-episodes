@@ -94,7 +94,7 @@ export default function CommentSidebar() {
 			</div>
 			<Button
 				className="absolute top-1 left-2 z-50"
-				variant={showResolved ? 'default' : 'outline-solid'}
+				variant={showResolved ? 'default' : 'outline'}
 				size="icon"
 				onClick={() => setResolved(true, true)}
 				tooltip={

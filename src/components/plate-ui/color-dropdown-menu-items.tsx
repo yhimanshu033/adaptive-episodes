@@ -39,7 +39,7 @@ export function ColorDropdownMenuItem({
 			className={cn(
 				buttonVariants({
 					isMenu: true,
-					variant: 'outline-solid',
+					variant: 'outline',
 				}),
 				'border-muted size-6 border border-solid p-0',
 				!isBrightColor && 'border-transparent text-white',
@@ -89,7 +89,7 @@ export function ColorDropdownMenuItems({
 			className={cn(
 				buttonVariants({
 					isMenu: true,
-					variant: 'outline-solid',
+					variant: 'outline',
 				}),
 				'border-muted size-6 border border-solid p-0',
 				className

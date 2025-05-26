@@ -44,7 +44,7 @@ export enum ESidebar {
 	DUAL_VIEW = 'dual-view',
 	FAR = 'far',
 	NOTES = 'notes',
-	OUTLINE = 'outline-solid',
+	OUTLINE = 'outline',
 }
 export type PlateStoreData = {
 	activeDiffId: string | null

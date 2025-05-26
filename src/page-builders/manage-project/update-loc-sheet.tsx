@@ -61,7 +61,7 @@ const UpdateLOCSheet = () => {
 				<a
 					href={link}
 					target="_blank"
-					className={buttonVariants({ size: 'icon', variant: 'outline-solid' })}
+					className={buttonVariants({ size: 'icon', variant: 'outline' })}
 					rel="noreferrer"
 				>
 					<ArrowUpRight size={16} />

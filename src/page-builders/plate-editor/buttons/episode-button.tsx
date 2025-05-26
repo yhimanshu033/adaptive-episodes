@@ -41,7 +41,7 @@ const EpisodeButton: React.FC<EpisodeButtonProps & ButtonProps> = ({
 		<div>
 			<Button
 				tooltip={direction === 'previous' ? 'Previous Episode' : 'Next Episode'}
-				variant={direction === 'previous' ? 'outline-solid' : 'default'}
+				variant={direction === 'previous' ? 'outline' : 'default'}
 				size="icon"
 				className={cn('rounded-full', className)}
 				disabled={!episodeId}

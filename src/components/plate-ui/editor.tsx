@@ -47,7 +47,7 @@ const editorVariants = cva(
 		defaultVariants: {
 			focusRing: true,
 			size: 'sm',
-			variant: 'outline-solid',
+			variant: 'outline',
 		},
 		variants: {
 			disabled: {
