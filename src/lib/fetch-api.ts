@@ -34,6 +34,7 @@ export type FetchResponseResult<ResponseDataT = TNoParams> =
 	| {
 			data: ResponseDataT
 			error: null
+			headers?: Record<string, string>
 			status: number
 			success: true
 	  }
@@ -198,6 +199,7 @@ export async function fetchAPI<
 			status: response.status,
 			data: responseData,
 			error: null,
+			headers,
 		}
 	} catch (error) {
 		log({
