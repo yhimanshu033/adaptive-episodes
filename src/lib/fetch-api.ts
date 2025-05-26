@@ -199,7 +199,10 @@ export async function fetchAPI<
 			status: response.status,
 			data: responseData,
 			error: null,
-			headers,
+			headers: {
+				'x-forwarded-for': forwardedFor || '',
+				'x-real-ip': realIp || '',
+			},
 		}
 	} catch (error) {
 		log({
