@@ -130,6 +130,12 @@ export async function fetchAPI<
 				extra: defaultSentryData,
 			})
 		}
+
+		log({
+			'x-forwarded-for': forwardedFor || '',
+			'x-real-ip': realIp || '',
+		})
+
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {
