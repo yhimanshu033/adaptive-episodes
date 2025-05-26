@@ -23,27 +23,27 @@ import { TNoParams, TSocketQueryParams } from '@/types/common'
 
 type TSocketStreamingContext =
 	| {
-			getStreamedResponse: (taskId: string) => Promise<string[]>
-			getStreamedResponseChunks: (taskId: string) => any[]
-			responses: Record<string, string[]>
-			startTask: <
-				BodyParamsT = TNoParams,
-				ResponseDataT = TNoParams,
-				UrlParamsT = TNoParams,
-				QueryParamsT = TNoParams,
-			>(
-				params: FetchRequestParams<
-					ResponseDataT,
-					UrlParamsT,
-					BodyParamsT,
-					QueryParamsT
-				> & {
-					noCache?: boolean
-					onResponse?: (data: ResponseDataT) => void
-				}
-			) => Promise<string>
-			taskEnded: Record<string, boolean>
-	  }
+		getStreamedResponse: (taskId: string) => Promise<string[]>
+		getStreamedResponseChunks: (taskId: string) => any[]
+		responses: Record<string, string[]>
+		startTask: <
+			BodyParamsT = TNoParams,
+			ResponseDataT = TNoParams,
+			UrlParamsT = TNoParams,
+			QueryParamsT = TNoParams,
+		>(
+			params: FetchRequestParams<
+				ResponseDataT,
+				UrlParamsT,
+				BodyParamsT,
+				QueryParamsT
+			> & {
+				noCache?: boolean
+				onResponse?: (data: ResponseDataT) => void
+			}
+		) => Promise<string>
+		taskEnded: Record<string, boolean>
+	}
 	| undefined
 
 const SocketStreamingContext = createContext<TSocketStreamingContext>(undefined)
@@ -161,7 +161,7 @@ export const SocketStreamingProvider = ({
 			}
 
 			socket.emit('subscribe', { task_id: String(session?.user.id) })
-			const response = await fetchAPI<
+			await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
 				BodyParamsT,
@@ -174,7 +174,7 @@ export const SocketStreamingProvider = ({
 					...(params.query as QueryParamsT),
 				},
 			})
-			console.log({ response })
+
 			return taskId
 		},
 		[fetchedData, session, socket]
