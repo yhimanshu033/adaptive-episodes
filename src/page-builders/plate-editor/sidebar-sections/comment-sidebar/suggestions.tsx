@@ -67,7 +67,7 @@ const SuggestionBlock = ({
 			ref={ref}
 			className={cn(
 				'cursor-pointer p-2',
-				isActive ? 'border-l-2 bg-background/90' : 'hover:bg-background/30'
+				isActive ? 'bg-background/90 border-l-2' : 'hover:bg-background/30'
 			)}
 			onClick={() => {
 				setCommentOption({ activeCommentId: null })
@@ -83,11 +83,11 @@ const SuggestionBlock = ({
 		>
 			<div className="relative flex items-center gap-2">
 				<SuggestionAvatar user={user} />
-				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
+				<h4 className="text-sm leading-none font-semibold">{user?.name}</h4>
 				{userTitle && (
 					<Badge
 						variant="outline"
-						className="bg-muted text-xxs leading-none text-muted-foreground"
+						className="bg-muted text-xxs text-muted-foreground leading-none"
 					>
 						{userTitle}
 					</Badge>
@@ -96,7 +96,7 @@ const SuggestionBlock = ({
 					title="Accept Suggestion"
 					className={cn(
 						buttonVariants({ variant: 'ghost' }),
-						'ml-auto h-6 p-1 text-muted-foreground'
+						'text-muted-foreground ml-auto h-6 p-1'
 					)}
 					onClick={() =>
 						suggestionAction(SuggestionActions.ACCEPT, description)
@@ -108,7 +108,7 @@ const SuggestionBlock = ({
 					title="Reject Suggestion"
 					className={cn(
 						buttonVariants({ variant: 'ghost' }),
-						'h-6 p-1 text-muted-foreground'
+						'text-muted-foreground h-6 p-1'
 					)}
 					onClick={() =>
 						suggestionAction(SuggestionActions.REJECT, description)

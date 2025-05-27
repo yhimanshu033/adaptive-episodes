@@ -82,7 +82,7 @@ const LSTableEditor = memo(
 				</If>
 
 				<div className="rounded-md border">
-					<div className="grid grid-cols-5 gap-4 bg-muted p-4 font-medium">
+					<div className="bg-muted grid grid-cols-5 gap-4 p-4 font-medium">
 						<div>original_name</div>
 						<div>localised_name</div>
 						<div>Type</div>
@@ -106,7 +106,7 @@ const LSTableEditor = memo(
 						</ForEach>
 
 						<If condition={tableData.length === 0}>
-							<div className="p-4 text-center text-muted-foreground">
+							<div className="text-muted-foreground p-4 text-center">
 								No data available.
 							</div>
 						</If>

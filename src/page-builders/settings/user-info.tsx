@@ -14,7 +14,7 @@ export function UserInfo() {
 		return <UserInfoSkeleton />
 	}
 	return (
-		<div className="flex items-center space-x-4 rounded-lg bg-background-editor p-4">
+		<div className="bg-background-editor flex items-center space-x-4 rounded-lg p-4">
 			<Avatar className="size-20">
 				{user.image && <AvatarImage src={user.image} alt={user.fullname} />}
 				<AvatarFallback colorString={user.fullname} className="text-white">

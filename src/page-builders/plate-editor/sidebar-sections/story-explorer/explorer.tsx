@@ -30,7 +30,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	return (
 		<div>
 			<Tabs defaultValue={activeExplorerMode}>
-				<TabsList className="grid w-full grid-cols-3 bg-background">
+				<TabsList className="bg-background grid w-full grid-cols-3">
 					{categories.map(({ mode, id }, idx) => (
 						<TabsTrigger
 							className="data-[state=active]:bg-primary"

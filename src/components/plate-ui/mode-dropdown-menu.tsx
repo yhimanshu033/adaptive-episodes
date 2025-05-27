@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import React, { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { EditorModes } from '@/constants/editor-constants'
@@ -84,7 +85,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
 		<DropdownMenu modal={false} {...openState} {...props}>
 			<DropdownMenuTrigger asChild>
 				<ToolbarButton
-					className="min-w-[auto] lg:min-w-[130px]"
+					className="min-w-auto lg:min-w-[130px]"
 					pressed={openState.open}
 					tooltip="Editing mode"
 					isDropdown

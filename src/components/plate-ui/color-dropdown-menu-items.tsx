@@ -41,7 +41,7 @@ export function ColorDropdownMenuItem({
 					isMenu: true,
 					variant: 'outline',
 				}),
-				'size-6 border border-solid border-muted p-0',
+				'border-muted size-6 border border-solid p-0',
 				!isBrightColor && 'border-transparent text-white',
 				className
 			)}
@@ -91,7 +91,7 @@ export function ColorDropdownMenuItems({
 					isMenu: true,
 					variant: 'outline',
 				}),
-				'size-6 border border-solid border-muted p-0',
+				'border-muted size-6 border border-solid p-0',
 				className
 			)}
 			style={{ backgroundColor: 'transparent' }}

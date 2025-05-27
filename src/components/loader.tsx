@@ -21,19 +21,19 @@ export function Loader({
 				<div
 					className={cn(
 						`size-${size}`,
-						'animate-pulse rounded-full bg-primary'
+						'bg-primary animate-pulse rounded-full'
 					)}
 				/>
 				<div
 					className={cn(
 						`size-${size}`,
-						'animate-pulse rounded-full bg-primary'
+						'bg-primary animate-pulse rounded-full'
 					)}
 				/>
 				<div
 					className={cn(
 						`size-${size}`,
-						'animate-pulse rounded-full bg-primary'
+						'bg-primary animate-pulse rounded-full'
 					)}
 				/>
 			</div>
@@ -56,7 +56,7 @@ export function FullScreenLoader({
 	return (
 		<div
 			className={cn(
-				'fixed inset-0 z-[99] flex items-center justify-center bg-black/30'
+				'fixed inset-0 z-99 flex items-center justify-center bg-black/30'
 			)}
 		>
 			<div className="flex flex-col items-center gap-2">

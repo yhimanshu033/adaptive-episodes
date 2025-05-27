@@ -29,18 +29,18 @@ const MembersTable = () => {
 			<SearchTable setGlobalFilter={setGlobalFilter} />
 			<ScrollArea className="relative mt-2 flex h-[48vh] w-full flex-col rounded-md border">
 				<Table>
-					<TableHeader className="sticky top-0 z-10 bg-background">
+					<TableHeader className="bg-background sticky top-0 z-10">
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
 									<TableHead
 										key={header.id}
-										className="flex-1 text-center after:absolute after:bottom-0 after:left-0 after:w-full after:border-b after:border-border"
+										className="after:border-border flex-1 text-center after:absolute after:bottom-0 after:left-0 after:w-full after:border-b"
 									>
 										<div
 											className={cn(
 												header.column.getCanSort() &&
-													'flex cursor-pointer select-none items-center'
+													'flex cursor-pointer items-center select-none'
 											)}
 											onClick={header.column.getToggleSortingHandler()}
 										>

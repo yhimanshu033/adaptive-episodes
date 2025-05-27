@@ -161,23 +161,23 @@ export default function VideoUpload() {
 						<div className="flex flex-col items-center justify-center gap-2 text-center">
 							<IfElse condition={!file}>
 								<If>
-									<Upload className="size-10 text-muted-foreground" />
+									<Upload className="text-muted-foreground size-10" />
 									<h3 className="text-lg font-medium">
 										{PROMO_PAGE.DND_TITLE}
 									</h3>
-									<p className="text-sm text-muted-foreground">
+									<p className="text-muted-foreground text-sm">
 										{PROMO_PAGE.DND_DESCRIPTION}
 									</p>
 								</If>
 								<Else>
 									<div className="w-full">
-										<div className="flex items-center justify-between rounded-md border bg-muted/50 p-2">
+										<div className="bg-muted/50 flex items-center justify-between rounded-md border p-2">
 											<div className="flex items-center gap-2 overflow-hidden">
-												<FileVideo className="size-6 shrink-0 text-primary" />
+												<FileVideo className="text-primary size-6 shrink-0" />
 												<span className="truncate text-sm font-medium">
 													{file?.name}
 												</span>
-												<span className="text-xs text-muted-foreground">
+												<span className="text-muted-foreground text-xs">
 													{fileSize}
 												</span>
 											</div>
@@ -206,7 +206,7 @@ export default function VideoUpload() {
 					</div>
 
 					<If condition={isError}>
-						<div className="text-sm font-medium text-destructive">
+						<div className="text-destructive text-sm font-medium">
 							{PROMO_PAGE.ERROR}
 						</div>
 					</If>

@@ -59,40 +59,40 @@ export default function ResolvedCommentItem({
 			className={cn(
 				'p-4',
 				activeResolvedCommentId === resolvedComment.id
-					? '~border-b border-l-2 border-b-primary bg-background/90'
+					? '~border-b border-b-primary bg-background/90 border-l-2'
 					: 'hover:bg-background/30'
 			)}
 		>
 			<div>
-				<div className="flex items-center gap-1 pb-2 text-xs text-muted-foreground">
+				<div className="text-muted-foreground flex items-center gap-1 pb-2 text-xs">
 					<ReplyIcon size={8} className="rotate-180" />
 					<h1 className="w-64 truncate">{resolvedComment.node.text}</h1>
 				</div>
 				<div className="relative flex items-center gap-2">
 					<CommentAvatar userId={resolvedComment?.userId} />
 
-					<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
+					<h4 className="text-sm leading-none font-semibold">{user?.name}</h4>
 					{userTitle && (
 						<Badge
 							variant="outline"
-							className="bg-muted text-xxs leading-none text-muted-foreground"
+							className="bg-muted text-xxs text-muted-foreground leading-none"
 						>
 							{userTitle}
 						</Badge>
 					)}
 
-					<div className="text-xs leading-none text-muted-foreground">
+					<div className="text-muted-foreground text-xs leading-none">
 						{formatDistance(resolvedComment.createdAt, Date.now())} ago
 					</div>
 
-					<div className="absolute -right-0.5 -top-0.5 flex space-x-1">
+					<div className="absolute -top-0.5 -right-0.5 flex space-x-1">
 						<Button
 							variant="ghost"
 							tooltip="Accept"
 							onClick={handleResolve}
 							className={cn(
 								buttonVariants({ variant: 'ghost' }),
-								'h-6 p-1 text-muted-foreground'
+								'text-muted-foreground h-6 p-1'
 							)}
 						>
 							<Icons.check className="size-4" />
@@ -103,7 +103,7 @@ export default function ResolvedCommentItem({
 							onClick={handleRestore}
 							className={cn(
 								buttonVariants({ variant: 'ghost' }),
-								'h-6 p-1 text-muted-foreground'
+								'text-muted-foreground h-6 p-1'
 							)}
 						>
 							<Undo className="size-4" />
@@ -111,8 +111,8 @@ export default function ResolvedCommentItem({
 					</div>
 				</div>
 
-				<div className="mb-4 pl-7 pt-0.5">
-					<div className="whitespace-pre-wrap text-sm">
+				<div className="mb-4 pt-0.5 pl-7">
+					<div className="text-sm whitespace-pre-wrap">
 						{getText(resolvedComment.value)}
 					</div>
 				</div>

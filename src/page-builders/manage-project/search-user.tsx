@@ -70,7 +70,7 @@ const SearchUser = ({
 				)}
 			</div>
 
-			<ScrollArea className="mt-2 max-h-[52vh] rounded-md border border-input">
+			<ScrollArea className="border-input mt-2 max-h-[52vh] rounded-md border">
 				<CommandList className="max-h-none">
 					<IfElse condition={isLoading}>
 						<If>
@@ -96,7 +96,7 @@ const SearchUser = ({
 						</Else>
 					</IfElse>
 				</CommandList>
-				<CommandEmpty className="my-5 text-sm text-muted-foreground">
+				<CommandEmpty className="text-muted-foreground my-5 text-sm">
 					No user found
 				</CommandEmpty>
 			</ScrollArea>

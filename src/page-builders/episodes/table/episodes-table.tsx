@@ -85,7 +85,7 @@ const EpisodesTable = () => {
 			</div>
 			<SelectionActions table={table} />
 			<Table className="rounded-md">
-				<TableHeader className="sticky top-14 z-10 bg-card">
+				<TableHeader className="bg-card sticky top-14 z-10">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header) => {
@@ -95,7 +95,7 @@ const EpisodesTable = () => {
 											<div
 												className={cn(
 													header.column.getCanSort() &&
-														'flex cursor-pointer select-none items-center'
+														'flex cursor-pointer items-center select-none'
 												)}
 												{...(header.id !==
 												(EEpisodeHeaderKeys.SERIAL_NUMBER as string)
@@ -164,7 +164,7 @@ const EpisodesTable = () => {
 														<Button
 															title="Invent episode"
 															tooltip="Invent episode"
-															className="absolute z-10 h-auto -translate-y-1/2 rounded-full bg-primary p-1"
+															className="bg-primary absolute z-10 h-auto -translate-y-1/2 rounded-full p-1"
 															disabled={!isWriter}
 															onClick={() => {
 																setIsInventOpen(true)

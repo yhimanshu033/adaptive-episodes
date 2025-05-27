@@ -68,10 +68,10 @@ const AddMemberForm = () => {
 										<SelectTrigger disabled={!form.watch('email')}>
 											<SelectValue placeholder="Select Role" />
 										</SelectTrigger>
-										<SelectContent className="mt-2 bg-background" align="end">
+										<SelectContent className="bg-background mt-2" align="end">
 											{rolesArray.map((role, index) => (
 												<SelectItem
-													className="cursor-pointer hover:bg-muted"
+													className="hover:bg-muted cursor-pointer"
 													key={index}
 													value={role}
 												>

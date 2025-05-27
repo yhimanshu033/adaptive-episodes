@@ -127,7 +127,7 @@ export default function FloatingLaserResponse() {
 				setActiveLaser(null)
 			}}
 			className={cn(
-				'fixed z-[9999] flex gap-2 rounded-lg bg-popover p-2',
+				'bg-popover fixed z-9999 flex gap-2 rounded-lg p-2',
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{
@@ -158,13 +158,13 @@ export default function FloatingLaserResponse() {
 						dangerouslySetInnerHTML={{
 							__html: laser.text.replace(/\n/g, '<br/>'),
 						}}
-						className="mb-2 max-h-16 text-wrap text-muted-foreground"
+						className="text-muted-foreground mb-2 max-h-16 text-wrap"
 					/>
 				</ScrollArea>
 				<Textarea
 					name={name}
 					id={`leaf-response-editor-${key}`}
-					className="mb-4 min-w-[300px] text-accent-foreground"
+					className="text-accent-foreground mb-4 min-w-[300px]"
 					value={val}
 					onChange={(e) => setVal(e.target.value)}
 				/>

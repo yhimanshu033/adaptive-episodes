@@ -103,26 +103,26 @@ export default function FileUpload({
 			<div className="flex flex-col items-center justify-center gap-2 text-center">
 				<IfElse condition={!url}>
 					<If>
-						<Upload className="size-10 text-muted-foreground" />
+						<Upload className="text-muted-foreground size-10" />
 						<h3 className="text-lg font-medium">Add file</h3>
-						<p className="text-sm text-muted-foreground">
+						<p className="text-muted-foreground text-sm">
 							Drag and drop or click to select files
 						</p>
 					</If>
 					<Else>
 						<div className="w-full">
-							<div className="flex items-center justify-between rounded-md border bg-muted/50 p-2">
+							<div className="bg-muted/50 flex items-center justify-between rounded-md border p-2">
 								<div className="flex items-center gap-2 overflow-hidden">
 									<Image
 										src={url}
 										alt={file?.name || 'Preview'}
-										className="size-6 shrink-0 text-primary"
+										className="text-primary size-6 shrink-0"
 									/>
 									<span className="truncate text-sm font-medium">
 										{trim(file?.name || 'Current File', 15)}
 									</span>
 									<If condition={!!file?.size}>
-										<span className="text-xs text-muted-foreground">
+										<span className="text-muted-foreground text-xs">
 											{fileSize}
 										</span>
 									</If>

@@ -47,7 +47,7 @@ const Stories = () => {
 							loading="lazy"
 							unoptimized
 						/>
-						<div className="absolute right-0 z-10 m-3 outline-none">
+						<div className="absolute right-0 z-10 m-3 outline-hidden">
 							<Select
 								defaultValue={countries.Germany}
 								onValueChange={(value) => {
@@ -85,7 +85,7 @@ const Stories = () => {
 							<BookOpen className="mr-1 size-3" />
 							<span>100 episodes</span>
 						</p>
-						<p className="flex items-center text-sm text-muted-foreground">
+						<p className="text-muted-foreground flex items-center text-sm">
 							<Clock className="mr-1 size-3" />
 							<span>{formatDate(Date.now())}</span>
 						</p>

@@ -33,7 +33,7 @@ const EpisodeHeader = ({
 
 	if (simplifiedEditor) {
 		return (
-			<div className="flex animate-fade-in-up items-center justify-between">
+			<div className="animate-fade-in-up flex items-center justify-between">
 				<p className="text-xl">
 					{content?.chapter.seq_number}. {content?.chapter.chapter_title}
 				</p>
@@ -43,7 +43,7 @@ const EpisodeHeader = ({
 	}
 
 	return (
-		<div className="flex animate-fade-in-up items-center justify-between border-l py-4 pl-10">
+		<div className="animate-fade-in-up flex items-center justify-between border-l py-4 pl-10">
 			<div className="flex items-center gap-2">
 				<HomeButton />
 				<Title

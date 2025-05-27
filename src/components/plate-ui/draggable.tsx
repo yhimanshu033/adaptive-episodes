@@ -82,7 +82,7 @@ const DragHandle = () => {
 		<Tooltip>
 			<TooltipTrigger type="button">
 				<Icons.dragHandle
-					className="size-4 text-muted-foreground"
+					className="text-muted-foreground size-4"
 					onClick={(event) => {
 						event.stopPropagation()
 						event.preventDefault()

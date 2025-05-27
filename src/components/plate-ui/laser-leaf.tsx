@@ -236,7 +236,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 					e.stopPropagation()
 				}}
 				className={cn(
-					'absolute bottom-0 z-[9999] max-w-[75vw] translate-y-full whitespace-nowrap rounded border bg-popover px-1 shadow-md print:hidden',
+					'bg-popover absolute bottom-0 z-9999 max-w-[75vw] translate-y-full rounded border px-1 whitespace-nowrap shadow-md print:hidden',
 					{
 						'pointer-events-none opacity-0': activeLaser !== key,
 						'opacity-100': activeLaser === key,

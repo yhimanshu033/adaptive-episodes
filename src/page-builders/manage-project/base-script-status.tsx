@@ -57,7 +57,7 @@ const BaseScriptStatus = ({
 	}, [responses])
 
 	return (
-		<div className="w-full rounded-md border p-4 shadow-sm">
+		<div className="w-full rounded-md border p-4 shadow-xs">
 			<ScrollArea className="h-48 pr-2">
 				<div ref={scrollRef} className="h-full overflow-y-auto pr-2">
 					{Object.entries(grouped).map(([header, messages]) => (
@@ -67,9 +67,9 @@ const BaseScriptStatus = ({
 								{messages.map((msg, idx) => (
 									<li
 										key={idx}
-										className="flex items-center space-x-2 text-sm text-muted-foreground"
+										className="text-muted-foreground flex items-center space-x-2 text-sm"
 									>
-										<CheckCircle className="size-4 text-success" />
+										<CheckCircle className="text-success size-4" />
 										<span>{msg}</span>
 									</li>
 								))}
@@ -82,7 +82,7 @@ const BaseScriptStatus = ({
 
 			<IfElse condition={taskEnded?.[taskId]}>
 				<If>
-					<div className="relative flex items-center justify-center space-x-2 pt-4 text-sm text-success">
+					<div className="text-success relative flex items-center justify-center space-x-2 pt-4 text-sm">
 						<CheckCircle className="size-4" />
 						<span>Task Completed</span>
 						<Button
@@ -97,7 +97,7 @@ const BaseScriptStatus = ({
 					</div>
 				</If>
 				<Else>
-					<div className="flex animate-pulse items-center justify-center space-x-2 pt-4 text-sm text-muted-foreground">
+					<div className="text-muted-foreground flex animate-pulse items-center justify-center space-x-2 pt-4 text-sm">
 						<Loader2 className="size-4 animate-spin" />
 						<span>Processing…</span>
 					</div>

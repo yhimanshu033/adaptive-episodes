@@ -27,7 +27,7 @@ export default function ViewLS() {
 					<Sheet />
 				</ToolbarButton>
 			</DialogTrigger>
-			<DialogContent className="max-w-screen-lg">
+			<DialogContent className="max-w-(--breakpoint-lg)">
 				<DialogHeader>
 					<DialogTitle>LS Sheet</DialogTitle>
 				</DialogHeader>
