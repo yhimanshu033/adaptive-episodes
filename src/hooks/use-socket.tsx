@@ -135,8 +135,6 @@ export const SocketProvider = ({
 				},
 			})
 
-			console.log({ resp })
-
 			if (!resp.success) {
 				responsesRef.current[taskId] = {
 					result: resp,

@@ -132,11 +132,6 @@ export async function fetchAPI<
 			})
 		}
 
-		log({
-			'x-forwarded-for': forwardedFor || '',
-			'x-real-ip': realIp || '',
-		})
-
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {
