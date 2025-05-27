@@ -131,6 +131,7 @@ export async function fetchAPI<
 				extra: defaultSentryData,
 			})
 		}
+
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {

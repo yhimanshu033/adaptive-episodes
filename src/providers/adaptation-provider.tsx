@@ -35,6 +35,7 @@ function useAdaptationUtil() {
 	} = useAdaptationMutation(() => setOpen(true))
 
 	const step = useMemo(() => {
+		// return 3
 		if (sendLSData) {
 			return 4
 		}

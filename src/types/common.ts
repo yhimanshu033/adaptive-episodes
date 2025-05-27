@@ -90,8 +90,9 @@ export enum ELSMappingGender {
 
 export type LSMappingCommon = {
 	gender?: ELSMappingGender
+	is_deleted?: string
 	type: ELSMappingType
-}
+} & Partial<{ [key: string]: string }>
 
 export interface LSMappingOutputItem extends LSMappingCommon {
 	localised_name: string
