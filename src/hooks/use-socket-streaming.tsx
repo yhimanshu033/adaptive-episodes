@@ -161,7 +161,7 @@ export const SocketStreamingProvider = ({
 			}
 
 			socket.emit('subscribe', { task_id: String(session?.user.id) })
-			const response = await fetchAPI<
+			const resp = await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
 				BodyParamsT,
@@ -174,7 +174,9 @@ export const SocketStreamingProvider = ({
 					...(params.query as QueryParamsT),
 				},
 			})
-			console.log({ response })
+
+			console.log({ resp })
+
 			return taskId
 		},
 		[fetchedData, session, socket]
