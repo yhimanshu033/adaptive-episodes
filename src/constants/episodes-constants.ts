@@ -19,7 +19,13 @@ export const languages: ELanguage[] = [
 	ELanguage.MEXICAN_SPANISH,
 ]
 
-export const sourceLanguages: ELanguage[] = [ELanguage.ENGLISH, ELanguage.HINDI]
+export const sourceLanguages: ELanguage[] = [
+	ELanguage.ENGLISH,
+	ELanguage.HINDI,
+	ELanguage.CHINESE,
+	ELanguage.KOREAN,
+	ELanguage.TRANSLATED_ENGLISH,
+]
 
 export const titleToStatus: Partial<Record<EStatus, string>> = {
 	[EStatus.FIRST_DRAFT]: '🔴 1ST DRAFT',
@@ -37,6 +43,10 @@ export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.MEXICAN_SPANISH]: 'Spanish',
 	[ELanguage.GERMAN_ORIGINAL]: 'German',
 	[ELanguage.ENGLISH_US]: 'English',
+	[ELanguage.CHINESE]: 'Chinese',
+	[ELanguage.KOREAN]: 'Korean',
+	[ELanguage.NEUTRAL_SPANISH]: 'Neutral Spanish',
+	[ELanguage.TRANSLATED_ENGLISH]: 'Translated English',
 }
 
 export enum EpisodeActions {

@@ -100,7 +100,9 @@ export const useEpisodeContentUtil = () => {
 
 		addEpisodeMap(episodeId, resp)
 		addEpisodeKey(episodeId, queryKey)
-		const oldData = await getValue(`${resp.chapter.project}_${episodeId}`)
+		const oldData = await getValue(
+			`${resp.chapter.project}_${episode?.id || episodeId}`
+		)
 		if (!oldData) {
 			return resp
 		}
