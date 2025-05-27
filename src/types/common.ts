@@ -38,6 +38,7 @@ export enum EEpisodeType {
 }
 
 export enum ELanguage {
+	CHINESE = 'chinese',
 	ENGLISH = 'english',
 	ENGLISH_US = 'english_us',
 	FRENCH = 'french',
@@ -45,7 +46,10 @@ export enum ELanguage {
 	GERMAN_ORIGINAL = 'german_original',
 	HINDI = 'hindi',
 	ITALIAN = 'italian',
+	KOREAN = 'korean',
 	MEXICAN_SPANISH = 'mexican_spanish',
+	NEUTRAL_SPANISH = 'neutral_spanish',
+	TRANSLATED_ENGLISH = 'translated_english',
 }
 
 export type TSourceLanguage = ELanguage.ENGLISH | ELanguage.HINDI
