@@ -52,7 +52,13 @@ export enum ELanguage {
 	TRANSLATED_ENGLISH = 'translated_english',
 }
 
-export type TSourceLanguage = ELanguage.ENGLISH | ELanguage.HINDI
+export type TSourceLanguage =
+	| ELanguage.ENGLISH
+	| ELanguage.HINDI
+	| ELanguage.CHINESE
+	| ELanguage.TRANSLATED_ENGLISH
+	| ELanguage.KOREAN
+	| ELanguage.GERMAN
 
 export const BASE_STATUS = 'BASE'
 

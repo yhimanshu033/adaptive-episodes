@@ -4,7 +4,7 @@ import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
 import { ArrowRight, CheckCircle } from 'lucide-react'
 
 import LanguageSelector from '@/components/plate-ui/language-selector'
-import { Case, SwitchCase } from '@/components/switch-case'
+import SwitchCase, { Case } from '@/components/switch-case'
 import { Button } from '@/components/ui/button'
 import {
 	Dialog,

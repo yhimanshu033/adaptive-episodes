@@ -1,28 +1,38 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { languages } from '@/constants/episodes-constants'
+import {
+	AVAILABLE_TARGET_LANGUAGES,
+	PREFERABLE_LANGUAGES,
+} from '@/constants/ai-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
 import AdaptationDialog from '@/page-builders/episodes/dialogs/adaptation-dialog'
 
 import { parseInputLSMapping } from '@/lib/utils/helpers'
 
-import { ELanguage, LSMappingOutput } from '@/types/common'
+import { ELanguage, LSMappingOutput, TSourceLanguage } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
 
 function useAdaptationUtil() {
 	const [open, setOpen] = useState(false)
 	const [selectedRowData, setSelectedRowData] = useState<TEpisode[]>([])
 	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
-		useState<ELanguage>(ELanguage.MEXICAN_SPANISH)
+		useState<ELanguage>(ELanguage.GERMAN)
 	const currentLanguage = useMemo(
-		() => selectedRowData[0]?.language || ELanguage.ENGLISH,
+		() =>
+			(selectedRowData[0]?.language as TSourceLanguage) || ELanguage.ENGLISH,
 		[selectedRowData]
 	)
 	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
 
 	const selectableLanguages = useMemo(
-		() => languages.filter((lang) => lang !== currentLanguage),
+		() => AVAILABLE_TARGET_LANGUAGES.filter((lang) => lang !== currentLanguage),
 		[currentLanguage]
 	)
+
+	useEffect(() => {
+		setSelectedAdaptingLanguage(
+			PREFERABLE_LANGUAGES[currentLanguage] || selectableLanguages[0]
+		)
+	}, [currentLanguage, selectableLanguages])
 
 	const {
 		createLSMutation: { mutate, isPending, data, reset },

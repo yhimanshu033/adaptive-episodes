@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import { LSMappingGenders, LSMappingTypes } from '@/constants/ai-constants'
 
 import IfElse, { Else, If } from '@/components/if-else'
-import { Case, Default, SwitchCase } from '@/components/switch-case'
+import SwitchCase, { Case } from '@/components/switch-case'
 import { Checkbox } from '@/components/ui/checkbox'
 import ForEach from '@/components/ui/for-each'
 import { Input } from '@/components/ui/input'
@@ -41,6 +41,7 @@ const LSEditorRow = memo(
 		disabled = false,
 		rows = ['original_name', 'localised_name'],
 	}: LSEditorRowProps) => {
+		const custom_fields = ['type', 'gender', 'is_deleted']
 		return (
 			<TableRow>
 				<ForEach data={rows}>
@@ -105,14 +106,14 @@ const LSEditorRow = memo(
 										}
 									/>
 								</Case>
-								<Default>
+								<Case value={custom_fields.includes(key) ? '' : key}>
 									<Input
 										disabled={disabled}
 										value={item[key]}
 										onChange={(e) => updateField(index, key, e.target.value)}
 										placeholder={key}
 									/>
-								</Default>
+								</Case>
 							</SwitchCase>
 						</TableCell>
 					)}
