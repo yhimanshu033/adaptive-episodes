@@ -8,9 +8,11 @@ import {
 	TQuickPrompt,
 } from '@/types/ai-types'
 import {
+	ELanguage,
 	ELSMappingGender,
 	ELSMappingType,
 	LSMappingOutputItem,
+	TSourceLanguage,
 } from '@/types/common'
 
 export const aiInitialMessage: TMessage[] = [
@@ -255,3 +257,24 @@ export const SAMPLE_LS_DATA: LSMappingOutputItem[] = [
 		is_deleted: '',
 	},
 ] as unknown as LSMappingOutputItem[]
+
+export const PREFERABLE_LANGUAGES: Record<TSourceLanguage, ELanguage> = {
+	[ELanguage.ENGLISH]: ELanguage.GERMAN,
+	[ELanguage.CHINESE]: ELanguage.ENGLISH,
+	[ELanguage.GERMAN]: ELanguage.FRENCH,
+	[ELanguage.HINDI]: ELanguage.ENGLISH,
+	[ELanguage.KOREAN]: ELanguage.ENGLISH,
+	[ELanguage.TRANSLATED_ENGLISH]: ELanguage.ENGLISH,
+}
+
+export const AVAILABLE_SOURCE_LANGUAGES: TSourceLanguage[] = []
+
+export const AVAILABLE_TARGET_LANGUAGES: ELanguage[] = [
+	ELanguage.ENGLISH,
+	ELanguage.HINDI,
+	ELanguage.ITALIAN,
+	ELanguage.GERMAN,
+	ELanguage.FRENCH,
+	ELanguage.MEXICAN_SPANISH,
+	ELanguage.NEUTRAL_SPANISH,
+]
