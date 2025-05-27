@@ -43,13 +43,13 @@ export function Case({
 		throw new Error('Case must be used within a SwitchCase component')
 	}
 
-	if (Array.isArray(caseValue)) {
-		if (caseValue.includes(context.value)) {
-			return children
-		}
-		return null
+	if (Array.isArray(caseValue) && caseValue?.includes?.(context.value)) {
+		return children
 	}
 
-	const condition = context.value === caseValue
-	return condition ? children : null
+	if (context.value === caseValue) {
+		return children
+	}
+
+	return null
 }
