@@ -6,7 +6,15 @@ export type TStoryStoreState = {
 	isFormOpen: boolean
 }
 
-export type TGetStoriesResponse = Array<TStory>
+export type TGetStoriesResponse = {
+	count: number
+	next: string | null
+	previous: number | null
+	results: {
+		data: Array<TStory>
+		message: string
+	}
+}
 
 export type TStory = {
 	author: string | null
@@ -34,4 +42,21 @@ export type StoryUploadParams = {
 		start_ep: number
 		title: string
 	}
+}
+
+export type TGetStoriesQueryParams = {
+	limit?: number
+	page?: number
+	search?: string
+}
+
+export type TGetStoriesQueryParamsKey = keyof TGetStoriesQueryParams
+
+export type TGetStoryDataResponse = {
+	data?: TStory
+	message: string
+}
+
+export type TGetStoryDataUrlParams = {
+	storyId: number
 }

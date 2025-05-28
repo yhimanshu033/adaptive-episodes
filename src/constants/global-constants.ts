@@ -103,6 +103,7 @@ export const API_URLS = {
 	GET_SLACK_CHANNEL: '/project/:projectId/get-slack-channel-info/',
 	SEND_TASK_TO_ADAPTATION: '/project/send-task-to-adaptation',
 	GET_ADAPTATION_LS: '/project/:projectId/:language/get_ls_sheet',
+	GET_STORY_DETAILS: '/project/:storyId/get-project-details/',
 }
 
 export const INDEXED_DB_KEYS = {
@@ -126,3 +127,6 @@ export const GDRIVE_SUCCESS_MESSAGE = 'gdrive-success'
 export const SIMPLIFIED_VIEWABLE_EDITOR = 'sve'
 export const GLOBAL_LOCALIZE = 'global-localize'
 export const HIDE_HEADER = 'hide-header'
+
+export const SAMPLE_DOC_LINK =
+	'https://docs.google.com/document/d/1WMpxu_7CUGKRJGfmWNf-4FgOpssvqyMA/edit'

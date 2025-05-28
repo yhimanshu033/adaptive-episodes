@@ -1,8 +1,5 @@
-import { EImportStatus } from '@/constants/story-constants'
-
 import { EEpisodeType, ELanguage } from '@/types/common'
 import { TGetEpisodeResponse, TGetEpisodesResponse } from '@/types/episode-type'
-import { TGetStoriesResponse } from '@/types/story-types'
 
 export const sampleEpisodeDetails: TGetEpisodesResponse = {
 	count: 1,
@@ -66,21 +63,3 @@ export function getSampleGetEpisodeResponse(id: number): TGetEpisodeResponse {
 		translation_text: 'EPISODE TRANSLATED' + id,
 	}
 }
-
-export const sampleStories: TGetStoriesResponse = [
-	{
-		id: 1,
-		author: 'Author 1',
-		base_script_drive_folder_url: '',
-		cms_ready_drive_folder_url: '',
-		create_time: '',
-		episode_count: 1,
-		image: '',
-		project_title: '',
-		props: {},
-		status: EImportStatus.IMPORTED,
-		update_time: '',
-		user: null,
-		parent_language: ELanguage.ENGLISH,
-	},
-]

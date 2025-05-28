@@ -55,7 +55,11 @@ export const SocketStreamingProvider = ({
 	baseUrl?: string
 	children: React.ReactNode
 }) => {
-	const socketUrl = baseUrl || process.env.NEXT_PUBLIC_BACKEND_URL || ''
+	const socketUrl =
+		baseUrl ||
+		process.env.NEXT_PUBLIC_SOCKET_URL ||
+		process.env.NEXT_PUBLIC_BACKEND_URL ||
+		''
 	const { data: session } = useSession()
 	const socket = useMemo(
 		() =>
@@ -64,6 +68,10 @@ export const SocketStreamingProvider = ({
 				extraHeaders: {
 					Authorization: `Bearer ${session?.accessToken}`,
 				},
+				// transports: ['websocket'],
+				// auth: {
+				// 	token: `${session?.accessToken}`,
+				// },
 			}),
 		[socketUrl, session]
 	)
@@ -153,7 +161,7 @@ export const SocketStreamingProvider = ({
 			}
 
 			socket.emit('subscribe', { task_id: String(session?.user.id) })
-			const resp = await fetchAPI<
+			await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
 				BodyParamsT,
@@ -166,8 +174,6 @@ export const SocketStreamingProvider = ({
 					...(params.query as QueryParamsT),
 				},
 			})
-
-			console.log({ resp })
 
 			return taskId
 		},
