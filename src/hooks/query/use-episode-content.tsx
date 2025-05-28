@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useMemo, useState } from 'react'
+import React, { createContext, useMemo } from 'react'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
@@ -52,6 +52,10 @@ export const useEpisodeContentUtil = () => {
 	const selectedLanguage = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedLanguage)
 	)
+
+	const importedLocal = useEpisodeIdStoreContext(
+		useShallow((state) => state.importedLocal)
+	)
 	const { addEpisodeMap, addEpisodeKey } = useEditorExtendedStore()
 	const { data } = useEpisodeInfo()
 
@@ -73,7 +77,6 @@ export const useEpisodeContentUtil = () => {
 		}
 		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
 	}, [data, selectedLanguage, selectedStatus])
-	const [imported, setImported] = useState(false)
 
 	const dict = useTranslations('placeholders')
 	const languages = useMemo(() => getAvailableLanguages(data), [data])
@@ -85,28 +88,35 @@ export const useEpisodeContentUtil = () => {
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
 	const { setDualViewMode } = useEpisodeIdStore()
 
-	const queryKey = [
-		EPISODE_CONTENT_QUERY_KEY,
-		episode ? episode.id : episodeId,
-		latestStatus || BASE_STATUS,
-		imported,
-	]
+	const usedEpisodeId = useMemo(
+		() => (episode ? episode.id : episodeId),
+		[episode, episodeId]
+	)
+
+	const queryKey = useMemo(
+		() => [
+			EPISODE_CONTENT_QUERY_KEY,
+			usedEpisodeId,
+			latestStatus || BASE_STATUS,
+			importedLocal,
+		],
+		[importedLocal, latestStatus, usedEpisodeId]
+	)
 
 	async function fetchEpisodeContent() {
-		const resp = await getEpisodeContent(episode?.id || episodeId)
+		const resp = await getEpisodeContent(usedEpisodeId)
 		if (!resp) {
 			return resp
 		}
 
 		addEpisodeMap(episodeId, resp)
 		addEpisodeKey(episodeId, queryKey)
-		const oldData = await getValue(
-			`${resp.chapter.project}_${episode?.id || episodeId}`
-		)
+
+		const oldData = await getValue(`${resp.chapter.project}_${usedEpisodeId}`)
 		if (!oldData) {
 			return resp
 		}
-		if (imported) {
+		if (importedLocal) {
 			setLocalDiffValue(null)
 			setSidebar(null)
 			return getEpisodeQueryResponseFromStoredData({
@@ -120,7 +130,7 @@ export const useEpisodeContentUtil = () => {
 			newData.text
 		)
 		if (!isContentDifferent) {
-			void removeValue(`${resp.chapter.project}_${episodeId}`)
+			void removeValue(`${resp.chapter.project}_${usedEpisodeId}`)
 			return resp
 		}
 		toast(
@@ -178,8 +188,7 @@ export const useEpisodeContentUtil = () => {
 		disabledLanguages,
 		language,
 		queryKey,
-		setImported,
-		imported,
+		importedLocal,
 	}
 }
 
