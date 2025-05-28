@@ -147,48 +147,6 @@ export function ImportStory() {
 								</FormItem>
 							)}
 						/>
-
-						<FormItem>
-							<FormLabel htmlFor="ep_start">
-								Episode Range<sup>*</sup>
-							</FormLabel>
-						</FormItem>
-						<div className="flex items-center gap-2">
-							<FormField
-								control={form.control}
-								name="start_ep"
-								render={({ field }) => (
-									<FormItem className="flex-1">
-										<FormControl>
-											<Input
-												type="number"
-												placeholder="Episode Start"
-												id="ep_start"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="end_ep"
-								render={({ field }) => (
-									<FormItem className="flex-1">
-										<FormControl>
-											<Input
-												type="number"
-												placeholder="Episode End"
-												id="ep_end"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-						</div>
 						<FormField
 							control={form.control}
 							name="image_file"
