@@ -73,6 +73,12 @@ function useEpisodeIdStore() {
 		useEpisodeIdStoreContext.setState({ selectedLanguage })
 	}
 
+	const setEpisodeImported = (
+		importedLocal: EpisodeIdStoreType['importedLocal']
+	) => {
+		useEpisodeIdStoreContext.setState({ importedLocal })
+	}
+
 	return {
 		store: useEpisodeIdStoreContext,
 		setSelectedStatus,
@@ -84,6 +90,7 @@ function useEpisodeIdStore() {
 		removeResolvedComment,
 		setActiveNoteId,
 		setSelectedLanguage,
+		setEpisodeImported,
 	}
 }
 

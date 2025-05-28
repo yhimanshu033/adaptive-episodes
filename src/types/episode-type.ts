@@ -186,6 +186,7 @@ export type EpisodeIdStoreType = {
 	currentTitle: string
 	dualViewMode: EDualVIewMode
 	episodeId: number
+	importedLocal: boolean
 	resolvedComments: TCustomComment[]
 	selectedLanguage: ELanguage | undefined
 	selectedStatus: EStatus | undefined

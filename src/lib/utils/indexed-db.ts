@@ -28,12 +28,25 @@ export function openDB(): Promise<IDBDatabase> {
 
 			request.onupgradeneeded = (event) => {
 				const db = (event.target as IDBOpenDBRequest).result
-				clearDB(db)
+				try {
+					STORES.forEach((store) => {
+						if (db.objectStoreNames.contains(store)) {
+							const tnx = db.transaction(store, 'readwrite').objectStore(store)
+							const clearReq = tnx.clear()
+							clearReq.onerror = (er) => {
+								console.log(er)
+							}
+						} else {
+							db.createObjectStore(store)
+						}
+					})
+				} catch (error) {
+					console.log(error)
+				}
 			}
 
 			request.onsuccess = () => {
 				const db = request.result
-				clearOldEntries(db)
 				resolve(db)
 			}
 			request.onerror = () => reject(request.error)
@@ -46,22 +59,17 @@ export function openDB(): Promise<IDBDatabase> {
 
 export const resetDB = async () => {
 	const db = await openDB()
-	clearDB(db)
-}
-
-const clearDB = (db: IDBDatabase) => {
-	try {
-		STORES.forEach((store) => {
-			if (db.objectStoreNames.contains(store)) {
-				const tnx = db.transaction(store, 'readwrite').objectStore(store)
-				tnx.clear()
-			} else {
-				db.createObjectStore(store)
+	STORES.forEach((store) => {
+		if (db.objectStoreNames.contains(store)) {
+			const tnx = db.transaction(store, 'readwrite').objectStore(store)
+			const clearReq = tnx.clear()
+			clearReq.onerror = (er) => {
+				console.log(er)
 			}
-		})
-	} catch (error) {
-		console.log(error)
-	}
+		} else {
+			db.createObjectStore(store)
+		}
+	})
 }
 
 export const clearOldEntries = (db: IDBDatabase) => {
