@@ -647,22 +647,26 @@ export function parseInputLSMapping(input: LSMappingInput) {
 	return tableItems
 }
 
-export function parseOutputLSMapping(data: LSMappingOutput['ls_mapping']) {
+export function parseOutputLSMapping(
+	data: Partial<LSMappingOutput['ls_mapping']>
+) {
 	return data.map((item) => {
-		if (item.type !== ELSMappingType.PERSON) {
-			delete item.gender
+		if (item?.type !== ELSMappingType.PERSON) {
+			delete item?.gender
 		}
-		return item
+		return item as LSMappingOutputItem
 	})
 }
 
-export function isInvalidLSMapping(data: LSMappingOutput['ls_mapping']) {
+export function isInvalidLSMapping(
+	data: Partial<LSMappingOutput['ls_mapping']>
+) {
 	return data.some(
 		(item) =>
-			!item.original_name.trim() ||
-			!item.localised_name.trim() ||
-			!item.type ||
-			(item.type === ELSMappingType.PERSON && !item.gender)
+			!item?.original_name?.trim() ||
+			!item?.localised_name?.trim() ||
+			!item?.type ||
+			(item?.type === ELSMappingType.PERSON && !item?.gender)
 	)
 }
 
@@ -672,4 +676,14 @@ export function isInternalUser(session: Session | null) {
 
 export function getQueryKeysFromObject(obj: Record<string, unknown>) {
 	return Object.values(obj).map(String)
+}
+
+export function toSnakeCase(str: string): string {
+	return str
+		.replace(/[\s-]+/g, '_') // convert spaces and dashes to _
+		.replace(/([a-z0-9])([A-Z])/g, '$1_$2') // camelCase → snake_case
+		.replace(/([A-Z]+)([A-Z][a-z0-9]+)/g, '$1_$2') // ABBRWord → abbr_word
+		.toLowerCase()
+		.replace(/__+/g, '_') // remove double underscores
+		.replace(/^_+|_+$/g, '') // trim leading/trailing _
 }

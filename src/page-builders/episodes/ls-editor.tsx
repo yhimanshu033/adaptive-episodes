@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import LSEditorRow from '@/page-builders/episodes/ls-editor-row'
-import { Plus } from 'lucide-react'
+import { Download, Plus, Upload } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
@@ -12,7 +13,14 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
-import { isInvalidLSMapping, parseOutputLSMapping } from '@/lib/utils/helpers'
+import { TooltipComponent } from '@/components/ui/tooltip-component'
+import { downloadBlobUrl } from '@/lib/utils/client-helpers'
+import {
+	buttonVariants,
+	isInvalidLSMapping,
+	parseOutputLSMapping,
+	toSnakeCase,
+} from '@/lib/utils/helpers'
 
 import {
 	ELSMappingGender,
@@ -78,11 +86,90 @@ const LSTableEditor = memo(
 			})
 		}
 
+		function handleCSV(files: FileList | null) {
+			const file = files?.[0]
+			if (!file) {
+				return
+			}
+			const reader = new FileReader()
+			reader.onload = (event) => {
+				const text = event.target?.result as string
+
+				const rows = text
+					.trim()
+					.split('\n')
+					.map((row) => row.split(',').map((cell) => cell.trim()))
+
+				const headers = rows[0].map((item) => toSnakeCase(item))
+				const data = rows
+					.slice(1)
+					.map((row) =>
+						Object.fromEntries(row.map((val, i) => [headers[i], val]))
+					) as LSMappingOutputItem[]
+
+				setTableData(data)
+			}
+			reader.onerror = () => {
+				toast.error('Some error occurred while reading CSV')
+			}
+			reader.readAsText(file)
+			toast.success('CSV import completed!')
+		}
+
+		function handleDownloadCSV() {
+			const headers = Object.keys(tableData[0])
+			const csvRows = [
+				headers.join(','), // header row
+				...tableData.map((row) =>
+					headers
+						.map(
+							(header) =>
+								`"${(row[header] ?? '').toString().replace(/"/g, '""')}"`
+						)
+						.join(',')
+				),
+			]
+
+			const blob = new Blob([csvRows.join('\n')], {
+				type: 'text/csv;charset=utf-8;',
+			})
+			const url = URL.createObjectURL(blob)
+			downloadBlobUrl(url, `${new Date().toUTCString()}.csv`)
+		}
 		return (
 			<div className="space-y-4 overflow-x-auto">
 				<If condition={!viewOnly}>
+					<h3 className="text-lg font-medium">Table Editor</h3>
 					<div className="flex items-center justify-between">
-						<h3 className="text-lg font-medium">Table Editor</h3>
+						<div className="flex gap-2">
+							<Button
+								variant="outline"
+								size="icon"
+								tooltip="Download CSV"
+								onClick={handleDownloadCSV}
+							>
+								<Download />
+							</Button>
+							<TooltipComponent tooltip="Upload CSV">
+								<label
+									htmlFor="csv-input"
+									className={buttonVariants({
+										variant: 'outline',
+										size: 'icon',
+									})}
+								>
+									<Upload />
+								</label>
+							</TooltipComponent>
+							<input
+								type="file"
+								accept=".csv"
+								className="hidden"
+								id="csv-input"
+								value={[]}
+								onChange={(e) => handleCSV(e.target.files)}
+							/>
+						</div>
 						<Button onClick={addNewRow} size="sm">
 							<Plus className="mr-2 size-4" /> Add Row
 						</Button>
