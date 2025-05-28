@@ -88,7 +88,7 @@ export default function CommentItemContent() {
 			<div className="relative flex items-center gap-2">
 				<CommentAvatar userId={comment?.userId} />
 
-				<h4 className="text-sm leading-none font-semibold">{user?.name}</h4>
+				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
 				<If condition={!!userTitle}>
 					<Badge
 						variant="outline"
@@ -103,7 +103,7 @@ export default function CommentItemContent() {
 				</div>
 
 				<If condition={!readOnly}>
-					<div className="absolute -top-0.5 -right-0.5 flex items-center space-x-1">
+					<div className="absolute -right-0.5 -top-0.5 flex items-center space-x-1">
 						<If condition={replyCount > 0}>
 							<div className="bg-muted text-muted-foreground ml-2 flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
 								{replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}
@@ -128,12 +128,12 @@ export default function CommentItemContent() {
 				</If>
 			</div>
 
-			<div className="mb-4 pt-0.5 pl-7">
+			<div className="mb-4 pl-7 pt-0.5">
 				<IfElse
 					condition={!!editingValue}
 					if={<CommentValue />}
 					else={
-						<div className="text-sm whitespace-pre-wrap">{commentText}</div>
+						<div className="whitespace-pre-wrap text-sm">{commentText}</div>
 					}
 				/>
 			</div>

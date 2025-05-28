@@ -83,7 +83,7 @@ const SuggestionBlock = ({
 		>
 			<div className="relative flex items-center gap-2">
 				<SuggestionAvatar user={user} />
-				<h4 className="text-sm leading-none font-semibold">{user?.name}</h4>
+				<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
 				{userTitle && (
 					<Badge
 						variant="outline"

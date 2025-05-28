@@ -12,7 +12,7 @@ const CloseSidebar = () => {
 			size="icon"
 			variant="ghost"
 			className={cn(
-				'absolute top-2 right-2 z-50 opacity-20 transition-all hover:opacity-100'
+				'absolute right-2 top-2 z-50 opacity-20 transition-all hover:opacity-100'
 			)}
 			tooltip="Close"
 			onClick={() => setSidebar(null)}

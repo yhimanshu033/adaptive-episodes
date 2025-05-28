@@ -60,7 +60,7 @@ const ProjectHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 	}
 
 	return (
-		<div className="animate-fade-in-down bg-background top-0 left-0 z-50 overflow-hidden border-b">
+		<div className="animate-fade-in-down bg-background left-0 top-0 z-50 overflow-hidden border-b">
 			<header className="animate-fade-in-down container flex h-14 items-center justify-between py-1">
 				<StoryDetails
 					handleClick={() => void handleClick()}

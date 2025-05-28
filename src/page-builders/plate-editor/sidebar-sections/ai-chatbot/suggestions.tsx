@@ -25,7 +25,7 @@ export default function Suggestions() {
 							<Button
 								variant="outline"
 								size="sm"
-								className="mr-2 mb-1"
+								className="mb-1 mr-2"
 								disabled={!!changesPending || disabled || isPending}
 							>
 								{suggestion.value}
@@ -40,7 +40,7 @@ export default function Suggestions() {
 								onClick={() => {
 									handleSuggestion(suggestion)
 								}}
-								className="mr-2 mb-1"
+								className="mb-1 mr-2"
 								disabled={!!changesPending || disabled || isPending}
 							>
 								{suggestion.value}

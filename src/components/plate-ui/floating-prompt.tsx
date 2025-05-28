@@ -83,7 +83,7 @@ export default function FloatingPrompt() {
 				onResetLeaf()
 			}}
 			className={cn(
-				'bg-popover fixed z-9999 flex gap-2 rounded-lg',
+				'bg-popover z-9999 fixed flex gap-2 rounded-lg',
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{

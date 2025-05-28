@@ -19,7 +19,7 @@ export const CommandInput = withRef<typeof CommandPrimitive.Input>(
 			<CommandPrimitive.Input
 				ref={ref}
 				className={cn(
-					'placeholder:text-muted-foreground flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
+					'placeholder:text-muted-foreground outline-hidden flex h-11 w-full rounded-md bg-transparent py-3 text-sm disabled:cursor-not-allowed disabled:opacity-50',
 					className
 				)}
 				{...props}

@@ -98,7 +98,7 @@ export default function AddForm({
 				onSubmit={(e) => {
 					void form.handleSubmit(onSubmit)(e)
 				}}
-				className="space-y-4 px-4 pt-4 pb-6"
+				className="space-y-4 px-4 pb-6 pt-4"
 			>
 				<div className="flex w-full items-center justify-between">
 					<h2 className="text-lg font-bold">Add to sheet</h2>

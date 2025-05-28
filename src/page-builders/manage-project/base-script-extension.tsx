@@ -121,7 +121,7 @@ const BaseScriptExtension = () => {
 												</CardContent>
 											</Else>
 										</IfElse>
-										<div className="absolute right-1 bottom-1">
+										<div className="absolute bottom-1 right-1">
 											<Button
 												variant="ghost"
 												size="icon"

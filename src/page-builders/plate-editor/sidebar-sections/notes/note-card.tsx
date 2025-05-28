@@ -41,7 +41,7 @@ const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 					</div>
 				</CardContent>
 			</Card>
-			<div className="absolute top-2 right-2 hidden items-center justify-center rounded text-center group-hover:flex">
+			<div className="absolute right-2 top-2 hidden items-center justify-center rounded text-center group-hover:flex">
 				{isPending ? (
 					<IconLoader />
 				) : (

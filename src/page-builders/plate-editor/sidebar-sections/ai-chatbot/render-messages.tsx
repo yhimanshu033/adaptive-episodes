@@ -117,7 +117,7 @@ export default function RenderMessage({
 								)
 							}}
 							variant="ghost"
-							className="sticky top-1 m-1 size-6 p-1! transition-all hover:scale-105 active:scale-75"
+							className="p-1! sticky top-1 m-1 size-6 transition-all hover:scale-105 active:scale-75"
 						>
 							<Copy size={16} />
 						</Button>

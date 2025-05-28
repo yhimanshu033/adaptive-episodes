@@ -147,7 +147,7 @@ export const useEpisodeContentUtil = () => {
 							{dict('localChanges')}
 						</Button>
 						<X
-							className="absolute top-1 right-1 z-10 cursor-pointer"
+							className="absolute right-1 top-1 z-10 cursor-pointer"
 							onClick={() => toast.dismiss(episodeId)}
 							size={12}
 						/>

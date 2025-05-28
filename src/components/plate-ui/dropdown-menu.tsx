@@ -36,7 +36,7 @@ export const DropdownMenuSubTrigger = withRef<
 	<DropdownMenuPrimitive.SubTrigger
 		ref={ref}
 		className={cn(
-			'focus:bg-accent data-[state=open]:bg-accent flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none',
+			'focus:bg-accent data-[state=open]:bg-accent outline-hidden flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm',
 			'data-disabled:pointer-events-none data-disabled:opacity-50',
 			inset && 'pl-8',
 			className
@@ -94,7 +94,7 @@ export const DropdownMenuCheckboxItem = withRef<
 	<DropdownMenuPrimitive.CheckboxItem
 		ref={ref}
 		className={cn(
-			'focus:bg-accent focus:text-accent-foreground relative flex items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-50',
+			'focus:bg-accent focus:text-accent-foreground outline-hidden data-disabled:pointer-events-none data-disabled:opacity-50 relative flex select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm transition-colors',
 			'cursor-pointer',
 			className
 		)}
@@ -118,7 +118,7 @@ export const DropdownMenuRadioItem = withRef<
 	<DropdownMenuPrimitive.RadioItem
 		ref={ref}
 		className={cn(
-			'focus:bg-accent focus:text-accent-foreground relative flex items-center rounded-sm pr-2 pl-8 text-sm outline-hidden transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-50',
+			'focus:bg-accent focus:text-accent-foreground outline-hidden data-disabled:pointer-events-none data-disabled:opacity-50 relative flex select-none items-center rounded-sm pl-8 pr-2 text-sm transition-colors',
 			'data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground h-9 cursor-pointer px-2',
 			className
 		)}

@@ -7,7 +7,7 @@ import BackButton from '@/components/back-button'
 
 const Projects = () => {
 	return (
-		<main className="animate-fade-in-up relative container flex-1 flex-col py-6">
+		<main className="animate-fade-in-up container relative flex-1 flex-col py-6">
 			<div className="flex items-center gap-6">
 				<BackButton />
 				<div className="flex flex-col">

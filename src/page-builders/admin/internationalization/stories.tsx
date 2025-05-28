@@ -47,7 +47,7 @@ const Stories = () => {
 							loading="lazy"
 							unoptimized
 						/>
-						<div className="absolute right-0 z-10 m-3 outline-hidden">
+						<div className="outline-hidden absolute right-0 z-10 m-3">
 							<Select
 								defaultValue={countries.Germany}
 								onValueChange={(value) => {

@@ -72,7 +72,7 @@ export default function PlateEditor() {
 							>
 								<ResizablePanelGroup
 									direction="horizontal"
-									className="flex size-full overflow-visible!"
+									className="overflow-visible! flex size-full"
 								>
 									<ResizablePanel
 										minSize={50}
