@@ -56,7 +56,7 @@ export function FullScreenLoader({
 	return (
 		<div
 			className={cn(
-				'z-99 fixed inset-0 flex items-center justify-center bg-black/30'
+				'fixed inset-0 z-99 flex items-center justify-center bg-black/30'
 			)}
 		>
 			<div className="flex flex-col items-center gap-2">

@@ -95,7 +95,7 @@ const EpisodesTable = () => {
 											<div
 												className={cn(
 													header.column.getCanSort() &&
-														'flex cursor-pointer select-none items-center'
+														'flex cursor-pointer items-center select-none'
 												)}
 												{...(header.id !==
 												(EEpisodeHeaderKeys.SERIAL_NUMBER as string)

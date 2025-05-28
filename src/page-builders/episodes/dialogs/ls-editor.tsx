@@ -24,8 +24,8 @@ import {
 const LSTableEditor = memo(
 	({
 		tableData = [],
-		setTableData = () => { },
-		onSubmit = () => { },
+		setTableData = () => {},
+		onSubmit = () => {},
 		viewOnly = false,
 	}: {
 		onSubmit?: (data: LSMappingOutput) => void
@@ -91,7 +91,7 @@ const LSTableEditor = memo(
 
 				<div className="max-h-96 max-w-full overflow-auto">
 					<Table>
-						<TableHeader className="sticky top-0 z-10 bg-background">
+						<TableHeader className="bg-background sticky top-0 z-10">
 							<TableRow>
 								<ForEach data={keys}>
 									{(item, idx) => <TableHead key={idx}>{item}</TableHead>}
@@ -114,7 +114,7 @@ const LSTableEditor = memo(
 							</ForEach>
 
 							<If condition={tableData.length === 0}>
-								<div className="p-4 text-center text-muted-foreground">
+								<div className="text-muted-foreground p-4 text-center">
 									No data available.
 								</div>
 							</If>

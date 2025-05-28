@@ -46,7 +46,7 @@ const Stories = ({
 					<Link href={`/projects/${story.id}`}>
 						<div className="relative aspect-square">
 							<If condition={openedStories?.slice(0, 5).includes(story.id)}>
-								<Badge className="absolute right-2 top-2 z-50">
+								<Badge className="absolute top-2 right-2 z-50">
 									Recently Opened
 								</Badge>
 							</If>

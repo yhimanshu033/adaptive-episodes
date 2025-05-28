@@ -127,7 +127,7 @@ export default function FloatingLaserResponse() {
 				setActiveLaser(null)
 			}}
 			className={cn(
-				'bg-popover z-9999 fixed flex gap-2 rounded-lg p-2',
+				'bg-popover fixed z-9999 flex gap-2 rounded-lg p-2',
 				minify ? 'w-[35vw]' : 'w-[70vw]'
 			)}
 			style={{

@@ -57,7 +57,7 @@ const BaseScriptStatus = ({
 	}, [responses])
 
 	return (
-		<div className="shadow-xs w-full rounded-md border p-4">
+		<div className="w-full rounded-md border p-4 shadow-xs">
 			<ScrollArea className="h-48 pr-2">
 				<div ref={scrollRef} className="h-full overflow-y-auto pr-2">
 					{Object.entries(grouped).map(([header, messages]) => (

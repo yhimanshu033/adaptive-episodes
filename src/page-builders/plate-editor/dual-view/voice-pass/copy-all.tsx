@@ -28,7 +28,7 @@ export default function CopyAll({
 			onClick={copyAll}
 			tooltip="Copy All"
 			size="icon"
-			className="pointer-events-[all] bg-background/30 sticky left-4 top-16 z-20 ml-4 mt-4 backdrop-blur-[1px]"
+			className="pointer-events-[all] bg-background/30 sticky top-16 left-4 z-20 mt-4 ml-4 backdrop-blur-[1px]"
 		>
 			<Copy />
 		</Button>

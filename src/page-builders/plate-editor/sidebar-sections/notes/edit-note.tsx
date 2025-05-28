@@ -30,7 +30,7 @@ const EditNote = ({
 			}}
 		>
 			<FixedToolbarComponent simplified className="z-0 rounded-sm py-1" />
-			<Editor focusRing={false} size="md" className="pt-0! min-h-24" />
+			<Editor focusRing={false} size="md" className="min-h-24 pt-0!" />
 		</Plate>
 	)
 }

@@ -405,7 +405,7 @@ export function ImportStory() {
 															asChild
 															variant="ghost"
 															size="icon"
-															className="bg-primary absolute right-0 top-0 m-1 hidden -translate-y-1/2 translate-x-1/2 rounded-full shadow-sm group-hover:block"
+															className="bg-primary absolute top-0 right-0 m-1 hidden translate-x-1/2 -translate-y-1/2 rounded-full shadow-sm group-hover:block"
 															onClick={handleDiscardImage}
 														>
 															<X className="size-4" />
@@ -441,8 +441,8 @@ export function ImportStory() {
 												>
 													<>
 														<Upload className="text-muted-foreground size-8" />
-														<div className="break-words text-center">
-															<p className="text-muted-foreground break-all text-sm">
+														<div className="text-center break-words">
+															<p className="text-muted-foreground text-sm break-all">
 																{field.value
 																	? field.value.name
 																	: 'Drag and drop your story file here'}

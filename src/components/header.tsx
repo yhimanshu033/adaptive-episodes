@@ -19,7 +19,7 @@ const Header = () => {
 	}
 
 	return (
-		<div className="animate-fade-in-down bg-background sticky left-0 top-0 z-50 border-b">
+		<div className="animate-fade-in-down bg-background sticky top-0 left-0 z-50 border-b">
 			<header className="animate-fade-in-down container flex h-14 items-center justify-between">
 				<Logo />
 				<div className="flex items-center gap-2">

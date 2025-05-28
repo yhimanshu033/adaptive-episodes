@@ -71,7 +71,7 @@ export default function ResolvedCommentItem({
 				<div className="relative flex items-center gap-2">
 					<CommentAvatar userId={resolvedComment?.userId} />
 
-					<h4 className="text-sm font-semibold leading-none">{user?.name}</h4>
+					<h4 className="text-sm leading-none font-semibold">{user?.name}</h4>
 					{userTitle && (
 						<Badge
 							variant="outline"
@@ -85,7 +85,7 @@ export default function ResolvedCommentItem({
 						{formatDistance(resolvedComment.createdAt, Date.now())} ago
 					</div>
 
-					<div className="absolute -right-0.5 -top-0.5 flex space-x-1">
+					<div className="absolute -top-0.5 -right-0.5 flex space-x-1">
 						<Button
 							variant="ghost"
 							tooltip="Accept"
@@ -111,8 +111,8 @@ export default function ResolvedCommentItem({
 					</div>
 				</div>
 
-				<div className="mb-4 pl-7 pt-0.5">
-					<div className="whitespace-pre-wrap text-sm">
+				<div className="mb-4 pt-0.5 pl-7">
+					<div className="text-sm whitespace-pre-wrap">
 						{getText(resolvedComment.value)}
 					</div>
 				</div>

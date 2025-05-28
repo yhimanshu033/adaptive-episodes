@@ -233,7 +233,7 @@ const InlineComboboxInput = forwardRef<
 		<>
 			{showTrigger && trigger}
 
-			<span className="min-h-lh relative">
+			<span className="relative min-h-lh">
 				<span
 					className="invisible overflow-hidden text-nowrap"
 					aria-hidden="true"
@@ -244,7 +244,7 @@ const InlineComboboxInput = forwardRef<
 				<Combobox
 					ref={ref}
 					className={cn(
-						'outline-hidden absolute left-0 top-0 size-full bg-transparent',
+						'absolute top-0 left-0 size-full bg-transparent outline-hidden',
 						className
 					)}
 					value={value}

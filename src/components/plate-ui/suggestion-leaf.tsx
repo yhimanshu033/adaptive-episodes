@@ -46,7 +46,7 @@ export default function SuggestionLeaf({
 			nodeProps={{ ...nodeProps }}
 		>
 			{isActive && (
-				<div className="absolute bottom-0 right-0 z-50 flex translate-x-1/2 translate-y-full gap-2 p-1">
+				<div className="absolute right-0 bottom-0 z-50 flex translate-x-1/2 translate-y-full gap-2 p-1">
 					<Button
 						variant="outline"
 						size="sm"

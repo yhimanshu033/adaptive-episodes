@@ -69,7 +69,7 @@ export default function PlayerAudio() {
 				className="hidden"
 			/>
 			<div className="bg-background/50 flex rounded-md p-2 backdrop-blur-[1px]">
-				<div className="h-full max-h-0 w-0 overflow-hidden px-0 transition-all group-hover:max-h-20 group-hover:w-64 group-hover:pl-2 group-hover:pr-4">
+				<div className="h-full max-h-0 w-0 overflow-hidden px-0 transition-all group-hover:max-h-20 group-hover:w-64 group-hover:pr-4 group-hover:pl-2">
 					<PlayerInfo />
 					<div className="mt-2 flex grow flex-col gap-2">
 						<Slider
@@ -89,7 +89,7 @@ export default function PlayerAudio() {
 					<Button
 						onClick={handleCancel}
 						tooltip="Remove"
-						className="border-foreground absolute right-0.5 top-0.5 size-4 rounded-full border p-0.5 opacity-0 group-hover:opacity-100"
+						className="border-foreground absolute top-0.5 right-0.5 size-4 rounded-full border p-0.5 opacity-0 group-hover:opacity-100"
 						size="icon"
 					>
 						<X />
@@ -109,7 +109,7 @@ export default function PlayerAudio() {
 						/>
 					</CircularProgressBar>
 					<Button
-						className="*:fill-primary! *:text-primary! z-20 size-full rounded-full p-3 opacity-0 transition-opacity hover:bg-transparent group-hover:opacity-100"
+						className="*:fill-primary! *:text-primary! z-20 size-full rounded-full p-3 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-transparent"
 						onClick={handlePlayPause}
 						variant="ghost"
 						size="icon"

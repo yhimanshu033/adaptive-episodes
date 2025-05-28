@@ -40,7 +40,7 @@ const MembersTable = () => {
 										<div
 											className={cn(
 												header.column.getCanSort() &&
-													'flex cursor-pointer select-none items-center'
+													'flex cursor-pointer items-center select-none'
 											)}
 											onClick={header.column.getToggleSortingHandler()}
 										>
