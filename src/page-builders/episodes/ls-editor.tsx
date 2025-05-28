@@ -5,7 +5,13 @@ import { Plus } from 'lucide-react'
 import { If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
 import ForEach from '@/components/ui/for-each'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+	Table,
+	TableBody,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table'
 import { isInvalidLSMapping, parseOutputLSMapping } from '@/lib/utils/helpers'
 
 import {
@@ -30,6 +36,8 @@ const LSTableEditor = memo(
 		viewOnly?: boolean
 	}) => {
 		const disabled = useMemo(() => isInvalidLSMapping(tableData), [tableData])
+
+		const keys = useMemo(() => Object.keys(tableData[0] || {}), [tableData])
 
 		const handleSubmit = useCallback(() => {
 			if (isInvalidLSMapping(tableData)) {
@@ -58,20 +66,20 @@ const LSTableEditor = memo(
 		const updateField = (
 			index: number,
 			field: keyof LSMappingOutputItem,
-			value: string
+			value: string | boolean
 		) => {
 			setTableData((prev) => {
 				const updatedData = [...prev]
 				updatedData[index] = {
 					...updatedData[index],
-					[field]: value,
+					[field]: value as string,
 				}
 				return updatedData
 			})
 		}
 
 		return (
-			<div className="space-y-4">
+			<div className="space-y-4 overflow-x-auto">
 				<If condition={!viewOnly}>
 					<div className="flex items-center justify-between">
 						<h3 className="text-lg font-medium">Table Editor</h3>
@@ -81,36 +89,37 @@ const LSTableEditor = memo(
 					</div>
 				</If>
 
-				<div className="rounded-md border">
-					<div className="grid grid-cols-5 gap-4 bg-muted p-4 font-medium">
-						<div>original_name</div>
-						<div>localised_name</div>
-						<div>Type</div>
-						<div>Gender</div>
-						<If condition={!viewOnly}>
-							<div>Actions</div>
-						</If>
-					</div>
-					<ScrollArea className="h-96">
-						<ForEach data={tableData}>
-							{(item, index) => (
-								<LSEditorRow
-									disabled={viewOnly}
-									key={`table-row-${index}`}
-									index={index}
-									item={item}
-									removeRow={removeRow}
-									updateField={updateField}
-								/>
-							)}
-						</ForEach>
+				<div className="max-h-96 max-w-full overflow-auto">
+					<Table>
+						<TableHeader className="sticky top-0 z-10 bg-background">
+							<TableRow>
+								<ForEach data={keys}>
+									{(item, idx) => <TableHead key={idx}>{item}</TableHead>}
+								</ForEach>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							<ForEach data={tableData}>
+								{(item, index) => (
+									<LSEditorRow
+										rows={keys}
+										disabled={viewOnly}
+										key={`table-row-${index}`}
+										index={index}
+										item={item}
+										removeRow={removeRow}
+										updateField={updateField}
+									/>
+								)}
+							</ForEach>
 
-						<If condition={tableData.length === 0}>
-							<div className="p-4 text-center text-muted-foreground">
-								No data available.
-							</div>
-						</If>
-					</ScrollArea>
+							<If condition={tableData.length === 0}>
+								<div className="p-4 text-center text-muted-foreground">
+									No data available.
+								</div>
+							</If>
+						</TableBody>
+					</Table>
 				</div>
 				<If condition={!viewOnly}>
 					<div className="flex justify-end">

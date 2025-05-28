@@ -68,10 +68,10 @@ export const SocketProvider = ({
 				extraHeaders: {
 					Authorization: `Bearer ${session?.accessToken}`,
 				},
-				transports: ['websocket'],
-				auth: {
-					token: `${session?.accessToken}`,
-				},
+				// transports: ['websocket'],
+				// auth: {
+				// 	token: `${session?.accessToken}`,
+				// },
 			}),
 		[socketUrl, session]
 	)
@@ -134,8 +134,6 @@ export const SocketProvider = ({
 					...(params.query as QueryParamsT),
 				},
 			})
-
-			console.log({ resp })
 
 			if (!resp.success) {
 				responsesRef.current[taskId] = {

@@ -68,10 +68,10 @@ export const SocketStreamingProvider = ({
 				extraHeaders: {
 					Authorization: `Bearer ${session?.accessToken}`,
 				},
-				transports: ['websocket'],
-				auth: {
-					token: `${session?.accessToken}`,
-				},
+				// transports: ['websocket'],
+				// auth: {
+				// 	token: `${session?.accessToken}`,
+				// },
 			}),
 		[socketUrl, session]
 	)
@@ -161,7 +161,7 @@ export const SocketStreamingProvider = ({
 			}
 
 			socket.emit('subscribe', { task_id: String(session?.user.id) })
-			const resp = await fetchAPI<
+			await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
 				BodyParamsT,
@@ -174,8 +174,6 @@ export const SocketStreamingProvider = ({
 					...(params.query as QueryParamsT),
 				},
 			})
-
-			console.log({ resp })
 
 			return taskId
 		},
