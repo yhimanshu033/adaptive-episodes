@@ -84,7 +84,9 @@ export function ImportStory() {
 				toast.info('Story import started')
 				const data: FetchResponseResult = await getResponse(taskId)
 				if (data?.success === false) {
-					toast.error('Story format invalid!')
+					toast.error('Story upload failed, please retry!', {
+						description: 'There might be an issue with the format.',
+					})
 				}
 			},
 		})
