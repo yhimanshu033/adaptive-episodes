@@ -78,7 +78,7 @@ const useStoryUploadHook = () => {
 			body: { author },
 			urlParams: { id: String(id) },
 		})
-		console.log({ resp })
+
 		if (resp.status !== 200) {
 			throw new Error('Invalid format')
 		}
