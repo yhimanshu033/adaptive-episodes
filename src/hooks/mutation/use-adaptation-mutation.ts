@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 
 import { doPoll } from '@/lib/do-poll'
 import { fetchAPI } from '@/lib/fetch-api'
+import { getSourceLanguage } from '@/lib/utils/helpers'
 
 import {
 	TGetAdaptationLSUrlParams,
@@ -17,15 +18,6 @@ import {
 	TNoParams,
 } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
-
-function getSourceLanguage(selectedRowData: TEpisode[]) {
-	const sourceLang = selectedRowData?.[0]?.language || ELanguage.ENGLISH_US
-
-	if (sourceLang === ELanguage.ENGLISH) {
-		return ELanguage.ENGLISH_US
-	}
-	return sourceLang
-}
 
 export default function useAdaptationMutation(onSuccess = () => {}) {
 	const { data: session } = useSession()
