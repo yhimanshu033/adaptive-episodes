@@ -32,7 +32,7 @@ import EpisodeHeader from './episode-header'
 
 export default function PlateEditor() {
 	const containerRef = useRef<HTMLDivElement>(null)
-	const { data: content, latestStatus, imported } = useEpisodeContent()
+	const { data: content, latestStatus, importedLocal } = useEpisodeContent()
 	const isChildEpisode = !!content?.chapter.is_deleted
 
 	const editor = useMyEditor({
@@ -56,7 +56,7 @@ export default function PlateEditor() {
 
 	return (
 		<Plate editor={editor}>
-			<SavingContextProvider data={content} initialForceSave={imported}>
+			<SavingContextProvider data={content} initialForceSave={importedLocal}>
 				<ChatbotProvider episodeContent={content}>
 					<FocusEditorWrapper>
 						<div className="container p-4">

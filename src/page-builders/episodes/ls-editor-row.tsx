@@ -1,5 +1,9 @@
-import React, { memo } from 'react'
-import { LSMappingGenders, LSMappingTypes } from '@/constants/ai-constants'
+import React, { memo, useMemo } from 'react'
+import {
+	LSMappingChineseGenders,
+	LSMappingGenders,
+	LSMappingTypes,
+} from '@/constants/ai-constants'
 
 import IfElse, { Else, If } from '@/components/if-else'
 import SwitchCase, { Case } from '@/components/switch-case'
@@ -14,8 +18,10 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { TableCell, TableRow } from '@/components/ui/table'
+import { isUpperCase } from '@/lib/utils/helpers'
 
 import {
+	ELSMappingChineseGender,
 	ELSMappingGender,
 	ELSMappingType,
 	LSMappingOutputItem,
@@ -42,6 +48,21 @@ const LSEditorRow = memo(
 		rows = ['original_name', 'localised_name'],
 	}: LSEditorRowProps) => {
 		const custom_fields = ['type', 'gender', 'is_deleted']
+		const defaultGender = useMemo(() => {
+			if (!item?.gender) {
+				return ELSMappingGender.MALE
+			}
+			if (isUpperCase(item?.gender?.[0])) {
+				return ELSMappingGender.MALE
+			}
+			return ELSMappingChineseGender.MALE
+		}, [item])
+		const genders = useMemo(() => {
+			if (isUpperCase(defaultGender[0])) {
+				return LSMappingGenders
+			}
+			return LSMappingChineseGenders
+		}, [defaultGender]) as unknown as ELSMappingGender[]
 		return (
 			<TableRow>
 				<ForEach data={rows}>
@@ -73,7 +94,7 @@ const LSEditorRow = memo(
 										<If>
 											<Select
 												disabled={disabled}
-												defaultValue={ELSMappingGender.MALE}
+												defaultValue={defaultGender}
 												value={item.gender}
 												onValueChange={(value) =>
 													updateField(index, 'gender', value)
@@ -83,7 +104,7 @@ const LSEditorRow = memo(
 													<SelectValue placeholder="Gender" />
 												</SelectTrigger>
 												<SelectContent>
-													<ForEach data={LSMappingGenders}>
+													<ForEach data={genders}>
 														{(gender) => (
 															<SelectItem key={gender} value={gender}>
 																{gender}

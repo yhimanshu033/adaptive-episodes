@@ -18,6 +18,15 @@ import {
 } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
 
+function getSourceLanguage(selectedRowData: TEpisode[]) {
+	const sourceLang = selectedRowData?.[0]?.language || ELanguage.ENGLISH_US
+
+	if (sourceLang === ELanguage.ENGLISH) {
+		return ELanguage.ENGLISH_US
+	}
+	return sourceLang
+}
+
 export default function useAdaptationMutation(onSuccess = () => {}) {
 	const { data: session } = useSession()
 
@@ -28,7 +37,6 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 		language: ELanguage
 		selectedRowData: TEpisode[]
 	}) {
-		const sourceLang = selectedRowData?.[0]?.language || ELanguage.ENGLISH_US
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{
 				method: 'POST',
@@ -39,10 +47,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					is_external: true,
 					project_id: selectedRowData?.[0]?.project,
 					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang:
-						sourceLang === ELanguage.ENGLISH
-							? ELanguage.ENGLISH_US
-							: sourceLang,
+					source_lang: getSourceLanguage(selectedRowData),
 					target_lang: language,
 					type: 'ls_sheet_gen',
 				},
@@ -106,7 +111,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					is_external: true,
 					project_id: selectedRowData?.[0]?.project,
 					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang: selectedRowData?.[0]?.language || ELanguage.ENGLISH,
+					source_lang: getSourceLanguage(selectedRowData),
 					target_lang: language,
 					type: 'adaptation',
 				},

@@ -98,8 +98,13 @@ export enum ELSMappingGender {
 	MALE = 'Male',
 }
 
+export enum ELSMappingChineseGender {
+	FEMALE = 'female',
+	MALE = 'male',
+}
+
 export type LSMappingCommon = {
-	gender?: ELSMappingGender
+	gender?: ELSMappingGender | ELSMappingChineseGender
 	is_deleted?: string
 	type: ELSMappingType
 } & Partial<{ [key: string]: string }>
