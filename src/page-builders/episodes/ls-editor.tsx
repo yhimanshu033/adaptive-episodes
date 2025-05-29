@@ -136,6 +136,7 @@ const LSTableEditor = memo(
 			const url = URL.createObjectURL(blob)
 			downloadBlobUrl(url, `${new Date().toUTCString()}.csv`)
 		}
+
 		return (
 			<div className="space-y-4 overflow-x-auto">
 				<If condition={!viewOnly}>

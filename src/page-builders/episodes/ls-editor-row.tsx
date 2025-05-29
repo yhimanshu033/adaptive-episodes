@@ -1,5 +1,9 @@
 import React, { memo } from 'react'
-import { LSMappingGenders, LSMappingTypes } from '@/constants/ai-constants'
+import {
+	LSMappingChineseGenders,
+	LSMappingGenders,
+	LSMappingTypes,
+} from '@/constants/ai-constants'
 
 import IfElse, { Else, If } from '@/components/if-else'
 import SwitchCase, { Case } from '@/components/switch-case'
@@ -14,8 +18,10 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { TableCell, TableRow } from '@/components/ui/table'
+import { isUpperCase } from '@/lib/utils/helpers'
 
 import {
+	ELSMappingChineseGender,
 	ELSMappingGender,
 	ELSMappingType,
 	LSMappingOutputItem,
@@ -73,7 +79,11 @@ const LSEditorRow = memo(
 										<If>
 											<Select
 												disabled={disabled}
-												defaultValue={ELSMappingGender.MALE}
+												defaultValue={
+													isUpperCase((item?.gender || '')?.charAt(0))
+														? ELSMappingGender.MALE
+														: ELSMappingChineseGender.MALE
+												}
 												value={item.gender}
 												onValueChange={(value) =>
 													updateField(index, 'gender', value)
@@ -83,7 +93,13 @@ const LSEditorRow = memo(
 													<SelectValue placeholder="Gender" />
 												</SelectTrigger>
 												<SelectContent>
-													<ForEach data={LSMappingGenders}>
+													<ForEach
+														data={
+															isUpperCase((item?.gender || '')?.charAt(0))
+																? LSMappingGenders
+																: (LSMappingChineseGenders as unknown as ELSMappingGender[])
+														}
+													>
 														{(gender) => (
 															<SelectItem key={gender} value={gender}>
 																{gender}

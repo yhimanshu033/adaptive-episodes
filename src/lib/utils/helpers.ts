@@ -21,7 +21,6 @@ import {
 	BASE_STATUS,
 	EEpisodeType,
 	ELanguage,
-	ELSMappingGender,
 	ELSMappingType,
 	EStatus,
 	LSMappingInput,
@@ -639,9 +638,7 @@ export function parseInputLSMapping(input: LSMappingInput) {
 		input.ls_mapping
 	).map(([key, value]) => ({
 		original_name: key,
-		localised_name: value['localised_name'] || '',
-		type: value.type || ELSMappingType.ENTITY,
-		gender: value.gender || ELSMappingGender.MALE,
+		...value,
 	}))
 
 	return tableItems
@@ -686,4 +683,8 @@ export function toSnakeCase(str: string): string {
 		.toLowerCase()
 		.replace(/__+/g, '_') // remove double underscores
 		.replace(/^_+|_+$/g, '') // trim leading/trailing _
+}
+
+export function isUpperCase(str: string): boolean {
+	return str === str.toUpperCase()
 }

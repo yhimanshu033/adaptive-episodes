@@ -11,6 +11,7 @@ import {
 	useStoryImportFormResolver,
 } from '@/hooks/form-resolvers/story-import-resolver'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
+import useSocket from '@/hooks/use-socket'
 import { setFormOpen } from '@/store/story-store'
 import { ArrowUpRight, ImageIcon, Lightbulb, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
@@ -30,6 +31,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { FetchResponseResult } from '@/lib/fetch-api'
 import { cn } from '@/lib/utils/helpers'
 
 import { ELanguage } from '@/types/common'
@@ -41,6 +43,7 @@ export function ImportStory() {
 	const storyInputRef = useRef<HTMLInputElement | null>(null)
 
 	const { storyUploadMutation } = useStoryUploadHook()
+	const { getResponse } = useSocket()
 
 	const form = useStoryImportFormResolver()
 
@@ -74,14 +77,15 @@ export function ImportStory() {
 
 	const onSubmit = (data: StoryImportFormSchema) => {
 		storyUploadMutation.mutate(data, {
-			onSuccess: () => {
+			onSuccess: async (taskId) => {
 				form.reset()
 				setImageSrc(null)
 				setFormOpen(false)
-				toast.success('Story uploaded successfully', {
-					description: 'Please wait while the server processes the story.',
-					className: 'bg-primary text-foreground top-0 mx-auto',
-				})
+				toast.info('Story import started')
+				const data: FetchResponseResult = await getResponse(taskId)
+				if (data?.success === false) {
+					toast.error('Story format invalid!')
+				}
 			},
 		})
 	}
