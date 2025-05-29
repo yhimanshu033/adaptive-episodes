@@ -9,6 +9,7 @@ import {
 } from '@/types/ai-types'
 import {
 	ELanguage,
+	ELSMappingChineseGender,
 	ELSMappingGender,
 	ELSMappingType,
 	LSMappingOutputItem,
@@ -167,6 +168,10 @@ export const INITIAL_FAR_OPTIONS: FindReplaceConfig['options'] = {
 }
 
 export const LSMappingGenders = [ELSMappingGender.MALE, ELSMappingGender.FEMALE]
+export const LSMappingChineseGenders = [
+	ELSMappingChineseGender.MALE,
+	ELSMappingChineseGender.FEMALE,
+]
 
 export const LSMappingTypes = [ELSMappingType.PERSON, ELSMappingType.ENTITY]
 
