@@ -10,57 +10,13 @@ import { If } from '@/components/if-else'
 import useProjectId from '@/providers/project-id-provider'
 
 export default function FindAndReplace() {
-	const {
-		localized_entities,
-		handleNext,
-		handlePrev,
-		handleSearchChange,
-		handleSuggestionClick,
-		isFetching,
-		occurrences,
-		onReplace,
-		onReplaceAll,
-		toggleSearchMode,
-		toggleReplace,
-		replaceEnabled,
-		caseSensitive,
-		ptr,
-		records,
-		replace,
-		search,
-		setData,
-		setOptions,
-		wholeWord,
-		genitive,
-		sheetURL,
-		handleScanEpisode,
-		updateLOCPending,
-	} = useFindAndReplace()
+	const value = useFindAndReplace()
 
 	const { isWriter } = useProjectId()
 
 	const farUiprops: IFindAndReplaceUIProps = {
-		toggleReplace,
-		caseSensitive,
-		handleNext,
-		handlePrev,
-		handleSearchChange,
-		isFetching,
+		...value,
 		isWriter,
-		localized_entities,
-		occurrences,
-		onReplace,
-		onReplaceAll,
-		ptr,
-		replaceEnabled,
-		search,
-		toggleSearchMode,
-		wholeWord,
-		records,
-		onReplaceChange: (e) => setOptions({ replace: e.target.value }),
-		replace,
-		genitive,
-		handleSuggestionClick,
 	}
 
 	return (
@@ -68,14 +24,14 @@ export default function FindAndReplace() {
 			<FindAndReplaceUI {...farUiprops} />
 			<hr />
 			<ReScan
-				handleScanEpisode={() => void handleScanEpisode()}
-				isFetching={isFetching}
+				handleScanEpisode={() => void value.handleScanEpisode()}
+				isFetching={value.isFetching}
 				isWriter={isWriter}
-				sheetURL={sheetURL}
-				updateLOCPending={updateLOCPending}
+				sheetURL={value.sheetURL}
+				updateLOCPending={value.updateLOCPending}
 			/>
 			<If condition={isWriter}>
-				<AddForm setData={setData} />
+				<AddForm setData={value.setData} />
 			</If>
 		</>
 	)

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { INITIAL_FAR_OPTIONS } from '@/constants/ai-constants'
 import { farSearchModes } from '@/constants/editor-constants'
 import useLocalizeHook, {
 	useLocalizeDownloadMutation,
@@ -17,6 +18,7 @@ import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import {
 	getLocalizationData,
 	getOccurrencesUtil,
+	getRecordsTextUtil,
 	getRecordsUtil,
 	getSuggestionValue,
 	replaceAll,
@@ -39,6 +41,7 @@ export default function useFindAndReplace() {
 	const caseSensitive = useOption('caseSensitive')
 	const wholeWord = useOption('wholeWord')
 	const genitive = useOption('genitive')
+	const currentId = useOption('currentId')
 	const [ptr, setPtr] = useState(0)
 
 	const { children } = useEditorState()
@@ -82,6 +85,19 @@ export default function useFindAndReplace() {
 		() =>
 			getRecordsUtil({ caseSensitive, children, genitive, search, wholeWord }),
 		[children, wholeWord, genitive, search, caseSensitive]
+	)
+
+	const recordTexts = useMemo(
+		() =>
+			getRecordsTextUtil({
+				records,
+				caseSensitive,
+				children,
+				genitive,
+				search,
+				wholeWord,
+			}),
+		[records, caseSensitive, children, genitive, search, wholeWord]
 	)
 
 	useEffect(() => {
@@ -191,6 +207,13 @@ export default function useFindAndReplace() {
 		[data]
 	)
 
+	console.log({
+		occurrences,
+		records,
+		ptr,
+		currentId,
+		search,
+	})
 	return {
 		handleDownload,
 		localized_entities,
@@ -218,5 +241,13 @@ export default function useFindAndReplace() {
 		sheetURL,
 		handleScanEpisode,
 		updateLOCPending,
+		recordTexts,
+		onReplaceChange: () => {},
+		options: INITIAL_FAR_OPTIONS,
+		replacedContentMap: {},
+		setReplacedContentMap: () => {},
+		setPtr,
 	}
 }
+
+export type useFindAndReplaceRet = ReturnType<typeof useFindAndReplace>

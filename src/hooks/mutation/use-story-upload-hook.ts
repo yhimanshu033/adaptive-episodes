@@ -29,7 +29,7 @@ const useStoryUploadHook = () => {
 	}
 
 	const onError = (error: Error) => {
-		toast.error("Error: couldn't able upload story", {
+		toast.error('Error: Please check story format!', {
 			description: error.message,
 		})
 	}
@@ -78,6 +78,10 @@ const useStoryUploadHook = () => {
 			body,
 			urlParams: { id: String(id) },
 		})
+
+		if (resp.status !== 200) {
+			throw new Error('Invalid format')
+		}
 		return resp.data
 	}
 

@@ -17,6 +17,7 @@ import {
 	useStoryImportFormResolver,
 } from '@/hooks/form-resolvers/story-import-resolver'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
+import useSocket from '@/hooks/use-socket'
 import { setFormOpen } from '@/store/story-store'
 import {
 	ArrowUpRight,
@@ -52,6 +53,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import Spinner from '@/components/ui/spinner'
+import { FetchResponseResult } from '@/lib/fetch-api'
 import { cn } from '@/lib/utils/helpers'
 
 import { ELanguage, IconComponent } from '@/types/common'
@@ -86,6 +88,7 @@ export function ImportStory() {
 	const storyInputRef = useRef<HTMLInputElement | null>(null)
 
 	const { storyUploadMutation } = useStoryUploadHook()
+	const { getResponse } = useSocket()
 
 	const form = useStoryImportFormResolver()
 
@@ -152,14 +155,17 @@ export function ImportStory() {
 		const proceed = nextStep()
 		if (proceed) {
 			storyUploadMutation.mutate(data, {
-				onSuccess: () => {
+				onSuccess: async (taskId) => {
 					form.reset()
 					setImageSrc(null)
 					setFormOpen(false)
-					toast.success('Story uploaded successfully', {
-						description: 'Please wait while the server processes the story.',
-						className: 'bg-primary text-foreground top-0 mx-auto',
-					})
+					toast.info('Story import started')
+					const data: FetchResponseResult = await getResponse(taskId)
+					if (data?.success === false) {
+						toast.error('Story upload failed, please retry!', {
+							description: 'There might be an issue with the format.',
+						})
+					}
 				},
 			})
 		}
@@ -312,55 +318,11 @@ export function ImportStory() {
 										</FormItem>
 									)}
 								/>
-							</Case>
-
-							<Case value={ImportStoryStep.CONTENT}>
-								<FormItem>
-									<FormLabel htmlFor="ep_start">
-										Episode Range<sup>*</sup>
-									</FormLabel>
-								</FormItem>
-								<div className="flex items-center gap-2">
-									<FormField
-										control={form.control}
-										name="start_ep"
-										render={({ field }) => (
-											<FormItem className="flex-1">
-												<FormControl>
-													<Input
-														type="number"
-														placeholder="Episode Start"
-														id="ep_start"
-														{...field}
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-									<FormField
-										control={form.control}
-										name="end_ep"
-										render={({ field }) => (
-											<FormItem className="flex-1">
-												<FormControl>
-													<Input
-														type="number"
-														placeholder="Episode End"
-														id="ep_end"
-														{...field}
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-								</div>
 								<FormField
 									control={form.control}
 									name="image_file"
 									render={({ field }) => (
-										<FormItem className="flex items-center justify-between">
+										<FormItem className="flex flex-row justify-between">
 											<div className="flex flex-col gap-4">
 												<FormLabel htmlFor="image">
 													Story Image (Optional)
@@ -406,7 +368,7 @@ export function ImportStory() {
 															asChild
 															variant="ghost"
 															size="icon"
-															className="bg-primary absolute top-0 right-0 m-1 hidden translate-x-1/2 -translate-y-1/2 rounded-full shadow-sm group-hover:block"
+															className="bg-primary absolute top-0 right-0 m-1 hidden translate-x-1/2 -translate-y-1/2 rounded-full shadow group-hover:block"
 															onClick={handleDiscardImage}
 														>
 															<X className="size-4" />
@@ -421,6 +383,9 @@ export function ImportStory() {
 										</FormItem>
 									)}
 								/>
+							</Case>
+
+							<Case value={ImportStoryStep.CONTENT}>
 								<FormField
 									control={form.control}
 									name="story_file"
@@ -511,7 +476,11 @@ export function ImportStory() {
 								type="submit"
 								disabled={storyUploadMutation.isPending}
 							>
-								{buttonText}
+								{storyUploadMutation.isPending
+									? 'Uploading'
+									: storyType === ImportStoryType.EMPTY
+										? 'Create New Story'
+										: 'Import a Story'}
 							</Button>
 						</form>
 					</Form>

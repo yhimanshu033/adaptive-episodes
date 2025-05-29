@@ -70,7 +70,7 @@ const Sidebar = () => {
 			>
 				{sidebarToDisplay && (
 					<ScrollArea className="relative size-full h-full flex-1 transition-all duration-200">
-						<div className="h-svh">
+						<div className="flex h-svh flex-col">
 							<SidebarTopBar />
 							{renderSidebar[sidebarToDisplay]}
 						</div>

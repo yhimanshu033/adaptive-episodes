@@ -37,7 +37,13 @@ export default function Translation({ translatedContent }: TranslationProps) {
 	}
 	return (
 		<Plate editor={editor}>
-			<Editor focusRing={false} readOnly variant="ghost" size="md" />
+			<Editor
+				focusRing={false}
+				readOnly
+				variant="ghost"
+				size="md"
+				className="py-[126px] opacity-75"
+			/>
 		</Plate>
 	)
 }

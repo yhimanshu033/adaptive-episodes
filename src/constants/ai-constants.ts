@@ -9,6 +9,7 @@ import {
 } from '@/types/ai-types'
 import {
 	ELanguage,
+	ELSMappingChineseGender,
 	ELSMappingGender,
 	ELSMappingType,
 	LSMappingOutputItem,
@@ -168,8 +169,23 @@ export const INITIAL_FAR_OPTIONS: FindReplaceConfig['options'] = {
 }
 
 export const LSMappingGenders = [ELSMappingGender.MALE, ELSMappingGender.FEMALE]
+export const LSMappingChineseGenders = [
+	ELSMappingChineseGender.MALE,
+	ELSMappingChineseGender.FEMALE,
+]
 
 export const LSMappingTypes = [ELSMappingType.PERSON, ELSMappingType.ENTITY]
+
+export const sidebarToTitle: Record<ESidebar, string> = {
+	[ESidebar.CHATBOT]: 'StoryChat',
+	[ESidebar.COMMENTS]: 'Comments',
+	[ESidebar.DUAL_VIEW]: '',
+	[ESidebar.FAR]: 'Find and Replace',
+	[ESidebar.NOTES]: 'Notes',
+	[ESidebar.OUTLINE]: 'Story Explorer',
+}
+
+export const sidebarButtons: ESidebar[] = [ESidebar.CHATBOT, ESidebar.OUTLINE]
 
 export const SAMPLE_LS_DATA: LSMappingOutputItem[] = [
 	{
@@ -279,14 +295,3 @@ export const AVAILABLE_TARGET_LANGUAGES: ELanguage[] = [
 	ELanguage.MEXICAN_SPANISH,
 	ELanguage.NEUTRAL_SPANISH,
 ]
-
-export const sidebarToTitle: Record<ESidebar, string> = {
-	[ESidebar.CHATBOT]: 'StoryChat',
-	[ESidebar.COMMENTS]: 'Comments',
-	[ESidebar.DUAL_VIEW]: '',
-	[ESidebar.FAR]: 'Find and Replace',
-	[ESidebar.NOTES]: 'Notes',
-	[ESidebar.OUTLINE]: 'Story Explorer',
-}
-
-export const sidebarButtons: ESidebar[] = [ESidebar.CHATBOT, ESidebar.OUTLINE]

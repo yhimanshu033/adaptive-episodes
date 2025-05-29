@@ -3,7 +3,7 @@ import { isText } from '@udecode/plate-common'
 import type { Range } from 'slate'
 
 import { type FindReplaceConfig } from '@/lib/plate/plugins/find-replace/FindReplacePlugin'
-import { generateGenitives } from '@/lib/utils/helpers'
+import { getFindReplaceRegex } from '@/lib/utils/ai-chatbot'
 
 export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 	entry: [node, path],
@@ -17,17 +17,17 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 
 	const ranges: SearchRange[] = []
 
-	if (!search || !isText(node)) {
+	if (!search || !search.trim().length || !isText(node)) {
 		return ranges
 	}
 
 	const { text } = node
-	const regex = new RegExp(
-		wholeWord
-			? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
-			: `(${search})`,
-		caseSensitive ? 'g' : 'gi'
-	)
+	const regex = getFindReplaceRegex({
+		caseSensitive,
+		genitive,
+		search,
+		wholeWord,
+	})
 	const parts = text.split(regex)
 	let offset = 0
 	let searchWord = ''
