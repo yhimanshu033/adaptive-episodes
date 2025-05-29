@@ -714,3 +714,37 @@ export function getSourceLanguage(selectedRowData: TEpisode[]) {
 	}
 	return sourceLang
 }
+
+export function extractWords(
+	input: string,
+	charCount: number,
+	fromEnd: boolean = false
+): string {
+	const words = input.trim().split(/\s+/)
+
+	if (fromEnd) {
+		let result = ''
+		for (let i = words.length - 1; i >= 0; i--) {
+			const temp = words[i] + (result ? ' ' + result : '')
+			result = temp
+			if (result.length > charCount) {
+				break
+			}
+		}
+		return result
+	} else {
+		let result = ''
+		for (let i = 0; i < words.length; i++) {
+			const temp = result + (result ? ' ' : '') + words[i]
+			result = temp
+			if (result.length > charCount) {
+				break
+			}
+		}
+		return result
+	}
+}
+
+export function isArrayEqual(arr1: number[], arr2: number[]) {
+	return arr1.every((v, i) => v === arr2[i])
+}

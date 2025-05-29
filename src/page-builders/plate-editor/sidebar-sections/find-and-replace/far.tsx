@@ -1,5 +1,6 @@
 import React from 'react'
 import { farSearchModes } from '@/constants/editor-constants'
+import { UseGlobalFARRet } from '@/hooks/use-global-find-and-replace'
 import useIsGerman from '@/hooks/use-is-german'
 import {
 	CaseSensitive,
@@ -21,43 +22,10 @@ import { Toggle } from '@/components/ui/toggle'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { cn } from '@/lib/utils/helpers'
 
-import {
-	TLocalizeArrayItem,
-	TLocalizeCharacterArrayItem,
-	TLocalizeConceptArrayItem,
-	TLocalizeObjectArrayItem,
-	TLocalizePlaceArrayItem,
-} from '@/types/ai-types'
-import { TLocalizationObject } from '@/types/editor-types'
+import { TLocalizeArrayItem } from '@/types/ai-types'
 
-export interface IFindAndReplaceUIProps {
-	caseSensitive: boolean
-	genitive: boolean
-	handleNext: () => void
-	handlePrev: () => void
-	handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-	handleSuggestionClick: (
-		character:
-			| TLocalizeCharacterArrayItem
-			| TLocalizePlaceArrayItem
-			| TLocalizeConceptArrayItem
-			| TLocalizeObjectArrayItem
-	) => void
-	isFetching: boolean
+export interface IFindAndReplaceUIProps extends UseGlobalFARRet {
 	isWriter: boolean
-	localized_entities: TLocalizationObject
-	occurrences: number
-	onReplace: () => void
-	onReplaceAll: () => void
-	onReplaceChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-	ptr: number
-	records: number[][]
-	replace: string
-	replaceEnabled: boolean
-	search: string
-	toggleReplace: () => void
-	toggleSearchMode: (mode: farSearchModes) => void
-	wholeWord: boolean
 }
 export default function FindAndReplaceUI({
 	toggleReplace,
@@ -81,6 +49,8 @@ export default function FindAndReplaceUI({
 	replace,
 	genitive,
 	handleSuggestionClick,
+	recordTexts,
+	setPtr,
 }: IFindAndReplaceUIProps) {
 	const dict = useTranslations('placeholders')
 	const isGerman = useIsGerman()
@@ -175,6 +145,30 @@ export default function FindAndReplaceUI({
 					<span className="text-foreground font-medium italic">{search}</span>
 					{genitive && " and it's genitives"}
 				</p>
+				<div className="flex flex-col">
+					<ForEach data={recordTexts}>
+						{(data, idx) => (
+							<div
+								key={idx}
+								className="h-auto cursor-pointer border-b px-2 py-1 text-sm *:mx-[0.5px]"
+								onClick={() => setPtr(idx)}
+							>
+								<span>{data[0]}</span>
+								<IfElse condition={ptr === idx}>
+									<If>
+										<del className="bg-red-500/20">{data[1]}</del>
+										<ins className="bg-green-500/20">{data[1]}</ins>
+									</If>
+									<Else>
+										<span>{data[1]}</span>
+									</Else>
+								</IfElse>
+
+								<span>{data[2]}</span>
+							</div>
+						)}
+					</ForEach>
+				</div>
 			</If>
 
 			<IfElse condition={isFetching}>

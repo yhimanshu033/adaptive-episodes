@@ -294,3 +294,10 @@ export type TGetAdaptationLSUrlParams = {
 }
 
 export type TQuickPrompt = { text: string; title: string | null }
+
+export type TGetRegexFAR = {
+	caseSensitive: boolean | undefined
+	genitive: boolean | undefined
+	search: string
+	wholeWord: boolean | undefined
+}
