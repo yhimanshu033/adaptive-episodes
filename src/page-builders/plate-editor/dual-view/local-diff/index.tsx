@@ -16,13 +16,13 @@ import { removeValue } from '@/lib/utils/indexed-db'
 import { EDualVIewMode } from '@/types/episode-type'
 
 export default function LocalDiffSection() {
-	const { data: content, setImported } = useEpisodeContent()
+	const { data: content } = useEpisodeContent()
 	const {
 		store: useEpisodePlateStore,
 		setLocalDiffValue,
 		setSidebar,
 	} = usePlateStore()
-	const { setDualViewMode } = useEpisodeIdStore()
+	const { setDualViewMode, setEpisodeImported } = useEpisodeIdStore()
 	const localDiffValue = useEpisodePlateStore(
 		useShallow((state) => state.localDiffValue)
 	)
@@ -34,13 +34,15 @@ export default function LocalDiffSection() {
 
 	function handleReject() {
 		setLocalDiffValue(null)
-		void removeValue(`${content?.chapter.project}_${content?.chapter?.parent}`)
+		void removeValue(
+			`${content?.chapter.project}_${content?.chapter?.id || content?.chapter?.parent}`
+		)
 		setSidebar(null)
 		setDualViewMode(EDualVIewMode.US_TRANSLATION)
 	}
 
 	function handleAccept() {
-		setImported(true)
+		setEpisodeImported(true)
 		setDualViewMode(EDualVIewMode.US_TRANSLATION)
 	}
 

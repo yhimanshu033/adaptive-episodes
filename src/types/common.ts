@@ -38,6 +38,7 @@ export enum EEpisodeType {
 }
 
 export enum ELanguage {
+	CHINESE = 'chinese',
 	ENGLISH = 'english',
 	ENGLISH_US = 'english_us',
 	FRENCH = 'french',
@@ -45,10 +46,19 @@ export enum ELanguage {
 	GERMAN_ORIGINAL = 'german_original',
 	HINDI = 'hindi',
 	ITALIAN = 'italian',
+	KOREAN = 'korean',
 	MEXICAN_SPANISH = 'mexican_spanish',
+	NEUTRAL_SPANISH = 'neutral_spanish',
+	TRANSLATED_ENGLISH = 'translated_english',
 }
 
-export type TSourceLanguage = ELanguage.ENGLISH | ELanguage.HINDI
+export type TSourceLanguage =
+	| ELanguage.ENGLISH
+	| ELanguage.HINDI
+	| ELanguage.CHINESE
+	| ELanguage.TRANSLATED_ENGLISH
+	| ELanguage.KOREAN
+	| ELanguage.GERMAN
 
 export const BASE_STATUS = 'BASE'
 
@@ -94,8 +104,9 @@ export enum ELSMappingGender {
 
 export type LSMappingCommon = {
 	gender?: ELSMappingGender
+	is_deleted?: string
 	type: ELSMappingType
-}
+} & Partial<{ [key: string]: string }>
 
 export interface LSMappingOutputItem extends LSMappingCommon {
 	localised_name: string

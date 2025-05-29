@@ -92,7 +92,8 @@ const Versions = ({
 						<AlertDialogTitle>Confirm Selection</AlertDialogTitle>
 					</AlertDialogHeader>
 					<AlertDialogDescription>
-						Are you sure you want to switch to {currentSelection}?
+						Are you sure you want to switch to{' '}
+						{titleToStatus[currentSelection as EStatus] || currentSelection}?
 					</AlertDialogDescription>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>

@@ -3,6 +3,7 @@
 
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import {
 	ImportStoryStep,
 	ImportStoryType,
@@ -10,13 +11,22 @@ import {
 	storySteps,
 	switchableStepsInfo,
 } from '@/constants/episodes-constants'
+import { SAMPLE_DOC_LINK } from '@/constants/global-constants'
 import {
 	StoryImportFormSchema,
 	useStoryImportFormResolver,
 } from '@/hooks/form-resolvers/story-import-resolver'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
 import { setFormOpen } from '@/store/story-store'
-import { File, ImageIcon, Plus, Upload, X } from 'lucide-react'
+import {
+	ArrowUpRight,
+	File,
+	ImageIcon,
+	Lightbulb,
+	Plus,
+	Upload,
+	X,
+} from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
@@ -25,11 +35,14 @@ import { If } from '@/components/if-else'
 import { FullScreenLoader } from '@/components/loader'
 import LanguageSelector from '@/components/plate-ui/language-selector'
 import SwitchCase, { Case } from '@/components/switch-case'
+import { Badge } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
 import { CardDescription } from '@/components/ui/card'
 import ForEach from '@/components/ui/for-each'
 import {
 	Form,
 	FormControl,
+	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -379,34 +392,32 @@ export function ImportStory() {
 												</Button>
 												<FormMessage />
 											</div>
-											{
-												<div className="group relative aspect-square w-20">
-													{imageSrc ? (
-														<>
-															<Image
-																src={imageSrc}
-																alt="Story Thumbnail"
-																layout="fill"
-																objectFit="cover"
-																className="overflow-hidden rounded-md"
-															/>
-															<Button
-																asChild
-																variant="ghost"
-																size="icon"
-																className="bg-primary absolute top-0 right-0 m-1 hidden translate-x-1/2 -translate-y-1/2 rounded-full shadow-sm group-hover:block"
-																onClick={handleDiscardImage}
-															>
-																<X className="size-4" />
-															</Button>
-														</>
-													) : (
-														<div className="flex size-full items-center justify-center rounded-md border-2 border-dashed">
-															<ImageIcon className="text-muted-foreground size-8" />
-														</div>
-													)}
-												</div>
-											}
+											<div className="group relative aspect-square w-20">
+												{imageSrc ? (
+													<>
+														<Image
+															src={imageSrc}
+															alt="Story Thumbnail"
+															layout="fill"
+															objectFit="cover"
+															className="overflow-hidden rounded-md"
+														/>
+														<Button
+															asChild
+															variant="ghost"
+															size="icon"
+															className="bg-primary absolute top-0 right-0 m-1 hidden translate-x-1/2 -translate-y-1/2 rounded-full shadow-sm group-hover:block"
+															onClick={handleDiscardImage}
+														>
+															<X className="size-4" />
+														</Button>
+													</>
+												) : (
+													<div className="flex size-full items-center justify-center rounded-md border-2 border-dashed">
+														<ImageIcon className="text-muted-foreground size-8" />
+													</div>
+												)}
+											</div>
 										</FormItem>
 									)}
 								/>
@@ -464,6 +475,32 @@ export function ImportStory() {
 													</>
 												</div>
 											</FormControl>
+											<FormDescription className="bg-foreground/10 flex flex-col gap-1.5 p-1 text-xs">
+												<div className="flex items-center justify-between">
+													<Badge className="bg-primary/20 text-xxs flex gap-2 rounded-none py-1">
+														<Lightbulb className="size-4" />
+														Content format
+													</Badge>
+													<Link
+														href={SAMPLE_DOC_LINK}
+														target="_blank"
+														className={cn(
+															buttonVariants({ variant: 'link' }),
+															'h-6 px-0.5 text-xs'
+														)}
+													>
+														View sample
+														<ArrowUpRight className="size-4" />
+													</Link>
+												</div>
+												<h4>
+													Make sure each episode is numbered correctly in your
+													file names so we can import them in the right order
+												</h4>
+												<h3 className="bg-primary/30 text-primary p-1.5">
+													Example: Episode 01 - Shadowed Realms
+												</h3>
+											</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}

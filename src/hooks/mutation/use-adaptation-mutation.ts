@@ -28,6 +28,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 		language: ELanguage
 		selectedRowData: TEpisode[]
 	}) {
+		const sourceLang = selectedRowData?.[0]?.language || ELanguage.ENGLISH_US
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{
 				method: 'POST',
@@ -38,7 +39,10 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					is_external: true,
 					project_id: selectedRowData?.[0]?.project,
 					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang: selectedRowData?.[0]?.language || ELanguage.ENGLISH,
+					source_lang:
+						sourceLang === ELanguage.ENGLISH
+							? ELanguage.ENGLISH_US
+							: sourceLang,
 					target_lang: language,
 					type: 'ls_sheet_gen',
 				},
