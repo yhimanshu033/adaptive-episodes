@@ -14,7 +14,11 @@ export function ChatbotToolbarButton() {
 	const sidebar = store(useShallow((state) => state.sidebar))
 	return (
 		<ToolbarButton
-			variant={sidebar === ESidebar.CHATBOT ? 'active' : 'default'}
+			variant={
+				sidebar === ESidebar.CHATBOT || sidebar === ESidebar.OUTLINE
+					? 'active'
+					: 'default'
+			}
 			tooltip="StoryChat"
 			onClick={() => setSidebar(ESidebar.CHATBOT, true)}
 		>

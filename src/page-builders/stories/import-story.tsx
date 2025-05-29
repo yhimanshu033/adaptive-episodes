@@ -321,7 +321,7 @@ export function ImportStory() {
 									control={form.control}
 									name="image_file"
 									render={({ field }) => (
-										<FormItem className="flex items-center justify-between">
+										<FormItem className="flex flex-row justify-between">
 											<div className="flex flex-col gap-4">
 												<FormLabel htmlFor="image">
 													Story Image (Optional)
@@ -477,7 +477,9 @@ export function ImportStory() {
 							>
 								{storyUploadMutation.isPending
 									? 'Uploading'
-									: 'Upload or Create New Story'}
+									: storyType === ImportStoryType.EMPTY
+										? 'Create New Story'
+										: 'Import a Story'}
 							</Button>
 						</form>
 					</Form>

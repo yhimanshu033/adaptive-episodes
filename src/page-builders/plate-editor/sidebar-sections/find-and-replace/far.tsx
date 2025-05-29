@@ -85,7 +85,7 @@ export default function FindAndReplaceUI({
 	const dict = useTranslations('placeholders')
 	const isGerman = useIsGerman()
 	return (
-		<div className="flex h-full flex-col gap-4 p-4">
+		<div className="flex flex-1 flex-col gap-4 p-4">
 			<div className="grid grid-cols-[1fr_10fr_2fr] gap-4">
 				<TooltipComponent tooltip="Enable Replace">
 					<Toggle onClick={toggleReplace} aria-label="Toggle replace">

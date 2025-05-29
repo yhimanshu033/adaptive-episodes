@@ -84,7 +84,7 @@ export default function CommentSidebar() {
 		: commentsAndDescriptions.length
 
 	return (
-		<div className="relative">
+		<div className="relative flex flex-1 flex-col">
 			<div className="pt-4 pb-8">
 				<h1 className="w-full text-center">
 					{!commentCount && (!myUserId || !activeCommentId)
