@@ -74,7 +74,11 @@ export default function AdaptationDialog() {
 							</DialogDescription>
 						</Case>
 						<Case value={2}>
-							<DialogDescription>Please wait for processing.</DialogDescription>
+							<DialogDescription>
+								{
+									'Please wait for processing. Do not refresh the page; however, you can close this dialog.'
+								}
+							</DialogDescription>
 						</Case>
 						<Case value={3}>
 							<DialogDescription>
