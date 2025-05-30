@@ -13,13 +13,10 @@ import {
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
-import { cn } from '@/lib/utils/helpers'
+import { cn, isArrayEqual } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 
-function isCurrent(arr1: number[], arr2: number[]) {
-	return arr1.every((v, i) => v === arr2[i])
-}
 export const SearchHighlightLeaf = ({
 	className,
 	...props
@@ -53,14 +50,14 @@ export const SearchHighlightLeaf = ({
 		setOptions({ currentId: id })
 	}
 	function renderContent() {
-		if (isCurrent(id, currentId) && replaceEnabled) {
+		if (isArrayEqual(id, currentId) && replaceEnabled) {
 			return (
 				<>
 					<del className="bg-red-500/60">{children}</del>
 					<span className="bg-blue-500/60">{replaceWith}</span>
 				</>
 			)
-		} else if (isCurrent(id, currentId)) {
+		} else if (isArrayEqual(id, currentId)) {
 			return <span className="bg-yellow-500/60">{children}</span>
 		} else {
 			return <span className="bg-green-500/60">{children}</span>

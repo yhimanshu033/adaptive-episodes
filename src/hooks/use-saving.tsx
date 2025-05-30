@@ -127,7 +127,7 @@ export function SavingContextProvider({
 				const chapterId = data?.chapter.id
 				const dataToSave: SaveEpisodeParams = {
 					projectId: Number(id),
-					status: BASE_STATUS,
+					status,
 					episodeId: Number(data?.chapter.parent || chapterId),
 					id: Number(chapterId),
 					text,

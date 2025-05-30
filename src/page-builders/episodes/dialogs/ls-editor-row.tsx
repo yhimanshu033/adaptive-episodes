@@ -1,9 +1,13 @@
-import React, { memo } from 'react'
-import { LSMappingGenders, LSMappingTypes } from '@/constants/ai-constants'
-import { Trash2 } from 'lucide-react'
+import React, { memo, useMemo } from 'react'
+import {
+	LSMappingChineseGenders,
+	LSMappingGenders,
+	LSMappingTypes,
+} from '@/constants/ai-constants'
 
 import IfElse, { Else, If } from '@/components/if-else'
-import { Button } from '@/components/ui/button'
+import SwitchCase, { Case } from '@/components/switch-case'
+import { Checkbox } from '@/components/ui/checkbox'
 import ForEach from '@/components/ui/for-each'
 import { Input } from '@/components/ui/input'
 import {
@@ -13,8 +17,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import { TableCell, TableRow } from '@/components/ui/table'
+import { isUpperCase } from '@/lib/utils/helpers'
 
 import {
+	ELSMappingChineseGender,
 	ELSMappingGender,
 	ELSMappingType,
 	LSMappingOutputItem,
@@ -25,89 +32,114 @@ interface LSEditorRowProps {
 	index: number
 	item: LSMappingOutputItem
 	removeRow: (index: number) => void
+	rows?: string[]
 	updateField: (
 		index: number,
 		field: keyof LSMappingOutputItem,
-		value: string
+		value: string | boolean
 	) => void
 }
 const LSEditorRow = memo(
 	({
 		item,
 		index,
-		removeRow,
 		updateField,
 		disabled = false,
+		rows = ['original_name', 'localised_name'],
 	}: LSEditorRowProps) => {
+		const custom_fields = ['type', 'gender', 'is_deleted']
+		const defaultGender = useMemo(() => {
+			if (!item?.gender) {
+				return ELSMappingGender.MALE
+			}
+			if (isUpperCase(item?.gender?.[0])) {
+				return ELSMappingGender.MALE
+			}
+			return ELSMappingChineseGender.MALE
+		}, [item])
+		const genders = useMemo(() => {
+			if (isUpperCase(defaultGender[0])) {
+				return LSMappingGenders
+			}
+			return LSMappingChineseGenders
+		}, [defaultGender]) as unknown as ELSMappingGender[]
 		return (
-			<div className="grid grid-cols-5 gap-4 border-t p-4">
-				<Input
-					disabled={disabled}
-					value={item['original_name']}
-					onChange={(e) => updateField(index, 'original_name', e.target.value)}
-					placeholder="original_name"
-				/>
-				<Input
-					disabled={disabled}
-					value={item['localised_name']}
-					onChange={(e) => updateField(index, 'localised_name', e.target.value)}
-					placeholder="localised_name"
-				/>
-				<Select
-					disabled={disabled}
-					value={item.type}
-					onValueChange={(value) => updateField(index, 'type', value)}
-				>
-					<SelectTrigger>
-						<SelectValue placeholder="Type" />
-					</SelectTrigger>
-					<SelectContent>
-						<ForEach data={LSMappingTypes}>
-							{(type) => (
-								<SelectItem key={type} value={type}>
-									{type.toUpperCase()}
-								</SelectItem>
-							)}
-						</ForEach>
-					</SelectContent>
-				</Select>
-				<IfElse condition={item.type === ELSMappingType.PERSON}>
-					<If>
-						<Select
-							disabled={disabled}
-							defaultValue={ELSMappingGender.MALE}
-							value={item.gender}
-							onValueChange={(value) => updateField(index, 'gender', value)}
-						>
-							<SelectTrigger>
-								<SelectValue placeholder="Gender" />
-							</SelectTrigger>
-							<SelectContent>
-								<ForEach data={LSMappingGenders}>
-									{(gender) => (
-										<SelectItem key={gender} value={gender}>
-											{gender}
-										</SelectItem>
-									)}
-								</ForEach>
-							</SelectContent>
-						</Select>
-					</If>
-					<Else>
-						<div />
-					</Else>
-				</IfElse>
-				<If condition={!disabled}>
-					<Button
-						disabled={disabled}
-						variant="destructive"
-						size="icon"
-						onClick={() => removeRow(index)}
-					>
-						<Trash2 className="size-4" />
-					</Button>
-				</If>
-			</div>
+			<TableRow>
+				<ForEach data={rows}>
+					{(key, idx) => (
+						<TableCell key={idx}>
+							<SwitchCase value={key}>
+								<Case value={'type'}>
+									<Select
+										disabled={disabled}
+										value={item.type}
+										onValueChange={(value) => updateField(index, 'type', value)}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Type" />
+										</SelectTrigger>
+										<SelectContent>
+											<ForEach data={LSMappingTypes}>
+												{(type) => (
+													<SelectItem key={type} value={type}>
+														{type.toUpperCase()}
+													</SelectItem>
+												)}
+											</ForEach>
+										</SelectContent>
+									</Select>
+								</Case>
+								<Case value="gender">
+									<IfElse condition={item.type === ELSMappingType.PERSON}>
+										<If>
+											<Select
+												disabled={disabled}
+												defaultValue={defaultGender}
+												value={item.gender}
+												onValueChange={(value) =>
+													updateField(index, 'gender', value)
+												}
+											>
+												<SelectTrigger>
+													<SelectValue placeholder="Gender" />
+												</SelectTrigger>
+												<SelectContent>
+													<ForEach data={genders}>
+														{(gender) => (
+															<SelectItem key={gender} value={gender}>
+																{gender}
+															</SelectItem>
+														)}
+													</ForEach>
+												</SelectContent>
+											</Select>
+										</If>
+										<Else>
+											<div />
+										</Else>
+									</IfElse>
+								</Case>
+								<Case value="is_deleted">
+									<Checkbox
+										disabled={disabled}
+										onCheckedChange={(checked) =>
+											updateField(index, 'is_deleted', checked)
+										}
+									/>
+								</Case>
+								<Case value={custom_fields.includes(key) ? '' : key}>
+									<Input
+										disabled={disabled}
+										value={item[key]}
+										onChange={(e) => updateField(index, key, e.target.value)}
+										placeholder={key}
+									/>
+								</Case>
+							</SwitchCase>
+						</TableCell>
+					)}
+				</ForEach>
+			</TableRow>
 		)
 	}
 )

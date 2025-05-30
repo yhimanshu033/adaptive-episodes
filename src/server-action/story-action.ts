@@ -1,6 +1,7 @@
 'use server'
 
 import { API_URLS } from '@/constants/global-constants'
+import { DEFAULT_STORIES_RESPONSE } from '@/constants/story-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
@@ -21,17 +22,24 @@ export const getStories = async (params: TGetStoriesQueryParams) => {
 	>({
 		method: 'GET',
 		url: API_URLS.GET_STORIES,
-		defaultData: {
-			results: {
-				data: [],
-				message: '',
-			},
-			count: 0,
-			next: null,
-			previous: null,
-		},
+		defaultData: DEFAULT_STORIES_RESPONSE,
 		query: params,
 	})
+
+	const data = (stories.data ||
+		[]) as unknown as TGetStoriesResponse['results']['data']
+
+	// IN CASE THE NEW API IS NOT DEPLOYED YET
+	if (!stories.data?.results) {
+		stories.data = {
+			...DEFAULT_STORIES_RESPONSE,
+			results: {
+				...DEFAULT_STORIES_RESPONSE.results,
+				data,
+			},
+			count: data.length,
+		}
+	}
 
 	return stories.data
 }
@@ -49,6 +57,20 @@ export const getStoryData = async (
 			storyId,
 		},
 	})
+
+	// IN CASE THE NEW API IS NOT DEPLOYED YET
+	if (!response.data?.data) {
+		const storiesResponse = await getStories({})
+
+		if (!storiesResponse?.results?.data) {
+			return
+		}
+
+		const story = storiesResponse.results.data.find(
+			(item) => item.id === storyId
+		)
+		return story
+	}
 
 	return response.data?.data
 }

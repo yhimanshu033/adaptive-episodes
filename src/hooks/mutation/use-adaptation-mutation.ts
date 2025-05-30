@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 
 import { doPoll } from '@/lib/do-poll'
 import { fetchAPI } from '@/lib/fetch-api'
+import { getSourceLanguage } from '@/lib/utils/helpers'
 
 import {
 	TGetAdaptationLSUrlParams,
@@ -38,7 +39,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					is_external: true,
 					project_id: selectedRowData?.[0]?.project,
 					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang: selectedRowData?.[0]?.language || ELanguage.ENGLISH,
+					source_lang: getSourceLanguage(selectedRowData),
 					target_lang: language,
 					type: 'ls_sheet_gen',
 				},
@@ -102,7 +103,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					is_external: true,
 					project_id: selectedRowData?.[0]?.project,
 					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang: selectedRowData?.[0]?.language || ELanguage.ENGLISH,
+					source_lang: getSourceLanguage(selectedRowData),
 					target_lang: language,
 					type: 'adaptation',
 				},

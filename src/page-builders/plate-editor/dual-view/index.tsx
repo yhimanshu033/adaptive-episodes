@@ -79,7 +79,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 				<div className="absolute top-0 right-0 z-20 w-fit pt-4 pr-4">
 					<DualViewSelector />
 				</div>
-				<div className="opacity-75">{modeToComponent[dualViewMode]}</div>
+				<div>{modeToComponent[dualViewMode]}</div>
 			</ResizablePanel>
 		</>
 	)

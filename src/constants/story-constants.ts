@@ -1,3 +1,5 @@
+import { TGetStoriesResponse } from '@/types/story-types'
+
 export const MAX_IMAGE_FILE_SIZE = 5000000
 export const ACCEPTED_IMAGE_TYPES = [
 	'image/jpeg',
@@ -13,4 +15,14 @@ export const ACCEPTED_DOCX_TYPES = [
 export enum EImportStatus {
 	IMPORTED = 'IMPORTED',
 	IMPORTING = 'IMPORTING',
+}
+
+export const DEFAULT_STORIES_RESPONSE: TGetStoriesResponse = {
+	results: {
+		data: [],
+		message: '',
+	},
+	count: 0,
+	next: null,
+	previous: null,
 }

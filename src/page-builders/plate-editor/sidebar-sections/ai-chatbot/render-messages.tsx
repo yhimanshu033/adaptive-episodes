@@ -68,7 +68,9 @@ export default function RenderMessage({
 				}}
 				className={cn(
 					'max-w-[70%] rounded-lg p-3',
-					message.role === EMessenger.ASSISTANT ? 'bg-background' : 'bg-primary'
+					message.role === EMessenger.ASSISTANT
+						? 'bg-foreground/10'
+						: 'bg-primary'
 				)}
 			/>
 		)
@@ -98,7 +100,7 @@ export default function RenderMessage({
 						className={cn(
 							'*:animate-in max-w-[70%] flex-1 rounded-lg p-3 transition-transform active:scale-[0.995]',
 							message.role === EMessenger.ASSISTANT
-								? 'bg-background'
+								? 'bg-foreground/10'
 								: 'bg-primary'
 						)}
 					/>
@@ -141,7 +143,9 @@ export default function RenderMessage({
 				}}
 				className={cn(
 					'max-w-[70%] rounded-lg p-3',
-					message.role === EMessenger.ASSISTANT ? 'bg-background' : 'bg-primary'
+					message.role === EMessenger.ASSISTANT
+						? 'bg-foreground/10'
+						: 'bg-primary'
 				)}
 			/>
 		)
@@ -153,7 +157,9 @@ export default function RenderMessage({
 			}}
 			className={cn(
 				'max-w-[70%] rounded-lg p-3',
-				message.role === EMessenger.ASSISTANT ? 'bg-background' : 'bg-primary'
+				message.role === EMessenger.ASSISTANT
+					? 'bg-foreground/10'
+					: 'bg-primary'
 			)}
 		/>
 	)

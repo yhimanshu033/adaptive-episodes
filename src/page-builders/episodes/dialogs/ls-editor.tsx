@@ -1,12 +1,26 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import LSEditorRow from '@/page-builders/episodes/dialogs/ls-editor-row'
-import { Plus } from 'lucide-react'
+import { Download, Plus, Upload } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
 import ForEach from '@/components/ui/for-each'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { isInvalidLSMapping, parseOutputLSMapping } from '@/lib/utils/helpers'
+import {
+	Table,
+	TableBody,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table'
+import { TooltipComponent } from '@/components/ui/tooltip-component'
+import { downloadBlobUrl } from '@/lib/utils/client-helpers'
+import {
+	buttonVariants,
+	isInvalidLSMapping,
+	parseOutputLSMapping,
+	toSnakeCase,
+} from '@/lib/utils/helpers'
 
 import {
 	ELSMappingGender,
@@ -30,6 +44,8 @@ const LSTableEditor = memo(
 		viewOnly?: boolean
 	}) => {
 		const disabled = useMemo(() => isInvalidLSMapping(tableData), [tableData])
+
+		const keys = useMemo(() => Object.keys(tableData[0] || {}), [tableData])
 
 		const handleSubmit = useCallback(() => {
 			if (isInvalidLSMapping(tableData)) {
@@ -58,59 +74,140 @@ const LSTableEditor = memo(
 		const updateField = (
 			index: number,
 			field: keyof LSMappingOutputItem,
-			value: string
+			value: string | boolean
 		) => {
 			setTableData((prev) => {
 				const updatedData = [...prev]
 				updatedData[index] = {
 					...updatedData[index],
-					[field]: value,
+					[field]: value as string,
 				}
 				return updatedData
 			})
 		}
 
+		function handleCSV(files: FileList | null) {
+			const file = files?.[0]
+			if (!file) {
+				return
+			}
+			const reader = new FileReader()
+			reader.onload = (event) => {
+				const text = event.target?.result as string
+
+				const rows = text
+					.trim()
+					.split('\n')
+					.map((row) => row.split(',').map((cell) => cell.trim()))
+
+				const headers = rows[0].map((item) => toSnakeCase(item))
+				const data = rows
+					.slice(1)
+					.map((row) =>
+						Object.fromEntries(row.map((val, i) => [headers[i], val]))
+					) as LSMappingOutputItem[]
+
+				setTableData(data)
+			}
+			reader.onerror = () => {
+				toast.error('Some error occurred while reading CSV')
+			}
+			reader.readAsText(file)
+			toast.success('CSV import completed!')
+		}
+
+		function handleDownloadCSV() {
+			const headers = Object.keys(tableData[0])
+			const csvRows = [
+				headers.join(','), // header row
+				...tableData.map((row) =>
+					headers
+						.map(
+							(header) =>
+								`"${(row[header] ?? '').toString().replace(/"/g, '""')}"`
+						)
+						.join(',')
+				),
+			]
+
+			const blob = new Blob([csvRows.join('\n')], {
+				type: 'text/csv;charset=utf-8;',
+			})
+			const url = URL.createObjectURL(blob)
+			downloadBlobUrl(url, `${new Date().toUTCString()}.csv`)
+		}
+
 		return (
-			<div className="space-y-4">
+			<div className="space-y-4 overflow-x-auto">
 				<If condition={!viewOnly}>
+					<h3 className="text-lg font-medium">Table Editor</h3>
 					<div className="flex items-center justify-between">
-						<h3 className="text-lg font-medium">Table Editor</h3>
+						<div className="flex gap-2">
+							<Button
+								variant="outline"
+								size="icon"
+								tooltip="Download CSV"
+								onClick={handleDownloadCSV}
+							>
+								<Download />
+							</Button>
+							<TooltipComponent tooltip="Upload CSV">
+								<label
+									htmlFor="csv-input"
+									className={buttonVariants({
+										variant: 'outline',
+										size: 'icon',
+									})}
+								>
+									<Upload />
+								</label>
+							</TooltipComponent>
+							<input
+								type="file"
+								accept=".csv"
+								className="hidden"
+								id="csv-input"
+								value={[]}
+								onChange={(e) => handleCSV(e.target.files)}
+							/>
+						</div>
 						<Button onClick={addNewRow} size="sm">
 							<Plus className="mr-2 size-4" /> Add Row
 						</Button>
 					</div>
 				</If>
 
-				<div className="rounded-md border">
-					<div className="bg-muted grid grid-cols-5 gap-4 p-4 font-medium">
-						<div>original_name</div>
-						<div>localised_name</div>
-						<div>Type</div>
-						<div>Gender</div>
-						<If condition={!viewOnly}>
-							<div>Actions</div>
-						</If>
-					</div>
-					<ScrollArea className="h-96">
-						<ForEach data={tableData}>
-							{(item, index) => (
-								<LSEditorRow
-									disabled={viewOnly}
-									key={`table-row-${index}`}
-									index={index}
-									item={item}
-									removeRow={removeRow}
-									updateField={updateField}
-								/>
-							)}
-						</ForEach>
+				<div className="max-h-96 max-w-full overflow-auto">
+					<Table>
+						<TableHeader className="bg-background sticky top-0 z-10">
+							<TableRow>
+								<ForEach data={keys}>
+									{(item, idx) => <TableHead key={idx}>{item}</TableHead>}
+								</ForEach>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							<ForEach data={tableData}>
+								{(item, index) => (
+									<LSEditorRow
+										rows={keys}
+										disabled={viewOnly}
+										key={`table-row-${index}`}
+										index={index}
+										item={item}
+										removeRow={removeRow}
+										updateField={updateField}
+									/>
+								)}
+							</ForEach>
 
-						<If condition={tableData.length === 0}>
-							<div className="text-muted-foreground p-4 text-center">
-								No data available.
-							</div>
-						</If>
-					</ScrollArea>
+							<If condition={tableData.length === 0}>
+								<div className="text-muted-foreground p-4 text-center">
+									No data available.
+								</div>
+							</If>
+						</TableBody>
+					</Table>
 				</div>
 				<If condition={!viewOnly}>
 					<div className="flex justify-end">

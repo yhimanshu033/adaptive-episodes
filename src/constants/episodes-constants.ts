@@ -19,7 +19,13 @@ export const languages: ELanguage[] = [
 	ELanguage.MEXICAN_SPANISH,
 ]
 
-export const sourceLanguages: ELanguage[] = [ELanguage.ENGLISH, ELanguage.HINDI]
+export const sourceLanguages: ELanguage[] = [
+	ELanguage.ENGLISH,
+	ELanguage.HINDI,
+	ELanguage.CHINESE,
+	ELanguage.KOREAN,
+	ELanguage.TRANSLATED_ENGLISH,
+]
 
 export const titleToStatus: Partial<Record<EStatus, string>> = {
 	[EStatus.FIRST_DRAFT]: '🔴 1ST DRAFT',
@@ -37,6 +43,10 @@ export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.MEXICAN_SPANISH]: 'Spanish',
 	[ELanguage.GERMAN_ORIGINAL]: 'German',
 	[ELanguage.ENGLISH_US]: 'English',
+	[ELanguage.CHINESE]: 'Chinese',
+	[ELanguage.KOREAN]: 'Korean',
+	[ELanguage.NEUTRAL_SPANISH]: 'Neutral Spanish',
+	[ELanguage.TRANSLATED_ENGLISH]: 'Translated English',
 }
 
 export enum EpisodeActions {
@@ -77,10 +87,10 @@ export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 export const UNASSIGNED_LABEL = 'Nicht zugewiesen'
 
 export const notesMessages = {
-	[ENotesAction.CREATE]: 'Erfolgreich zur Notiz hinzugefügt!',
-	[ENotesAction.DELETE]: 'Notiz erfolgreich gelöscht!',
-	[ENotesAction.UPDATE]: 'Hinweis erfolgreich aktualisiert!',
-	[ENotesAction.DELETE_ALL]: 'Alle Notizen erfolgreich gelöscht!',
+	[ENotesAction.CREATE]: 'Note created successfully!',
+	[ENotesAction.DELETE]: 'Note deleted successfully!',
+	[ENotesAction.UPDATE]: 'Note updated successfully!',
+	[ENotesAction.DELETE_ALL]: 'All nots deleted successfully!',
 }
 
 export const prioritizedStatuses = [

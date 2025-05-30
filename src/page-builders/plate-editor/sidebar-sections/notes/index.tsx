@@ -55,7 +55,7 @@ const Notes = () => {
 	}
 
 	return (
-		<section className="mt-16 p-4">
+		<section className="mt-4 p-4">
 			<RenderNotes />
 		</section>
 	)

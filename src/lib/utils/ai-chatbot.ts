@@ -1,3 +1,4 @@
+import { FAR_PADDING_TEXT } from '@/constants/editor-constants'
 import {
 	nanoid,
 	TDescendant,
@@ -6,11 +7,13 @@ import {
 	Value,
 } from '@udecode/plate-common'
 
-import { generateGenitives } from '@/lib/utils/helpers'
+import { extractWords, generateGenitives } from '@/lib/utils/helpers'
+import { getText } from '@/lib/utils/plate'
 
 import {
 	EChatMode,
 	StoryExplorerConfiguration,
+	TGetRegexFAR,
 	TLocalizeArrayItem,
 	TLocalizeCharacterArrayItem,
 	TLocalizeConceptArrayItem,
@@ -466,22 +469,21 @@ export function getRecordsUtil({
 	genitive,
 	wholeWord,
 }: {
-	caseSensitive: boolean | undefined
 	children: Value
-	genitive: boolean | undefined
-	search: string
-	wholeWord: boolean | undefined
-}) {
+} & TGetRegexFAR) {
 	const records: number[][] = []
+	if (!search?.trim?.().length) {
+		return records
+	}
 	children.forEach((node, index) => {
 		const getCount = (node: TElement | TText, path: number[]): void => {
 			if ('text' in node) {
-				const regex = new RegExp(
-					wholeWord
-						? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
-						: `(${search})`,
-					caseSensitive ? 'g' : 'gi'
-				)
+				const regex = getFindReplaceRegex({
+					caseSensitive,
+					genitive,
+					search,
+					wholeWord,
+				})
 				const matches = String(node.text).match(regex)
 				matches?.forEach((m, i) => records.push([...path, i]))
 			} else if ('children' in node) {
@@ -495,6 +497,146 @@ export function getRecordsUtil({
 	return records
 }
 
+export function getRecordsTextUtil({
+	children,
+	records,
+	caseSensitive,
+	genitive,
+	search,
+	wholeWord,
+}: {
+	children: Value
+	records: number[][]
+} & TGetRegexFAR) {
+	const texts: string[][] = []
+	records.forEach((record) => {
+		if (record.some((num) => num !== 0 && !num)) {
+			return
+		}
+		const block = children[record[0]]
+
+		const leaf = block?.children?.[record[1]] as TText | undefined
+		if (!leaf?.text) {
+			return
+		}
+
+		const regex = getFindReplaceRegex({
+			caseSensitive,
+			genitive,
+			search,
+			wholeWord,
+		})
+		const matches = String(leaf.text).match(regex)
+		const match = matches?.[record[2]]
+
+		if (!match) {
+			return
+		}
+
+		// initialize the text array --> prev, searchedWord, next
+		const textArray: string[] = ['', match, '']
+
+		// for previous texts
+		let remainingPrevText = FAR_PADDING_TEXT
+
+		// add text from same leaf
+		const prevLeafText = leaf.text
+			.split(regex)
+			.slice(0, record[2] + 1)
+			.join('')
+		const remainingPrevLeafText = extractWords(
+			prevLeafText,
+			remainingPrevText,
+			true
+		)
+		textArray[0] = remainingPrevLeafText
+		remainingPrevText = FAR_PADDING_TEXT - textArray[0].length
+
+		if (remainingPrevText > 0) {
+			// add text from same block
+			const prevBlockText = getText([
+				{
+					children: block.children.slice(0, record[1]),
+					type: 'p',
+				},
+			])
+			const remainingPrevBlockText = extractWords(
+				prevBlockText,
+				remainingPrevText,
+				true
+			)
+			textArray[0] = remainingPrevBlockText + textArray[0]
+			remainingPrevText = FAR_PADDING_TEXT - textArray[0].length
+		}
+
+		if (remainingPrevText > 0) {
+			// add text from previous children
+			const prevChildrenText = getText(children.slice(0, record[0]))
+			const remainingPrevChildText = extractWords(
+				prevChildrenText,
+				remainingPrevText,
+				true
+			)
+			textArray[0] = remainingPrevChildText + textArray[0]
+		}
+
+		// for next texts
+		let remainingNextText = FAR_PADDING_TEXT
+
+		// same leaf
+		const nextLeafText = leaf.text
+			.split(regex)
+			.slice(record[2] + 2)
+			.join('')
+		const remainingNextLeafText = extractWords(nextLeafText, remainingNextText)
+		textArray[2] = remainingNextLeafText
+		remainingNextText = FAR_PADDING_TEXT - textArray[2].length
+
+		if (remainingNextText > 0) {
+			// add text from same block
+			const nextBlockText = getText([
+				{
+					children: block.children.slice(record[1] + 1),
+					type: 'p',
+				},
+			])
+			const remainingNextBlockText = extractWords(
+				nextBlockText,
+				remainingNextText
+			)
+			textArray[2] = textArray[2] + remainingNextBlockText
+			remainingNextText = FAR_PADDING_TEXT - textArray[2].length
+		}
+
+		if (remainingNextText > 0) {
+			// add text from previous children
+			const nextChildrenText = getText(children.slice(record[0] + 1))
+			const remainingNextChildText = extractWords(
+				nextChildrenText,
+				remainingNextText
+			)
+			textArray[2] = textArray[2] + remainingNextChildText
+		}
+
+		texts.push(textArray)
+	})
+	return texts
+}
+
+export function getFindReplaceRegex({
+	search,
+	caseSensitive,
+	genitive,
+	wholeWord,
+}: TGetRegexFAR) {
+	return new RegExp(
+		wholeWord
+			? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
+			: `(${search})`,
+		caseSensitive ? 'g' : 'gi'
+	)
+}
+
 export function getOccurrencesUtil({
 	children,
 	search,
@@ -502,21 +644,20 @@ export function getOccurrencesUtil({
 	genitive,
 	wholeWord,
 }: {
-	caseSensitive: boolean | undefined
 	children: Value
-	genitive: boolean | undefined
-	search: string
-	wholeWord: boolean | undefined
-}) {
+} & TGetRegexFAR) {
+	if (!search?.trim?.()?.length) {
+		return 0
+	}
 	return children.reduce((acc, node) => {
 		const getCount = (node: TElement | TText): number => {
 			if ('text' in node) {
-				const regex = new RegExp(
-					wholeWord
-						? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
-						: `(${search})`,
-					caseSensitive ? 'g' : 'gi'
-				)
+				const regex = getFindReplaceRegex({
+					search,
+					caseSensitive,
+					genitive,
+					wholeWord,
+				})
 				const matches = String(node.text).match(regex)
 				return matches ? matches.length : 0
 			} else if ('children' in node) {
