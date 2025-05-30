@@ -41,7 +41,6 @@ export default function useFindAndReplace() {
 	const caseSensitive = useOption('caseSensitive')
 	const wholeWord = useOption('wholeWord')
 	const genitive = useOption('genitive')
-	const currentId = useOption('currentId')
 	const [ptr, setPtr] = useState(0)
 
 	const { children } = useEditorState()
@@ -207,13 +206,6 @@ export default function useFindAndReplace() {
 		[data]
 	)
 
-	console.log({
-		occurrences,
-		records,
-		ptr,
-		currentId,
-		search,
-	})
 	return {
 		handleDownload,
 		localized_entities,

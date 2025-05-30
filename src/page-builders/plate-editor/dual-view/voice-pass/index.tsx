@@ -48,11 +48,39 @@ export default function VoicePass({
 			return []
 		}
 
+		const concatenatedResponse = responses[data].reduce(
+			(acc, curr) => {
+				if (curr.includes('\n')) {
+					const curParts = curr.split('\n')
+					acc[acc.length - 1].push(curParts[0] || '')
+					curParts.slice(1).forEach((item) => {
+						acc.push([item])
+					})
+					return acc
+				}
+				acc[acc.length - 1].push(curr)
+				return acc
+			},
+			[[]] as string[][]
+		)
+
+		// CAN WE REMOVE THIS FOR STREAMING DISPLAY?
+		// if (voiceMode === EChatMode.VOICE2_XML) {
+		// 	const prettifiedData = pretifyVoiceXMLData(responses[data].join(""))
+		// 	concatenatedResponse = prettifiedData.split("\n").map((item) => [item])
+		// }
+
+		return concatenatedResponse
+	}, [data, responses])
+
+	const finalData = useMemo(() => {
+		if (!data || !responses[data]) {
+			return []
+		}
 		let concatenatedResponse = responses[data].join('')
 		if (voiceMode === EChatMode.VOICE2_XML) {
 			concatenatedResponse = pretifyVoiceXMLData(concatenatedResponse)
 		}
-
 		return concatenatedResponse.split('\n')
 	}, [data, responses, voiceMode])
 
@@ -62,7 +90,7 @@ export default function VoicePass({
 
 	return (
 		<div className="grid bg-neutral-900 *:[grid-area:1/-1]">
-			<CopyAll id={data} streamedData={streamedData} />
+			<CopyAll id={data} streamedData={finalData} />
 			<div className="flex flex-col px-16 py-[126px]">
 				{streamedData.map((data, idx) => (
 					<Block key={idx} data={data} />

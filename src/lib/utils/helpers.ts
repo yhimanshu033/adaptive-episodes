@@ -570,6 +570,22 @@ export function handleToolTags(
 		.join('')
 		.replace(/<tool [^>]*>/g, '')
 		.replace(/<\/tool>/g, '')
+		.replace(/<answer[^>]*>/g, '')
+		.replace(/<\/answer>/g, '')
+		.replace(/<text[^>]*>/g, '')
+		.replace(/<\/text>/g, '')
+}
+
+export function handleToolTagsArray(
+	responseChunks: string[],
+	isRunning: boolean = false
+) {
+	const concatenated = handleToolTags(responseChunks, isRunning)
+	const newChunks = [...responseChunks]
+	newChunks.pop()
+	const concatenatedPrev = handleToolTags(newChunks, isRunning)
+	const concatenatedNext = concatenated.slice(concatenatedPrev.length)
+	return [concatenatedPrev, concatenatedNext]
 }
 
 export function hasToolResult(responseChunks: string[]) {
