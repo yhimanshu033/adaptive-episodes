@@ -1,4 +1,9 @@
-import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
+import {
+	BASE_STATUS,
+	ELanguage,
+	EStatus,
+	TSourceLanguage,
+} from '@/types/common'
 import {
 	ENotesAction,
 	SaveEpisodeParams,
@@ -19,10 +24,11 @@ export const languages: ELanguage[] = [
 	ELanguage.MEXICAN_SPANISH,
 ]
 
-export const sourceLanguages: ELanguage[] = [
+export const sourceLanguages: TSourceLanguage[] = [
 	ELanguage.ENGLISH,
 	ELanguage.HINDI,
 	ELanguage.CHINESE,
+	ELanguage.GERMAN,
 	ELanguage.KOREAN,
 	ELanguage.TRANSLATED_ENGLISH,
 ]

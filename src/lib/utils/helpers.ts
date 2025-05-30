@@ -688,3 +688,12 @@ export function toSnakeCase(str: string): string {
 export function isUpperCase(str: string): boolean {
 	return str === str.toUpperCase()
 }
+
+export function getSourceLanguage(selectedRowData: TEpisode[]) {
+	const sourceLang = selectedRowData?.[0]?.language || ELanguage.ENGLISH_US
+
+	if (sourceLang === ELanguage.ENGLISH) {
+		return ELanguage.ENGLISH_US
+	}
+	return sourceLang
+}
