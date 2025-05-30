@@ -30,14 +30,13 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/aural-ui/button'
 import { RadioGroup, RadioGroupItem } from '@/components/aural-ui/radio'
 import { If } from '@/components/if-else'
 import { FullScreenLoader } from '@/components/loader'
 import LanguageSelector from '@/components/plate-ui/language-selector'
 import SwitchCase, { Case } from '@/components/switch-case'
 import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { CardDescription } from '@/components/ui/card'
 import ForEach from '@/components/ui/for-each'
 import {
@@ -365,7 +364,6 @@ export function ImportStory() {
 															className="overflow-hidden rounded-md"
 														/>
 														<Button
-															asChild
 															variant="ghost"
 															size="icon"
 															className="bg-primary absolute top-0 right-0 m-1 hidden translate-x-1/2 -translate-y-1/2 rounded-full shadow group-hover:block"
