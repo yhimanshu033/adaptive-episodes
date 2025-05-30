@@ -14,6 +14,7 @@ import { Languages, Merge, Replace, Split, X } from 'lucide-react'
 import { If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
 import useAdaptation from '@/providers/adaptation-provider'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
 
 import { ELanguage } from '@/types/common'
@@ -26,6 +27,7 @@ export default function SelectionActions({
 }) {
 	const { isWriter } = useProjectId()
 	const language = useParentLanguage()
+	const { initialStoryData } = useEpisodeTableContext()
 
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
@@ -46,6 +48,7 @@ export default function SelectionActions({
 	const {
 		setSelectedRowData,
 		setOpen,
+		setStory,
 		selectedRowData: adaptationData,
 	} = useAdaptation()
 
@@ -70,6 +73,7 @@ export default function SelectionActions({
 					<Button
 						disabled={Object.keys(selectedRowData).length < 1}
 						onClick={() => {
+							setStory(initialStoryData)
 							if (adaptationData.length === 0) {
 								setSelectedRowData(selectedRowData)
 							}

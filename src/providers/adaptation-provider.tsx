@@ -10,6 +10,7 @@ import { parseInputLSMapping } from '@/lib/utils/helpers'
 
 import { ELanguage, LSMappingOutput, TSourceLanguage } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
+import { TStory } from '@/types/story-types'
 
 function useAdaptationUtil() {
 	const [open, setOpen] = useState(false)
@@ -21,6 +22,7 @@ function useAdaptationUtil() {
 			(selectedRowData[0]?.language as TSourceLanguage) || ELanguage.ENGLISH,
 		[selectedRowData]
 	)
+	const [storyData, setStory] = useState<TStory>()
 	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
 
 	const selectableLanguages = useMemo(
@@ -58,8 +60,16 @@ function useAdaptationUtil() {
 		if (isPending) {
 			return 2
 		}
+		if (
+			storyData?.adapting_seq_nos &&
+			selectedRowData.some((row) =>
+				storyData.adapting_seq_nos?.includes(row.seq_number)
+			)
+		) {
+			return -1
+		}
 		return 1
-	}, [data, isPending, sendLSData, sendLSPending])
+	}, [data, isPending, sendLSData, sendLSPending, storyData, selectedRowData])
 
 	const resetMutations = useCallback(() => {
 		reset()
@@ -102,6 +112,8 @@ function useAdaptationUtil() {
 		data,
 		tableData,
 		setTableData,
+		setStory,
+		storyData,
 	}
 }
 
