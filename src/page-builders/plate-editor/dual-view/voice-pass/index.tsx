@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useAIChatbotQueryHook } from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
@@ -9,6 +9,7 @@ import { useEditorState } from '@udecode/plate-common/react'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { minify } from '@/lib/utils/ai-chatbot'
+import { removeVoicePass2XMLTags } from '@/lib/utils/client-helpers'
 import { pretifyVoiceXMLData } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
 
@@ -83,6 +84,10 @@ export default function VoicePass({
 		}
 		return concatenatedResponse.split('\n')
 	}, [data, responses, voiceMode])
+
+	useEffect(() => {
+		removeVoicePass2XMLTags()
+	}, [finalData])
 
 	if (!streamedData.length) {
 		return <DualViewLoader />

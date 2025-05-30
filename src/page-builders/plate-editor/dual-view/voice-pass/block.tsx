@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
 import StreamedResponse from '@/components/ui/streamed-response'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
 
 export default function Block({ data }: { data: string[] }) {
+	const divRef = useRef<HTMLDivElement>(null)
 	function copyToClipboard() {
-		void navigator.clipboard.writeText(data.join(''))
+		void navigator.clipboard.writeText(
+			divRef.current?.innerText || data.join('')
+		)
 	}
 
 	if (!data.length || !data.join('').length) {
@@ -15,6 +18,7 @@ export default function Block({ data }: { data: string[] }) {
 		<TooltipComponent tooltip={'Click to copy block'} delayDuration={100}>
 			<div
 				onClick={copyToClipboard}
+				ref={divRef}
 				className="group animate-fade-in-up relative cursor-pointer rounded text-left transition-all hover:scale-[0.99] active:scale-[0.96]"
 			>
 				<StreamedResponse data={data} />
