@@ -1,0 +1,13 @@
+{
+	"framework": "react",
+	"styling": "tailwind",
+	"componentsDir": "src/components/aural-ui",
+	"hookDir": "src/hooks/aural-ui",
+	"iconDir": "src/icons",
+	"libDir": "src/lib/aural-ui",
+	"fontDir": "src/fonts",
+	"tailwind": {
+		"css": "src/styles/globals.css",
+		"theme": "aural"
+	}
+}
