@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import useAdaptation from '@/providers/adaptation-provider'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 import { ELanguage } from '@/types/common'
 import { TEpisode, TEpisodeSearchForm } from '@/types/episode-type'
@@ -43,7 +44,7 @@ const Filters = ({
 	const { handleMerge, handleUnmerge } = useEpisodeTable()
 	const [fetchedSeqNumber, setFetchedSeqNumber] = useState<boolean>(false)
 	const { limit, setSearch, setCurrentPage, search, seqNumber } = usePageState()
-
+	const { initialStoryData } = useEpisodeTableContext()
 	const { id } = useParams()
 
 	const selectedRowModel = table.getSelectedRowModel().rows
@@ -53,6 +54,7 @@ const Filters = ({
 
 	const {
 		setSelectedRowData,
+		setStory,
 		setOpen,
 		selectedRowData: adaptationData,
 	} = useAdaptation()
@@ -150,6 +152,7 @@ const Filters = ({
 					disabled={disabled || selectedRowData.length < 1}
 					onClick={() => {
 						if (adaptationData.length === 0) {
+							setStory(initialStoryData)
 							setSelectedRowData(selectedRowData)
 						}
 						setOpen(true)
