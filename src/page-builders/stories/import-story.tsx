@@ -153,6 +153,8 @@ export function ImportStory() {
 		const file = e.dataTransfer.files[0]
 		if (file && file.type.startsWith('image/')) {
 			form.setValue('image_file', file)
+			const imageURL = URL.createObjectURL(file)
+			setImageSrc(imageURL)
 		}
 	}
 
