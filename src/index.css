@@ -11,6 +11,12 @@
 		var(--color-fm-secondary-400)
 	);
 	--button-fm-noise: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%20100%20100%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20opacity%3D%270.6%27%3E%3Cfilter%20id%3D%27noiseFilter%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%274%27%20numOctaves%3D%271%27%20stitchTiles%3D%27stitch%27/%3E%3C/filter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url(%23noiseFilter)%27/%3E%3C/svg%3E');
+
+	/* aural-ui tokens :root variables */
+	--button-fm-noise-low: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%20100%20100%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20opacity%3D%270.2%27%3E%3Cfilter%20id%3D%27noiseFilter%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%274%27%20numOctaves%3D%271%27%20stitchTiles%3D%27stitch%27/%3E%3C/filter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url(%23noiseFilter)%27/%3E%3C/svg%3E');
+
+	/* aural-ui tokens :root variables */
+	--bottom-sheet-shadow: 0 -21px 24.8px -27px;
 }
 
 @theme {
@@ -53,6 +59,18 @@
 	--color-fm-green-500: rgb(27, 203, 100);
 	--color-fm-neutral-500: rgb(102, 102, 102);
 	--color-fm-neutral-50: rgb(10, 10, 10);
+
+	/* aural-ui tokens @theme variables */
+	--color-fm-blue-300: rgb(0, 131, 163);
+	--color-fm-button-fill-secondary: var(--color-fm-neutral-200);
+	--color-fm-divider-secondary: var(--color-fm-neutral-200);
+	--color-fm-green-300: rgb(0, 152, 60);
+	--color-fm-red-300: rgb(163, 25, 0);
+	--color-fm-surface-frosted: var(--color-fm-neutral-500);
+	--color-fm-yellow-300: rgb(163, 139, 0);
+	--leading-fm-md: 1.125rem;
+	--leading-fm-xl: 1.5rem;
+	--color-fm-neutral-200: rgb(47, 47, 47);
 }
 
 /* aural-ui tokens @property declarations */

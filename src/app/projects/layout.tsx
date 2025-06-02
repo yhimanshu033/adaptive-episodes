@@ -4,7 +4,7 @@ import React from 'react'
 import { useGlobalStore } from '@/store/global-store'
 import { useShallow } from 'zustand/react/shallow'
 
-import Footer from '@/components/footer'
+// import Footer from '@/components/footer'
 import Header from '@/components/header'
 import { FullScreenLoader } from '@/components/loader'
 
@@ -21,7 +21,7 @@ export default function ProjectsLayout({
 			<Header />
 			{isFullScreenLoading && <FullScreenLoader />}
 			{children}
-			<Footer />
+			{/* <Footer /> */}
 		</div>
 	)
 }

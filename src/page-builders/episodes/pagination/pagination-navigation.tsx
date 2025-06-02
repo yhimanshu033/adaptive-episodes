@@ -1,14 +1,12 @@
 import React, { useCallback } from 'react'
 import { DEFAULT_PAGE } from '@/constants/episodes-constants'
 import { usePageState } from '@/hooks/use-page-state'
-import {
-	ChevronLeft,
-	ChevronRight,
-	ChevronsLeft,
-	ChevronsRight,
-} from 'lucide-react'
+import ChevronDoubleLeftIcon from '@/icons/chevron-double-left-icon'
+import ChevronDoubleRightIcon from '@/icons/chevron-double-right-icon'
+import ChevronLeftIcon from '@/icons/chevron-left-icon'
+import ChevronRightIcon from '@/icons/chevron-right-icon'
 
-import { Button } from '@/components/ui/button'
+import { PaginationButton } from '@/components/aural-ui/pagination'
 
 interface PaginationNavigationProps {
 	children: React.ReactNode
@@ -44,35 +42,35 @@ export default function PaginationNavigation({
 
 	return (
 		<>
-			<Button
-				size="icon"
+			<PaginationButton
+				variant="navigation"
 				onClick={handleFirst}
 				disabled={currentPage <= DEFAULT_PAGE}
 			>
-				<ChevronsLeft />
-			</Button>
-			<Button
-				size="icon"
+				<ChevronDoubleLeftIcon />
+			</PaginationButton>
+			<PaginationButton
+				variant="navigation"
 				onClick={handleBack}
 				disabled={currentPage <= DEFAULT_PAGE}
 			>
-				<ChevronLeft />
-			</Button>
+				<ChevronLeftIcon />
+			</PaginationButton>
 			{children}
-			<Button
-				size="icon"
+			<PaginationButton
+				variant="navigation"
 				onClick={handleNext}
 				disabled={currentPage >= totalPages}
 			>
-				<ChevronRight />
-			</Button>
-			<Button
-				size="icon"
+				<ChevronRightIcon />
+			</PaginationButton>
+			<PaginationButton
+				variant="navigation"
 				onClick={handleLast}
 				disabled={currentPage >= totalPages}
 			>
-				<ChevronsRight />
-			</Button>
+				<ChevronDoubleRightIcon />
+			</PaginationButton>
 		</>
 	)
 }

@@ -1,15 +1,15 @@
 import React from 'react'
 import { languages, languageToTitle } from '@/constants/episodes-constants'
 
-import IfElse from '@/components/if-else'
-import ForEach from '@/components/ui/for-each'
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '@/components/ui/select'
+} from '@/components/aural-ui/select'
+import IfElse from '@/components/if-else'
+import ForEach from '@/components/ui/for-each'
 import { cn } from '@/lib/utils/helpers'
 
 import { ELanguage } from '@/types/common'
@@ -30,10 +30,10 @@ const LanguageSelector = ({
 }: TLanguageSelectorProps) => {
 	return (
 		<Select value={value} onValueChange={onValueChange}>
-			<SelectTrigger className={cn('gap-2', className)}>
+			<SelectTrigger className={cn('gap-2', className)} decoration="outline">
 				<SelectValue placeholder="Language" />
 			</SelectTrigger>
-			<SelectContent>
+			<SelectContent className="z-50">
 				<ForEach data={selectableLanguages}>
 					{(lang) => (
 						<SelectItem

@@ -3,6 +3,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { usePageState } from '@/hooks/use-page-state'
+import EmptyState from '@/page-builders/stories/empty-state'
 import Filters from '@/page-builders/stories/filters'
 import Pagination from '@/page-builders/stories/pagination'
 import Stories from '@/page-builders/stories/stories'
@@ -30,6 +31,11 @@ const StoryDashboard = () => {
 	const { data, stories, isLoading, sortedStories, openedStories } =
 		useStoriesData(params)
 
+	const showEmpty = useMemo(
+		() => !isLoading && (stories?.length === 0 || sortedStories?.length === 0),
+		[isLoading, sortedStories?.length, stories?.length]
+	)
+
 	const totalPages = useMemo(() => {
 		if (!data?.count) {
 			return 0
@@ -43,23 +49,30 @@ const StoryDashboard = () => {
 	}, [data, limit])
 
 	return (
-		<main className="animate-fade-in-up container flex flex-1 flex-col pt-6">
-			<Filters
-				setSearch={(search) => {
-					changeParams({ search, page: 1 })
-				}}
-			/>
-			<Stories
-				isLoading={isLoading}
-				openedStories={openedStories}
-				sortedStories={sortedStories}
-				stories={stories}
-			/>
-			<Pagination
-				params={params}
-				changeParams={changeParams}
-				totalPages={totalPages}
-			/>
+		<main className="animate-fade-in-up flex flex-1">
+			{showEmpty ? (
+				<EmptyState />
+			) : (
+				<div className="container flex flex-1 flex-col pt-6">
+					<Filters
+						setSearch={(search) => {
+							changeParams({ search, page: 1 })
+						}}
+					/>
+
+					<Stories
+						isLoading={isLoading}
+						openedStories={openedStories}
+						sortedStories={sortedStories}
+						stories={stories}
+					/>
+					<Pagination
+						params={params}
+						changeParams={changeParams}
+						totalPages={totalPages}
+					/>
+				</div>
+			)}
 		</main>
 	)
 }

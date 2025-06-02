@@ -1,8 +1,13 @@
 import React, { useCallback } from 'react'
-import { DEFAULT_PAGE, PAGES_TO_SHOW } from '@/constants/episodes-constants'
+import { DEFAULT_PAGE } from '@/constants/episodes-constants'
 import { usePageState } from '@/hooks/use-page-state'
 import PaginationNavigation from '@/page-builders/episodes/pagination/pagination-navigation'
 import RenderPageButtons from '@/page-builders/episodes/pagination/render-page-btns'
+
+import {
+	PaginationContent,
+	PaginationRoot,
+} from '@/components/aural-ui/pagination'
 
 interface PaginationButtonsProps {
 	totalPages: number
@@ -19,26 +24,20 @@ export default function PaginationButtons({
 		[setCurrentPage]
 	)
 
-	if (totalPages <= PAGES_TO_SHOW) {
-		return (
-			<RenderPageButtons
-				currentPage={currentPage}
-				handlePageChange={handlePageChange}
-				totalPages={totalPages}
-			/>
-		)
-	}
-
 	return (
-		<PaginationNavigation
-			totalPages={totalPages}
-			handlePageChange={handlePageChange}
-		>
-			<RenderPageButtons
-				currentPage={currentPage}
-				handlePageChange={handlePageChange}
-				totalPages={totalPages}
-			/>
-		</PaginationNavigation>
+		<PaginationRoot>
+			<PaginationContent>
+				<PaginationNavigation
+					totalPages={totalPages}
+					handlePageChange={handlePageChange}
+				>
+					<RenderPageButtons
+						currentPage={currentPage}
+						handlePageChange={handlePageChange}
+						totalPages={totalPages}
+					/>
+				</PaginationNavigation>
+			</PaginationContent>
+		</PaginationRoot>
 	)
 }

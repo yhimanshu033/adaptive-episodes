@@ -748,3 +748,13 @@ export function extractWords(
 export function isArrayEqual(arr1: number[], arr2: number[]) {
 	return arr1.every((v, i) => v === arr2[i])
 }
+
+export const formatFileSize = (bytes: number): string => {
+	if (bytes < 1024) {
+		return `${bytes} B`
+	} else if (bytes < 1024 * 1024) {
+		return `${(bytes / 1024).toFixed(2)} KB`
+	} else {
+		return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+	}
+}

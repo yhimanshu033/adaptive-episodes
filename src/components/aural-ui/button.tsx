@@ -3,6 +3,7 @@ import { cva } from 'class-variance-authority'
 
 import { FeatureShineIcon } from '../../icons/feature-shine-icon'
 import { cn } from '../../lib/aural-ui/utils'
+import { withTooltip } from '../plate-ui/tooltip'
 import { If } from './if-else'
 
 export const buttonVariants = cva('group relative font-fm-brand', {
@@ -68,13 +69,15 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	children: React.ReactNode
 	className?: string
 	icon?: 'left' | 'right' | 'both'
+	iconLeft?: React.ReactNode
+	iconRight?: React.ReactNode
 	innerClassName?: string
 	isDisabled?: boolean
 	size?: 'sm' | 'md' | 'lg'
 	variant?: 'primary' | 'secondary' | 'outline' | 'text'
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+const ButtonComponent = forwardRef<HTMLButtonElement, ButtonProps>(
 	(
 		{
 			variant = 'primary',
@@ -84,6 +87,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			innerClassName = '',
 			isDisabled = false,
 			icon,
+			iconLeft,
+			iconRight,
 			...props
 		},
 		ref
@@ -118,14 +123,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 					)}
 				>
 					<If condition={icon === 'left' || icon === 'both'}>
-						<FeatureShineIcon color={iconColor} />
+						{iconLeft ?? <FeatureShineIcon color={iconColor} />}
 					</If>
 					{children}
 					<If condition={icon === 'right' || icon === 'both'}>
-						<FeatureShineIcon color={iconColor} />
+						{iconRight ?? <FeatureShineIcon color={iconColor} />}
 					</If>
 				</span>
 			</button>
 		)
 	}
 )
+
+ButtonComponent.displayName = 'ButtonComponent'
+
+export const Button = withTooltip(ButtonComponent)
+Button.displayName = 'Button'
