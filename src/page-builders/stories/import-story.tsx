@@ -21,11 +21,11 @@ import useSocket from '@/hooks/use-socket'
 import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 import { FeatureShineIcon } from '@/icons/feature-shine-icon'
 import { FileChartIcon } from '@/icons/file-chart-icon'
+import { LightBulbSimpleIcon } from '@/icons/light-bulb-simple-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import ChooseStoryTypes from '@/page-builders/stories/choose-story-types'
 import useStoryStore from '@/store/story-store'
-import { Lightbulb } from 'lucide-react'
 import { toast } from 'sonner'
 
 import Badge from '@/components/aural-ui/badge'
@@ -492,7 +492,7 @@ export function ImportStory() {
 														<div className="absolute inset-0 z-[-1] bg-[url('/assets/dusky_bg.webp')] bg-cover bg-center opacity-5" />
 														<div className="flex items-center justify-between">
 															<Badge className="flex gap-2" size="sm">
-																<Lightbulb className="size-4" />
+																<LightBulbSimpleIcon className="size-4" />
 																Content format
 															</Badge>
 															<Link
