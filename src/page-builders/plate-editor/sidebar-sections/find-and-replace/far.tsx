@@ -157,7 +157,7 @@ export default function FindAndReplaceUI({
 								<IfElse condition={ptr === idx}>
 									<If>
 										<del className="bg-red-500/20">{data[1]}</del>
-										<ins className="bg-green-500/20">{data[1]}</ins>
+										<ins className="bg-green-500/20">{replace}</ins>
 									</If>
 									<Else>
 										<span>{data[1]}</span>

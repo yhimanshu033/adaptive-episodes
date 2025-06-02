@@ -22,6 +22,7 @@ export type TGetStoriesResponse = {
 }
 
 export type TStory = {
+	adapting_seq_nos?: number[]
 	author: string | null
 	base_script_drive_folder_url: string | null
 	cms_ready_drive_folder_url: string | null

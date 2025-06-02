@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { If } from '@/components/if-else'
 import { StoryAccordion } from '@/components/render-content'
 import { Button } from '@/components/ui/button'
+import StreamedResponse from '@/components/ui/streamed-response'
 import {
 	cn,
 	extract,
@@ -82,27 +83,15 @@ export default function RenderMessage({
 		if ((responses[message.taskId] || []).length) {
 			return !hasToolResult(responses[message.taskId]) ? (
 				<div className="relative flex">
-					<div
+					<StreamedResponse
 						onClick={() => {
 							void navigator.clipboard.writeText(
 								extract((responses[message.taskId] || []).join(''))
 							)
 						}}
-						dangerouslySetInnerHTML={{
-							__html: handleToolTags(responses[message.taskId] || [], true)
-								.replaceAll('\n', '<br/>')
-								.replace(
-									/<text>/g,
-									"<span class='bg-background-editor rounded-md'>"
-								)
-								.replace(/<\/text>/g, '</span>'),
-						}}
-						className={cn(
-							'*:animate-in max-w-[70%] flex-1 rounded-lg p-3 transition-transform active:scale-[0.995]',
-							message.role === EMessenger.ASSISTANT
-								? 'bg-foreground/10'
-								: 'bg-primary'
-						)}
+						data={responses[message.taskId] || []}
+						dataConversion={(str) => handleToolTags(str, true)}
+						className="bg-foreground/10 max-w-[70%] flex-1 rounded-lg p-3 transition-transform active:scale-[0.995]"
 					/>
 					<If
 						condition={

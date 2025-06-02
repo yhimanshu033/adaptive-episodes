@@ -41,7 +41,6 @@ export default function useFindAndReplace() {
 	const caseSensitive = useOption('caseSensitive')
 	const wholeWord = useOption('wholeWord')
 	const genitive = useOption('genitive')
-	const currentId = useOption('currentId')
 	const [ptr, setPtr] = useState(0)
 
 	const { children } = useEditorState()
@@ -161,6 +160,10 @@ export default function useFindAndReplace() {
 		setPtr(ptr < records.length - 1 ? ptr + 1 : ptr)
 	}
 
+	function onReplaceChange(e: React.ChangeEvent<HTMLInputElement>) {
+		setOptions({ replace: e.target.value })
+	}
+
 	function toggleSearchMode(mode: farSearchModes) {
 		if (mode === farSearchModes.CASE_SENSITIVE) {
 			setOptions({ caseSensitive: !caseSensitive })
@@ -207,13 +210,6 @@ export default function useFindAndReplace() {
 		[data]
 	)
 
-	console.log({
-		occurrences,
-		records,
-		ptr,
-		currentId,
-		search,
-	})
 	return {
 		handleDownload,
 		localized_entities,
@@ -242,7 +238,7 @@ export default function useFindAndReplace() {
 		handleScanEpisode,
 		updateLOCPending,
 		recordTexts,
-		onReplaceChange: () => {},
+		onReplaceChange,
 		options: INITIAL_FAR_OPTIONS,
 		replacedContentMap: {},
 		setReplacedContentMap: () => {},

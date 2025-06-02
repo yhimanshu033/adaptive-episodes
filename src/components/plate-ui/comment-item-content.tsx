@@ -24,6 +24,7 @@ import { CommentResolveButton } from '@/components/plate-ui/comment-resolve-butt
 import { CommentValue } from '@/components/plate-ui/comment-value'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import StreamedResponse from '@/components/ui/streamed-response'
 
 import { PlateUser } from '@/types/plate-types'
 
@@ -66,7 +67,7 @@ export default function CommentItemContent() {
 		if (user?.id !== AI_USER_ID || !key) {
 			return null
 		}
-		return responses[key]?.join('') || ''
+		return responses[key] || []
 	}, [key, user, responses])
 
 	async function onExample() {
@@ -116,7 +117,7 @@ export default function CommentItemContent() {
 						<If condition={isReplyComment && user?.id === AI_USER_ID}>
 							<Button asChild tooltip="Copy" size="icon" variant="ghost">
 								<Copy
-									className="mr-1 size-4"
+									className="mr-1 !size-4"
 									onClick={() => handleCopy(commentText)}
 								/>
 							</Button>
@@ -137,15 +138,15 @@ export default function CommentItemContent() {
 					}
 				/>
 			</div>
-			<If condition={!exampleData && !!key}>
+			<If condition={!exampleData?.length && !!key}>
 				<div className="flex flex-col gap-2 p-2">
 					<h2 className="font-semibold">{dict('thinking')}</h2>
 				</div>
 			</If>
-			<If condition={!!exampleData && !taskEnded[key]}>
+			<If condition={!!exampleData?.length && !taskEnded[key]}>
 				<div className="flex flex-col gap-2 p-2">
 					<h2 className="text-sm font-semibold">{dict('example')}:</h2>
-					<p className="text-xs">{exampleData}</p>
+					<StreamedResponse className="tex-xs" data={exampleData || []} />
 				</div>
 			</If>
 		</div>
