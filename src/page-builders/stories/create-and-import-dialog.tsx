@@ -10,6 +10,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/aural-ui/dialog'
+import { Divider } from '@/components/aural-ui/divider'
 import { cn } from '@/lib/aural-ui/utils'
 
 interface ICreateAndImportDialogProps {
@@ -32,14 +33,10 @@ const CreateAndImportDialog = ({ children }: ICreateAndImportDialogProps) => {
 	return (
 		<Dialog open={isFormOpen} onOpenChange={onOpenChange}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent className="h-181 w-138 px-8 py-0" glass={false}>
-				<DialogHeader
-					className={cn(
-						'border-fm-divider-primary/50 border-b border-dashed py-8',
-						{ hidden: !showTitle }
-					)}
-				>
+			<DialogContent className="h-181 w-138 gap-5 px-8 py-8" glass={false}>
+				<DialogHeader className={cn('space-y-8', { hidden: !showTitle })}>
 					<DialogTitle>{title}</DialogTitle>
+					<Divider variant="dashed" />
 				</DialogHeader>
 				<ImportStory />
 			</DialogContent>

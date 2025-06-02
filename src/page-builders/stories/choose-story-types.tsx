@@ -56,7 +56,7 @@ const ChooseStoryTypes = ({
 		nextStep()
 	}
 	return (
-		<div className="flex h-full flex-col overflow-y-auto pb-8">
+		<div className="flex h-full flex-col overflow-y-auto">
 			<div className="text-fm-tertiary pb-5">
 				{
 					'Tell the world your story with creative tools, advanced AI features, insights, and more'

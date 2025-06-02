@@ -30,6 +30,7 @@ import { toast } from 'sonner'
 
 import Badge from '@/components/aural-ui/badge'
 import { Button, buttonVariants } from '@/components/aural-ui/button'
+import { Divider } from '@/components/aural-ui/divider'
 import {
 	Form,
 	FormControl,
@@ -210,15 +211,16 @@ export function ImportStory() {
 						>
 							<div className="flex h-full flex-col gap-4">
 								<If condition={storyType === ImportStoryType.IMPORT}>
-									<div className="border-fm-divider-primary/50 flex items-center border-b border-dashed py-8">
+									<div className="flex flex-col justify-center">
 										<Stepper
 											steps={2}
 											activeStep={storySteps.indexOf(step) - 1}
 											variant="primary"
-											className="mx-auto w-full max-w-90"
+											className="mx-auto w-full max-w-90 pb-8"
 											stepLabels={switchableStepsInfo.map((item) => item.title)}
 											onStepClick={handleStepClick}
 										/>
+										<Divider variant="dashed" />
 									</div>
 								</If>
 								<Case value={ImportStoryStep.DETAILS}>
@@ -526,13 +528,12 @@ export function ImportStory() {
 								</Case>
 							</div>
 
-							<div className="mb-8 flex grow items-end">
-								<div
-									className={cn('flex w-full items-center justify-between', {
-										'border-fm-divider-primary/50 border-t border-dashed pt-8':
-											storyType === ImportStoryType.IMPORT,
-									})}
-								>
+							<div className="flex grow flex-col justify-end gap-8">
+								<If condition={storyType === ImportStoryType.IMPORT}>
+									<Divider variant="dashed" />
+								</If>
+
+								<div className="flex w-full items-center justify-between">
 									<If condition={storyType === ImportStoryType.IMPORT}>
 										<Button
 											variant="text"
