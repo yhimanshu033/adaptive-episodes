@@ -50,49 +50,55 @@ const Stories = ({
 	return (
 		<section className="my-6 grid flex-1 grid-cols-1 justify-items-center gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 			<CreateAndImportDialog>
-				<div className="border-fm-divider-secondary flex min-h-102 w-full max-w-77 cursor-pointer items-center justify-center border-2 border-dashed">
-					<div className="border-fm-divider-secondary/50 rounded-full border p-2">
-						<PlusIcon className="size-8" />
-					</div>
-					{/* <IconButton label="" render={<PlusIcon/>}/> */}
+				<div className="border-fm-divider-secondary hover:bg-fm-divider-primary/20 hover:border-fm-divider-primary flex h-102 w-full max-w-77 cursor-pointer items-center justify-center border-2 border-dashed">
+					<IconButton
+						label="Add Story"
+						variant="outlined"
+						icon={<PlusIcon className="size-8" />}
+					/>
 				</div>
 			</CreateAndImportDialog>
 			{(sortedStories || stories || [])?.map((story) => (
 				<div
 					key={story.id}
-					className="group border-fm-divider-secondary bg-fm-surface-primary relative min-h-102 w-full max-w-77 cursor-pointer overflow-hidden rounded border p-3"
+					className="group border-fm-divider-secondary bg-fm-surface-primary relative h-102 w-full max-w-77 cursor-pointer overflow-hidden rounded border p-3"
 				>
+					{/* <div className="pointer-events-none absolute inset-0 z-[-1]">
+						<Image
+							src="/assets/story_card_hover_bg.webp"
+							alt="Background Image"
+							className="h-full w-full rounded object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+							priority={false}
+						/>
+					</div> */}
+
 					<Link
 						href={`/projects/${story.id}`}
 						className="flex h-full flex-col justify-between gap-4"
 					>
 						<div className="relative aspect-square">
-							<If condition={openedStories?.slice(0, 5).includes(story.id)}>
+							<div className="absolute inset-x-0 top-2 z-10 flex justify-between px-2">
+								<If condition={openedStories?.slice(0, 5).includes(story.id)}>
+									<Tag size="xs" color="lemon" variant="promotional">
+										Recently Opened
+									</Tag>
+								</If>
 								<Tag
-									className="absolute top-2 left-2 z-10"
+									color={
+										story.status === EImportStatus.IMPORTING ? 'lemon' : 'info'
+									}
+									leftIcon={story.status === EImportStatus.IMPORTING}
 									size="xs"
-									color="lemon"
-									variant="promotional"
+									variant={
+										story.status === EImportStatus.IMPORTING
+											? 'promotional'
+											: 'system'
+									}
+									emphasis="primary"
 								>
-									Recently Opened
+									{story.status}
 								</Tag>
-							</If>
-							<Tag
-								className="absolute bottom-2 left-2 z-10"
-								color={
-									story.status === EImportStatus.IMPORTING ? 'lemon' : 'info'
-								}
-								leftIcon={story.status === EImportStatus.IMPORTING}
-								size="xs"
-								variant={
-									story.status === EImportStatus.IMPORTING
-										? 'promotional'
-										: 'system'
-								}
-								emphasis="primary"
-							>
-								{story.status}
-							</Tag>
+							</div>
 							<If condition={!!story.image?.trim()}>
 								<Image
 									src={story.image}

@@ -31,12 +31,6 @@ import { toast } from 'sonner'
 import Badge from '@/components/aural-ui/badge'
 import { Button, buttonVariants } from '@/components/aural-ui/button'
 import {
-	Dialog,
-	DialogContent,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/aural-ui/dialog'
-import {
 	Form,
 	FormControl,
 	FormDescription,
@@ -58,13 +52,13 @@ import { formatFileSize } from '@/lib/utils/helpers'
 
 import { ELanguage } from '@/types/common'
 
+import DeleteModal from './delete-modal'
+
 export function ImportStory() {
 	const [storyType, setStoryType] = useState(ImportStoryType.EMPTY)
 	const [step, setStep] = useState(ImportStoryStep.CHOOSE_TYPE)
 	const [isDragging, setIsDragging] = useState(false)
 	const [imageSrc, setImageSrc] = useState<string | null>(null)
-	const [isImageDeleteModalOpen, setIsImageDeleteModalOpen] = useState(false)
-	const [isFileDeleteModalOpen, setIsFileDeleteModalOpen] = useState(false)
 	const imageInputRef = useRef<HTMLInputElement | null>(null)
 	const storyInputRef = useRef<HTMLInputElement | null>(null)
 	const { setFormOpen, setShowTitle } = useStoryStore()
@@ -120,6 +114,17 @@ export function ImportStory() {
 			imageInputRef.current.value = ''
 		}
 		form.resetField('image_file')
+		setImageSrc(null)
+	}
+
+	const handleDiscardDoc = (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
+		e.preventDefault()
+		if (storyInputRef.current) {
+			storyInputRef.current.value = ''
+		}
+		form.resetField('story_file')
 		setImageSrc(null)
 	}
 
@@ -334,67 +339,26 @@ export function ImportStory() {
 																		</div>
 																	</div>
 																</div>
-																<Dialog
-																	open={isImageDeleteModalOpen}
-																	onOpenChange={setIsImageDeleteModalOpen}
+																<DeleteModal
+																	onPrimaryClick={handleDiscardImage}
+																	title="Delete uploaded image"
+																	subTitle="Once deleted, this can't be
+																					undone. Don't worry! You can
+																					always upload a new image."
 																>
-																	<DialogTrigger asChild>
-																		<Button
-																			variant="text"
-																			className="text-fm-negative gap-2"
-																			innerClassName="!p-0"
-																		>
-																			<TrashIcon
-																				height={16}
-																				width={16}
-																				className="text-fm-negative"
-																			/>{' '}
-																			DELETE
-																		</Button>
-																	</DialogTrigger>
-																	<DialogContent
-																		variant="negative"
-																		className="flex flex-col items-center px-6 py-8 text-center"
-																		glass={false}
+																	<Button
+																		variant="text"
+																		className="text-fm-negative gap-2"
+																		innerClassName="!p-0"
 																	>
-																		<DialogTitle className="sr-only">
-																			Delete
-																		</DialogTitle>
-																		<div className="flex flex-col items-center gap-8">
-																			<TrashIcon
-																				height={44}
-																				width={44}
-																				className="text-fm-negative"
-																			/>
-																			<div className="w-full space-y-2">
-																				<h1 className="text-xl">
-																					Delete uploaded file
-																				</h1>
-																				<p className="text-fm-tertiary">
-																					Once deleted, this can&apos;t be
-																					undone. Don&apos;t worry! You can
-																					always upload a new image.
-																				</p>
-																			</div>
-																			<div className="flex w-full flex-col gap-5">
-																				<Button
-																					variant="secondary"
-																					onClick={handleDiscardImage}
-																				>
-																					Delete
-																				</Button>
-																				<Button
-																					variant="outline"
-																					onClick={() => {
-																						setIsImageDeleteModalOpen(false)
-																					}}
-																				>
-																					Cancel
-																				</Button>
-																			</div>
-																		</div>
-																	</DialogContent>
-																</Dialog>
+																		<TrashIcon
+																			height={16}
+																			width={16}
+																			className="text-fm-negative"
+																		/>{' '}
+																		DELETE
+																	</Button>
+																</DeleteModal>
 															</div>
 														</If>
 														<input
@@ -480,72 +444,26 @@ export function ImportStory() {
 																		</div>
 																	</div>
 																</div>
-																<Dialog
-																	open={isFileDeleteModalOpen}
-																	onOpenChange={setIsFileDeleteModalOpen}
+																<DeleteModal
+																	title="Delete uploaded file"
+																	subTitle="Once deleted, this can't be
+																					undone. Don't worry! You can
+																					always upload a new file."
+																	onPrimaryClick={handleDiscardDoc}
 																>
-																	<DialogTrigger asChild>
-																		<Button
-																			variant="text"
-																			className="text-fm-negative gap-2"
-																			innerClassName="!p-0"
-																		>
-																			<TrashIcon
-																				height={16}
-																				width={16}
-																				className="text-fm-negative"
-																			/>{' '}
-																			DELETE
-																		</Button>
-																	</DialogTrigger>
-																	<DialogContent
-																		variant="negative"
-																		className="flex flex-col items-center px-6 py-8 text-center"
-																		glass={false}
+																	<Button
+																		variant="text"
+																		className="text-fm-negative gap-2"
+																		innerClassName="!p-0"
 																	>
-																		<DialogTitle className="sr-only">
-																			Delete
-																		</DialogTitle>
-																		<div className="flex flex-col gap-8">
-																			<TrashIcon
-																				height={44}
-																				width={44}
-																				className="text-fm-negative"
-																			/>
-																			<div className="space-y-2">
-																				<h1 className="text-xl">
-																					Delete uploaded file
-																				</h1>
-																				<p className="text-fm-tertiary">
-																					Once deleted, this can&apos;t be
-																					undone. Don&apos;t worry! You can
-																					always upload a new file.
-																				</p>
-																			</div>
-																			<div className="flex flex-col gap-5">
-																				<Button
-																					variant="secondary"
-																					onClick={() =>
-																						form.setValue(
-																							'story_file',
-																							undefined
-																						)
-																					}
-																				>
-																					Delete
-																				</Button>
-																				<Button
-																					variant="outline"
-																					onClick={() =>
-																						setIsFileDeleteModalOpen(false)
-																					}
-																				>
-																					Cancel
-																				</Button>
-																			</div>
-																		</div>
-																	</DialogContent>
-																</Dialog>
+																		<TrashIcon
+																			height={16}
+																			width={16}
+																			className="text-fm-negative"
+																		/>{' '}
+																		DELETE
+																	</Button>
+																</DeleteModal>
 															</div>
 														</If>
 														<input
