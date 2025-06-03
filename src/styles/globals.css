@@ -236,6 +236,17 @@
 			--text-fm-6xl: 2.5rem;
 			--text-fm-7xl: 2.875rem;
 			--text-fm-8xl: 3.625rem;
+
+			/* aural-ui tokens @theme variables */
+			--color-fm-label-secondary: var(--color-fm-neutral-600);
+			--color-fm-surface-negative-alpha-15: rgba(209, 42, 0, 0.15);
+
+			/* aural-ui tokens @theme variables */
+			--color-fm-blue-300: rgb(0, 131, 163);
+			--color-fm-green-300: rgb(0, 152, 60);
+			--color-fm-red-300: rgb(163, 25, 0);
+			--color-fm-yellow-300: rgb(163, 139, 0);
+			--color-fm-blue-500-alpha-80: rgba(25, 186, 255, 0.8);
 		}
 		to {
 			height: var(--radix-accordion-content-height);
@@ -420,6 +431,15 @@
 
 		/* aural-ui tokens :root variables */
 		--toast-shadow: 0 6px 20px -9px;
+
+		/* aural-ui tokens :root variables */
+		--bottom-sheet-shadow: 0 -21px 24.8px -27px;
+		--gradient-fm-stroke-info: linear-gradient(
+			var(--stroke-direction, 270deg),
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-blue-500-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
 	}
 
 	.dark {

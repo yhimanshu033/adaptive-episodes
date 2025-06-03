@@ -33,7 +33,7 @@ const CreateAndImportDialog = ({ children }: ICreateAndImportDialogProps) => {
 	return (
 		<Dialog open={isFormOpen} onOpenChange={onOpenChange}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent className="h-181 w-138 gap-5 px-8 py-8" glass={false}>
+			<DialogContent className="h-181 w-138 gap-5 px-8 py-8" noise="none">
 				<DialogHeader className={cn('space-y-8', { hidden: !showTitle })}>
 					<DialogTitle>{title}</DialogTitle>
 					<Divider variant="dashed" />

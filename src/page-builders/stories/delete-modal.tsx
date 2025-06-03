@@ -43,8 +43,12 @@ const DeleteModal = ({
 			<DialogTrigger asChild>{children}</DialogTrigger>
 			<DialogContent
 				variant="negative"
-				className="flex h-88 w-99 flex-col items-center px-6 py-8 text-center"
-				glass={false}
+				classes={{
+					root: 'flex h-88 w-99 flex-col items-center px-6 py-8 text-center',
+					overlay: 'z-60',
+					content: 'z-70',
+				}}
+				noise="none"
 			>
 				<DialogTitle className="sr-only">Delete</DialogTitle>
 				<div className="flex flex-col items-center gap-8">

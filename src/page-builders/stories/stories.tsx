@@ -7,8 +7,7 @@ import { ImageIcon } from '@/icons/image-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { VerticalMenuIcon } from '@/icons/test-icons'
 import CreateAndImportDialog from '@/page-builders/stories/create-and-import-dialog'
-
-// import EditDeleteStory from '@/page-builders/stories/edit-delete-story'
+import ViewDeleteStory from '@/page-builders/stories/view-delete-story'
 
 import Badge from '@/components/aural-ui/badge'
 import { IconButton } from '@/components/aural-ui/icon-button'
@@ -146,17 +145,17 @@ const Stories = ({
 								Edited {formatDate(story.update_time)}
 							</Badge>
 						</div>
-						<div className="absolute right-1 bottom-2 opacity-0 transition-opacity group-hover:opacity-100">
-							{/* <EditDeleteStory> */}
-							<IconButton
-								label="Option menu"
-								icon={<VerticalMenuIcon className="size-4.5" />}
-								shape="square"
-								variant="ghost"
-								className="p-1"
-							/>
-							{/* </EditDeleteStory> */}
-						</div>
+						<ViewDeleteStory>
+							<div className="absolute right-1 bottom-2 opacity-0 transition-opacity group-hover:opacity-100">
+								<IconButton
+									label="Option menu"
+									icon={<VerticalMenuIcon className="size-4.5" />}
+									shape="square"
+									variant="ghost"
+									className="p-1"
+								/>
+							</div>
+						</ViewDeleteStory>
 					</Link>
 				</div>
 			))}
