@@ -9,7 +9,9 @@ import { ImportFolderIcon } from '@/icons/import-folder-icon'
 import useStoryStore from '@/store/story-store'
 
 import { Button } from '@/components/aural-ui/button'
+import Label from '@/components/aural-ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/aural-ui/radio'
+import { Typography } from '@/components/aural-ui/typography'
 import ForEach from '@/components/ui/for-each'
 
 import { IconComponent } from '@/types/common'
@@ -57,11 +59,17 @@ const ChooseStoryTypes = ({
 	}
 	return (
 		<div className="flex h-full flex-col overflow-y-auto">
-			<div className="text-fm-tertiary pb-5">
+			<Typography
+				align="left"
+				color="tertiary"
+				variant="body-medium"
+				weight="regular"
+				className="pb-5"
+			>
 				{
 					'Tell the world your story with creative tools, advanced AI features, insights, and more'
 				}
-			</div>
+			</Typography>
 			<RadioGroup
 				value={storyType}
 				onValueChange={(v) => updateStoryType(v as ImportStoryType)}
@@ -75,14 +83,34 @@ const ChooseStoryTypes = ({
 						>
 							<div className="flex items-center gap-2">
 								<RadioGroupItem value={item.type} id={item.type} />
-								<label htmlFor={item.type} className="flex flex-col">
-									<span className="text">{item.title}</span>
-									<span className="text-fm-tertiary text-sm">{item.desc}</span>
-								</label>
+								<Label
+									htmlFor={item.type}
+									className="!font-fm-text flex flex-col gap-1 normal-case"
+								>
+									<Typography
+										align="left"
+										color="primary"
+										variant="body-small"
+										weight="regular"
+									>
+										{item.title}
+									</Typography>
+									<Typography
+										align="left"
+										color="tertiary"
+										variant="body-small"
+										weight="regular"
+									>
+										{item.desc}
+									</Typography>
+								</Label>
 							</div>
-							<div className="flex h-full items-end">
+							<Label
+								htmlFor={item.type}
+								className="flex h-full items-end normal-case"
+							>
 								<item.icon className="text-fm-tertiary/20 size-15 stroke-1" />
-							</div>
+							</Label>
 						</div>
 					)}
 				</ForEach>

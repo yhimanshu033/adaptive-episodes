@@ -222,6 +222,20 @@
 
 			/* aural-ui tokens @theme variables */
 			--text-fm-xs: 0.625rem;
+
+			/* aural-ui tokens @theme variables */
+			--leading-fm-2xl: 1.75rem;
+			--leading-fm-4xl: 2.375rem;
+			--leading-fm-5xl: 2.625rem;
+			--leading-fm-6xl: 2.875rem;
+			--leading-fm-7xl: 3.375rem;
+			--leading-fm-8xl: 4.5rem;
+			--text-fm-2xl: 1.5rem;
+			--text-fm-4xl: 2rem;
+			--text-fm-5xl: 2.25rem;
+			--text-fm-6xl: 2.5rem;
+			--text-fm-7xl: 2.875rem;
+			--text-fm-8xl: 3.625rem;
 		}
 		to {
 			height: var(--radix-accordion-content-height);

@@ -4,6 +4,7 @@ import { PlusIcon } from '@/icons/plus-icon'
 import CreateAndImportDialog from '@/page-builders/stories/create-and-import-dialog'
 
 import { Button } from '@/components/aural-ui/button'
+import { Typography } from '@/components/aural-ui/typography'
 
 const EmptyState = () => {
 	return (
@@ -16,13 +17,21 @@ const EmptyState = () => {
 				className="z-[-1] object-cover"
 			/>
 			<CreateAndImportDialog>
-				<Button icon="left" iconLeft={<PlusIcon height={20} width={20} />}>
+				<Button
+					className="h-11"
+					icon="left"
+					iconLeft={<PlusIcon height={20} width={20} />}
+				>
 					Create Series
 				</Button>
 			</CreateAndImportDialog>
-			<div className="text-fm-tertiary text-center">
-				<p>{'It’s a clean slate, for now! Create series and'}</p>
-				<p>they will appear here.</p>
+			<div>
+				<Typography color="tertiary" align="center" variant="body-large">
+					It’s a clean slate, for now! Create series and
+				</Typography>
+				<Typography color="tertiary" align="center" variant="body-large">
+					they will appear here.
+				</Typography>
 			</div>
 		</div>
 	)

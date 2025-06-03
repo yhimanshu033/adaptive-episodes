@@ -22,7 +22,6 @@ const Header = () => {
 			<header className="animate-fade-in-down container flex h-14 items-center justify-between">
 				<Logo />
 				<div className="flex items-center gap-2">
-					{/* <SettingsButton /> */}
 					<UserProfile />
 				</div>
 			</header>

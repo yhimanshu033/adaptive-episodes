@@ -10,6 +10,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/aural-ui/dialog'
+import { Typography } from '@/components/aural-ui/typography'
 
 interface IDeleteModalProps {
 	children: ReactNode
@@ -42,15 +43,19 @@ const DeleteModal = ({
 			<DialogTrigger asChild>{children}</DialogTrigger>
 			<DialogContent
 				variant="negative"
-				className="flex flex-col items-center px-6 py-8 text-center"
+				className="flex h-88 w-99 flex-col items-center px-6 py-8 text-center"
 				glass={false}
 			>
 				<DialogTitle className="sr-only">Delete</DialogTitle>
 				<div className="flex flex-col items-center gap-8">
 					<TrashIcon height={44} width={44} className="text-fm-negative" />
 					<div className="space-y-2">
-						<h1 className="text-xl">{title}</h1>
-						<p className="text-fm-tertiary">{subTitle}</p>
+						<Typography align="center" as="h2" variant="body-large">
+							{title}
+						</Typography>
+						<Typography align="center" color="tertiary">
+							{subTitle}
+						</Typography>
 					</div>
 					<div className="flex w-full flex-col gap-5">
 						<Button variant="secondary" onClick={handlePrimaryClick}>

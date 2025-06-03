@@ -25,6 +25,7 @@ import { LightBulbSimpleIcon } from '@/icons/light-bulb-simple-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import ChooseStoryTypes from '@/page-builders/stories/choose-story-types'
+import DeleteModal from '@/page-builders/stories/delete-modal'
 import useStoryStore from '@/store/story-store'
 import { toast } from 'sonner'
 
@@ -43,6 +44,7 @@ import {
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
 import { Stepper } from '@/components/aural-ui/stepper'
+import { Typography } from '@/components/aural-ui/typography'
 import { If } from '@/components/if-else'
 import { FullScreenLoader } from '@/components/loader'
 import LanguageSelector from '@/components/plate-ui/language-selector'
@@ -52,8 +54,6 @@ import { FetchResponseResult } from '@/lib/fetch-api'
 import { formatFileSize } from '@/lib/utils/helpers'
 
 import { ELanguage } from '@/types/common'
-
-import DeleteModal from './delete-modal'
 
 export function ImportStory() {
 	const [storyType, setStoryType] = useState(ImportStoryType.EMPTY)
@@ -283,10 +283,18 @@ export function ImportStory() {
 										control={form.control}
 										name="image_file"
 										render={({ field }) => (
-											<FormItem className="flex flex-col gap-2">
+											<FormItem className="flex flex-col gap-2 align-text-bottom">
 												<FormLabel htmlFor="image">
 													Story Image{' '}
-													<span className="text-fm-tertiary">[Optional]</span>
+													<Typography
+														as="span"
+														color="tertiary"
+														variant="caption-small"
+														weight="regular"
+														className="font-fm-brand"
+													>
+														[Optional]
+													</Typography>
 												</FormLabel>
 												<FormControl>
 													<div
@@ -310,12 +318,19 @@ export function ImportStory() {
 																onClick={() => imageInputRef.current?.click()}
 															/>
 
-															<p className="text-fm-tertiary text-sm">
+															<Typography
+																color="tertiary"
+																variant="caption-large"
+																weight="regular"
+															>
 																Drag and drop or{' '}
-																<span className="text-fm-secondary-800">
+																<Typography
+																	as="span"
+																	className="text-fm-secondary-800"
+																>
 																	upload image
-																</span>
-															</p>
+																</Typography>
+															</Typography>
 														</If>
 														<If condition={!!field.value}>
 															<div className="flex w-full items-center justify-between text-sm">
@@ -337,10 +352,21 @@ export function ImportStory() {
 																		</div>
 																	)}
 																	<div className="flex flex-col gap-1">
-																		<div>{field.value?.name}</div>
-																		<div className="text-fm-tertiary text-xs">
+																		<Typography
+																			as="div"
+																			variant="caption-large"
+																		>
+																			{field.value?.name}
+																		</Typography>
+																		<Typography
+																			as="div"
+																			color="tertiary"
+																			variant="caption-medium"
+																			transform="uppercase"
+																			className="font-fm-brand"
+																		>
 																			{formatFileSize(field.value?.size || 0)}
-																		</div>
+																		</Typography>
 																	</div>
 																</div>
 																<DeleteModal
@@ -383,9 +409,25 @@ export function ImportStory() {
 													</div>
 												</FormControl>
 												<FormDescription className="flex flex-col text-xs">
-													<div className="text-fm-tertiary mb-4 flex w-full justify-between text-[10px]">
-														<h4>FORMATS: JPG, PNG</h4>
-														<h4>MAX SIZE: 25 MB</h4>
+													<div className="mb-4 flex w-full justify-between">
+														<Typography
+															as="h4"
+															color="tertiary"
+															variant="caption-small"
+															transform="uppercase"
+															className="font-fm-brand"
+														>
+															FORMATS: JPG, PNG
+														</Typography>
+														<Typography
+															as="h4"
+															color="tertiary"
+															variant="caption-small"
+															transform="uppercase"
+															className="font-fm-brand"
+														>
+															MAX SIZE: 25 MB
+														</Typography>
 													</div>
 												</FormDescription>
 											</FormItem>
@@ -421,13 +463,19 @@ export function ImportStory() {
 																icon={<PlusIcon />}
 																onClick={() => storyInputRef.current?.click()}
 															/>
-
-															<p className="text-fm-tertiary text-sm">
+															<Typography
+																color="tertiary"
+																variant="caption-large"
+																weight="regular"
+															>
 																Drag and drop or{' '}
-																<span className="text-fm-secondary-800">
+																<Typography
+																	as="span"
+																	className="text-fm-secondary-800"
+																>
 																	upload story
-																</span>
-															</p>
+																</Typography>
+															</Typography>
 														</If>
 														<If condition={!!field.value}>
 															<div className="flex w-full items-center justify-between text-sm">
@@ -442,10 +490,18 @@ export function ImportStory() {
 																		}
 																	/>
 																	<div className="flex flex-col gap-1">
-																		<div>Translation Document</div>
-																		<div className="text-fm-tertiary text-xs">
+																		<Typography as="div">
+																			Translation Document
+																		</Typography>
+																		<Typography
+																			as="div"
+																			color="tertiary"
+																			variant="caption-large"
+																			transform="uppercase"
+																			className="font-fm-brand"
+																		>
 																			{formatFileSize(field.value?.size || 0)}
-																		</div>
+																		</Typography>
 																	</div>
 																</div>
 																<DeleteModal
@@ -486,9 +542,25 @@ export function ImportStory() {
 													</div>
 												</FormControl>
 												<FormDescription className="flex flex-col text-xs">
-													<div className="text-fm-tertiary mb-4 flex w-full justify-between text-[10px]">
-														<h4>FORMATS: TXT, PDF, DOC</h4>
-														<h4>MAX SIZE: 100 MB</h4>
+													<div className="mb-4 flex w-full justify-between">
+														<Typography
+															as="h4"
+															color="tertiary"
+															variant="caption-small"
+															transform="uppercase"
+															className="font-fm-brand"
+														>
+															FORMATS: TXT, PDF, DOC
+														</Typography>
+														<Typography
+															as="h4"
+															color="tertiary"
+															variant="caption-small"
+															transform="uppercase"
+															className="font-fm-brand"
+														>
+															MAX SIZE: 100 MB
+														</Typography>
 													</div>
 													<div className="relative z-0 flex flex-col gap-5 px-3 py-4">
 														<div className="absolute inset-0 z-[-1] bg-[url('/assets/dusky_bg.webp')] bg-cover bg-center opacity-5" />
@@ -511,14 +583,22 @@ export function ImportStory() {
 																</div>
 															</Link>
 														</div>
-														<h4 className="text-fm-tertiary">
+														<Typography
+															as="h4"
+															color="tertiary"
+															variant="caption-medium"
+														>
 															Make sure each episode is numbered correctly in
 															your file names so we can import them in the right
 															order
-														</h4>
-														<h3 className="bg-fm-blue-200 text-fm-info-sec rounded p-1">
+														</Typography>
+														<Typography
+															as="h4"
+															variant="caption-medium"
+															className="bg-fm-blue-200 text-fm-info-sec rounded p-1"
+														>
 															Example: Episode 01 - Shadowed Realms
-														</h3>
+														</Typography>
 													</div>
 												</FormDescription>
 												<FormMessage />

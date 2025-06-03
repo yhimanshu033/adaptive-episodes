@@ -14,6 +14,7 @@ import Badge from '@/components/aural-ui/badge'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Label from '@/components/aural-ui/label'
 import { Tag } from '@/components/aural-ui/tag'
+import { Typography } from '@/components/aural-ui/typography'
 import { If } from '@/components/if-else'
 import { Loader } from '@/components/loader'
 import Image from '@/components/ui/image'
@@ -61,7 +62,7 @@ const Stories = ({
 			{(sortedStories || stories || [])?.map((story) => (
 				<div
 					key={story.id}
-					className="group border-fm-divider-secondary bg-fm-surface-primary relative h-102 w-full max-w-77 cursor-pointer overflow-hidden rounded border p-3"
+					className="group border-fm-divider-secondary bg-fm-surface-primary relative h-102 w-full max-w-77 cursor-pointer overflow-hidden rounded border p-4"
 				>
 					{/* <div className="pointer-events-none absolute inset-0 z-[-1]">
 						<Image
@@ -74,7 +75,7 @@ const Stories = ({
 
 					<Link
 						href={`/projects/${story.id}`}
-						className="flex h-full flex-col justify-between gap-4"
+						className="flex h-full flex-col gap-4"
 					>
 						<div className="relative aspect-square">
 							<div className="absolute inset-x-0 top-2 z-10 flex justify-between px-2">
@@ -117,30 +118,42 @@ const Stories = ({
 								</div>
 							</If>
 						</div>
-						<div>
-							<div className="space-y-2">
-								<h3 className="truncate overflow-hidden text-xl whitespace-nowrap">
+						<div className="flex h-full flex-col justify-between">
+							<div className="flex flex-col gap-2">
+								<Typography
+									as="h2"
+									variant="body-large"
+									className="truncate overflow-hidden whitespace-nowrap"
+								>
 									{story.project_title}
-								</h3>
-								<div className="text-fm-secondary flex items-center gap-1 text-sm">
-									<span className="max-w-1/2 truncate overflow-hidden whitespace-nowrap">
+								</Typography>
+								<div className="text-fm-secondary flex items-center gap-1">
+									<Typography
+										as="span"
+										variant="caption-medium"
+										color="secondary"
+										className="max-w-1/2 truncate overflow-hidden whitespace-nowrap"
+									>
 										{story.author ?? 'Anonymous'}
-									</span>
+									</Typography>
 									<span className="bg-fm-tertiary size-0.5" />
 									<Label className="text-fm-tertiary max-w-1/2 truncate overflow-hidden whitespace-nowrap">
 										{story.episode_count} episodes
 									</Label>
 								</div>
 							</div>
-							<Badge size="xs">Edited {formatDate(story.update_time)}</Badge>
+							<Badge size="xs" className="w-fit">
+								Edited {formatDate(story.update_time)}
+							</Badge>
 						</div>
-						<div className="absolute right-2 bottom-5 opacity-0 transition-opacity group-hover:opacity-100">
+						<div className="absolute right-1 bottom-2 opacity-0 transition-opacity group-hover:opacity-100">
 							{/* <EditDeleteStory> */}
 							<IconButton
 								label="Option menu"
-								icon={<VerticalMenuIcon className="size-5" />}
+								icon={<VerticalMenuIcon className="size-4.5" />}
 								shape="square"
 								variant="ghost"
+								className="p-1"
 							/>
 							{/* </EditDeleteStory> */}
 						</div>
