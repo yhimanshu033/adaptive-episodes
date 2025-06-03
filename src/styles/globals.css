@@ -87,6 +87,11 @@
 			--text-fm-3xl: 1.75rem;
 			--text-fm-xl: 1.25rem;
 			--color-fm-neutral-600: rgb(130, 130, 130);
+
+			/* aural-ui tokens @theme variables */
+			--color-fm-surface-frosted: var(--color-fm-neutral-500);
+			--color-fm-divider-secondary-alpha-80: rgba(47, 47, 47, 0.8);
+			--color-fm-divider-contrast-alpha-80: rgb(157, 157, 157, 0.8);
 		}
 		to {
 			height: var(--radix-accordion-content-height);
@@ -242,6 +247,14 @@
 
 		/* Default Font */
 		/* --font-default: 'Inter', 'Inter Fallback'; CHECK WITH LAYOUT.TSX */
+
+		/* aural-ui tokens :root variables */
+		--gradient-fm-stroke-neutral: linear-gradient(
+			270deg,
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-divider-contrast-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
 	}
 
 	.dark {
@@ -332,4 +345,9 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+}
+
+/* aural-ui tokens class and ID definitions */
+.popover-content {
+	animation-duration: 0ms;
 }
