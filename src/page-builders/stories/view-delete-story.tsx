@@ -25,7 +25,7 @@ const ViewDeleteStory: React.FC<ViewDeleteStoryProps> = ({ children }) => {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-			<DropdownMenuContent>
+			<DropdownMenuContent align="end">
 				<DropdownMenuGroup>
 					<DropdownMenuItem>
 						{' '}

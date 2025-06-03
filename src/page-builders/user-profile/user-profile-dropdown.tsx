@@ -57,7 +57,7 @@ const UserProfileDropDown = ({ children }: IUserProfileDropDownProps) => {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-			<DropdownMenuContent>
+			<DropdownMenuContent align="end" sideOffset={4}>
 				<DropdownMenuGroup>
 					<DropdownMenuItem>
 						<div className="flex items-center gap-2">
