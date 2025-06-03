@@ -188,9 +188,8 @@ export const PaginationSizeSelector: React.FC<PaginationSizeSelectorProps> = ({
 			{...props}
 		>
 			{pageSizeOptions.map((option, index) => (
-				<>
+				<div key={option}>
 					<SelectItem
-						key={option}
 						value={option.toString()}
 						classes={{
 							root: cn('h-10', pageFontVariants({ size })),
@@ -200,7 +199,7 @@ export const PaginationSizeSelector: React.FC<PaginationSizeSelectorProps> = ({
 						{option}
 					</SelectItem>
 					{index < pageSizeOptions.length - 1 && <SelectSeparator />}
-				</>
+				</div>
 			))}
 		</SelectField>
 	)

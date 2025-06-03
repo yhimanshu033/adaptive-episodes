@@ -5,12 +5,14 @@ import { useStoriesData } from '@/hooks/query/use-story-data'
 import { usePageState } from '@/hooks/use-page-state'
 import EmptyState from '@/page-builders/stories/empty-state'
 import Filters from '@/page-builders/stories/filters'
-import Pagination from '@/page-builders/stories/pagination'
+import PaginationComponent from '@/page-builders/stories/pagination-component'
 import Stories from '@/page-builders/stories/stories'
+
+import { PaginationProvider } from '@/components/aural-ui/pagination'
 
 import { TGetStoriesQueryParams } from '@/types/story-types'
 
-const StoryDashboard = () => {
+const PaginatedStoryDashboard = () => {
 	const { currentPage, limit, search, setCurrentPage, setLimit, setSearch } =
 		usePageState()
 
@@ -28,25 +30,37 @@ const StoryDashboard = () => {
 		[limit, currentPage, search]
 	)
 
-	const { data, stories, isLoading, sortedStories, openedStories } =
-		useStoriesData(params)
+	const {
+		// data,
+		stories,
+		isLoading,
+		sortedStories,
+		openedStories,
+	} = useStoriesData(params)
 
 	const showEmpty = useMemo(
 		() => !isLoading && (stories?.length === 0 || sortedStories?.length === 0),
 		[isLoading, sortedStories?.length, stories?.length]
 	)
 
-	const totalPages = useMemo(() => {
-		if (!data?.count) {
-			return 0
-		}
+	// const totalPages = useMemo(() => {
+	// 	if (!data?.count) {
+	// 		return 0
+	// 	}
 
-		if (!limit) {
-			return 1
-		}
+	// 	if (!limit) {
+	// 		return 1
+	// 	}
 
-		return Math.ceil(data?.count / limit)
-	}, [data, limit])
+	// 	return Math.ceil(data?.count / limit)
+	// }, [data, limit])
+
+	const updateCurrentPage = useCallback(
+		(page: number) => {
+			void setCurrentPage(page)
+		},
+		[setCurrentPage]
+	)
 
 	return (
 		<main className="animate-fade-in-up flex flex-1">
@@ -66,14 +80,23 @@ const StoryDashboard = () => {
 						sortedStories={sortedStories}
 						stories={stories}
 					/>
-					<Pagination
-						params={params}
+					<PaginationComponent
 						changeParams={changeParams}
-						totalPages={totalPages}
+						updateCurrentPage={updateCurrentPage}
 					/>
 				</div>
 			)}
 		</main>
+	)
+}
+
+const StoryDashboard = () => {
+	const { stories } = useStoriesData()
+
+	return (
+		<PaginationProvider totalItems={stories.length || 1}>
+			<PaginatedStoryDashboard />
+		</PaginationProvider>
 	)
 }
 
