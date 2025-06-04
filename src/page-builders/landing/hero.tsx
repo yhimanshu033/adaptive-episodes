@@ -14,7 +14,7 @@ import {
 
 export default function HeroSection() {
 	return (
-		<section className="relative min-h-screen w-full">
+		<section className="relative w-full sm:min-h-screen">
 			<div className="relative z-10">
 				<nav className="text-fm-primary flex items-center justify-between p-4 sm:p-6">
 					<div className="not-sm:flex not-sm:flex-col">
@@ -71,7 +71,7 @@ export default function HeroSection() {
 					</div>
 				</nav>
 
-				<div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center px-4 text-center sm:px-6">
+				<div className="flex flex-col items-center justify-center px-4 text-center not-sm:mt-12 sm:min-h-[calc(100vh-80px)] sm:px-6">
 					<h1 className="mb-4 text-3xl leading-tight sm:text-4xl md:text-5xl lg:text-6xl">
 						Write smart. Write fast.
 						<br className="hidden sm:block" />
