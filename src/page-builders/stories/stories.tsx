@@ -4,12 +4,10 @@ import React from 'react'
 import Link from 'next/link'
 import { EImportStatus } from '@/constants/story-constants'
 import { ImageIcon } from '@/icons/image-icon'
-import { VerticalMenuIcon } from '@/icons/test-icons'
 import CreateAndImportCard from '@/page-builders/stories/create-and-import-card'
 import ViewDeleteStory from '@/page-builders/stories/view-delete-story'
 
 import Badge from '@/components/aural-ui/badge'
-import { IconButton } from '@/components/aural-ui/icon-button'
 import Label from '@/components/aural-ui/label'
 import { Tag } from '@/components/aural-ui/tag'
 import { Typography } from '@/components/aural-ui/typography'
@@ -135,17 +133,7 @@ const Stories = ({
 								Edited {formatDate(story.update_time)}
 							</Badge>
 						</div>
-						<ViewDeleteStory>
-							<div className="absolute right-1 bottom-2 opacity-0 transition-opacity group-hover:opacity-100">
-								<IconButton
-									label="Option menu"
-									icon={<VerticalMenuIcon className="size-4.5" />}
-									shape="square"
-									variant="ghost"
-									className="p-1"
-								/>
-							</div>
-						</ViewDeleteStory>
+						<ViewDeleteStory />
 					</Link>
 				</div>
 			))}

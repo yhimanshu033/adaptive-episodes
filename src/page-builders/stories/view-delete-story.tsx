@@ -1,4 +1,5 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
+import { VerticalMenuIcon } from '@/icons/test-icons'
 import { TrashIcon } from '@/icons/trash-icon'
 import { PencilIcon } from 'lucide-react'
 
@@ -10,18 +11,25 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
+import { IconButton } from '@/components/aural-ui/icon-button'
 
-type ViewDeleteStoryProps = {
-	children: ReactNode
-}
-
-const ViewDeleteStory: React.FC<ViewDeleteStoryProps> = ({ children }) => {
+const ViewDeleteStory = () => {
 	const onDelete = (e: React.MouseEvent) => {
 		e.stopPropagation()
 	}
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
+			<DropdownMenuTrigger asChild>
+				<div className="absolute right-1 bottom-2 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100">
+					<IconButton
+						label="Option menu"
+						icon={<VerticalMenuIcon className="size-4.5" />}
+						shape="square"
+						variant="ghost"
+						className="p-1"
+					/>
+				</div>
+			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
 				<DropdownMenuGroup>
 					<DropdownMenuItem>

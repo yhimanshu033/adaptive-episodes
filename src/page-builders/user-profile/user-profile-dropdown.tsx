@@ -29,11 +29,11 @@ type IUserProfileDropDownProps = {
 
 const UserProfileDropDown = ({ children }: IUserProfileDropDownProps) => {
 	const { session } = useAuth()
-	const user = session?.data?.user
-	const [isLoading, setIsLoading] = useState(false)
 	const isInternal = useIsInternal()
-	const fallbackInitial = user?.fullname?.charAt(0) ?? '?'
 	const { setFormOpen } = useEditPromptsStore()
+	const [isLoading, setIsLoading] = useState(false)
+	const user = session?.data?.user
+	const fallbackInitial = user?.fullname?.charAt(0) ?? '?'
 
 	const onLogout = async (e: React.MouseEvent) => {
 		e.stopPropagation()
