@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
 import React, { useCallback, useMemo } from 'react'
@@ -25,7 +26,7 @@ const PaginatedStoryDashboard = () => {
 		(value: Partial<TGetStoriesQueryParams>) => {
 			void setCurrentPage((prev) => value.page || prev)
 			void setLimit((prev) => value.limit || prev)
-			void setSearch(() => value.search || '')
+			void setSearch((prev) => value.search ?? prev)
 		},
 		[setCurrentPage, setLimit, setSearch]
 	)
@@ -41,13 +42,6 @@ const PaginatedStoryDashboard = () => {
 	const showEmpty = useMemo(
 		() => !isLoading && (stories?.length === 0 || sortedStories?.length === 0),
 		[isLoading, sortedStories?.length, stories?.length]
-	)
-
-	const updateCurrentPage = useCallback(
-		(page: number) => {
-			void setCurrentPage(page)
-		},
-		[setCurrentPage]
 	)
 
 	return (
@@ -71,10 +65,7 @@ const PaginatedStoryDashboard = () => {
 						stories={stories}
 						search={search}
 					/>
-					<PaginationComponent
-						changeParams={changeParams}
-						updateCurrentPage={updateCurrentPage}
-					/>
+					<PaginationComponent changeParams={changeParams} />
 				</div>
 			</If>
 		</main>
@@ -84,7 +75,12 @@ const PaginatedStoryDashboard = () => {
 const StoryDashboard = () => {
 	const { currentPage, limit, search } = usePageState()
 
-	const { data } = useStoriesData({ limit, page: currentPage, search })
+	const params = useMemo(
+		() => ({ limit, page: currentPage, search }),
+		[limit, search]
+	)
+
+	const { data } = useStoriesData(params)
 
 	return (
 		<PaginationProvider totalItems={data?.count || 1}>

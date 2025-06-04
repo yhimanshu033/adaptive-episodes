@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 
 import { Divider } from '@/components/aural-ui/divider'
@@ -8,22 +9,20 @@ import { TGetStoriesQueryParams } from '@/types/story-types'
 
 interface IStoryPaginationProps {
 	changeParams: (value: Partial<TGetStoriesQueryParams>) => void
-	updateCurrentPage: (page: number) => void
 }
 export default function PaginationComponent({
 	changeParams,
-	updateCurrentPage,
 }: IStoryPaginationProps) {
 	const { currentPage, pageSize, setPage } = usePagination()
 
 	useEffect(() => {
-		updateCurrentPage(currentPage)
-	}, [currentPage, updateCurrentPage])
+		changeParams({ page: currentPage })
+	}, [currentPage])
 
 	useEffect(() => {
 		changeParams({ limit: Number(pageSize), page: 1 })
 		setPage(1)
-	}, [pageSize, changeParams, setPage])
+	}, [pageSize])
 
 	return (
 		<div className="mb-6 flex flex-col justify-between gap-4 py-4">
