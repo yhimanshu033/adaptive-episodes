@@ -74,20 +74,20 @@ const EpisodesTable = () => {
 				/>
 			</div>
 			<Table className="rounded-md border">
-				<TableHeader className="sticky top-14 z-10 bg-background">
+				<TableHeader className="bg-background sticky top-14 z-10">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header) => {
 								return (
 									<TableHead
 										key={header.id}
-										className="after:absolute after:bottom-0 after:left-0 after:w-full after:border-b after:border-border"
+										className="after:border-border after:absolute after:bottom-0 after:left-0 after:w-full after:border-b"
 									>
 										<If condition={!header.isPlaceholder}>
 											<div
 												className={cn(
 													header.column.getCanSort() &&
-														'flex cursor-pointer select-none items-center'
+														'flex cursor-pointer items-center select-none'
 												)}
 												{...(header.id !==
 												(EEpisodeHeaderKeys.SERIAL_NUMBER as string)
@@ -152,7 +152,7 @@ const EpisodesTable = () => {
 													<TableCell className="relative p-0">
 														<Button
 															title="Invent episode"
-															className="absolute z-10 h-auto -translate-y-1/2 rounded-full bg-primary p-1"
+															className="bg-primary absolute z-10 h-auto -translate-y-1/2 rounded-full p-1"
 															disabled={!isWriter}
 															onClick={() => {
 																setIsInventOpen(true)

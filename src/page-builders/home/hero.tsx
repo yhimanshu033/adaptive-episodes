@@ -8,7 +8,7 @@ import { buttonVariants, cn } from '@/lib/utils/helpers'
 const Hero = async () => {
 	const dict = await getTranslations('landing')
 	return (
-		<section className="container flex flex-1 animate-fade-in-up flex-col items-center justify-center gap-5">
+		<section className="animate-fade-in-up container flex flex-1 flex-col items-center justify-center gap-5">
 			<Image
 				src="/assets/copilot-logo.gif"
 				alt="logo_animation"

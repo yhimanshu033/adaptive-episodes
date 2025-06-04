@@ -203,7 +203,7 @@ export function ImportStory() {
 													asChild
 													variant="ghost"
 													size="icon"
-													className="absolute right-0 top-0 m-1 hidden -translate-y-1/2 translate-x-1/2 rounded-full bg-primary shadow group-hover:block"
+													className="bg-primary absolute top-0 right-0 m-1 hidden translate-x-1/2 -translate-y-1/2 rounded-full shadow group-hover:block"
 													onClick={handleDiscardImage}
 												>
 													<X className="size-4" />
@@ -211,7 +211,7 @@ export function ImportStory() {
 											</>
 										) : (
 											<div className="flex size-full items-center justify-center rounded-md border-2 border-dashed">
-												<ImageIcon className="size-8 text-muted-foreground" />
+												<ImageIcon className="text-muted-foreground size-8" />
 											</div>
 										)}
 									</div>
@@ -238,9 +238,9 @@ export function ImportStory() {
 											onDrop={handleDrop}
 										>
 											<>
-												<Upload className="size-8 text-muted-foreground" />
-												<div className="break-words text-center">
-													<p className="break-all text-sm text-muted-foreground">
+												<Upload className="text-muted-foreground size-8" />
+												<div className="text-center break-words">
+													<p className="text-muted-foreground text-sm break-all">
 														{field.value
 															? field.value.name
 															: 'Drag and drop your story file here'}
@@ -272,9 +272,9 @@ export function ImportStory() {
 											</>
 										</div>
 									</FormControl>
-									<FormDescription className="flex flex-col gap-1.5 bg-foreground/10 p-1 text-xs">
+									<FormDescription className="bg-foreground/10 flex flex-col gap-1.5 p-1 text-xs">
 										<div className="flex items-center justify-between">
-											<Badge className="flex gap-2 rounded-none bg-primary/20 py-1 text-xxs">
+											<Badge className="bg-primary/20 text-xxs flex gap-2 rounded-none py-1">
 												<Lightbulb className="size-4" />
 												Content format
 											</Badge>
@@ -294,7 +294,7 @@ export function ImportStory() {
 											Make sure each episode is numbered correctly in your file
 											names so we can import them in the right order
 										</h4>
-										<h3 className="bg-primary/30 p-1.5 text-primary">
+										<h3 className="bg-primary/30 text-primary p-1.5">
 											Example: Episode 01 - Shadowed Realms
 										</h3>
 									</FormDescription>

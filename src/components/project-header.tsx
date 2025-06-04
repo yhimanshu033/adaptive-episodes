@@ -60,8 +60,8 @@ const ProjectHeader = ({ initialSeqNumber }: { initialSeqNumber?: number }) => {
 	}
 
 	return (
-		<div className="left-0 top-0 z-50 animate-fade-in-down overflow-hidden border-b bg-background">
-			<header className="container flex h-14 animate-fade-in-down items-center justify-between py-1">
+		<div className="animate-fade-in-down bg-background top-0 left-0 z-50 overflow-hidden border-b">
+			<header className="animate-fade-in-down container flex h-14 items-center justify-between py-1">
 				<StoryDetails
 					handleClick={() => void handleClick()}
 					imageSize={30}

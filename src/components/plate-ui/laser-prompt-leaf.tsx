@@ -13,7 +13,7 @@ export default function LaserPromptLeaf({
 		<PlateLeaf
 			{...props}
 			className={cn(
-				'border-b-2 border-b-primary/40',
+				'border-b-primary/40 border-b-2',
 				'bg-primary/40',
 				className
 			)}

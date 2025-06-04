@@ -48,11 +48,11 @@ const ManageProject = () => {
 						</p>
 					</div>
 
-					<div className="rounded-md bg-muted p-4 text-sm">
+					<div className="bg-muted rounded-md p-4 text-sm">
 						<p className="text-muted-foreground">
 							<strong>Note:</strong> Editor access must be granted to
 						</p>
-						<p className="flex items-center gap-2 font-mono text-xs text-primary">
+						<p className="text-primary flex items-center gap-2 font-mono text-xs">
 							{LOC_SHEET_SERVICE_ACCOUNT}
 							<Button
 								variant="ghost"

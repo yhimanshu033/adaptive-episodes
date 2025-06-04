@@ -355,7 +355,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 						{focusMode && (
 							<div
 								style={{ minHeight: `${remainingHeight}px` }}
-								className="last-padding-div mb-6 bg-background-editor pb-[var(--editor-break-padding)]"
+								className="last-padding-div bg-background-editor mb-6 pb-[var(--editor-break-padding)]"
 							/>
 						)}
 					</>

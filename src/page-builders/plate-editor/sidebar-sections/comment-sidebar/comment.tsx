@@ -53,11 +53,11 @@ export default function CommentComponent({
 				className={cn(
 					'p-4',
 					activeCommentId === comment.id
-						? '~border-b border-l-2 border-b-primary bg-background/90'
+						? '~border-b border-b-primary bg-background/90 border-l-2'
 						: 'hover:bg-background/30'
 				)}
 			>
-				<div className="flex items-center gap-1 pb-2 text-xs text-muted-foreground">
+				<div className="text-muted-foreground flex items-center gap-1 pb-2 text-xs">
 					<ReplyIcon size={8} className="rotate-180" />
 					<h1 className="w-64 truncate">{comment.node.text}</h1>
 				</div>

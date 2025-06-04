@@ -176,10 +176,10 @@ export default function FindAndReplaceUI({
 				</If>
 			</div>
 			<If condition={!!search}>
-				<p className="text-lg text-muted-foreground">
-					Found <span className="font-bold text-foreground">{occurrences}</span>{' '}
+				<p className="text-muted-foreground text-lg">
+					Found <span className="text-foreground font-bold">{occurrences}</span>{' '}
 					occurrences of{' '}
-					<span className="font-medium italic text-foreground">{search}</span>
+					<span className="text-foreground font-medium italic">{search}</span>
 					{genitive && " and it's genitives"}
 				</p>
 			</If>
@@ -199,7 +199,7 @@ export default function FindAndReplaceUI({
 										key={`entity-${idx}`}
 										condition={!!localized_entity.entities.length}
 									>
-										<h4 className="my-2 rounded-md bg-muted p-2 text-lg font-semibold">
+										<h4 className="bg-muted my-2 rounded-md p-2 text-lg font-semibold">
 											{localized_entity.title}
 										</h4>
 										<div className="flex flex-wrap gap-2">

@@ -30,18 +30,18 @@ const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 				</CardHeader>
 				<CardContent>
 					{content && (
-						<CardDescription className="line-clamp-2 text-sm text-foreground">
+						<CardDescription className="text-foreground line-clamp-2 text-sm">
 							{typeof content === 'string'
 								? content
 								: `${content.length} results from Explorer`}
 						</CardDescription>
 					)}
-					<div className="mt-2 text-xs text-muted-foreground">
+					<div className="text-muted-foreground mt-2 text-xs">
 						Last updated: {formatDate(updateTime)}
 					</div>
 				</CardContent>
 			</Card>
-			<div className="absolute right-2 top-2 hidden items-center justify-center rounded text-center group-hover:flex">
+			<div className="absolute top-2 right-2 hidden items-center justify-center rounded text-center group-hover:flex">
 				{isPending ? (
 					<IconLoader />
 				) : (
