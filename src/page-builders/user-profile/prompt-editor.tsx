@@ -44,10 +44,10 @@ const PromptEditor = () => {
 
 	return (
 		<Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-			<DialogContent className="h-181 w-138 px-6 py-8" noise="none">
+			<DialogContent className="h-[85vh] w-138 px-6 py-8" noise="none">
 				<DialogTitle>Edit prompts across editor</DialogTitle>
 				<Divider variant="dashed" />
-				<div className="flex h-full flex-col overflow-y-auto">
+				<div className="flex h-full flex-col gap-4 overflow-y-auto">
 					<div className="space-y-8">
 						<div className="space-y-3">
 							<Label>Prompts</Label>

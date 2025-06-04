@@ -29,7 +29,7 @@ export default function LogOutButton() {
 				e.stopPropagation()
 				void handleLogout()
 			}}
-			className="text-fm-primary font-fm-text w-full p-0 text-base"
+			className="text-fm-primary font-fm-text w-full p-0"
 			leftIcon={
 				isLoading ? (
 					<FeatureShineIcon height={24} width={24} />
@@ -37,7 +37,7 @@ export default function LogOutButton() {
 					<ArrowBoxLeftIcon />
 				)
 			}
-			innerClassName="justify-start !p-0"
+			innerClassName="justify-start !p-0 text-fm-lg"
 		>
 			Logout
 		</Button>

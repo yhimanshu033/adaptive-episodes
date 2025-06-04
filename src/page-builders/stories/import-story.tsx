@@ -633,7 +633,7 @@ export function ImportStory() {
 												form.reset()
 											}}
 										>
-											Exist & Discard
+											Exit & Discard
 										</Button>
 									</If>
 

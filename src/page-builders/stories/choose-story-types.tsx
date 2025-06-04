@@ -115,7 +115,7 @@ const ChooseStoryTypes = ({
 					)}
 				</ForEach>
 			</RadioGroup>
-			<div className="flex grow items-end">
+			<div className="mt-5 flex grow items-end">
 				<Button className="mx-auto w-full" onClick={handleButtonClick}>
 					{buttonText}
 				</Button>

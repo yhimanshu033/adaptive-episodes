@@ -64,7 +64,7 @@ const Stories = ({
 			{(sortedStories || stories || [])?.map((story) => (
 				<div
 					key={story.id}
-					className="group border-fm-divider-secondary bg-fm-surface-primary relative h-102 w-full max-w-77 cursor-pointer overflow-hidden rounded border p-4"
+					className="group border-fm-divider-secondary hover:bg-fm-divider-primary/30 bg-fm-surface-primary relative h-102 w-full max-w-77 cursor-pointer overflow-hidden rounded border p-4"
 				>
 					<Link
 						href={`/projects/${story.id}`}

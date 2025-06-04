@@ -34,7 +34,7 @@ const CreateAndImport = ({ children }: ICreateAndImportProps) => {
 	return (
 		<Dialog open={isFormOpen} onOpenChange={onOpenChange}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent className="h-181 w-138 gap-5 px-8 py-8" noise="none">
+			<DialogContent className="h-[85vh] w-138 gap-5 px-8 py-8" noise="none">
 				<DialogHeader className={cn('space-y-8', { hidden: !showTitle })}>
 					<DialogTitle>{title}</DialogTitle>
 					<Divider variant="dashed" />

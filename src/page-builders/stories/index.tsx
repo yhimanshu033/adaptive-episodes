@@ -25,7 +25,7 @@ const PaginatedStoryDashboard = () => {
 		(value: Partial<TGetStoriesQueryParams>) => {
 			void setCurrentPage((prev) => value.page || prev)
 			void setLimit((prev) => value.limit || prev)
-			void setSearch((prev) => value.search || prev)
+			void setSearch(() => value.search || '')
 		},
 		[setCurrentPage, setLimit, setSearch]
 	)
@@ -82,7 +82,9 @@ const PaginatedStoryDashboard = () => {
 }
 
 const StoryDashboard = () => {
-	const { data } = useStoriesData()
+	const { currentPage, limit, search } = usePageState()
+
+	const { data } = useStoriesData({ limit, page: currentPage, search })
 
 	return (
 		<PaginationProvider totalItems={data?.count || 1}>
