@@ -9,7 +9,7 @@ import {
 
 export default function EditorPreviewSection() {
 	return (
-		<section className="mt-20 px-4 sm:mt-40 sm:px-0">
+		<section className="mt-20 sm:mt-40">
 			<div className="relative">
 				<div className="absolute top-1/2 left-1/2 h-32 w-40 -translate-x-1/2 -translate-y-1/4 overflow-hidden sm:h-44 sm:w-56">
 					<Image

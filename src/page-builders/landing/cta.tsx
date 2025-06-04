@@ -19,7 +19,7 @@ export default function CTA() {
 						className="w-full object-cover object-center"
 					/>
 				</div>
-				<div className="relative z-10 container px-4 sm:px-0">
+				<div className="relative z-10 container not-sm:px-4">
 					<h2 className="sm:text-fm-2xl md:text-fm-4xl mb-6 text-xl sm:mb-8">
 						Ready to write fast, smart, and
 						<br className="hidden sm:block" /> reach a global audience?

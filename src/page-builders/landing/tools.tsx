@@ -38,8 +38,8 @@ export default function ToolsSection() {
 	}, [])
 
 	return (
-		<div className="from-fm-neutral-300/25 to-fm-surface-primary/0 relative w-full bg-linear-to-r to-50% py-8 sm:py-10">
-			<div className="container mx-auto grid grid-cols-1 items-center gap-6 px-6 sm:gap-8 md:grid-cols-2">
+		<section className="from-fm-neutral-300/25 to-fm-surface-primary/0 relative w-full bg-linear-to-r to-50% py-8 sm:py-10">
+			<div className="container mx-auto grid grid-cols-1 items-center gap-6 not-sm:px-4 sm:gap-8 md:grid-cols-2">
 				<div>
 					<h2 className="font-display sm:text-fm-4xl md:text-fm-7xl mb-6 text-2xl sm:mb-8 sm:text-3xl">
 						Create faster, better.
@@ -83,6 +83,6 @@ export default function ToolsSection() {
 					</div>
 				</div>
 			</div>
-		</div>
+		</section>
 	)
 }
