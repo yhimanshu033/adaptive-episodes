@@ -8,6 +8,7 @@ import { Button } from '@/components/aural-ui/button'
 import {
 	Dialog,
 	DialogContent,
+	DialogDescription,
 	DialogTitle,
 } from '@/components/aural-ui/dialog'
 import { Divider } from '@/components/aural-ui/divider'
@@ -49,6 +50,9 @@ const PromptEditor = () => {
 				noise="none"
 			>
 				<DialogTitle>Edit prompts across editor</DialogTitle>
+				<DialogDescription className="sr-only">
+					Edit prompt across editor
+				</DialogDescription>
 				<Divider variant="dashed" />
 				<div className="flex h-full flex-col gap-4 overflow-auto">
 					<div className="space-y-8">

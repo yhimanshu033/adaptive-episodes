@@ -7,6 +7,7 @@ import useStoryStore from '@/store/story-store'
 import {
 	Dialog,
 	DialogContent,
+	DialogDescription,
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
@@ -40,6 +41,9 @@ const CreateAndImport = ({ children }: ICreateAndImportProps) => {
 			>
 				<DialogHeader className={cn('space-y-8', { hidden: !showTitle })}>
 					<DialogTitle>{title}</DialogTitle>
+					<DialogDescription className="sr-only">
+						Create and Import story
+					</DialogDescription>
 					<Divider variant="dashed" />
 				</DialogHeader>
 				<ImportStory />

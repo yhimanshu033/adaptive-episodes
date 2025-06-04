@@ -1,7 +1,7 @@
 import React from 'react'
+import { PencilIcon } from '@/icons/pencil-icon'
 import { VerticalMenuIcon } from '@/icons/test-icons'
 import { TrashIcon } from '@/icons/trash-icon'
-import { PencilIcon } from 'lucide-react'
 
 import {
 	DropdownMenu,

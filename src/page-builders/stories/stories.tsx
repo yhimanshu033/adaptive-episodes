@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { EImportStatus } from '@/constants/story-constants'
 import { ImageIcon } from '@/icons/image-icon'
+import { PageSearchIcon } from '@/icons/page-search-icon'
 import CreateAndImportCard from '@/page-builders/stories/create-and-import-card'
 import ViewDeleteStory from '@/page-builders/stories/view-delete-story'
 
@@ -44,7 +45,10 @@ const Stories = ({
 
 	if (!!search.trim() && stories?.length === 0 && !isLoading) {
 		return (
-			<div className="flex grow items-center justify-center">
+			<div className="flex grow flex-col items-center justify-center gap-4">
+				<div className="bg-fm-surface-frosted/20 rounded-full p-4">
+					<PageSearchIcon className="size-5" />
+				</div>
 				<Typography
 					as="div"
 					color="tertiary"

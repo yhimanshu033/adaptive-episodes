@@ -443,7 +443,7 @@ export function ImportStory() {
 											render={({ field }) => (
 												<FormItem className="space-y-2">
 													<FormLabel htmlFor="story">
-														STORY
+														STORY{' '}
 														<Typography
 															as="span"
 															color="tertiary"
