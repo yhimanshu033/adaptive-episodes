@@ -5,8 +5,8 @@ import { ArrowRightLeft } from 'lucide-react'
 
 const LocalizationSection = () => {
 	return (
-		<section className="mt-20 px-4 sm:mt-40 sm:px-0">
-			<div className="relative z-10 space-y-2 sm:space-y-4">
+		<section className="mt-20 sm:mt-40">
+			<div className="relative z-10 container space-y-2 not-sm:px-4 sm:space-y-4">
 				<h2 className="sm:text-fm-4xl md:text-fm-7xl font-display text-center text-2xl">
 					Don&apos;t just translate. Adapt.
 				</h2>
@@ -20,7 +20,7 @@ const LocalizationSection = () => {
 					src={LOCALIZATION_IMAGE_URL}
 					alt="Localization"
 					fill
-					className="object-cover object-center"
+					className="object-cover object-left sm:object-center"
 					priority
 				/>
 				<div className="absolute bottom-[6%] left-1/2 flex w-full max-w-xs -translate-x-1/2 flex-col items-center justify-center gap-2 px-2 text-center sm:max-w-none sm:gap-3 sm:px-0 md:flex-row">

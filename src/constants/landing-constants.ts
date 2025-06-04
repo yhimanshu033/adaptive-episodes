@@ -45,17 +45,17 @@ export const seriesData = [
 	{
 		title: 'Aaj Ka Hero',
 		plays: '16M',
-		image: { SERIES_1_URL },
+		image: SERIES_1_URL,
 	},
 	{
 		title: 'Banda Ye Badass Hai',
 		plays: '126M',
-		image: { SERIES_2_URL },
+		image: SERIES_2_URL,
 	},
 	{
 		title: 'Super Yoodha',
 		plays: '231M',
-		image: { SERIES_3_URL },
+		image: SERIES_3_URL,
 	},
 ]
 

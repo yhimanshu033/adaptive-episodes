@@ -11,7 +11,7 @@ import {
 
 const AIFeaturesSection = () => {
 	return (
-		<section id="ai-features" className="relative px-4 sm:px-0">
+		<section id="ai-features" className="relative">
 			<h2 className="text-fm-2xl font-display sm:text-fm-4xl md:text-fm-7xl mb-8 text-center sm:mb-12">
 				Go beyond writing. Create with StoryChat AI.
 			</h2>

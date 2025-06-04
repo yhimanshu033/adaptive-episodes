@@ -14,14 +14,12 @@ import {
 
 export default function HeroSection() {
 	return (
-		<section className="min-h-screen w-full overflow-hidden">
+		<section className="relative min-h-screen w-full">
 			<div className="relative z-10">
 				<nav className="text-fm-primary flex items-center justify-between p-4 sm:p-6">
-					<div className="flex flex-col items-end sm:flex-row">
-						<span className="font-display sm:text-fm-4xl text-3xl">
-							COPILOT
-						</span>
-						<span className="text-fm-secondary sm:text-fm-xl text-lg sm:ml-1">
+					<div className="not-sm:flex not-sm:flex-col">
+						<span className="font-display text-fm-4xl">COPILOT</span>
+						<span className="text-fm-secondary text-fm-xl sm:ml-1">
 							by PocketFM
 						</span>
 					</div>
@@ -53,7 +51,7 @@ export default function HeroSection() {
 									icon={<Menu size={24} className="text-fm-primary" />}
 								/>
 							</PopoverTrigger>
-							<PopoverContent>
+							<PopoverContent className="w-auto">
 								<div className="font-display text-fm-sm flex flex-col gap-4 p-4">
 									{navLinks.map((link) => (
 										<a
@@ -94,7 +92,7 @@ export default function HeroSection() {
 					alt="Background"
 					fill
 					sizes="100vw"
-					className="w-full object-contain object-top"
+					className="w-full overflow-visible object-cover object-top"
 					priority
 				/>
 			</div>

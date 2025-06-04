@@ -11,8 +11,8 @@ import {
 
 export default function FAQ() {
 	return (
-		<section id="faq" className="relative mt-20 w-full px-4 sm:mt-40 sm:px-0">
-			<div className="container">
+		<section id="faq" className="relative mt-20 w-full sm:mt-40">
+			<div className="container not-sm:px-4">
 				<h2 className="font-display sm:text-fm-4xl md:text-fm-7xl mb-8 text-2xl sm:mb-12">
 					Frequently asked questions
 				</h2>

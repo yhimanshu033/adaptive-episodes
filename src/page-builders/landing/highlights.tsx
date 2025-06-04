@@ -4,7 +4,7 @@ import { highlightedFeatures } from '@/constants/landing-constants'
 
 export default function HighlightSection() {
 	return (
-		<section id="essentials" className="mt-40 px-4 sm:px-0">
+		<section id="essentials" className="mt-16 sm:mt-40">
 			<h2 className="font-display text-fm-2xl sm:text-fm-4xl md:text-fm-7xl relative z-10 mb-8 sm:mb-12">
 				Tell stories. Like nobody else.
 			</h2>
