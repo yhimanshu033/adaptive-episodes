@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 
 import { Divider } from '@/components/aural-ui/divider'
 import { Pagination, usePagination } from '@/components/aural-ui/pagination'
+import { ScrollArea, ScrollBar } from '@/components/aural-ui/scroll-area'
 
 import { TGetStoriesQueryParams } from '@/types/story-types'
 
@@ -27,7 +28,10 @@ export default function PaginationComponent({
 	return (
 		<div className="mb-6 flex flex-col justify-between gap-4 py-4">
 			<Divider variant="primary" />
-			<Pagination showPageSize={true} pageSizeOptions={[5, 10, 15, 20]} />
+			<ScrollArea>
+				<Pagination showPageSize={true} pageSizeOptions={[5, 10, 15, 20]} />
+				<ScrollBar orientation="horizontal" />
+			</ScrollArea>
 			<Divider variant="primary" />
 		</div>
 	)
