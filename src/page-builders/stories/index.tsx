@@ -9,13 +9,17 @@ import PaginationComponent from '@/page-builders/stories/pagination-component'
 import Stories from '@/page-builders/stories/stories'
 
 import { If } from '@/components/aural-ui/if-else'
-import { PaginationProvider } from '@/components/aural-ui/pagination'
+import {
+	PaginationProvider,
+	usePagination,
+} from '@/components/aural-ui/pagination'
 
 import { TGetStoriesQueryParams } from '@/types/story-types'
 
 const PaginatedStoryDashboard = () => {
 	const { currentPage, limit, search, setCurrentPage, setLimit, setSearch } =
 		usePageState()
+	const { setPage } = usePagination()
 
 	const changeParams = useCallback(
 		(value: Partial<TGetStoriesQueryParams>) => {
@@ -48,14 +52,15 @@ const PaginatedStoryDashboard = () => {
 
 	return (
 		<main className="animate-fade-in-up flex flex-1">
-			<If condition={showEmpty}>
+			<If condition={showEmpty && !search.trim()}>
 				<EmptyState />
 			</If>
-			<If condition={!showEmpty}>
+			<If condition={!showEmpty || !!search.trim()}>
 				<div className="container flex flex-1 flex-col pt-6">
 					<Filters
 						setSearch={(search) => {
 							changeParams({ search, page: 1 })
+							setPage(1)
 						}}
 					/>
 
@@ -64,6 +69,7 @@ const PaginatedStoryDashboard = () => {
 						openedStories={openedStories}
 						sortedStories={sortedStories}
 						stories={stories}
+						search={search}
 					/>
 					<PaginationComponent
 						changeParams={changeParams}

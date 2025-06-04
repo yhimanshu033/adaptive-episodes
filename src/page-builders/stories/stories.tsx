@@ -22,6 +22,7 @@ import { TStory } from '@/types/story-types'
 interface IStories {
 	isLoading: boolean
 	openedStories: TOpenedStories | undefined
+	search: string
 	sortedStories: TStory[] | undefined
 	stories: TStory[] | undefined
 }
@@ -31,11 +32,28 @@ const Stories = ({
 	openedStories,
 	sortedStories,
 	stories,
+	search,
 }: IStories) => {
 	if (isLoading) {
 		return (
 			<div className="flex flex-1 items-center justify-center">
 				<Loader />
+			</div>
+		)
+	}
+
+	if (!!search.trim() && stories?.length === 0 && !isLoading) {
+		return (
+			<div className="flex grow items-center justify-center">
+				<Typography
+					as="div"
+					color="tertiary"
+					variant="body-medium"
+					className="max-w-83"
+					align="center"
+				>
+					No results found. Check your spelling or try different keywords.
+				</Typography>
 			</div>
 		)
 	}

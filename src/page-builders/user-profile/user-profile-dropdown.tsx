@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react'
 import useAuth from '@/hooks/use-auth'
 import useIsInternal from '@/hooks/use-is-internal'
-import useUnsavedChecker from '@/hooks/use-unsaved-checker'
 import { MaintenanceIcon } from '@/icons/maintenance-icon'
 import LogOutButton from '@/page-builders/user-profile/log-out'
 import useEditPromptsStore from '@/store/prompt-editor-store'
@@ -37,8 +36,6 @@ const UserProfileDropDown = ({ children }: IUserProfileDropDownProps) => {
 		setFormOpen(true)
 	}
 
-	useUnsavedChecker()
-	// Need clarity on using the above on Log-out
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
@@ -63,7 +60,7 @@ const UserProfileDropDown = ({ children }: IUserProfileDropDownProps) => {
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 					</If>
-					<DropdownMenuItem className="p-0">
+					<DropdownMenuItem>
 						<LogOutButton />
 					</DropdownMenuItem>
 				</DropdownMenuGroup>

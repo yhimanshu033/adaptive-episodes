@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { QUICK_PROMPTS } from '@/constants/ai-constants'
 import usePromptEditorStore from '@/store/prompt-editor-store'
 
@@ -35,6 +35,12 @@ const PromptEditor = () => {
 	const { isFormOpen, setFormOpen } = usePromptEditorStore()
 	const [selectedType, setSelectedType] = useState(promptTypes[0].value)
 	const [promptText, setPromptText] = useState(selectedType)
+
+	useEffect(() => {
+		return () => {
+			document.body.style.pointerEvents = ''
+		}
+	}, [isFormOpen])
 
 	return (
 		<Dialog open={isFormOpen} onOpenChange={setFormOpen}>
