@@ -630,8 +630,10 @@ export function ImportStory() {
 										className={cn('w-full', {
 											'h-11 w-fit': storyType === ImportStoryType.IMPORT,
 										})}
+										isDisabled={
+											!form.watch('title') || storyUploadMutation.isPending
+										}
 										type="submit"
-										disabled={storyUploadMutation.isPending}
 									>
 										{storyUploadMutation.isPending
 											? 'Uploading'

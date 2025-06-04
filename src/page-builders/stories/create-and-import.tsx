@@ -1,4 +1,5 @@
-import React from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from 'react'
 import { CI_DIALOG_TITLE } from '@/constants/story-constants'
 import { ImportStory } from '@/page-builders/stories/import-story'
 import useStoryStore from '@/store/story-store'
@@ -23,12 +24,12 @@ const CreateAndImport = ({ children }: ICreateAndImportProps) => {
 
 	const onOpenChange = (open: boolean) => {
 		setFormOpen(open)
-
-		if (!open) {
-			setTitle(CI_DIALOG_TITLE.DEFAULT)
-			setShowTitle(true)
-		}
 	}
+
+	useEffect(() => {
+		setTitle(CI_DIALOG_TITLE.DEFAULT)
+		setShowTitle(true)
+	}, [isFormOpen])
 
 	return (
 		<Dialog open={isFormOpen} onOpenChange={onOpenChange}>
