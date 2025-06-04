@@ -26,9 +26,6 @@ interface IStories {
 	stories: TStory[] | undefined
 }
 
-// TO-DO: Multiple author (need to confirm implementation side)
-// TO-DO importing and adaptation badge : BE support needed
-
 const Stories = ({
 	isLoading,
 	openedStories,
@@ -51,15 +48,6 @@ const Stories = ({
 					key={story.id}
 					className="group border-fm-divider-secondary bg-fm-surface-primary relative h-102 w-full max-w-77 cursor-pointer overflow-hidden rounded border p-4"
 				>
-					{/* <div className="pointer-events-none absolute inset-0 z-[-1]">
-						<Image
-							src="/assets/story_card_hover_bg.webp"
-							alt="Background Image"
-							className="h-full w-full rounded object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-							priority={false}
-						/>
-					</div> */}
-
 					<Link
 						href={`/projects/${story.id}`}
 						className="flex h-full flex-col gap-4"

@@ -1,11 +1,10 @@
-import React, { ReactNode, useState } from 'react'
+import React, { ReactNode } from 'react'
 import useAuth from '@/hooks/use-auth'
 import useIsInternal from '@/hooks/use-is-internal'
 import useUnsavedChecker from '@/hooks/use-unsaved-checker'
-import { ArrowBoxLeftIcon } from '@/icons/arrow-box-left-icon'
 import { MaintenanceIcon } from '@/icons/maintenance-icon'
+import LogOutButton from '@/page-builders/user-profile/log-out'
 import useEditPromptsStore from '@/store/prompt-editor-store'
-import { signOut } from 'next-auth/react'
 
 import {
 	Avatar,
@@ -31,27 +30,13 @@ const UserProfileDropDown = ({ children }: IUserProfileDropDownProps) => {
 	const { session } = useAuth()
 	const isInternal = useIsInternal()
 	const { setFormOpen } = useEditPromptsStore()
-	const [isLoading, setIsLoading] = useState(false)
 	const user = session?.data?.user
 	const fallbackInitial = user?.fullname?.charAt(0) ?? '?'
-
-	const onLogout = async (e: React.MouseEvent) => {
-		e.stopPropagation()
-		setIsLoading(true)
-		try {
-			await signOut()
-		} catch (error) {
-			console.error({ error })
-		} finally {
-			setIsLoading(false)
-		}
-	}
 
 	const onEditPrompts = () => {
 		setFormOpen(true)
 	}
 
-	console.log(isLoading)
 	useUnsavedChecker()
 	// Need clarity on using the above on Log-out
 	return (
@@ -78,8 +63,8 @@ const UserProfileDropDown = ({ children }: IUserProfileDropDownProps) => {
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 					</If>
-					<DropdownMenuItem onClick={() => void onLogout}>
-						<ArrowBoxLeftIcon /> Log Out
+					<DropdownMenuItem className="p-0">
+						<LogOutButton />
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>

@@ -441,7 +441,18 @@ export function ImportStory() {
 										name="story_file"
 										render={({ field }) => (
 											<FormItem className="space-y-2">
-												<FormLabel htmlFor="story">STORY</FormLabel>
+												<FormLabel htmlFor="story">
+													STORY
+													<Typography
+														as="span"
+														color="tertiary"
+														variant="caption-small"
+														weight="regular"
+														className="font-fm-brand"
+													>
+														[Optional]
+													</Typography>
+												</FormLabel>
 												<FormControl>
 													<div
 														className={cn(

@@ -68,8 +68,7 @@ export const innerButtonVariants = cva(
 	}
 )
 
-export interface RawButtonProps
-	extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	children: React.ReactNode
 	className?: string
 	iconProps?: React.SVGProps<SVGSVGElement>
@@ -81,7 +80,7 @@ export interface RawButtonProps
 	variant?: 'primary' | 'secondary' | 'outline' | 'text'
 }
 
-export const RawButton = forwardRef<HTMLButtonElement, RawButtonProps>(
+export const RawButton = forwardRef<HTMLButtonElement, ButtonProps>(
 	(
 		{
 			variant = 'primary',
