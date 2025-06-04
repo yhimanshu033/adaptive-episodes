@@ -1,7 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { PlusIcon } from '@/icons/plus-icon'
-import CreateAndImportDialog from '@/page-builders/stories/create-and-import-dialog'
+import CreateAndImport from '@/page-builders/stories/create-and-import'
 
 import { Button } from '@/components/aural-ui/button'
 import { Typography } from '@/components/aural-ui/typography'
@@ -16,15 +16,11 @@ const EmptyState = () => {
 				priority
 				className="z-[-1] object-cover"
 			/>
-			<CreateAndImportDialog>
-				<Button
-					className="h-11"
-					icon="left"
-					iconLeft={<PlusIcon height={20} width={20} />}
-				>
+			<CreateAndImport>
+				<Button className="h-11" leftIcon={<PlusIcon height={20} width={20} />}>
 					Create Series
 				</Button>
-			</CreateAndImportDialog>
+			</CreateAndImport>
 			<div>
 				<Typography color="tertiary" align="center" variant="body-large">
 					It’s a clean slate, for now! Create series and

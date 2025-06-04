@@ -13,11 +13,11 @@ import {
 import { Divider } from '@/components/aural-ui/divider'
 import { cn } from '@/lib/aural-ui/utils'
 
-interface ICreateAndImportDialogProps {
+interface ICreateAndImportProps {
 	children: React.ReactNode
 }
 
-const CreateAndImportDialog = ({ children }: ICreateAndImportDialogProps) => {
+const CreateAndImport = ({ children }: ICreateAndImportProps) => {
 	const { isFormOpen, title, showTitle, setFormOpen, setTitle, setShowTitle } =
 		useStoryStore()
 
@@ -44,4 +44,4 @@ const CreateAndImportDialog = ({ children }: ICreateAndImportDialogProps) => {
 	)
 }
 
-export default CreateAndImportDialog
+export default CreateAndImport

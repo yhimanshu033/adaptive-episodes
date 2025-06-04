@@ -15,12 +15,9 @@ type ViewDeleteStoryProps = {
 	children: ReactNode
 }
 
-// TO-DO : Replace Pencil icon once available
-
 const ViewDeleteStory: React.FC<ViewDeleteStoryProps> = ({ children }) => {
 	const onDelete = (e: React.MouseEvent) => {
 		e.stopPropagation()
-		// BE support is not available for now
 	}
 	return (
 		<DropdownMenu>
@@ -28,12 +25,10 @@ const ViewDeleteStory: React.FC<ViewDeleteStoryProps> = ({ children }) => {
 			<DropdownMenuContent align="end">
 				<DropdownMenuGroup>
 					<DropdownMenuItem>
-						{' '}
 						<PencilIcon className="size-4" /> View
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem onClick={onDelete}>
-						{' '}
 						<TrashIcon /> Delete
 					</DropdownMenuItem>
 				</DropdownMenuGroup>

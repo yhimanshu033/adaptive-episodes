@@ -8,6 +8,7 @@ import Filters from '@/page-builders/stories/filters'
 import PaginationComponent from '@/page-builders/stories/pagination-component'
 import Stories from '@/page-builders/stories/stories'
 
+import { If } from '@/components/aural-ui/if-else'
 import { PaginationProvider } from '@/components/aural-ui/pagination'
 
 import { TGetStoriesQueryParams } from '@/types/story-types'
@@ -30,30 +31,13 @@ const PaginatedStoryDashboard = () => {
 		[limit, currentPage, search]
 	)
 
-	const {
-		// data,
-		stories,
-		isLoading,
-		sortedStories,
-		openedStories,
-	} = useStoriesData(params)
+	const { stories, isLoading, sortedStories, openedStories } =
+		useStoriesData(params)
 
 	const showEmpty = useMemo(
 		() => !isLoading && (stories?.length === 0 || sortedStories?.length === 0),
 		[isLoading, sortedStories?.length, stories?.length]
 	)
-
-	// const totalPages = useMemo(() => {
-	// 	if (!data?.count) {
-	// 		return 0
-	// 	}
-
-	// 	if (!limit) {
-	// 		return 1
-	// 	}
-
-	// 	return Math.ceil(data?.count / limit)
-	// }, [data, limit])
 
 	const updateCurrentPage = useCallback(
 		(page: number) => {
@@ -64,9 +48,10 @@ const PaginatedStoryDashboard = () => {
 
 	return (
 		<main className="animate-fade-in-up flex flex-1">
-			{showEmpty ? (
+			<If condition={showEmpty}>
 				<EmptyState />
-			) : (
+			</If>
+			<If condition={!showEmpty}>
 				<div className="container flex flex-1 flex-col pt-6">
 					<Filters
 						setSearch={(search) => {
@@ -85,16 +70,16 @@ const PaginatedStoryDashboard = () => {
 						updateCurrentPage={updateCurrentPage}
 					/>
 				</div>
-			)}
+			</If>
 		</main>
 	)
 }
 
 const StoryDashboard = () => {
-	const { stories } = useStoriesData()
+	const { data } = useStoriesData()
 
 	return (
-		<PaginationProvider totalItems={stories.length || 1}>
+		<PaginationProvider totalItems={data?.count || 1}>
 			<PaginatedStoryDashboard />
 		</PaginationProvider>
 	)

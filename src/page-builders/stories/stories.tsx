@@ -4,9 +4,8 @@ import React from 'react'
 import Link from 'next/link'
 import { EImportStatus } from '@/constants/story-constants'
 import { ImageIcon } from '@/icons/image-icon'
-import { PlusIcon } from '@/icons/plus-icon'
 import { VerticalMenuIcon } from '@/icons/test-icons'
-import CreateAndImportDialog from '@/page-builders/stories/create-and-import-dialog'
+import CreateAndImportCard from '@/page-builders/stories/create-and-import-card'
 import ViewDeleteStory from '@/page-builders/stories/view-delete-story'
 
 import Badge from '@/components/aural-ui/badge'
@@ -29,9 +28,8 @@ interface IStories {
 	stories: TStory[] | undefined
 }
 
-// Doubt: Multiple author thing
-// TO-DO importing and adaptation badge things
-// TO-DO Add Pop over - on the vertical menu
+// TO-DO: Multiple author (need to confirm implementation side)
+// TO-DO importing and adaptation badge : BE support needed
 
 const Stories = ({
 	isLoading,
@@ -49,15 +47,7 @@ const Stories = ({
 
 	return (
 		<section className="my-6 grid flex-1 grid-cols-1 justify-items-center gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-			<CreateAndImportDialog>
-				<div className="border-fm-divider-secondary hover:bg-fm-divider-primary/20 hover:border-fm-divider-primary flex h-102 w-full max-w-77 cursor-pointer items-center justify-center border-2 border-dashed">
-					<IconButton
-						label="Add Story"
-						variant="outlined"
-						icon={<PlusIcon className="size-8" />}
-					/>
-				</div>
-			</CreateAndImportDialog>
+			<CreateAndImportCard />
 			{(sortedStories || stories || [])?.map((story) => (
 				<div
 					key={story.id}
