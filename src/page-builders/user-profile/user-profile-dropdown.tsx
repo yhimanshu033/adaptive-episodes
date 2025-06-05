@@ -60,7 +60,7 @@ const UserProfileDropDown = ({ children }: IUserProfileDropDownProps) => {
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 					</If>
-					<DropdownMenuItem>
+					<DropdownMenuItem className="p-0">
 						<LogOutButton />
 					</DropdownMenuItem>
 				</DropdownMenuGroup>

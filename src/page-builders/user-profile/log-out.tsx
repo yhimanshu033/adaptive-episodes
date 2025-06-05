@@ -29,10 +29,14 @@ export default function LogOutButton() {
 				e.stopPropagation()
 				void handleLogout()
 			}}
-			className="text-fm-primary font-fm-text w-full p-0"
+			className="text-fm-primary font-fm-text w-full px-4 py-3"
 			leftIcon={
 				isLoading ? (
-					<FeatureShineIcon height={24} width={24} />
+					<FeatureShineIcon
+						height={24}
+						width={24}
+						className="text-fm-primary"
+					/>
 				) : (
 					<ArrowBoxLeftIcon />
 				)

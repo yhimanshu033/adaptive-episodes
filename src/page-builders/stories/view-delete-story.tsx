@@ -13,20 +13,23 @@ import {
 } from '@/components/aural-ui/dropdown'
 import { IconButton } from '@/components/aural-ui/icon-button'
 
-const ViewDeleteStory = () => {
+interface IViewDeleteStoryProps {
+	onOpenChange: (open: boolean) => void
+}
+
+const ViewDeleteStory = ({ onOpenChange }: IViewDeleteStoryProps) => {
 	const onDelete = (e: React.MouseEvent) => {
 		e.stopPropagation()
 	}
 	return (
-		<DropdownMenu>
+		<DropdownMenu onOpenChange={onOpenChange}>
 			<DropdownMenuTrigger asChild>
 				<div className="absolute right-1 bottom-2 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100">
 					<IconButton
 						label="Option menu"
-						icon={<VerticalMenuIcon className="size-4.5" />}
-						shape="square"
+						icon={<VerticalMenuIcon className="z-10 size-4.5" />}
 						variant="ghost"
-						className="p-1"
+						className="!rounded-fm-m p-1"
 					/>
 				</div>
 			</DropdownMenuTrigger>
