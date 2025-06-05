@@ -16,7 +16,7 @@ const LandingPage = () => {
 	return (
 		<main className="bg-fm-surface-primary relative">
 			<Hero />
-			<div className="container">
+			<div className="container not-sm:px-4">
 				<HighlightSection />
 				<EditorPreviewSection />
 				<AIFeaturesSection />
