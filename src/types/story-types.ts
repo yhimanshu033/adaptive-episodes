@@ -4,6 +4,11 @@ import { ELanguage } from '@/types/common'
 
 export type TStoryStoreState = {
 	isFormOpen: boolean
+	setFormOpen: (isOpen: boolean) => void
+	setShowTitle: (show: boolean) => void
+	setTitle: (title: string) => void
+	showTitle: boolean
+	title: string
 }
 
 export type TGetStoriesResponse = {

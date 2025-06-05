@@ -26,3 +26,8 @@ export const DEFAULT_STORIES_RESPONSE: TGetStoriesResponse = {
 	next: null,
 	previous: null,
 }
+
+export const CI_DIALOG_TITLE = {
+	DEFAULT: 'Let’s get started',
+	CREATE: 'Create new series',
+}

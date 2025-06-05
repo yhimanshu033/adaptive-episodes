@@ -18,27 +18,20 @@ import {
 } from '@/hooks/form-resolvers/story-import-resolver'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
 import useSocket from '@/hooks/use-socket'
-import { setFormOpen } from '@/store/story-store'
-import {
-	ArrowUpRight,
-	File,
-	ImageIcon,
-	Lightbulb,
-	Plus,
-	Upload,
-	X,
-} from 'lucide-react'
+import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
+import { FeatureShineIcon } from '@/icons/feature-shine-icon'
+import { FileChartIcon } from '@/icons/file-chart-icon'
+import { LightBulbSimpleIcon } from '@/icons/light-bulb-simple-icon'
+import { PlusIcon } from '@/icons/plus-icon'
+import { TrashIcon } from '@/icons/trash-icon'
+import ChooseStoryTypes from '@/page-builders/stories/choose-story-types'
+import DeleteModal from '@/page-builders/stories/delete-modal'
+import useStoryStore from '@/store/story-store'
 import { toast } from 'sonner'
 
-import { RadioGroup, RadioGroupItem } from '@/components/aural-ui/radio'
-import { If } from '@/components/if-else'
-import { FullScreenLoader } from '@/components/loader'
-import LanguageSelector from '@/components/plate-ui/language-selector'
-import SwitchCase, { Case } from '@/components/switch-case'
-import { Badge } from '@/components/ui/badge'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { CardDescription } from '@/components/ui/card'
-import ForEach from '@/components/ui/for-each'
+import Badge from '@/components/aural-ui/badge'
+import { Button, buttonVariants } from '@/components/aural-ui/button'
+import { Divider } from '@/components/aural-ui/divider'
 import {
 	Form,
 	FormControl,
@@ -47,36 +40,20 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import Spinner from '@/components/ui/spinner'
+} from '@/components/aural-ui/form'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import Input from '@/components/aural-ui/input'
+import { Stepper } from '@/components/aural-ui/stepper'
+import { Typography } from '@/components/aural-ui/typography'
+import { If } from '@/components/if-else'
+import { FullScreenLoader } from '@/components/loader'
+import LanguageSelector from '@/components/plate-ui/language-selector'
+import SwitchCase, { Case } from '@/components/switch-case'
+import { cn } from '@/lib/aural-ui/utils'
 import { FetchResponseResult } from '@/lib/fetch-api'
-import { cn } from '@/lib/utils/helpers'
+import { formatFileSize } from '@/lib/utils/helpers'
 
-import { ELanguage, IconComponent } from '@/types/common'
-
-const storyTypesInfoRecord: Record<
-	ImportStoryType,
-	{ desc: string; icon: IconComponent; title: string }
-> = {
-	[ImportStoryType.EMPTY]: {
-		title: 'Create new series',
-		desc: 'Start from scratch and shape your story as inspiration strikes',
-		icon: (props) => <Plus {...props} />,
-	},
-	[ImportStoryType.IMPORT]: {
-		title: 'Import content for series',
-		desc: 'Bring in your work and enhance it with fresh tools and insights',
-		icon: (props) => <File {...props} />,
-	},
-}
-
-const storyTypesInfo = Object.keys(storyTypesInfoRecord).map((k) => ({
-	...storyTypesInfoRecord[k as ImportStoryType],
-	type: k as ImportStoryType,
-}))
+import { ELanguage } from '@/types/common'
 
 export function ImportStory() {
 	const [storyType, setStoryType] = useState(ImportStoryType.EMPTY)
@@ -85,6 +62,7 @@ export function ImportStory() {
 	const [imageSrc, setImageSrc] = useState<string | null>(null)
 	const imageInputRef = useRef<HTMLInputElement | null>(null)
 	const storyInputRef = useRef<HTMLInputElement | null>(null)
+	const { setFormOpen, setShowTitle } = useStoryStore()
 
 	const { storyUploadMutation } = useStoryUploadHook()
 	const { getResponse } = useSocket()
@@ -99,27 +77,34 @@ export function ImportStory() {
 		[storyType]
 	)
 
+	const updateStoryType = useCallback((type: ImportStoryType) => {
+		setStoryType(type)
+	}, [])
+
 	const nextStep = useCallback(() => {
 		const currentIdx = storySteps.indexOf(step)
+		if (storyType === ImportStoryType.IMPORT) {
+			setShowTitle(false)
+		}
 		if (step === lastStep) {
 			return true
 		} else {
 			setStep(storySteps[currentIdx + 1])
 		}
-	}, [lastStep, step])
+	}, [lastStep, setShowTitle, step, storyType])
 
 	const buttonText = useMemo(() => {
 		if (storyUploadMutation.isPending) {
 			return (
 				<>
-					Uploading <Spinner size={16} className="ml-2" />
+					Uploading <FeatureShineIcon height={16} width={16} className="ml-2" />
 				</>
 			)
 		}
 		if (step === lastStep) {
 			return 'Create'
 		}
-		return 'Next'
+		return 'Continue'
 	}, [step, lastStep, storyUploadMutation.isPending])
 
 	const handleDiscardImage = (
@@ -130,6 +115,17 @@ export function ImportStory() {
 			imageInputRef.current.value = ''
 		}
 		form.resetField('image_file')
+		setImageSrc(null)
+	}
+
+	const handleDiscardDoc = (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
+		e.preventDefault()
+		if (storyInputRef.current) {
+			storyInputRef.current.value = ''
+		}
+		form.resetField('story_file')
 		setImageSrc(null)
 	}
 
@@ -148,6 +144,29 @@ export function ImportStory() {
 		if (file) {
 			form.setValue('story_file', file)
 		}
+	}
+
+	const handleImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault()
+		e.stopPropagation()
+		setIsDragging(false)
+
+		const file = e.dataTransfer.files[0]
+		if (file && file.type.startsWith('image/')) {
+			form.setValue('image_file', file)
+			const imageURL = URL.createObjectURL(file)
+			setImageSrc(imageURL)
+		}
+	}
+
+	const handleStepClick = (stepIndex: number) => {
+		const isCompleted =
+			storySteps.indexOf(step) >=
+			storySteps.indexOf(switchableStepsInfo[stepIndex].type)
+		if (!isCompleted) {
+			return
+		}
+		setStep(switchableStepsInfo[stepIndex].type)
 	}
 
 	const onSubmit = (data: StoryImportFormSchema) => {
@@ -171,257 +190,356 @@ export function ImportStory() {
 	}
 
 	return (
-		<div className="overflow-y-auto py-2">
+		<div className="flex h-full flex-col overflow-y-auto">
 			<If condition={storyUploadMutation.isPending}>
 				<FullScreenLoader />
 			</If>
 			<SwitchCase value={step}>
 				<Case value={ImportStoryStep.CHOOSE_TYPE}>
-					<CardDescription className="pb-2">
-						{
-							"Pick how you'd like to begin, write something new or build on what you've created."
-						}
-					</CardDescription>
-					<RadioGroup
-						value={storyType}
-						onValueChange={(v) => setStoryType(v as ImportStoryType)}
-					>
-						<ForEach data={storyTypesInfo}>
-							{(item, idx) => (
-								<div key={idx} className="flex space-x-2 p-2">
-									<RadioGroupItem
-										value={item.type}
-										id={item.type}
-										className="mt-2"
-									/>
-									<Label htmlFor={item.type} className="flex flex-col">
-										<span className="text-lg">{item.title}</span>
-										<span className="text-muted-foreground">{item.desc}</span>
-									</Label>
-									<Label htmlFor={item.type} className="flex h-full items-end">
-										<item.icon />
-									</Label>
-								</div>
-							)}
-						</ForEach>
-					</RadioGroup>
-					<Button className="mx-auto mt-2 w-full" onClick={nextStep}>
-						{buttonText}
-					</Button>
+					<ChooseStoryTypes
+						storyType={storyType}
+						updateStoryType={updateStoryType}
+						buttonText={buttonText}
+						nextStep={nextStep}
+					/>
 				</Case>
 				<Case value={[ImportStoryStep.DETAILS, ImportStoryStep.CONTENT]}>
 					<Form {...form}>
-						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-							<If condition={storyType === ImportStoryType.IMPORT}>
-								<div className="flex items-center justify-between">
-									<ForEach data={switchableStepsInfo}>
-										{(item, idx) => {
-											const isCompleted =
-												storySteps.indexOf(step) >=
-												storySteps.indexOf(item.type)
-											const handleClick = () => {
-												if (!isCompleted) {
-													return
-												}
-												setStep(item.type)
-											}
-											return (
-												<div
-													key={idx}
-													className={cn(
-														'flex items-center',
-														idx === 0 ? 'w-fit' : 'w-full grow'
-													)}
-												>
-													<If condition={idx !== 0}>
-														<Separator
-															className={cn('shrink', {
-																'bg-primary': isCompleted,
-															})}
+						<form
+							onSubmit={form.handleSubmit(onSubmit)}
+							className="flex h-full flex-col overflow-y-auto"
+						>
+							<div className="flex h-full flex-col gap-4 overflow-y-auto">
+								<If condition={storyType === ImportStoryType.IMPORT}>
+									<div className="flex flex-col justify-center">
+										<Stepper
+											steps={2}
+											activeStep={storySteps.indexOf(step) - 1}
+											variant="primary"
+											className="mx-auto w-full max-w-90 pb-8"
+											stepLabels={switchableStepsInfo.map((item) => item.title)}
+											onStepClick={handleStepClick}
+										/>
+										<Divider variant="dashed" />
+									</div>
+								</If>
+								<div className="flex flex-col gap-4 overflow-y-auto">
+									<Case value={ImportStoryStep.DETAILS}>
+										<FormField
+											control={form.control}
+											name="title"
+											render={({ field }) => (
+												<FormItem className="space-y-2">
+													<FormLabel htmlFor="title">Story Title</FormLabel>
+													<FormControl>
+														<Input
+															placeholder="Give your series a name"
+															decoration="outline"
+															id="title"
+															{...field}
 														/>
-													</If>
-													<Button
-														variant="ghost"
-														type={isCompleted ? 'button' : 'submit'}
-														onClick={handleClick}
-														className="flex h-auto grow gap-2 rounded-full p-2"
-													>
-														<span
-															className={cn('rounded-full p-1', {
-																'bg-primary/20 text-primary': isCompleted,
-															})}
-														>
-															0{idx + 1}
-														</span>
-														<h4>{item.title}</h4>
-													</Button>
-												</div>
-											)
-										}}
-									</ForEach>
-								</div>
-							</If>
-							<Case value={ImportStoryStep.DETAILS}>
-								<FormField
-									control={form.control}
-									name="title"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel htmlFor="title">
-												Story Title<sup>*</sup>
-											</FormLabel>
-											<FormControl>
-												<Input
-													placeholder="Enter story title"
-													id="title"
-													{...field}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
 
-								<FormField
-									control={form.control}
-									name="author"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel htmlFor="author">Author</FormLabel>
-											<FormControl>
-												<Input
-													placeholder="Enter Author name"
-													id="author"
-													{...field}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								<FormField
-									control={form.control}
-									name="input_language"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel htmlFor="language">Language</FormLabel>
-											<FormControl>
-												<LanguageSelector
-													value={field.value as ELanguage}
-													selectableLanguages={sourceLanguages}
-													onValueChange={field.onChange}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<FormField
-									control={form.control}
-									name="image_file"
-									render={({ field }) => (
-										<FormItem className="flex flex-row justify-between">
-											<div className="flex flex-col gap-4">
-												<FormLabel htmlFor="image">
-													Story Image (Optional)
-												</FormLabel>
-												<FormControl>
-													<Input
-														id="image"
-														type="file"
-														onChange={(e) => {
-															if (e.target.files?.length) {
-																const file = e.target.files[0]
-																form.setValue('image_file', file)
-																const imageURL = URL.createObjectURL(file)
-																setImageSrc(imageURL)
-															}
-														}}
-														accept="image/*"
-														ref={imageInputRef}
-														className="hidden"
-													/>
-												</FormControl>
-												<Button
-													type="button"
-													variant="outline"
-													onClick={() => imageInputRef.current?.click()}
-												>
-													<ImageIcon className="mr-2 size-4" />
-													{field.value ? 'Change Image' : 'Upload Image'}
-												</Button>
-												<FormMessage />
-											</div>
-											<div className="group relative aspect-square w-20">
-												{imageSrc ? (
-													<>
-														<Image
-															src={imageSrc}
-															alt="Story Thumbnail"
-															layout="fill"
-															objectFit="cover"
-															className="overflow-hidden rounded-md"
+										<FormField
+											control={form.control}
+											name="author"
+											render={({ field }) => (
+												<FormItem className="space-y-2">
+													<FormLabel htmlFor="author">Author</FormLabel>
+													<FormControl>
+														<Input
+															placeholder="Enter Author name"
+															decoration="outline"
+															id="author"
+															{...field}
 														/>
-														<Button
-															variant="ghost"
-															size="icon"
-															className="bg-primary absolute top-0 right-0 m-1 hidden translate-x-1/2 -translate-y-1/2 rounded-full shadow group-hover:block"
-															onClick={handleDiscardImage}
-														>
-															<X className="size-4" />
-														</Button>
-													</>
-												) : (
-													<div className="flex size-full items-center justify-center rounded-md border-2 border-dashed">
-														<ImageIcon className="text-muted-foreground size-8" />
-													</div>
-												)}
-											</div>
-										</FormItem>
-									)}
-								/>
-							</Case>
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
 
-							<Case value={ImportStoryStep.CONTENT}>
-								<FormField
-									control={form.control}
-									name="story_file"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel htmlFor="story">
-												Upload Story Files (optional)
-											</FormLabel>
-											<FormControl>
-												<div
-													className={`mt-6 flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed p-8 transition-colors duration-200 ${
-														isDragging
-															? 'border-primary bg-primary/10'
-															: 'border-border'
-													}`}
-													onDragOver={handleDrag}
-													onDragLeave={handleDrag}
-													onDrop={handleDrop}
-												>
-													<>
-														<Upload className="text-muted-foreground size-8" />
-														<div className="text-center break-words">
-															<p className="text-muted-foreground text-sm break-all">
-																{field.value
-																	? field.value.name
-																	: 'Drag and drop your story file here'}
-															</p>
-															<Button
-																type="button"
-																variant="link"
-																className="mt-2"
-																onClick={() => storyInputRef.current?.click()}
+										<FormField
+											control={form.control}
+											name="input_language"
+											render={({ field }) => (
+												<FormItem className="space-y-2">
+													<FormLabel htmlFor="language">Language</FormLabel>
+													<FormControl>
+														<LanguageSelector
+															value={field.value as ELanguage}
+															selectableLanguages={sourceLanguages}
+															onValueChange={field.onChange}
+														/>
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="image_file"
+											render={({ field }) => (
+												<FormItem className="flex flex-col gap-2 align-text-bottom">
+													<FormLabel htmlFor="image">
+														Story Image{' '}
+														<Typography
+															as="span"
+															color="tertiary"
+															variant="caption-small"
+															weight="regular"
+															className="font-fm-brand"
+														>
+															[Optional]
+														</Typography>
+													</FormLabel>
+													<FormControl>
+														<div
+															className={cn(
+																'border-fm-divider-secondary flex flex-col items-center justify-center gap-1 rounded-lg border-1 border-dashed p-8 transition-colors duration-200',
+																{
+																	'border-fm-divider-primary bg-fm-divider-primary/30':
+																		isDragging,
+																	'border-solid p-4': !!field.value,
+																}
+															)}
+															onDragOver={handleDrag}
+															onDragLeave={handleDrag}
+															onDrop={handleImageDrop}
+														>
+															<If condition={!field.value}>
+																<IconButton
+																	label="Upload image button"
+																	size="small"
+																	icon={<PlusIcon />}
+																	onClick={() => imageInputRef.current?.click()}
+																/>
+
+																<Typography
+																	color="tertiary"
+																	variant="caption-large"
+																	weight="regular"
+																>
+																	Drag and drop or{' '}
+																	<Typography
+																		as="span"
+																		className="text-fm-secondary-800"
+																	>
+																		upload image
+																	</Typography>
+																</Typography>
+															</If>
+															<If condition={!!field.value}>
+																<div className="flex w-full items-center justify-between text-sm">
+																	<div className="flex max-w-3/5 gap-4">
+																		{imageSrc && (
+																			<div
+																				className="relative aspect-square h-9 shrink-0 overflow-hidden"
+																				onClick={() =>
+																					imageInputRef.current?.click()
+																				}
+																			>
+																				<Image
+																					src={imageSrc}
+																					alt="Story Thumbnail"
+																					layout="fill"
+																					objectFit="cover"
+																					className="rounded-md"
+																				/>
+																			</div>
+																		)}
+																		<div className="flex w-full flex-col gap-1">
+																			<Typography
+																				as="div"
+																				variant="caption-large"
+																				className="truncate overflow-hidden whitespace-nowrap"
+																			>
+																				{field.value?.name}
+																			</Typography>
+																			<Typography
+																				as="div"
+																				color="tertiary"
+																				variant="caption-medium"
+																				transform="uppercase"
+																				className="font-fm-brand"
+																			>
+																				{formatFileSize(field.value?.size || 0)}
+																			</Typography>
+																		</div>
+																	</div>
+																	<DeleteModal
+																		onPrimaryClick={handleDiscardImage}
+																		title="Delete uploaded image"
+																		subTitle="Once deleted, this can't be
+																					undone. Don't worry! You can
+																					always upload a new image."
+																	>
+																		<Button
+																			variant="text"
+																			className="text-fm-negative gap-2"
+																			innerClassName="!p-0"
+																		>
+																			<TrashIcon
+																				height={16}
+																				width={16}
+																				className="text-fm-negative"
+																			/>{' '}
+																			DELETE
+																		</Button>
+																	</DeleteModal>
+																</div>
+															</If>
+															<input
+																id="image"
+																type="file"
+																onChange={(e) => {
+																	if (e.target.files?.length) {
+																		const file = e.target.files[0]
+																		form.setValue('image_file', file)
+																		const imageURL = URL.createObjectURL(file)
+																		setImageSrc(imageURL)
+																	}
+																}}
+																accept="image/*"
+																ref={imageInputRef}
+																className="hidden"
+															/>
+														</div>
+													</FormControl>
+													<FormDescription className="flex flex-col text-xs">
+														<div className="mb-4 flex w-full justify-between">
+															<Typography
+																as="h4"
+																color="tertiary"
+																variant="caption-small"
+																transform="uppercase"
+																className="font-fm-brand"
 															>
-																{field.value
-																	? 'Change file'
-																	: 'Choose file to upload'}
-															</Button>
-															<Input
+																FORMATS: JPG, PNG
+															</Typography>
+															<Typography
+																as="h4"
+																color="tertiary"
+																variant="caption-small"
+																transform="uppercase"
+																className="font-fm-brand"
+															>
+																MAX SIZE: 25 MB
+															</Typography>
+														</div>
+													</FormDescription>
+												</FormItem>
+											)}
+										/>
+									</Case>
+
+									<Case value={ImportStoryStep.CONTENT}>
+										<FormField
+											control={form.control}
+											name="story_file"
+											render={({ field }) => (
+												<FormItem className="space-y-2">
+													<FormLabel htmlFor="story">
+														STORY{' '}
+														<Typography
+															as="span"
+															color="tertiary"
+															variant="caption-small"
+															weight="regular"
+															className="font-fm-brand"
+														>
+															[Optional]
+														</Typography>
+													</FormLabel>
+													<FormControl>
+														<div
+															className={cn(
+																'border-fm-divider-secondary flex flex-col items-center justify-center gap-1 rounded-lg border-1 border-dashed p-8 transition-colors duration-200',
+																{
+																	'border-fm-divider-primary bg-fm-divider-primary/30':
+																		isDragging,
+																	'border-solid p-4': !!field.value,
+																}
+															)}
+															onDragOver={handleDrag}
+															onDragLeave={handleDrag}
+															onDrop={handleDrop}
+														>
+															<If condition={!field.value}>
+																<IconButton
+																	label="Upload file button"
+																	size="small"
+																	icon={<PlusIcon />}
+																	onClick={() => storyInputRef.current?.click()}
+																/>
+																<Typography
+																	color="tertiary"
+																	variant="caption-large"
+																	weight="regular"
+																>
+																	Drag and drop or{' '}
+																	<Typography
+																		as="span"
+																		className="text-fm-secondary-800"
+																	>
+																		upload story
+																	</Typography>
+																</Typography>
+															</If>
+															<If condition={!!field.value}>
+																<div className="flex w-full items-center justify-between text-sm">
+																	<div className="flex gap-4">
+																		<IconButton
+																			label="Re-Upload file button"
+																			icon={
+																				<FileChartIcon className="text-fm-secondary-800" />
+																			}
+																			onClick={() =>
+																				storyInputRef.current?.click()
+																			}
+																		/>
+																		<div className="flex flex-col gap-1">
+																			<Typography as="div">
+																				Translation Document
+																			</Typography>
+																			<Typography
+																				as="div"
+																				color="tertiary"
+																				variant="caption-large"
+																				transform="uppercase"
+																				className="font-fm-brand"
+																			>
+																				{formatFileSize(field.value?.size || 0)}
+																			</Typography>
+																		</div>
+																	</div>
+																	<DeleteModal
+																		title="Delete uploaded file"
+																		subTitle="Once deleted, this can't be
+																					undone. Don't worry! You can
+																					always upload a new file."
+																		onPrimaryClick={handleDiscardDoc}
+																	>
+																		<Button
+																			variant="text"
+																			className="text-fm-negative gap-2"
+																			innerClassName="!p-0"
+																		>
+																			<TrashIcon
+																				height={16}
+																				width={16}
+																				className="text-fm-negative"
+																			/>{' '}
+																			DELETE
+																		</Button>
+																	</DeleteModal>
+																</div>
+															</If>
+															<input
 																id="story"
 																type="file"
 																accept=".docx"
@@ -435,51 +553,110 @@ export function ImportStory() {
 																}}
 															/>
 														</div>
-													</>
-												</div>
-											</FormControl>
-											<FormDescription className="bg-foreground/10 flex flex-col gap-1.5 p-1 text-xs">
-												<div className="flex items-center justify-between">
-													<Badge className="bg-primary/20 text-xxs flex gap-2 rounded-none py-1">
-														<Lightbulb className="size-4" />
-														Content format
-													</Badge>
-													<Link
-														href={SAMPLE_DOC_LINK}
-														target="_blank"
-														className={cn(
-															buttonVariants({ variant: 'link' }),
-															'h-6 px-0.5 text-xs'
-														)}
-													>
-														View sample
-														<ArrowUpRight className="size-4" />
-													</Link>
-												</div>
-												<h4>
-													Make sure each episode is numbered correctly in your
-													file names so we can import them in the right order
-												</h4>
-												<h3 className="bg-primary/30 text-primary p-1.5">
-													Example: Episode 01 - Shadowed Realms
-												</h3>
-											</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							</Case>
-							<Button
-								className="mx-auto w-full"
-								type="submit"
-								disabled={storyUploadMutation.isPending}
-							>
-								{storyUploadMutation.isPending
-									? 'Uploading'
-									: storyType === ImportStoryType.EMPTY
-										? 'Create New Story'
-										: 'Import a Story'}
-							</Button>
+													</FormControl>
+													<FormDescription className="flex flex-col text-xs">
+														<div className="mb-4 flex w-full justify-between">
+															<Typography
+																as="h4"
+																color="tertiary"
+																variant="caption-small"
+																transform="uppercase"
+																className="font-fm-brand"
+															>
+																FORMATS: TXT, PDF, DOC
+															</Typography>
+															<Typography
+																as="h4"
+																color="tertiary"
+																variant="caption-small"
+																transform="uppercase"
+																className="font-fm-brand"
+															>
+																MAX SIZE: 100 MB
+															</Typography>
+														</div>
+														<div className="relative z-0 flex flex-col gap-5 px-3 py-4">
+															<div className="absolute inset-0 z-[-1] bg-[url('/assets/dusky_bg.webp')] bg-cover bg-center opacity-5" />
+															<div className="flex items-center justify-between">
+																<Badge className="flex gap-2" size="sm">
+																	<LightBulbSimpleIcon className="size-4" />
+																	Content format
+																</Badge>
+																<Link
+																	href={SAMPLE_DOC_LINK}
+																	target="_blank"
+																	className={cn(
+																		buttonVariants({ variant: 'text' }),
+																		'h-6 w-23 text-xs'
+																	)}
+																>
+																	<div className="flex gap-1">
+																		VIEW SAMPLE
+																		<ArrowRightUpIcon className="size-4" />
+																	</div>
+																</Link>
+															</div>
+															<Typography
+																as="h4"
+																color="tertiary"
+																variant="caption-medium"
+															>
+																Make sure each episode is numbered correctly in
+																your file names so we can import them in the
+																right order
+															</Typography>
+															<Typography
+																as="h4"
+																variant="caption-medium"
+																className="bg-fm-blue-200 text-fm-info-sec rounded p-1"
+															>
+																Example: Episode 01 - Shadowed Realms
+															</Typography>
+														</div>
+													</FormDescription>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</Case>
+								</div>
+							</div>
+
+							<div className="flex flex-col justify-end">
+								<If condition={storyType === ImportStoryType.IMPORT}>
+									<Divider variant="dashed" />
+								</If>
+
+								<div className="flex w-full items-center justify-between pt-8">
+									<If condition={storyType === ImportStoryType.IMPORT}>
+										<Button
+											variant="text"
+											onClick={() => {
+												setFormOpen(false)
+												form.reset()
+											}}
+										>
+											Exit & Discard
+										</Button>
+									</If>
+
+									<Button
+										className={cn('w-full', {
+											'h-11 w-fit': storyType === ImportStoryType.IMPORT,
+										})}
+										isDisabled={
+											!form.watch('title') || storyUploadMutation.isPending
+										}
+										type="submit"
+									>
+										{storyUploadMutation.isPending
+											? 'Uploading'
+											: storyType === ImportStoryType.EMPTY
+												? 'Create New Story'
+												: 'Import a Story'}
+									</Button>
+								</div>
+							</div>
 						</form>
 					</Form>
 				</Case>
