@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { DEFAULT_PAGE, PAGES_TO_SHOW } from '@/constants/episodes-constants'
 
-import { PaginationButton } from '@/components/aural-ui/pagination'
+import { Button } from '@/components/ui/button'
 
 export default function RenderPageButtons({
 	currentPage,
@@ -28,13 +28,13 @@ export default function RenderPageButtons({
 	)
 
 	return Array.from({ length: lastPage - startPage + 1 }).map((_, i) => (
-		<PaginationButton
+		<Button
 			key={i + 1}
-			variant={currentPage === startPage + i ? 'active' : 'number'}
+			variant={currentPage === startPage + i ? 'default' : 'outline'}
 			onClick={() => handlePageChange(startPage + i)}
 			className="size-10"
 		>
 			{startPage + i}
-		</PaginationButton>
+		</Button>
 	))
 }
