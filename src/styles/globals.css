@@ -87,6 +87,96 @@
 			--text-fm-3xl: 1.75rem;
 			--text-fm-xl: 1.25rem;
 			--color-fm-neutral-600: rgb(130, 130, 130);
+
+			/* aural-ui tokens @theme variables */
+			--text-fm-sm: 0.75rem;
+			--leading-fm-xs: 0.75rem;
+			--font-fm-brand: 'PP Supply Sans';
+
+			/* aural-ui tokens @theme variables */
+			--color-fm-icon-warning: var(--color-fm-yellow-500);
+			--color-fm-icon-negative: var(--color-fm-red-600);
+			--color-fm-icon-positive: var(--color-fm-green-500);
+			--color-fm-yellow-500: rgb(255, 191, 0);
+			--color-fm-red-600: rgb(255, 88, 46);
+			--color-fm-green-500: rgb(27, 203, 100);
+
+			/* aural-ui tokens @theme variables */
+			--color-fm-electricblue-1000: rgb(230, 230, 255);
+			--color-fm-electricblue-200: rgb(0, 0, 117);
+			--color-fm-emerald-100: rgb(0, 71, 57);
+			--color-fm-emerald-900: rgb(184, 255, 241);
+			--color-fm-hotpink-100: rgb(71, 0, 71);
+			--color-fm-hotpink-900: rgb(255, 184, 255);
+			--color-fm-info: var(--color-fm-blue-500);
+			--color-fm-info-sec: var(--color-fm-blue-900);
+			--color-fm-lemon-100: rgb(71, 71, 0);
+			--color-fm-lemon-900: rgb(255, 255, 184);
+			--color-fm-negative: var(--color-fm-red-600);
+			--color-fm-negative-tert: var(--color-fm-red-1000);
+			--color-fm-neongreen-100: rgb(68, 71, 0);
+			--color-fm-neongreen-900: rgb(252, 255, 184);
+			--color-fm-positive: var(--color-fm-green-500);
+			--color-fm-positive-sec: var(--color-fm-green-900);
+			--color-fm-secondary: var(--color-fm-neutral-800);
+			--color-fm-surface-electricblue: var(--color-fm-electricblue-600);
+			--color-fm-surface-emerald: var(--color-fm-emerald-500);
+			--color-fm-surface-hotpink: var(--color-fm-hotpink-500);
+			--color-fm-surface-info: var(--color-fm-blue-500);
+			--color-fm-surface-info-sec: var(--color-fm-blue-100);
+			--color-fm-surface-lemon: var(--color-fm-lemon-500);
+			--color-fm-surface-negative: var(--color-fm-red-400);
+			--color-fm-surface-negative-sec: var(--color-fm-red-100);
+			--color-fm-surface-neongreen: var(--color-fm-neongreen-500);
+			--color-fm-surface-positive: var(--color-fm-green-500);
+			--color-fm-surface-positive-sec: var(--color-fm-green-100);
+			--color-fm-surface-warning: var(--color-fm-yellow-500);
+			--color-fm-tag-electricblue: var(--color-fm-electricblue-600);
+			--color-fm-tag-emerald: var(--color-fm-emerald-500);
+			--color-fm-tag-hotpink: var(--color-fm-hotpink-500);
+			--color-fm-tag-lemon: var(--color-fm-lemon-500);
+			--color-fm-tag-neongreen: var(--color-fm-neongreen-500);
+			--color-fm-warning: var(--color-fm-yellow-500);
+			--color-fm-yellow-200: rgb(117, 105, 0);
+			--color-fm-yellow-900: rgb(255, 251, 184);
+			--spacing-fm-lg: 0.5rem;
+			--spacing-fm-md: 0.25rem;
+			--text-fm-md: 0.875rem;
+			--color-fm-blue-500: rgb(25, 186, 255);
+			--color-fm-blue-900: rgb(184, 246, 255);
+			--color-fm-red-1000: rgb(255, 230, 230);
+			--color-fm-green-900: rgb(184, 255, 208);
+			--color-fm-neutral-800: rgb(185, 185, 185);
+			--color-fm-electricblue-600: rgb(46, 46, 255);
+			--color-fm-emerald-500: rgb(0, 255, 170);
+			--color-fm-hotpink-500: rgb(255, 59, 255);
+			--color-fm-blue-100: rgb(0, 62, 71);
+			--color-fm-lemon-500: rgb(249, 249, 39);
+			--color-fm-red-400: rgb(209, 42, 0);
+			--color-fm-red-100: rgb(71, 4, 0);
+			--color-fm-neongreen-500: rgb(192, 255, 0);
+			--color-fm-green-100: rgb(0, 71, 25);
+
+			/* aural-ui tokens @theme variables */
+			--leading-fm-sm: 1rem;
+
+			/* aural-ui tokens @theme variables */
+			--color-fm-divider-contrast: var(--color-fm-neutral-700);
+			--color-fm-divider-negative: var(--color-fm-red-400);
+			--color-fm-divider-positive: var(--color-fm-green-500);
+			--color-fm-divider-warning: var(--color-fm-yellow-500);
+			--color-fm-placeholder: var(--color-fm-neutral-400);
+			--color-fm-surface-frosted: var(--color-fm-neutral-500);
+			--leading-fm-lg: 1.25rem;
+			--leading-fm-md: 1.125rem;
+			--radius-fm-s: 0.125rem;
+			--text-fm-lg: 1rem;
+			--color-fm-neutral-700: rgb(157, 157, 157);
+			--color-fm-divider-secondary-alpha-80: rgba(47, 47, 47, 0.8);
+			--color-fm-red-500-alpha-80: rgba(255, 64, 0, 0.8);
+			--color-fm-divider-contrast-alpha-80: rgb(157, 157, 157, 0.8);
+			--color-fm-green-500-alpha-80: rgba(27, 203, 100, 0.8);
+			--color-fm-yellow-500-alpha-80: rgba(255, 191, 0, 0.8);
 		}
 		to {
 			height: var(--radix-accordion-content-height);
@@ -242,6 +332,32 @@
 
 		/* Default Font */
 		/* --font-default: 'Inter', 'Inter Fallback'; CHECK WITH LAYOUT.TSX */
+
+		/* aural-ui tokens :root variables */
+		--gradient-fm-stroke-negative: linear-gradient(
+			270deg,
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-red-500-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
+		--gradient-fm-stroke-neutral: linear-gradient(
+			270deg,
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-divider-contrast-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
+		--gradient-fm-stroke-positive: linear-gradient(
+			270deg,
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-green-500-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
+		--gradient-fm-stroke-warning: linear-gradient(
+			270deg,
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-yellow-500-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
 	}
 
 	.dark {

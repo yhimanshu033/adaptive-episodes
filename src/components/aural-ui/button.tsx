@@ -1,8 +1,9 @@
 import React, { ButtonHTMLAttributes, forwardRef } from 'react'
+import { FeatureShineIcon } from '@/icons/feature-shine-icon'
 import { cva } from 'class-variance-authority'
 
-import { FeatureShineIcon } from '../../icons/feature-shine-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { If } from './if-else'
 
 export const buttonVariants = cva('group relative font-fm-brand', {

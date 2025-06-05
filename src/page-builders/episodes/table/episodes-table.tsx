@@ -3,6 +3,10 @@ import { EImportStatus } from '@/constants/story-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import { usePageState } from '@/hooks/use-page-state'
+import ChevronDownIcon from '@/icons/chevron-down-icon'
+import { MagicBookIcon } from '@/icons/magic-book-icon'
+import { PlusIcon } from '@/icons/plus-icon'
+import { UploadIcon } from '@/icons/upload-icon'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
 import InventForm from '@/page-builders/episodes/dialogs/invent-form'
 import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
@@ -11,12 +15,23 @@ import Filters from '@/page-builders/episodes/table/filters'
 import SelectionActions from '@/page-builders/episodes/table/selection-actions'
 import { useEpisodeStore } from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
-import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 
+import { Button } from '@/components/aural-ui/button'
+import { Divider } from '@/components/aural-ui/divider'
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '@/components/aural-ui/dropdown'
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from '@/components/aural-ui/tooltip'
 import AuthWrapper from '@/components/auth-wrapper'
 import IfElse, { Else, If } from '@/components/if-else'
 import StoryDetails from '@/components/story-details'
-import { Button } from '@/components/ui/button'
 import {
 	Table,
 	TableBody,
@@ -30,8 +45,6 @@ import { cn } from '@/lib/utils/helpers'
 
 import { ERole } from '@/types/admin-types'
 import { EEpisodeHeaderKeys } from '@/types/episode-type'
-
-import AdminManageProject from '../buttons/admin-manage-project'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
@@ -72,15 +85,40 @@ const EpisodesTable = () => {
 	return (
 		<>
 			<div className="mb-4 flex items-center justify-between">
-				<StoryDetails titleClassname="text-xl" imageSize={60} />
-				<div className="flex gap-2">
+				<StoryDetails titleClassname="text-xl" imageSize={40} />
+				<div className="flex items-center gap-2">
 					<Filters
 						totalEpisodes={data?.count}
 						setSearchedRow={setSearchedRow}
 					/>
 					<AuthWrapper role={ERole.ADMIN}>
-						<AdminManageProject />
+						<Button variant="secondary" className="h-11">
+							<UploadIcon width={20} height={20} />
+						</Button>
 					</AuthWrapper>
+					<Button variant="secondary" className="font-fm-brand h-11 text-sm">
+						<MagicBookIcon width={20} height={20} />
+						<span>Adopt</span>
+					</Button>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="primary" className="font-fm-brand h-11 text-sm">
+								<PlusIcon width={20} height={20} />
+								<span>Add</span>
+								<ChevronDownIcon width={20} height={20} />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent className="mr-8">
+							<DropdownMenuItem>
+								<PlusIcon />
+								<span>Add new episode</span>
+							</DropdownMenuItem>
+							<DropdownMenuItem>
+								<PlusIcon />
+								<span>Import new episode</span>
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</div>
 			</div>
 			<SelectionActions table={table} />
@@ -90,12 +128,12 @@ const EpisodesTable = () => {
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header) => {
 								return (
-									<TableHead key={header.id} className="">
+									<TableHead key={header.id}>
 										<If condition={!header.isPlaceholder}>
 											<div
 												className={cn(
 													header.column.getCanSort() &&
-														'flex cursor-pointer items-center select-none'
+														'font-fm-brand text-fm-tertiary flex cursor-pointer items-center text-xs uppercase'
 												)}
 												{...(header.id !==
 												(EEpisodeHeaderKeys.SERIAL_NUMBER as string)
@@ -109,8 +147,10 @@ const EpisodesTable = () => {
 													header.getContext()
 												)}
 												{{
-													asc: <ChevronUp className="ml-2 size-4" />,
-													desc: <ChevronDown className="ml-2 size-4" />,
+													asc: (
+														<ChevronDownIcon className="ml-2 size-4 rotate-180" />
+													),
+													desc: <ChevronDownIcon className="ml-2 size-4" />,
 												}[header.column.getIsSorted() as string] ?? null}
 											</div>
 										</If>
@@ -136,10 +176,13 @@ const EpisodesTable = () => {
 										<React.Fragment key={row.id}>
 											<TableRow
 												id={`row-${row.id}`}
-												className={cn({
-													selected: row.getIsSelected(),
-													'bg-card': rowIndex % 2,
-												})}
+												className={cn(
+													'hover:bg-fm-surface-frosted/20 hover:border-b-fm-divider-brand-secondary hover:border-b-[0.5px]',
+													{
+														selected: row.getIsSelected(),
+														'bg-card': rowIndex % 2,
+													}
+												)}
 											>
 												{row.getVisibleCells().map((cell) => (
 													<TableCell
@@ -160,19 +203,24 @@ const EpisodesTable = () => {
 
 											{hoverIndex === rowIndex && isWriter && (
 												<TableRow className="relative border-none">
-													<TableCell className="relative p-0">
-														<Button
-															title="Invent episode"
-															tooltip="Invent episode"
-															className="bg-primary absolute z-10 h-auto -translate-y-1/2 rounded-full p-1"
-															disabled={!isWriter}
-															onClick={() => {
-																setIsInventOpen(true)
-																setInventIndex(rowIndex)
-															}}
-														>
-															<Plus size={12} />
-														</Button>
+													<TableCell className="absolute -top-8 -left-10">
+														<Tooltip>
+															<TooltipTrigger asChild>
+																<Button
+																	variant="secondary"
+																	size="sm"
+																	disabled={!isWriter}
+																	className="rounded-full"
+																	onClick={() => {
+																		setIsInventOpen(true)
+																		setInventIndex(rowIndex)
+																	}}
+																>
+																	<PlusIcon width={16} height={16} />
+																</Button>
+															</TooltipTrigger>
+															<TooltipContent>Invent Episode</TooltipContent>
+														</Tooltip>
 													</TableCell>
 												</TableRow>
 											)}
@@ -202,9 +250,12 @@ const EpisodesTable = () => {
 					</IfElse>
 				</TableBody>
 			</Table>
+			<Divider className="mt-8" />
 			<EpisodesPagination
 				totalPages={data ? Math.ceil(data.count / limit) : 0}
+				totalItems={data ? data.count : 0}
 			/>
+			<Divider />
 			<ActionAlert />
 			<InventForm />
 		</>
