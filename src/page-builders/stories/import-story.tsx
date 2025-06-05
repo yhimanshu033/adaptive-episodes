@@ -335,10 +335,10 @@ export function ImportStory() {
 															</If>
 															<If condition={!!field.value}>
 																<div className="flex w-full items-center justify-between text-sm">
-																	<div className="flex gap-4">
+																	<div className="flex max-w-3/5 gap-4">
 																		{imageSrc && (
 																			<div
-																				className="relative aspect-square h-9 overflow-hidden"
+																				className="relative aspect-square h-9 shrink-0 overflow-hidden"
 																				onClick={() =>
 																					imageInputRef.current?.click()
 																				}
@@ -352,10 +352,11 @@ export function ImportStory() {
 																				/>
 																			</div>
 																		)}
-																		<div className="flex flex-col gap-1">
+																		<div className="flex w-full flex-col gap-1">
 																			<Typography
 																				as="div"
 																				variant="caption-large"
+																				className="truncate overflow-hidden whitespace-nowrap"
 																			>
 																				{field.value?.name}
 																			</Typography>
