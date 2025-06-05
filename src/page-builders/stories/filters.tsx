@@ -1,10 +1,10 @@
 import React from 'react'
-import { useDebounce } from '@/hooks/use-debounce'
+import { useDebounceCallback } from 'usehooks-ts'
 
 import Search from '@/components/aural-ui/search'
 
 const Filters = ({ setSearch }: { setSearch: (str: string) => void }) => {
-	const debouncedSetSearch = useDebounce(setSearch, 300)
+	const debouncedSetSearch = useDebounceCallback(setSearch, 300)
 
 	return (
 		<Search
