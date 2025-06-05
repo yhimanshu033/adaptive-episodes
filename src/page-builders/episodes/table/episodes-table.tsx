@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { EImportStatus } from '@/constants/story-constants'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
+import useIsGerman from '@/hooks/use-is-german'
 import { usePageState } from '@/hooks/use-page-state'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
@@ -25,6 +26,14 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
 import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/aural-ui/table'
+import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
@@ -32,14 +41,6 @@ import {
 import AuthWrapper from '@/components/auth-wrapper'
 import IfElse, { Else, If } from '@/components/if-else'
 import StoryDetails from '@/components/story-details'
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
 
@@ -49,6 +50,7 @@ import { EEpisodeHeaderKeys } from '@/types/episode-type'
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const { setInventIndex, setIsInventOpen } = useEpisodeStore()
+	const isGerman = useIsGerman()
 	const { initialStoryData } = useEpisodeTableContext()
 	const { currentPage, search, limit } = usePageState()
 	const [searchedRow, setSearchedRow] = useState<number | null>(null)
@@ -96,10 +98,12 @@ const EpisodesTable = () => {
 							<UploadIcon width={20} height={20} />
 						</Button>
 					</AuthWrapper>
-					<Button variant="secondary" className="font-fm-brand h-11 text-sm">
-						<MagicBookIcon width={20} height={20} />
-						<span>Adopt</span>
-					</Button>
+					<If condition={!isGerman}>
+						<Button variant="secondary" className="font-fm-brand h-11 text-sm">
+							<MagicBookIcon width={20} height={20} />
+							<span>Adapt</span>
+						</Button>
+					</If>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button variant="primary" className="font-fm-brand h-11 text-sm">

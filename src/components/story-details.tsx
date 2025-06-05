@@ -2,11 +2,10 @@
 
 import React from 'react'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
+import { EditBigIcon } from '@/icons/edit-big-icon'
 import EditProjectDialog from '@/page-builders/episodes/dialogs/edit-project-dialog'
-import AuthorTitle from '@/page-builders/episodes/info/author'
-import { Edit } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/aural-ui/icon-button'
 import Image from '@/components/ui/image'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
@@ -29,10 +28,7 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 	const { initialStoryData: storyData } = useEpisodeTableContext()
 
 	return (
-		<div
-			onClick={handleClick}
-			className="flex cursor-pointer items-center gap-2"
-		>
+		<div onClick={handleClick} className="flex items-start gap-4">
 			<div style={{ width: imageSize, height: imageSize }}>
 				<Image
 					src={storyData?.image || COPILOT_LOGO_URL}
@@ -43,17 +39,25 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 				/>
 			</div>
 			<div>
-				<div className="flex gap-2">
-					<h2 className={cn('text-3xl font-bold', titleClassname)}>
+				<div className="flex items-center gap-2">
+					<h2 className={cn('font-fm-text text-3xl', titleClassname)}>
 						{storyData?.project_title}
 					</h2>
 					<EditProjectDialog>
-						<Button variant="ghost" size="icon">
-							<Edit />
-						</Button>
+						<IconButton
+							icon={<EditBigIcon className="text-fm-icon-brand-secondary" />}
+							size="xSmall"
+							label="edit"
+							variant="ghost"
+							className="p-0"
+						/>
 					</EditProjectDialog>
 				</div>
-				{!hideAuthor && <AuthorTitle />}
+				{!hideAuthor && (
+					<h4 className="font-fm-brand text-fm-tertiary ml-1 text-xs uppercase">
+						{storyData?.author ?? ''}
+					</h4>
+				)}
 			</div>
 		</div>
 	)
