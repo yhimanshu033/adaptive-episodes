@@ -129,7 +129,7 @@ const EpisodesTable = () => {
 								<DropdownMenuItem
 									onClick={() => {
 										setIsInventOpen(true)
-										setInventIndex(-1)
+										setInventIndex((data?.count ?? 0) - 1)
 									}}
 								>
 									<PlusIcon />

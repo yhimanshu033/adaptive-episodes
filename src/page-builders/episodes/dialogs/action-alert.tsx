@@ -49,7 +49,10 @@ const ActionAlert = () => {
 						<Button
 							variant="secondary"
 							className="w-full"
-							onClick={handleConfirm}
+							onClick={() => {
+								void handleConfirm()
+								setIsDialogOpen(false)
+							}}
 						>
 							Delete
 						</Button>

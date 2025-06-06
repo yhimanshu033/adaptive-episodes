@@ -161,12 +161,12 @@ const useEpisodeTable = () => {
 		setIsInventOpen(false)
 	}
 
-	const handleDeleteEpisode = (episodeId: number) => {
+	const handleDeleteEpisode = (episodeId: number, episodeSeq: number) => {
 		if (!isWriter) {
 			return
 		}
 		setAlertInfo({
-			description: `Delete Episode ${episodeId} permanently`,
+			description: `Delete Episode ${episodeSeq} permanently`,
 			action: EpisodeActions.DELETE,
 		})
 		setDeleteEpisodeId(episodeId)

@@ -127,7 +127,9 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						</DropdownMenuItem>
 						<DropdownMenuItem
 							disabled={!isWriter || !row.original.props?.creation_timestamp}
-							onClick={() => handleDeleteEpisode(row.original.id)}
+							onClick={() =>
+								handleDeleteEpisode(row.original.id, row.original?.seq_number)
+							}
 						>
 							Delete
 						</DropdownMenuItem>
@@ -163,7 +165,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const tagProps = statusTagProps[latestStatus]
 
-				if (isWriter) {
+				if (!isWriter) {
 					return (
 						<Tag {...tagProps} emphasis="secondary">
 							{titleToStatusText[latestStatus]}
@@ -261,6 +263,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						checked={row.getIsSelected()}
 						disabled={!isWriter || !row.getCanSelect()}
 						className="border-fm-divider-primary bg-fm-surface-primary size-6 border-1"
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 						onClick={(e) => handleRowSelection(e, row)}
 					/>
 				),
@@ -301,7 +304,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 								variant="link"
 								className="text-fm-brand text-fm-tertiary cursor-pointer text-xs uppercase"
 								// TODO Rename functionality
-								onClick={() => console.log('Rename functionality')}
 							>
 								Submit
 							</Button>

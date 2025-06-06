@@ -17,7 +17,7 @@ interface StoryDetailsProps {
 	hideAuthor?: boolean
 	imageClassname?: string
 	imageSize?: number
-	isLoading?: boolean,
+	isLoading?: boolean
 	titleClassname?: string
 }
 
