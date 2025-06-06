@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './aural-theme.css';
+@import './styles/aural-theme.css';
 
 @custom-variant dark (&: is(.dark *));
 @theme {
@@ -56,42 +57,6 @@
 	@keyframes accordion-down {
 		from {
 			height: 0;
-
-			/* aural-ui tokens @theme variables */
-			--color-fm-button-fill-secondary: var(--color-fm-neutral-200);
-			--color-fm-button-shadow-secondary: var(--color-fm-neutral-100);
-			--color-fm-button-stroke: var(--color-fm-neutral-400);
-			--color-fm-divider-primary: var(--color-fm-neutral-300);
-			--color-fm-divider-tertiary: var(--color-fm-neutral-100);
-			--color-fm-icon-active: var(--color-fm-neutral-1100);
-			--color-fm-icon-inactive: var(--color-fm-neutral-500);
-			--color-fm-neutral-0: rgb(0, 0, 0);
-			--color-fm-neutral-300: rgb(65, 65, 65);
-			--color-fm-primary: var(--color-fm-neutral-1100);
-			--color-fm-surface-secondary: var(--color-fm-neutral-100);
-			--color-fm-neutral-200: rgb(47, 47, 47);
-			--color-fm-neutral-100: rgb(29, 29, 29);
-			--color-fm-neutral-400: rgb(84, 84, 84);
-			--color-fm-neutral-1100: rgb(255, 255, 255);
-			--color-fm-neutral-500: rgb(102, 102, 102);
-
-			/* aural-ui tokens @theme variables */
-			--color-fm-contrast: var(--color-fm-neutral-100);
-			--color-fm-divider-secondary: var(--color-fm-neutral-200);
-			--color-fm-inactive: var(--color-fm-neutral-300);
-			--color-fm-tertiary: var(--color-fm-neutral-600);
-			--font-fm-text: 'Lab Grotesque';
-			--leading-fm-3xl: 2rem;
-			--leading-fm-xl: 1.5rem;
-			--spacing-fm-2xl: 1rem;
-			--text-fm-3xl: 1.75rem;
-			--text-fm-xl: 1.25rem;
-			--color-fm-neutral-600: rgb(130, 130, 130);
-
-			/* aural-ui tokens @theme variables */
-			--color-fm-surface-frosted: var(--color-fm-neutral-500);
-			--color-fm-divider-secondary-alpha-80: rgba(47, 47, 47, 0.8);
-			--color-fm-divider-contrast-alpha-80: rgb(157, 157, 157, 0.8);
 		}
 		to {
 			height: var(--radix-accordion-content-height);
