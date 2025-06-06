@@ -1,5 +1,4 @@
 name: Build and Deploy
-
 permissions:
   id-token: write
   contents: read
@@ -7,12 +6,10 @@ permissions:
   actions: read
   issues: write
   pull-requests: write
-
 env:
   BRANCH_NAME: ${{ github.ref_name }}
   IS_PRODUCTION: ${{ github.ref_name == 'main' }}
   ENVIRONMENT: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
-
 on:
   workflow_dispatch:
     inputs:
@@ -24,10 +21,9 @@ on:
         options:
           - 'yes'
           - 'no'
-
 jobs:
   debug:
-    runs-on: self-hosted
+    runs-on: self-hosted-arc-arm64
     steps:
       - name: Debug Information
         run: |
@@ -35,23 +31,18 @@ jobs:
           echo "Branch: ${{ github.ref }}"
           echo "Environment: ${{ github.event.inputs.environment }}"
           echo "Build with cache: ${{ github.event.inputs.build_with_cache }}"
-
   build:
     needs: debug
-    if:
-      ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
-      || startsWith(github.ref, 'refs/heads/PF-')}}
-    runs-on: self-hosted
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/PF-')}}
+    runs-on: self-hosted-arc-arm64
     outputs:
       docker-tag: ${{ steps.set_tag.outputs.dockerTag }}
     steps:
       - name: Debug Build Job
         run: |
           echo "Debug: Build job started"
-
       - name: Checkout Code
         uses: actions/checkout@v3
-
       - name: Verify AWS CLI Installation
         run: |
           aws --version
@@ -59,7 +50,6 @@ jobs:
             echo "AWS CLI is not installed or not functioning correctly"
             exit 1
           fi
-
       - name: Set Docker Tag
         id: set_tag
         run: |
@@ -67,7 +57,6 @@ jobs:
           DOCKER_TAG="${COMMIT_HASH}-${GITHUB_RUN_NUMBER}"
           echo "dockerTag=$DOCKER_TAG" >> $GITHUB_ENV
           echo "dockerTag=$DOCKER_TAG" >> $GITHUB_OUTPUT
-
       - name: Determine ECR Repository Based on Branch
         id: set_repo
         run: |
@@ -80,30 +69,25 @@ jobs:
           fi
           echo "ECR_REPO=$ECR_REPO" >> $GITHUB_ENV
           echo "ecrRepo=$ECR_REPO" >> $GITHUB_OUTPUT
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.1
         with:
           role-to-assume: ${{ secrets.AWS_IAM_ASSUME_ROLE }}
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ vars.AWS_REGION }}
-
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
           install: true
           driver: docker-container
-
       - name: Configure AWS Credentials for ECR Check
         uses: aws-actions/configure-aws-credentials@v4.0.1
         with:
           role-to-assume: ${{ secrets.AWS_IAM_ASSUME_ROLE }}
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ vars.AWS_REGION }}
-
       - name: Debug Environment Variables
         run: |
           echo "Debug: IS_PRODUCTION = ${{ env.IS_PRODUCTION }}"
@@ -111,7 +95,6 @@ jobs:
           echo "Debug: dockerTag = ${{ env.dockerTag }}"
           echo "Debug: ENVIRONMENT = ${{ env.ENVIRONMENT }}"
           echo "Debug: BRANCH_NAME = ${{ env.BRANCH_NAME }}"
-
       - name: Build and Push Multi-Architecture Image with Cache
         if: ${{ github.event.inputs.build_with_cache == 'yes' }}
         uses: docker/build-push-action@v5
@@ -121,18 +104,10 @@ jobs:
           push: true
           tags: |
             ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
-          cache-from:
-            type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{
-            vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{
-            env.ENVIRONMENT }}:cache
-          cache-to:
-            mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{
-            vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION
-            }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT
-            }}:cache
+          cache-from: type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
+          cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
-
       - name: Build and Push Multi-Architecture Image without Cache
         if: ${{ github.event.inputs.build_with_cache == 'no' }}
         uses: docker/build-push-action@v5
@@ -143,14 +118,9 @@ jobs:
           tags: |
             ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
           no-cache: true
-          cache-to:
-            mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{
-            vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION
-            }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT
-            }}:cache
+          cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
-
       - name: Check Docker Tag in ECR Repo
         env:
           AWS_REGION: ${{ vars.AWS_REGION }}
@@ -168,17 +138,15 @@ jobs:
               echo "Image with tag ${{ env.dockerTag }} not found in ECR"
               exit 1
           fi
-
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: self-hosted-arc-arm64
     env:
       dockerTag: ${{ needs.build.outputs.docker-tag }}
     steps:
       - name: Debug Deploy Job
         run: |
           echo "Debug: Deploy job started"
-
       - name: Test Secret Accessibility
         run: |
           echo "Debug: Testing secret accessibility"
@@ -188,7 +156,6 @@ jobs:
             echo "GIT_TOKEN is empty or not accessible"
             exit 1
           fi
-
       - name: Checkout Infra Repo
         uses: actions/checkout@v4
         with:
@@ -196,12 +163,10 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
           path: infra
           fetch-depth: 0
-
       - name: Fetch Commit Details from Workflow Repo
         uses: actions/checkout@v3
         with:
           path: source-repo
-
       - name: Extract Commit Information
         id: commit_details
         run: |
@@ -212,7 +177,6 @@ jobs:
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
           echo "COMMIT_AUTHOR_NAME=$COMMIT_AUTHOR_NAME" >> $GITHUB_ENV
           echo "COMMIT_AUTHOR_EMAIL=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_ENV
-
       - name: Update deployment.yaml
         env:
           COMMIT_HASH: ${{ env.COMMIT_HASH }}
@@ -245,15 +209,13 @@ jobs:
           git commit -m "Update Docker tag to $dockerTag in ${{ env.ENVIRONMENT }} deployment"
           git pull origin main
           git push origin main
-
   cleanup:
     needs: deploy
-    runs-on: self-hosted
+    runs-on: self-hosted-arc-arm64
     steps:
       - name: Debug Cleanup Job
         run: |
           echo "Debug: Cleanup job started"
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.1
         with:
@@ -265,15 +227,13 @@ jobs:
           echo "Debug: Starting Docker cleanup"
           docker system prune -f
           docker images | grep ${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }} | awk '{print $1":"$2}' | xargs docker rmi || true
-
   notify:
     needs: cleanup
-    runs-on: self-hosted
+    runs-on: self-hosted-arc-arm64
     steps:
       - name: Debug Notify Job
         run: |
           echo "Debug: Notify job started"
-
       - name: Notify Slack on Success
         if: success()
         run: |
@@ -281,7 +241,6 @@ jobs:
           curl -X POST -H 'Content-type: application/json' --data '{ \
               "text": "${{ env.ENVIRONMENT }} deployment successful\nWorkflow URL: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>\n" \
           }' ${{ vars.SLACK_WEBHOOK }}
-
       - name: Notify Slack on Failure
         if: failure()
         run: |
