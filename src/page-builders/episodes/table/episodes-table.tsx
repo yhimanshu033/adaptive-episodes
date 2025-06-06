@@ -11,20 +11,20 @@ import { UploadIcon } from '@/icons/upload-icon'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
 import InventForm from '@/page-builders/episodes/dialogs/invent-form'
 import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
-import SkeletonBuilder from '@/page-builders/episodes/table/episode-skeleton'
 import Filters from '@/page-builders/episodes/table/filters'
 import SelectionActions from '@/page-builders/episodes/table/selection-actions'
 import { useEpisodeStore } from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
 
 import { Button } from '@/components/aural-ui/button'
-import { Divider } from '@/components/aural-ui/divider'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
+import { PaginationProvider } from '@/components/aural-ui/pagination'
+import { Skeleton } from '@/components/aural-ui/skelton'
 import {
 	Table,
 	TableBody,
@@ -59,7 +59,10 @@ const EpisodesTable = () => {
 		currentPage,
 		limit
 	)
-	const tableData = useMemo(() => data?.results?.data ?? [], [data])
+	const tableData = useMemo(
+		() => data?.results?.data ?? [],
+		[data?.results?.data]
+	)
 	const { table, columnSize, isWriter } = useCreateTable(tableData)
 
 	useEffect(() => {
@@ -87,11 +90,16 @@ const EpisodesTable = () => {
 	return (
 		<>
 			<div className="mb-4 flex items-center justify-between">
-				<StoryDetails titleClassname="text-xl" imageSize={40} />
+				<StoryDetails
+					isLoading={isEpisodesLoading}
+					titleClassname="text-xl"
+					imageSize={40}
+				/>
 				<div className="flex items-center gap-2">
 					<Filters
 						totalEpisodes={data?.count}
 						setSearchedRow={setSearchedRow}
+						isLoading={isEpisodesLoading}
 					/>
 					<AuthWrapper role={ERole.ADMIN}>
 						<Button variant="secondary" className="h-11">
@@ -104,30 +112,41 @@ const EpisodesTable = () => {
 							<span>Adapt</span>
 						</Button>
 					</If>
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="primary" className="font-fm-brand h-11 text-sm">
-								<PlusIcon width={20} height={20} />
-								<span>Add</span>
-								<ChevronDownIcon width={20} height={20} />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent className="mr-8">
-							<DropdownMenuItem>
-								<PlusIcon />
-								<span>Add new episode</span>
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<PlusIcon />
-								<span>Import new episode</span>
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+					{/* @ts-expect-error data count */}
+					<If condition={data?.count > 0}>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="primary"
+									className="font-fm-brand h-11 text-sm"
+								>
+									<PlusIcon width={20} height={20} />
+									<span>Add</span>
+									<ChevronDownIcon width={20} height={20} />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent className="mr-8">
+								<DropdownMenuItem
+									onClick={() => {
+										setIsInventOpen(true)
+										setInventIndex(-1)
+									}}
+								>
+									<PlusIcon />
+									<span>Add new episode</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<PlusIcon />
+									<span>Import new episode</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</If>
 				</div>
 			</div>
 			<SelectionActions table={table} />
-			<Table className="rounded-md">
-				<TableHeader className="bg-card sticky top-14 z-10">
+			<Table>
+				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header) => {
@@ -167,9 +186,11 @@ const EpisodesTable = () => {
 				<TableBody>
 					<IfElse condition={isEpisodesLoading}>
 						<If>
-							<TableRow className="hover:bg-transparent">
+							<TableRow>
 								<TableCell colSpan={columnSize + 1}>
-									<SkeletonBuilder count={limit} className="h-8" />
+									{Array.from({ length: limit }).map(() => (
+										<Skeleton key={`skeleton-${limit}`} className="mb-3 h-12" />
+									))}
 								</TableCell>
 							</TableRow>
 						</If>
@@ -180,13 +201,10 @@ const EpisodesTable = () => {
 										<React.Fragment key={row.id}>
 											<TableRow
 												id={`row-${row.id}`}
-												className={cn(
-													'hover:bg-fm-surface-frosted/20 hover:border-b-fm-divider-brand-secondary hover:border-b-[0.5px]',
-													{
-														selected: row.getIsSelected(),
-														'bg-card': rowIndex % 2,
-													}
-												)}
+												className={cn({
+													selected: row.getIsSelected(),
+													'bg-card': rowIndex % 2,
+												})}
 											>
 												{row.getVisibleCells().map((cell) => (
 													<TableCell
@@ -238,6 +256,7 @@ const EpisodesTable = () => {
 												<p>Importing Story ...</p>
 											) : (
 												<Button
+													className="my-2"
 													onClick={() => {
 														setIsInventOpen(true)
 														setInventIndex(-1)
@@ -254,12 +273,11 @@ const EpisodesTable = () => {
 					</IfElse>
 				</TableBody>
 			</Table>
-			<Divider className="mt-8" />
-			<EpisodesPagination
-				totalPages={data ? Math.ceil(data.count / limit) : 0}
-				totalItems={data ? data.count : 0}
-			/>
-			<Divider />
+			<PaginationProvider totalItems={data ? data.count : 0}>
+				<If condition={!!data}>
+					<EpisodesPagination />
+				</If>
+			</PaginationProvider>
 			<ActionAlert />
 			<InventForm />
 		</>

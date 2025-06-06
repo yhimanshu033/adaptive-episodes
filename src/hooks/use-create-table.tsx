@@ -4,6 +4,7 @@ import useEpisodeTable from '@/hooks/use-episode-table'
 import useParentLanguage from '@/hooks/use-parent-language'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import ChevronRightIcon from '@/icons/chevron-right-icon'
+import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
 import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
 import { HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
 import {
@@ -17,9 +18,16 @@ import {
 	SortingState,
 	useReactTable,
 } from '@tanstack/react-table'
-import { EllipsisVertical, Trash2 } from 'lucide-react'
 
 import { Checkbox } from '@/components/aural-ui/checkbox'
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '@/components/aural-ui/dropdown'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import Input from '@/components/aural-ui/input'
 import {
 	Select,
 	SelectContent,
@@ -37,12 +45,6 @@ import {
 } from '@/components/aural-ui/tooltip'
 import IfElse, { Else, If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { HoverCard } from '@/components/ui/hover-card'
 import { Switch } from '@/components/ui/switch'
 import useProjectId from '@/providers/project-id-provider'
@@ -60,6 +62,7 @@ const statusTagProps = {
 
 export const useCreateTable = (episodes: TEpisode[]) => {
 	const [expanded, setExpanded] = useState<ExpandedState>({})
+	const [editingRowId, setEditingRowId] = useState<number | null>(null)
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 	const [checked, setChecked] = useState<boolean>(false)
@@ -112,16 +115,21 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			cell: ({ row }) => (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button size="icon" variant="ghost">
-							<EllipsisVertical />
-						</Button>
+						<IconButton
+							variant="ghost"
+							icon={<VerticalMenuIcon />}
+							label="episode menu icon"
+						/>
 					</DropdownMenuTrigger>
-					<DropdownMenuContent className="min-w-0">
+					<DropdownMenuContent className="mr-8 w-34">
+						<DropdownMenuItem onClick={() => setEditingRowId(row.original.id)}>
+							Rename
+						</DropdownMenuItem>
 						<DropdownMenuItem
 							disabled={!isWriter || !row.original.props?.creation_timestamp}
 							onClick={() => handleDeleteEpisode(row.original.id)}
 						>
-							Delete <Trash2 size={16} className="ml-2" />
+							Delete
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
@@ -278,40 +286,64 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			accessorKey: EEpisodeHeaderKeys.CHAPTER_TITLE,
 			header: 'Title',
 			cell: ({ row }) => (
-				<div
-					className="font-fm-text flex cursor-pointer items-center gap-2 text-sm"
-					onClick={() =>
-						handleTitleClick(row.original.parent || row.original.id)
-					}
-				>
-					{row.getCanExpand() && (
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<Button
-									variant="link"
-									className="text-fm-icon-active cursor-pointer"
-									onClick={(e) => {
-										e.stopPropagation()
-										row.getToggleExpandedHandler()()
-									}}
-								>
-									<IfElse condition={row.getIsExpanded()}>
-										<If>
-											<ChevronDownIcon />
-										</If>
-										<Else>
-											<ChevronRightIcon />
-										</Else>
-									</IfElse>
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								{row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
-							</TooltipContent>
-						</Tooltip>
-					)}
-					{row.getValue('chapter_title')}
-				</div>
+				<IfElse condition={editingRowId === row.original.id}>
+					<If>
+						<div className="border-fm-divider-tertiary flex w-full items-center justify-between border-1 pl-2">
+							<Input
+								type="text"
+								classes={{
+									input: '!text-xs !focus:border-none !border-none',
+									root: 'w-full',
+								}}
+								defaultValue={row.getValue('chapter_title')}
+							/>
+							<Button
+								variant="link"
+								className="text-fm-brand text-fm-tertiary cursor-pointer text-xs uppercase"
+								// TODO Rename functionality
+								onClick={() => console.log('Rename functionality')}
+							>
+								Submit
+							</Button>
+						</div>
+					</If>
+					<Else>
+						<div
+							className="font-fm-text flex cursor-pointer items-center gap-2 text-sm"
+							onClick={() =>
+								handleTitleClick(row.original.parent || row.original.id)
+							}
+						>
+							{row.getCanExpand() && (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<Button
+											variant="link"
+											className="text-fm-icon-active cursor-pointer"
+											onClick={(e) => {
+												e.stopPropagation()
+												row.getToggleExpandedHandler()()
+											}}
+										>
+											<IfElse condition={row.getIsExpanded()}>
+												<If>
+													<ChevronDownIcon />
+												</If>
+												<Else>
+													<ChevronRightIcon />
+												</Else>
+											</IfElse>
+										</Button>
+									</TooltipTrigger>
+									<TooltipContent>
+										{row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
+									</TooltipContent>
+								</Tooltip>
+							)}
+							{row.getValue('chapter_title')}
+						</div>
+					</Else>
+				</IfElse>
 			),
 		},
 		{

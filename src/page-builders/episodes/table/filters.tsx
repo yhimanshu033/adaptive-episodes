@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import Input from '@/components/aural-ui/input'
+import { Skeleton } from '@/components/aural-ui/skelton'
+import IfElse, { Else, If } from '@/components/if-else'
 import {
 	Form,
 	FormControl,
@@ -18,7 +20,9 @@ import { TEpisodeSearchForm } from '@/types/episode-type'
 const Filters = ({
 	totalEpisodes = 0,
 	setSearchedRow,
+	isLoading = false,
 }: {
+	isLoading?: boolean
 	setSearchedRow: React.Dispatch<React.SetStateAction<number | null>>
 	totalEpisodes?: number
 }) => {
@@ -82,33 +86,40 @@ const Filters = ({
 
 	return (
 		<>
-			<Form {...form}>
-				<form
-					onSubmit={(e) => void form.handleSubmit(handleSearch)(e)}
-					className="mb-2 flex flex-1 items-center gap-2"
-				>
-					<FormField
-						control={form.control}
-						name="input"
-						render={({ field }) => (
-							<FormItem className="flex-1">
-								<FormControl>
-									<div className="bg-fm-surface-frosted/20 rounded-fm-3xl font-fm-text text-fm-placeholder border-fm-divider-secondary relative flex min-w-72 items-center border-1 p-3 text-sm">
-										<SearchIcon className="mx-4" width={16} height={16} />
-										<Input
-											placeholder="Search Episode"
-											{...field}
-											unstyled
-											className="text-fm-primary w-full border-none pr-4 outline-none"
-										/>
-									</div>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</form>
-			</Form>
+			<IfElse condition={isLoading}>
+				<If>
+					<Skeleton className="mb-2 flex h-12 min-w-80 flex-1 items-center gap-2" />
+				</If>
+				<Else>
+					<Form {...form}>
+						<form
+							onSubmit={(e) => void form.handleSubmit(handleSearch)(e)}
+							className="mb-2 flex flex-1 items-center gap-2"
+						>
+							<FormField
+								control={form.control}
+								name="input"
+								render={({ field }) => (
+									<FormItem className="flex-1">
+										<FormControl>
+											<div className="bg-fm-surface-frosted/20 rounded-fm-3xl font-fm-text text-fm-placeholder border-fm-divider-secondary relative flex min-w-72 items-center border-1 p-3 text-sm">
+												<SearchIcon className="mx-4" width={16} height={16} />
+												<Input
+													placeholder="Search Episode"
+													{...field}
+													unstyled
+													className="text-fm-primary w-full border-none pr-4 outline-none"
+												/>
+											</div>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</form>
+					</Form>
+				</Else>
+			</IfElse>
 		</>
 	)
 }

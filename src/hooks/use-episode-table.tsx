@@ -152,6 +152,7 @@ const useEpisodeTable = () => {
 		if (!isWriter) {
 			return
 		}
+		// TODO add episode on last
 		episodeInventMutation.mutate({
 			chapter_title: data.title,
 			seq_number: (currentInventIndex || 0) + 2 + (currentPage - 1) * limit,
@@ -165,7 +166,7 @@ const useEpisodeTable = () => {
 			return
 		}
 		setAlertInfo({
-			description: 'Selected episode will get permanently deleted',
+			description: `Delete Episode ${episodeId} permanently`,
 			action: EpisodeActions.DELETE,
 		})
 		setDeleteEpisodeId(episodeId)
