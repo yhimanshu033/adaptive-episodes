@@ -1,6 +1,6 @@
-import React from 'react'
-import AdminPanel from '@/page-builders/admin'
+import { notFound } from 'next/navigation'
 
 export default function Page() {
-	return <AdminPanel />
+	notFound()
+	return null
 }
