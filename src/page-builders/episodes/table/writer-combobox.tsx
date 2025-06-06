@@ -47,7 +47,6 @@ const WriterCombobox = ({
 	const selectedMember = members?.find(
 		(member) => member.user.id === Number(value)
 	)
-
 	const dict = useTranslations('common')
 
 	if (!isGerman) {

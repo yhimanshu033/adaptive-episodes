@@ -13,7 +13,7 @@ import { TEpisode } from '@/types/episode-type'
 import { TStory } from '@/types/story-types'
 
 function useAdaptationUtil() {
-	const [open, setOpen] = useState(false)
+	const [open, setOpen] = useState(true)
 	const [selectedRowData, setSelectedRowData] = useState<TEpisode[]>([])
 	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
 		useState<ELanguage>(ELanguage.GERMAN)
