@@ -68,10 +68,10 @@ export const SocketStreamingProvider = ({
 				extraHeaders: {
 					Authorization: `Bearer ${session?.accessToken}`,
 				},
-				// transports: ['websocket'],
-				// auth: {
-				// 	token: `${session?.accessToken}`,
-				// },
+				transports: ['websocket'],
+				auth: {
+					token: `${session?.accessToken}`,
+				},
 			}),
 		[socketUrl, session]
 	)
