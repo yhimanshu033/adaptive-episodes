@@ -530,7 +530,9 @@ export function pretifyVoiceXMLData(data: string) {
 			cleanedData = cleanedData.replace(statusMatches[i][0], '')
 		}
 	}
-	cleanedData = cleanedData.replace(/<\/?[^>]+\/?>/g, '\n').trim()
+	cleanedData = cleanedData
+		.replace(/<\/?(?:status| section-)[^>]*\/?>/g, '\n')
+		.trim()
 
 	return cleanedData
 }
