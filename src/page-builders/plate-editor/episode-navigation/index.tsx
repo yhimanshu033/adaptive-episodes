@@ -7,10 +7,11 @@ import useEditorExtendedStore from '@/store/extended-store'
 import { Sidebar } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/aural-ui/button'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import CircularLoader from '@/components/ui/circular-loader'
 import ForEach from '@/components/ui/for-each'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import Spinner from '@/components/ui/spinner'
 import { cn, getPageFromEpisode } from '@/lib/utils/helpers'
 
 import { TGetEpisodesResponse } from '@/types/episode-type'
@@ -78,31 +79,29 @@ export default function EpisodeNavigation() {
 	if (simplifiedEditor || !page) {
 		return null
 	}
+
 	return (
 		<div className="animate-fade-in-up relative z-10">
-			<Button
-				className={cn(
-					'absolute z-10 mt-4 rounded-full transition-all',
-					episodeNavigationOpen ? '-right-5' : '-right-14'
-				)}
-				variant="outline"
-				size="icon"
+			<IconButton
+				icon={<Sidebar />}
+				label="Toggle Episode Navigation"
+				variant="outlined"
+				size="small"
 				onClick={toggleOpenNavigation}
-			>
-				<Sidebar />
-			</Button>
+				className="absolute top-7 -right-4 z-10 bg-black"
+			/>
 			<div
 				className={cn(
 					'sticky top-0 text-clip transition-all',
-					episodeNavigationOpen ? 'w-24' : 'w-0'
+					episodeNavigationOpen ? 'w-30' : 'w-0'
 				)}
 			>
 				<ScrollArea className="h-svh">
 					<InfiniteScrollWithDebouncing
 						className=""
 						skeleton={
-							<div className="flex w-full justify-center">
-								<Spinner />
+							<div className="flex w-full justify-start p-4">
+								<CircularLoader className="size-8" />
 							</div>
 						}
 					>
@@ -110,11 +109,19 @@ export default function EpisodeNavigation() {
 							<ForEach data={sortedEpisodes}>
 								{(item, idx) => (
 									<Button
-										variant="ghost"
-										className={cn('h-auto justify-start py-4', {
-											'bg-primary/40':
-												item.seq_number === firstEpisode?.chapter?.seq_number,
-										})}
+										variant="text"
+										className={cn(
+											'group text-fm-placeholder leading-fm-md border-l-2 border-transparent [font-size:var(--text-fm-md)] backdrop-blur-3xl focus-visible:ring-0 focus-visible:ring-offset-0',
+											{
+												'bg-fm-hotpink-50 text-fm-secondary-800 border-fm-hotpink-200':
+													item.seq_number === firstEpisode?.chapter?.seq_number,
+												'hover:bg-fm-hotpink-50 focus-visible:bg-fm-hotpink-50 hover:text-fm-secondary-800 focus-visible:text-fm-secondary-800':
+													item.seq_number !== firstEpisode?.chapter?.seq_number,
+											}
+										)}
+										innerClassName={cn(
+											'justify-start translate-y-0 !px-fm-2xl rounded-none'
+										)}
 										id={`ep-btn-${item.seq_number}`}
 										key={idx}
 										onClick={() =>

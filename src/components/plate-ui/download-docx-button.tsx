@@ -2,10 +2,10 @@ import React from 'react'
 import useDocxDownloadHook from '@/hooks/mutation/use-docx-download-hook'
 import { Download } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
-import Spinner from '@/components/ui/spinner'
-
 import { DownloadDocxParams } from '@/types/episode-type'
+
+import { IconButton } from '../aural-ui/icon-button'
+import CircularLoader from '../ui/circular-loader'
 
 export default function DownloadDocxButton({
 	latestStatus,
@@ -15,15 +15,26 @@ export default function DownloadDocxButton({
 	})
 	return (
 		showButton && (
-			<Button
-				variant="outline"
+			<IconButton
+				variant="outlined"
 				disabled={isPending}
-				className="px-2"
 				tooltip="Download"
+				shape="square"
 				onClick={() => mutate()}
-			>
-				{isPending ? <Spinner size={16} /> : <Download size={16} />}
-			</Button>
+				label="Download Docx"
+				className="size-7 shrink-0"
+				icon={
+					isPending ? (
+						<CircularLoader className="size-4" />
+					) : (
+						<Download className="size-4" />
+					)
+				}
+				tooltipContentProps={{
+					side: 'bottom',
+					align: 'center',
+				}}
+			/>
 		)
 	)
 }

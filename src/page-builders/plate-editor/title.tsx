@@ -6,7 +6,7 @@ import { useEditorReadOnly } from '@udecode/plate-common/react'
 
 import EditableText from '@/components/editable-text'
 import { If } from '@/components/if-else'
-import Spinner from '@/components/ui/spinner'
+import CircularLoader from '@/components/ui/circular-loader'
 
 const Title = ({
 	chapterId,
@@ -36,28 +36,32 @@ const Title = ({
 		<div>
 			<div className="flex items-center justify-center gap-2">
 				<If condition={!episodeContent}>
-					<Spinner size={24} />
+					<CircularLoader className="size-6" />
 				</If>
 
 				<div className="flex items-center gap-2">
-					<p className="text-xl">E{episodeContent?.chapter.seq_number}.</p>
+					<p className="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]">
+						E{episodeContent?.chapter.seq_number}.
+					</p>
 					<EditableText
 						key={episodeContent?.chapter.chapter_title}
 						text={episodeContent?.chapter.chapter_title || ''}
 						rootClass="text-xl"
-						inputClass="text-xl"
+						inputClass="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]"
+						textClass="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]"
 						isEditable={!readOnly}
 						onComplete={(title) => void updateChapterTitle(title)}
 					/>
 					<WriterCombobox
 						chapterId={chapterId}
 						selectedMemberId={memberId}
-						className="ml-2 origin-left scale-75"
+						className="font-fm-brand ml-2 w-30 rounded-full px-4 py-2 [font-size:var(--text-fm-sm)] capitalize"
+						iconClass="size-4"
 					/>
 				</div>
 			</div>
 			{updatedAt && (
-				<p className="text-foreground/50 text-xs italic">
+				<p className="text-fm-tertiary font-fm-brand [font-size:var(--text-fm-sm)]">
 					(Last updated: {updatedAt})
 				</p>
 			)}

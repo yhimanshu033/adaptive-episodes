@@ -59,7 +59,7 @@ export default function PlateEditor() {
 			<SavingContextProvider data={content} initialForceSave={importedLocal}>
 				<ChatbotProvider episodeContent={content}>
 					<FocusEditorWrapper>
-						<div className="container pb-6 pl-0">
+						<div className="pb-6">
 							<EditorOverlayLoader />
 							<EpisodeHeader {...{ content, isChildEpisode, latestStatus }} />
 							<div

@@ -6,6 +6,14 @@ import { Eye } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectSeparator,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/aural-ui/select'
+import {
 	AlertDialog,
 	AlertDialogAction,
 	AlertDialogCancel,
@@ -15,13 +23,6 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select'
 import Spinner from '@/components/ui/spinner'
 import { useEpisodeContext } from '@/providers/episode-id-provider'
 
@@ -67,21 +68,40 @@ const Versions = ({
 				value={selectedStatus || statuses[latestIndex]}
 				onValueChange={handleSelect}
 			>
-				<SelectTrigger className="gap-2">
-					<SelectValue className="" placeholder="Version" />
+				<SelectTrigger
+					decoration="outline"
+					classes={{
+						root: 'border-fm-divider-secondary font-fm-brand h-auto rounded-full [&_>span]:text-left',
+						icon: 'size-4',
+					}}
+				>
+					<SelectValue placeholder="Version" />
 				</SelectTrigger>
-				<SelectContent>
+				<SelectContent
+					align="end"
+					classes={{
+						scrollButton: {
+							icon: 'size-4',
+						},
+					}}
+				>
 					{statuses.map((status, index) => (
-						<SelectItem
-							disabled={index > latestIndex + Number(!isChildEpisode)}
-							key={index}
-							value={status}
-						>
-							{titleToStatus[status]}
-							{index < latestIndex + Number(isChildEpisode) && (
-								<Eye className="ml-2 inline" size={16} />
-							)}
-						</SelectItem>
+						<div key={index}>
+							<SelectItem
+								disabled={index > latestIndex + Number(!isChildEpisode)}
+								value={status}
+								classes={{
+									root: '[font-size:var(--text-fm-sm)]',
+									icon: 'size-4',
+								}}
+							>
+								{titleToStatus[status]}
+								{index < latestIndex + Number(isChildEpisode) && (
+									<Eye className="ml-2 inline" size={16} />
+								)}
+							</SelectItem>
+							{index < statuses.length - 1 && <SelectSeparator />}
+						</div>
 					))}
 				</SelectContent>
 			</Select>

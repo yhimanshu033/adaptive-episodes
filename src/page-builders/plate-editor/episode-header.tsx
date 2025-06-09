@@ -33,8 +33,8 @@ const EpisodeHeader = ({
 
 	if (simplifiedEditor) {
 		return (
-			<div className="animate-fade-in-up flex items-center justify-between">
-				<p className="text-xl">
+			<div className="animate-fade-in-up flex items-center justify-between py-4">
+				<p className="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]">
 					{content?.chapter.seq_number}. {content?.chapter.chapter_title}
 				</p>
 				<SaveEpisode />
@@ -43,8 +43,8 @@ const EpisodeHeader = ({
 	}
 
 	return (
-		<div className="animate-fade-in-up flex items-center justify-between border-l py-4 pl-10">
-			<div className="flex items-center gap-2">
+		<div className="animate-fade-in-up border-fm-divider-tertiary flex items-center justify-between border-r border-l px-7 py-6">
+			<div className="flex items-center gap-4">
 				<HomeButton />
 				<Title
 					chapterId={String(content?.chapter?.id)}
@@ -53,12 +53,29 @@ const EpisodeHeader = ({
 			</div>
 			<div className="flex items-center gap-2">
 				<SaveEpisode />
-				<SidebarToggleButton sidebar={ESidebar.COMMENTS} tooltip="Comments">
-					<Icons.comment />
-				</SidebarToggleButton>
-				<SidebarToggleButton sidebar={ESidebar.NOTES} tooltip="Notes">
-					<Icons.attachment />
-				</SidebarToggleButton>
+				<SidebarToggleButton
+					sidebar={ESidebar.COMMENTS}
+					tooltip="Comments"
+					icon={<Icons.comment />}
+					label="Comments"
+					size="small"
+					tooltipContentProps={{
+						side: 'bottom',
+						align: 'center',
+					}}
+				/>
+				<SidebarToggleButton
+					sidebar={ESidebar.NOTES}
+					tooltip="Notes"
+					icon={<Icons.attachment />}
+					label="Notes"
+					size="small"
+					tooltipContentProps={{
+						side: 'bottom',
+						align: 'center',
+					}}
+				/>
+
 				<Languages />
 				<AuthWrapper role={ERole.WRITER}>
 					<Versions

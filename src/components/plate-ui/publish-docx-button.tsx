@@ -31,6 +31,8 @@ import { cn, getFormattedDate } from '@/lib/utils/helpers'
 
 import { DownloadDocxParams } from '@/types/episode-type'
 
+import { IconButton } from '../aural-ui/icon-button'
+
 export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 	const [open, setOpen] = useState<boolean>(false)
 	const { isPending, showButton, mutate } = usePublishDocxHook({
@@ -59,18 +61,25 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button
-					variant="outline"
+				<IconButton
+					variant="outlined"
 					disabled={isPending}
-					className="px-2"
+					label="Download Docx"
+					className="size-7 shrink-0"
 					tooltip="Upload to Google Drive"
-				>
-					<IfElse
-						condition={isPending}
-						if={<Spinner size={16} />}
-						else={<Upload size={16} />}
-					/>
-				</Button>
+					shape="square"
+					tooltipContentProps={{
+						side: 'bottom',
+						align: 'center',
+					}}
+					icon={
+						<IfElse
+							condition={isPending}
+							if={<Spinner size={16} />}
+							else={<Upload size={16} />}
+						/>
+					}
+				/>
 			</DialogTrigger>
 			<DialogContent className="w-1/2 max-w-none">
 				<DialogTitle>Upload</DialogTitle>

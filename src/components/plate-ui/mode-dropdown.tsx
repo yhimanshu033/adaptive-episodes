@@ -20,8 +20,9 @@ import {
 	Select,
 	SelectContent,
 	SelectItem,
+	SelectSeparator,
 	SelectTrigger,
-} from '@/components/ui/select'
+} from '@/components/aural-ui/select'
 import useProjectId from '@/providers/project-id-provider'
 
 export function ModeDropdown(props: SelectProps) {
@@ -72,17 +73,38 @@ export function ModeDropdown(props: SelectProps) {
 
 	return (
 		<Select value={value} onValueChange={handleChange} {...props}>
-			<SelectTrigger>{capitalize(value)}</SelectTrigger>
+			<SelectTrigger
+				decoration="outline"
+				classes={{
+					root: 'border-fm-divider-secondary font-fm-brand h-auto rounded-full',
+					icon: 'size-4',
+				}}
+			>
+				{capitalize(value)}
+			</SelectTrigger>
 
-			<SelectContent className="min-w-[180px]" align="start">
+			<SelectContent
+				align="end"
+				classes={{
+					scrollButton: {
+						icon: 'size-4',
+					},
+				}}
+			>
 				{Object.values(EditorModes).map((mode, idx) => (
-					<SelectItem
-						key={idx}
-						disabled={mode !== EditorModes.viewing ? viewMode : false}
-						value={mode}
-					>
-						{capitalize(mode)}
-					</SelectItem>
+					<div key={idx}>
+						<SelectItem
+							disabled={mode !== EditorModes.viewing ? viewMode : false}
+							value={mode}
+							classes={{
+								root: '[font-size:var(--text-fm-sm)]',
+								icon: 'size-4',
+							}}
+						>
+							{capitalize(mode)}
+						</SelectItem>
+						{idx < Object.values(EditorModes).length - 1 && <SelectSeparator />}
+					</div>
 				))}
 			</SelectContent>
 		</Select>

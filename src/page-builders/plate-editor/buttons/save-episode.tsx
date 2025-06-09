@@ -3,11 +3,11 @@ import React, { useEffect, useMemo } from 'react'
 import { SAVE_EPISODE_BUTTON_ID } from '@/constants/editor-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaveEpisode from '@/hooks/use-save-episode'
-import { Save } from 'lucide-react'
+import { CircleCheck, Save } from 'lucide-react'
 import { useEventCallback } from 'usehooks-ts'
 
+import { IconButton } from '@/components/aural-ui/icon-button'
 import IfElse, { Else, If } from '@/components/if-else'
-import { Button } from '@/components/ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
 import { formatRelativeTime } from '@/lib/utils/helpers'
 
@@ -49,25 +49,30 @@ const SaveEpisode = () => {
 	}
 
 	return (
-		<div className="text-muted-foreground flex gap-2 text-sm">
+		<div className="text-fm-placeholder text-fm-sm flex items-center gap-2">
 			<IfElse condition={isPending}>
 				<If>
-					<p className="font-display uppercase">Saving...</p>
+					<p className="font-fm-brand uppercase">Saving...</p>
 				</If>
 				<Else>
-					<p className="font-display whitespace-nowrap uppercase">
+					<CircleCheck className="size-4" />
+					<p className="font-fm-brand whitespace-nowrap uppercase">
 						Updated {updatedAt}
 					</p>
-					<Button
+					<IconButton
 						id={`${SAVE_EPISODE_BUTTON_ID}-${episodeId}`}
 						tooltip="Save Episode"
 						disabled={isSaved}
 						className="size-0 overflow-hidden"
-						size="icon"
+						size="small"
+						label="Save Episode"
+						icon={<Save size={16} />}
 						onClick={() => handleSave()}
-					>
-						<Save size={16} />
-					</Button>
+						tooltipContentProps={{
+							side: 'bottom',
+							align: 'center',
+						}}
+					/>
 				</Else>
 			</IfElse>
 		</div>
