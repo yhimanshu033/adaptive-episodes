@@ -4,6 +4,7 @@
 import React, { useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
 import { sourceLanguages } from '@/constants/episodes-constants'
 import { SAMPLE_DOC_LINK } from '@/constants/global-constants'
 import {
@@ -16,11 +17,13 @@ import { setFormOpen } from '@/store/story-store'
 import { ArrowUpRight, ImageIcon, Lightbulb, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { If } from '@/components/if-else'
 import { FullScreenLoader } from '@/components/loader'
 import LanguageSelector from '@/components/plate-ui/language-selector'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
 	Form,
 	FormControl,
@@ -153,6 +156,48 @@ export function ImportStory() {
 								</FormItem>
 							)}
 						/>
+						<FormField
+							control={form.control}
+							name="run_adaptation"
+							render={({ field }) => (
+								<FormItem className="space-y-2">
+									<FormControl>
+										<div className="flex items-center gap-2">
+											<Checkbox
+												checked={field.value}
+												id="adaptation-checkbox"
+												onCheckedChange={field.onChange}
+											/>
+											<FormLabel htmlFor="adaptation-checkbox">
+												Run Adaptation
+											</FormLabel>
+										</div>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<If condition={form.watch('run_adaptation')}>
+							<FormField
+								control={form.control}
+								name="target_language"
+								render={({ field }) => (
+									<FormItem className="space-y-2">
+										<FormLabel htmlFor="language">Target Language</FormLabel>
+										<FormControl>
+											<LanguageSelector
+												value={field.value as ELanguage}
+												selectableLanguages={AVAILABLE_TARGET_LANGUAGES}
+												onValueChange={field.onChange}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</If>
+
 						<FormField
 							control={form.control}
 							name="image_file"

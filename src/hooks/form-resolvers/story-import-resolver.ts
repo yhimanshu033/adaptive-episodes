@@ -44,6 +44,8 @@ export const storyImportFormSchema = z.object({
 			'Only .docx format is supported.'
 		),
 	input_language: z.string(),
+	run_adaptation: z.boolean(),
+	target_language: z.string().optional(),
 })
 
 export type StoryImportFormSchema = z.infer<typeof storyImportFormSchema>
@@ -60,5 +62,7 @@ export const useStoryImportFormResolver = () =>
 			image_file: undefined,
 			story_file: undefined,
 			input_language: ELanguage.ENGLISH,
+			run_adaptation: false,
+			target_language: undefined,
 		},
 	})

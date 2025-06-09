@@ -113,3 +113,5 @@ export const allPrioritizedStatuses = [
 	EStatus.FIRST_DRAFT,
 	BASE_STATUS,
 ]
+
+export const EXCLUDED_HEADERS_LS_SHEET = ['created_by']

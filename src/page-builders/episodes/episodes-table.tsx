@@ -27,6 +27,8 @@ import { cn } from '@/lib/utils/helpers'
 
 import { EEpisodeHeaderKeys } from '@/types/episode-type'
 
+import AdaptationContainer from './adaptation-container'
+
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const { setInventIndex, setIsInventOpen } = useEpisodeStore()
@@ -62,6 +64,14 @@ const EpisodesTable = () => {
 			setSearchedRow(null)
 		}
 	}, [searchedRow, isEpisodesLoading])
+
+	if (
+		initialStoryData?.parent_language &&
+		!isEpisodesLoading &&
+		!tableData.length
+	) {
+		return <AdaptationContainer />
+	}
 
 	return (
 		<>
