@@ -13,13 +13,14 @@ import Label from '@/components/aural-ui/label'
 import { Tag } from '@/components/aural-ui/tag'
 import { Typography } from '@/components/aural-ui/typography'
 import { If } from '@/components/if-else'
-import { Loader } from '@/components/loader'
 import Image from '@/components/ui/image'
 import { cn } from '@/lib/aural-ui/utils'
 import { formatDate } from '@/lib/format-date'
 
 import { TOpenedStories } from '@/types/common'
 import { TStory } from '@/types/story-types'
+
+import { StoryCardGridSkeleton } from './story-card-skelton'
 
 interface IStories {
 	isLoading: boolean
@@ -39,8 +40,8 @@ const Stories = ({
 	const [openStoryId, setOpenStoryId] = useState<string | null>(null)
 	if (isLoading) {
 		return (
-			<div className="flex flex-1 items-center justify-center">
-				<Loader />
+			<div className="flex flex-1">
+				<StoryCardGridSkeleton />
 			</div>
 		)
 	}
@@ -65,16 +66,19 @@ const Stories = ({
 	}
 
 	return (
-		<section className="my-6 grid flex-1 grid-cols-1 justify-items-center gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+		<section className="my-6 grid flex-1 grid-cols-1 justify-items-center gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 			<CreateAndImportCard />
 			{(sortedStories || stories || [])?.map((story) => {
 				const isOpen = openStoryId === story.id.toString()
 				return (
 					<div
 						key={story.id}
-						className="group border-fm-divider-secondary bg-fm-surface-primary relative h-102 w-full max-w-77 cursor-pointer overflow-hidden rounded border"
+						className={cn(
+							'group border-fm-divider-secondary bg-fm-surface-primary relative h-102 w-full max-w-77 cursor-pointer overflow-hidden rounded border hover:bg-transparent',
+							{ 'bg-transparent': isOpen }
+						)}
 					>
-						<div className="absolute inset-0">
+						<div className="absolute inset-0 z-[-1]">
 							<Image
 								src="/assets/story_card_hover_bg.webp"
 								alt="Background Image"
@@ -86,9 +90,9 @@ const Stories = ({
 							/>
 						</div>
 						<Link href={`/projects/${story.id}`}>
-							<div className="z-10 flex h-full flex-col gap-4 p-4">
+							<div className="flex h-full flex-col gap-4 p-4">
 								<div className="relative aspect-square">
-									<div className="absolute inset-x-0 top-2 z-10 flex justify-between px-2">
+									<div className="absolute inset-x-0 top-2 flex justify-between px-2">
 										<If
 											condition={openedStories?.slice(0, 5).includes(story.id)}
 										>
@@ -132,7 +136,7 @@ const Stories = ({
 										</div>
 									</If>
 								</div>
-								<div className="z-10 flex h-full flex-col justify-between">
+								<div className="flex h-full flex-col justify-between">
 									<div className="flex flex-col gap-2">
 										<Typography
 											as="h2"

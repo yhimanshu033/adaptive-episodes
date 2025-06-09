@@ -45,17 +45,19 @@ const PaginatedStoryDashboard = () => {
 	)
 
 	return (
-		<main className="animate-fade-in-up flex flex-1">
+		<main className="flex flex-1">
 			<If condition={showEmpty && !search.trim()}>
 				<EmptyState />
 			</If>
 			<If condition={!showEmpty || !!search.trim()}>
 				<div className="container flex flex-1 flex-col pt-6">
 					<Filters
+						isLoading={isLoading}
 						setSearch={(search) => {
 							changeParams({ search, page: 1 })
 							setPage(1)
 						}}
+						search={search}
 					/>
 
 					<Stories
@@ -65,7 +67,10 @@ const PaginatedStoryDashboard = () => {
 						stories={stories}
 						search={search}
 					/>
-					<PaginationComponent changeParams={changeParams} />
+					<PaginationComponent
+						isLoading={isLoading}
+						changeParams={changeParams}
+					/>
 				</div>
 			</If>
 		</main>
