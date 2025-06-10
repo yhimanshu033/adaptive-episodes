@@ -1,6 +1,6 @@
 import React from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
-import useIsGerman from '@/hooks/use-is-german'
+import useAccessChecks from '@/hooks/use-access-checks'
 import useVersions from '@/hooks/use-versions'
 import { Eye } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -51,9 +51,9 @@ const Versions = ({
 		latestStatus,
 	})
 
-	const isGerman = useIsGerman()
+	const { isGerman, isOriginal } = useAccessChecks()
 
-	if (!isGerman) {
+	if (!(isGerman || isOriginal)) {
 		return null
 	}
 

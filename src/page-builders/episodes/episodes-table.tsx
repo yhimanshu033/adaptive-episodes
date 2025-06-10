@@ -66,7 +66,7 @@ const EpisodesTable = () => {
 	}, [searchedRow, isEpisodesLoading])
 
 	if (
-		initialStoryData?.parent_language &&
+		initialStoryData?.is_original &&
 		!isEpisodesLoading &&
 		!tableData.length
 	) {
