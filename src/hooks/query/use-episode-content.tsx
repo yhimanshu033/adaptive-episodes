@@ -34,6 +34,8 @@ import { BASE_STATUS, ELanguage } from '@/types/common'
 import { EDualVIewMode } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
+import useAccessChecks from '../use-access-checks'
+
 /**
  * Retrieves episode content.
  *
@@ -44,6 +46,7 @@ import { ESidebar } from '@/types/plate-types'
 
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+	const { isOriginal } = useAccessChecks()
 
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
@@ -72,7 +75,7 @@ export const useEpisodeContentUtil = () => {
 		const isGerman = data.results.data.some(
 			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
 		)
-		if (isGerman) {
+		if (isGerman || isOriginal) {
 			return getSelectedEpisode(data, selectedStatus)
 		}
 		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
