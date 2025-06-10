@@ -43,7 +43,7 @@ export function SidebarToggleButton({
 			onClick={() => setSidebar(sidebar, true)}
 			shape="square"
 			className={cn(
-				'hover:text-fm-secondary-800 hover:bg-fm-secondary-50 size-7 shrink-0 grow-0 basis-7',
+				'hover:text-fm-secondary-800 hover:bg-fm-secondary-50 size-7 shrink-0',
 				{
 					'bg-fm-secondary-50 text-fm-secondary-800': isActive,
 					'text-fm-icon-active': !isActive,

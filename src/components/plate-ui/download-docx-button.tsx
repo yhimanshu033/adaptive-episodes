@@ -1,10 +1,9 @@
 import React from 'react'
 import useDocxDownloadHook from '@/hooks/mutation/use-docx-download-hook'
-import { Download } from 'lucide-react'
 
 import { DownloadDocxParams } from '@/types/episode-type'
 
-import { IconButton } from '../aural-ui/icon-button'
+import { Button } from '../aural-ui/button'
 import CircularLoader from '../ui/circular-loader'
 
 export default function DownloadDocxButton({
@@ -15,26 +14,23 @@ export default function DownloadDocxButton({
 	})
 	return (
 		showButton && (
-			<IconButton
-				variant="outlined"
+			<Button
+				variant="outline"
 				disabled={isPending}
 				tooltip="Download"
-				shape="square"
-				onClick={() => mutate()}
-				label="Download Docx"
-				className="size-7 shrink-0"
-				icon={
-					isPending ? (
-						<CircularLoader className="size-4" />
-					) : (
-						<Download className="size-4" />
-					)
-				}
 				tooltipContentProps={{
 					side: 'bottom',
-					align: 'center',
+					align: 'end',
 				}}
-			/>
+				isDisabled={isPending}
+				size="sm"
+				className="group"
+				innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary "
+				onClick={() => mutate()}
+			>
+				{isPending ? <CircularLoader className="size-4" /> : null}
+				Download
+			</Button>
 		)
 	)
 }

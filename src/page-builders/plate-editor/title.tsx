@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react'
+import React from 'react'
+import { statuses } from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
+import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 
@@ -9,24 +10,21 @@ import { If } from '@/components/if-else'
 import CircularLoader from '@/components/ui/circular-loader'
 
 const Title = ({
-	chapterId,
 	memberId,
+	latestIndex,
 }: {
-	chapterId?: string
+	latestIndex: number
 	memberId?: string
 }) => {
 	const { data: episodeContent } = useEpisodeContent()
 	const readOnly = useEditorReadOnly()
 	const { setCurrentTitle } = useEpisodeIdStore()
+	const { data } = useUserMembersQuery()
+	const members = data?.members || []
 
-	const updatedAt = useMemo(() => {
-		const updateTime = episodeContent?.chapter.update_time
-		if (!updateTime) {
-			return null
-		}
-		const date = new Date(updateTime)
-		return date.toLocaleString()
-	}, [episodeContent])
+	const selectedMember = members?.find(
+		(member) => member.user.id === Number(memberId)
+	)
 
 	const updateChapterTitle = (chapter_title: string) => {
 		setCurrentTitle(chapter_title)
@@ -39,7 +37,7 @@ const Title = ({
 					<CircularLoader className="size-6" />
 				</If>
 
-				<div className="flex items-center gap-2">
+				<div className="flex flex-1 items-center gap-2">
 					<p className="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]">
 						E{episodeContent?.chapter.seq_number}.
 					</p>
@@ -52,19 +50,17 @@ const Title = ({
 						isEditable={!readOnly}
 						onComplete={(title) => void updateChapterTitle(title)}
 					/>
-					<WriterCombobox
-						chapterId={chapterId}
-						selectedMemberId={memberId}
-						className="font-fm-brand ml-2 w-30 rounded-full px-4 py-2 [font-size:var(--text-fm-sm)] capitalize"
-						iconClass="size-4"
-					/>
 				</div>
 			</div>
-			{updatedAt && (
-				<p className="text-fm-tertiary font-fm-brand [font-size:var(--text-fm-sm)]">
-					(Last updated: {updatedAt})
-				</p>
-			)}
+			<p className="text-fm-tertiary font-fm-brand flex items-center justify-center gap-2 [font-size:var(--text-fm-sm)] font-medium uppercase">
+				{selectedMember?.user.fullname && (
+					<>
+						<span>{selectedMember?.user.fullname}</span>
+						<span className="size-0.5 rounded-full bg-current" />
+					</>
+				)}
+				<span>{statuses[latestIndex]}</span>
+			</p>
 		</div>
 	)
 }

@@ -33,7 +33,6 @@ import EpisodeHeader from './episode-header'
 export default function PlateEditor() {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { data: content, latestStatus, importedLocal } = useEpisodeContent()
-	const isChildEpisode = !!content?.chapter.is_deleted
 
 	const editor = useMyEditor({
 		content: content?.text || '',
@@ -61,7 +60,7 @@ export default function PlateEditor() {
 					<FocusEditorWrapper>
 						<div className="pb-6">
 							<EditorOverlayLoader />
-							<EpisodeHeader {...{ content, isChildEpisode, latestStatus }} />
+							<EpisodeHeader {...{ content, latestStatus }} />
 							<div
 								ref={containerRef}
 								className={cn(

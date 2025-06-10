@@ -5,18 +5,10 @@ import {
 } from '@/hooks/form-resolvers/rename-file-resolver'
 import useDocxHtml from '@/hooks/mutation/use-get-docx-hook'
 import usePublishDocxHook from '@/hooks/mutation/use-publish-docx-hook'
-import { Upload } from 'lucide-react'
+import { UploadIcon } from '@/icons/upload-icon'
 
-import IfElse from '@/components/if-else'
+import { Button } from '@/components/aural-ui/button'
 import { inputVariants } from '@/components/plate-ui/input'
-import { Button } from '@/components/ui/button'
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog'
 import {
 	Form,
 	FormControl,
@@ -26,12 +18,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import Spinner from '@/components/ui/spinner'
 import { cn, getFormattedDate } from '@/lib/utils/helpers'
 
 import { DownloadDocxParams } from '@/types/episode-type'
 
-import { IconButton } from '../aural-ui/icon-button'
+import { Popover, PopoverContent, PopoverTrigger } from '../aural-ui/popover'
+import { Typography } from '../aural-ui/typography'
 
 export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 	const [open, setOpen] = useState<boolean>(false)
@@ -59,33 +51,46 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 	}
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<IconButton
-					variant="outlined"
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>
+				<Button
+					variant="outline"
 					disabled={isPending}
-					label="Download Docx"
-					className="size-7 shrink-0"
 					tooltip="Upload to Google Drive"
-					shape="square"
 					tooltipContentProps={{
 						side: 'bottom',
-						align: 'center',
+						align: 'end',
 					}}
-					icon={
-						<IfElse
-							condition={isPending}
-							if={<Spinner size={16} />}
-							else={<Upload size={16} />}
-						/>
-					}
-				/>
-			</DialogTrigger>
-			<DialogContent className="w-1/2 max-w-none">
-				<DialogTitle>Upload</DialogTitle>
-				<DialogDescription>
-					Confirm filename before uploading to Google Drive
-				</DialogDescription>
+					isDisabled={isPending}
+					size="sm"
+					className="group"
+					innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary"
+				>
+					Export
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent
+				className="rounded-fm-s px-4 py-6"
+				align="end"
+				side="bottom"
+			>
+				<Typography
+					as="h3"
+					color="primary"
+					variant="caption-medium"
+					weight="medium"
+					className="mb-1 flex items-center gap-2"
+				>
+					<UploadIcon className="size-4" /> Upload to Drive
+				</Typography>
+				<Typography
+					color="tertiary"
+					variant="caption-medium"
+					weight="medium"
+					className="mb-4"
+				>
+					Confirm the file name to avoid any errors later
+				</Typography>
 				<Form {...form}>
 					<form
 						onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
@@ -119,7 +124,7 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 						<Button>Upload</Button>
 					</form>
 				</Form>
-			</DialogContent>
-		</Dialog>
+			</PopoverContent>
+		</Popover>
 	)
 }
