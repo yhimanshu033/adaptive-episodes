@@ -9,8 +9,8 @@ export default function ProjectsIdLayout({
 	children: React.ReactNode
 }) {
 	return (
-		<ProjectIdProvider>
-			<EpisodeTableProvider>{children}</EpisodeTableProvider>
-		</ProjectIdProvider>
+		<EpisodeTableProvider>
+			<ProjectIdProvider>{children}</ProjectIdProvider>
+		</EpisodeTableProvider>
 	)
 }

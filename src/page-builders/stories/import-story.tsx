@@ -12,6 +12,7 @@ import {
 	useStoryImportFormResolver,
 } from '@/hooks/form-resolvers/story-import-resolver'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
+import useIsInternal from '@/hooks/use-is-internal'
 import useSocket from '@/hooks/use-socket'
 import { setFormOpen } from '@/store/story-store'
 import { ArrowUpRight, ImageIcon, Lightbulb, Upload, X } from 'lucide-react'
@@ -49,6 +50,7 @@ export function ImportStory() {
 	const { getResponse } = useSocket()
 
 	const form = useStoryImportFormResolver()
+	const isInternal = useIsInternal()
 
 	const handleDiscardImage = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -156,27 +158,29 @@ export function ImportStory() {
 								</FormItem>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="run_adaptation"
-							render={({ field }) => (
-								<FormItem className="space-y-2">
-									<FormControl>
-										<div className="flex items-center gap-2">
-											<Checkbox
-												checked={field.value}
-												id="adaptation-checkbox"
-												onCheckedChange={field.onChange}
-											/>
-											<FormLabel htmlFor="adaptation-checkbox">
-												Run Adaptation
-											</FormLabel>
-										</div>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+						<If condition={isInternal}>
+							<FormField
+								control={form.control}
+								name="run_adaptation"
+								render={({ field }) => (
+									<FormItem className="space-y-2">
+										<FormControl>
+											<div className="flex items-center gap-2">
+												<Checkbox
+													checked={field.value}
+													id="adaptation-checkbox"
+													onCheckedChange={field.onChange}
+												/>
+												<FormLabel htmlFor="adaptation-checkbox">
+													Run Adaptation
+												</FormLabel>
+											</div>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</If>
 
 						<If condition={form.watch('run_adaptation')}>
 							<FormField
