@@ -79,7 +79,7 @@ export const useEpisodeContentUtil = () => {
 			return getSelectedEpisode(data, selectedStatus)
 		}
 		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
-	}, [data, selectedLanguage, selectedStatus])
+	}, [data, selectedLanguage, selectedStatus, isOriginal])
 
 	const dict = useTranslations('placeholders')
 	const languages = useMemo(() => getAvailableLanguages(data), [data])
