@@ -101,16 +101,6 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 		selectedRowData: TEpisode[]
 		sourceLang: ELanguage
 	}) {
-		console.log({
-			author: session?.user?.fullname || '',
-			inputls,
-			is_external: true,
-			project_id: projectId,
-			seq_no: selectedRowData.map((item) => item.seq_number),
-			source_lang: getSourceLanguage(sourceLang),
-			target_lang: language,
-			type: 'adaptation',
-		})
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{
 				method: 'POST',
