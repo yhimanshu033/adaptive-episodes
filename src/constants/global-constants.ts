@@ -119,7 +119,11 @@ export type TIdParams = {
 	id: string
 }
 
-export const pathsWithoutGlobalHeader = ['/editor', '/manage-project']
+export const pathsWithoutGlobalHeader = [
+	'/editor',
+	'/manage-project',
+	'/preview',
+]
 
 export const GDRIVE_BROADCAST_CHANNEL = 'gdrive-channel'
 export const GDRIVE_SUCCESS_MESSAGE = 'gdrive-success'

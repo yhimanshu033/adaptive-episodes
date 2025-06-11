@@ -7,7 +7,6 @@ import useIsGerman from '@/hooks/use-is-german'
 import UserInfo from '@/page-builders/episodes/info/user-info'
 import { Check, ChevronsUpDown } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import {
 	Command,
 	CommandEmpty,
@@ -15,12 +14,13 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from '@/components/ui/command'
+} from '@/components/aural-ui/command'
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from '@/components/ui/popover'
+} from '@/components/aural-ui/popover'
+import { Button } from '@/components/ui/button'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/utils/helpers'
 
@@ -28,9 +28,11 @@ const WriterCombobox = ({
 	chapterId,
 	selectedMemberId,
 	className,
+	iconClass,
 }: {
 	chapterId?: string
 	className?: string
+	iconClass?: string
 	selectedMemberId?: string
 }) => {
 	const [open, setOpen] = React.useState<boolean>(false)
@@ -59,10 +61,10 @@ const WriterCombobox = ({
 					role="combobox"
 					aria-expanded={open}
 					disabled={!isWriter}
-					className={cn('w-[200px] justify-between', className)}
+					className={cn('w-50 justify-between', className)}
 				>
 					<UserInfo user={selectedMember?.user} />
-					<ChevronsUpDown className="opacity-50" />
+					<ChevronsUpDown className={iconClass} />
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-[200px] p-0">
@@ -82,6 +84,9 @@ const WriterCombobox = ({
 										setValue(String(member.user.id))
 										mutate(member.user.id)
 										setOpen(false)
+									}}
+									classes={{
+										root: '[font-size:var(--text-fm-sm)]',
 									}}
 								>
 									{member.user.fullname}

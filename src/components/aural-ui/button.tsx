@@ -4,7 +4,7 @@ import { cva } from 'class-variance-authority'
 
 import { FeatureShineIcon } from '../../icons/feature-shine-icon'
 import { cn } from '../../lib/aural-ui/utils'
-import { withTooltip } from '../plate-ui/tooltip'
+import { withTooltip } from './tooltip'
 
 export const buttonVariants = cva(
 	'group relative font-fm-brand focus-visible:ring-fm-primary focus-visible:ring-offset-fm-contrast outline-none focus-visible:ring-2 focus-visible:ring-offset-6',

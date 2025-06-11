@@ -13,7 +13,7 @@ import Label from './label'
 // CVA for select variants matching input component
 export const selectVariants = cva(
 	// Base styles
-	'flex w-full items-center justify-between focus:outline-none transition-all duration-200 border-solid tracking-wide font-fm-text text-fm-primary [&>span]:line-clamp-1 data-[placeholder]:text-fm-placeholder',
+	'flex w-full items-center justify-between focus:outline-none transition-all duration-200 border-solid tracking-wide font-fm-text text-fm-primary [&>span]:line-clamp-1 data-[placeholder]:text-fm-placeholder gap-2',
 	{
 		variants: {
 			variant: {

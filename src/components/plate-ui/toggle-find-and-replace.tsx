@@ -17,8 +17,8 @@ export default function ToggleFindAndReplace() {
 		<SidebarToggleButton
 			sidebar={ESidebar.FAR}
 			tooltip={isGerman ? 'Find and Replace' : 'Localization'}
-		>
-			<Search />
-		</SidebarToggleButton>
+			icon={<Search />}
+			label={isGerman ? 'Find and Replace' : 'Localization'}
+		/>
 	)
 }
