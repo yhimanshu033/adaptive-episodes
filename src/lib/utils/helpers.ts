@@ -210,16 +210,19 @@ export function parseOptimistically<T>(input: string) {
 	const cleanedInput = input.trim()
 
 	try {
-		return parse(cleanedInput) as T
-	} catch (e) {
-		console.log('Initial parse failed', e)
-	}
-	try {
 		const repaired = jsonrepair(cleanedInput)
 		return parse(repaired) as T
 	} catch (e) {
 		console.log('Jsonrepair failed:', e)
 	}
+
+	// Needs to debug why this is not working
+	// try {
+	// 	const res = parse(cleanedInput) as T
+	// 	return res
+	// } catch (e) {
+	// 	console.log('Initial parse failed', e)
+	// }
 	return null
 }
 

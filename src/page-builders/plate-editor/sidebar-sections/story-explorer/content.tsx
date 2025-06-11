@@ -36,7 +36,6 @@ const Content = ({
 	const activeExplorerActions = store(
 		useShallow((state) => state.activeExplorerActions)
 	)
-
 	const updateNotesMutation = useNotesMutation()
 
 	const addToNote = (explorerData?: PlotExplorerApiResponse['data']) => {
