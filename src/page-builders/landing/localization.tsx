@@ -119,7 +119,7 @@ const LocalizationSection = () => {
 		<section className="mt-20 sm:mt-40">
 			<div className="relative z-10 container space-y-2 not-sm:px-4 sm:space-y-4">
 				<motion.h2
-					className="sm:text-fm-4xl md:text-fm-7xl font-display text-2xl sm:text-center"
+					className="sm:text-fm-4xl md:text-fm-7xl font-display text-3xl sm:text-center"
 					variants={headingVariants}
 					initial="hidden"
 					whileInView="visible"

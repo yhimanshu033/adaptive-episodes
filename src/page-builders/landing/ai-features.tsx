@@ -75,7 +75,7 @@ const AIFeaturesSection = () => {
 	return (
 		<section id="ai-features" className="relative mt-5 sm:mt-0">
 			<motion.h2
-				className="text-fm-2xl font-display sm:text-fm-4xl md:text-fm-7xl mb-8 sm:mb-12 sm:text-center"
+				className="text-fm-3xl font-display sm:text-fm-4xl md:text-fm-7xl mb-8 sm:mb-12 sm:text-center"
 				variants={headingVariants}
 				initial="hidden"
 				whileInView="visible"

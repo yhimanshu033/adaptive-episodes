@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { navLinks } from '@/constants/landing-constants'
 import { Menu } from 'lucide-react'
@@ -13,15 +13,40 @@ import {
 	SheetTrigger,
 } from '@/components/aural-ui/sheet'
 
-const Header = () => {
+const Heading = () => {
 	return (
-		<nav className="text-fm-primary bg-fm-surface-frosted/20 animate-fade-in-down sticky top-0 z-20 flex items-center justify-between p-4 shadow-sm backdrop-blur-xl sm:p-6">
-			<div className="not-sm:flex not-sm:flex-col">
-				<span className="font-display text-fm-xl sm:text-fm-4xl">COPILOT</span>
-				<span className="text-fm-secondary text-fm-sm sm:text-fm-xl sm:ml-1">
-					by PocketFM
-				</span>
-			</div>
+		<div className="not-sm:flex not-sm:flex-col">
+			<span className="font-display text-fm-xl sm:text-fm-4xl">COPILOT</span>
+			<span className="text-fm-secondary text-fm-sm sm:text-fm-xl sm:ml-1">
+				by PocketFM
+			</span>
+		</div>
+	)
+}
+
+const Header = () => {
+	const [hasScrolled, setHasScrolled] = useState(false)
+
+	useEffect(() => {
+		const handleScroll = () => {
+			const scrollPosition = window.scrollY
+			if (scrollPosition > 10) {
+				setHasScrolled(true)
+			} else {
+				setHasScrolled(false)
+			}
+		}
+
+		window.addEventListener('scroll', handleScroll)
+		handleScroll()
+		return () => window.removeEventListener('scroll', handleScroll)
+	}, [])
+
+	return (
+		<nav
+			className={`text-fm-primary animate-fade-in-down sticky top-0 z-20 flex items-center justify-between p-4 transition-all duration-300 sm:p-6 ${hasScrolled ? 'bg-fm-surface-frosted/20 shadow-sm backdrop-blur-xl' : 'bg-transparent'}`}
+		>
+			<Heading />
 
 			{/* Desktop Navigation */}
 			<div className="font-display text-fm-secondary text-fm-sm hidden items-center gap-3 md:flex lg:gap-6">
@@ -54,9 +79,10 @@ const Header = () => {
 							icon={<Menu className="text-fm-primary size-6" />}
 						/>
 					</SheetTrigger>
-					<SheetContent side="right" className="w-64">
+					<SheetContent side="top" className="w-full">
+						<Heading />
 						<SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-						<ul className="font-display text-fm-sm flex list-none flex-col">
+						<ul className="font-display text-fm-sm flex list-none flex-col py-4 pl-0">
 							{navLinks.map((link) => (
 								<li key={link.href}>
 									<a

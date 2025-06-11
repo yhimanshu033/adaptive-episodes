@@ -70,25 +70,9 @@ const SeriesShowcase = () => {
 			whileInView="visible"
 			viewport={{ once: true, amount: 0.3 }}
 			transition={{ delay: index * 0.1 }}
-			whileHover={{
-				scale: 1.05,
-				y: -10,
-				transition: { duration: 0.3 },
-			}}
 		>
-			<motion.div
-				className="relative overflow-hidden rounded transition-all duration-300"
-				whileHover={{
-					boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-					transition: { duration: 0.3 },
-				}}
-			>
-				<motion.div
-					whileHover={{
-						scale: 1.1,
-						transition: { duration: 0.4 },
-					}}
-				>
+			<motion.div className="relative overflow-hidden rounded transition-all duration-300">
+				<motion.div>
 					<Image
 						src={series.image}
 						alt={series.title}
@@ -98,15 +82,9 @@ const SeriesShowcase = () => {
 						priority
 					/>
 				</motion.div>
-				<motion.div
-					className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300"
-					whileHover={{ opacity: 1 }}
-				/>
+				<motion.div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300" />
 			</motion.div>
-			<motion.div
-				className="mt-1 sm:mt-2"
-				whileHover={{ y: -2, transition: { duration: 0.2 } }}
-			>
+			<motion.div className="mt-1 sm:mt-2">
 				<h4 className="text-fm-tertiary sm:text-fm-2xl line-clamp-2 text-lg text-ellipsis">
 					{series.title}
 				</h4>
@@ -121,7 +99,7 @@ const SeriesShowcase = () => {
 		<section id="creations" className="mt-20 overflow-hidden sm:mt-40">
 			<div className="container mx-auto mb-8 not-sm:px-4 sm:mb-12">
 				<motion.h2
-					className="font-display sm:text-fm-4xl md:text-fm-7xl mb-4 text-2xl sm:mb-6"
+					className="font-display sm:text-fm-4xl md:text-fm-7xl mb-4 text-3xl sm:mb-6"
 					variants={headingVariants}
 					initial="hidden"
 					whileInView="visible"

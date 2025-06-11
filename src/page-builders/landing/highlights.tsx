@@ -46,7 +46,7 @@ export default function HighlightSection() {
 	return (
 		<section id="essentials" className="mt-16 sm:mt-40">
 			<motion.h2
-				className="font-display text-fm-2xl sm:text-fm-4xl md:text-fm-7xl relative z-10 mb-8 sm:mb-12"
+				className="font-display text-fm-3xl sm:text-fm-4xl md:text-fm-7xl relative z-10 mb-8 sm:mb-12"
 				variants={headingVariants}
 				initial="hidden"
 				whileInView="visible"

@@ -78,7 +78,7 @@ export default function EditorPreviewSection() {
 					/>
 				</motion.div>
 				<motion.h2
-					className="font-display md:text-fm-7xl text-fm-2xl sm:text-fm-4xl relative z-10 mb-8 sm:mb-16 sm:text-center"
+					className="font-display md:text-fm-7xl text-fm-3xl sm:text-fm-4xl relative z-10 mb-8 sm:mb-16 sm:text-center"
 					variants={headingVariants}
 					initial="hidden"
 					whileInView="visible"
