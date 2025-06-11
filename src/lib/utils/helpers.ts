@@ -531,7 +531,7 @@ export function pretifyVoiceXMLData(data: string) {
 		}
 	}
 	cleanedData = cleanedData
-		.replace(/<\/?(?:status| section-)[^>]*\/?>/g, '\n')
+		.replace(/<\/?(?:status|section-)[^>]*\/?>/g, '\n')
 		.trim()
 
 	return cleanedData
