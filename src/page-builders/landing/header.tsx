@@ -26,6 +26,7 @@ const Heading = () => {
 
 const Header = () => {
 	const [hasScrolled, setHasScrolled] = useState(false)
+	const [open, setOpen] = useState(false)
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -70,7 +71,7 @@ const Header = () => {
 
 			{/* Mobile Navigation */}
 			<div className="md:hidden">
-				<Sheet>
+				<Sheet open={open} onOpenChange={setOpen}>
 					<SheetTrigger asChild>
 						<IconButton
 							variant="ghost"
@@ -88,6 +89,7 @@ const Header = () => {
 									<a
 										href={link.href}
 										className="hover:text-fm-primary text-fm-secondary block px-4 py-2 transition-colors"
+										onClick={() => setOpen(false)}
 									>
 										{link.label}
 									</a>
