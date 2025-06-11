@@ -203,18 +203,24 @@ export function extract(str: string) {
 }
 
 export function parseOptimistically<T>(input: string) {
-	try {
-		return parse(input) as T
-	} catch (e) {
-		console.log(e)
-		try {
-			const repaired = jsonrepair(input)
-			return parse(repaired) as T
-		} catch (e) {
-			console.log(e)
-			return null
-		}
+	if (!input || input.trim() === '') {
+		return null
 	}
+
+	const cleanedInput = input.trim()
+
+	try {
+		return parse(cleanedInput) as T
+	} catch (e) {
+		console.log('Initial parse failed', e)
+	}
+	try {
+		const repaired = jsonrepair(cleanedInput)
+		return parse(repaired) as T
+	} catch (e) {
+		console.log('Jsonrepair failed:', e)
+	}
+	return null
 }
 
 export function trim(str: string, length: number = 100) {
