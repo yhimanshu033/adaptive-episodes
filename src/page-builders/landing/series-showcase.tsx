@@ -107,7 +107,7 @@ const SeriesShowcase = () => {
 				className="mt-1 sm:mt-2"
 				whileHover={{ y: -2, transition: { duration: 0.2 } }}
 			>
-				<h4 className="text-fm-tertiary sm:text-fm-2xl line-clamp-2 text-lg">
+				<h4 className="text-fm-tertiary sm:text-fm-2xl line-clamp-2 text-lg text-ellipsis">
 					{series.title}
 				</h4>
 				<p className="text-fm-tertiary font-display text-sm sm:text-base">

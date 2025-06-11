@@ -45,18 +45,18 @@ export const highlightedFeatures = [
 
 export const seriesData = [
 	{
-		title: 'Aaj Ka Hero',
-		plays: '16M',
+		title: 'My Vampire System',
+		plays: '9.1M',
 		image: SERIES_1_URL,
 	},
 	{
-		title: 'Banda Ye Badass Hai',
-		plays: '126M',
+		title: 'Saving Nora',
+		plays: '7.7M',
 		image: SERIES_2_URL,
 	},
 	{
-		title: 'Super Yoodha',
-		plays: '231M',
+		title: "The Billionaire's Accidental Bride",
+		plays: '8.1M',
 		image: SERIES_3_URL,
 	},
 ]
