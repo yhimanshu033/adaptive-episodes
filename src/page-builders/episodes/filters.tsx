@@ -5,9 +5,9 @@ import {
 	HIDE_HEADER,
 	SIMPLIFIED_VIEWABLE_EDITOR,
 } from '@/constants/global-constants'
+import useAccessChecks from '@/hooks/use-access-checks'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { usePageState } from '@/hooks/use-page-state'
-import useParentLanguage from '@/hooks/use-parent-language'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/multi-ep-localize-dialog'
 import { Table } from '@tanstack/react-table'
 import { Languages, Merge, Replace, Search, Split } from 'lucide-react'
@@ -27,7 +27,6 @@ import { Input } from '@/components/ui/input'
 import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 
-import { ELanguage } from '@/types/common'
 import { TEpisode, TEpisodeSearchForm } from '@/types/episode-type'
 
 const Filters = ({
@@ -44,13 +43,13 @@ const Filters = ({
 	const { handleMerge, handleUnmerge } = useEpisodeTable()
 	const [fetchedSeqNumber, setFetchedSeqNumber] = useState<boolean>(false)
 	const { limit, setSearch, setCurrentPage, search, seqNumber } = usePageState()
-	const { initialStoryData } = useEpisodeTableContext()
 	const { id } = useParams()
 
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
 
-	const language = useParentLanguage()
+	const { isGerman, isOriginal } = useAccessChecks()
+	const { initialStoryData } = useEpisodeTableContext()
 
 	const {
 		setSelectedRowData,
@@ -147,7 +146,7 @@ const Filters = ({
 					</Button>
 				</form>
 			</Form>
-			<If condition={language !== ELanguage.GERMAN_ORIGINAL}>
+			<If condition={isOriginal === false && !isGerman}>
 				<Button
 					disabled={disabled || selectedRowData.length < 1}
 					onClick={() => {
@@ -171,7 +170,7 @@ const Filters = ({
 			>
 				<Replace size={16} />
 			</MultiEpLocalizeDialog>
-			<If condition={!language || language === ELanguage.GERMAN_ORIGINAL}>
+			<If condition={isGerman || isOriginal}>
 				<Button
 					size="icon"
 					disabled={disabled || Object.keys(selectedRowData).length <= 1}

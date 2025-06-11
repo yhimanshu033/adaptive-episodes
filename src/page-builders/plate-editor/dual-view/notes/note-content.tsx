@@ -41,7 +41,7 @@ const NoteContent = ({
 
 	return (
 		<div>
-			<div className="sticky top-10 z-10 flex justify-between bg-background pt-3">
+			<div className="bg-background sticky top-10 z-10 flex justify-between pt-3">
 				<div>
 					<EditableText
 						key={activeNoteId}
@@ -54,7 +54,7 @@ const NoteContent = ({
 							handleUpdateNotes(activeNoteId, { title: text })
 						}
 					/>
-					<p className="mb-4 text-sm text-muted-foreground">
+					<p className="text-muted-foreground mb-4 text-sm">
 						Last updated: {formatDate(note?.updateTime || '')}
 					</p>
 				</div>

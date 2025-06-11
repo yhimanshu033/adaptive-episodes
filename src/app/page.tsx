@@ -1,6 +1,6 @@
 import React from 'react'
-import Home from '@/page-builders/home'
+import LandingPage from '@/page-builders/landing'
 
 export default function Page() {
-	return <Home />
+	return <LandingPage />
 }

@@ -46,7 +46,7 @@ const Stories = ({
 					<Link href={`/projects/${story.id}`}>
 						<div className="relative aspect-square">
 							<If condition={openedStories?.slice(0, 5).includes(story.id)}>
-								<Badge className="absolute right-2 top-2 z-50">
+								<Badge className="absolute top-2 right-2 z-50">
 									Recently Opened
 								</Badge>
 							</If>
@@ -68,7 +68,7 @@ const Stories = ({
 								<BookOpen className="mr-1 size-3" />
 								<span>{story.episode_count} episodes</span>
 							</p>
-							<p className="flex items-center text-sm text-muted-foreground">
+							<p className="text-muted-foreground flex items-center text-sm">
 								<Clock className="mr-1 size-3" />
 								<span>{formatDate(story.update_time)}</span>
 							</p>

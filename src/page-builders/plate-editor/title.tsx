@@ -64,7 +64,7 @@ const Title = ({
 				</div>
 			</div>
 			{updatedAt && (
-				<p className="text-xs italic text-foreground/50">
+				<p className="text-foreground/50 text-xs italic">
 					(Last updated: {updatedAt})
 				</p>
 			)}

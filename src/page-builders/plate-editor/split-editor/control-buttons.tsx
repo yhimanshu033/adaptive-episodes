@@ -27,7 +27,7 @@ export default function ControlButtons() {
 	}
 
 	return (
-		<div className="mt-5 flex animate-fade-in-up items-center justify-between gap-2">
+		<div className="animate-fade-in-up mt-5 flex items-center justify-between gap-2">
 			<EpisodeButton
 				direction="previous"
 				episodeId={firstEpisode?.previous_parent_id}

@@ -65,7 +65,7 @@ export default function PlateEditor() {
 							<div
 								ref={containerRef}
 								className={cn(
-									'relative mt-4 animate-fade-in-up rounded',
+									'animate-fade-in-up relative mt-4 rounded',
 									// Block selection
 									'[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4'
 								)}

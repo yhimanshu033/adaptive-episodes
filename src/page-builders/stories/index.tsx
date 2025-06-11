@@ -43,7 +43,7 @@ const StoryDashboard = () => {
 	}, [data, limit])
 
 	return (
-		<main className="container flex flex-1 animate-fade-in-up flex-col pt-6">
+		<main className="animate-fade-in-up container flex flex-1 flex-col pt-6">
 			<Filters
 				setSearch={(search) => {
 					changeParams({ search, page: 1 })

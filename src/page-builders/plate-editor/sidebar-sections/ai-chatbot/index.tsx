@@ -43,7 +43,7 @@ const AIChatbot = () => {
 	}, [])
 	return (
 		<>
-			<div className="flex h-[93vh] flex-col text-clip px-4 pt-4">
+			<div className="flex h-[93vh] flex-col px-4 pt-4 text-clip">
 				<h1 className="mb-4 flex-[0_0_auto] text-2xl font-bold">StoryChat</h1>
 				<CheckboxDropdown />
 				<MessagesList isPending={isPending} />
@@ -51,7 +51,7 @@ const AIChatbot = () => {
 				<div className="flex flex-[0_0_auto] items-end gap-1">
 					<form
 						onSubmit={handleSendMessage}
-						className="flex flex-1 items-end space-x-2 rounded-md border bg-background"
+						className="bg-background flex flex-1 items-end space-x-2 rounded-md border"
 					>
 						<Textarea
 							ref={textareaRef}

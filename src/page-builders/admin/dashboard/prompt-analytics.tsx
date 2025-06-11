@@ -38,7 +38,7 @@ export function PromptAnalytics() {
 							{MOCK_FREQUENT_PROMPTS.map((prompt, i) => (
 								<div key={i} className="flex items-center justify-between">
 									<span className="text-sm font-medium">{trim(prompt)}</span>
-									<span className="text-sm text-muted-foreground">
+									<span className="text-muted-foreground text-sm">
 										{100 - i * 20}x used
 									</span>
 								</div>
@@ -50,7 +50,7 @@ export function PromptAnalytics() {
 							{MOCK_SUCCESSFUL_PROMPTS.map((prompt, i) => (
 								<div key={i} className="flex items-center justify-between">
 									<span className="text-sm font-medium">{trim(prompt)}</span>
-									<span className="text-sm text-muted-foreground">
+									<span className="text-muted-foreground text-sm">
 										{90 - i * 5}% success
 									</span>
 								</div>
@@ -62,7 +62,7 @@ export function PromptAnalytics() {
 							{MOCK_RATIO_STORY.map((type, i) => (
 								<div key={i} className="flex items-center justify-between">
 									<span className="text-sm font-medium">{trim(type)}</span>
-									<span className="text-sm text-muted-foreground">
+									<span className="text-muted-foreground text-sm">
 										{30 - i * 5}% AI content
 									</span>
 								</div>

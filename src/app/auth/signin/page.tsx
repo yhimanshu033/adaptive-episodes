@@ -8,7 +8,7 @@ export default function Page() {
 	return (
 		<div className="flex min-h-screen flex-col">
 			<Header />
-			<main className="flex flex-1 animate-fade-in-up items-center justify-center">
+			<main className="animate-fade-in-up flex flex-1 items-center justify-center">
 				<SignInWithGoogle />
 			</main>
 			<Footer />
