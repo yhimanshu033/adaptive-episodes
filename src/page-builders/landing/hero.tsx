@@ -13,12 +13,12 @@ export default function HeroSection() {
 		<section className="relative min-h-[calc(100dvh-80px)] w-full sm:min-h-dvh">
 			<div className="animate-fade-in-down relative z-10">
 				<div className="flex min-h-[calc(100dvh-80px)] flex-col items-center justify-center px-6 text-center sm:min-h-[calc(100dvh-96px)]">
-					<h1 className="mb-4 text-3xl leading-tight sm:text-4xl md:text-5xl lg:text-6xl">
+					<h1 className="text-fm-4xl sm:text-fm-5xl mb-4 leading-tight md:text-7xl">
 						Write smart. Write fast.
 						<br className="hidden sm:block" />
 						Go global.
 					</h1>
-					<p className="text-fm-tertiary sm:text-fm-lg mb-6 line-clamp-3 max-w-sm text-sm sm:mb-8 sm:max-w-xl">
+					<p className="text-fm-tertiary sm:text-fm-lg text-fm-lg mb-6 line-clamp-3 max-w-sm sm:mb-8 sm:max-w-xl">
 						Adapt your story to 10+ languages, collaborate with other writers,
 						and do more with our AI-powered Copilot
 					</p>
