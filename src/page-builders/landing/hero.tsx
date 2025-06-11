@@ -13,7 +13,7 @@ export default function HeroSection() {
 		<section className="relative min-h-[calc(100dvh-80px)] w-full sm:min-h-dvh">
 			<div className="animate-fade-in-down relative z-10">
 				<div className="flex min-h-[calc(100dvh-80px)] flex-col items-center justify-center px-6 text-center sm:min-h-[calc(100dvh-96px)]">
-					<h1 className="text-fm-4xl sm:text-fm-5xl mb-4 leading-tight md:text-7xl">
+					<h1 className="text-fm-4xl sm:text-fm-5xl mb-4 leading-tight md:text-6xl">
 						Write smart. Write fast.
 						<br className="hidden sm:block" />
 						Go global.
