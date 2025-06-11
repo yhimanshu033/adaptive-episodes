@@ -30,8 +30,10 @@ import { Switch } from '@/components/ui/switch'
 import useProjectId from '@/providers/project-id-provider'
 import { formatDate } from '@/lib/format-date'
 
-import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
+import { BASE_STATUS, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
+
+import useAccessChecks from './use-access-checks'
 
 export const useCreateTable = (episodes: TEpisode[]) => {
 	const [expanded, setExpanded] = useState<ExpandedState>({})
@@ -46,6 +48,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		useEpisodeTable()
 
 	const { isWriter } = useProjectId()
+	const { isGerman, isOriginal } = useAccessChecks()
 
 	const handleRowSelection = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -167,10 +170,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						: row.getValue('status')
 				const latestIndex = statuses.indexOf(latestStatus)
 
-				if (
-					row.original.language &&
-					row.original.language !== ELanguage.GERMAN_ORIGINAL
-				) {
+				if (!(isGerman || isOriginal)) {
 					return null
 				}
 				if (row.depth) {
