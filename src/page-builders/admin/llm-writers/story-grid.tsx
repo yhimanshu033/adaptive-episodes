@@ -40,11 +40,11 @@ export function StoryGrid({ stories, onSelect }: StoryGridProps) {
 								<h3 className="line-clamp-1 font-semibold">
 									{story.project_title}
 								</h3>
-								<div className="flex items-center justify-between text-sm text-muted-foreground">
+								<div className="text-muted-foreground flex items-center justify-between text-sm">
 									<span>{story.author || 'Unknown Author'}</span>
 									<Badge>{story.episode_count} eps</Badge>
 								</div>
-								<p className="text-xs text-muted-foreground">
+								<p className="text-muted-foreground text-xs">
 									Updated {formatDistanceToNow(new Date(story.update_time))} ago
 								</p>
 							</div>

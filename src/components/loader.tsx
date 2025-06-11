@@ -21,19 +21,19 @@ export function Loader({
 				<div
 					className={cn(
 						`size-${size}`,
-						'animate-pulse rounded-full bg-primary'
+						'bg-primary animate-pulse rounded-full'
 					)}
 				/>
 				<div
 					className={cn(
 						`size-${size}`,
-						'animate-pulse rounded-full bg-primary'
+						'bg-primary animate-pulse rounded-full'
 					)}
 				/>
 				<div
 					className={cn(
 						`size-${size}`,
-						'animate-pulse rounded-full bg-primary'
+						'bg-primary animate-pulse rounded-full'
 					)}
 				/>
 			</div>

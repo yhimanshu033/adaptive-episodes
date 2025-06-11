@@ -1,65 +1,62 @@
 {
-  "extends": [
-    "next",
-    "prettier",
-    "next/core-web-vitals",
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:prettier/recommended",
-    "plugin:tailwindcss/recommended",
-    "plugin:typescript-sort-keys/recommended"
-  ],
-  "overrides": [
-    {
-      "extends": [
-        "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking"
-      ],
-      "files": ["**/*.{ts,tsx}"],
-      "parserOptions": {
-        "project": ["./tsconfig.json"]
-      }
-    }
-  ],
-  "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint",
-    "react",
-    "react-hooks",
-    "tailwindcss",
-    "typescript-sort-keys",
-    "prettier"
-  ],
-  "root": true,
-  "settings": {
-    "react": {
-      "version": "detect"
-    },
-    "tailwindcss": {
-      "callees": ["cn", "cva", "classnames", "clsx"],
-      "config": "tailwind.config.ts"
-    },
-    "next": {
-      "rootDir": ["./"]
-    }
-  },
-  "rules": {
-    "react/prop-types": 0,
-    "tailwindcss/no-custom-classname": 0,
-    "tailwindcss/classnames-order": 0,
-    "react-hooks/exhaustive-deps": [
-      "warn",
-      {
-        "additionalHooks": "(useDeepCompareEffect|useDeepCompareCallback|useDeepCompareMemo)"
-      }
-    ],
-    "curly": ["error", "all"]
-  },
-  "env": {
-    "browser": true,
-    "es6": true,
-    "node": true
-  }
+	"extends": [
+		"next",
+		"prettier",
+		"next/core-web-vitals",
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:react/recommended",
+		"plugin:react-hooks/recommended",
+		"plugin:prettier/recommended",
+		"plugin:typescript-sort-keys/recommended"
+	],
+	"overrides": [
+		{
+			"extends": [
+				"plugin:@typescript-eslint/recommended",
+				"plugin:@typescript-eslint/recommended-requiring-type-checking"
+			],
+			"files": ["**/*.{ts,tsx}"],
+			"parserOptions": {
+				"project": ["./tsconfig.json"]
+			}
+		}
+	],
+	"parser": "@typescript-eslint/parser",
+	"plugins": [
+		"@typescript-eslint",
+		"react",
+		"react-hooks",
+		"typescript-sort-keys",
+		"prettier"
+	],
+	"root": true,
+	"settings": {
+		"react": {
+			"version": "detect"
+		},
+		"next": {
+			"rootDir": ["./"]
+		}
+	},
+	"rules": {
+		"react/prop-types": 0,
+		"react-hooks/exhaustive-deps": [
+			"warn",
+			{
+				"additionalHooks": "(useDeepCompareEffect|useDeepCompareCallback|useDeepCompareMemo)"
+			}
+		],
+		"curly": ["error", "all"]
+	},
+	"env": {
+		"browser": true,
+		"es6": true,
+		"node": true
+	}
 }
+
+// TODO: Re-enable `eslint-plugin-tailwindcss` once it supports Tailwind CSS v4.
+
+
+// Tracking issue: https://github.com/francoismassart/eslint-plugin-tailwindcss/issues/325

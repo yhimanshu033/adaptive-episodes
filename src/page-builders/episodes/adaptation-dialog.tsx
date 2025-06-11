@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { useParams } from 'next/navigation'
 import { languageToTitle } from '@/constants/episodes-constants'
 import LSTableEditor from '@/page-builders/episodes/ls-editor'
 import { ArrowRight, CheckCircle, Info } from 'lucide-react'
@@ -17,8 +18,20 @@ import {
 } from '@/components/ui/dialog'
 import Spinner from '@/components/ui/spinner'
 import useAdaptation from '@/providers/adaptation-provider'
+import { getSourceLanguage } from '@/lib/utils/helpers'
 
-export default function AdaptationDialog() {
+import { ELanguage } from '@/types/common'
+
+type AdaptationDialogProps = {
+	// Both must be provided together or neither should be provided
+	openDialog?: boolean
+	setOpenDialog?: (open: boolean) => void
+}
+
+export default function AdaptationDialog({
+	openDialog,
+	setOpenDialog,
+}: AdaptationDialogProps) {
 	const {
 		currentLanguage,
 		mutate,
@@ -35,6 +48,25 @@ export default function AdaptationDialog() {
 		storyData,
 	} = useAdaptation()
 
+	// Validate props: Either both custom dialog props must be provided or neither
+	if (
+		(openDialog !== undefined && setOpenDialog === undefined) ||
+		(openDialog === undefined && setOpenDialog !== undefined)
+	) {
+		console.error(
+			'AdaptationDialog: Both openDialog and setOpenDialog must be provided together. ' +
+				'Falling back to useAdaptation hook values.'
+		)
+	}
+
+	// Use props if both are provided, otherwise use hook values
+	const useCustomDialog =
+		openDialog !== undefined && setOpenDialog !== undefined
+	const adaptOpen = useCustomDialog ? openDialog : open
+	const setAdaptDialogOpen = useCustomDialog ? setOpenDialog : setOpen
+
+	const { id } = useParams()
+
 	const selectedEpNo = useMemo(
 		() => [
 			selectedRowData?.[0]?.seq_number,
@@ -43,16 +75,23 @@ export default function AdaptationDialog() {
 		[selectedRowData]
 	)
 
-	const project = useMemo(
+	const projectId = useMemo(
 		() => selectedRowData?.[0]?.project,
 		[selectedRowData]
 	)
 
-	if (!open && step > 1) {
+	const titleText = useMemo(() => {
+		if (selectedEpNo && projectId) {
+			return `Adapt: Episodes ${selectedEpNo.join('-')} of Project ${projectId}`
+		}
+		return `Adapt all episodes of project ${storyData?.project_title}`
+	}, [projectId, selectedEpNo, storyData?.project_title])
+
+	if (!adaptOpen && step > 1) {
 		return (
 			<Button
 				tooltip="Adaptation working..."
-				onClick={() => setOpen(true)}
+				onClick={() => setAdaptDialogOpen(true)}
 				size="icon"
 				className="fixed bottom-5 left-5 rounded-full"
 			>
@@ -62,13 +101,11 @@ export default function AdaptationDialog() {
 	}
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogContent className="max-w-screen-lg">
+		<Dialog open={adaptOpen} onOpenChange={setAdaptDialogOpen}>
+			<DialogContent className="max-w-[80vw]">
 				<SwitchCase value={step}>
 					<DialogHeader>
-						<DialogTitle>
-							Adapt: Episodes {selectedEpNo.join('-')} of Project {project}
-						</DialogTitle>
+						<DialogTitle>{titleText}</DialogTitle>
 						<Case value={-1}>
 							<DialogDescription>
 								Episodes{' '}
@@ -131,7 +168,9 @@ export default function AdaptationDialog() {
 							onSubmit={(inputls) =>
 								sendLS({
 									inputls,
-									language: selectedAdaptingLanguage,
+									projectId: Number(id),
+									sourceLang: getSourceLanguage(storyData?.source_language),
+									language: storyData?.parent_language || ELanguage.GERMAN,
 									selectedRowData,
 								})
 							}

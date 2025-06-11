@@ -114,14 +114,14 @@ const BaseScriptExtension = () => {
 													</CardTitle>
 												</CardHeader>
 												<CardContent className="mb-5">
-													<p className="text-sm text-muted-foreground">
+													<p className="text-muted-foreground text-sm">
 														The file for base script extension couldn&apos;t be
 														located.
 													</p>
 												</CardContent>
 											</Else>
 										</IfElse>
-										<div className="absolute bottom-1 right-1">
+										<div className="absolute right-1 bottom-1">
 											<Button
 												variant="ghost"
 												size="icon"
@@ -158,7 +158,7 @@ const BaseScriptExtension = () => {
 													<p className="font-medium">
 														{data?.previous_extension_status.message}
 													</p>
-													<span className="text-xs text-muted-foreground">
+													<span className="text-muted-foreground text-xs">
 														{formatDate(
 															data?.previous_extension_status.timestamp || '',
 															true

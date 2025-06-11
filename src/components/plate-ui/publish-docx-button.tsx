@@ -88,7 +88,7 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 							render={({ field }) => (
 								<FormItem className="flex-1">
 									<FormControl>
-										<div className="flex flex-1 items-center gap-2 space-y-0 rounded-md border border-input p-1.5 px-3">
+										<div className="border-input flex flex-1 items-center gap-2 space-y-0 rounded-md border p-1.5 px-3">
 											<Input
 												{...field}
 												className={cn(
@@ -98,7 +98,7 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 												placeholder="Enter file name"
 											/>
 											<Separator className="h-10" orientation="vertical" />
-											<span className="text-sm text-muted-foreground">
+											<span className="text-muted-foreground text-sm">
 												.docx
 											</span>
 										</div>

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 const Features = async () => {
 	const dict = await getTranslations('landing.features')
 	return (
-		<section className="w-full flex-1 animate-fade-in-down bg-card py-12 md:py-24 lg:py-32">
+		<section className="animate-fade-in-down bg-card w-full flex-1 py-12 md:py-24 lg:py-32">
 			<div className="container">
 				<h2 className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
 					{dict('title')}

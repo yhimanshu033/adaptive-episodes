@@ -85,7 +85,7 @@ const Stories = () => {
 							<BookOpen className="mr-1 size-3" />
 							<span>100 episodes</span>
 						</p>
-						<p className="flex items-center text-sm text-muted-foreground">
+						<p className="text-muted-foreground flex items-center text-sm">
 							<Clock className="mr-1 size-3" />
 							<span>{formatDate(Date.now())}</span>
 						</p>

@@ -1,8 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
 
-import { fontSans } from '@/lib/fonts'
-
 import '@/styles/globals.css'
 
 import { NextIntlClientProvider } from 'next-intl'
@@ -25,11 +23,8 @@ export default async function RootLayout({
 	const session = await getServerSession()
 	const locale = await getLocale()
 	return (
-		<html lang={locale} suppressHydrationWarning>
-			<body
-				suppressHydrationWarning
-				className={`${fontSans.className} antialiased`}
-			>
+		<html lang={locale} suppressHydrationWarning className="scroll-smooth">
+			<body suppressHydrationWarning className={`font-body antialiased`}>
 				<NextIntlClientProvider>
 					<AppProvider session={session}>{children}</AppProvider>
 				</NextIntlClientProvider>

@@ -135,7 +135,7 @@ export default function WritersRoom() {
 									<h3 className="font-semibold">
 										{selectedStory.project_title}
 									</h3>
-									<p className="text-sm text-muted-foreground">
+									<p className="text-muted-foreground text-sm">
 										by {selectedStory.author || 'Unknown Author'}
 									</p>
 								</div>
@@ -156,7 +156,7 @@ export default function WritersRoom() {
 										<UserCircle2 className="size-10" />
 										<div>
 											<h3 className="font-semibold">Showrunner</h3>
-											<div className="text-sm text-muted-foreground">
+											<div className="text-muted-foreground text-sm">
 												<p>Bio:</p>
 												<p>Style:</p>
 											</div>
@@ -171,7 +171,7 @@ export default function WritersRoom() {
 												<UserCircle2 className="size-8" />
 												<div>
 													<h4 className="font-medium">Writer 1</h4>
-													<div className="text-xs text-muted-foreground">
+													<div className="text-muted-foreground text-xs">
 														<p>Bio:</p>
 														<p>Style:</p>
 													</div>
@@ -184,7 +184,7 @@ export default function WritersRoom() {
 												<UserCircle2 className="size-8" />
 												<div>
 													<h4 className="font-medium">Writer 2</h4>
-													<div className="text-xs text-muted-foreground">
+													<div className="text-muted-foreground text-xs">
 														<p>Bio:</p>
 														<p>Style:</p>
 													</div>
@@ -201,7 +201,7 @@ export default function WritersRoom() {
 										<UserCircle2 className="size-8" />
 										<div>
 											<h4 className="font-medium">Editor</h4>
-											<div className="text-xs text-muted-foreground">
+											<div className="text-muted-foreground text-xs">
 												<p>Bio:</p>
 												<p>Style:</p>
 											</div>
@@ -224,7 +224,7 @@ export default function WritersRoom() {
 								<h3 className="mb-2 text-lg font-semibold">
 									{selectedStory?.project_title} Ep 1
 								</h3>
-								<div className="space-y-4 text-sm text-muted-foreground">
+								<div className="text-muted-foreground space-y-4 text-sm">
 									<p>
 										Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
 										do eiusmod tempor incididunt ut labore et dolore magna

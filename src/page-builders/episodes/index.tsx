@@ -15,7 +15,7 @@ import AdminManageProject from './admin-manage-project'
 
 export default function EpisodeListPage() {
 	return (
-		<main className="container flex-1 animate-fade-in-up flex-col p-4">
+		<main className="animate-fade-in-up container flex-1 flex-col p-4">
 			<div className="mb-4 flex items-center justify-between">
 				<StoryDetails titleClassname="text-xl" imageSize={60} />
 				<div className="flex gap-2">
