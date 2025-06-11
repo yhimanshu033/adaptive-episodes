@@ -11,12 +11,14 @@ import { UploadIcon } from '@/icons/upload-icon'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
 import InventForm from '@/page-builders/episodes/dialogs/invent-form'
 import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
+import ShareAccessDialog from '@/page-builders/episodes/shared-access-dialog/share-access-dialog'
 import Filters from '@/page-builders/episodes/table/filters'
 import SelectionActions from '@/page-builders/episodes/table/selection-actions'
 import { useEpisodeStore } from '@/store/episode-store'
 import { flexRender } from '@tanstack/react-table'
 
 import { Button } from '@/components/aural-ui/button'
+import { Divider } from '@/components/aural-ui/divider'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -49,7 +51,8 @@ import { EEpisodeHeaderKeys } from '@/types/episode-type'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
-	const { setInventIndex, setIsInventOpen } = useEpisodeStore()
+	const { setInventIndex, setIsInventOpen, setIsShareAccessDialogOpen } =
+		useEpisodeStore()
 	const isGerman = useIsGerman()
 	const { initialStoryData } = useEpisodeTableContext()
 	const { currentPage, search, limit } = usePageState()
@@ -102,7 +105,11 @@ const EpisodesTable = () => {
 						isLoading={isEpisodesLoading}
 					/>
 					<AuthWrapper role={ERole.ADMIN}>
-						<Button variant="secondary" className="h-11">
+						<Button
+							variant="secondary"
+							className="h-11"
+							onClick={() => setIsShareAccessDialogOpen(true)}
+						>
 							<UploadIcon width={20} height={20} />
 						</Button>
 					</AuthWrapper>
@@ -144,6 +151,7 @@ const EpisodesTable = () => {
 					</If>
 				</div>
 			</div>
+			<Divider className="mt-4" />
 			<SelectionActions table={table} />
 			<Table>
 				<TableHeader>
@@ -280,6 +288,7 @@ const EpisodesTable = () => {
 			</PaginationProvider>
 			<ActionAlert />
 			<InventForm />
+			<ShareAccessDialog />
 		</>
 	)
 }
