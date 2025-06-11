@@ -1,12 +1,12 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useMyEditor from '@/hooks/use-my-editor'
 import { CrossIcon } from '@/icons/cross-icon'
-import { Value } from '@udecode/plate'
+import { Plate, PlateContent } from '@udecode/plate-common/react'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
-import { getText, jsonify } from '@/lib/utils/plate'
 
 const PreviewContent = () => {
 	const router = useRouter()
@@ -16,7 +16,11 @@ const PreviewContent = () => {
 		router.back()
 	}
 
-	const content = getText(jsonify(data?.text || '') as Value)
+	const editor = useMyEditor({
+		content: data?.text || '',
+		id: 'preview-editor',
+		simplified: true,
+	})
 
 	return (
 		<div className="bg-fm-surface-primary h-dvh overflow-hidden px-10">
@@ -40,9 +44,9 @@ const PreviewContent = () => {
 						)}
 					</div>
 					<div className="px-14 py-12">
-						<p className="text-fm-primary font-fm-text leading-fm-xl [font-size:var(--text-fm-xl)]">
-							{content}
-						</p>
+						<Plate editor={editor} readOnly>
+							<PlateContent />
+						</Plate>
 					</div>
 				</ScrollArea>
 			</div>
