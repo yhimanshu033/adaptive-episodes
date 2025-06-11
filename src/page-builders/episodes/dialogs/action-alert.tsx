@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
-import { TrashIcon } from '@/icons/trash-icon'
 import { useEpisodeStore } from '@/store/episode-store'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -24,23 +23,21 @@ const ActionAlert = () => {
 	return (
 		<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 			<DialogContent
-				variant="negative"
+				// @ts-expect-error type
+				variant={alertInfo?.variant ?? 'neutral'}
 				classes={{
 					root: 'w-80',
 				}}
+				noise="none"
 			>
 				<DialogHeader>
-					<DialogTitle className="flex items-center justify-center">
-						<TrashIcon
-							className="text-fm-icon-negative"
-							width={44}
-							height={44}
-						/>
+					<DialogTitle className="flex items-center justify-center pt-4">
+						{alertInfo?.icon}
 					</DialogTitle>
 					<DialogDescription className="text-fm-text py-4 text-center">
 						<h3 className="text-xl">{alertInfo?.description}</h3>
 						<h4 className="text-fm-tertiary mt-4">
-							Once deleted, this can’t be undone
+							{alertInfo?.subDescription}
 						</h4>
 					</DialogDescription>
 				</DialogHeader>
@@ -48,18 +45,18 @@ const ActionAlert = () => {
 					{alertInfo?.action && (
 						<Button
 							variant="secondary"
-							className="w-full"
+							className="w-full capitalize"
 							onClick={() => {
 								void handleConfirm()
 								setIsDialogOpen(false)
 							}}
 						>
-							Delete
+							{alertInfo?.action}
 						</Button>
 					)}
 
-					<Button variant="outline" className="w-full">
-						Cancel
+					<Button variant="outline" className="w-full capitalize">
+						{alertInfo?.secondAction}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

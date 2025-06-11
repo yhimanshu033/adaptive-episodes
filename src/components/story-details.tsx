@@ -65,13 +65,13 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 								/>
 							</EditProjectDialog>
 						</div>
+						{!hideAuthor && (
+							<h4 className="font-fm-brand text-fm-tertiary ml-1 text-xs uppercase">
+								{storyData?.author ?? ''}
+							</h4>
+						)}
 					</Else>
 				</IfElse>
-				{!hideAuthor && (
-					<h4 className="font-fm-brand text-fm-tertiary ml-1 text-xs uppercase">
-						{storyData?.author ?? ''}
-					</h4>
-				)}
 			</div>
 		</div>
 	)

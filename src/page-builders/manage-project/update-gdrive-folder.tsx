@@ -1,22 +1,22 @@
 import React, { useEffect, useMemo } from 'react'
+import Link from 'next/link'
 import {
 	UploadGDriveFolderSchema,
 	useUploadGDriveFolderResolver,
 } from '@/hooks/form-resolvers/upload-gdrive-folder-resolver'
 import { useGDriveUpdateMutation } from '@/hooks/mutation/use-gdrive-hook'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 
-import IfElse from '@/components/if-else'
-import { IconLoader } from '@/components/loader'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/aural-ui/button'
 import {
 	Form,
 	FormControl,
 	FormField,
 	FormItem,
 	FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/components/aural-ui/form'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import Input from '@/components/aural-ui/input'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 import { EFolderType } from '@/types/admin-types'
@@ -56,41 +56,54 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 	}, [defaultLink])
 
 	return (
-		<Form {...form}>
-			<form
-				onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
-				className="flex flex-1 gap-2"
-			>
-				<FormField
-					control={form.control}
-					name="link"
-					render={({ field }) => (
-						<FormItem className="flex-1">
-							<FormControl>
-								<Input
-									placeholder="Paste the goolge drive folder link here"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<a
-					href={link}
-					target="_blank"
-					className={buttonVariants({ size: 'icon', variant: 'outline' })}
-					rel="noreferrer"
+		<>
+			<h3 className="font-fm-brand mt-4 text-sm tracking-wider uppercase">
+				Google Drive Folder
+			</h3>
+			<Form {...form}>
+				<form
+					onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
+					className="mt-2.5 flex w-full items-center gap-2"
 				>
-					<ArrowUpRight size={16} />
-				</a>
-				<IfElse
-					condition={updateGDriveFolderMutation.isPending}
-					if={<IconLoader />}
-					else={<Button>Update</Button>}
-				/>
-			</form>
-		</Form>
+					<div className="border-fm-divider-secondary flex w-11/12 items-center justify-between border-1 p-3">
+						<FormField
+							control={form.control}
+							name="link"
+							render={({ field }) => (
+								<FormItem className="w-full">
+									<FormControl>
+										<Input
+											unstyled
+											className="w-full border-none pr-4 outline-none"
+											placeholder="Paste the goolge drive folder link here"
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<Button
+							type="submit"
+							disabled={updateGDriveFolderMutation.isPending}
+							variant="text"
+							innerClassName="text-fm-tertiary text-sm !p-0 -translate-y-0 uppercase"
+						>
+							Update
+						</Button>
+					</div>
+					<Link href={link} target="_blank">
+						<IconButton
+							shape="square"
+							variant="outlined"
+							icon={<ArrowRightUpIcon />}
+							label="redirect icon"
+							type="button"
+						/>
+					</Link>
+				</form>
+			</Form>
+		</>
 	)
 }
 

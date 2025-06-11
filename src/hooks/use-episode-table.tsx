@@ -1,8 +1,11 @@
+import React from 'react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
+import { GitForkIcon } from '@/icons/git-fork-icon'
+import { TrashIcon } from '@/icons/trash-icon'
 import { useEpisodeStore } from '@/store/episode-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { Row, Table } from '@tanstack/react-table'
@@ -70,17 +73,44 @@ const useEpisodeTable = () => {
 		})
 		if (selectedRows.length <= 1) {
 			setAlertInfo({
-				description: `Status of selected episode will switch to ${status}`,
+				icon: (
+					<GitForkIcon
+						className="text-fm-icon-brand-secondary"
+						width={44}
+						height={44}
+					/>
+				),
+				description: 'Status change',
+				subDescription: `Status of selected episode will switch to ${status}`,
 				action: EpisodeActions.UPDATE,
+				secondAction: 'Update',
 			})
 		} else if (hasConsistentStatus(selectedRows)) {
 			setAlertInfo({
-				description: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
+				icon: (
+					<GitForkIcon
+						className="text-fm-icon-brand-secondary"
+						width={44}
+						height={44}
+					/>
+				),
+				description: 'Status update',
+				subDescription: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
 				action: EpisodeActions.UPDATE,
+				secondAction: 'Got it',
 			})
 		} else {
 			setAlertInfo({
-				description: `All selected episodes must have the same current status to update.`,
+				icon: (
+					<GitForkIcon
+						className="text-fm-icon-brand-secondary"
+						width={44}
+						height={44}
+					/>
+				),
+				description: 'Status update',
+				subDescription: `All selected episodes must have the same current status to update.`,
+				secondAction: 'Got it',
 			})
 		}
 		setIsDialogOpen(true)
@@ -108,11 +138,29 @@ const useEpisodeTable = () => {
 
 		if (!isStatusSame) {
 			setAlertInfo({
-				description: `Cannot merge episodes with different statuses`,
+				icon: (
+					<GitForkIcon
+						className="text-fm-icon-brand-secondary"
+						width={44}
+						height={44}
+					/>
+				),
+				description: 'Cannot combine episode',
+				subDescription: `You cannot merge episodes with different statuses`,
+				secondAction: 'Got it',
 			})
 		} else if (!isContinuous) {
 			setAlertInfo({
-				description: 'Selected Episodes are non sequential',
+				icon: (
+					<GitForkIcon
+						className="text-fm-icon-brand-secondary"
+						width={44}
+						height={44}
+					/>
+				),
+				description: 'Episode sequential fail',
+				subDescription: 'Selected Episodes are non sequential',
+				secondAction: 'Got it',
 			})
 		} else {
 			setSelectedEpisodes({
@@ -120,8 +168,17 @@ const useEpisodeTable = () => {
 				status: selectedRowData[0].status,
 			})
 			setAlertInfo({
-				description: 'Selected episodes will get merged',
+				icon: (
+					<GitForkIcon
+						className="text-fm-icon-brand-secondary"
+						width={44}
+						height={44}
+					/>
+				),
+				description: 'Episode merged',
+				subDescription: 'Selected episodes will get merged',
 				action: EpisodeActions.MERGE,
+				secondAction: 'Got it',
 			})
 		}
 		setIsDialogOpen(true)
@@ -133,7 +190,16 @@ const useEpisodeTable = () => {
 		}
 		if (!selectedRowModel[0].getCanExpand()) {
 			setAlertInfo({
-				description: 'Please select a merged episode',
+				icon: (
+					<GitForkIcon
+						className="text-fm-icon-brand-secondary"
+						width={44}
+						height={44}
+					/>
+				),
+				description: 'Merge episode fail',
+				subDescription: 'Please select a merged episode',
+				secondAction: 'Got it',
 			})
 		} else {
 			setSelectedEpisodes({
@@ -141,8 +207,17 @@ const useEpisodeTable = () => {
 				status: selectedRowModel[0].original.status,
 			})
 			setAlertInfo({
-				description: 'Selected Episode will get unmerged',
+				icon: (
+					<GitForkIcon
+						className="text-fm-icon-brand-secondary"
+						width={44}
+						height={44}
+					/>
+				),
+				description: 'Unmerge Success',
+				subDescription: 'Selected Episode will get unmerged',
 				action: EpisodeActions.UNMERGE,
+				secondAction: 'Got it',
 			})
 		}
 		setIsDialogOpen(true)
@@ -166,8 +241,14 @@ const useEpisodeTable = () => {
 			return
 		}
 		setAlertInfo({
-			description: `Delete Episode ${episodeSeq} permanently`,
 			action: EpisodeActions.DELETE,
+			variant: 'negative',
+			icon: (
+				<TrashIcon className="text-fm-icon-negative" width={44} height={44} />
+			),
+			description: `Delete Episode ${episodeSeq} permanently`,
+			subDescription: 'Once deleted, this can’t be undone',
+			secondAction: 'Cancel',
 		})
 		setDeleteEpisodeId(episodeId)
 		setIsDialogOpen(true)

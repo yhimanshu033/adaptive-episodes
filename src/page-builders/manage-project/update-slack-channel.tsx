@@ -7,19 +7,16 @@ import {
 import { Copy } from 'lucide-react'
 import { toast } from 'sonner'
 
-import IfElse, { If } from '@/components/if-else'
-import { IconLoader } from '@/components/loader'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/aural-ui/button'
 import {
 	Form,
 	FormControl,
 	FormField,
 	FormItem,
-	FormLabel,
 	FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/components/aural-ui/form'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import Input from '@/components/aural-ui/input'
 
 import { TUpdateSlackChannelBody } from '@/types/admin-types'
 
@@ -27,11 +24,6 @@ const UpdateSlackChannel = () => {
 	const { data } = useSlackNotificationQuery()
 
 	const defaultChannelId = useMemo(() => data?.slack_channel_id || '', [data])
-
-	const defaultChannelName = useMemo(
-		() => data?.slack_channel_name || '',
-		[data]
-	)
 
 	const form = useUploadSlackChannelResolver()
 	const updateSlackChanelMutation = useSlackNotificationMutation()
@@ -59,52 +51,53 @@ const UpdateSlackChannel = () => {
 	}, [defaultChannelId])
 
 	return (
-		<Form {...form}>
-			<form
-				onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
-				className="flex flex-1 items-end gap-2"
-			>
-				<FormField
-					control={form.control}
-					name="slack_channel_id"
-					render={({ field }) => (
-						<FormItem className="flex-1">
-							<FormLabel>
-								Slack Channel ID
-								<If
-									condition={
-										!!slack_channel_id && slack_channel_id === defaultChannelId
-									}
-								>
-									<Badge className="ml-4">{defaultChannelName}</Badge>
-								</If>
-							</FormLabel>
-							<FormControl>
-								<Input
-									placeholder="Paste the slack channel ID here"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<Button
-					tooltip="Copy"
-					size="icon"
-					variant="outline"
-					type="button"
-					onClick={handleCopy}
+		<>
+			<h3 className="font-fm-brand mt-4 text-sm tracking-wider uppercase">
+				Slack Channel Id
+			</h3>
+			<Form {...form}>
+				<form
+					onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
+					className="mt-2.5 flex w-full items-center gap-2"
 				>
-					<Copy size={16} />
-				</Button>
-				<IfElse
-					condition={updateSlackChanelMutation.isPending}
-					if={<IconLoader />}
-					else={<Button>Update</Button>}
-				/>
-			</form>
-		</Form>
+					<div className="border-fm-divider-secondary flex w-11/12 items-center justify-between border-1 p-3">
+						<FormField
+							control={form.control}
+							name="slack_channel_id"
+							render={({ field }) => (
+								<FormItem className="w-full">
+									<FormControl>
+										<Input
+											unstyled
+											className="w-full border-none pr-4 outline-none"
+											placeholder="Paste the slack channel ID here"
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<Button
+							type="submit"
+							disabled={updateSlackChanelMutation.isPending}
+							variant="text"
+							innerClassName="text-fm-tertiary text-sm !p-0 -translate-y-0 uppercase"
+						>
+							Update
+						</Button>
+					</div>
+					<IconButton
+						shape="square"
+						variant="outlined"
+						icon={<Copy />}
+						label="redirect icon"
+						type="button"
+						onClick={handleCopy}
+					/>
+				</form>
+			</Form>
+		</>
 	)
 }
 
