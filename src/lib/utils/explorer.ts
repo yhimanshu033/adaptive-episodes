@@ -48,7 +48,7 @@ export const formatExplorerData = (
 		if (typeof node.content === 'string') {
 			result += `${node.content}\n`
 		} else {
-			node.content.forEach((child) => {
+			node.content?.forEach((child) => {
 				result += formatNode(child)
 			})
 		}
