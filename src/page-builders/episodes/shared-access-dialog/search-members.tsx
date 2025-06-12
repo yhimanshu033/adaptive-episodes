@@ -5,6 +5,7 @@ import {
 } from '@/hooks/form-resolvers/add-user-resolver'
 import useProjectAccessMutation from '@/hooks/mutation/use-project-access-mutation'
 import { SearchIcon } from '@/icons/search-icon'
+import SearchMembersForm from '@/page-builders/episodes/shared-access-dialog/search-members-form'
 import { setMemberQuery } from '@/store/admin-store'
 
 import {
@@ -13,7 +14,6 @@ import {
 	FormField,
 	FormItem,
 } from '@/components/aural-ui/form'
-import Input from '@/components/aural-ui/input'
 
 import { EProjectAccessActions } from '@/types/admin-types'
 
@@ -44,31 +44,15 @@ export default function SearchMembers() {
 					render={({ field }) => (
 						<FormItem className="flex-1">
 							<FormControl>
-								<Input
-									unstyled
-									className="text-fm-primary w-full border-none pr-4 outline-none"
-									placeholder="Add people to share access"
-									onChange={field.onChange}
+								<SearchMembersForm
+									selectedValue={field.value}
+									onUserSelect={field.onChange}
 								/>
 							</FormControl>
 						</FormItem>
 					)}
 				/>
 			</form>
-			{/*<List variant="elevated" className="absolute z-99 w-[93%]">*/}
-			{/*  <ListItem classes={{ content: 'block' }}>*/}
-			{/*    <h3 className="text-sm">Aniket Mahajan</h3>*/}
-			{/*    <span className="text-fm-secondary text-xs">*/}
-			{/*						aniket.mahajan@pocketfm.com*/}
-			{/*					</span>*/}
-			{/*  </ListItem>*/}
-			{/*  <ListItem size="default" classes={{ content: 'block' }} selected>*/}
-			{/*    <h3 className="text-sm">Aniket Mahajan</h3>*/}
-			{/*    <span className="text-fm-secondary text-xs">*/}
-			{/*						aniket.mahajan@pocketfm.com*/}
-			{/*					</span>*/}
-			{/*  </ListItem>*/}
-			{/*</List>*/}
 		</Form>
 	)
 }
