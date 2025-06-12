@@ -4,6 +4,7 @@ import {
 	LSMappingGenders,
 	LSMappingTypes,
 } from '@/constants/ai-constants'
+import { EXCLUDED_HEADERS_LS_SHEET } from '@/constants/episodes-constants'
 
 import IfElse, { Else, If } from '@/components/if-else'
 import SwitchCase, { Case } from '@/components/switch-case'
@@ -65,7 +66,10 @@ const LSEditorRow = memo(
 		}, [defaultGender]) as unknown as ELSMappingGender[]
 		return (
 			<TableRow>
-				<ForEach data={rows}>
+				<ForEach
+					data={rows}
+					filter={(key) => !EXCLUDED_HEADERS_LS_SHEET.includes(key)}
+				>
 					{(key, idx) => (
 						<TableCell key={idx}>
 							<SwitchCase value={key}>

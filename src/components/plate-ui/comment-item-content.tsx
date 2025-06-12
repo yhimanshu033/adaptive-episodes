@@ -115,9 +115,15 @@ export default function CommentItemContent() {
 						</If>
 
 						<If condition={isReplyComment && user?.id === AI_USER_ID}>
-							<Button asChild tooltip="Copy" size="icon" variant="ghost">
+							<Button
+								asChild
+								tooltip="Copy"
+								size="icon"
+								variant="ghost"
+								className="size-4"
+							>
 								<Copy
-									className="mr-1 !size-4"
+									className="mr-1"
 									onClick={() => handleCopy(commentText)}
 								/>
 							</Button>

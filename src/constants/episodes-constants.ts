@@ -140,3 +140,4 @@ export const switchableStepsInfo: { title: string; type: ImportStoryStep }[] = [
 	{ type: ImportStoryStep.DETAILS, title: 'Set up name' },
 	{ type: ImportStoryStep.CONTENT, title: 'Import content' },
 ]
+export const EXCLUDED_HEADERS_LS_SHEET = ['created_by']

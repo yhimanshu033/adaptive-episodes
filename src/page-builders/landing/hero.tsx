@@ -1,52 +1,52 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { LANDING_BACKGROUND_URL } from '@/constants/landing-constants'
+import {
+	LANDING_BACKGROUND_URL,
+	LANDING_BACKGROUND_URL_MOBILE,
+} from '@/constants/landing-constants'
 
 import { Button } from '@/components/aural-ui/button'
 
 export default function HeroSection() {
 	return (
-		<section className="h-[115vh] w-full overflow-hidden">
-			<div className="relative z-10">
-				<nav className="text-fm-primary flex items-center justify-between p-6">
-					<div>
-						<span className="font-display text-fm-4xl">COPILOT</span>
-						<span className="text-fm-secondary text-fm-xl ml-1">
-							by PocketFM
-						</span>
-					</div>
-					<div className="font-display text-fm-secondary text-fm-sm hidden items-center gap-6 md:flex">
-						<a href="#ai-features">AI FEATURES</a>
-						<a href="#essentials">ESSENTIALS</a>
-						<a href="#creations">CREATIONS</a>
-						<a href="#faq">FAQ</a>
-						<Button variant="outline" size="sm">
-							<Link href="/projects">Try it for free</Link>
-						</Button>
-					</div>
-				</nav>
-
-				<div className="flex h-[calc(100vh-80px)] flex-col items-center justify-center px-6 text-center">
-					<h1 className="text-6xl leading-tight">
-						Write smart. Write fast. <br /> Go global.
+		<section className="relative min-h-[calc(100dvh-80px)] w-full sm:min-h-dvh">
+			<div className="animate-fade-in-down relative z-10">
+				<div className="flex min-h-[calc(100dvh-80px)] flex-col items-center justify-center px-6 text-center sm:min-h-[calc(100dvh-96px)]">
+					<h1 className="text-fm-4xl sm:text-fm-5xl mb-4 leading-tight md:text-6xl">
+						Write smart. Write fast.
+						<br className="hidden sm:block" />
+						Go global.
 					</h1>
-					<p className="text-fm-tertiary text-fm-lg mb-8 max-w-xl">
+					<p className="text-fm-tertiary sm:text-fm-lg text-fm-lg mb-6 line-clamp-3 max-w-sm sm:mb-8 sm:max-w-xl">
 						Adapt your story to 10+ languages, collaborate with other writers,
 						and do more with our AI-powered Copilot
 					</p>
-					<Button variant="outline" size="lg">
+					<Button
+						variant="outline"
+						size="lg"
+						className="transition-transform hover:scale-105"
+						innerClassName="sm:[font-size:var(--text-fm-xl)] [font-size:var(--text-fm-lg)] bg-fm-primary sm:bg-transparent text-fm-neutral-50 sm:text-fm-primary"
+					>
 						<Link href="/projects">Try it for free</Link>
 					</Button>
 				</div>
 			</div>
-			<div className="absolute inset-0">
+			<div className="animate-fade-in-down absolute right-0 bottom-0 left-0 h-full w-full bg-gradient-to-br from-[#240047]/50 via-[#470000]/50 to-[#470047]/50 sm:-top-24 sm:min-h-screen">
 				<Image
 					src={LANDING_BACKGROUND_URL}
 					alt="Background"
 					fill
 					sizes="100vw"
-					className="w-full object-contain object-top"
+					className="hidden w-full overflow-visible object-top sm:block"
+					priority
+				/>
+				<Image
+					src={LANDING_BACKGROUND_URL_MOBILE}
+					alt="Background"
+					fill
+					sizes="100vw"
+					className="block w-full overflow-visible object-top sm:hidden"
 					priority
 				/>
 			</div>
