@@ -33,7 +33,7 @@ const NoteCard = ({ id, title, content, updateTime }: TNote) => {
 						<CardDescription className="text-foreground line-clamp-2 text-sm">
 							{typeof content === 'string'
 								? content
-								: `${content.length} results from Explorer`}
+								: `${[content].length} results from Explorer`}
 						</CardDescription>
 					)}
 					<div className="text-muted-foreground mt-2 text-xs">

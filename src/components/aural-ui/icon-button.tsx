@@ -80,6 +80,7 @@ const IconButtonComp = forwardRef<HTMLButtonElement, IconButtonProps>(
 			icon,
 			label,
 			type = 'button',
+			children,
 			...props
 		},
 		ref
@@ -103,10 +104,12 @@ const IconButtonComp = forwardRef<HTMLButtonElement, IconButtonProps>(
 				aria-label={label}
 				{...props}
 			>
-				<AccessibleIcon label={label}>
-					{/* Clone the icon with the size props if it's an SVG */}
-					{React.isValidElement(icon) &&
-						React.cloneElement(icon, {
+				{React.isValidElement(children) && children}
+				{React.isValidElement(icon) && (
+					<AccessibleIcon label={label}>
+						{/* Clone the icon with the size props if it's an SVG */}
+
+						{React.cloneElement(icon, {
 							width:
 								(icon.props as React.SVGProps<SVGSVGElement>).width || iconSize,
 							height:
@@ -114,7 +117,8 @@ const IconButtonComp = forwardRef<HTMLButtonElement, IconButtonProps>(
 								iconSize,
 							...(icon.props as React.SVGProps<SVGSVGElement>),
 						})}
-				</AccessibleIcon>
+					</AccessibleIcon>
+				)}
 			</button>
 		)
 	}

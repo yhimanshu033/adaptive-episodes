@@ -25,7 +25,7 @@ export default function FixedToolbarComponent({
 	return (
 		<div
 			className={cn(
-				'bg-background sticky top-0 z-40',
+				'bg-fm-surface-primary sticky top-0 z-40',
 				{
 					'-mt-4 pt-4 pb-4': plateFocusMode,
 				},

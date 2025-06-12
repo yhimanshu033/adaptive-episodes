@@ -82,7 +82,13 @@ const NoteContent = ({
 					</Button>
 				</div>
 			</div>
-			<StoryAccordion explorerData={note?.content || ''} />
+			<StoryAccordion
+				explorerData={
+					typeof note?.content === 'object'
+						? [note.content]
+						: (note?.content ?? '')
+				}
+			/>
 			{'edit' in note && (
 				<EditNote editorRef={editorRef} content={note.edit || ''} />
 			)}

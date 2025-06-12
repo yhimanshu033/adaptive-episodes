@@ -100,7 +100,10 @@ type InputProps = {
 	unstyled?: boolean
 	value?: string
 	variant?: InputVariant
-}
+} & Omit<
+	React.InputHTMLAttributes<HTMLInputElement>,
+	'onChange' | 'onBlur' | 'onFocus'
+>
 
 // Sub-components for atomic design pattern
 const InputRoot = forwardRef<
