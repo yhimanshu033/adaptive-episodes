@@ -4,8 +4,6 @@ import {
 	useAddUserFormResolver,
 } from '@/hooks/form-resolvers/add-user-resolver'
 import useProjectAccessMutation from '@/hooks/mutation/use-project-access-mutation'
-import { SearchIcon } from '@/icons/search-icon'
-import SearchMembersForm from '@/page-builders/episodes/shared-access-dialog/search-members-form'
 import { setMemberQuery } from '@/store/admin-store'
 
 import {
@@ -35,19 +33,19 @@ export default function SearchMembers() {
 		<Form {...form}>
 			<form
 				onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
-				className="border-fm-divider-secondary bg-fm-surface-frosted/20 rounded-fm-3xl font-fm-text text-fm-placeholder relative my-6 flex items-center border-1 p-3 text-sm"
+				className="my-6"
+				// className="border-fm-divider-secondary bg-fm-surface-frosted/20 rounded-fm-3xl font-fm-text text-fm-placeholder relative my-6 flex items-center border-1 p-3 text-sm"
 			>
-				<SearchIcon className="mx-2" width={16} height={16} />
 				<FormField
 					control={form.control}
 					name="email"
-					render={({ field }) => (
+					render={() => (
 						<FormItem className="flex-1">
 							<FormControl>
-								<SearchMembersForm
-									selectedValue={field.value}
-									onUserSelect={field.onChange}
-								/>
+								{/*<SearchMembersForm*/}
+								{/*	selectedValue={field.value}*/}
+								{/*	onUserSelect={field.onChange}*/}
+								{/*/>*/}
 							</FormControl>
 						</FormItem>
 					)}

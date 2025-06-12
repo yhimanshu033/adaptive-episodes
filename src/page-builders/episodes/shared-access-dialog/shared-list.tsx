@@ -54,7 +54,7 @@ export default function SharedList() {
 	}
 
 	return (
-		<ScrollArea className="max-h-32 w-full">
+		<ScrollArea className="w-full [&>[data-radix-scroll-area-viewport]]:max-h-44">
 			<IfElse condition={isMembersLoading}>
 				<If>
 					<ShareListSkeletonLoader />
