@@ -2,11 +2,11 @@ import React from 'react'
 import { CrossIcon } from '@/icons/cross-icon'
 import useAIStore from '@/store/ai-store'
 
+import DotLoader from '@/components/aural-ui/dot-loader'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Typography } from '@/components/aural-ui/typography'
-import { Loader } from '@/components/loader'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
 
@@ -58,8 +58,11 @@ const Content = ({
 					</ScrollArea>
 				</If>
 				<Else>
-					<div className="flex h-full w-full items-center justify-center">
-						<Loader />
+					<div className="flex h-full w-full flex-col items-center justify-center gap-4">
+						<DotLoader />
+						<Typography color="tertiary" className="px-5">
+							Just a moment, we&apos;re generating your content
+						</Typography>
 					</div>
 				</Else>
 			</IfElse>

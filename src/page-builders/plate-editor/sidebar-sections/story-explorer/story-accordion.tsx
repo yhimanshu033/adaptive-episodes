@@ -8,13 +8,13 @@ import { nanoid } from 'nanoid'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
+import CircularLoader from '@/components/aural-ui/circular-loader'
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleHeader,
 } from '@/components/aural-ui/collapsible'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
-import { IconLoader } from '@/components/loader'
 import { cn } from '@/lib/aural-ui/utils'
 import { formatExplorerData, preProcessData } from '@/lib/utils/explorer'
 import { toPascalCase } from '@/lib/utils/helpers'
@@ -65,7 +65,7 @@ export function ContentActions({
 	const { icon: savedIcon, text: savedText } = useMemo(() => {
 		if (isPending) {
 			return {
-				icon: <IconLoader />,
+				icon: <CircularLoader />,
 				text: 'Saving...',
 			}
 		}
@@ -80,9 +80,8 @@ export function ContentActions({
 			text: 'Save to Notes',
 		}
 	}, [isPending, isSuccess])
-
 	return (
-		<div className="mt-6 hidden w-full items-center justify-end gap-4 opacity-0 transition group-hover:flex group-hover:opacity-100">
+		<div className="mt-6 flex max-h-0 w-full justify-end gap-4 overflow-hidden opacity-0 transition-all duration-300 ease-in-out group-hover:max-h-20 group-hover:opacity-100">
 			<Button
 				variant="text"
 				onClick={handleCopy}

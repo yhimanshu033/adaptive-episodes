@@ -26,8 +26,8 @@ export function ExplorerSettings() {
 				<IconButton
 					label="Trigger filter dropdown"
 					variant="outlined"
-					className="shrink-0"
-					icon={<FilterBarRowIcon className="size-4.5" />}
+					className="bg-fm-hotpink-50 border-fm-hotpink-200 hover:border-fm-hotpink-300 shrink-0"
+					icon={<FilterBarRowIcon className="text-fm-hotpink-400 size-4.5" />}
 				/>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-fit">

@@ -382,6 +382,7 @@
 	--animate-fm-slideOutRight: slideOutRight 0.5s ease 0s 1 normal both;
 	--animate-fm-slideInUp: slideInUp 0.5s ease 0s 1 normal both;
 	--animate-fm-slideOutUp: slideOutUp 0.5s ease 0s 1 normal both;
+	--animate-fm-shadowPulse: shadowPulse 1s linear infinite;
 }
 
 :root {
@@ -1041,5 +1042,26 @@
 @media (prefers-reduced-motion: reduce) {
 	.popover-content {
 		animation-duration: 0ms;
+	}
+}
+
+@keyframes shadowPulse {
+	33% {
+		background: var(--dot-color, --color-fm-secondary-800);
+		box-shadow:
+			-24px 0 var(--active-dot-color, --color-fm-secondary-500),
+			24px 0 var(--dot-color, --color-fm-secondary-800);
+	}
+	66% {
+		background: var(--active-dot-color, --color-fm-secondary-500);
+		box-shadow:
+			-24px 0 var(--dot-color, --color-fm-secondary-800),
+			24px 0 var(--dot-color, --color-fm-secondary-800);
+	}
+	100% {
+		background: var(--dot-color, --color-fm-secondary-800);
+		box-shadow:
+			-24px 0 var(--dot-color, --color-fm-secondary-800),
+			24px 0 var(--active-dot-color, --color-fm-secondary-500);
 	}
 }
