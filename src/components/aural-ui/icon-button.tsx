@@ -4,10 +4,12 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/aural-ui/utils'
 
+import { withTooltip } from './tooltip'
+
 // Define variants with class-variance-authority
 const iconButtonVariants = cva(
 	// Base styles for all icon buttons
-	'inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-fm-primary focus-visible:ring-offset-fm-neutral-0',
+	'inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-fm-primary focus-visible:ring-offset-fm-neutral-0 text-fm-icon-active disabled:text-fm-icon-inactive',
 	{
 		variants: {
 			variant: {
@@ -59,16 +61,17 @@ export const getIconSize = (size: 'xSmall' | 'small' | 'large' | 'medium') => {
 	}
 }
 
-export interface IconButtonProps
+interface IconButtonProps
 	extends React.ButtonHTMLAttributes<HTMLButtonElement>,
 		Omit<VariantProps<typeof iconButtonVariants>, 'disabled'> {
 	// Accessible label for the button
 	className?: string
 	icon: React.ReactNode | SVGSVGElement
 	label: string
+	tooltip?: React.ReactNode
 }
 
-const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+const IconButtonComp = forwardRef<HTMLButtonElement, IconButtonProps>(
 	(
 		{
 			className,
@@ -95,8 +98,8 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
 						size,
 						shape,
 						disabled,
-						className,
-					})
+					}),
+					className
 				)}
 				ref={ref}
 				aria-label={label}
@@ -111,11 +114,6 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
 							height:
 								(icon.props as React.SVGProps<SVGSVGElement>).height ||
 								iconSize,
-							className: cn(
-								'text-fm-icon-active',
-								disabled && 'text-fm-icon-inactive',
-								(icon.props as React.SVGProps<SVGSVGElement>).className
-							),
 							...(icon.props as React.SVGProps<SVGSVGElement>),
 						})}
 				</AccessibleIcon>
@@ -124,6 +122,9 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
 	}
 )
 
-IconButton.displayName = 'IconButton'
+const IconButton = withTooltip(IconButtonComp)
+
+IconButtonComp.displayName = 'IconButton'
 
 export { IconButton, iconButtonVariants }
+export type { IconButtonProps }

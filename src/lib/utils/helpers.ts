@@ -532,7 +532,9 @@ export function pretifyVoiceXMLData(data: string) {
 			cleanedData = cleanedData.replace(statusMatches[i][0], '')
 		}
 	}
-	cleanedData = cleanedData.replace(/<\/?[^>]+\/?>/g, '\n').trim()
+	cleanedData = cleanedData
+		.replace(/<\/?(?:status|section-)[^>]*\/?>/g, '\n')
+		.trim()
 
 	return cleanedData
 }
@@ -722,8 +724,8 @@ export function isUpperCase(str: string): boolean {
 	return str === str.toUpperCase()
 }
 
-export function getSourceLanguage(selectedRowData: TEpisode[]) {
-	const sourceLang = selectedRowData?.[0]?.language || ELanguage.ENGLISH_US
+export function getSourceLanguage(language?: ELanguage) {
+	const sourceLang = language || ELanguage.ENGLISH_US
 
 	if (sourceLang === ELanguage.ENGLISH) {
 		return ELanguage.ENGLISH_US
@@ -763,4 +765,14 @@ export function extractWords(
 
 export function isArrayEqual(arr1: number[], arr2: number[]) {
 	return arr1.every((v, i) => v === arr2[i])
+}
+
+export const formatFileSize = (bytes: number): string => {
+	if (bytes < 1024) {
+		return `${bytes} B`
+	} else if (bytes < 1024 * 1024) {
+		return `${(bytes / 1024).toFixed(2)} KB`
+	} else {
+		return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+	}
 }

@@ -28,7 +28,7 @@ function PopoverContent({
 				align={align}
 				sideOffset={sideOffset}
 				className={cn(
-					'bg-fm-surface-frosted/20 popover-content relative z-50 max-h-96 w-72 origin-(--radix-popover-content-transform-origin) shadow-lg outline-hidden backdrop-blur-lg',
+					'bg-fm-surface-frosted/20 popover-content relative z-50 max-h-96 w-72 origin-(--radix-popover-content-transform-origin) outline-hidden backdrop-blur-lg',
 					className
 				)}
 				{...props}

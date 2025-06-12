@@ -1,6 +1,6 @@
 import React from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useIsGerman from '@/hooks/use-is-german'
+import useAccessChecks from '@/hooks/use-access-checks'
 import useLanguage from '@/hooks/use-language'
 import useEpisodeIdStore from '@/store/episode-id-store'
 
@@ -12,9 +12,9 @@ const Languages = () => {
 	const { setSelectedLanguage } = useEpisodeIdStore()
 	const selectedLanguage = useLanguage()
 
-	const isGerman = useIsGerman()
+	const { isGerman, isOriginal } = useAccessChecks()
 
-	if (isGerman) {
+	if (isGerman || isOriginal) {
 		return null
 	}
 
@@ -25,6 +25,21 @@ const Languages = () => {
 			value={selectedLanguage}
 			disabledLanguages={disabledLanguages}
 			className="w-28"
+			classes={{
+				trigger: {
+					root: 'border-fm-divider-secondary font-fm-brand h-auto rounded-full [&_>span]:text-left',
+					icon: 'size-4',
+				},
+				content: {
+					scrollButton: {
+						icon: 'size-4',
+					},
+				},
+				item: {
+					root: '[font-size:var(--text-fm-sm)]',
+					icon: 'size-4',
+				},
+			}}
 		/>
 	)
 }

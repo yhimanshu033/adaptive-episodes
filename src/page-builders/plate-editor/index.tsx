@@ -22,7 +22,7 @@ const EpisodePlateEditor = () => {
 	return (
 		<main className="flex flex-1 flex-col">
 			<DndProvider backend={HTML5Backend}>
-				<div className="flex">
+				<div className="max-auto container flex px-6">
 					<If condition={!globalLocalize}>
 						<EpisodeNavigation />
 					</If>

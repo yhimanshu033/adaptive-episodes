@@ -72,7 +72,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 					transitionDuration: `${isTransitioning ? TRANSITION_DURATION : 0}ms`,
 				}}
 				className={cn(
-					'first-line relative flex w-full max-w-full flex-col border transition-all',
+					'first-line border-fm-divider-tertiary relative flex w-full max-w-full flex-col border transition-all',
 					!showDualView && 'max-w-0'
 				)}
 			>

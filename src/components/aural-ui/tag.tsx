@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import React, { forwardRef } from 'react'
-import { FeatureShineIcon } from '@/icons/feature-shine-icon'
 import { cva } from 'class-variance-authority'
 
-import { cn } from '@/lib/aural-ui/utils'
+import { FeatureShineIcon } from '../../icons/feature-shine-icon'
+import { cn } from '../../lib/aural-ui/utils'
 
 // Define the props interface for the Tag component
 interface TagProps {
@@ -320,4 +320,5 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(
 		)
 	}
 )
+
 Tag.displayName = 'Tag'

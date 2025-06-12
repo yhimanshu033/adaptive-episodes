@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import useIsGerman from '@/hooks/use-is-german'
+import useAccessChecks from '@/hooks/use-access-checks'
 import { Settings } from 'lucide-react'
 
 import { TooltipComponent } from '@/components/ui/tooltip-component'
@@ -10,7 +10,7 @@ import { buttonVariants, cn } from '@/lib/utils/helpers'
 
 const AdminManageProject = () => {
 	const { id } = useParams()
-	const isGerman = useIsGerman()
+	const { isGerman } = useAccessChecks()
 	const { isAdmin } = useProjectId()
 
 	if (!isGerman || !isAdmin) {

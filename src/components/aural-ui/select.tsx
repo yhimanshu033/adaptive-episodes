@@ -1,12 +1,11 @@
 import * as React from 'react'
 import { ChevronDownIcon } from '@/icons/chevron-down-icon'
-import { ChevronUpIcon } from '@/icons/chevron-up-icon'
+import ChevronUpIcon from '@/icons/chevron-up-icon'
 import { TickIcon } from '@/icons/tick-icon'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { cva } from 'class-variance-authority'
 
-import { cn } from '@/lib/aural-ui/utils'
-
+import { cn } from '../../lib/aural-ui/utils'
 import { Divider } from './divider'
 import HelperText from './helper-text'
 import Label from './label'
@@ -14,7 +13,7 @@ import Label from './label'
 // CVA for select variants matching input component
 export const selectVariants = cva(
 	// Base styles
-	'flex w-full items-center justify-between focus:outline-none transition-all duration-200 border-solid tracking-wide font-fm-text text-fm-primary [&>span]:line-clamp-1 data-[placeholder]:text-fm-placeholder',
+	'flex w-full items-center justify-between focus:outline-none transition-all duration-200 border-solid tracking-wide font-fm-text text-fm-primary [&>span]:line-clamp-1 data-[placeholder]:text-fm-placeholder gap-2',
 	{
 		variants: {
 			variant: {

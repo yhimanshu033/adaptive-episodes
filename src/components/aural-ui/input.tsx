@@ -225,7 +225,7 @@ const InputBase = forwardRef<
 		onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
 		placeholder?: string
 		required?: boolean
-		startIcon?: boolean // Indicates if start icon spacing should be applied
+		startIcon?: boolean
 		type?: string
 		unstyled?: boolean
 		value?: string
@@ -361,10 +361,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
 		// Handle input change
 		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-			// Only update internal state if component is uncontrolled (no value prop)
-			if (value === undefined) {
-				setInputValue(e.target.value)
-			}
+			setInputValue(e.target.value)
 			if (onChange) {
 				onChange(e)
 			}
@@ -377,10 +374,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
 		// Determine input type for password fields
 		const inputType = type === 'password' && isPasswordVisible ? 'text' : type
-
-		// Determine which value to use for character count
-		const currentValue = value !== undefined ? value : inputValue
-		const currentLength = currentValue?.length || 0
 
 		return (
 			<InputRoot fullWidth={fullWidth} className={cn(className, classes.root)}>
@@ -398,7 +391,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 					</If>
 					<If condition={!!maxLength}>
 						<CharCount
-							currentLength={currentLength}
+							currentLength={value?.length || inputValue.length || 0}
 							maxLength={maxLength || 0}
 							className={cn(classes.characterCounter)}
 						/>

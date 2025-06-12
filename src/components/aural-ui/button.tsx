@@ -1,32 +1,35 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import React, { ButtonHTMLAttributes, forwardRef } from 'react'
-import { FeatureShineIcon } from '@/icons/feature-shine-icon'
 import { cva } from 'class-variance-authority'
 
-import { cn } from '@/lib/aural-ui/utils'
+import { FeatureShineIcon } from '../../icons/feature-shine-icon'
+import { cn } from '../../lib/aural-ui/utils'
+import { withTooltip } from './tooltip'
 
-import { If } from './if-else'
-
-export const buttonVariants = cva('group relative font-fm-brand', {
-	variants: {
-		variant: {
-			primary:
-				'before:absolute before:inset-0 before:rounded-full before:border-[length:var(--stroke-fm-xsm)] before:border-transparent before:[background-image:var(--button-fm-background),linear-gradient(to_top,color-mix(in_srgb,var(--color-fm-primary-600)_50%,_transparent))] text-fm-neutral-1100',
-			secondary:
-				'before:absolute before:inset-0 rounded-full before:border-[length:var(--stroke-fm-xsm)] before:border-transparent bg-fm-surface-secondary text-fm-primary',
-			outline: 'text-fm-primary',
-			text: 'bg-transparent text-fm-secondary-800',
-			default: '',
+export const buttonVariants = cva(
+	'group relative font-fm-brand focus-visible:ring-fm-primary focus-visible:ring-offset-fm-contrast outline-none focus-visible:ring-2 focus-visible:ring-offset-6',
+	{
+		variants: {
+			variant: {
+				primary:
+					'before:absolute before:inset-0 before:rounded-full before:border-[length:var(--stroke-fm-xsm)] before:border-transparent before:[background-image:var(--button-fm-background),linear-gradient(to_top,color-mix(in_srgb,var(--color-fm-primary-600)_50%,_transparent))] text-fm-neutral-1100',
+				secondary:
+					'before:absolute before:inset-0 rounded-full before:border-[length:var(--stroke-fm-xsm)] before:border-transparent bg-fm-surface-secondary text-fm-primary',
+				outline: 'text-fm-primary',
+				text: 'bg-transparent text-fm-secondary-800',
+				default: '',
+			},
+			disabled: {
+				true: 'cursor-not-allowed',
+				false: 'cursor-pointer',
+			},
 		},
-		disabled: {
-			true: 'cursor-not-allowed',
-			false: 'cursor-pointer',
+		defaultVariants: {
+			variant: 'primary',
+			disabled: false,
 		},
-	},
-	defaultVariants: {
-		variant: 'primary',
-		disabled: false,
-	},
-})
+	}
+)
 
 export const innerButtonVariants = cva(
 	'flex items-center justify-center gap-2 rounded-full border-[length:var(--stroke-fm-xsm)] border-transparent transition-[_translate,_--gradientSizeX,_--gradientSizeY,_--gradientPositionY]',
@@ -34,7 +37,7 @@ export const innerButtonVariants = cva(
 		variants: {
 			variant: {
 				primary:
-					'shadow-[0_0_1.5rem_var(--color-fm-primary-400)_inset] group-active:translate-y-0 [--gradientSizeX:50%] [--gradientSizeY:150%] [--gradientPositionY:100%] hover:[--gradientSizeX:40%] hover:[--gradientSizeY:110%] hover:[--gradientPositionY:50%] [background-image:var(--button-fm-noise),_radial-gradient(ellipse_var(--gradientSizeX)_var(--gradientSizeY)_at_50%_var(--gradientPositionY),_var(--color-fm-primary-600),_var(--color-fm-secondary-300)),_linear-gradient(_to_top,_color-mix(in_srgb,var(--color-fm-primary-600)_50%,_transparent),_color-mix(in_srgb,var(--color-fm-primary-200)_50%,_transparent))] bg-cover bg-center [background-blend-mode:color-dodge,multiply,darken] duration-300 bg-repeat-x bg-auto bg-center bg-origin-border',
+					'shadow-[0_0_1.5rem_var(--color-fm-primary-400)_inset] group-active:translate-y-0 [--gradientSizeX:50%] [--gradientSizeY:150%] [--gradientPositionY:100%] group-hover:[--gradientSizeX:40%] group-hover:[--gradientSizeY:110%] group-hover:[--gradientPositionY:50%] [background-image:var(--button-fm-noise),_radial-gradient(ellipse_var(--gradientSizeX)_var(--gradientSizeY)_at_50%_var(--gradientPositionY),_var(--color-fm-primary-600),_var(--color-fm-secondary-300)),_linear-gradient(_to_top,_color-mix(in_srgb,var(--color-fm-primary-600)_50%,_transparent),_color-mix(in_srgb,var(--color-fm-primary-200)_50%,_transparent))] bg-cover bg-center [background-blend-mode:color-dodge,multiply,darken] duration-300 bg-repeat-x bg-auto bg-center bg-origin-border',
 				secondary:
 					'group-active:translate-y-0 bg-fm-button-fill-secondary [background-image:var(--button-fm-noise)] bg-repeat-x bg-auto bg-center bg-origin-border',
 				outline:
@@ -68,14 +71,16 @@ export const innerButtonVariants = cva(
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	children: React.ReactNode
 	className?: string
-	icon?: 'left' | 'right' | 'both'
+	iconProps?: React.SVGProps<SVGSVGElement>
 	innerClassName?: string
 	isDisabled?: boolean
+	leftIcon?: React.ReactNode | boolean
+	rightIcon?: React.ReactNode | boolean
 	size?: 'sm' | 'md' | 'lg'
 	variant?: 'primary' | 'secondary' | 'outline' | 'text'
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+export const RawButton = forwardRef<HTMLButtonElement, ButtonProps>(
 	(
 		{
 			variant = 'primary',
@@ -84,7 +89,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			className = '',
 			innerClassName = '',
 			isDisabled = false,
-			icon,
+			leftIcon,
+			rightIcon,
+			iconProps = {},
 			...props
 		},
 		ref
@@ -94,6 +101,32 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			: variant === 'text'
 				? 'var(--color-fm-secondary-800)'
 				: 'var(--color-fm-primary)'
+
+		const renderIcon = (icon: React.ReactNode | boolean) => {
+			if (!icon) {
+				return null
+			}
+
+			if (React.isValidElement(icon)) {
+				return React.cloneElement(icon, {
+					color: iconColor,
+					className: cn(
+						'h-4 w-4',
+						(icon.props as React.SVGProps<SVGSVGElement>).className
+					),
+					...iconProps,
+				})
+			}
+
+			return (
+				<FeatureShineIcon
+					height={12}
+					width={12}
+					color={iconColor}
+					{...iconProps}
+				/>
+			)
+		}
 
 		return (
 			<button
@@ -118,16 +151,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 						innerClassName
 					)}
 				>
-					<If condition={icon === 'left' || icon === 'both'}>
-						<FeatureShineIcon color={iconColor} />
-					</If>
+					{renderIcon(leftIcon)}
 					{children}
-					<If condition={icon === 'right' || icon === 'both'}>
-						<FeatureShineIcon color={iconColor} />
-					</If>
+					{renderIcon(rightIcon)}
 				</span>
 			</button>
 		)
 	}
 )
-Button.displayName = 'Button'
+
+RawButton.displayName = 'RawButton'
+
+export const Button = withTooltip(RawButton)

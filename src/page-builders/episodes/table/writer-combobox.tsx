@@ -3,7 +3,7 @@
 import * as React from 'react'
 import useWriterUpdateMutation from '@/hooks/mutation/use-writer-update-mutation'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
-import useIsGerman from '@/hooks/use-is-german'
+import useAccessChecks from '@/hooks/use-access-checks'
 import { TickIcon } from '@/icons/tick-icon'
 import { useTranslations } from 'next-intl'
 
@@ -29,15 +29,17 @@ import { cn } from '@/lib/utils/helpers'
 const WriterCombobox = ({
 	chapterId,
 	className,
+	// iconClass,
 	selectedMemberId,
 }: {
 	chapterId?: string
 	className?: string
+	iconClass?: string
 	selectedMemberId?: string
 }) => {
 	const [value, setValue] = React.useState<string>(selectedMemberId || '')
 	const { mutate } = useWriterUpdateMutation(chapterId || '')
-	const isGerman = useIsGerman()
+	const { isGerman, isOriginal } = useAccessChecks()
 
 	const { isWriter } = useProjectId()
 
@@ -49,7 +51,7 @@ const WriterCombobox = ({
 	)
 	const dict = useTranslations('common')
 
-	if (!isGerman) {
+	if (!(isGerman || isOriginal)) {
 		return null
 	}
 

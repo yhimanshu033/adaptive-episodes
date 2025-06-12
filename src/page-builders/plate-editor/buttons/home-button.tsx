@@ -4,7 +4,7 @@ import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useExtendedSaving from '@/hooks/use-extended-saving'
 import { Home } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/aural-ui/icon-button'
 
 export default function HomeButton() {
 	const { id } = useParams()
@@ -18,13 +18,13 @@ export default function HomeButton() {
 	}
 
 	return (
-		<Button
-			size="icon"
-			variant="outline"
-			className="rounded-full"
+		<IconButton
+			icon={<Home />}
+			label="Go to Home"
+			variant="outlined"
+			size="small"
 			onClick={() => void handleClick()}
-		>
-			<Home />
-		</Button>
+			className="bg-black"
+		/>
 	)
 }

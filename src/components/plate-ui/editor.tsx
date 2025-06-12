@@ -66,7 +66,7 @@ const editorVariants = cva(
 			},
 			variant: {
 				ghost: '',
-				outline: 'border border-input',
+				outline: 'border border-fm-divider-tertiary',
 			},
 		},
 	}
@@ -331,7 +331,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 										isEmpty && !focusMode,
 									'counter-parent first-of-type:*:pt-[var(--editor-break-padding) bg-background-editor':
 										focusMode,
-									'border-x border-b bg-neutral-900 py-16 pb-6 *:px-32':
+									'border-fm-divider-tertiary border-x border-b bg-neutral-900 py-16 pb-6 *:px-32':
 										!focusMode,
 								},
 								className

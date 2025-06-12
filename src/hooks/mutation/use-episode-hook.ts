@@ -23,12 +23,15 @@ import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
 import { TEpisodeMergeParams } from '@/types/episode-type'
 
+import useAccessChecks from '../use-access-checks'
+
 const useEpisodeHook = () => {
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
 	const { startTask, getResponse } = useSocket()
 	const [updatedStatus, setUpdatedStatus] = useState<boolean>(false)
 	const queryClient = useQueryClient()
+	const { isGerman, isOriginal } = useAccessChecks()
 
 	const onSuccess = async () => {
 		await queryClient.invalidateQueries({
@@ -128,7 +131,7 @@ const useEpisodeHook = () => {
 		})
 	}
 
-	const onStatusUpdate = ({
+	const onStatusUpdate = async ({
 		parent_id,
 		status,
 		language,
@@ -137,6 +140,9 @@ const useEpisodeHook = () => {
 		parent_id: number
 		status: string
 	}) => {
+		if (!(isGerman || isOriginal)) {
+			return
+		}
 		return updateStatus(Number(id), parent_id, status, language)
 	}
 

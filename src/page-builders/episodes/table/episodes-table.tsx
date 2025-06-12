@@ -8,6 +8,7 @@ import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { UploadIcon } from '@/icons/upload-icon'
+import AdaptationContainer from '@/page-builders/episodes/adaptation-container'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
 import InventForm from '@/page-builders/episodes/dialogs/invent-form'
 import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
@@ -89,6 +90,14 @@ const EpisodesTable = () => {
 			setSearchedRow(null)
 		}
 	}, [searchedRow, isEpisodesLoading])
+
+	if (
+		initialStoryData?.is_original &&
+		!isEpisodesLoading &&
+		!tableData.length
+	) {
+		return <AdaptationContainer />
+	}
 
 	return (
 		<>

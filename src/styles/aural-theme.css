@@ -386,23 +386,12 @@
 
 :root {
 	/* BUTTON STYLES */
-	--button-fm-foreground: radial-gradient(
-		148.94deg,
-		var(--color-fm-primary-600) 0%,
-		var(--color-fm-secondary-300) 100%
-	);
 
 	--button-fm-background: linear-gradient(
 		to right,
 		var(--color-fm-secondary-400),
 		var(--color-fm-primary-300),
 		var(--color-fm-secondary-400)
-	);
-
-	--gradient-fm-pressed: radial-gradient(
-		144.33deg,
-		var(--color-fm-primary-600) 0%,
-		var(--color-fm-secondary-300) 100%
 	);
 
 	--gradient-fm-stroke: linear-gradient(

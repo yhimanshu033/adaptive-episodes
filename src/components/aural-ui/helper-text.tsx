@@ -27,11 +27,7 @@ const HelperText = forwardRef<HTMLSpanElement, HelperTextProps>(
 						className={cn('w-full justify-normal normal-case', className)}
 						ref={ref}
 						variant="system"
-						leftIcon={
-							<span className="inline-block w-4">
-								<CrossCircleIcon color="var(--color-fm-icon-negative)" />
-							</span>
-						}
+						leftIcon={<CrossCircleIcon color="var(--color-fm-icon-negative)" />}
 						size="sm"
 						color="negative"
 						id={id}
@@ -44,11 +40,7 @@ const HelperText = forwardRef<HTMLSpanElement, HelperTextProps>(
 						className={cn('w-full justify-normal normal-case', className)}
 						ref={ref}
 						variant="system"
-						leftIcon={
-							<span className="inline-block w-4">
-								<AlertIcon color="var(--color-fm-icon-contrast)" />
-							</span>
-						}
+						leftIcon={<AlertIcon color="var(--color-fm-icon-warning)" />}
 						size="sm"
 						color="warning"
 						id={id}
@@ -61,11 +53,7 @@ const HelperText = forwardRef<HTMLSpanElement, HelperTextProps>(
 						className={cn('w-full justify-normal normal-case', className)}
 						ref={ref}
 						variant="system"
-						leftIcon={
-							<span className="inline-block w-4">
-								<TickCircleIcon color="var(--color-fm-icon-positive)" />
-							</span>
-						}
+						leftIcon={<TickCircleIcon color="var(--color-fm-icon-positive)" />}
 						size="sm"
 						color="positive"
 						id={id}

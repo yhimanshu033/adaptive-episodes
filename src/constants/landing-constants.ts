@@ -1,5 +1,7 @@
 //Assets Path
 export const LANDING_BACKGROUND_URL = '/assets/landing-page/bg-landing.webp'
+export const LANDING_BACKGROUND_URL_MOBILE =
+	'/assets/landing-page/bg-landing-mobile.webp'
 export const HIGHLIGHT_1_URL = '/assets/landing-page/highlight-1.webp'
 export const HIGHLIGHT_2_URL = '/assets/landing-page/highlight-2.webp'
 export const HIGHLIGHT_3_URL = '/assets/landing-page/highlight-3.webp'
@@ -43,18 +45,18 @@ export const highlightedFeatures = [
 
 export const seriesData = [
 	{
-		title: 'Aaj Ka Hero',
-		plays: '16M',
+		title: 'My Vampire System',
+		plays: '9.1M',
 		image: SERIES_1_URL,
 	},
 	{
-		title: 'Banda Ye Badass Hai',
-		plays: '126M',
+		title: 'Saving Nora',
+		plays: '7.7M',
 		image: SERIES_2_URL,
 	},
 	{
-		title: 'Super Yoodha',
-		plays: '231M',
+		title: "The Billionaire's Accidental Bride",
+		plays: '8.1M',
 		image: SERIES_3_URL,
 	},
 ]
