@@ -100,7 +100,7 @@ const CollapsibleHeader = forwardRef<HTMLDivElement, CollapsibleHeaderProps>(
 						<CollapsibleTitle className="collapsible-title">
 							{title}
 						</CollapsibleTitle>
-						<AngleDownIcon className="toggle-icon size-8" />
+						<AngleDownIcon className="toggle-icon" height={32} width={32} />
 					</button>
 				</CollapsibleTrigger>
 			</div>
