@@ -82,13 +82,16 @@ type InputProps = {
 		wrapper?: string
 	}
 	decoration?: InputDecoration
+	defaultValue?: string | number
 	disabled?: boolean
 	endIcon?: ReactNode
 	fullWidth?: boolean
 	helperText?: ReactNode
 	id?: string
 	label?: ReactNode
+	max?: number
 	maxLength?: number
+	min?: number
 	name?: string
 	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
 	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -98,12 +101,9 @@ type InputProps = {
 	startIcon?: ReactNode
 	type?: string
 	unstyled?: boolean
-	value?: string
+	value?: string | number
 	variant?: InputVariant
-} & Omit<
-	React.InputHTMLAttributes<HTMLInputElement>,
-	'onChange' | 'onBlur' | 'onFocus'
->
+}
 
 // Sub-components for atomic design pattern
 const InputRoot = forwardRef<
@@ -216,6 +216,7 @@ const InputBase = forwardRef<
 	{
 		className?: string
 		decoration?: InputDecoration
+		defaultValue?: string | number
 		disabled?: boolean
 		// Indicates if start icon spacing should be applied
 		endIcon?: boolean
@@ -230,11 +231,11 @@ const InputBase = forwardRef<
 		startIcon?: boolean
 		type?: string
 		unstyled?: boolean
-		value?: string
+		value?: string | number
 		variant?: InputVariant // Indicates if end icon spacing should be applied
 	} & Omit<
 		React.InputHTMLAttributes<HTMLInputElement>,
-		'onChange' | 'onBlur' | 'onFocus'
+		'onChange' | 'onBlur' | 'onFocus' | 'defaultValue'
 	>
 >(
 	(
@@ -247,6 +248,7 @@ const InputBase = forwardRef<
 			type = 'text',
 			placeholder = '',
 			value,
+			defaultValue,
 			onChange,
 			onBlur,
 			onFocus,
@@ -314,6 +316,7 @@ const InputBase = forwardRef<
 				placeholder={placeholder}
 				disabled={disabled}
 				value={value}
+				defaultValue={defaultValue}
 				onChange={handleChange}
 				onFocus={handleFocus}
 				onBlur={handleBlur}
@@ -340,6 +343,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 			fullWidth = false,
 			className = '',
 			value,
+			defaultValue,
 			onChange,
 			onBlur,
 			onFocus,
@@ -355,12 +359,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 		},
 		ref
 	) => {
-		const [inputValue, setInputValue] = useState(value || '')
+		const [inputValue, setInputValue] = useState(value || defaultValue || '')
 		const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
 		// Handle input change
 		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-			setInputValue(e.target.value)
+			// Only update internal state if component is uncontrolled (no value prop)
+			if (value === undefined) {
+				setInputValue(e.target.value)
+			}
 			if (onChange) {
 				onChange(e)
 			}
@@ -373,6 +380,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
 		// Determine input type for password fields
 		const inputType = type === 'password' && isPasswordVisible ? 'text' : type
+
+		// Determine which value to use for character count
+		const currentValue = value !== undefined ? value : inputValue
+		const currentLength = String(currentValue).length || 0
 
 		return (
 			<InputRoot fullWidth={fullWidth} className={cn(className, classes.root)}>
@@ -390,7 +401,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 					</If>
 					<If condition={!!maxLength}>
 						<CharCount
-							currentLength={value?.length || inputValue.length || 0}
+							currentLength={currentLength}
 							maxLength={maxLength || 0}
 							className={cn(classes.characterCounter)}
 						/>
@@ -415,6 +426,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 						disabled={disabled}
 						placeholder={placeholder}
 						value={value !== undefined ? value : inputValue}
+						defaultValue={value === undefined ? defaultValue : undefined}
 						onChange={handleChange}
 						onFocus={onFocus}
 						onBlur={onBlur}

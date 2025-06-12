@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import useNotes from '@/hooks/use-notes'
+import { AngleDownIcon } from '@/icons/angle-down-icon'
 import { CopyIcon } from '@/icons/copy-icon'
 import NotepadIcon from '@/icons/notepad-icon'
 import useAIStore from '@/store/ai-store'
@@ -12,7 +13,8 @@ import CircularLoader from '@/components/aural-ui/circular-loader'
 import {
 	Collapsible,
 	CollapsibleContent,
-	CollapsibleHeader,
+	CollapsibleTitle,
+	CollapsibleTrigger,
 } from '@/components/aural-ui/collapsible'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
@@ -234,12 +236,15 @@ export function StoryAccordion({
 
 				return (
 					<Collapsible key={`${title}-${index}`}>
-						<CollapsibleHeader
-							title={title}
-							innerClassName="text-fm-md"
-							iconClassName="size-3.5"
-						/>
-						<CollapsibleContent className="text-fm-md group !text-fm-tertiary">
+						<CollapsibleTrigger asChild>
+							<button className="text-fm-icon-active flex w-full flex-1 cursor-pointer items-center justify-between text-left outline-none [&>.toggle-icon]:transition-transform [&>.toggle-icon]:duration-50 data-[state=open]:[&>.toggle-icon]:-rotate-180">
+								<CollapsibleTitle className="text-fm-md">
+									{title}
+								</CollapsibleTitle>
+								<AngleDownIcon className="toggle-icon text-fm-icon-inactive size-3.5" />
+							</button>
+						</CollapsibleTrigger>
+						<CollapsibleContent className="text-fm-md group !text-fm-tertiary pr-2">
 							<RenderContent
 								content={data.content}
 								preContent={data.preContent}

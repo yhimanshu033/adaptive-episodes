@@ -180,20 +180,23 @@ export function ImportStory() {
 		) {
 			data.input_language = ELanguage.ENGLISH_US
 		}
-		storyUploadMutation.mutate(data, {
-			onSuccess: async (taskId) => {
-				form.reset()
-				setImageSrc(null)
-				setFormOpen(false)
-				toast.info('Story import started')
-				const data: FetchResponseResult = await getResponse(taskId)
-				if (data?.success === false) {
-					toast.error('Story upload failed, please retry!', {
-						description: 'There might be an issue with the format.',
-					})
-				}
-			},
-		})
+		const proceed = nextStep()
+		if (proceed) {
+			storyUploadMutation.mutate(data, {
+				onSuccess: async (taskId) => {
+					form.reset()
+					setImageSrc(null)
+					setFormOpen(false)
+					toast.info('Story import started')
+					const data: FetchResponseResult = await getResponse(taskId)
+					if (data?.success === false) {
+						toast.error('Story upload failed, please retry!', {
+							description: 'There might be an issue with the format.',
+						})
+					}
+				},
+			})
+		}
 	}
 
 	return (

@@ -83,14 +83,12 @@ const CollapsibleTrigger = forwardRef<
 CollapsibleTrigger.displayName = 'CollapsibleTrigger'
 
 type CollapsibleHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
-	iconClassName?: string
-	innerClassName?: string
 	title: React.ReactNode
 }
 
 const CollapsibleHeader = forwardRef<HTMLDivElement, CollapsibleHeaderProps>(
 	(props, ref) => {
-		const { className, innerClassName, iconClassName, title, ...rest } = props
+		const { className, title, ...rest } = props
 		return (
 			<div
 				ref={ref}
@@ -99,14 +97,10 @@ const CollapsibleHeader = forwardRef<HTMLDivElement, CollapsibleHeaderProps>(
 			>
 				<CollapsibleTrigger asChild>
 					<button className="text-fm-icon-active disabled:text-fm-icon-inactive focus-visible:ring-fm-primary focus-visible:ring-offset-fm-contrast disabled:[&>.collapsible-title]:text-fm-inactive flex flex-1 cursor-pointer items-center justify-between text-left outline-none focus-visible:ring-2 focus-visible:ring-offset-2 [&>.toggle-icon]:transition-transform [&>.toggle-icon]:duration-50 data-[state=open]:[&>.toggle-icon]:-rotate-180">
-						<CollapsibleTitle
-							className={cn('collapsible-title', innerClassName)}
-						>
+						<CollapsibleTitle className="collapsible-title">
 							{title}
 						</CollapsibleTitle>
-						<AngleDownIcon
-							className={cn('toggle-icon size-8', iconClassName)}
-						/>
+						<AngleDownIcon className="toggle-icon size-8" />
 					</button>
 				</CollapsibleTrigger>
 			</div>
