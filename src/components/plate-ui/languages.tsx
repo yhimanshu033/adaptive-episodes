@@ -1,6 +1,6 @@
 import React from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useIsGerman from '@/hooks/use-is-german'
+import useAccessChecks from '@/hooks/use-access-checks'
 import useLanguage from '@/hooks/use-language'
 import useEpisodeIdStore from '@/store/episode-id-store'
 
@@ -12,9 +12,9 @@ const Languages = () => {
 	const { setSelectedLanguage } = useEpisodeIdStore()
 	const selectedLanguage = useLanguage()
 
-	const isGerman = useIsGerman()
+	const { isGerman, isOriginal } = useAccessChecks()
 
-	if (isGerman) {
+	if (isGerman || isOriginal) {
 		return null
 	}
 

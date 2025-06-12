@@ -1,4 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react'
+import { EXCLUDED_HEADERS_LS_SHEET } from '@/constants/episodes-constants'
 import LSEditorRow from '@/page-builders/episodes/dialogs/ls-editor-row'
 import { Download, Plus, Upload } from 'lucide-react'
 import { toast } from 'sonner'
@@ -181,7 +182,10 @@ const LSTableEditor = memo(
 					<Table>
 						<TableHeader className="bg-background sticky top-0 z-10">
 							<TableRow>
-								<ForEach data={keys}>
+								<ForEach
+									data={keys}
+									filter={(key) => !EXCLUDED_HEADERS_LS_SHEET.includes(key)}
+								>
 									{(item, idx) => <TableHead key={idx}>{item}</TableHead>}
 								</ForEach>
 							</TableRow>

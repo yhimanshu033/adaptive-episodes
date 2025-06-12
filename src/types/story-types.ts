@@ -30,9 +30,11 @@ export type TStory = {
 	episode_count: number
 	id: number
 	image: string
+	is_original: boolean
 	parent_language?: ELanguage
 	project_title: string
 	props: Record<string, unknown>
+	source_language?: ELanguage
 	status: EImportStatus
 	update_time: string
 	user: number | null
@@ -45,7 +47,9 @@ export type StoryUploadParams = {
 		image: string | null
 		input_language: string
 		project_url: string | null
+		run_adaptation: boolean
 		start_ep: number
+		target_language?: string
 		title: string
 	}
 }

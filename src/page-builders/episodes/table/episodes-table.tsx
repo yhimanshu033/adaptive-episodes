@@ -31,6 +31,7 @@ import { cn } from '@/lib/utils/helpers'
 import { ERole } from '@/types/admin-types'
 import { EEpisodeHeaderKeys } from '@/types/episode-type'
 
+import AdaptationContainer from '../adaptation-container'
 import AdminManageProject from '../buttons/admin-manage-project'
 
 const EpisodesTable = () => {
@@ -68,6 +69,14 @@ const EpisodesTable = () => {
 			setSearchedRow(null)
 		}
 	}, [searchedRow, isEpisodesLoading])
+
+	if (
+		initialStoryData?.is_original &&
+		!isEpisodesLoading &&
+		!tableData.length
+	) {
+		return <AdaptationContainer />
+	}
 
 	return (
 		<>

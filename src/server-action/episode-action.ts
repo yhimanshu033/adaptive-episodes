@@ -150,9 +150,6 @@ export const updateStatus = async (
 	status: string,
 	language?: ELanguage
 ) => {
-	if (language !== ELanguage.GERMAN_ORIGINAL) {
-		return
-	}
 	const res = await fetchAPI<
 		TStatusUpdateResponse,
 		TStatusUpdateURLParams,

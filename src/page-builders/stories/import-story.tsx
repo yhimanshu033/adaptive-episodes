@@ -4,6 +4,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
 import {
 	ImportStoryStep,
 	ImportStoryType,
@@ -17,6 +18,7 @@ import {
 	useStoryImportFormResolver,
 } from '@/hooks/form-resolvers/story-import-resolver'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
+import useIsInternal from '@/hooks/use-is-internal'
 import useSocket from '@/hooks/use-socket'
 import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 import { FeatureShineIcon } from '@/icons/feature-shine-icon'
@@ -31,6 +33,7 @@ import { toast } from 'sonner'
 
 import Badge from '@/components/aural-ui/badge'
 import { Button, buttonVariants } from '@/components/aural-ui/button'
+import { Checkbox } from '@/components/aural-ui/checkbox'
 import { Divider } from '@/components/aural-ui/divider'
 import {
 	Form,
@@ -68,6 +71,7 @@ export function ImportStory() {
 	const { getResponse } = useSocket()
 
 	const form = useStoryImportFormResolver()
+	const isInternal = useIsInternal()
 
 	const lastStep = useMemo(
 		() =>
@@ -170,23 +174,26 @@ export function ImportStory() {
 	}
 
 	const onSubmit = (data: StoryImportFormSchema) => {
-		const proceed = nextStep()
-		if (proceed) {
-			storyUploadMutation.mutate(data, {
-				onSuccess: async (taskId) => {
-					form.reset()
-					setImageSrc(null)
-					setFormOpen(false)
-					toast.info('Story import started')
-					const data: FetchResponseResult = await getResponse(taskId)
-					if (data?.success === false) {
-						toast.error('Story upload failed, please retry!', {
-							description: 'There might be an issue with the format.',
-						})
-					}
-				},
-			})
+		if (
+			data.input_language === (ELanguage.ENGLISH as string) &&
+			data.run_adaptation
+		) {
+			data.input_language = ELanguage.ENGLISH_US
 		}
+		storyUploadMutation.mutate(data, {
+			onSuccess: async (taskId) => {
+				form.reset()
+				setImageSrc(null)
+				setFormOpen(false)
+				toast.info('Story import started')
+				const data: FetchResponseResult = await getResponse(taskId)
+				if (data?.success === false) {
+					toast.error('Story upload failed, please retry!', {
+						description: 'There might be an issue with the format.',
+					})
+				}
+			},
+		})
 	}
 
 	return (
@@ -280,6 +287,51 @@ export function ImportStory() {
 												</FormItem>
 											)}
 										/>
+										<If condition={isInternal}>
+											<FormField
+												control={form.control}
+												name="run_adaptation"
+												render={({ field }) => (
+													<FormItem className="space-y-2">
+														<FormControl>
+															<div className="flex items-center gap-2">
+																<Checkbox
+																	checked={field.value}
+																	id="adaptation-checkbox"
+																	onCheckedChange={field.onChange}
+																/>
+																<FormLabel htmlFor="adaptation-checkbox">
+																	Run Adaptation
+																</FormLabel>
+															</div>
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</If>
+
+										<If condition={form.watch('run_adaptation')}>
+											<FormField
+												control={form.control}
+												name="target_language"
+												render={({ field }) => (
+													<FormItem className="space-y-2">
+														<FormLabel htmlFor="language">
+															Target Language
+														</FormLabel>
+														<FormControl>
+															<LanguageSelector
+																value={field.value as ELanguage}
+																selectableLanguages={AVAILABLE_TARGET_LANGUAGES}
+																onValueChange={field.onChange}
+															/>
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</If>
 										<FormField
 											control={form.control}
 											name="image_file"

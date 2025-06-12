@@ -22,19 +22,14 @@ function useAdaptationUtil() {
 			(selectedRowData[0]?.language as TSourceLanguage) || ELanguage.ENGLISH,
 		[selectedRowData]
 	)
-	const [storyData, setStory] = useState<TStory>()
+	const [storyData, setStory] = useState<TStory | null>()
 	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
+	const [isFetchingLSSheet, setFetchingLSSheet] = useState<boolean>(false)
 
 	const selectableLanguages = useMemo(
 		() => AVAILABLE_TARGET_LANGUAGES.filter((lang) => lang !== currentLanguage),
 		[currentLanguage]
 	)
-
-	useEffect(() => {
-		setSelectedAdaptingLanguage(
-			PREFERABLE_LANGUAGES[currentLanguage] || selectableLanguages[0]
-		)
-	}, [currentLanguage, selectableLanguages])
 
 	const {
 		createLSMutation: { mutate, isPending, data, reset },
@@ -54,10 +49,10 @@ function useAdaptationUtil() {
 		if (sendLSPending) {
 			return 2
 		}
-		if (data?.ls_mapping) {
+		if (data?.ls_mapping || tableData.length) {
 			return 3
 		}
-		if (isPending) {
+		if (isPending || isFetchingLSSheet) {
 			return 2
 		}
 		if (
@@ -69,13 +64,28 @@ function useAdaptationUtil() {
 			return -1
 		}
 		return 1
-	}, [data, isPending, sendLSData, sendLSPending, storyData, selectedRowData])
+	}, [
+		sendLSData,
+		sendLSPending,
+		data?.ls_mapping,
+		tableData,
+		isPending,
+		isFetchingLSSheet,
+		storyData?.adapting_seq_nos,
+		selectedRowData,
+	])
 
 	const resetMutations = useCallback(() => {
 		reset()
 		resetSendLS()
 		setTableData([])
 	}, [reset, resetSendLS, setTableData])
+
+	useEffect(() => {
+		setSelectedAdaptingLanguage(
+			PREFERABLE_LANGUAGES[currentLanguage] || selectableLanguages[0]
+		)
+	}, [currentLanguage, selectableLanguages])
 
 	useEffect(() => {
 		if (!data) {
@@ -91,6 +101,7 @@ function useAdaptationUtil() {
 	useEffect(() => {
 		if (step === 4 && !open) {
 			resetMutations()
+			setFetchingLSSheet(false)
 			setSelectedRowData([])
 			return
 		}
@@ -113,6 +124,7 @@ function useAdaptationUtil() {
 		tableData,
 		setTableData,
 		setStory,
+		setFetchingLSSheet,
 		storyData,
 	}
 }

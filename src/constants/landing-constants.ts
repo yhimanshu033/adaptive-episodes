@@ -1,5 +1,7 @@
 //Assets Path
 export const LANDING_BACKGROUND_URL = '/assets/landing-page/bg-landing.webp'
+export const LANDING_BACKGROUND_URL_MOBILE =
+	'/assets/landing-page/bg-landing-mobile.webp'
 export const HIGHLIGHT_1_URL = '/assets/landing-page/highlight-1.webp'
 export const HIGHLIGHT_2_URL = '/assets/landing-page/highlight-2.webp'
 export const HIGHLIGHT_3_URL = '/assets/landing-page/highlight-3.webp'
@@ -43,19 +45,19 @@ export const highlightedFeatures = [
 
 export const seriesData = [
 	{
-		title: 'Aaj Ka Hero',
-		plays: '16M',
-		image: { SERIES_1_URL },
+		title: 'My Vampire System',
+		plays: '9.1M',
+		image: SERIES_1_URL,
 	},
 	{
-		title: 'Banda Ye Badass Hai',
-		plays: '126M',
-		image: { SERIES_2_URL },
+		title: 'Saving Nora',
+		plays: '7.7M',
+		image: SERIES_2_URL,
 	},
 	{
-		title: 'Super Yoodha',
-		plays: '231M',
-		image: { SERIES_3_URL },
+		title: "The Billionaire's Accidental Bride",
+		plays: '8.1M',
+		image: SERIES_3_URL,
 	},
 ]
 
@@ -79,4 +81,32 @@ export const faqItems = [
 		answer:
 			'All core features are available in the free plan. Some advanced features may require a paid plan.',
 	},
+]
+
+export const slides = [
+	{
+		image: TOOL_1_URL,
+		title: 'Collaboration',
+		description:
+			'Build your own dream team of writers, editors, and friends and create series in real time.',
+	},
+	{
+		image: TOOL_2_URL,
+		title: 'Story explorer',
+		description:
+			'Get a clear overview of your story anytime —characters, arcs, locations, and more. Think of it as an easy-to-use cheatsheet.',
+	},
+	{
+		image: TOOL_3_URL,
+		title: 'Create modes',
+		description:
+			'Toggle between writing mode and preview mode to build and review your work with ease.',
+	},
+]
+
+export const navLinks = [
+	{ href: '#ai-features', label: 'AI FEATURES' },
+	{ href: '#essentials', label: 'ESSENTIALS' },
+	{ href: '#creations', label: 'CREATIONS' },
+	{ href: '#faq', label: 'FAQ' },
 ]

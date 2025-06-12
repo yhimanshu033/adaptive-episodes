@@ -45,6 +45,8 @@ import { formatDate } from '@/lib/format-date'
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
+import useAccessChecks from './use-access-checks'
+
 export const useCreateTable = (episodes: TEpisode[]) => {
 	const [expanded, setExpanded] = useState<ExpandedState>({})
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -59,6 +61,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 
 	const { isWriter } = useProjectId()
 	const language = useParentLanguage()
+	const { isGerman, isOriginal } = useAccessChecks()
 
 	const handleRowSelection = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -94,8 +97,57 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 
 	const writerOnlyColumns: ColumnDef<TEpisode>[] = [
 		{
-			accessorKey: EEpisodeHeaderKeys.ACTIONS,
-			header: 'Actions',
+			id: EEpisodeHeaderKeys.SELECT_COL,
+			header: ({ table, column }) => {
+				const isSomeSelected = table.getIsSomeRowsSelected()
+				const isAllSelected = table.getIsAllRowsSelected()
+
+				return (
+					<Checkbox
+						disabled={!isWriter}
+						id={`header-${column.id}`}
+						checked={isSomeSelected || isAllSelected}
+						indeterminate={isSomeSelected}
+						onClick={() => {
+							if (isSomeSelected) {
+								table.resetRowSelection()
+							} else {
+								table.toggleAllRowsSelected()
+							}
+						}}
+					/>
+				)
+			},
+			cell: ({ row }) =>
+				!row.depth && (
+					<Checkbox
+						id={`row-${row.id}`}
+						checked={row.getIsSelected()}
+						disabled={!isWriter || !row.getCanSelect()}
+						onClick={(e) => handleRowSelection(e, row)}
+					/>
+				),
+		},
+		{
+			accessorKey: EEpisodeHeaderKeys.SERIAL_NUMBER,
+			header: () => (
+				<HoverCard openDelay={0}>
+					<HoverCardTrigger> {`DE${checked ? '/US' : ''}`} </HoverCardTrigger>
+					<HoverCardContent className="b</HoverCard>order bg-background z-[100] mt-2 w-38 rounded-md p-2">
+						<div className="flex items-center justify-center gap-2">
+							<p>US Index:</p>
+							<Switch checked={checked} onCheckedChange={setChecked} />
+						</div>
+					</HoverCardContent>
+				</HoverCard>
+			),
+			cell: ({ row }) =>
+				!row.depth &&
+				`${row.original.seq_number}${checked && row.original.original_seq_number ? `/${row.original.original_seq_number}` : ''}`,
+		},
+		{
+			accessorKey: EEpisodeHeaderKeys.CHAPTER_TITLE,
+			header: 'Title',
 			cell: ({ row }) => (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -128,10 +180,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						: row.getValue('status')
 				const latestIndex = statuses.indexOf(latestStatus)
 
-				if (
-					row.original.language &&
-					row.original.language !== ELanguage.GERMAN_ORIGINAL
-				) {
+				if (!(isGerman || isOriginal)) {
 					return null
 				}
 				if (row.depth) {
