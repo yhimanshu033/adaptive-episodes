@@ -15,6 +15,7 @@ import {
 	CollapsibleHeader,
 } from '@/components/aural-ui/collapsible'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import { Typography } from '@/components/aural-ui/typography'
 import { cn } from '@/lib/aural-ui/utils'
 import { formatExplorerData, preProcessData } from '@/lib/utils/explorer'
 import { toPascalCase } from '@/lib/utils/helpers'
@@ -126,7 +127,11 @@ export function RenderContent({
 	}
 
 	if (!content || (typeof content === 'string' && content.trim() === '')) {
-		return <p>Content not found 😭</p>
+		return (
+			<Typography color="tertiary" className="px-5">
+				Content not found 😭
+			</Typography>
+		)
 	}
 
 	if (typeof content === 'string') {
