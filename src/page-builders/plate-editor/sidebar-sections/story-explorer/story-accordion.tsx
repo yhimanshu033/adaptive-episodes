@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react'
-import useNotesMutation from '@/hooks/mutation/use-notes-mutation'
 import useNotes from '@/hooks/use-notes'
 import { CopyIcon } from '@/icons/copy-icon'
 import NotepadIcon from '@/icons/notepad-icon'
-import { TickCircleIcon } from '@/icons/tick-circle-icon'
 import useAIStore from '@/store/ai-store'
+import { CircleCheck } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { toast } from 'sonner'
 
@@ -38,12 +37,10 @@ export function ContentActions({
 	htmlText: string | undefined
 	title: string
 }) {
-	const updateNotesMutation = useNotesMutation()
-	const { handleAddNote } = useNotes()
+	const { handleAddNote, isSuccess, isPending } = useNotes()
 	const { store } = useAIStore()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
 	const activeExplorerActions = store((state) => state.activeExplorerActions)
-	const { isPending, isSuccess } = updateNotesMutation
 
 	const addToNote = () => {
 		const note: TNote = {
@@ -64,7 +61,7 @@ export function ContentActions({
 		void navigator.clipboard.writeText(formattedText)
 		toast.success('Text copied successfully')
 	}
-	console.log({ isPending, isSuccess })
+
 	const { icon: savedIcon, text: savedText } = useMemo(() => {
 		if (isPending) {
 			return {
@@ -74,7 +71,7 @@ export function ContentActions({
 		}
 		if (isSuccess) {
 			return {
-				icon: <TickCircleIcon className="size-4 stroke-2" />,
+				icon: <CircleCheck className="size-4 stroke-2" />,
 				text: 'Saved',
 			}
 		}
