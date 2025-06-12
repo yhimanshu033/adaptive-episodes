@@ -44,14 +44,14 @@ const StoryExplorer = () => {
 					<div className="flex items-center justify-center gap-2">
 						<Input
 							type="number"
-							min={1}
+							min="1"
 							onBlur={(e) => {
 								if (isNaN(parseInt(e.target.value))) {
 									handleEpisodeChange('start', '1')
 								}
 							}}
 							decoration="outline"
-							max={episodeRange.end}
+							max={String(episodeRange.end)}
 							value={String(episodeRange.start)}
 							onChange={(e) => handleEpisodeChange('start', e.target.value)}
 							className="w-full"
@@ -67,7 +67,7 @@ const StoryExplorer = () => {
 									handleEpisodeChange('end', '1')
 								}
 							}}
-							min={episodeRange.start}
+							min={String(episodeRange.start)}
 							value={String(episodeRange.end)}
 							onChange={(e) => handleEpisodeChange('end', e.target.value)}
 							className="w-full"

@@ -82,16 +82,16 @@ type InputProps = {
 		wrapper?: string
 	}
 	decoration?: InputDecoration
-	defaultValue?: string | number
+	defaultValue?: string
 	disabled?: boolean
 	endIcon?: ReactNode
 	fullWidth?: boolean
 	helperText?: ReactNode
 	id?: string
 	label?: ReactNode
-	max?: number
+	max?: string
 	maxLength?: number
-	min?: number
+	min?: string
 	name?: string
 	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
 	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -101,7 +101,7 @@ type InputProps = {
 	startIcon?: ReactNode
 	type?: string
 	unstyled?: boolean
-	value?: string | number
+	value?: string
 	variant?: InputVariant
 }
 
