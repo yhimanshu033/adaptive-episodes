@@ -43,7 +43,7 @@ export default function SidebarTopBar() {
 					</Tabs>
 				</If>
 				<Else>
-					<div className="flex h-full items-center justify-between gap-4 pr-4 pl-7">
+					<div className="flex h-14 items-center justify-between gap-4 pr-4 pl-7">
 						<h4>{sidebarToTitle[sidebar]}</h4>
 						<IconButton
 							label="Close Sidebar"

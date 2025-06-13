@@ -1,20 +1,25 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
 import React, { useEffect } from 'react'
 import { useNotesData } from '@/hooks/query/use-notes-query'
-import DualViewLoader from '@/page-builders/plate-editor/dual-view/dual-view-loader'
+import { NotesIcon } from '@/icons/notes-icon'
 import AddNotes from '@/page-builders/plate-editor/sidebar-sections/notes/add-notes'
 import NoteCard from '@/page-builders/plate-editor/sidebar-sections/notes/note-card'
-import NoteContent from '@/page-builders/plate-editor/sidebar-sections/notes/note-content'
-import useEpisodeIdStore from '@/store/episode-id-store'
+import useEditorNoteStore from '@/store/edit-note-store'
 import { useEpisodeStore } from '@/store/episode-store'
 import { useShallow } from 'zustand/react/shallow'
 
+import DotLoader from '@/components/aural-ui/dot-loader'
+import { If } from '@/components/aural-ui/if-else'
+import { Typography } from '@/components/aural-ui/typography'
+
 import { TNote } from '@/types/plate-types'
 
+import EditNote from './edit-note'
+
 const Notes = () => {
-	const { store } = useEpisodeIdStore()
-	const activeNoteId = store((state) => state.activeNoteId)
+	const { isFormOpen, setFormOpen } = useEditorNoteStore()
 	const { useEpisodeTableStore, setNotes } = useEpisodeStore()
 	const notes = useEpisodeTableStore(useShallow((state) => state.notes))
 	const { data, isLoading } = useNotesData()
@@ -28,34 +33,49 @@ const Notes = () => {
 				setNotes(fetchedNotes)
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data])
+
+	useEffect(() => {
+		return () => {
+			setFormOpen(false)
+		}
+	}, [])
 
 	const RenderNotes = () => {
 		if (isLoading) {
-			return <DualViewLoader />
+			return (
+				<div className="flex h-full flex-col justify-center">
+					<DotLoader />
+				</div>
+			)
 		}
 
 		return (
-			<div className="grid grid-cols-1 gap-4">
+			<div className="relative flex h-svh flex-col gap-4">
 				<AddNotes />
-				{notes.map((note) =>
-					note.id === activeNoteId ? (
-						<NoteContent
-							key={note.id}
-							activeNoteId={activeNoteId}
-							notes={notes}
-						/>
-					) : (
-						<NoteCard key={note.id} {...note} />
-					)
-				)}
+				<If condition={!notes?.length}>
+					<div className="flex h-full flex-col items-center justify-center gap-6">
+						<div className="bg-fm-surface-frosted/20 flex size-12 items-center justify-center rounded-full p-4">
+							<NotesIcon className="text-fm-icon-inactive stroke-1.5 size-6" />
+						</div>
+						<Typography color="tertiary" className="px-5" align="center">
+							It&apos;s quiet here. Start adding your notes, and you&apos;ll see
+							them here
+						</Typography>
+					</div>
+				</If>
+				{notes.map((note) => {
+					return <NoteCard key={note.id} note={note} />
+				})}
+				<If condition={isFormOpen}>
+					<EditNote />
+				</If>
 			</div>
 		)
 	}
 
 	return (
-		<section className="mt-4 p-4">
+		<section className="h-svh px-6 pt-8">
 			<RenderNotes />
 		</section>
 	)

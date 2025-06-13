@@ -17,22 +17,27 @@ export const preProcessData = (data: ExplorerType): ExplorerType[] => {
 }
 
 export const formatExplorerData = (
-	explorerData: ExplorerType | string
+	explorerData: string | ExplorerType | Partial<ExplorerType>
 ): string => {
 	if (typeof explorerData === 'string') {
 		return explorerData
 	}
 
-	const formatNode = (node: ExplorerType): string => {
-		let result = `${node.title}\n`
+	const formatNode = (node: ExplorerType | Partial<ExplorerType>): string => {
+		let result = ''
+
+		if ('title' in node && node.title) {
+			result += `${node.title}\n`
+		}
+
 		if (node.preContent) {
 			result += `${node.preContent}\n`
 		}
 
 		if (typeof node.content === 'string') {
 			result += `${node.content}\n`
-		} else {
-			node.content?.forEach((child) => {
+		} else if (Array.isArray(node.content)) {
+			node.content.forEach((child) => {
 				result += formatNode(child)
 			})
 		}

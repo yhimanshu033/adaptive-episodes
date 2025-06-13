@@ -33,7 +33,7 @@ export function ContentActions({
 	episodeRange,
 	episodeNo,
 }: {
-	content: ExplorerType | string
+	content: Partial<ExplorerType> | string
 	enableNote?: boolean
 	episodeNo?: number
 	episodeRange?: string
@@ -42,19 +42,21 @@ export function ContentActions({
 }) {
 	const { handleAddNote, isSuccess, isPending } = useNotes()
 	const { store } = useAIStore()
+	const inputFocus = store((state) => state.inputFocus)
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
 	const activeExplorerActions = store((state) => state.activeExplorerActions)
 
 	const addToNote = () => {
 		const note: TNote = {
 			id: nanoid(),
-			title: `${toPascalCase(activeExplorerMode)} ${toPascalCase(
-				activeExplorerActions[activeExplorerMode]
-			)} - ${title}`,
+			title: inputFocus ? `${inputFocus}-${title}` : title,
 			content: content || '',
 			episodeNo: episodeNo,
 			episodeRange: episodeRange,
 			updateTime: new Date().toString(),
+			modeAction: `${toPascalCase(activeExplorerMode)} - ${toPascalCase(
+				activeExplorerActions[activeExplorerMode]
+			)}`,
 		}
 		handleAddNote(note)
 	}
@@ -120,7 +122,7 @@ export function RenderContent({
 	episodeNo: number
 	preContent?: string
 }) {
-	const formattedHtml = (text: string) => text.replace(/\n/g, '<br/>')
+	const formattedHtml = (text: string) => text?.replace(/\n/g, '<br/>')
 
 	function boldFirstLine(html: string) {
 		const [firstLine, ...rest] = html.split('\n')
@@ -128,9 +130,14 @@ export function RenderContent({
 		return [boldedFirst, ...rest].join('<br/>')
 	}
 
-	if (!content || (typeof content === 'string' && content.trim() === '')) {
+	if (
+		!content ||
+		(typeof content === 'string' && content.trim() === '') ||
+		!content ||
+		(typeof preContent === 'string' && preContent.trim() === '')
+	) {
 		return (
-			<Typography color="tertiary" className="px-5">
+			<Typography color="tertiary" align="left" variant="body-small">
 				Content not found 😭
 			</Typography>
 		)
@@ -232,7 +239,7 @@ export function StoryAccordion({
 		<div className={cn('flex flex-col gap-4 px-6 pb-10', className)}>
 			{explorerData.map((data, index) => {
 				const episodeNo = start + index
-				const title = data.title || `Episode ${episodeNo}`
+				const title = data.title
 
 				return (
 					<Collapsible key={`${title}-${index}`}>
@@ -253,7 +260,10 @@ export function StoryAccordion({
 							/>
 							<ContentActions
 								title={title}
-								content={data}
+								content={{
+									preContent: data?.preContent,
+									content: data.content,
+								}}
 								episodeNo={episodeNo}
 								htmlText={formatExplorerData(data)}
 								enableNote={enableNote}

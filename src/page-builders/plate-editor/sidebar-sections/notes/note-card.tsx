@@ -1,63 +1,54 @@
 import React from 'react'
-import useNotes from '@/hooks/use-notes'
-import useEpisodeIdStore from '@/store/episode-id-store'
-import { Trash2 } from 'lucide-react'
 
-import { IconLoader } from '@/components/loader'
-import { Button } from '@/components/ui/button'
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card'
+import Badge from '@/components/aural-ui/badge'
+import { Divider } from '@/components/aural-ui/divider'
+import { If } from '@/components/aural-ui/if-else'
+import { Typography } from '@/components/aural-ui/typography'
 import { formatDate } from '@/lib/format-date'
+import { formatExplorerData } from '@/lib/utils/explorer'
 
 import { TNote } from '@/types/plate-types'
 
-const NoteCard = ({ id, title, content, updateTime }: TNote) => {
-	const { setActiveNoteId } = useEpisodeIdStore()
-	const { handleDeleteNote, isPending } = useNotes()
+import { ActionButtons } from './action-buttons'
+
+const NoteCard = ({ note }: { note: TNote }) => {
+	const {
+		id,
+		title,
+		content,
+		updateTime,
+		episodeNo,
+		episodeRange,
+		modeAction,
+		edit,
+	} = note
 	return (
-		<div className="group relative">
-			<Card
-				className="h-full cursor-pointer transition-shadow hover:shadow-lg"
-				onClick={() => setActiveNoteId(id)}
-			>
-				<CardHeader>
-					<CardTitle className="break-words">{title}</CardTitle>
-				</CardHeader>
-				<CardContent>
-					{content && (
-						<CardDescription className="text-foreground line-clamp-2 text-sm">
-							{typeof content === 'string'
-								? content
-								: `${[content].length} results from Explorer`}
-						</CardDescription>
-					)}
-					<div className="text-muted-foreground mt-2 text-xs">
-						Last updated: {formatDate(updateTime)}
-					</div>
-				</CardContent>
-			</Card>
-			<div className="absolute top-2 right-2 hidden items-center justify-center rounded text-center group-hover:flex">
-				{isPending ? (
-					<IconLoader />
-				) : (
-					<Button
-						tooltip="Delete Note"
-						variant="outline"
-						size="icon"
-						onClick={(e) => {
-							e.stopPropagation()
-							handleDeleteNote(id)
-						}}
-					>
-						<Trash2 size={16} />
-					</Button>
-				)}
+		<div className="group flex flex-col gap-3">
+			<div className="flex flex-col gap-1">
+				<Typography as="h2" variant="body-small" align="left">
+					{title}
+				</Typography>
+				<div
+					className="text-fm-md text-fm-tertiary line-clamp-3 gap-4 overflow-hidden transition-all duration-1000 ease-out hover:line-clamp-none hover:max-h-full"
+					dangerouslySetInnerHTML={{
+						__html: formatExplorerData(content ?? '').replace(/\n/g, '<br/>'),
+					}}
+				/>
 			</div>
+			<div className="flex gap-1">
+				<Badge size="xs">Updated : {formatDate(updateTime)}</Badge>
+				<If condition={!!episodeRange}>
+					<Badge size="xs">EP - {episodeRange}</Badge>
+				</If>
+				<If condition={!!episodeNo}>
+					<Badge size="xs">EP - {episodeNo}</Badge>
+				</If>
+				<If condition={!!modeAction}>
+					<Badge size="xs">{modeAction}</Badge>
+				</If>
+			</div>
+			<ActionButtons id={id} edit={edit} />
+			<Divider variant="secondary" />
 		</div>
 	)
 }
