@@ -56,6 +56,7 @@ const Filters = ({
 		setStory,
 		setOpen,
 		selectedRowData: adaptationData,
+		setEpisodeAdaptation,
 	} = useAdaptation()
 
 	const handleSearch = (data: TEpisodeSearchForm) => {
@@ -153,6 +154,7 @@ const Filters = ({
 						if (adaptationData.length === 0) {
 							setStory(initialStoryData)
 							setSelectedRowData(selectedRowData)
+							setEpisodeAdaptation(true)
 						}
 						setOpen(true)
 					}}
