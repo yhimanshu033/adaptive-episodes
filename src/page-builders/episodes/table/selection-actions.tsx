@@ -94,11 +94,11 @@ export default function SelectionActions({
 				</If>
 				<MultiEpLocalizeDialog
 					url={url}
-					size="icon"
 					disabled={Object.keys(selectedRowData).length <= 1}
+					// @ts-expect-error type mismatch
 					tooltip="Localize episodes"
 				>
-					<Replace size={16} />
+					<Replace size={18} />
 				</MultiEpLocalizeDialog>
 				<If condition={!language || language === ELanguage.GERMAN_ORIGINAL}>
 					<Button
@@ -106,7 +106,7 @@ export default function SelectionActions({
 						disabled={Object.keys(selectedRowData).length <= 1}
 						onClick={() => handleMerge(selectedRowData)}
 					>
-						<GitForkIcon width={20} height={20} />
+						<GitForkIcon width={18} height={18} />
 						<span>Combine</span>
 					</Button>
 					<Button
@@ -114,7 +114,7 @@ export default function SelectionActions({
 						disabled={selectedRowData.length !== 1}
 						onClick={() => handleUnmerge(selectedRowModel)}
 					>
-						<GitBranchIcon className="text-fm-primary" width={20} height={20} />
+						<GitBranchIcon className="text-fm-primary" width={18} height={18} />
 						<span>Separate</span>
 					</Button>
 				</If>

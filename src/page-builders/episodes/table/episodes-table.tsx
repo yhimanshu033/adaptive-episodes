@@ -220,7 +220,7 @@ const EpisodesTable = () => {
 												id={`row-${row.id}`}
 												className={cn({
 													selected: row.getIsSelected(),
-													'bg-card': rowIndex % 2,
+													'bg-fm-secondary-50': row.getIsSelected(),
 												})}
 											>
 												{row.getVisibleCells().map((cell) => (

@@ -7,6 +7,14 @@ import useAccessChecks from '@/hooks/use-access-checks'
 import { TickIcon } from '@/icons/tick-icon'
 import { useTranslations } from 'next-intl'
 
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from '@/components/aural-ui/command'
 import { Divider } from '@/components/aural-ui/divider'
 import {
 	Select,
@@ -15,26 +23,16 @@ import {
 	SelectTrigger,
 	SelectWrapper,
 } from '@/components/aural-ui/select'
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from '@/components/ui/command'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/utils/helpers'
 
 const WriterCombobox = ({
 	chapterId,
 	className,
-	// iconClass,
 	selectedMemberId,
 }: {
 	chapterId?: string
 	className?: string
-	iconClass?: string
 	selectedMemberId?: string
 }) => {
 	const [value, setValue] = React.useState<string>(selectedMemberId || '')
@@ -64,29 +62,31 @@ const WriterCombobox = ({
 						className="font-fm-brand text-xs uppercase"
 						classes={{
 							root: 'h-10 text-sm',
-							icon: 'text-fm-icon-inactive',
+							icon: 'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
 						}}
 						disabled={!isWriter}
 					>
-						{!selectedMember?.user
-							? dict('unassigned')
-							: selectedMember?.user?.fullname}
+						<span className="text-fm-primary tracking-wider">
+							{!selectedMember?.user
+								? dict('unassigned')
+								: selectedMember?.user?.fullname}
+						</span>
 					</SelectTrigger>
 					<SelectContent>
 						<Command
-							className="bg-fm-surface-frosted/1 backdrop-blur-lg"
+							className="bg-fm-surface-frosted/20"
 							defaultValue={selectedMember?.user?.fullname}
 						>
-							<CommandInput placeholder="Search Writer" className="h-10" />
+							<CommandInput placeholder="Search Writer" />
 							<CommandList>
-								<CommandEmpty className="font-fm-text h-10 px-4 py-2">
+								<CommandEmpty className="font-fm-text py-2">
 									No writer found.
 								</CommandEmpty>
 								<CommandGroup>
 									{members?.map((member) => (
 										<>
 											<CommandItem
-												className="font-fm-text h-10 p-3"
+												className="font-fm-text text-sm"
 												key={member.user.id}
 												value={String(member.user.fullname)}
 												onSelect={() => {
@@ -107,7 +107,7 @@ const WriterCombobox = ({
 													)}
 												/>
 											</CommandItem>
-											<Divider variant="dashed" />
+											<Divider variant="dashed" className="my-0.5" />
 										</>
 									))}
 								</CommandGroup>

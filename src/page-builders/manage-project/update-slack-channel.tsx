@@ -17,6 +17,7 @@ import {
 } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
+import { cn } from '@/lib/utils/helpers'
 
 import { TUpdateSlackChannelBody } from '@/types/admin-types'
 
@@ -82,7 +83,12 @@ const UpdateSlackChannel = () => {
 							type="submit"
 							disabled={updateSlackChanelMutation.isPending}
 							variant="text"
-							innerClassName="text-fm-tertiary text-sm !p-0 -translate-y-0 uppercase"
+							innerClassName={cn(
+								(form.getValues('slack_channel_id').length < 3 ||
+									updateSlackChanelMutation.isPending) &&
+									'text-fm-tertiary',
+								'text-sm !p-0 -translate-y-0 uppercase truncate'
+							)}
 						>
 							Update
 						</Button>

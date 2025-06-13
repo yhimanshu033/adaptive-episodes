@@ -14,10 +14,10 @@ import {
 	FormControl,
 	FormField,
 	FormItem,
-	FormMessage,
 } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
+import { cn } from '@/lib/utils/helpers'
 
 const UpdateLOCSheet = () => {
 	const { data } = useLOCSheetData()
@@ -63,7 +63,6 @@ const UpdateLOCSheet = () => {
 											{...field}
 										/>
 									</FormControl>
-									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -71,7 +70,12 @@ const UpdateLOCSheet = () => {
 							type="submit"
 							disabled={updateLOCSheetMutation.isPending}
 							variant="text"
-							innerClassName="text-fm-tertiary text-sm !p-0 -translate-y-0 uppercase"
+							innerClassName={cn(
+								(form.getValues('link').length < 3 ||
+									updateLOCSheetMutation.isPending) &&
+									'text-fm-tertiary',
+								'text-sm !p-0 -translate-y-0 uppercase truncate'
+							)}
 						>
 							Update
 						</Button>

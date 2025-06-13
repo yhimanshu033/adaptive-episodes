@@ -1,42 +1,41 @@
 import * as React from 'react'
+import { ChevronRightIcon } from '@/icons/chevron-right-icon'
+import { TickIcon } from '@/icons/tick-icon'
 import { cva, type VariantProps } from 'class-variance-authority'
 
-import { ChevronRightIcon } from '../../icons/chevron-right-icon'
-import { TickIcon } from '../../icons/tick-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { Divider } from './divider'
 import { Label } from './label'
 
 // Base List Container
-export const listVariants = cva(
-	'bg-fm-surface-frosted/20 relative shadow-lg backdrop-blur-lg',
-	{
-		variants: {
-			variant: {
-				default: '',
-				elevated: 'shadow-xl',
-				flat: 'shadow-sm',
-			},
-			size: {
-				sm: 'min-w-32',
-				default: 'min-w-40',
-				lg: 'min-w-48',
-				xl: 'min-w-56',
-			},
-			rounded: {
-				none: 'rounded-none',
-				sm: 'rounded-sm',
-				default: 'rounded-fm-s',
-				lg: 'rounded-lg',
-			},
+export const listVariants = cva('relative shadow-lg', {
+	variants: {
+		variant: {
+			filled: 'bg-fm-surface-frosted/20 backdrop-blur-lg',
+			default: '',
+			elevated: 'shadow-xl',
+			flat: 'shadow-sm',
 		},
-		defaultVariants: {
-			variant: 'default',
-			size: 'default',
-			rounded: 'default',
+		size: {
+			sm: 'min-w-32',
+			default: 'min-w-40',
+			lg: 'min-w-48',
+			xl: 'min-w-56',
 		},
-	}
-)
+		rounded: {
+			none: 'rounded-none',
+			sm: 'rounded-sm',
+			default: 'rounded-fm-s',
+			lg: 'rounded-lg',
+		},
+	},
+	defaultVariants: {
+		variant: 'default',
+		size: 'default',
+		rounded: 'default',
+	},
+})
 
 // Border variants for top accent
 export const listBorderVariants = cva(

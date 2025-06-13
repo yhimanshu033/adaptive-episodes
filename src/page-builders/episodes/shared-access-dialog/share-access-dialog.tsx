@@ -16,6 +16,7 @@ import {
 } from '@/components/aural-ui/dialog'
 import { Divider } from '@/components/aural-ui/divider'
 import { IconButton } from '@/components/aural-ui/icon-button'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 
 import { EFolderType } from '@/types/admin-types'
 
@@ -36,36 +37,38 @@ export default function ShareAccessDialog() {
 				noise="none"
 				showCloseButton={false}
 			>
-				<DialogHeader>
-					<DialogTitle className="pt-4">
-						<div className="flex items-center justify-between py-3">
-							<h3 className="font-fm-text text-xl">Share access</h3>
-							<IconButton
-								variant="ghost"
-								size="small"
-								onClick={() => console.log(false)}
-								icon={<CrossIcon width={20} height={20} />}
-								label="cross icon"
-							/>
-						</div>
-						<Divider variant="dashed" />
-						<SearchMembers />
-					</DialogTitle>
-					<DialogDescription>
-						<h3 className="font-fm-brand mb-4 text-sm tracking-wider uppercase">
-							Shared with
-						</h3>
-						<Divider variant="dashed" />
-						<SharedList />
-						<h3 className="font-fm-brand my-5 text-sm tracking-wider uppercase">
-							Other Links
-						</h3>
-						<Divider variant="dashed" />
-						<UpdateLOCSheet />
-						<UpdateDriveFolder folderType={EFolderType.CMS} />
-						<UpdateSlackChannel />
-					</DialogDescription>
-				</DialogHeader>
+				<ScrollArea className="[&>[data-radix-scroll-area-viewport]]:max-h-[90vh]">
+					<DialogHeader>
+						<DialogTitle className="pt-4">
+							<div className="flex items-center justify-between py-3">
+								<h3 className="font-fm-text text-xl">Share access</h3>
+								<IconButton
+									variant="ghost"
+									size="small"
+									onClick={() => setIsShareAccessDialogOpen(false)}
+									icon={<CrossIcon width={20} height={20} />}
+									label="cross icon"
+								/>
+							</div>
+							<Divider variant="dashed" />
+							<SearchMembers />
+						</DialogTitle>
+						<DialogDescription>
+							<h3 className="font-fm-brand mb-4 text-sm tracking-wider uppercase">
+								Shared with
+							</h3>
+							<Divider variant="dashed" />
+							<SharedList />
+							<h3 className="font-fm-brand my-5 text-sm tracking-wider uppercase">
+								Other Links
+							</h3>
+							<Divider variant="dashed" />
+							<UpdateLOCSheet />
+							<UpdateDriveFolder folderType={EFolderType.CMS} />
+							<UpdateSlackChannel />
+						</DialogDescription>
+					</DialogHeader>
+				</ScrollArea>
 			</DialogContent>
 		</Dialog>
 	)

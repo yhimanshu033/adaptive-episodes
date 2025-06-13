@@ -41,7 +41,7 @@ const ShareListSkeletonLoader = () => (
 
 export default function SharedList() {
 	const { data, isLoading: isMembersLoading } = useUserMembersQuery()
-	console.log(data)
+
 	const memberData = useMemo(() => data?.members ?? [], [data])
 	const { table } = useProjectUsersTable(memberData)
 	const projectAccessMutation = useProjectAccessMutation()
@@ -54,7 +54,7 @@ export default function SharedList() {
 	}
 
 	return (
-		<ScrollArea className="w-full [&>[data-radix-scroll-area-viewport]]:max-h-44">
+		<ScrollArea className="w-full [&>[data-radix-scroll-area-viewport]]:max-h-36">
 			<IfElse condition={isMembersLoading}>
 				<If>
 					<ShareListSkeletonLoader />
@@ -93,6 +93,7 @@ export default function SharedList() {
 													{rolesArray.map((role, index) => (
 														<DropdownMenuItem
 															key={index}
+															className="!text-xs"
 															onClick={() =>
 																handleUpdateRole(
 																	row.original.user.email,

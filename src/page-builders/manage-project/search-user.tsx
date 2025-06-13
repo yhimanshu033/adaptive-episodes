@@ -2,9 +2,7 @@ import React from 'react'
 import useAllUsersData from '@/hooks/query/use-all-users-data'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useAdminStore, { setMemberQuery } from '@/store/admin-store'
-import { Check } from 'lucide-react'
 
-import IfElse, { Else, If } from '@/components/if-else'
 import {
 	Command,
 	CommandEmpty,
@@ -12,13 +10,13 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from '@/components/ui/command'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@/components/aural-ui/command'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import { Skeleton } from '@/components/aural-ui/skelton'
+import IfElse, { Else, If } from '@/components/if-else'
+import { cn } from '@/lib/utils/helpers'
 
 import { UserData } from '@/types/admin-types'
-
-import UserInfo from '../episodes/info/user-info'
 
 const SearchUser = ({
 	selectedValue,
@@ -55,50 +53,59 @@ const SearchUser = ({
 	}
 
 	return (
-		<Command className="bg-transparent">
-			<div className="relative flex items-center">
-				<CommandInput
-					placeholder="Search User"
-					value={addMemberQuery}
-					onValueChange={handleValueChange}
-					autoComplete="off"
-					groupClassName="border border-input rounded-md flex-1"
-					className="h-9"
-				/>
-				{selectedValue && (
-					<Check color="#B7D6A8" className="absolute right-2" size={16} />
+		<Command>
+			<CommandInput
+				classes={{
+					wrapper: 'border-none rounded-full bg-fm-surface-frosted/20',
+				}}
+				placeholder="Search User"
+				value={addMemberQuery}
+				onValueChange={handleValueChange}
+				autoComplete="off"
+			/>
+			<ScrollArea
+				className={cn(
+					addMemberQuery.length < 2 && 'hidden',
+					'max-h-32 rounded-md'
 				)}
-			</div>
-
-			<ScrollArea className="border-input mt-2 max-h-[52vh] rounded-md border">
-				<CommandList className="max-h-none">
+			>
+				<CommandList>
 					<IfElse condition={isLoading}>
 						<If>
-							{Array.from({ length: 9 }).map((_, index) => (
+							{Array.from({ length: 2 }).map((_, index) => (
 								<CommandItem key={index} disabled>
 									<Skeleton className="h-8 w-full" />
 								</CommandItem>
 							))}
 						</If>
 						<Else>
-							<CommandGroup>
-								{users.map((user, index) => (
-									<CommandItem
-										key={index}
-										onMouseDown={(e) => e.preventDefault()}
-										onSelect={() => handleSelect(user)}
-										className="cursor-pointer py-3"
-									>
-										<UserInfo user={user} showFullName showEmail />
-									</CommandItem>
-								))}
-							</CommandGroup>
+							<If condition={!selectedValue}>
+								<CommandGroup>
+									{users.map((user, index) => (
+										<CommandItem
+											className="bg-fm-surface-frosted/20"
+											key={index}
+											onMouseDown={(e) => e.preventDefault()}
+											onSelect={() => handleSelect(user)}
+										>
+											<div>
+												<h3 className="text-sm">
+													{user?.fullname ?? 'Anonymous'}
+												</h3>
+												<span className="text-fm-secondary text-xs">
+													{user.email}
+												</span>
+											</div>
+										</CommandItem>
+									))}
+								</CommandGroup>
+								<CommandEmpty className="text-muted-foreground py-2 text-sm">
+									No user found
+								</CommandEmpty>
+							</If>
 						</Else>
 					</IfElse>
 				</CommandList>
-				<CommandEmpty className="text-muted-foreground my-5 text-sm">
-					No user found
-				</CommandEmpty>
 			</ScrollArea>
 		</Command>
 	)

@@ -18,6 +18,7 @@ import {
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { cn } from '@/lib/utils/helpers'
 
 import { EFolderType } from '@/types/admin-types'
 
@@ -87,7 +88,12 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 							type="submit"
 							disabled={updateGDriveFolderMutation.isPending}
 							variant="text"
-							innerClassName="text-fm-tertiary text-sm !p-0 -translate-y-0 uppercase"
+							innerClassName={cn(
+								(form.getValues('link').length < 3 ||
+									updateGDriveFolderMutation.isPending) &&
+									'text-fm-tertiary',
+								'text-sm !p-0 -translate-y-0 uppercase truncate'
+							)}
 						>
 							Update
 						</Button>
