@@ -110,3 +110,5 @@ export const DEFAULT_NAVIGATION_PAGE_LIMIT = 20
 export const DEFAULT_INITIAL_PAGE = 1
 
 export const FAR_PADDING_TEXT = 8
+
+export const VIEW_SAVED_NOTES_URL = '/assets/save_notes_banner.webp'

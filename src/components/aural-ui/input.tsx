@@ -90,7 +90,9 @@ type InputProps = {
 	helperText?: ReactNode
 	id?: string
 	label?: ReactNode
+	max?: string
 	maxLength?: number
+	min?: string
 	name?: string
 	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
 	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -206,6 +208,7 @@ const PasswordToggle = forwardRef<
 		</IfElse>
 	</button>
 ))
+
 PasswordToggle.displayName = 'PasswordToggle'
 
 // InputBase component - Core input functionality without any wrapper elements
@@ -214,9 +217,10 @@ const InputBase = forwardRef<
 	{
 		className?: string
 		decoration?: InputDecoration
-		defaultValue?: string
+		defaultValue?: string | number
 		disabled?: boolean
-		endIcon?: boolean // Indicates if end icon spacing should be applied
+		// Indicates if start icon spacing should be applied
+		endIcon?: boolean
 		id?: string
 		maxLength?: number
 		name?: string
@@ -228,8 +232,8 @@ const InputBase = forwardRef<
 		startIcon?: boolean
 		type?: string
 		unstyled?: boolean
-		value?: string
-		variant?: InputVariant
+		value?: string | number
+		variant?: InputVariant // Indicates if end icon spacing should be applied
 	} & Omit<
 		React.InputHTMLAttributes<HTMLInputElement>,
 		'onChange' | 'onBlur' | 'onFocus' | 'defaultValue'
@@ -361,7 +365,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
 		// Handle input change
 		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-			setInputValue(e.target.value)
+			// Only update internal state if component is uncontrolled (no value prop)
+			if (value === undefined) {
+				setInputValue(e.target.value)
+			}
 			if (onChange) {
 				onChange(e)
 			}
@@ -374,6 +381,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
 		// Determine input type for password fields
 		const inputType = type === 'password' && isPasswordVisible ? 'text' : type
+
+		// Determine which value to use for character count
+		const currentValue = value !== undefined ? value : inputValue
+		const currentLength = String(currentValue).length || 0
 
 		return (
 			<InputRoot fullWidth={fullWidth} className={cn(className, classes.root)}>
@@ -391,7 +402,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 					</If>
 					<If condition={!!maxLength}>
 						<CharCount
-							currentLength={value?.length || inputValue.length || 0}
+							currentLength={currentLength}
 							maxLength={maxLength || 0}
 							className={cn(classes.characterCounter)}
 						/>

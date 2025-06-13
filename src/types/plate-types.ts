@@ -3,7 +3,7 @@ import { TDescendant, Value } from '@udecode/plate-common'
 import { SuggestionUser } from '@udecode/plate-suggestion'
 
 import { ERole, UserData } from '@/types/admin-types'
-import { Laser, PlotExplorerApiResponse } from '@/types/ai-types'
+import { ExplorerType, Laser } from '@/types/ai-types'
 
 export type Selection = {
 	anchor: {
@@ -70,8 +70,10 @@ export type LaserStoreType = {
 }
 
 export type TNote = {
-	content?: string | PlotExplorerApiResponse['data']
+	content?: string | ExplorerType
 	edit?: string
+	episodeNo?: number
+	episodeRange?: string
 	id: string
 	title: string
 	updateTime: string
