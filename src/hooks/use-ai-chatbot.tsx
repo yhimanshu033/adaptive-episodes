@@ -383,10 +383,15 @@ export function ChatbotProvider({
 			return
 		}
 		try {
-			const parsedResponse = parseOptimistically<IndexedCommentsResponse[]>(
-				responses[reviewStreaming].join('')
-			)
-			if (!parsedResponse) {
+			const parsedResponse =
+				parseOptimistically<IndexedCommentsResponse[]>(
+					responses[reviewStreaming].join('')
+				) ??
+				(responses[reviewStreaming]
+					.map((res) => parseOptimistically<IndexedCommentsResponse>(res))
+					.filter(Boolean) as IndexedCommentsResponse[])
+
+			if (!parsedResponse || !parsedResponse.length) {
 				return
 			}
 			addReview(parsedResponse)

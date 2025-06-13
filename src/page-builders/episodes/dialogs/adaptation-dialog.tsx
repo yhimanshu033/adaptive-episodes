@@ -46,6 +46,7 @@ export default function AdaptationDialog({
 		tableData,
 		setTableData,
 		storyData,
+		isAdapting,
 	} = useAdaptation()
 
 	// Validate props: Either both custom dialog props must be provided or neither
@@ -151,6 +152,8 @@ export default function AdaptationDialog({
 									mutate({
 										language: selectedAdaptingLanguage,
 										selectedRowData,
+										storyData,
+										currentLanguage,
 									})
 								}
 							>
@@ -169,8 +172,11 @@ export default function AdaptationDialog({
 								sendLS({
 									inputls,
 									projectId: Number(id),
-									sourceLang: getSourceLanguage(storyData?.source_language),
-									language: storyData?.parent_language || ELanguage.GERMAN,
+									sourceLang: getSourceLanguage(currentLanguage),
+									language:
+										(isAdapting
+											? storyData?.parent_language
+											: selectedAdaptingLanguage) || ELanguage.GERMAN,
 									selectedRowData,
 								})
 							}

@@ -7,7 +7,7 @@ const useAccessChecks = () => {
 
 	const isGerman = initialStoryData?.parent_language
 		? initialStoryData.parent_language === ELanguage.GERMAN_ORIGINAL
-		: true
+		: false
 
 	const isOriginal = initialStoryData?.is_original || false
 
