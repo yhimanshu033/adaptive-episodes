@@ -48,7 +48,7 @@ export const getStoryData = async (
 	storyId: TGetStoryDataUrlParams['storyId']
 ) => {
 	const response = await fetchAPI<
-		TGetStoryDataResponse,
+		TGetStoryDataResponse['data'],
 		TGetStoryDataUrlParams
 	>({
 		method: 'GET',
@@ -57,9 +57,8 @@ export const getStoryData = async (
 			storyId,
 		},
 	})
-
 	// IN CASE THE NEW API IS NOT DEPLOYED YET
-	if (!response.data?.data) {
+	if (!response?.data) {
 		const storiesResponse = await getStories({})
 
 		if (!storiesResponse?.results?.data) {
@@ -72,5 +71,5 @@ export const getStoryData = async (
 		return story
 	}
 
-	return response.data?.data
+	return response.data
 }

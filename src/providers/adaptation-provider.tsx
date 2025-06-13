@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-	AVAILABLE_TARGET_LANGUAGES,
-	PREFERABLE_LANGUAGES,
-} from '@/constants/ai-constants'
+import { PREFERABLE_LANGUAGES } from '@/constants/ai-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
 import AdaptationDialog from '@/page-builders/episodes/adaptation-dialog'
 
-import { parseInputLSMapping } from '@/lib/utils/helpers'
+import {
+	getSelectableLanguages,
+	parseInputLSMapping,
+} from '@/lib/utils/helpers'
 
 import { ELanguage, LSMappingOutput, TSourceLanguage } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
@@ -17,17 +17,26 @@ function useAdaptationUtil() {
 	const [selectedRowData, setSelectedRowData] = useState<TEpisode[]>([])
 	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
 		useState<ELanguage>(ELanguage.GERMAN)
-	const currentLanguage = useMemo(
-		() =>
-			(selectedRowData[0]?.language as TSourceLanguage) || ELanguage.ENGLISH,
-		[selectedRowData]
-	)
+
 	const [storyData, setStory] = useState<TStory | null>()
 	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
 	const [isFetchingLSSheet, setFetchingLSSheet] = useState<boolean>(false)
 
+	const isAdapting = useMemo(
+		() => !storyData?.adapting_seq_nos?.length && storyData?.is_original,
+		[storyData]
+	)
+
+	const currentLanguage = useMemo(
+		() =>
+			(isAdapting
+				? (storyData?.source_language as TSourceLanguage)
+				: (storyData?.parent_language as TSourceLanguage)) || ELanguage.ENGLISH,
+		[isAdapting, storyData?.parent_language, storyData?.source_language]
+	)
+
 	const selectableLanguages = useMemo(
-		() => AVAILABLE_TARGET_LANGUAGES.filter((lang) => lang !== currentLanguage),
+		() => getSelectableLanguages(currentLanguage),
 		[currentLanguage]
 	)
 
@@ -125,6 +134,7 @@ function useAdaptationUtil() {
 		setStory,
 		setFetchingLSSheet,
 		storyData,
+		isAdapting,
 	}
 }
 

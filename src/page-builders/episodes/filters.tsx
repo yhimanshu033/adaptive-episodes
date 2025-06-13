@@ -146,7 +146,7 @@ const Filters = ({
 					</Button>
 				</form>
 			</Form>
-			<If condition={isOriginal === false && !isGerman}>
+			<If condition={!isGerman}>
 				<Button
 					disabled={disabled || selectedRowData.length < 1}
 					onClick={() => {
