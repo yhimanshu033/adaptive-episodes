@@ -1,12 +1,15 @@
 import React from 'react'
 import { sidebarButtons, sidebarToTitle } from '@/constants/ai-constants'
+import { CrossIcon } from '@/icons/cross-icon'
 import usePlateStore from '@/store/plate-store'
-import { X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
-import IfElse, { Else, If } from '@/components/if-else'
-import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import { Tabs, TabsList, TabsTrigger } from '@/components/aural-ui/tabs'
 import ForEach from '@/components/ui/for-each'
+
+import { ESidebar } from '@/types/plate-types'
 
 export default function SidebarTopBar() {
 	const { store: plateStore, setSidebar } = usePlateStore()
@@ -15,31 +18,43 @@ export default function SidebarTopBar() {
 	if (!sidebar) {
 		return null
 	}
+	{
+		/* <div className="bg-background border-fm-divider-tertiary sticky top-0 z-20 flex h-[62px] min-h-[62px] items-center justify-between border-y px-2 py-1.5"> */
+	}
 	return (
-		<div className="bg-background border-fm-divider-tertiary sticky top-0 z-20 flex h-[62px] min-h-[62px] items-center justify-between border-y px-2 py-1.5">
+		<div className="bg-fm-surface-primary border-fm-divider-tertiary sticky top-0 z-20 h-14 border">
 			<IfElse condition={sidebarButtons.includes(sidebar)}>
 				<If>
-					<ForEach data={sidebarButtons}>
-						{(sidebarItem, idx) => (
-							<Button
-								key={idx}
-								onClick={() => setSidebar(sidebarItem)}
-								variant="ghost"
-							>
-								{sidebarToTitle[sidebarItem]}
-							</Button>
-						)}
-					</ForEach>
+					<Tabs defaultValue={ESidebar.CHATBOT}>
+						<TabsList className="justify-between">
+							<ForEach data={sidebarButtons}>
+								{(sidebarItem, idx) => (
+									<TabsTrigger
+										key={idx}
+										onClick={() => setSidebar(sidebarItem)}
+										className="text-fm-md"
+										value={sidebarItem}
+									>
+										{sidebarToTitle[sidebarItem]}
+									</TabsTrigger>
+								)}
+							</ForEach>
+						</TabsList>
+					</Tabs>
 				</If>
 				<Else>
-					<h4>{sidebarToTitle[sidebar]}</h4>
+					<div className="flex h-full items-center justify-between gap-4 pr-4 pl-7">
+						<h4>{sidebarToTitle[sidebar]}</h4>
+						<IconButton
+							label="Close Sidebar"
+							variant="ghost"
+							className="hover:bg-transparent"
+							onClick={() => setSidebar(null)}
+							icon={<CrossIcon className="size-4" />}
+						/>
+					</div>
 				</Else>
 			</IfElse>
-			<div>
-				<Button variant="ghost" size="icon" onClick={() => setSidebar(null)}>
-					<X />
-				</Button>
-			</div>
 		</div>
 	)
 }

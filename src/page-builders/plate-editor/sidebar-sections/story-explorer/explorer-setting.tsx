@@ -1,8 +1,6 @@
 import React from 'react'
 import useAIStore from '@/store/ai-store'
-import { Settings } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -10,9 +8,11 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/aural-ui/dropdown'
+import { FilterBarRowIcon } from '@/components/aural-ui/filter-bar-row-icon'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { RadioGroup, RadioGroupItem } from '@/components/aural-ui/radio'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 import { EFocusSetting } from '@/types/ai-types'
 
@@ -22,16 +22,16 @@ export function ExplorerSettings() {
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger
-				asChild
-				className="absolute -right-1 translate-x-full"
-			>
-				<Button tooltip="Configurations" variant="outline" size="icon">
-					<Settings />
-				</Button>
+			<DropdownMenuTrigger asChild>
+				<IconButton
+					label="Trigger filter dropdown"
+					variant="outlined"
+					className="bg-fm-hotpink-50 border-fm-hotpink-200 hover:border-fm-hotpink-300 shrink-0"
+					icon={<FilterBarRowIcon className="text-fm-hotpink-400 size-4.5" />}
+				/>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="start" className="w-fit">
-				<DropdownMenuLabel>Configure</DropdownMenuLabel>
+			<DropdownMenuContent align="end" className="w-fit">
+				<DropdownMenuLabel className="sr-only">Configure</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup className="space-y-4 p-2">
 					<RadioGroup
@@ -39,15 +39,20 @@ export function ExplorerSettings() {
 						onValueChange={setFocusConfig}
 					>
 						<div className="flex items-center space-x-2">
-							<RadioGroupItem id="cms" value={EFocusSetting.CMS} />
-							<Label id="cms">Use CMS episodes</Label>
+							<RadioGroupItem
+								id="cms"
+								value={EFocusSetting.CMS}
+								className="size-6"
+							/>
+							<Label id="cms">CMS episodes</Label>
 						</div>
 						<div className="flex items-center space-x-2">
 							<RadioGroupItem
 								value={EFocusSetting.BASE_SCRIPT}
 								id="base_script"
+								className="size-6"
 							/>
-							<Label id="base_script">Use base script episodes</Label>
+							<Label id="base_script">Base script episodes</Label>
 						</div>
 					</RadioGroup>
 				</DropdownMenuGroup>

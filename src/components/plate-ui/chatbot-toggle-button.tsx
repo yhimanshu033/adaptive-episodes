@@ -20,7 +20,7 @@ export function ChatbotToolbarButton() {
 					: 'default'
 			}
 			tooltip="StoryChat"
-			onClick={() => setSidebar(ESidebar.CHATBOT, true)}
+			onClick={() => setSidebar(sidebar ?? ESidebar.CHATBOT, true)}
 		>
 			<Sidebar />
 		</ToolbarButton>

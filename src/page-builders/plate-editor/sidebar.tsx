@@ -11,8 +11,8 @@ import SidebarTopBar from '@/page-builders/plate-editor/sidebar-sections/top-bar
 import usePlateStore from '@/store/plate-store'
 import { useDebounceValue } from 'usehooks-ts'
 
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
@@ -64,7 +64,7 @@ const Sidebar = () => {
 					transitionDuration: `${isTransitioning ? TRANSITION_DURATION : 0}ms`,
 				}}
 				className={cn(
-					'bg-background border-fm-divider-tertiary sticky top-0 h-svh w-full max-w-full border-r border-b transition-all',
+					'bg-fm-surface-primary border-fm-divider-tertiary sticky top-0 h-svh w-full max-w-full border-r border-b transition-all',
 					!showSidebar && 'max-w-0'
 				)}
 			>
