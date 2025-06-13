@@ -84,31 +84,29 @@ const WriterCombobox = ({
 								</CommandEmpty>
 								<CommandGroup>
 									{members?.map((member) => (
-										<>
-											<CommandItem
-												className="font-fm-text text-sm"
-												key={member.user.id}
-												value={String(member.user.fullname)}
-												onSelect={() => {
-													if (!isWriter) {
-														return
-													}
-													setValue(String(member.user.id))
-													mutate(member.user.id)
-												}}
-											>
-												{member.user.fullname}
-												<TickIcon
-													className={cn(
-														'ml-auto',
-														selectedMember?.user.id === member.user.id
-															? 'opacity-100'
-															: 'opacity-0'
-													)}
-												/>
-											</CommandItem>
+										<CommandItem
+											className="font-fm-text text-sm"
+											key={member.user.id}
+											value={String(member.user.fullname)}
+											onSelect={() => {
+												if (!isWriter) {
+													return
+												}
+												setValue(String(member.user.id))
+												mutate(member.user.id)
+											}}
+										>
+											{member.user.fullname}
+											<TickIcon
+												className={cn(
+													'ml-auto',
+													selectedMember?.user.id === member.user.id
+														? 'opacity-100'
+														: 'opacity-0'
+												)}
+											/>
 											<Divider variant="dashed" className="my-0.5" />
-										</>
+										</CommandItem>
 									))}
 								</CommandGroup>
 							</CommandList>

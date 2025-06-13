@@ -205,8 +205,8 @@ const EpisodesTable = () => {
 						<If>
 							<TableRow>
 								<TableCell colSpan={columnSize + 1}>
-									{Array.from({ length: limit }).map(() => (
-										<Skeleton key={`skeleton-${limit}`} className="mb-3 h-12" />
+									{Array.from({ length: limit }).map((_, index) => (
+										<Skeleton key={`skeleton-${index}`} className="mb-3 h-12" />
 									))}
 								</TableCell>
 							</TableRow>
