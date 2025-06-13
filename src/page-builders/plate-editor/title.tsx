@@ -52,7 +52,7 @@ const Title = ({
 					/>
 				</div>
 			</div>
-			<p className="text-fm-tertiary font-fm-brand flex items-center justify-center gap-2 [font-size:var(--text-fm-sm)] font-medium uppercase">
+			<p className="text-fm-tertiary font-fm-brand flex items-center justify-start gap-2 [font-size:var(--text-fm-sm)] font-medium uppercase">
 				{selectedMember?.user.fullname && (
 					<>
 						<span>{selectedMember?.user.fullname}</span>

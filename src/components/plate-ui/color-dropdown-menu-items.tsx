@@ -7,15 +7,15 @@ import type { DropdownMenuItemProps } from '@radix-ui/react-dropdown-menu'
 import { cn } from '@udecode/cn'
 import { Ban } from 'lucide-react'
 
-import { Icons } from '@/components/icons'
-import { buttonVariants } from '@/components/plate-ui/button'
-import type { TColor } from '@/components/plate-ui/color-dropdown-menu'
-import { DropdownMenuItem } from '@/components/plate-ui/dropdown-menu'
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
-} from '@/components/plate-ui/tooltip'
+} from '@/components/aural-ui/tooltip'
+import { Icons } from '@/components/icons'
+import { buttonVariants } from '@/components/plate-ui/button'
+import type { TColor } from '@/components/plate-ui/color-dropdown-menu'
+import { DropdownMenuItem } from '@/components/plate-ui/dropdown-menu'
 
 type ColorDropdownMenuItemProps = {
 	isBrightColor: boolean

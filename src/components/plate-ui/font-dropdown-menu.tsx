@@ -66,7 +66,7 @@ export function FontDropdownMenu(props: DropdownMenuProps) {
 					{items.map(({ icon: Icon, value: itemValue }) => (
 						<DropdownMenuRadioItem
 							key={itemValue}
-							className="min-w-[180px]"
+							className="min-w-45 py-2 [font-size:var(--text-fm-md)]"
 							value={itemValue}
 						>
 							<Icon className="mr-2 w-full" />

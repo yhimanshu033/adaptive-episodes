@@ -42,7 +42,7 @@ export function LineHeightDropdownMenu({ ...props }: DropdownMenuProps) {
 					{state.values.map((_value) => (
 						<DropdownMenuRadioItem
 							key={_value}
-							className="min-w-[180px]"
+							className="min-w-24 py-2 [font-size:var(--text-fm-md)]"
 							value={_value}
 						>
 							{_value}

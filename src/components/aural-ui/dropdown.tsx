@@ -1,8 +1,8 @@
 import * as React from 'react'
-import ChevronRightIcon from '@/icons/chevron-right-icon'
-import { TickIcon } from '@/icons/tick-icon'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 
+import { ChevronRightIcon } from '../../icons/chevron-right-icon'
+import { TickIcon } from '../../icons/tick-icon'
 import { cn } from '../../lib/aural-ui/utils'
 import { Divider } from './divider'
 import { Label } from './label'
@@ -445,6 +445,22 @@ function DropdownMenuSubContent({
 			{children}
 		</DropdownMenuPrimitive.SubContent>
 	)
+}
+
+export const useOpenState = () => {
+	const [open, setOpen] = React.useState(false)
+
+	const onOpenChange = React.useCallback(
+		(_value = !open) => {
+			setOpen(_value)
+		},
+		[open]
+	)
+
+	return {
+		open,
+		onOpenChange,
+	}
 }
 
 export {

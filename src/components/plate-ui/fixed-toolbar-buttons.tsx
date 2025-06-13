@@ -13,6 +13,7 @@ import {
 import { ListStyleType } from '@udecode/plate-indent-list'
 import { useShallow } from 'zustand/react/shallow'
 
+import { Switch } from '@/components/aural-ui/switch'
 import { Icons, iconVariants } from '@/components/icons'
 import IfElse, { Else, If } from '@/components/if-else'
 import { AlignDropdownMenu } from '@/components/plate-ui/align-dropdown-menu'
@@ -28,7 +29,6 @@ import TtsToolbarButton from '@/components/plate-ui/tts-toolbar-button'
 import { TurnIntoDropdownMenu } from '@/components/plate-ui/turn-into-dropdown-menu'
 import UndoRedoButtons from '@/components/plate-ui/undo-redo-buttons'
 import { ZoomDropdownMenu } from '@/components/plate-ui/zoom-dropdown'
-import { Switch } from '@/components/ui/switch'
 
 import { ESidebar } from '@/types/plate-types'
 

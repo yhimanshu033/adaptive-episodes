@@ -5,9 +5,9 @@ import * as ToolbarPrimitive from '@radix-ui/react-toolbar'
 import { cn, withCn, withRef, withVariants } from '@udecode/cn'
 import { cva, type VariantProps } from 'class-variance-authority'
 
+import { Divider } from '@/components/aural-ui/divider'
+import { withTooltip } from '@/components/aural-ui/tooltip'
 import { Icons } from '@/components/icons'
-import { withTooltip } from '@/components/plate-ui/tooltip'
-import { Separator } from '@/components/ui/separator'
 
 export const Toolbar = withCn(
 	ToolbarPrimitive.Root,
@@ -31,8 +31,10 @@ export const ToolbarSeparator = withCn(
 
 const toolbarButtonVariants = cva(
 	cn(
-		'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-		'[&_svg:not([data-icon])]:size-5'
+		'inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-fm-primary focus-visible:ring-offset-fm-neutral-0 text-fm-icon-active disabled:text-fm-icon-inactive [font-size:var(--text-fm-md)]',
+		'[&_svg:not([data-icon])]:size-5',
+		'data-[state=open]:bg-fm-secondary-50 data-[state=open]:text-fm-secondary-800',
+		'aria-checked:bg-fm-secondary-50 aria-checked:text-fm-secondary-800'
 	),
 	{
 		defaultVariants: {
@@ -47,10 +49,10 @@ const toolbarButtonVariants = cva(
 			},
 			variant: {
 				default:
-					'bg-transparent hover:bg-muted hover:text-muted-foreground aria-checked:bg-accent aria-checked:text-accent-foreground',
+					'bg-transparent hover:text-fm-secondary-800 hover:bg-fm-secondary-50 disabled:bg-transparent data-[state=open]:bg-fm-secondary-50 data-[state=open]:text-fm-secondary-800',
 				outline:
-					'border border-input bg-transparent hover:bg-accent hover:text-accent-foreground',
-				active: 'bg-primary text-primary-foreground hover:bg-primary/90',
+					'border border-solid border-fm-divider-primary hover:border-fm-secondary-50 disabled:border-fm-divider-tertiary',
+				active: 'bg-fm-secondary-50 text-fm-secondary-800',
 			},
 		},
 	}
@@ -86,7 +88,7 @@ const ToolbarButton = withTooltip(
 								size,
 								variant,
 							}),
-							isDropdown && 'my-1 justify-between pr-1',
+							isDropdown && 'justify-between pr-1',
 							className
 						)}
 						value={pressed ? 'single' : ''}
@@ -147,11 +149,7 @@ export const ToolbarGroup = withRef<
 
 	return (
 		<div ref={ref} className={cn('flex', className)}>
-			{!noSeparator && (
-				<div className="h-full py-1">
-					<Separator orientation="vertical" />
-				</div>
-			)}
+			{!noSeparator && <Divider orientation="vertical" variant="secondary" />}
 
 			<div className="mx-1 flex items-center gap-1">{children}</div>
 		</div>
