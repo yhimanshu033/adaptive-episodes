@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
 	prioritizedStatuses,
@@ -707,4 +708,13 @@ export function getSourceLanguage(language?: ELanguage) {
 		return ELanguage.ENGLISH_US
 	}
 	return sourceLang
+}
+
+export function getSelectableLanguages(
+	currentLanguage: ELanguage
+): ELanguage[] {
+	if (currentLanguage === ELanguage.TRANSLATED_ENGLISH) {
+		return [ELanguage.ENGLISH]
+	}
+	return AVAILABLE_TARGET_LANGUAGES.filter((lang) => lang !== currentLanguage)
 }
