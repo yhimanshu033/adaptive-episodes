@@ -9,33 +9,35 @@ import { Divider } from './divider'
 import { Label } from './label'
 
 // Base List Container
-export const listVariants = cva('relative shadow-lg', {
-	variants: {
-		variant: {
-			filled: 'bg-fm-surface-frosted/20 backdrop-blur-lg',
-			default: '',
-			elevated: 'shadow-xl',
-			flat: 'shadow-sm',
+export const listVariants = cva(
+	'bg-fm-surface-frosted/20 relative shadow-lg backdrop-blur-lg',
+	{
+		variants: {
+			variant: {
+				default: '',
+				elevated: 'shadow-xl',
+				flat: 'shadow-sm',
+			},
+			size: {
+				sm: 'min-w-32',
+				default: 'min-w-40',
+				lg: 'min-w-48',
+				xl: 'min-w-56',
+			},
+			rounded: {
+				none: 'rounded-none',
+				sm: 'rounded-sm',
+				default: 'rounded-fm-s',
+				lg: 'rounded-lg',
+			},
 		},
-		size: {
-			sm: 'min-w-32',
-			default: 'min-w-40',
-			lg: 'min-w-48',
-			xl: 'min-w-56',
+		defaultVariants: {
+			variant: 'default',
+			size: 'default',
+			rounded: 'default',
 		},
-		rounded: {
-			none: 'rounded-none',
-			sm: 'rounded-sm',
-			default: 'rounded-fm-s',
-			lg: 'rounded-lg',
-		},
-	},
-	defaultVariants: {
-		variant: 'default',
-		size: 'default',
-		rounded: 'default',
-	},
-})
+	}
+)
 
 // Border variants for top accent
 export const listBorderVariants = cva(

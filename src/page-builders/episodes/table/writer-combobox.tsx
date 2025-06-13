@@ -74,7 +74,9 @@ const WriterCombobox = ({
 					</SelectTrigger>
 					<SelectContent>
 						<Command
-							className="bg-fm-surface-frosted/20"
+							classes={{
+								list: 'backdrop-blur-none bg-transparent',
+							}}
 							defaultValue={selectedMember?.user?.fullname}
 						>
 							<CommandInput placeholder="Search Writer" />

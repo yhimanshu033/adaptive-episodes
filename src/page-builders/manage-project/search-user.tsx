@@ -53,7 +53,11 @@ const SearchUser = ({
 	}
 
 	return (
-		<Command>
+		<Command
+			classes={{
+				list: 'backdrop-blur-none bg-transparent',
+			}}
+		>
 			<CommandInput
 				classes={{
 					wrapper: 'border-none rounded-full bg-fm-surface-frosted/20',
