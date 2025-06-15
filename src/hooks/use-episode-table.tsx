@@ -1,5 +1,5 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { EpisodeActions } from '@/constants/episodes-constants'
+import { EpisodeActions, titleToStatus } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
@@ -70,7 +70,7 @@ const useEpisodeTable = () => {
 		})
 		if (selectedRows.length <= 1) {
 			setAlertInfo({
-				description: `Status of selected episode will switch to ${status}`,
+				description: `Status of selected episode will switch to ${titleToStatus[status]}`,
 				action: EpisodeActions.UPDATE,
 			})
 		} else if (hasConsistentStatus(selectedRows)) {
