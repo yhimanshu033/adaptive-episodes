@@ -7,10 +7,13 @@ import EditProjectDialog from '@/page-builders/episodes/dialogs/edit-project-dia
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Skeleton } from '@/components/aural-ui/skelton'
+import AuthWrapper from '@/components/auth-wrapper'
 import IfElse, { Else, If } from '@/components/if-else'
 import Image from '@/components/ui/image'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
+
+import { ERole } from '@/types/admin-types'
 
 interface StoryDetailsProps {
 	handleClick?: () => void
@@ -53,17 +56,19 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 							<h2 className={cn('font-fm-text text-3xl', titleClassname)}>
 								{storyData?.project_title}
 							</h2>
-							<EditProjectDialog>
-								<IconButton
-									icon={
-										<EditBigIcon className="text-fm-icon-brand-secondary" />
-									}
-									size="xSmall"
-									label="edit"
-									variant="ghost"
-									className="p-0"
-								/>
-							</EditProjectDialog>
+							<AuthWrapper role={ERole.ADMIN}>
+								<EditProjectDialog>
+									<IconButton
+										icon={
+											<EditBigIcon className="text-fm-icon-brand-secondary" />
+										}
+										size="xSmall"
+										label="edit"
+										variant="ghost"
+										className="p-0"
+									/>
+								</EditProjectDialog>
+							</AuthWrapper>
 						</div>
 						{!hideAuthor && (
 							<h4 className="font-fm-brand text-fm-tertiary ml-1 text-xs uppercase">

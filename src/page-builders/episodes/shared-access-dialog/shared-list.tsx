@@ -76,38 +76,46 @@ export default function SharedList() {
 												{row.original.user.email}
 											</span>
 										</div>
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button
-													variant="outline"
-													disabled={row.original.role === ERole.ADMIN}
-													size="sm"
-													className="gap-2 text-xs"
-												>
+										<IfElse condition={row.original.role === ERole.ADMIN}>
+											<If>
+												<span className="mr-2 text-xs uppercase">
 													{row.original.role}
-													<ChevronDownIcon className="h-4 w-4" />
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent>
-												<DropdownMenuGroup>
-													{rolesArray.map((role, index) => (
-														<DropdownMenuItem
-															key={index}
-															className="!text-xs"
-															onClick={() =>
-																handleUpdateRole(
-																	row.original.user.email,
-																	role as ERole
-																)
-															}
+												</span>
+											</If>
+											<Else>
+												<DropdownMenu>
+													<DropdownMenuTrigger asChild>
+														<Button
+															variant="outline"
+															size="sm"
+															className="gap-2 text-xs"
 														>
-															{role}
-															<DropdownMenuSeparator className="border-fm-secondary border-dashed" />
-														</DropdownMenuItem>
-													))}
-												</DropdownMenuGroup>
-											</DropdownMenuContent>
-										</DropdownMenu>
+															{row.original.role}
+															<ChevronDownIcon className="h-4 w-4" />
+														</Button>
+													</DropdownMenuTrigger>
+													<DropdownMenuContent align="end">
+														<DropdownMenuGroup>
+															{rolesArray.map((role, index) => (
+																<DropdownMenuItem
+																	key={index}
+																	className="!text-xs"
+																	onClick={() =>
+																		handleUpdateRole(
+																			row.original.user.email,
+																			role as ERole
+																		)
+																	}
+																>
+																	{role}
+																	<DropdownMenuSeparator className="border-fm-secondary border-dashed" />
+																</DropdownMenuItem>
+															))}
+														</DropdownMenuGroup>
+													</DropdownMenuContent>
+												</DropdownMenu>
+											</Else>
+										</IfElse>
 									</li>
 								))}
 							</ul>

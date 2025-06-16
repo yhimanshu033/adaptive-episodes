@@ -128,36 +128,38 @@ const EpisodesTable = () => {
 							<span>Adapt</span>
 						</Button>
 					</If>
-					{/* @ts-expect-error data count */}
-					<If condition={data?.count > 0}>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button
-									variant="primary"
-									className="font-fm-brand h-11 text-sm"
-								>
-									<PlusIcon width={20} height={20} />
-									<span>Add</span>
-									<ChevronDownIcon width={20} height={20} />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent className="mr-8">
-								<DropdownMenuItem
-									onClick={() => {
-										setIsInventOpen(true)
-										setInventIndex((data?.count ?? 0) - 1)
-									}}
-								>
-									<PlusIcon />
-									<span>Add new episode</span>
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<PlusIcon />
-									<span>Import new episode</span>
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</If>
+					<AuthWrapper role={ERole.WRITER}>
+						{/* @ts-expect-error data count */}
+						<If condition={data?.count > 0}>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button
+										variant="primary"
+										className="font-fm-brand h-11 text-sm"
+									>
+										<PlusIcon width={20} height={20} />
+										<span>Add</span>
+										<ChevronDownIcon width={20} height={20} />
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="mr-8">
+									<DropdownMenuItem
+										onClick={() => {
+											setIsInventOpen(true)
+											setInventIndex((data?.count ?? 0) - 1)
+										}}
+									>
+										<PlusIcon />
+										<span>Add new episode</span>
+									</DropdownMenuItem>
+									<DropdownMenuItem>
+										<PlusIcon />
+										<span>Import new episode</span>
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</If>
+					</AuthWrapper>
 				</div>
 			</div>
 			<Divider className="mt-4" />
@@ -290,11 +292,11 @@ const EpisodesTable = () => {
 					</IfElse>
 				</TableBody>
 			</Table>
-			<PaginationProvider totalItems={data ? data.count : 0}>
-				<If condition={!!data}>
+			{data && data.count > 0 && (
+				<PaginationProvider totalItems={data.count} initialPage={currentPage}>
 					<EpisodesPagination />
-				</If>
-			</PaginationProvider>
+				</PaginationProvider>
+			)}
 			<ActionAlert />
 			<InventForm />
 			<ShareAccessDialog />

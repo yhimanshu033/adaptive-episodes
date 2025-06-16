@@ -59,14 +59,16 @@ const WriterCombobox = ({
 				<Select>
 					<SelectTrigger
 						decoration="outline"
-						className="font-fm-brand text-xs uppercase"
+						className="font-fm-brand text-xs tracking-wider uppercase"
 						classes={{
 							root: 'h-10 text-sm',
 							icon: 'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
 						}}
 						disabled={!isWriter}
 					>
-						<span className="text-fm-primary tracking-wider">
+						<span
+							className={cn(isWriter ? 'text-fm-primary' : 'text-fm-secondary')}
+						>
 							{!selectedMember?.user
 								? dict('unassigned')
 								: selectedMember?.user?.fullname}
