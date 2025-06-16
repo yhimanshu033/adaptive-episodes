@@ -1,6 +1,9 @@
 import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
-import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
+import {
+	EPISODE_LIST_QUERY_KEY,
+	STORY_ID_QUERY_KEY,
+} from '@/constants/query-constants'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -20,6 +23,7 @@ import {
 	TNoParams,
 } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
+import { TStory } from '@/types/story-types'
 
 export default function useAdaptationMutation(onSuccess = () => {}) {
 	const { data: session } = useSession()
@@ -29,9 +33,13 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 	async function createAdaptation({
 		language,
 		selectedRowData,
+		storyData,
+		currentLanguage,
 	}: {
+		currentLanguage?: ELanguage
 		language: ELanguage
 		selectedRowData: TEpisode[]
+		storyData?: TStory | null
 	}) {
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{
@@ -41,9 +49,9 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					author: session?.user?.fullname || '',
 					inputls: {},
 					is_external: true,
-					project_id: selectedRowData?.[0]?.project,
+					project_id: storyData?.id || selectedRowData[0].project,
 					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang: getSourceLanguage(selectedRowData[0]?.language),
+					source_lang: getSourceLanguage(currentLanguage || ELanguage.ENGLISH),
 					target_lang: language,
 					type: 'ls_sheet_gen',
 				},
@@ -131,6 +139,9 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 			toast.success('Adaptation registered!')
 			await queryClient.invalidateQueries({
 				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
+			})
+			await queryClient.invalidateQueries({
+				queryKey: [STORY_ID_QUERY_KEY, Number(id)],
 			})
 		},
 		onError: () => {

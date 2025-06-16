@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
 import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
@@ -205,18 +206,27 @@ export function extract(str: string) {
 }
 
 export function parseOptimistically<T>(input: string) {
-	try {
-		return parse(input) as T
-	} catch (e) {
-		console.log(e)
-		try {
-			const repaired = jsonrepair(input)
-			return parse(repaired) as T
-		} catch (e) {
-			console.log(e)
-			return null
-		}
+	if (!input || input.trim() === '') {
+		return null
 	}
+
+	const cleanedInput = input.trim()
+
+	try {
+		const repaired = jsonrepair(cleanedInput)
+		return parse(repaired) as T
+	} catch (e) {
+		console.log('Jsonrepair failed:', e)
+	}
+
+	// Needs to debug why this is not working
+	// try {
+	// 	const res = parse(cleanedInput) as T
+	// 	return res
+	// } catch (e) {
+	// 	console.log('Initial parse failed', e)
+	// }
+	return null
 }
 
 export function trim(str: string, length: number = 100) {
@@ -775,4 +785,13 @@ export const formatFileSize = (bytes: number): string => {
 	} else {
 		return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 	}
+}
+
+export function getSelectableLanguages(
+	currentLanguage: ELanguage
+): ELanguage[] {
+	if (currentLanguage === ELanguage.TRANSLATED_ENGLISH) {
+		return [ELanguage.ENGLISH]
+	}
+	return AVAILABLE_TARGET_LANGUAGES.filter((lang) => lang !== currentLanguage)
 }
