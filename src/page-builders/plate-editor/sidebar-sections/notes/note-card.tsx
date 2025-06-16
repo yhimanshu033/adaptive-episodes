@@ -36,7 +36,7 @@ const NoteCard = ({ note }: { note: TNote }) => {
 	useLayoutEffect(() => {
 		if (contentRef.current) {
 			const scrollHeight = contentRef.current.scrollHeight
-			const collapsedHeight = 56 // 3.5rem = 56px
+			const collapsedHeight = 56
 
 			setMaxHeight(expanded ? `${scrollHeight}px` : `${collapsedHeight}px`)
 			setIsExpandable(scrollHeight > collapsedHeight)
