@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
 import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
@@ -7,6 +8,7 @@ import {
 } from '@/constants/episodes-constants'
 import { API_URLS, roleToData } from '@/constants/global-constants'
 import { MANAGE_PROJECT } from '@/constants/route-constants'
+import { EImportStatus } from '@/constants/story-constants'
 import { Locale } from '@/i18n/config'
 import { match } from '@formatjs/intl-localematcher'
 import { parse } from 'best-effort-json-parser'
@@ -205,18 +207,27 @@ export function extract(str: string) {
 }
 
 export function parseOptimistically<T>(input: string) {
-	try {
-		return parse(input) as T
-	} catch (e) {
-		console.log(e)
-		try {
-			const repaired = jsonrepair(input)
-			return parse(repaired) as T
-		} catch (e) {
-			console.log(e)
-			return null
-		}
+	if (!input || input.trim() === '') {
+		return null
 	}
+
+	const cleanedInput = input.trim()
+
+	try {
+		const repaired = jsonrepair(cleanedInput)
+		return parse(repaired) as T
+	} catch (e) {
+		console.log('Jsonrepair failed:', e)
+	}
+
+	// Needs to debug why this is not working
+	// try {
+	// 	const res = parse(cleanedInput) as T
+	// 	return res
+	// } catch (e) {
+	// 	console.log('Initial parse failed', e)
+	// }
+	return null
 }
 
 export function trim(str: string, length: number = 100) {
@@ -488,18 +499,31 @@ export async function projectAdminCheck(
 
 export function sortOpenedStories(openedIds: number[], projects: TStory[]) {
 	const sortedProjects = [...projects].sort((a, b) => {
+		// Check if either story has "Importing" status
+		const aIsImporting = a.status === EImportStatus.IMPORTING
+		const bIsImporting = b.status === EImportStatus.IMPORTING
+
+		// If one is importing and the other isn't, prioritize the importing one
+		if (aIsImporting && !bIsImporting) {
+			return -1 // A comes first
+		}
+		if (!aIsImporting && bIsImporting) {
+			return 1 // B comes first
+		}
+
+		// If both are importing or both are not importing, apply original logic
 		const indexA = openedIds.indexOf(a.id)
 		const indexB = openedIds.indexOf(b.id)
 
 		if (indexA === -1 && indexB === -1) {
-			return 0
-		} // Both not in openedIds, keep relative order
+			return 0 // Both not in openedIds, keep relative order
+		}
 		if (indexA === -1) {
-			return 1
-		} // A is not in openedIds, move to end
+			return 1 // A is not in openedIds, move to end
+		}
 		if (indexB === -1) {
-			return -1
-		} // B is not in openedIds, move to end
+			return -1 // B is not in openedIds, move to end
+		}
 
 		return indexA - indexB
 	})
@@ -775,4 +799,13 @@ export const formatFileSize = (bytes: number): string => {
 	} else {
 		return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 	}
+}
+
+export function getSelectableLanguages(
+	currentLanguage: ELanguage
+): ELanguage[] {
+	if (currentLanguage === ELanguage.TRANSLATED_ENGLISH) {
+		return [ELanguage.ENGLISH]
+	}
+	return AVAILABLE_TARGET_LANGUAGES.filter((lang) => lang !== currentLanguage)
 }

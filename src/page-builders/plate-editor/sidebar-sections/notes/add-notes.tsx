@@ -1,36 +1,24 @@
 import React from 'react'
-import useNotes from '@/hooks/use-notes'
-import useEpisodeIdStore from '@/store/episode-id-store'
-import { nanoid } from '@udecode/plate'
-import { Plus } from 'lucide-react'
+import { PlusIcon } from '@/icons/plus-icon'
+import useEditorNoteStore from '@/store/edit-note-store'
 
-import { Button } from '@/components/ui/button'
-
-import { TNote } from '@/types/plate-types'
+import { Button } from '@/components/aural-ui/button'
 
 const AddNotes = () => {
-	const { setActiveNoteId } = useEpisodeIdStore()
-	const { handleAddNote } = useNotes()
+	const { setFormOpen } = useEditorNoteStore()
 
 	const onClickAddNote = () => {
-		const id = nanoid()
-		const newNote: TNote = {
-			id,
-			title: 'Untitled',
-			edit: '',
-			updateTime: new Date().toString(),
-		}
-		handleAddNote(newNote, true)
-		setActiveNoteId(id)
+		setFormOpen(true)
 	}
 
 	return (
 		<Button
 			variant="outline"
-			className="text-l w-full"
+			className="text-fm-secondary-800 w-full"
+			innerClassName="border-fm-divider-secondary"
 			onClick={onClickAddNote}
 		>
-			<Plus size={16} /> Add to Notes
+			<PlusIcon /> Add new Notes
 		</Button>
 	)
 }

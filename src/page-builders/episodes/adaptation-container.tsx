@@ -28,8 +28,14 @@ const AdaptationContainer = () => {
 		language: initialStoryData?.parent_language || ELanguage.ENGLISH,
 	})
 
-	const { setFetchingLSSheet, setTableData, setStory, setOpen, step } =
-		useAdaptation()
+	const {
+		setFetchingLSSheet,
+		setTableData,
+		setStory,
+		setOpen,
+		step,
+		setEpisodeAdaptation,
+	} = useAdaptation()
 
 	useEffect(() => {
 		setStory(initialStoryData)
@@ -80,7 +86,10 @@ const AdaptationContainer = () => {
 					<CardContent className="text-center">
 						<If condition={step !== 1}>
 							<Button
-								onClick={() => setOpen(true)}
+								onClick={() => {
+									setOpen(true)
+									setEpisodeAdaptation(false)
+								}}
 								variant="outline"
 								className="w-full"
 							>
