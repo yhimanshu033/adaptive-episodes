@@ -39,7 +39,7 @@ export default function ShareAccessDialog() {
 			>
 				<ScrollArea className="[&>[data-radix-scroll-area-viewport]]:max-h-[90vh]">
 					<DialogHeader>
-						<DialogTitle className="pt-4">
+						<DialogTitle className="pt-2">
 							<div className="flex items-center justify-between py-3">
 								<h3 className="font-fm-text text-xl">Share access</h3>
 								<IconButton

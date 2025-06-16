@@ -1,8 +1,8 @@
 import React from 'react'
+import { SpinnerGradientIcon } from '@/icons/spinner-gradient-icon'
+import { SpinnerSolidIcon } from '@/icons/spinner-solid-icon'
 
-import { SpinnerGradientIcon } from '../../icons/spinner-gradient-icon'
-import { SpinnerSolidIcon } from '../../icons/spinner-solid-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
 
 interface CircularLoaderProps {
 	variant?: 'v1' | 'v2'

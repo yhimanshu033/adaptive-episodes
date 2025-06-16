@@ -24,7 +24,6 @@ const iconButtonVariants = cva(
 					'border border-solid border-fm-divider-primary hover:border-fm-button-stroke disabled:border-fm-divider-tertiary',
 			},
 			size: {
-				xSmall: 'size-5', // 20px
 				small: 'size-8', // 32px
 				medium: 'size-11', // 44px
 				large: 'size-14', // 56px

@@ -1,20 +1,22 @@
 import React, { PropsWithChildren, useCallback, useEffect } from 'react'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
 import useUploadFile from '@/hooks/mutation/use-upload-file'
+import { CrossIcon } from '@/icons/cross-icon'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import IfElse from '@/components/if-else'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/aural-ui/button'
+import Spinner from '@/components/aural-ui/circular-loader'
 import {
 	Dialog,
 	DialogClose,
 	DialogContent,
 	DialogTitle,
 	DialogTrigger,
-} from '@/components/ui/dialog'
-import FileUpload from '@/components/ui/file-upload'
+} from '@/components/aural-ui/dialog'
+import { Divider } from '@/components/aural-ui/divider'
+import FileUpload from '@/components/aural-ui/file-upload'
 import {
 	Form,
 	FormControl,
@@ -22,9 +24,10 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import Spinner from '@/components/ui/spinner'
+} from '@/components/aural-ui/form'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import Input from '@/components/aural-ui/input'
+import IfElse from '@/components/if-else'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 import { TStory } from '@/types/story-types'
@@ -76,11 +79,31 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent>
-				<DialogTitle>Edit Details</DialogTitle>
+			<DialogContent
+				variant="neutral"
+				classes={{
+					content: 'w-full',
+				}}
+				noise="none"
+				showCloseButton={false}
+			>
+				<DialogTitle>
+					<div className="flex items-center justify-between py-3">
+						<h3 className="font-fm-text text-xl">Edit series details</h3>
+						<DialogClose asChild>
+							<IconButton
+								variant="ghost"
+								size="small"
+								icon={<CrossIcon width={20} height={20} />}
+								label="cross icon"
+							/>
+						</DialogClose>
+					</div>
+					<Divider variant="dashed" />
+				</DialogTitle>
 				<Form {...form}>
 					<form
-						className="space-y-4"
+						className="mt-6 space-y-8"
 						onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
 					>
 						<FormField
@@ -88,10 +111,12 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 							name="project_title"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Series title</FormLabel>
+									<FormLabel className="mb-2 text-xs">Series title</FormLabel>
 									<FormControl>
 										<Input
-											placeholder="Enter story title"
+											className="text-sm"
+											decoration="outline"
+											placeholder="Enter series title"
 											id="project_title"
 											{...field}
 										/>
@@ -105,9 +130,11 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 							name="author"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Author</FormLabel>
+									<FormLabel className="mb-2 text-xs">Author</FormLabel>
 									<FormControl>
 										<Input
+											decoration="outline"
+											className="text-sm"
 											placeholder="Enter author name"
 											id="project_title"
 											{...field}
@@ -123,16 +150,23 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 							name="image"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Thumbnail</FormLabel>
-									<FormControl>
-										<FileUpload
-											accept="image/*"
-											defaultUrl={field.value}
-											onFileSelect={({ file }) => {
-												form.setValue('newImage', file)
-											}}
-										/>
-									</FormControl>
+									<FormLabel className="mb-2 text-xs">Thumbnail</FormLabel>
+									<FileUpload
+										accept="image/*"
+										defaultUrl={field.value}
+										onFileSelect={({ file }) => {
+											form.setValue('newImage', file)
+										}}
+									/>
+									{/*<FormControl>*/}
+									{/*	<FileUpload*/}
+									{/*		accept="image/*"*/}
+									{/*		defaultUrl={field.value}*/}
+									{/*		onFileSelect={({ file }) => {*/}
+									{/*			form.setValue('newImage', file)*/}
+									{/*		}}*/}
+									{/*	/>*/}
+									{/*</FormControl>*/}
 									<FormMessage />
 								</FormItem>
 							)}
@@ -140,12 +174,12 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 						<DialogClose asChild>
 							<Button
 								disabled={isFileUploading || storyUpdateMutation.isPending}
-								className="w-full"
+								className="mt-8 w-full"
 								type="submit"
 							>
 								<IfElse
 									condition={isFileUploading || storyUpdateMutation.isPending}
-									if={<Spinner />}
+									if={<Spinner className="size-4" />}
 									else={'Save'}
 								/>
 							</Button>
