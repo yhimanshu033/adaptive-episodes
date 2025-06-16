@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/components/aural-ui/button'
-import Spinner from '@/components/aural-ui/circular-loader'
 import {
 	Dialog,
 	DialogClose,
@@ -27,7 +26,6 @@ import {
 } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
-import IfElse from '@/components/if-else'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 import { TStory } from '@/types/story-types'
@@ -158,15 +156,6 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 											form.setValue('newImage', file)
 										}}
 									/>
-									{/*<FormControl>*/}
-									{/*	<FileUpload*/}
-									{/*		accept="image/*"*/}
-									{/*		defaultUrl={field.value}*/}
-									{/*		onFileSelect={({ file }) => {*/}
-									{/*			form.setValue('newImage', file)*/}
-									{/*		}}*/}
-									{/*	/>*/}
-									{/*</FormControl>*/}
 									<FormMessage />
 								</FormItem>
 							)}
@@ -177,11 +166,7 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 								className="mt-8 w-full"
 								type="submit"
 							>
-								<IfElse
-									condition={isFileUploading || storyUpdateMutation.isPending}
-									if={<Spinner className="size-4" />}
-									else={'Save'}
-								/>
+								Save
 							</Button>
 						</DialogClose>
 					</form>

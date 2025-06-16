@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { PlusIcon } from '@/icons/plus-icon'
 import { TrashIcon } from '@/icons/trash-icon'
-import { UploadIcon } from '@/icons/upload-icon'
 
 import { FormDescription } from '@/components/aural-ui/form'
+import { IconButton } from '@/components/aural-ui/icon-button'
 import { Typography } from '@/components/aural-ui/typography'
 import IfElse, { Else, If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
@@ -99,7 +100,8 @@ export default function FileUpload({
 					isDragging
 						? `border-fm-divider-contrast`
 						: 'border-fm-divider-primary hover:border-fm-divider-contrast',
-					isDragging && classes.isDragging
+					isDragging && classes.isDragging,
+					!url && 'border-dashed'
 				)}
 				onDragOver={handleDragOver}
 				onDragLeave={handleDragLeave}
@@ -113,15 +115,27 @@ export default function FileUpload({
 					onChange={handleFileChange}
 					className="hidden"
 				/>
-
 				<div className="flex flex-col items-center justify-center gap-2 text-center">
 					<IfElse condition={!url}>
 						<If>
-							<UploadIcon className="text-muted-foreground size-10" />
-							<h3 className="text-lg font-medium">Add file</h3>
-							<p className="text-muted-foreground text-sm">
-								Drag and drop or click to select files
-							</p>
+							<div className="px-4 py-8">
+								<IconButton
+									label="Upload file button"
+									size="small"
+									icon={<PlusIcon />}
+								/>
+								<Typography
+									color="tertiary"
+									variant="caption-large"
+									className="text-fm-primary pt-3"
+									weight="regular"
+								>
+									Drag and drop or{' '}
+									<Typography as="span" className="text-fm-secondary-800">
+										upload story
+									</Typography>
+								</Typography>
+							</div>
 						</If>
 						<Else>
 							<div className="w-full">
@@ -147,6 +161,7 @@ export default function FileUpload({
 										</div>
 									</div>
 									<Button
+										type="button"
 										variant="link"
 										className="text-fm-negative gap-2 text-xs"
 										onClick={(e) => {

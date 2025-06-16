@@ -51,7 +51,7 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 						<Skeleton className="mt-2 h-4 w-24" />
 					</If>
 					<Else>
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-4">
 							<h2 className={cn('font-fm-text text-3xl', titleClassname)}>
 								{storyData?.project_title}
 							</h2>
