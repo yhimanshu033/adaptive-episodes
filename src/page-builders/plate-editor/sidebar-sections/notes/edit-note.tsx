@@ -1,40 +1,158 @@
-import React from 'react'
-import { NOTE_EDITOR_BASE_ID } from '@/constants/editor-constants'
-import useMyEditor from '@/hooks/use-my-editor'
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable react-hooks/exhaustive-deps */
+'use client'
+
+import React, { useEffect } from 'react'
+import {
+	EditNoteFormSchemaFormSchema,
+	useEditNoteFormResolver,
+} from '@/hooks/form-resolvers/edit-note-resolver'
+import useNotes from '@/hooks/use-notes'
+import useEditorNoteStore from '@/store/edit-note-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { Value } from '@udecode/plate'
-import { Plate } from '@udecode/plate-common/react'
+import { useEpisodeStore } from '@/store/episode-store'
+import { nanoid } from '@udecode/plate'
+import { useShallow } from 'zustand/react/shallow'
 
-import { Editor } from '@/components/plate-ui/editor'
-import FixedToolbarComponent from '@/components/plate-ui/fixed-toolbar-component'
+import { Button } from '@/components/aural-ui/button'
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/aural-ui/form'
+import Input from '@/components/aural-ui/input'
+import TextArea from '@/components/aural-ui/textarea'
 
-const EditNote = ({
-	content,
-	editorRef,
-}: {
-	content: string
-	editorRef: React.MutableRefObject<Value | null>
-}) => {
-	const { store } = useEpisodeIdStore()
-	const activeNoteId = store((state) => state.activeNoteId)
-	const editor = useMyEditor({
-		content,
-		id: `${NOTE_EDITOR_BASE_ID}-${activeNoteId}`,
-		simplified: true,
-	})
+import { TNote } from '@/types/plate-types'
+
+const EditNote = () => {
+	const { useEpisodeTableStore } = useEpisodeStore()
+	const notes = useEpisodeTableStore(useShallow((state) => state.notes))
+	const {
+		mode: primaryButtonText,
+		setFormOpen,
+		isFormOpen,
+	} = useEditorNoteStore()
+	const { store, setActiveNoteId } = useEpisodeIdStore()
+	const id = store(useShallow((state) => state.activeNoteId))
+	const note = id ? notes.find((note) => note.id === id) : null
+	const { handleAddNote, handleUpdateNotes } = useNotes()
+	const initialValues = {
+		title: note?.title || '',
+		description: typeof note?.content === 'string' ? note.content : '',
+	}
+
+	const form = useEditNoteFormResolver(initialValues)
+
+	const onSubmit = (data: EditNoteFormSchemaFormSchema) => {
+		const { title, description } = data
+		if (id) {
+			handleUpdateNotes(id, { title: title, content: description })
+			setActiveNoteId(null)
+			setFormOpen(false)
+		} else {
+			const id = nanoid()
+			const newNote: TNote = {
+				id,
+				title: title,
+				content: description,
+				edit: '',
+				updateTime: new Date().toString(),
+			}
+			handleAddNote(newNote, true)
+			setFormOpen(false)
+		}
+	}
+
+	useEffect(() => {
+		form.reset()
+	}, [isFormOpen])
+
 	return (
-		<Plate
-			editor={editor}
-			onValueChange={({ value }) => {
-				editorRef.current = value
-			}}
-		>
-			<FixedToolbarComponent simplified className="z-0 rounded-sm py-1" />
-			<Editor focusRing={false} size="md" className="min-h-24 pt-0!" />
-		</Plate>
+		<div className="bg-fm-surface-primary absolute inset-0 top-0 px-6 pt-22">
+			<Form {...form}>
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					className="flex flex-col gap-6"
+				>
+					<FormField
+						control={form.control}
+						name="title"
+						render={({ field }) => (
+							<FormItem className="space-y-2">
+								<FormLabel htmlFor="title" className="!sr-only">
+									Title
+								</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="Enter title here"
+										decoration="outline"
+										id="title"
+										{...field}
+										maxLength={60}
+										label="Title"
+										classes={{
+											label: 'pb-2',
+										}}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="description"
+						render={({ field }) => (
+							<FormItem className="space-y-2">
+								<FormLabel htmlFor="description">Description</FormLabel>
+								<FormControl>
+									<TextArea
+										placeholder="Enter description here"
+										decoration="outline"
+										id="description"
+										{...field}
+										autoGrow={false}
+										rows={15}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<div className="flex w-full items-center justify-end pt-3">
+						<Button
+							variant="text"
+							onClick={() => {
+								form.reset()
+								setFormOpen(false)
+							}}
+							innerClassName="h-9 text-fm-sm"
+						>
+							Cancel
+						</Button>
+
+						<Button
+							isDisabled={
+								!form.watch('title') ||
+								!form.watch('description') ||
+								!form.formState.isDirty
+							}
+							type="submit"
+							innerClassName="h-9 text-fm-sm"
+						>
+							{primaryButtonText}
+						</Button>
+					</div>
+				</form>
+			</Form>
+		</div>
 	)
 }
-
-EditNote.displayName = 'EditNote'
 
 export default EditNote

@@ -40,6 +40,13 @@ export const titleToStatus: Partial<Record<EStatus, string>> = {
 	[EStatus.PUBLISHED]: '🟢 CMS READY',
 }
 
+export const titleToStatusText: Partial<Record<EStatus, string>> = {
+	[EStatus.FIRST_DRAFT]: '1ST DRAFT',
+	[EStatus.SECOND_DRAFT]: 'REVIEW',
+	[EStatus.POLISH]: '2ND DRAFT',
+	[EStatus.PUBLISHED]: 'CMS READY',
+}
+
 export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.ENGLISH]: 'English',
 	[ELanguage.FRENCH]: 'French',
@@ -93,10 +100,10 @@ export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 export const UNASSIGNED_LABEL = 'Nicht zugewiesen'
 
 export const notesMessages = {
-	[ENotesAction.CREATE]: 'Note created successfully!',
-	[ENotesAction.DELETE]: 'Note deleted successfully!',
-	[ENotesAction.UPDATE]: 'Note updated successfully!',
-	[ENotesAction.DELETE_ALL]: 'All nots deleted successfully!',
+	[ENotesAction.CREATE]: 'Your note has been created successfully.',
+	[ENotesAction.DELETE]: 'Your note has been deleted successfully.',
+	[ENotesAction.UPDATE]: 'Your note has been updated successfully.',
+	[ENotesAction.DELETE_ALL]: 'All notes deleted successfully!',
 }
 
 export const prioritizedStatuses = [

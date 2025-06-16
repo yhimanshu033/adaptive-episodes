@@ -13,6 +13,7 @@ const initialState: EpisodeStoreState = {
 	episodeSearch: '',
 	isDialogOpen: false,
 	isInventOpen: false,
+	isSharedAccessDialogOpen: false,
 	alertInfo: null,
 	deleteEpisodeId: null,
 	selectedEpisodes: null,

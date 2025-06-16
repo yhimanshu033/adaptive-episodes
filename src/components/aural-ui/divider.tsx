@@ -1,9 +1,9 @@
 import * as React from 'react'
+import { AudioBarIcon } from '@/icons/audio-bar-icon'
 import * as SeparatorPrimitive from '@radix-ui/react-separator'
 import { cva } from 'class-variance-authority'
 
-import { AudioBarIcon } from '../../icons/audio-bar-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
 
 const dividerVariants = cva('flex-auto', {
 	variants: {

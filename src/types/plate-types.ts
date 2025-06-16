@@ -70,11 +70,12 @@ export type LaserStoreType = {
 }
 
 export type TNote = {
-	content?: string | ExplorerType
+	content?: string | Partial<ExplorerType>
 	edit?: string
 	episodeNo?: number
 	episodeRange?: string
 	id: string
+	modeAction?: string
 	title: string
 	updateTime: string
 }

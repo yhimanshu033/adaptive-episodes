@@ -1,0 +1,25 @@
+import React from 'react'
+import { AccessibleIcon } from '@radix-ui/react-accessible-icon'
+
+export const GitBranchIcon = (
+	props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
+	color = '#ffffff'
+) => (
+	<AccessibleIcon label="Git fork icon">
+		<svg
+			width="12"
+			height="14"
+			viewBox="0 0 12 14"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+			{...props}
+		>
+			<path
+				d="M2.99996 7.00065H8.99996V4.83398M2.99996 7.00065V4.66732M2.99996 7.00065V9.33398M8.99996 4.50065C10.0125 4.50065 10.8333 3.67984 10.8333 2.66732C10.8333 1.6548 10.0125 0.833984 8.99996 0.833984C7.98744 0.833984 7.16663 1.6548 7.16663 2.66732C7.16663 3.67984 7.98744 4.50065 8.99996 4.50065ZM2.99996 9.50065C1.98744 9.50065 1.16663 10.3215 1.16663 11.334C1.16663 12.3465 1.98744 13.1673 2.99996 13.1673C4.01248 13.1673 4.83329 12.3465 4.83329 11.334C4.83329 10.3215 4.01248 9.50065 2.99996 9.50065ZM2.99996 4.50065C4.01248 4.50065 4.83329 3.67984 4.83329 2.66732C4.83329 1.6548 4.01248 0.833984 2.99996 0.833984C1.98744 0.833984 1.16663 1.6548 1.16663 2.66732C1.16663 3.67984 1.98744 4.50065 2.99996 4.50065Z"
+				stroke={color}
+				strokeWidth="1.2"
+				strokeLinecap="square"
+			/>
+		</svg>
+	</AccessibleIcon>
+)

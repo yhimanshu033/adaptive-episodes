@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
 
@@ -9,6 +10,11 @@ export type EpisodeStoreState = {
 	alertInfo: {
 		action?: EpisodeActions
 		description: string
+		icon?: ReactNode
+		secondAction?: string
+		subDescription?: string
+		type?: string
+		variant?: string
 	} | null
 	currentInventIndex: number | null
 	currentPage: number
@@ -16,6 +22,7 @@ export type EpisodeStoreState = {
 	episodeSearch: string
 	isDialogOpen: boolean
 	isInventOpen: boolean
+	isSharedAccessDialogOpen: boolean
 	notes: TNote[]
 	selectedEpisodes: {
 		episodes: TEpisode[]

@@ -1,9 +1,10 @@
 import * as React from 'react'
+import { ChevronRightIcon } from '@/icons/chevron-right-icon'
+import { TickIcon } from '@/icons/tick-icon'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 
-import { ChevronRightIcon } from '../../icons/chevron-right-icon'
-import { TickIcon } from '../../icons/tick-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { Divider } from './divider'
 import { Label } from './label'
 

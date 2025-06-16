@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
 
 function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
 	return (

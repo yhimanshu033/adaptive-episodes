@@ -225,7 +225,8 @@ const SelectContent = React.forwardRef<
 		},
 		ref
 	) => (
-		<SelectPrimitive.Portal>
+		// @ts-expect-error type mismatch with Radix Select
+		<SelectPrimitive.Portal className="z-50">
 			<SelectPrimitive.Content
 				ref={ref}
 				className={cn(

@@ -5,11 +5,12 @@ import React, {
 	RefAttributes,
 	useState,
 } from 'react'
+import { EyeCloseIcon } from '@/icons/eye-close-icon'
+import { EyeOpenIcon } from '@/icons/eye-open-icon'
 import { cva } from 'class-variance-authority'
 
-import { EyeCloseIcon } from '../../icons/eye-close-icon'
-import { EyeOpenIcon } from '../../icons/eye-open-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import CharCount from './char-count'
 import HelperText from './helper-text'
 import { Else, If, IfElse } from './if-else'
@@ -142,7 +143,7 @@ const InputWrapper = forwardRef<
 	HTMLDivElement,
 	React.PropsWithChildren<{ className?: string }>
 >(({ children, className = '' }, ref) => (
-	<div ref={ref} className={cn('relative mt-1', className)}>
+	<div ref={ref} className={cn('relative', className)}>
 		{children}
 	</div>
 ))

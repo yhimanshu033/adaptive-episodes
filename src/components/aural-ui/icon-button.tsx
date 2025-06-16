@@ -2,7 +2,8 @@ import React, { forwardRef } from 'react'
 import { AccessibleIcon } from '@radix-ui/react-accessible-icon'
 import { cva, type VariantProps } from 'class-variance-authority'
 
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { withTooltip } from './tooltip'
 
 // Define variants with class-variance-authority
@@ -23,6 +24,7 @@ const iconButtonVariants = cva(
 					'border border-solid border-fm-divider-primary hover:border-fm-button-stroke disabled:border-fm-divider-tertiary',
 			},
 			size: {
+				xSmall: 'size-5', // 20px
 				small: 'size-8', // 32px
 				medium: 'size-11', // 44px
 				large: 'size-14', // 56px
@@ -46,7 +48,7 @@ const iconButtonVariants = cva(
 )
 
 // Determine the icon size based on button size
-export const getIconSize = (size: 'small' | 'large' | 'medium') => {
+export const getIconSize = (size: 'xSmall' | 'small' | 'large' | 'medium') => {
 	switch (size) {
 		case 'small':
 			return 16

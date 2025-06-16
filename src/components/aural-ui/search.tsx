@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react'
+import { CrossIcon } from '@/icons/cross-icon'
+import { SearchIcon } from '@/icons/search-icon'
 
-import { CrossIcon } from '../../icons/cross-icon'
-import { SearchIcon } from '../../icons/search-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { IconButton } from './icon-button'
 import Input from './input'
 
@@ -15,9 +16,11 @@ export interface SearchProps {
 	children?: React.ReactNode
 	className?: string
 	initialValue?: string
+	onChange?: (value: string) => void
 	onSearch?: (query: string) => void
 	placeholder?: string
-	results?: SearchResult[] // Children can be used to render custom search results
+	results?: SearchResult[]
+	value?: string
 }
 
 export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
@@ -25,20 +28,38 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 		{
 			placeholder = 'Search episodes',
 			className = '',
+			value: controlledValue,
 			onSearch,
+			onChange,
 			results = [],
 			initialValue = '',
 			children, // Children can be used to render custom search results
 		},
 		ref
 	) => {
-		const [value, setValue] = useState(initialValue)
+		// Determine if component is controlled or uncontrolled
+		const isControlled = controlledValue !== undefined
+		const [internalValue, setInternalValue] = useState(initialValue)
 		const [isFocused, setIsFocused] = useState(false)
 		const searchRef = useRef<HTMLDivElement>(null)
 
+		// Use controlled value if provided, otherwise use internal state
+		const value = isControlled ? controlledValue : internalValue
+
 		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 			const query = e.target.value
-			setValue(query)
+
+			// Update internal state only if uncontrolled
+			if (!isControlled) {
+				setInternalValue(query)
+			}
+
+			// Call onChange if provided (for controlled components)
+			if (onChange) {
+				onChange(query)
+			}
+
+			// Call onSearch if provided
 			if (onSearch) {
 				onSearch(query)
 			}
@@ -54,9 +75,21 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 				}
 			} else {
 				// Clear the input
-				setValue('')
+				const newValue = ''
+
+				// Update internal state only if uncontrolled
+				if (!isControlled) {
+					setInternalValue(newValue)
+				}
+
+				// Call onChange if provided (for controlled components)
+				if (onChange) {
+					onChange(newValue)
+				}
+
+				// Call onSearch if provided
 				if (onSearch) {
-					onSearch('')
+					onSearch(newValue)
 				}
 			}
 		}
@@ -90,7 +123,7 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 							label="Clear search"
 						/>
 					}
-					className="rounded-full"
+					className="w-full rounded-full"
 					decoration="filled"
 					classes={{
 						input: 'rounded-full h-11',
