@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
-type EditNoteMode = 'add' | 'save'
+type EditNoteMode = 'Add' | 'Save'
 
 type TEditNoteState = {
 	isFormOpen: boolean
@@ -14,7 +14,7 @@ type TEditNoteState = {
 const useEditorNoteStore = create<TEditNoteState>()(
 	devtools(
 		immer((set) => ({
-			mode: 'add',
+			mode: 'Add',
 			isFormOpen: false,
 			setMode: (mode) => {
 				set((state) => {

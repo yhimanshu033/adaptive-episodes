@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react'
 
 import Badge from '@/components/aural-ui/badge'
 import { Divider } from '@/components/aural-ui/divider'
 import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
+import { cn } from '@/lib/aural-ui/utils'
 import { formatDate } from '@/lib/format-date'
 import { formatExplorerData } from '@/lib/utils/explorer'
 
@@ -22,6 +23,26 @@ const NoteCard = ({ note }: { note: TNote }) => {
 		modeAction,
 		edit,
 	} = note
+
+	const contentRef = useRef<HTMLDivElement>(null)
+	const [expanded, setExpanded] = useState(false)
+	const [maxHeight, setMaxHeight] = useState('0px')
+	const [isExpandable, setIsExpandable] = useState(false)
+
+	const handleExpand = useCallback(() => {
+		setExpanded((prev) => !prev)
+	}, [])
+
+	useLayoutEffect(() => {
+		if (contentRef.current) {
+			const scrollHeight = contentRef.current.scrollHeight
+			const collapsedHeight = 56 // 3.5rem = 56px
+
+			setMaxHeight(expanded ? `${scrollHeight}px` : `${collapsedHeight}px`)
+			setIsExpandable(scrollHeight > collapsedHeight)
+		}
+	}, [expanded, content])
+
 	return (
 		<div className="group flex flex-col gap-3">
 			<div className="flex flex-col gap-1">
@@ -29,11 +50,19 @@ const NoteCard = ({ note }: { note: TNote }) => {
 					{title}
 				</Typography>
 				<div
-					className="text-fm-md text-fm-tertiary line-clamp-3 gap-4 overflow-hidden transition-all duration-1000 ease-out hover:line-clamp-none hover:max-h-full"
-					dangerouslySetInnerHTML={{
-						__html: formatExplorerData(content ?? '').replace(/\n/g, '<br/>'),
-					}}
-				/>
+					className="overflow-hidden transition-all duration-500 ease-in-out"
+					style={{ maxHeight }}
+				>
+					<div
+						ref={contentRef}
+						className={cn('!text-fm-md text-fm-tertiary', {
+							'line-clamp-2': !expanded,
+						})}
+						dangerouslySetInnerHTML={{
+							__html: formatExplorerData(content ?? '').replace(/\n/g, '<br/>'),
+						}}
+					/>
+				</div>
 			</div>
 			<div className="flex gap-1">
 				<Badge size="xs">Updated : {formatDate(updateTime)}</Badge>
@@ -47,7 +76,13 @@ const NoteCard = ({ note }: { note: TNote }) => {
 					<Badge size="xs">{modeAction}</Badge>
 				</If>
 			</div>
-			<ActionButtons id={id} edit={edit} />
+			<ActionButtons
+				id={id}
+				edit={edit}
+				handleExpand={handleExpand}
+				expanded={expanded}
+				isExpandable={isExpandable}
+			/>
 			<Divider variant="secondary" />
 		</div>
 	)

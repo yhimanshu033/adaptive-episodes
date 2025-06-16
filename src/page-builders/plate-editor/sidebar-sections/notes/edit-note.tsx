@@ -72,7 +72,7 @@ const EditNote = () => {
 	}, [isFormOpen])
 
 	return (
-		<div className="bg-fm-surface-primary absolute inset-0 top-0 z-10">
+		<div className="bg-fm-surface-primary absolute inset-0 top-0 px-6 pt-22">
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
@@ -134,7 +134,7 @@ const EditNote = () => {
 							}}
 							innerClassName="h-9 text-fm-sm"
 						>
-							cancel
+							Cancel
 						</Button>
 
 						<Button

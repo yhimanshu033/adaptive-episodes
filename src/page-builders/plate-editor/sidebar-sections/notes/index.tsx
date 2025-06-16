@@ -12,7 +12,9 @@ import { useShallow } from 'zustand/react/shallow'
 
 import DotLoader from '@/components/aural-ui/dot-loader'
 import { If } from '@/components/aural-ui/if-else'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Typography } from '@/components/aural-ui/typography'
+import { cn } from '@/lib/aural-ui/utils'
 
 import { TNote } from '@/types/plate-types'
 
@@ -51,8 +53,15 @@ const Notes = () => {
 		}
 
 		return (
-			<div className="relative flex h-svh flex-col gap-4">
-				<AddNotes />
+			<div className="h-full">
+				<ScrollArea className={cn('h-full px-6', { 'h-fit': !notes?.length })}>
+					<div className="flex h-full flex-col gap-8">
+						<AddNotes />
+						{notes.map((note) => {
+							return <NoteCard key={note.id} note={note} />
+						})}
+					</div>
+				</ScrollArea>
 				<If condition={!notes?.length}>
 					<div className="flex h-full flex-col items-center justify-center gap-6">
 						<div className="bg-fm-surface-frosted/20 flex size-12 items-center justify-center rounded-full p-4">
@@ -64,9 +73,6 @@ const Notes = () => {
 						</Typography>
 					</div>
 				</If>
-				{notes.map((note) => {
-					return <NoteCard key={note.id} note={note} />
-				})}
 				<If condition={isFormOpen}>
 					<EditNote />
 				</If>
@@ -75,7 +81,7 @@ const Notes = () => {
 	}
 
 	return (
-		<section className="h-svh px-6 pt-8">
+		<section className="h-full pt-8">
 			<RenderNotes />
 		</section>
 	)

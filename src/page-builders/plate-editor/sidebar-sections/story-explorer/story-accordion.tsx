@@ -49,7 +49,7 @@ export function ContentActions({
 	const addToNote = () => {
 		const note: TNote = {
 			id: nanoid(),
-			title: inputFocus ? `${inputFocus}-${title}` : title,
+			title: inputFocus ? `${inputFocus} - ${title}` : title,
 			content: content || '',
 			episodeNo: episodeNo,
 			episodeRange: episodeRange,
