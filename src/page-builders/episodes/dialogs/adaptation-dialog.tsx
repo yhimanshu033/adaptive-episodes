@@ -46,7 +46,8 @@ export default function AdaptationDialog({
 		tableData,
 		setTableData,
 		storyData,
-		isAdapting,
+		isEpisodeAdaptation,
+		setEpisodeAdaptation,
 	} = useAdaptation()
 
 	// Validate props: Either both custom dialog props must be provided or neither
@@ -83,10 +84,15 @@ export default function AdaptationDialog({
 
 	const titleText = useMemo(() => {
 		if (selectedEpNo && projectId) {
-			return `Adapt: Episodes ${selectedEpNo.join('-')} of Project ${projectId}`
+			return `Adapt: ${selectedRowData.length} Episodes of Project ${storyData?.project_title}`
 		}
 		return `Adapt all episodes of project ${storyData?.project_title}`
-	}, [projectId, selectedEpNo, storyData?.project_title])
+	}, [
+		projectId,
+		selectedEpNo,
+		selectedRowData.length,
+		storyData?.project_title,
+	])
 
 	if (!adaptOpen && step > 1) {
 		return (
@@ -169,16 +175,19 @@ export default function AdaptationDialog({
 							tableData={tableData}
 							setTableData={setTableData}
 							onSubmit={(inputls) =>
-								sendLS({
-									inputls,
-									projectId: Number(id),
-									sourceLang: getSourceLanguage(currentLanguage),
-									language:
-										(isAdapting
-											? storyData?.parent_language
-											: selectedAdaptingLanguage) || ELanguage.GERMAN,
-									selectedRowData,
-								})
+								sendLS(
+									{
+										inputls,
+										projectId: Number(id),
+										sourceLang: getSourceLanguage(currentLanguage),
+										language:
+											(isEpisodeAdaptation
+												? selectedAdaptingLanguage
+												: storyData?.parent_language) || ELanguage.GERMAN,
+										selectedRowData,
+									},
+									{ onSuccess: () => setEpisodeAdaptation(false) }
+								)
 							}
 						/>
 					</Case>

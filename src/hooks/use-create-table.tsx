@@ -60,7 +60,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		useEpisodeTable()
 
 	const { isWriter } = useProjectId()
-	const language = useParentLanguage()
+	const { parentLanguage } = useParentLanguage()
 	const { isGerman, isOriginal } = useAccessChecks()
 
 	const handleRowSelection = (
@@ -319,7 +319,9 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				</div>
 			),
 		},
-		...(language === ELanguage.GERMAN_ORIGINAL ? languageDependentColumns : []),
+		...(parentLanguage === ELanguage.GERMAN_ORIGINAL
+			? languageDependentColumns
+			: []),
 		{
 			accessorKey: EEpisodeHeaderKeys.UPDATE_TIME,
 			header: 'Last Updated',

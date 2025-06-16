@@ -13,10 +13,10 @@ import { LSMappingInput } from '@/types/common'
 
 export default function useLSSheetQuery() {
 	const language = useLanguage()
-	const parentLanguage = useParentLanguage()
+	const { parentLanguage, sourceLanguage } = useParentLanguage()
 	const { id: projectId } = useParams()
 	async function getLSData() {
-		if (language === parentLanguage) {
+		if (!sourceLanguage && language === parentLanguage) {
 			return null
 		}
 		const resp = await fetchAPI<LSMappingInput, TGetAdaptationLSUrlParams>({
