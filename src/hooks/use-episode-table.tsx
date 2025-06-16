@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { EpisodeActions } from '@/constants/episodes-constants'
+import { EpisodeActions, titleToStatus } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
@@ -81,7 +81,7 @@ const useEpisodeTable = () => {
 					/>
 				),
 				description: 'Status change',
-				subDescription: `Status of selected episode will switch to ${status}`,
+				subDescription: `Status of selected episode will switch to ${titleToStatus[status]}`,
 				action: EpisodeActions.UPDATE,
 				secondAction: 'Update',
 			})

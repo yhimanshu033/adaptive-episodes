@@ -97,7 +97,11 @@ export const SocketStreamingProvider = ({
 					if (payload.status === ESocketStatus.STARTED) {
 						setTaskEnded((prev) => ({ ...prev, [task_id]: false }))
 					}
-					if (payload.status === ESocketStatus.COMPLETED) {
+					if (
+						(payload.status === ESocketStatus.COMPLETED ||
+							payload.chunk === ']') &&
+						!taskEnded[task_id]
+					) {
 						const callback = taskCallbacksRef.current[task_id]
 						if (callback) {
 							callback(responsesRef.current[task_id])
@@ -109,7 +113,7 @@ export const SocketStreamingProvider = ({
 					setResponses((prev) => ({ ...prev, [task_id]: [] }))
 					responsesRef.current[task_id] = []
 				}
-				if (!payload.chunk) {
+				if (!payload.chunk || payload.chunk === ']') {
 					return
 				}
 				let chunk = payload.chunk

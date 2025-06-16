@@ -53,6 +53,8 @@ import { formatDate } from '@/lib/format-date'
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
+import useAccessChecks from './use-access-checks'
+
 const statusTagProps = {
 	[EStatus.PUBLISHED]: { variant: 'system', color: 'positive' },
 	[EStatus.FIRST_DRAFT]: { variant: 'system', color: 'negative' },
@@ -74,7 +76,8 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		useEpisodeTable()
 
 	const { isWriter } = useProjectId()
-	const language = useParentLanguage()
+	const { parentLanguage } = useParentLanguage()
+	const { isGerman, isOriginal } = useAccessChecks()
 
 	const handleRowSelection = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -151,10 +154,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						: row.getValue('status')
 				const latestIndex = statuses.indexOf(latestStatus)
 
-				if (
-					row.original.language &&
-					row.original.language !== ELanguage.GERMAN_ORIGINAL
-				) {
+				if (!(isGerman || isOriginal)) {
 					return null
 				}
 				if (row.depth) {
@@ -362,7 +362,9 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				</div>
 			),
 		},
-		...(language === ELanguage.GERMAN_ORIGINAL ? languageDependentColumns : []),
+		...(parentLanguage === ELanguage.GERMAN_ORIGINAL
+			? languageDependentColumns
+			: []),
 		{
 			accessorKey: EEpisodeHeaderKeys.UPDATE_TIME,
 			header: 'Last Updated',

@@ -100,10 +100,10 @@ export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 export const UNASSIGNED_LABEL = 'Nicht zugewiesen'
 
 export const notesMessages = {
-	[ENotesAction.CREATE]: 'Note created successfully!',
-	[ENotesAction.DELETE]: 'Note deleted successfully!',
-	[ENotesAction.UPDATE]: 'Note updated successfully!',
-	[ENotesAction.DELETE_ALL]: 'All nots deleted successfully!',
+	[ENotesAction.CREATE]: 'Your note has been created successfully.',
+	[ENotesAction.DELETE]: 'Your note has been deleted successfully.',
+	[ENotesAction.UPDATE]: 'Your note has been updated successfully.',
+	[ENotesAction.DELETE_ALL]: 'All notes deleted successfully!',
 }
 
 export const prioritizedStatuses = [
