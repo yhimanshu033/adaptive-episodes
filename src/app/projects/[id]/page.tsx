@@ -7,19 +7,19 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import getQueryClient from '@/lib/get-query-client'
 
 interface PageProps {
-	params: {
-		id: string
-	}
+	params: Promise<{ id: string }>
 }
 
-export default async function Page({ params }: PageProps) {
+const Page = async ({ params }: PageProps) => {
 	const queryClient = getQueryClient()
-	const id = Number(params.id)
 
-	// Prefetch the story data
+	// Await the params Promise
+	const { id } = await params
+	const projectId = Number(id)
+
 	await queryClient.prefetchQuery({
-		queryKey: [STORY_ID_QUERY_KEY, id],
-		queryFn: () => getStoryData(id),
+		queryKey: [STORY_ID_QUERY_KEY, projectId],
+		queryFn: () => getStoryData(projectId),
 	})
 
 	return (
@@ -28,3 +28,5 @@ export default async function Page({ params }: PageProps) {
 		</HydrationBoundary>
 	)
 }
+
+export default Page
