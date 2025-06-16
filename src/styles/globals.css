@@ -95,7 +95,7 @@
 			background-color: transparent;
 		}
 		50% {
-			background-color: hsl(var(--primary));
+			background-color: var(--color-fm-secondary-100);
 			opacity: 0.5;
 		}
 	}

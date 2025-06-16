@@ -121,7 +121,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							label="episode menu icon"
 						/>
 					</DropdownMenuTrigger>
-					<DropdownMenuContent className="mr-8 w-34">
+					<DropdownMenuContent align="end" className="w-34">
 						<DropdownMenuItem onClick={() => setEditingRowId(row.original.id)}>
 							Rename
 						</DropdownMenuItem>
