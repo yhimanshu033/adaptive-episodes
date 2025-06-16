@@ -1,11 +1,11 @@
 import { EChatMode, TStoryChatSuggestion } from '@/types/ai-types'
 
 export const rephraseMethods = [
-	{ id: 'shortenmore', method: '🤏 Shorten', status: 'Shortening...' },
-	{ id: 'expand', method: '🤲 Expand', status: 'Expanding...' },
-	{ id: 'stylize', method: '🎨 Stylize', status: 'Rewriting... (Stylize)' },
-	{ id: 'dialog', method: '🗣️ Dialog', status: 'Dialogizing...' },
-	{ id: 'custom', method: '💬 Prompt', status: 'Running custom prompt...' },
+	{ id: 'shortenmore', method: 'Shorten', status: 'Shortening...' },
+	{ id: 'expand', method: 'Expand', status: 'Expanding...' },
+	{ id: 'dialog', method: 'Dialog', status: 'Dialogizing...' },
+	{ id: 'stylize', method: 'Stylize', status: 'Rewriting... (Stylize)' },
+	{ id: 'custom', method: 'Prompt', status: 'Running custom prompt...' },
 ]
 
 export const storyChatSuggestions: Array<TStoryChatSuggestion> = [

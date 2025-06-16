@@ -66,7 +66,7 @@ export const FloatingToolbar = withRef<
 			<Toolbar
 				ref={ref}
 				className={cn(
-					'bg-popover absolute z-50 rounded border px-1 whitespace-nowrap opacity-100 shadow-md print:hidden'
+					'bg-fm-surface-secondary border-fm-divider-secondary rounded-fm-l absolute z-50 border whitespace-nowrap shadow-md backdrop-blur-md print:hidden'
 				)}
 				{...rootProps}
 				{...props}

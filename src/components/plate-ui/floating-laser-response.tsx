@@ -1,13 +1,14 @@
 import React, { useCallback, useMemo } from 'react'
+import { CrossIcon } from '@/icons/cross-icon'
+import { TickIcon } from '@/icons/tick-icon'
 import useLaserStore from '@/store/laser-store'
 import usePlateStore from '@/store/plate-store'
-import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { useEditorRef } from '@udecode/plate-common/react'
-import { ArrowLeft, RotateCw } from 'lucide-react'
+import { RotateCw } from 'lucide-react'
 import { nanoid } from 'nanoid'
 
-import { Button } from '@/components/plate-ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/aural-ui/button'
+import Textarea from '@/components/aural-ui/textarea'
 import { cn } from '@/lib/utils/helpers'
 import {
 	breakDownValue,
@@ -15,6 +16,8 @@ import {
 	keyNodeOperationOnce,
 	updateNodesWithStartKeys,
 } from '@/lib/utils/plate'
+
+import { Divider } from '../aural-ui/divider'
 
 export default function FloatingLaserResponse() {
 	const {
@@ -127,68 +130,66 @@ export default function FloatingLaserResponse() {
 				setActiveLaser(null)
 			}}
 			className={cn(
-				'bg-popover fixed z-9999 flex gap-2 rounded-lg p-2',
-				minify ? 'w-[35vw]' : 'w-[70vw]'
+				'fixed z-9999 flex gap-2',
+				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg',
+				minify ? 'w-[35vw]' : 'w-[70vw] min-w-200'
 			)}
 			style={{
-				top: Math.max(Math.min(laser.clientY || 0, 580) + 24, 180),
-				left: 64,
+				top: Math.max(Math.min(laser.clientY || 0, 580) + 40, 180),
+				left: 128,
 			}}
 		>
-			<Button
-				variant="ghost"
-				size="sm"
-				className="h-48"
-				onClick={() => {
-					setActiveLaser(null)
-				}}
-			>
-				<ArrowLeft size={16} />
-			</Button>
 			<div
 				id={`leaf-response-${key}`}
 				onClick={(e) => {
 					e.stopPropagation()
 					e.preventDefault()
 				}}
-				className={cn('w-full')}
+				className={cn('flex w-full flex-col items-start justify-start gap-5')}
 			>
-				<ScrollArea className="mb-1 overflow-y-auto rounded border p-2 pr-3">
-					<div
-						dangerouslySetInnerHTML={{
-							__html: laser.text.replace(/\n/g, '<br/>'),
-						}}
-						className="text-muted-foreground mb-2 max-h-16 text-wrap"
-					/>
-				</ScrollArea>
-				<Textarea
+				<Textarea.Base
 					name={name}
 					id={`leaf-response-editor-${key}`}
-					className="text-accent-foreground mb-4 min-w-[300px]"
+					className="text-fm-primary/80 leading-fm-md w-full min-w-[300px] resize-none [font-size:var(--text-fm-md)] outline-none"
+					placeholder="Rephrase your text here..."
 					value={val}
 					onChange={(e) => setVal(e.target.value)}
+					unstyled
 				/>
-				<div className="flex items-center justify-between">
+				<Divider wrapperClassName="w-full" />
+				<div className="flex w-full items-center justify-between">
 					<Button
 						title="Rephrase"
-						variant="ghost"
+						variant="outline"
+						size="sm"
 						onClick={() => {
 							handleRephrase()
 						}}
+						className="group"
+						innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary"
 					>
 						<RotateCw size={16} />
+						Try again
 					</Button>
 					<div className="flex items-center justify-end gap-2">
 						<Button
 							variant="outline"
 							size="sm"
-							className="mr-2"
-							onClick={handleRejectRephrase}
+							onClick={handleAcceptRephrase}
+							leftIcon={<TickIcon className="size-4" />}
+							className="group"
+							innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary"
 						>
-							Reject
+							Apply
 						</Button>
-						<Button size="sm" onClick={handleAcceptRephrase}>
-							Accept
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={handleRejectRephrase}
+							className="group"
+							innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary"
+						>
+							<CrossIcon className="size-4" />
 						</Button>
 					</div>
 				</div>

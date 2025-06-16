@@ -23,6 +23,8 @@ interface TextAreaBaseProps {
 	'aria-describedby'?: string
 	'aria-invalid'?: boolean
 	'aria-labelledby'?: string
+	autoComplete?: string
+	autoFocus?: boolean
 	autoGrow?: boolean
 	className?: string
 	decoration?: TextAreaDecoration

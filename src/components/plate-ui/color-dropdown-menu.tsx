@@ -28,6 +28,7 @@ export type TColor = {
 }
 
 type ColorDropdownMenuProps = {
+	buttonProps?: React.ComponentProps<typeof ToolbarButton>
 	nodeType: string
 	tooltip?: string
 } & DropdownMenuProps
@@ -36,6 +37,7 @@ export function ColorDropdownMenu({
 	children,
 	nodeType,
 	tooltip,
+	buttonProps,
 }: ColorDropdownMenuProps) {
 	const state = useColorDropdownMenuState({
 		closeOnSelect: true,
@@ -55,12 +57,13 @@ export function ColorDropdownMenu({
 		}
 	}, [editor, nodeType, value])
 
-	const { buttonProps, menuProps } = useColorDropdownMenu(state)
+	const { buttonProps: stateButtonProps, menuProps } =
+		useColorDropdownMenu(state)
 
 	return (
 		<DropdownMenu modal={false} {...menuProps}>
 			<DropdownMenuTrigger asChild>
-				<ToolbarButton tooltip={tooltip} {...buttonProps}>
+				<ToolbarButton tooltip={tooltip} {...stateButtonProps} {...buttonProps}>
 					{children}
 				</ToolbarButton>
 			</DropdownMenuTrigger>

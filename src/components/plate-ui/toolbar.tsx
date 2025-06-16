@@ -33,8 +33,8 @@ const toolbarButtonVariants = cva(
 	cn(
 		'inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-fm-primary focus-visible:ring-offset-fm-neutral-0 text-fm-icon-active disabled:text-fm-icon-inactive [font-size:var(--text-fm-md)]',
 		'[&_svg:not([data-icon])]:size-5',
-		'data-[state=open]:bg-fm-secondary-50 data-[state=open]:text-fm-secondary-800',
-		'aria-checked:bg-fm-secondary-50 aria-checked:text-fm-secondary-800'
+		'data-[state=open]:bg-fm-surface-frosted/20 data-[state=open]:text-fm-secondary-800',
+		'aria-checked:bg-fm-surface-frosted/20 aria-checked:text-fm-secondary-800'
 	),
 	{
 		defaultVariants: {
@@ -43,16 +43,17 @@ const toolbarButtonVariants = cva(
 		},
 		variants: {
 			size: {
-				default: 'h-10 px-3',
-				lg: 'h-11 px-5',
-				sm: 'h-9 px-2',
+				default: 'h-10 p-3',
+				lg: 'h-11 p-5',
+				sm: 'h-9 p-2',
+				floating: 'p-3 h-full',
 			},
 			variant: {
 				default:
-					'bg-transparent hover:text-fm-secondary-800 hover:bg-fm-secondary-50 disabled:bg-transparent data-[state=open]:bg-fm-secondary-50 data-[state=open]:text-fm-secondary-800',
+					'bg-transparent hover:text-fm-secondary-800 hover:bg-fm-surface-frosted/20 disabled:bg-transparent data-[state=open]:bg-fm-surface-frosted/20 data-[state=open]:text-fm-secondary-800',
 				outline:
-					'border border-solid border-fm-divider-primary hover:border-fm-secondary-50 disabled:border-fm-divider-tertiary',
-				active: 'bg-fm-secondary-50 text-fm-secondary-800',
+					'border border-solid border-fm-divider-primary hover:border-fm-surface-frosted disabled:border-fm-divider-tertiary',
+				active: 'bg-fm-surface-frosted/20 text-fm-secondary-800',
 			},
 		},
 	}
@@ -139,8 +140,9 @@ export const ToolbarGroup = withRef<
 	'div',
 	{
 		noSeparator?: boolean
+		seperatorProps?: React.ComponentProps<typeof Divider>
 	}
->(({ children, className, noSeparator }, ref) => {
+>(({ children, className, noSeparator, seperatorProps }, ref) => {
 	const childArr = React.Children.map(children, (c) => c)
 
 	if (!childArr || childArr.length === 0) {
@@ -149,9 +151,17 @@ export const ToolbarGroup = withRef<
 
 	return (
 		<div ref={ref} className={cn('flex', className)}>
-			{!noSeparator && <Divider orientation="vertical" variant="secondary" />}
+			{!noSeparator && (
+				<Divider
+					orientation="vertical"
+					variant="secondary"
+					{...seperatorProps}
+				/>
+			)}
 
-			<div className="mx-1 flex items-center gap-1">{children}</div>
+			<div className="toolbar-group-content mx-1 flex items-center gap-1">
+				{children}
+			</div>
 		</div>
 	)
 })

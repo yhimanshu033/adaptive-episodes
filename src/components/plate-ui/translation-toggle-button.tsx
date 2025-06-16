@@ -1,7 +1,8 @@
 import React from 'react'
 import useDisableTools from '@/hooks/use-disable-tools'
+import ChevronDownIcon from '@/icons/chevron-down-icon'
+import { LayoutColumnIcon } from '@/icons/layout-column-icon'
 import usePlateStore from '@/store/plate-store'
-import { Book } from 'lucide-react'
 
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
@@ -21,7 +22,8 @@ export default function TranslationToggleButton() {
 			disabled={isDisabled}
 			onClick={onTranslation}
 		>
-			<Book className="size-4" />
+			<LayoutColumnIcon className="size-4" />
+			<ChevronDownIcon className="ml-2 size-4" />
 		</ToolbarButton>
 	)
 }

@@ -3,13 +3,15 @@ import useLaserStore from '@/store/laser-store'
 import usePlateStore from '@/store/plate-store'
 import { TDescendant } from '@udecode/plate-common'
 import { useEditorRef } from '@udecode/plate-common/react'
-import { ArrowLeft, Send } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { nanoid } from 'nanoid'
 
-import { Button } from '@/components/plate-ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/aural-ui/button'
+import Textarea from '@/components/aural-ui/textarea'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { cn } from '@/lib/utils/helpers'
+
+import { Divider } from '../aural-ui/divider'
 
 export default function FloatingPrompt() {
 	const { setActiveLaser, setPromptActive, store: laserStore } = useLaserStore()
@@ -83,25 +85,17 @@ export default function FloatingPrompt() {
 				onResetLeaf()
 			}}
 			className={cn(
-				'bg-popover fixed z-9999 flex gap-2 rounded-lg',
-				minify ? 'w-[35vw]' : 'w-[70vw]'
+				'fixed z-9999',
+				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg',
+				'flex w-full flex-col items-start justify-start gap-5',
+				minify ? 'w-[35vw]' : 'w-[70vw] min-w-200'
 			)}
 			style={{
 				top: Math.max(Math.min(screenY || 0, 650) + 16, 180),
-				left: 64,
+				left: 128,
 			}}
 		>
-			<Button
-				variant="ghost"
-				size="sm"
-				className="h-24"
-				onClick={() => {
-					onResetLeaf()
-				}}
-			>
-				<ArrowLeft size={16} />
-			</Button>
-			<Textarea
+			<Textarea.Base
 				autoFocus
 				placeholder="Enter prompt here..."
 				name={name}
@@ -109,22 +103,31 @@ export default function FloatingPrompt() {
 				value={val}
 				onChange={(e) => setVal(e.target.value)}
 				id="prompt-input"
+				decoration="filled"
+				className="text-fm-primary/80 leading-fm-md w-full min-w-[300px] resize-none [font-size:var(--text-fm-md)] outline-none"
+				rows={4}
+				minHeight={100}
 			/>
-			<Button
-				variant="default"
-				size="sm"
-				className="h-24"
-				onClick={(e) => {
-					e.stopPropagation()
-					e.preventDefault()
-					if (!val.trim()) {
-						return
-					}
-					onResetLeaf(true)
-				}}
-			>
-				<Send size={16} />
-			</Button>
+			<Divider wrapperClassName="w-full" />
+			<div className="w-full text-right">
+				<Button
+					variant="outline"
+					size="sm"
+					className="group"
+					innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary"
+					onClick={(e) => {
+						e.stopPropagation()
+						e.preventDefault()
+						if (!val.trim()) {
+							return
+						}
+						onResetLeaf(true)
+					}}
+					leftIcon={<Send size={16} />}
+				>
+					Send
+				</Button>
+			</div>
 		</div>
 	)
 }

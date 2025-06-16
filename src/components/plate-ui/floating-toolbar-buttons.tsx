@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { PaintRollIcon } from '@/icons/paint-roll-icon'
+import { TextColorIcon } from '@/icons/text-color-icon'
 import usePlateStore from '@/store/plate-store'
 import {
 	BoldPlugin,
@@ -14,7 +16,6 @@ import {
 	FontBackgroundColorPlugin,
 	FontColorPlugin,
 } from '@udecode/plate-font/react'
-import { Bot } from 'lucide-react'
 
 import { Icons, iconVariants } from '@/components/icons'
 import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
@@ -22,62 +23,85 @@ import FloatingLaserBtns from '@/components/plate-ui/floating-laser-btns'
 import { MarkToolbarButton } from '@/components/plate-ui/mark-toolbar-button'
 import { ToolbarGroup } from '@/components/plate-ui/toolbar'
 import { TurnIntoDropdownMenu } from '@/components/plate-ui/turn-into-dropdown-menu'
-import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 
 import { ESidebar } from '@/types/plate-types'
 
 const FloatingToolbarButtons = () => {
 	const readOnly = useEditorReadOnly()
 	const { props } = useCommentAddButton()
-	const [showRephrase, setShowRephrase] = useState(false)
 
 	const { setSidebar } = usePlateStore()
 
 	if (readOnly) {
-		return <></>
+		return null
 	}
 
-	if (!readOnly && showRephrase) {
-		return <FloatingLaserBtns setShowLaser={setShowRephrase} />
-	}
 	return (
-		<div className="flex">
+		<div className="group flex [&.group_.toolbar-group-content]:mx-0">
 			<ToolbarGroup noSeparator>
-				<TurnIntoDropdownMenu />
-				<MarkToolbarButton nodeType={BoldPlugin.key} tooltip="Bold (⌘+B)">
+				<TurnIntoDropdownMenu
+					buttonProps={{
+						size: 'floating',
+					}}
+				/>
+			</ToolbarGroup>
+			<ToolbarGroup
+				seperatorProps={{
+					variant: 'primary',
+				}}
+			>
+				<MarkToolbarButton
+					nodeType={BoldPlugin.key}
+					tooltip="Bold (⌘+B)"
+					size="floating"
+				>
 					<Icons.bold />
 				</MarkToolbarButton>
-				<MarkToolbarButton nodeType={ItalicPlugin.key} tooltip="Italic (⌘+I)">
+				<MarkToolbarButton
+					nodeType={ItalicPlugin.key}
+					tooltip="Italic (⌘+I)"
+					size="floating"
+				>
 					<Icons.italic />
 				</MarkToolbarButton>
 				<MarkToolbarButton
 					nodeType={UnderlinePlugin.key}
 					tooltip="Underline (⌘+U)"
+					size="floating"
 				>
 					<Icons.underline />
 				</MarkToolbarButton>
-				<ColorDropdownMenu nodeType={FontColorPlugin.key} tooltip="Text Color">
-					<Icons.color className={iconVariants({ variant: 'toolbar' })} />
+				<ColorDropdownMenu
+					nodeType={FontColorPlugin.key}
+					tooltip="Text Color"
+					buttonProps={{
+						size: 'floating',
+					}}
+				>
+					<TextColorIcon className={iconVariants({ variant: 'toolbar' })} />
 				</ColorDropdownMenu>
 				<ColorDropdownMenu
 					nodeType={FontBackgroundColorPlugin.key}
 					tooltip="Highlight Color"
+					buttonProps={{
+						size: 'floating',
+					}}
 				>
-					<Icons.bg className={iconVariants({ variant: 'toolbar' })} />
+					<PaintRollIcon className={iconVariants({ variant: 'toolbar' })} />
 				</ColorDropdownMenu>
 			</ToolbarGroup>
-			<ToolbarGroup>
-				<MarkToolbarButton
-					onClick={() => {
-						setShowRephrase(true)
-					}}
-					nodeType={LaserPlugin.key}
-					tooltip="Laser (⌘+B)"
-				>
-					<Bot />
-				</MarkToolbarButton>
+			<ToolbarGroup
+				seperatorProps={{
+					variant: 'primary',
+				}}
+			>
+				<FloatingLaserBtns />
 			</ToolbarGroup>
-			<ToolbarGroup>
+			<ToolbarGroup
+				seperatorProps={{
+					variant: 'primary',
+				}}
+			>
 				<MarkToolbarButton
 					{...props}
 					onClick={(e) => {
@@ -86,6 +110,7 @@ const FloatingToolbarButtons = () => {
 					}}
 					nodeType={CommentsPlugin.key}
 					tooltip="Comment (⌘+⇧+M)"
+					size="floating"
 				>
 					<Icons.commentAdd />
 				</MarkToolbarButton>

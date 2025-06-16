@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useInfiniteEpisodesData } from '@/hooks/query/use-episode-data'
 import useExtendedSaving from '@/hooks/use-extended-saving'
+import { LayoutLeftIcon } from '@/icons/layout-left-icon'
 import useEditorExtendedStore from '@/store/extended-store'
-import { Sidebar } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
@@ -27,6 +28,7 @@ export default function EpisodeNavigation() {
 	const episodeNavigationOpen = extendStore(
 		useShallow((state) => state.episodeNavigationOpen)
 	)
+	const { data: content, latestStatus } = useEpisodeContent()
 
 	const firstEpisode = useMemo(
 		() => episodeMap?.[extended[0]],
@@ -76,19 +78,21 @@ export default function EpisodeNavigation() {
 		toggleEpisodeNavigationOpen()
 	}, [toggleEpisodeNavigationOpen])
 
-	if (simplifiedEditor || !page) {
+	if (simplifiedEditor || !content || !latestStatus) {
 		return null
 	}
 
 	return (
 		<div className="animate-fade-in-up relative z-10">
 			<IconButton
-				icon={<Sidebar />}
+				icon={<LayoutLeftIcon />}
 				label="Toggle Episode Navigation"
 				variant="outlined"
 				size="small"
 				onClick={toggleOpenNavigation}
-				className="absolute top-7 -right-4 z-10 bg-black"
+				className={cn('absolute top-7 -right-4 z-10 bg-black', {
+					'bg-fm-secondary-50 text-fm-secondary-800': episodeNavigationOpen,
+				})}
 			/>
 			<div
 				className={cn(

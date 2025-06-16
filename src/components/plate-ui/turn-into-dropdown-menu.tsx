@@ -79,7 +79,12 @@ const items = [
 
 const defaultItem = items.find((item) => item.value === ParagraphPlugin.key)!
 
-export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
+export function TurnIntoDropdownMenu({
+	buttonProps,
+	...props
+}: DropdownMenuProps & {
+	buttonProps?: React.ComponentProps<typeof ToolbarButton>
+}) {
 	const value: string = useEditorSelector((editor) => {
 		let initialNodeType: string = ParagraphPlugin.key
 		let allNodesMatchInitialNodeType = false
@@ -109,7 +114,12 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
 	return (
 		<DropdownMenu modal={false} {...openState} {...props}>
 			<DropdownMenuTrigger asChild>
-				<ToolbarButton pressed={openState.open} tooltip="Turn into" isDropdown>
+				<ToolbarButton
+					pressed={openState.open}
+					tooltip="Turn into"
+					isDropdown
+					{...buttonProps}
+				>
 					<SelectedItemIcon className="size-5 lg:hidden" />
 					<span className="max-lg:hidden">
 						<SelectedItemIcon />

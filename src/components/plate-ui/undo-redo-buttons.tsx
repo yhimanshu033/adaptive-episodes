@@ -1,6 +1,7 @@
 import React from 'react'
+import { ArrowCornerUpLeftIcon } from '@/icons/arrow-corner-up-left-icon'
+import { ArrowCornerUpRightIcon } from '@/icons/arrow-corner-up-right-icon'
 import { useEditorRef } from '@udecode/plate-common/react'
-import { RedoIcon, UndoIcon } from 'lucide-react'
 
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
@@ -15,10 +16,10 @@ export default function UndoRedoButtons() {
 	return (
 		<>
 			<ToolbarButton tooltip="Undo (⌘+Z)" onClick={undo}>
-				<UndoIcon />
+				<ArrowCornerUpLeftIcon />
 			</ToolbarButton>
 			<ToolbarButton tooltip="Redo (⌘+⇧+Z)" onClick={redo}>
-				<RedoIcon />
+				<ArrowCornerUpRightIcon />
 			</ToolbarButton>
 		</>
 	)
