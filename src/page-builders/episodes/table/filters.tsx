@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { usePageState } from '@/hooks/use-page-state'
-import { SearchIcon } from '@/icons/search-icon'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import Input from '@/components/aural-ui/input'
+import Search from '@/components/aural-ui/search'
 import { Skeleton } from '@/components/aural-ui/skelton'
 import IfElse, { Else, If } from '@/components/if-else'
 import {
@@ -102,15 +101,11 @@ const Filters = ({
 								render={({ field }) => (
 									<FormItem className="flex-1">
 										<FormControl>
-											<div className="bg-fm-surface-frosted/20 rounded-fm-3xl font-fm-text text-fm-placeholder border-fm-divider-secondary relative flex min-w-72 items-center border-1 p-3 text-sm">
-												<SearchIcon className="mx-4" width={16} height={16} />
-												<Input
-													placeholder="Search Episode"
-													{...field}
-													unstyled
-													className="text-fm-primary w-full border-none pr-4 outline-none"
-												/>
-											</div>
+											<Search
+												placeholder="Search Episode"
+												className="min-w-72"
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
