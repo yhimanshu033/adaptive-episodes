@@ -12,9 +12,9 @@ const Languages = () => {
 	const { setSelectedLanguage } = useEpisodeIdStore()
 	const selectedLanguage = useLanguage()
 
-	const { isGerman, isOriginal } = useAccessChecks()
+	const { isGerman } = useAccessChecks()
 
-	if (isGerman || isOriginal) {
+	if (isGerman) {
 		return null
 	}
 

@@ -21,7 +21,7 @@ const useProjectIdUtil = () => {
 	const { data } = userMembersQuery()
 	const userData = useGlobalStore(useShallow((state) => state.userData))
 
-	const parentLanguage = useParentLanguage()
+	const { parentLanguage } = useParentLanguage()
 	const myRole = useMemo(() => {
 		if (!userData) {
 			return null

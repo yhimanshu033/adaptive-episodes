@@ -21,24 +21,7 @@ function useAdaptationUtil() {
 	const [storyData, setStory] = useState<TStory | null>()
 	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
 	const [isFetchingLSSheet, setFetchingLSSheet] = useState<boolean>(false)
-
-	const isAdapting = useMemo(
-		() => !storyData?.adapting_seq_nos?.length && storyData?.is_original,
-		[storyData]
-	)
-
-	const currentLanguage = useMemo(
-		() =>
-			(isAdapting
-				? (storyData?.source_language as TSourceLanguage)
-				: (storyData?.parent_language as TSourceLanguage)) || ELanguage.ENGLISH,
-		[isAdapting, storyData?.parent_language, storyData?.source_language]
-	)
-
-	const selectableLanguages = useMemo(
-		() => getSelectableLanguages(currentLanguage),
-		[currentLanguage]
-	)
+	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
 
 	const {
 		createLSMutation: { mutate, isPending, data, reset },
@@ -82,6 +65,23 @@ function useAdaptationUtil() {
 		storyData?.adapting_seq_nos,
 		selectedRowData,
 	])
+
+	const currentLanguage = useMemo(
+		() =>
+			(isEpisodeAdaptation
+				? (storyData?.parent_language as TSourceLanguage)
+				: (storyData?.source_language as TSourceLanguage)) || ELanguage.ENGLISH,
+		[
+			isEpisodeAdaptation,
+			storyData?.parent_language,
+			storyData?.source_language,
+		]
+	)
+
+	const selectableLanguages = useMemo(
+		() => getSelectableLanguages(currentLanguage),
+		[currentLanguage]
+	)
 
 	const resetMutations = useCallback(() => {
 		reset()
@@ -134,7 +134,8 @@ function useAdaptationUtil() {
 		setStory,
 		setFetchingLSSheet,
 		storyData,
-		isAdapting,
+		isEpisodeAdaptation,
+		setEpisodeAdaptation,
 	}
 }
 
