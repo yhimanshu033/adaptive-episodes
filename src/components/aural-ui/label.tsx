@@ -6,7 +6,8 @@ import React, {
 } from 'react'
 import * as LabelPrimitive from '@radix-ui/react-label'
 
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { If } from './if-else'
 
 export interface LabelProps {

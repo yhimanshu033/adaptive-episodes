@@ -1,10 +1,10 @@
 import React from 'react'
 import { AccessibleIcon } from '@radix-ui/react-accessible-icon'
 
-export const ChevronUpIcon = (
+export const VerticalMenuIcon = (
 	props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
 ) => (
-	<AccessibleIcon label="Chevron Up Icon">
+	<AccessibleIcon label="Vertical Menu icon">
 		<svg
 			width="24"
 			height="24"
@@ -14,14 +14,14 @@ export const ChevronUpIcon = (
 			{...props}
 		>
 			<path
-				d="M18 15L12 9L6 15"
-				stroke="currentColor"
-				strokeWidth="1.5"
-				strokeLinecap="square"
-				strokeLinejoin="round"
+				d="M11 2.75H13V4.75H11V2.75Z"
+				className="fill-current stroke-current"
+			/>
+			<path d="M13 11H11V13H13V11Z" className="fill-current stroke-current" />
+			<path
+				d="M11 19.25H13V21.25H11V19.25Z"
+				className="fill-current stroke-current"
 			/>
 		</svg>
 	</AccessibleIcon>
 )
-
-export default ChevronUpIcon

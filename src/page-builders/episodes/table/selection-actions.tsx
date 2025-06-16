@@ -7,12 +7,17 @@ import {
 } from '@/constants/global-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import useParentLanguage from '@/hooks/use-parent-language'
+import { CrossIcon } from '@/icons/cross-icon'
+import { GitBranchIcon } from '@/icons/git-branch-icon'
+import { GitForkIcon } from '@/icons/git-fork-icon'
+import { MagicBookIcon } from '@/icons/magic-book-icon'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/dialogs/multi-ep-localize-dialog'
 import { Table } from '@tanstack/react-table'
-import { Languages, Merge, Replace, Split, X } from 'lucide-react'
+import { Replace } from 'lucide-react'
 
+import { Button } from '@/components/aural-ui/button'
+import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/if-else'
-import { Button } from '@/components/ui/button'
 import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
@@ -57,16 +62,17 @@ export default function SelectionActions({
 	}
 
 	return (
-		<div className="flex items-center justify-between gap-3">
-			<div className="flex items-center gap-3">
-				<Button
-					size="icon"
+		<div className="flex items-center justify-between gap-3 py-3">
+			<div className="flex items-center gap-1 py-4">
+				<IconButton
+					onClick={() => void table.resetRowSelection()}
 					variant="ghost"
-					onClick={() => table.resetRowSelection()}
-				>
-					<X className="size-6" />
-				</Button>
-				<h4>{selectedRowData.length} Episodes selected</h4>
+					icon={<CrossIcon width={20} height={20} />}
+					label="cross selection icon"
+				/>
+				<h4 className="font-fm-brand text-sm">
+					{selectedRowData.length} Episodes selected
+				</h4>
 			</div>
 			<div className="flex gap-3">
 				<If condition={language !== ELanguage.GERMAN_ORIGINAL}>
@@ -79,36 +85,37 @@ export default function SelectionActions({
 							}
 							setOpen(true)
 						}}
-						size="icon"
-						tooltip="Adapt episodes"
+						variant="outline"
+						className="gap-2 rounded-3xl"
 					>
-						<Languages size={16} />
+						<MagicBookIcon width={20} height={20} />
+						<span>AI Adaptation</span>
 					</Button>
 				</If>
 				<MultiEpLocalizeDialog
 					url={url}
-					size="icon"
 					disabled={Object.keys(selectedRowData).length <= 1}
+					// @ts-expect-error type mismatch
 					tooltip="Localize episodes"
 				>
-					<Replace size={16} />
+					<Replace size={18} />
 				</MultiEpLocalizeDialog>
 				<If condition={!language || language === ELanguage.GERMAN_ORIGINAL}>
 					<Button
-						size="icon"
+						variant="outline"
 						disabled={Object.keys(selectedRowData).length <= 1}
 						onClick={() => handleMerge(selectedRowData)}
-						tooltip="Merge episodes"
 					>
-						<Merge size={16} />
+						<GitForkIcon width={18} height={18} />
+						<span>Combine</span>
 					</Button>
 					<Button
-						size="icon"
+						variant="outline"
 						disabled={selectedRowData.length !== 1}
 						onClick={() => handleUnmerge(selectedRowModel)}
-						tooltip="Unmerge episodes"
 					>
-						<Split size={16} />
+						<GitBranchIcon className="text-fm-primary" width={18} height={18} />
+						<span>Separate</span>
 					</Button>
 				</If>
 			</div>

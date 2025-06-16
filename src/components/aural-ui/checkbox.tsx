@@ -1,8 +1,8 @@
 import * as React from 'react'
+import { TickIcon } from '@/icons/tick-icon'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 
-import { TickIcon } from '../../icons/tick-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
 
 type CheckboxProps = React.ComponentPropsWithoutRef<
 	typeof CheckboxPrimitive.Root

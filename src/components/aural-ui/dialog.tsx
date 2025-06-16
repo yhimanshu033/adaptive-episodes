@@ -1,9 +1,10 @@
 import * as React from 'react'
+import { CrossIcon } from '@/icons/cross-icon'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { cva, VariantProps } from 'class-variance-authority'
 
-import { CrossIcon } from '../../icons/cross-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { Overlay } from './overlay'
 
 const Dialog = DialogPrimitive.Root

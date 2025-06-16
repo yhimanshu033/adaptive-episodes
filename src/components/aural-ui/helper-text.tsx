@@ -1,9 +1,10 @@
 import React, { forwardRef, ReactNode } from 'react'
+import { AlertIcon } from '@/icons/alert-icon'
+import { CrossCircleIcon } from '@/icons/cross-circle-icon'
+import { TickCircleIcon } from '@/icons/tick-circle-icon'
 
-import { AlertIcon } from '../../icons/alert-icon'
-import { CrossCircleIcon } from '../../icons/cross-circle-icon'
-import { TickCircleIcon } from '../../icons/tick-circle-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { Case, Default, SwitchCase } from './switch-case'
 import { Tag } from './tag'
 

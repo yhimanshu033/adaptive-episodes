@@ -40,6 +40,13 @@ export const titleToStatus: Partial<Record<EStatus, string>> = {
 	[EStatus.PUBLISHED]: '🟢 CMS READY',
 }
 
+export const titleToStatusText: Partial<Record<EStatus, string>> = {
+	[EStatus.FIRST_DRAFT]: '1ST DRAFT',
+	[EStatus.SECOND_DRAFT]: 'REVIEW',
+	[EStatus.POLISH]: '2ND DRAFT',
+	[EStatus.PUBLISHED]: 'CMS READY',
+}
+
 export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.ENGLISH]: 'English',
 	[ELanguage.FRENCH]: 'French',

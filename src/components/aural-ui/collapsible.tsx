@@ -1,9 +1,10 @@
 import React, { forwardRef } from 'react'
+import { AngleDownIcon } from '@/icons/angle-down-icon'
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible'
 import { Slot } from '@radix-ui/react-slot'
 
-import { AngleDownIcon } from '../../icons/angle-down-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { IconButton } from './icon-button'
 
 const Collapsible = forwardRef<

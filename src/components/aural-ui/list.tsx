@@ -1,9 +1,10 @@
 import * as React from 'react'
+import { ChevronRightIcon } from '@/icons/chevron-right-icon'
+import { TickIcon } from '@/icons/tick-icon'
 import { cva, type VariantProps } from 'class-variance-authority'
 
-import { ChevronRightIcon } from '../../icons/chevron-right-icon'
-import { TickIcon } from '../../icons/tick-icon'
-import { cn } from '../../lib/aural-ui/utils'
+import { cn } from '@/lib/aural-ui/utils'
+
 import { Divider } from './divider'
 import { Label } from './label'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Button, ButtonProps } from '@/components/ui/button'
+import { Button, ButtonProps } from '@/components/aural-ui/button'
 import {
 	Drawer,
 	DrawerContent,
@@ -15,7 +15,7 @@ export default function MultiEpLocalizeDialog({
 	return (
 		<Drawer>
 			<DrawerTrigger asChild>
-				<Button {...props} />
+				<Button variant="outline" {...props} />
 			</DrawerTrigger>
 			<DrawerContent>
 				<DrawerTitle />

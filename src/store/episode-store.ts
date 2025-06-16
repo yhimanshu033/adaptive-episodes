@@ -22,6 +22,10 @@ export function useEpisodeStore() {
 		useEpisodeStoreUtil.setState({ isInventOpen })
 	}
 
+	const setIsShareAccessDialogOpen = (isSharedAccessDialogOpen: boolean) => {
+		useEpisodeStoreUtil.setState({ isSharedAccessDialogOpen })
+	}
+
 	const setAlertInfo = (alertInfo: EpisodeStoreState['alertInfo']) => {
 		useEpisodeStoreUtil.setState({ alertInfo })
 	}
@@ -79,6 +83,7 @@ export function useEpisodeStore() {
 		setEpisodeSearch,
 		setIsDialogOpen,
 		setIsInventOpen,
+		setIsShareAccessDialogOpen,
 		setAlertInfo,
 		setSelectedEpisodes,
 		setDeleteEpisodeId,
