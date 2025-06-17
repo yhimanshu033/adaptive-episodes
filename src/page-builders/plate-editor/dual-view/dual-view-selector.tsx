@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useIsGerman from '@/hooks/use-is-german'
+import useAccessChecks from '@/hooks/use-access-checks'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -26,7 +26,7 @@ export default function DualViewSelector() {
 		useShallow((state) => state.dualViewMode)
 	)
 	const { store: useEpisodePlateStore } = usePlateStore()
-	const isGerman = useIsGerman()
+	const { isGerman } = useAccessChecks()
 
 	const { data } = useEpisodeContent()
 	const localDiffValue = useEpisodePlateStore(
@@ -43,11 +43,8 @@ export default function DualViewSelector() {
 		if (!localDiffValue) {
 			excludedModes.push(EDualVIewMode.LOCAL_DIFF)
 		}
-		if (!isGerman) {
-			excludedModes.push(EDualVIewMode.US_TRANSLATION)
-		}
 		return DUAL_VIEW_MODES.filter((item) => !excludedModes.includes(item))
-	}, [localDiffValue, data, isGerman])
+	}, [data?.previous_parent_id, data?.next_parent_id, localDiffValue])
 
 	useEffect(() => {
 		if (modes.includes(dualViewMode)) {
@@ -59,7 +56,7 @@ export default function DualViewSelector() {
 
 	const modeToTitle = useMemo(() => {
 		if (!isGerman) {
-			MODE_TO_TITLE[EDualVIewMode.BASE_SCRIPT] = 'Original Script'
+			MODE_TO_TITLE[EDualVIewMode.US_TRANSLATION] = 'Source Script'
 		}
 		return MODE_TO_TITLE
 	}, [isGerman])
