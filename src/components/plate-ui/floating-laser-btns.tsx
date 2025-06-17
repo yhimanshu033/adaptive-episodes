@@ -21,7 +21,7 @@ import { MarkToolbarButton } from './mark-toolbar-button'
 
 export default function FloatingLaserBtns() {
 	const editor = useEditorRef()
-	const { setActiveLaser, setPromptActive, setScreenY } = useLaserStore()
+	const { setActiveLaser, setPromptActive } = useLaserStore()
 	const key = `laser-id-${nanoid()}`
 
 	return (
@@ -42,11 +42,10 @@ export default function FloatingLaserBtns() {
 					<div key={method.id}>
 						<DropdownMenuItem
 							className="[font-size:var(--text-fm-md)]"
-							onClick={(e) => {
+							onClick={() => {
 								const children = structuredClone(editor.children)
 								let newChildren: Value = children
 								if (method.id === 'custom') {
-									setScreenY(e.clientY + e.currentTarget.clientHeight)
 									const key = `floating-prompt-id-${nanoid()}`
 									newChildren = mergeBlocks(
 										children,

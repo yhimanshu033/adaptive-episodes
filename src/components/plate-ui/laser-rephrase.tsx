@@ -97,7 +97,7 @@ export default function LaserRephrase({
 	}
 
 	return (
-		<div className="rounded-fm-l border-fm-divider-primary bg-fm-surface-primary flex w-full min-w-200 items-center justify-between gap-2 border py-2 pr-2 pl-5 shadow-lg">
+		<div className="rounded-fm-l border-fm-divider-primary bg-fm-surface-primary flex w-full items-center justify-between gap-2 border py-2 pr-2 pl-5 shadow-lg">
 			<div className="flex items-center gap-2">
 				<CircularLoader className="size-5" />
 				<p className="leading-fm-md [background-image:linear-gradient(270deg,var(--color-fm-placeholder)_12.22%,var(--color-fm-primary)_31.77%,var(--color-fm-primary)_67.87%,var(--color-fm-placeholder)_96.75%)] bg-clip-text [font-size:var(--text-fm-md)] font-medium text-transparent">

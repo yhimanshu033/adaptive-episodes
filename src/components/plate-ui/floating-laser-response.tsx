@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react'
 import { CrossIcon } from '@/icons/cross-icon'
 import { TickIcon } from '@/icons/tick-icon'
 import useLaserStore from '@/store/laser-store'
-import usePlateStore from '@/store/plate-store'
 import { useEditorRef } from '@udecode/plate-common/react'
 import { RotateCw } from 'lucide-react'
 import { nanoid } from 'nanoid'
@@ -33,10 +32,6 @@ export default function FloatingLaserResponse() {
 		lasers: allLasers,
 	} = laserStore()
 	const editor = useEditorRef()
-
-	const { store } = usePlateStore()
-	const { sidebar } = store()
-	const minify = !!sidebar
 
 	const laser =
 		responseActive === activeLaser && responseActive
@@ -131,12 +126,12 @@ export default function FloatingLaserResponse() {
 			}}
 			className={cn(
 				'fixed z-9999 flex gap-2',
-				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg',
-				minify ? 'w-[35vw]' : 'w-[70vw] min-w-200'
+				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg'
 			)}
 			style={{
-				top: Math.max(Math.min(laser.clientY || 0, 580) + 40, 180),
-				left: 128,
+				top: laser.clientY || 300,
+				left: laser.clientX || 500,
+				width: laser.width || 800,
 			}}
 		>
 			<div

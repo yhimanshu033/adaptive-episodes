@@ -10,7 +10,11 @@ import {
 } from '@udecode/plate-common/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
-import { breakDownValue, getCommentNode } from '@/lib/utils/plate'
+import {
+	breakDownValue,
+	getCommentNode,
+	getParentWidth,
+} from '@/lib/utils/plate'
 
 import { TLaserLeafChildren } from '@/types/plate-types'
 
@@ -54,10 +58,16 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		if (!rect) {
 			return
 		}
+
+		const { blockAncestorContentWidth, blockAncestorClientX } =
+			getParentWidth(areaRef)
+
 		setLaser({
 			laser: {
 				...laser,
-				clientY: rect.y,
+				clientY: rect.y + rect.height,
+				clientX: blockAncestorClientX,
+				width: blockAncestorContentWidth,
 			},
 			id: key,
 		})
@@ -144,13 +154,25 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		}
 		let laser = getLaser(key)
 		const rect = areaRef.current?.getBoundingClientRect()
+
+		const { blockAncestorContentWidth, blockAncestorClientX } =
+			getParentWidth(areaRef)
+
 		laser = laser
-			? { ...laser, clientY: rect ? rect.top - rect.height : 0 }
+			? {
+					...laser,
+					clientY: rect ? rect.top + rect.height : 0,
+					clientX: blockAncestorClientX,
+					width: blockAncestorContentWidth,
+				}
 			: {
 					response: '',
 					text: '',
-					clientY: rect ? rect.top - rect.height : 0,
+					clientY: rect ? rect.top + rect.height : 0,
+					clientX: blockAncestorClientX,
+					width: blockAncestorContentWidth,
 				}
+
 		setLaser({
 			laser: {
 				...laser,
@@ -242,6 +264,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 						'opacity-100': activeLaser === key,
 					}
 				)}
+				style={{
+					width: getParentWidth(divRef).blockAncestorContentWidth || 800,
+				}}
 			>
 				<LaserRephrase
 					setResponseMode={setResponseMode}

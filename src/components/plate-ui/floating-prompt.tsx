@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
 import useLaserStore from '@/store/laser-store'
-import usePlateStore from '@/store/plate-store'
 import { TDescendant } from '@udecode/plate-common'
 import { useEditorRef } from '@udecode/plate-common/react'
 import { Send } from 'lucide-react'
@@ -15,12 +14,8 @@ import { Divider } from '../aural-ui/divider'
 
 export default function FloatingPrompt() {
 	const { setActiveLaser, setPromptActive, store: laserStore } = useLaserStore()
-	const { screenY, promptActive } = laserStore()
+	const { promptPosition, promptActive } = laserStore()
 	const editor = useEditorRef()
-
-	const { store } = usePlateStore()
-	const { sidebar } = store()
-	const minify = !!sidebar
 
 	const [val, setVal] = React.useState<string>('')
 
@@ -87,12 +82,12 @@ export default function FloatingPrompt() {
 			className={cn(
 				'fixed z-9999',
 				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg',
-				'flex w-full flex-col items-start justify-start gap-5',
-				minify ? 'w-[35vw]' : 'w-[70vw] min-w-200'
+				'flex w-full flex-col items-start justify-start gap-5'
 			)}
 			style={{
-				top: Math.max(Math.min(screenY || 0, 650) + 16, 180),
-				left: 128,
+				top: promptPosition?.clientY || 300,
+				left: promptPosition?.clientX || 500,
+				width: promptPosition?.width || 800,
 			}}
 		>
 			<Textarea.Base
