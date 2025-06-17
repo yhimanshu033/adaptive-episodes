@@ -744,3 +744,30 @@ export function getUniqueAllComments(children: Value, allComments: TComment[]) {
 
 	return { cleanedCommentsRecord, cleanedComments }
 }
+
+export const getParentWidth = (ref: React.RefObject<HTMLDivElement>) => {
+	const blockAncestor = ref.current?.closest('[data-block-id]') as HTMLElement
+	const blockAncestorRect = blockAncestor?.getBoundingClientRect()
+
+	let blockAncestorContentWidth = 0,
+		blockAncestorClientX = 0
+
+	if (blockAncestor) {
+		const computedStyle = window.getComputedStyle(blockAncestor)
+		const paddingLeft = parseFloat(computedStyle.paddingLeft)
+		const paddingRight = parseFloat(computedStyle.paddingRight)
+		blockAncestorContentWidth =
+			blockAncestor.clientWidth - paddingLeft - paddingRight
+		blockAncestorClientX = blockAncestorRect
+			? blockAncestorRect.left + paddingLeft
+			: 0
+	}
+
+	return {
+		blockAncestor,
+		blockAncestorContentWidth:
+			blockAncestorContentWidth || blockAncestor?.clientWidth || 800,
+		blockAncestorRect,
+		blockAncestorClientX,
+	}
+}

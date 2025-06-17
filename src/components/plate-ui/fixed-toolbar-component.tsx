@@ -23,20 +23,16 @@ export default function FixedToolbarComponent({
 		return <hr />
 	}
 	return (
-		<div
+		<FixedToolbar
 			className={cn(
-				'bg-fm-surface-primary sticky top-0 z-40',
 				{
-					'-mt-4 pt-4 pb-4': plateFocusMode,
+					'-mt-4 rounded-2xl pt-4 pb-4': plateFocusMode,
+					'rounded-none px-6 py-3': !plateFocusMode,
 				},
 				className
 			)}
 		>
-			<FixedToolbar
-				className={cn(plateFocusMode ? 'rounded-2xl' : 'rounded-none py-2')}
-			>
-				<FixedToolbarButtons {...{ simplified }} />
-			</FixedToolbar>
-		</div>
+			<FixedToolbarButtons {...{ simplified }} />
+		</FixedToolbar>
 	)
 }

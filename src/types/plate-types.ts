@@ -64,8 +64,8 @@ export type LaserStoreType = {
 	editorY?: number
 	lasers: Record<string, Laser>
 	promptActive: string | null
+	promptPosition?: PromptPosition
 	responseActive: string | null
-	screenY?: number
 	triggerRephrase?: string | null
 }
 
@@ -83,3 +83,5 @@ export type TNote = {
 export type PlateUser = SuggestionUser &
 	CommentUser &
 	UserData & { role: ERole }
+
+export type PromptPosition = Pick<Laser, 'clientX' | 'clientY' | 'width'>

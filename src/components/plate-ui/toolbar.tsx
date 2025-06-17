@@ -5,9 +5,9 @@ import * as ToolbarPrimitive from '@radix-ui/react-toolbar'
 import { cn, withCn, withRef, withVariants } from '@udecode/cn'
 import { cva, type VariantProps } from 'class-variance-authority'
 
+import { Divider } from '@/components/aural-ui/divider'
+import { withTooltip } from '@/components/aural-ui/tooltip'
 import { Icons } from '@/components/icons'
-import { withTooltip } from '@/components/plate-ui/tooltip'
-import { Separator } from '@/components/ui/separator'
 
 export const Toolbar = withCn(
 	ToolbarPrimitive.Root,
@@ -31,8 +31,10 @@ export const ToolbarSeparator = withCn(
 
 const toolbarButtonVariants = cva(
 	cn(
-		'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-		'[&_svg:not([data-icon])]:size-5'
+		'inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-fm-primary focus-visible:ring-offset-fm-neutral-0 text-fm-icon-active disabled:text-fm-icon-inactive [font-size:var(--text-fm-md)]',
+		'[&_svg:not([data-icon])]:size-5',
+		'data-[state=open]:bg-fm-surface-frosted/20 data-[state=open]:text-fm-secondary-800',
+		'aria-checked:bg-fm-surface-frosted/20 aria-checked:text-fm-secondary-800'
 	),
 	{
 		defaultVariants: {
@@ -41,16 +43,17 @@ const toolbarButtonVariants = cva(
 		},
 		variants: {
 			size: {
-				default: 'h-10 px-3',
-				lg: 'h-11 px-5',
-				sm: 'h-9 px-2',
+				default: 'h-10 p-3',
+				lg: 'h-11 p-5',
+				sm: 'h-9 p-2',
+				floating: 'p-3 h-full',
 			},
 			variant: {
 				default:
-					'bg-transparent hover:bg-muted hover:text-muted-foreground aria-checked:bg-accent aria-checked:text-accent-foreground',
+					'bg-transparent hover:text-fm-secondary-800 hover:bg-fm-surface-frosted/20 disabled:bg-transparent data-[state=open]:bg-fm-surface-frosted/20 data-[state=open]:text-fm-secondary-800',
 				outline:
-					'border border-input bg-transparent hover:bg-accent hover:text-accent-foreground',
-				active: 'bg-primary text-primary-foreground hover:bg-primary/90',
+					'border border-solid border-fm-divider-primary hover:border-fm-surface-frosted disabled:border-fm-divider-tertiary',
+				active: 'bg-fm-surface-frosted/20 text-fm-secondary-800',
 			},
 		},
 	}
@@ -86,7 +89,7 @@ const ToolbarButton = withTooltip(
 								size,
 								variant,
 							}),
-							isDropdown && 'my-1 justify-between pr-1',
+							isDropdown && 'justify-between pr-1',
 							className
 						)}
 						value={pressed ? 'single' : ''}
@@ -137,8 +140,9 @@ export const ToolbarGroup = withRef<
 	'div',
 	{
 		noSeparator?: boolean
+		seperatorProps?: React.ComponentProps<typeof Divider>
 	}
->(({ children, className, noSeparator }, ref) => {
+>(({ children, className, noSeparator, seperatorProps }, ref) => {
 	const childArr = React.Children.map(children, (c) => c)
 
 	if (!childArr || childArr.length === 0) {
@@ -148,12 +152,16 @@ export const ToolbarGroup = withRef<
 	return (
 		<div ref={ref} className={cn('flex', className)}>
 			{!noSeparator && (
-				<div className="h-full py-1">
-					<Separator orientation="vertical" />
-				</div>
+				<Divider
+					orientation="vertical"
+					variant="secondary"
+					{...seperatorProps}
+				/>
 			)}
 
-			<div className="mx-1 flex items-center gap-1">{children}</div>
+			<div className="toolbar-group-content mx-1 flex items-center gap-1">
+				{children}
+			</div>
 		</div>
 	)
 })

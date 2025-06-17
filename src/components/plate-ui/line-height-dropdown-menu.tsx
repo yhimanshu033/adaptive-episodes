@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from 'react'
+import { TextIndicatorIcon } from '@/icons/text-indicator-icon'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
 	useLineHeightDropdownMenu,
 	useLineHeightDropdownMenuState,
 } from '@udecode/plate-line-height/react'
 
-import { Icons } from '@/components/icons'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -30,7 +30,7 @@ export function LineHeightDropdownMenu({ ...props }: DropdownMenuProps) {
 					tooltip="Line height"
 					isDropdown
 				>
-					<Icons.lineHeight />
+					<TextIndicatorIcon />
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
@@ -42,7 +42,7 @@ export function LineHeightDropdownMenu({ ...props }: DropdownMenuProps) {
 					{state.values.map((_value) => (
 						<DropdownMenuRadioItem
 							key={_value}
-							className="min-w-[180px]"
+							className="min-w-24 py-2 [font-size:var(--text-fm-md)]"
 							value={_value}
 						>
 							{_value}

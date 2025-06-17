@@ -16,7 +16,7 @@ import ControlButtons from '@/page-builders/plate-editor/split-editor/control-bu
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
 
-import { Loader } from '@/components/loader'
+import DotLoader from '@/components/aural-ui/dot-loader'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
 import { Editor } from '@/components/plate-ui/editor'
 import FixedToolbarComponent from '@/components/plate-ui/fixed-toolbar-component'
@@ -47,8 +47,8 @@ export default function PlateEditor() {
 
 	if (!content || !latestStatus) {
 		return (
-			<div className="flex min-h-[80vh] flex-1 items-center justify-center">
-				<Loader />
+			<div className="flex min-h-dvh flex-1 items-center justify-center">
+				<DotLoader />
 			</div>
 		)
 	}
@@ -76,16 +76,16 @@ export default function PlateEditor() {
 									<ResizablePanel
 										minSize={50}
 										order={1}
-										className="w-full flex-1"
+										className="w-full flex-1 overflow-visible!"
 									>
 										<ResizablePanelGroup
 											direction="horizontal"
-											className="flex h-full"
+											className="flex h-full overflow-visible!"
 										>
 											<ResizablePanel
 												minSize={30}
 												order={1}
-												className="flex w-full flex-col"
+												className="flex w-full flex-col overflow-visible!"
 											>
 												<FixedToolbarComponent />
 												<Editor

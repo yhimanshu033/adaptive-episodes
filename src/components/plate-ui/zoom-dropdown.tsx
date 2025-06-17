@@ -49,13 +49,16 @@ export function ZoomDropdownMenu(props: DropdownMenuProps) {
 						focusEditor(editor)
 					}}
 				>
-					<DropdownMenuRadioItem className="min-w-[180px]" value={'1.0'}>
+					<DropdownMenuRadioItem
+						className="min-w-24 py-2 [font-size:var(--text-fm-md)]"
+						value={'1.0'}
+					>
 						Fit
 					</DropdownMenuRadioItem>
 					{items.map((val, idx) => (
 						<DropdownMenuRadioItem
 							key={`scale-item-${idx}`}
-							className="min-w-[180px]"
+							className="min-w-24 py-2 [font-size:var(--text-fm-md)]"
 							value={String(val)}
 						>
 							{`${val * 100}%`}

@@ -9,12 +9,13 @@ import { useEditorState } from '@udecode/plate-common/react'
 import { X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
-import { Button } from '@/components/ui/button'
-import Spinner from '@/components/ui/spinner'
 import { getText } from '@/lib/utils/plate'
 
 import { LaserToolsParams } from '@/types/ai-types'
 import { RephraseSelectionProps } from '@/types/editor-types'
+
+import CircularLoader from '../aural-ui/circular-loader'
+import { IconButton } from '../aural-ui/icon-button'
 
 export default function LaserRephrase({
 	getSelectedText,
@@ -96,12 +97,19 @@ export default function LaserRephrase({
 	}
 
 	return (
-		<div className="flex items-center gap-1 p-2">
-			<Button variant="ghost" size="sm" onClick={onResetLeaf}>
-				<X size={16} />
-			</Button>
-			<h4>{rephraseMethods.find((m) => m.id === methodId)?.status}</h4>
-			<Spinner size={24} />
+		<div className="rounded-fm-l border-fm-divider-primary bg-fm-surface-primary flex w-full items-center justify-between gap-2 border py-2 pr-2 pl-5 shadow-lg">
+			<div className="flex items-center gap-2">
+				<CircularLoader className="size-5" />
+				<p className="leading-fm-md [background-image:linear-gradient(270deg,var(--color-fm-placeholder)_12.22%,var(--color-fm-primary)_31.77%,var(--color-fm-primary)_67.87%,var(--color-fm-placeholder)_96.75%)] bg-clip-text [font-size:var(--text-fm-md)] font-medium text-transparent">
+					{rephraseMethods.find((m) => m.id === methodId)?.status}
+				</p>
+			</div>
+			<IconButton
+				onClick={onResetLeaf}
+				icon={<X size={16} />}
+				label="Close"
+				variant="ghost"
+			/>
 		</div>
 	)
 }

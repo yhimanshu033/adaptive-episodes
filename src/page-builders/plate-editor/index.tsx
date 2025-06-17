@@ -12,6 +12,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useShallow } from 'zustand/react/shallow'
 
 import { If } from '@/components/if-else'
+import { EpisodeIdProvider } from '@/providers/episode-id-provider'
 
 const EpisodePlateEditor = () => {
 	const { store: extendStore } = useEditorExtendedStore()
@@ -24,7 +25,9 @@ const EpisodePlateEditor = () => {
 			<DndProvider backend={HTML5Backend}>
 				<div className="max-auto container flex px-6">
 					<If condition={!globalLocalize}>
-						<EpisodeNavigation />
+						<EpisodeIdProvider key={extended[0]} episodeId={extended[0]}>
+							<EpisodeNavigation />
+						</EpisodeIdProvider>
 					</If>
 
 					<div className="relative w-full">

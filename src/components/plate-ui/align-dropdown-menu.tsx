@@ -60,7 +60,11 @@ export function AlignDropdownMenu({ children, ...props }: DropdownMenuProps) {
 					{...radioGroupProps}
 				>
 					{items.map(({ icon: Icon, value: itemValue }) => (
-						<DropdownMenuRadioItem key={itemValue} value={itemValue} hideIcon>
+						<DropdownMenuRadioItem
+							key={itemValue}
+							value={itemValue}
+							className="min-w-24 py-2 [font-size:var(--text-fm-md)]"
+						>
 							<Icon className={iconVariants({ variant: 'toolbar' })} />
 						</DropdownMenuRadioItem>
 					))}
