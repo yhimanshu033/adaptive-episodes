@@ -30,8 +30,8 @@ const Content = ({
 	const { store, setActiveExplorerActions } = useAIStore()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
 	return (
-		<div className="bg-fm-surface-primary absolute inset-0 -top-14 z-50">
-			<div className="border-fm-divider-tertiary bg-fm-surface-primary sticky top-0 z-51 mb-4 flex h-14 items-center justify-between gap-2 border py-3 pr-4 pl-7">
+		<div className="bg-fm-surface-primary absolute inset-x-0 -top-14 z-21 flex min-h-full flex-col">
+			<div className="border-fm-divider-tertiary bg-fm-surface-primary sticky top-0 z-22 mb-4 flex h-14 items-center justify-between gap-2 border py-3 pr-4 pl-7">
 				<Typography align="left" color="primary" variant="body-small">
 					{header}
 				</Typography>
@@ -57,9 +57,9 @@ const Content = ({
 					</ScrollArea>
 				</If>
 				<Else>
-					<div className="flex h-full w-full flex-col items-center justify-center gap-4">
+					<div className="flex w-full flex-1 flex-col items-center justify-center gap-4">
 						<DotLoader />
-						<Typography color="tertiary" className="px-5">
+						<Typography color="tertiary" align="center" className="px-5">
 							Just a moment, we&apos;re generating your content
 						</Typography>
 					</div>

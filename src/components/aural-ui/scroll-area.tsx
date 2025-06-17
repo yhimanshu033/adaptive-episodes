@@ -5,23 +5,35 @@ import { cn } from '@/lib/aural-ui/utils'
 
 function ScrollArea({
 	className,
+	classes = {},
 	children,
 	...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+}: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
+	classes?: {
+		corner?: string
+		root?: string
+		scrollbar?: string
+		thumb?: string
+		viewport?: string
+	}
+}) {
 	return (
 		<ScrollAreaPrimitive.Root
 			data-slot="scroll-area"
-			className={cn('relative', className)}
+			className={cn('relative', className, classes?.root)}
 			{...props}
 		>
 			<ScrollAreaPrimitive.Viewport
 				data-slot="scroll-area-viewport"
-				className="focus-visible:ring-fm-secondary-1000/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&>div]:w-full [&>div]:table-fixed"
+				className={cn(
+					'focus-visible:ring-fm-secondary-1000/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&>div]:w-full [&>div]:table-fixed',
+					classes.viewport
+				)}
 			>
 				{children}
 			</ScrollAreaPrimitive.Viewport>
-			<ScrollBar />
-			<ScrollAreaPrimitive.Corner />
+			<ScrollBar className={classes.scrollbar} />
+			<ScrollAreaPrimitive.Corner className={classes.corner} />
 		</ScrollAreaPrimitive.Root>
 	)
 }

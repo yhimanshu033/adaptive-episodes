@@ -13,10 +13,10 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { AIStoreType, EFocusSetting } from '@/types/ai-types'
 import { EDualVIewMode, EpisodeIdStoreType } from '@/types/episode-type'
-import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
+import { ESidebar, LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
-	sidebar: null,
+	sidebar: ESidebar.CHATBOT,
 	resolved: false,
 	scale: 1,
 	activeDiffId: null,

@@ -38,7 +38,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 	} = useStoryExplorer({ start, end })
 
 	return (
-		<div className="h-full px-5 pt-4">
+		<div className="flex flex-1 flex-col px-5 pt-4">
 			<div className="flex w-full justify-between gap-3">
 				{categories.map(({ mode, id }, idx) => (
 					<Button
@@ -55,72 +55,69 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 			</div>
 
 			<div className="my-5 h-full">
-				{categories.map(({ id, action }, idx) =>
-					activeTab === id ? (
-						<div key={idx} className="h-full">
-							<IfElse condition={!!currentAction}>
-								<If>
-									<Content
-										header={
-											categoryNames[
-												currentAction as keyof typeof categoryNames
-											] ?? currentAction
-										}
-										explorerData={content}
-										isLoading={isMetadataLoading}
-										enableNote={isTaskEnded}
-										start={start}
-										end={end}
-									/>
-								</If>
-								<Else>
-									<div className="flex h-full flex-col gap-5">
-										<If condition={isGermanUser}>
-											<div className="flex items-center gap-2">
-												<Search
-													placeholder="Focus (optional)"
-													initialValue={inputFocus ?? ''}
-													onSearch={setInputFocus}
-												/>
-												<ExplorerSettings />
-											</div>
-										</If>
-										<div className="flex flex-col gap-3">
-											{action.map((actionId, actionIdx) => (
-												<div
-													key={actionIdx}
-													className={cn('mt-2 space-y-2', {
-														hidden: actionId === currentlyDisabled,
-													})}
-												>
-													<div
-														className="flex justify-between"
-														onClick={() => void handleRequest(actionId)}
-													>
-														{categoryNames[actionId]}
-														<ChevronRightIcon className="text-fm-icon-inactive size-5" />
-													</div>
-													<Divider variant="secondary" />
-												</div>
-											))}
+				<IfElse condition={!!currentAction}>
+					<If>
+						<Content
+							header={
+								categoryNames[currentAction as keyof typeof categoryNames] ??
+								currentAction
+							}
+							explorerData={content}
+							isLoading={isMetadataLoading}
+							enableNote={isTaskEnded}
+							start={start}
+							end={end}
+						/>
+					</If>
+					<Else>
+						{categories.map(({ id, action }, idx) =>
+							activeTab === id ? (
+								<div key={idx} className="flex h-full flex-col gap-5">
+									<If condition={isGermanUser}>
+										<div className="flex items-center gap-2">
+											<Search
+												placeholder="Focus (optional)"
+												initialValue={inputFocus ?? ''}
+												onSearch={setInputFocus}
+											/>
+											<ExplorerSettings />
 										</div>
-										<div className="flex h-full items-end justify-center pb-5">
-											<div onClick={() => setSidebar(ESidebar.NOTES, true)}>
-												<Image
-													src={VIEW_SAVED_NOTES_URL}
-													width={300}
-													height={44}
-													alt="Notes Banner"
-													priority
-												/>
+									</If>
+									<div className="flex flex-col gap-3">
+										{action.map((actionId, actionIdx) => (
+											<div
+												key={actionIdx}
+												className={cn('mt-2 space-y-2', {
+													hidden: actionId === currentlyDisabled,
+												})}
+											>
+												<div
+													className="flex justify-between"
+													onClick={() => void handleRequest(actionId)}
+												>
+													{categoryNames[actionId]}
+													<ChevronRightIcon className="text-fm-icon-inactive size-5" />
+												</div>
+												<Divider variant="secondary" />
 											</div>
+										))}
+									</div>
+									<div className="flex h-full items-end justify-center">
+										<div onClick={() => setSidebar(ESidebar.NOTES, true)}>
+											<Image
+												src={VIEW_SAVED_NOTES_URL}
+												width={300}
+												height={44}
+												alt="Notes Banner"
+												priority
+											/>
 										</div>
 									</div>
-								</Else>
-							</IfElse>
-						</div>
-					) : null
-				)}
+								</div>
+							) : null
+						)}
+					</Else>
+				</IfElse>
 			</div>
 		</div>
 	)

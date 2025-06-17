@@ -92,7 +92,7 @@ const Stories = ({
 						<Link href={`/projects/${story.id}`}>
 							<div className="flex h-full flex-col gap-4 p-4">
 								<div className="relative aspect-square">
-									<div className="absolute inset-x-0 top-2 flex justify-between px-2">
+									<div className="absolute inset-x-0 top-2 z-10 flex justify-between px-2">
 										<If
 											condition={openedStories?.slice(0, 5).includes(story.id)}
 										>

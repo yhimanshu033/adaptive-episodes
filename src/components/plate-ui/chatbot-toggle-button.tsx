@@ -23,7 +23,7 @@ export function ChatbotToolbarButton() {
 			size="small"
 			onClick={() => setSidebar(sidebar ?? ESidebar.CHATBOT, true)}
 			className={cn(
-				'absolute top-1/2 -right-4 z-10 -translate-y-1/2 bg-black',
+				'absolute top-1/2 -right-4 z-50 -translate-y-1/2 bg-black',
 				{
 					'bg-fm-secondary-50 text-fm-secondary-800':
 						sidebar === ESidebar.CHATBOT || sidebar === ESidebar.OUTLINE,

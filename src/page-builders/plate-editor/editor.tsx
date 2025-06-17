@@ -12,11 +12,11 @@ import DualView from '@/page-builders/plate-editor/dual-view'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
 import FocusEditorWrapper from '@/page-builders/plate-editor/focus-mode/editor-wrapper'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
-import ControlButtons from '@/page-builders/plate-editor/split-editor/control-buttons'
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
 
 import DotLoader from '@/components/aural-ui/dot-loader'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
 import { Editor } from '@/components/plate-ui/editor'
 import FixedToolbarComponent from '@/components/plate-ui/fixed-toolbar-component'
@@ -58,25 +58,25 @@ export default function PlateEditor() {
 			<SavingContextProvider data={content} initialForceSave={importedLocal}>
 				<ChatbotProvider episodeContent={content}>
 					<FocusEditorWrapper>
-						<div className="pb-6">
+						<div className="flex h-screen flex-col">
 							<EditorOverlayLoader />
 							<EpisodeHeader {...{ content, latestStatus }} />
 							<div
 								ref={containerRef}
 								className={cn(
-									'animate-fade-in-up relative',
+									'animate-fade-in-up relative min-h-0 flex-1 pb-4',
 									// Block selection
 									'[&_.slate-start-area-left]:w-[64px]! [&_.slate-start-area-right]:w-[64px]! [&_.slate-start-area-top]:h-4!'
 								)}
 							>
 								<ResizablePanelGroup
 									direction="horizontal"
-									className="flex size-full overflow-visible!"
+									className="flex h-full overflow-visible!"
 								>
 									<ResizablePanel
 										minSize={50}
 										order={1}
-										className="w-full flex-1 overflow-visible!"
+										className="h-full w-full flex-1 overflow-visible!"
 									>
 										<ResizablePanelGroup
 											direction="horizontal"
@@ -88,14 +88,16 @@ export default function PlateEditor() {
 												className="flex w-full flex-col overflow-visible!"
 											>
 												<FixedToolbarComponent />
-												<Editor
-													className="size-full rounded-none"
-													autoFocus
-													readOnly={!!simplifiedEditor}
-													focusRing={false}
-													variant="ghost"
-													size="md"
-												/>
+												<ScrollArea className="overflow-y-auto">
+													<Editor
+														className="size-full rounded-none"
+														autoFocus
+														readOnly={!!simplifiedEditor}
+														focusRing={false}
+														variant="ghost"
+														size="md"
+													/>
+												</ScrollArea>
 
 												<FloatingToolbar>
 													<FloatingToolbarButtons />
@@ -109,7 +111,6 @@ export default function PlateEditor() {
 									<Sidebar />
 								</ResizablePanelGroup>
 							</div>
-							<ControlButtons />
 							<FloatingPrompt />
 							<FloatingLaserResponse />
 						</div>

@@ -53,7 +53,7 @@ const Notes = () => {
 		}
 
 		return (
-			<div className="h-full">
+			<div className="flex h-full flex-col">
 				<ScrollArea className={cn('h-full px-6', { 'h-fit': !notes?.length })}>
 					<div className="flex h-full flex-col gap-8">
 						<AddNotes />
@@ -63,7 +63,7 @@ const Notes = () => {
 					</div>
 				</ScrollArea>
 				<If condition={!notes?.length}>
-					<div className="flex h-full flex-col items-center justify-center gap-6">
+					<div className="flex flex-1 flex-col items-center justify-center gap-6">
 						<div className="bg-fm-surface-frosted/20 flex size-12 items-center justify-center rounded-full p-4">
 							<NotesIcon className="text-fm-icon-inactive stroke-1.5 size-6" />
 						</div>

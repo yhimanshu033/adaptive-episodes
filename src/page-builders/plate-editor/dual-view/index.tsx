@@ -11,6 +11,7 @@ import usePlateStore from '@/store/plate-store'
 import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { cn } from '@/lib/utils/helpers'
 
@@ -76,10 +77,12 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 					!showDualView && 'max-w-0'
 				)}
 			>
-				<div className="absolute top-0 right-0 z-20 w-fit pt-4 pr-4">
-					<DualViewSelector />
-				</div>
-				<div>{modeToComponent[dualViewMode]}</div>
+				<ScrollArea className="h-full">
+					<div className="absolute top-0 right-0 z-20 w-fit pt-4 pr-4">
+						<DualViewSelector />
+					</div>
+					<div>{modeToComponent[dualViewMode]}</div>
+				</ScrollArea>
 			</ResizablePanel>
 		</>
 	)

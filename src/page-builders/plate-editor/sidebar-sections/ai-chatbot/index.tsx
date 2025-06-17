@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from 'react'
 import useAIChatbot from '@/hooks/use-ai-chatbot'
 import ChatClearAlert from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/alert'
-import { CheckboxDropdown } from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/checkbox-dropdown'
 import MessagesList from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages'
 import Suggestions from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/suggestions'
 import { Send, StopCircle } from 'lucide-react'
@@ -43,8 +42,7 @@ const AIChatbot = () => {
 	}, [])
 	return (
 		<>
-			<div className="flex flex-1 flex-col px-4 pt-4 text-clip">
-				<CheckboxDropdown />
+			<div className="flex h-full flex-1 flex-col px-4 py-4 text-clip">
 				<MessagesList isPending={isPending} />
 				<Suggestions />
 				<div className="flex flex-[0_0_auto] items-end gap-1">

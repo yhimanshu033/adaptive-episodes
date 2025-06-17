@@ -57,7 +57,7 @@ export default function LocalDiffSection() {
 						editorVariants({
 							focused: false,
 						}),
-						'rounded-none border-none bg-neutral-900 px-16 py-[126px]'
+						'rounded-none border-none bg-neutral-900 px-16 py-[126px] opacity-75'
 					)}
 				/>
 			</Plate>
