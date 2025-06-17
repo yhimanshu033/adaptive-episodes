@@ -24,7 +24,7 @@ const MessagesList = ({ isPending }: { isPending: boolean }) => {
 	}, [messages])
 
 	return (
-		<ScrollArea className="mb-4 flex-[1_1_auto] rounded-md border px-4 *:py-4">
+		<ScrollArea className="mb-4 flex-1 rounded-md border px-4 *:py-4">
 			{messages.map((message, index) => (
 				<div
 					key={index}

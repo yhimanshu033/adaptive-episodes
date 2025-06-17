@@ -64,17 +64,24 @@ const Sidebar = () => {
 					transitionDuration: `${isTransitioning ? TRANSITION_DURATION : 0}ms`,
 				}}
 				className={cn(
-					'bg-fm-surface-primary border-fm-divider-tertiary sticky top-0 h-svh w-full max-w-full border-r border-b transition-all',
+					'bg-fm-surface-primary border-fm-divider-tertiary w-full max-w-full border-r border-b transition-all',
 					!showSidebar && 'max-w-0'
 				)}
 			>
 				{sidebarToDisplay && (
-					<ScrollArea className="relative size-full h-full flex-1 transition-all duration-200">
-						<div className="flex h-svh flex-col">
-							<SidebarTopBar />
-							{renderSidebar[sidebarToDisplay]}
-						</div>
-					</ScrollArea>
+					<div className="relative flex size-full flex-col transition-all duration-200">
+						<ScrollArea
+							className="h-full"
+							classes={{
+								viewport: '[&>div]:min-h-full [&>div]:h-full ',
+							}}
+						>
+							<div className="flex h-full flex-col">
+								<SidebarTopBar />
+								<div className="flex-1">{renderSidebar[sidebarToDisplay]}</div>
+							</div>
+						</ScrollArea>
+					</div>
 				)}
 			</ResizablePanel>
 		</>

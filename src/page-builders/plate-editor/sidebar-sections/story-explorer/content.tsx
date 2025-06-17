@@ -30,8 +30,8 @@ const Content = ({
 	const { store, setActiveExplorerActions } = useAIStore()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
 	return (
-		<div className="bg-fm-surface-primary absolute inset-0 -top-14 z-50">
-			<div className="border-fm-divider-tertiary bg-fm-surface-primary sticky top-0 z-51 mb-4 flex h-14 items-center justify-between gap-2 border py-3 pr-4 pl-7">
+		<div className="bg-fm-surface-primary absolute inset-x-0 -top-14 z-21 min-h-full">
+			<div className="border-fm-divider-tertiary bg-fm-surface-primary sticky top-0 z-22 mb-4 flex h-14 items-center justify-between gap-2 border py-3 pr-4 pl-7">
 				<Typography align="left" color="primary" variant="body-small">
 					{header}
 				</Typography>

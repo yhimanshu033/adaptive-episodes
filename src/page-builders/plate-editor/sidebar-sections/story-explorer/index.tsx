@@ -37,7 +37,7 @@ const StoryExplorer = () => {
 	}
 
 	return (
-		<section className="bg-fm-surface-primary relative h-full pt-8">
+		<section className="bg-fm-surface-primary relative flex h-full flex-col pt-8">
 			<div className="space-y-9">
 				<div className="flex flex-col gap-3 px-5">
 					<Label>Episode Range</Label>
