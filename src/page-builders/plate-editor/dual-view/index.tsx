@@ -31,7 +31,9 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 	const modeToComponent: Record<EDualVIewMode, React.ReactNode> = useMemo(
 		() => ({
 			[EDualVIewMode.US_TRANSLATION]: (
-				<Translation translatedContent={translatedContent} />
+				<Translation
+					translatedContent={translatedContent || 'No Content Found'}
+				/>
 			),
 			[EDualVIewMode.BASE_SCRIPT]: <BaseScript />,
 			[EDualVIewMode.PREV_EP]: <PreviousEpisode />,
