@@ -1,5 +1,11 @@
 import React from 'react'
-import { languages, languageToTitle } from '@/constants/episodes-constants'
+import {
+	ELLMModel,
+	languages,
+	languageToTitle,
+	LLM_MODELS,
+	modelToTitle,
+} from '@/constants/episodes-constants'
 
 import IfElse from '@/components/if-else'
 import ForEach from '@/components/ui/for-each'
@@ -21,6 +27,13 @@ interface TLanguageSelectorProps {
 	selectableLanguages?: ELanguage[]
 	value: ELanguage
 }
+
+interface TModelSelectorProps {
+	className?: string
+	onValueChange: (model: ELLMModel) => void
+	value: string
+}
+
 const LanguageSelector = ({
 	onValueChange,
 	value,
@@ -46,6 +59,29 @@ const LanguageSelector = ({
 								if={`${languageToTitle[lang]} (adapting)`}
 								else={languageToTitle[lang]}
 							/>
+						</SelectItem>
+					)}
+				</ForEach>
+			</SelectContent>
+		</Select>
+	)
+}
+
+export const LLMModelSelector = ({
+	onValueChange,
+	value,
+	className,
+}: TModelSelectorProps) => {
+	return (
+		<Select value={value} onValueChange={onValueChange}>
+			<SelectTrigger className={cn('gap-2', className)}>
+				<SelectValue placeholder="Model" />
+			</SelectTrigger>
+			<SelectContent>
+				<ForEach data={LLM_MODELS}>
+					{(model) => (
+						<SelectItem key={model} value={model}>
+							{modelToTitle[model]}
 						</SelectItem>
 					)}
 				</ForEach>

@@ -5,7 +5,7 @@ import React, { useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
-import { sourceLanguages } from '@/constants/episodes-constants'
+import { ELLMModel, sourceLanguages } from '@/constants/episodes-constants'
 import { SAMPLE_DOC_LINK } from '@/constants/global-constants'
 import {
 	StoryImportFormSchema,
@@ -20,7 +20,9 @@ import { toast } from 'sonner'
 
 import { If } from '@/components/if-else'
 import { FullScreenLoader } from '@/components/loader'
-import LanguageSelector from '@/components/plate-ui/language-selector'
+import LanguageSelector, {
+	LLMModelSelector,
+} from '@/components/plate-ui/language-selector'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -199,6 +201,22 @@ export function ImportStory() {
 											<LanguageSelector
 												value={field.value as ELanguage}
 												selectableLanguages={AVAILABLE_TARGET_LANGUAGES}
+												onValueChange={field.onChange}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="llm_model"
+								render={({ field }) => (
+									<FormItem className="space-y-2">
+										<FormLabel htmlFor="language">AI Model</FormLabel>
+										<FormControl>
+											<LLMModelSelector
+												value={field.value as ELLMModel}
 												onValueChange={field.onChange}
 											/>
 										</FormControl>

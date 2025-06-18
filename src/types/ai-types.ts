@@ -1,3 +1,4 @@
+import { ELLMModel } from '@/constants/episodes-constants'
 import {
 	CharacterAction,
 	ExplorerMode,
@@ -281,6 +282,7 @@ export type TSendAdaptationStartBody = {
 	author: string
 	inputls: LSMappingOutput | Record<string, never>
 	is_external: boolean
+	llm_model: ELLMModel
 	project_id: number
 	seq_no: number[]
 	source_lang: ELanguage

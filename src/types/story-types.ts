@@ -41,6 +41,7 @@ export type StoryUploadParams = {
 		end_ep: number
 		image: string | null
 		input_language: string
+		llm_model: string
 		project_url: string | null
 		run_adaptation: boolean
 		start_ep: number

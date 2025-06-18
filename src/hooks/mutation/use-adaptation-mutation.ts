@@ -1,4 +1,5 @@
 import { useParams } from 'next/navigation'
+import { ELLMModel } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import {
 	EPISODE_LIST_QUERY_KEY,
@@ -35,9 +36,11 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 		selectedRowData,
 		storyData,
 		currentLanguage,
+		llmModel,
 	}: {
 		currentLanguage?: ELanguage
 		language: ELanguage
+		llmModel: ELLMModel
 		selectedRowData: TEpisode[]
 		storyData?: TStory | null
 	}) {
@@ -54,6 +57,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					source_lang: getSourceLanguage(currentLanguage || ELanguage.ENGLISH),
 					target_lang: language,
 					type: 'ls_sheet_gen',
+					llm_model: llmModel,
 				},
 			}
 		)
@@ -102,9 +106,11 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 		selectedRowData,
 		inputls,
 		projectId,
+		llmModel,
 	}: {
 		inputls: LSMappingOutput
 		language: ELanguage
+		llmModel: ELLMModel
 		projectId: number
 		selectedRowData: TEpisode[]
 		sourceLang: ELanguage
@@ -122,6 +128,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 					source_lang: getSourceLanguage(sourceLang),
 					target_lang: language,
 					type: 'adaptation',
+					llm_model: llmModel,
 				},
 			}
 		)
