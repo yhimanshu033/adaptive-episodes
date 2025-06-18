@@ -5,7 +5,6 @@ import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 import { EditBigIcon } from '@/icons/edit-big-icon'
 import EditProjectDialog from '@/page-builders/episodes/dialogs/edit-project-dialog'
 
-import { IconButton } from '@/components/aural-ui/icon-button'
 import { Skeleton } from '@/components/aural-ui/skelton'
 import AuthWrapper from '@/components/auth-wrapper'
 import IfElse, { Else, If } from '@/components/if-else'
@@ -52,20 +51,16 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 						<Skeleton className="mt-2 h-4 w-24" />
 					</If>
 					<Else>
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-4">
 							<h2 className={cn('font-fm-text text-3xl', titleClassname)}>
 								{storyData?.project_title}
 							</h2>
 							<AuthWrapper role={ERole.ADMIN}>
 								<EditProjectDialog>
-									<IconButton
-										icon={
-											<EditBigIcon className="text-fm-icon-brand-secondary" />
-										}
-										size="xSmall"
-										label="edit"
-										variant="ghost"
-										className="p-0"
+									<EditBigIcon
+										width={20}
+										height={20}
+										className="text-fm-icon-brand-secondary cursor-pointer"
 									/>
 								</EditProjectDialog>
 							</AuthWrapper>
