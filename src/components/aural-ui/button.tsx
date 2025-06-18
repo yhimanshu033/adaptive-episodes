@@ -74,8 +74,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	iconProps?: React.SVGProps<SVGSVGElement>
 	innerClassName?: string
 	isDisabled?: boolean
-	leftIcon?: React.ReactNode | boolean
-	rightIcon?: React.ReactNode | boolean
+	leftIcon?: React.ReactNode
+	rightIcon?: React.ReactNode
 	size?: 'sm' | 'md' | 'lg'
 	variant?: 'primary' | 'secondary' | 'outline' | 'text'
 }
@@ -102,7 +102,7 @@ export const RawButton = forwardRef<HTMLButtonElement, ButtonProps>(
 				? 'var(--color-fm-secondary-800)'
 				: 'var(--color-fm-primary)'
 
-		const renderIcon = (icon: React.ReactNode | boolean) => {
+		const renderIcon = (icon: React.ReactNode) => {
 			if (!icon) {
 				return null
 			}

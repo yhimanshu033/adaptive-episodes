@@ -22,14 +22,16 @@ export default function HeroSection() {
 						Adapt your story to 10+ languages, collaborate with other writers,
 						and do more with our AI-powered Copilot
 					</p>
-					<Button
-						variant="outline"
-						size="lg"
-						className="transition-transform hover:scale-105"
-						innerClassName="sm:[font-size:var(--text-fm-xl)] [font-size:var(--text-fm-lg)] bg-fm-primary sm:bg-transparent text-fm-neutral-50 sm:text-fm-primary"
-					>
-						<Link href="/projects">Try it for free</Link>
-					</Button>
+					<Link href="/projects">
+						<Button
+							variant="outline"
+							size="lg"
+							className="transition-transform hover:scale-105"
+							innerClassName="sm:[font-size:var(--text-fm-xl)] [font-size:var(--text-fm-lg)] bg-fm-primary sm:bg-transparent text-fm-neutral-50 sm:text-fm-primary"
+						>
+							Try it for free
+						</Button>
+					</Link>
 				</div>
 			</div>
 			<div className="animate-fade-in-down absolute right-0 bottom-0 left-0 h-full w-full bg-gradient-to-br from-[#240047]/50 via-[#470000]/50 to-[#470047]/50 sm:-top-24 sm:min-h-screen">
