@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import useAuth from '@/hooks/use-auth'
 import { GoogleIcon } from '@/icons/google-icon'
@@ -80,6 +81,22 @@ const SignInWithGoogle = () => {
 				animate="visible"
 				variants={containerVariants}
 			>
+				<motion.div className="absolute inset-0 z-0" variants={itemVariants}>
+					<Image
+						src="/assets/signin/bg-signin-desktop.webp"
+						alt="Desktop"
+						layout="fill"
+						objectFit="cover"
+						className="hidden md:block"
+					/>
+					<Image
+						src="/assets/signin/bg-signin-mobile.webp"
+						alt="Desktop"
+						layout="fill"
+						objectFit="cover"
+						className="block md:hidden"
+					/>
+				</motion.div>
 				<TwinkleStarsIcon />
 
 				{/* Home button */}
@@ -105,11 +122,11 @@ const SignInWithGoogle = () => {
 				{/* Main content */}
 				<div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center">
 					<motion.div
-						className="mx-auto max-w-4xl space-y-8"
+						className="mx-auto w-full max-w-4xl space-y-5"
 						variants={containerVariants}
 					>
 						<motion.h1
-							className="text-fm-5xl md:text-fm-8xl leading-tight font-bold text-white"
+							className="text-fm-3xl md:text-fm-8xl mb-8 leading-tight font-normal text-white md:mb-10"
 							variants={itemVariants}
 						>
 							<motion.span
@@ -135,16 +152,17 @@ const SignInWithGoogle = () => {
 								variants={buttonVariants}
 								whileHover="hover"
 								whileTap="tap"
-								className="w-full md:w-auto"
+								className="w-full md:w-91"
 							>
 								<Button
 									variant="outline"
 									size="md"
 									className="w-full"
-									leftIcon={<GoogleIcon />}
+									leftIcon={<GoogleIcon className="md:size-6" />}
 									onClick={handleSignIn}
 									aria-label="Sign in with Google"
 									title="Sign in with Google"
+									innerClassName="md:py-fm-2xl md:px-fm-5xl md:text-fm-xl md:-translate-y-1.5"
 								>
 									Sign in with Google
 								</Button>

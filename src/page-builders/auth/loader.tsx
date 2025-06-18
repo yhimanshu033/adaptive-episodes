@@ -9,7 +9,7 @@ export default function Loader({ isLoading = false }: { isLoading?: boolean }) {
 	}
 
 	return (
-		<Overlay glass="low" opacity="low" noise="none">
+		<Overlay glass="low" opacity="high" noise="none">
 			<CircularLoader
 				size="xl"
 				text="Please wait..."
