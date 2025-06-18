@@ -1,20 +1,33 @@
 import React, { useCallback, useMemo } from 'react'
 import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
-import CommentComponent from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/comment'
+import { TickIcon } from '@/icons/tick-icon'
+// import CommentComponent from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/comment'
 import ResolvedCommentItem from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/resolved-comment'
 import SuggestionBlock from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
 import usePlateStore from '@/store/plate-store'
 import { BaseCommentsPlugin } from '@udecode/plate-comments'
 import { useEditorState } from '@udecode/plate-common/react'
-import { CheckCheck } from 'lucide-react'
 
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '@/components/aural-ui/dropdown'
+import { FilterBarRowIcon } from '@/components/aural-ui/filter-bar-row-icon'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { If } from '@/components/aural-ui/if-else'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
-import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/aural-ui/utils'
 import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import { sortCommentsAndDescriptions } from '@/lib/utils/plate'
 
 import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
+
+import CommentCard from './comment-card'
+import EmptyState from './empty-state'
 
 export default function CommentSidebar() {
 	const editor = useEditorState()
@@ -51,14 +64,26 @@ export default function CommentSidebar() {
 
 	const RenderReviews = useCallback(() => {
 		if (showResolved) {
+			if (resolvedComments.length === 0) {
+				return (
+					<EmptyState description="No resolved comments yet. Once you resolve a comment, it will appear here" />
+				)
+			}
 			return resolvedComments.map((item, idx) => (
 				<ResolvedCommentItem key={idx} resolvedComment={item} />
 			))
 		}
+
+		if (commentsAndDescriptions.length === 0) {
+			return (
+				<EmptyState description="No comments yet. Share your thoughts and start the conversation." />
+			)
+		}
+
 		return commentsAndDescriptions.map((item, index) => {
 			if (item.type === EReviewType.COMMENT) {
 				return (
-					<CommentComponent
+					<CommentCard
 						key={index}
 						setActiveComment={setActiveComment}
 						comment={item.data}
@@ -78,35 +103,50 @@ export default function CommentSidebar() {
 		myUserId,
 	])
 
-	const commentType = showResolved ? 'resolved' : 'unresolved'
-	const commentCount = showResolved
-		? resolvedComments.length
-		: commentsAndDescriptions.length
-
 	return (
-		<div className="relative flex flex-1 flex-col">
-			<div className="pt-4 pb-8">
-				<h1 className="w-full text-center">
-					{!commentCount && (!myUserId || !activeCommentId)
-						? `No ${showResolved ? 'resolved' : 'unresolved'} comments`
-						: `${commentCount} ${commentType} comments`}
-				</h1>
-			</div>
-			<Button
-				className="absolute top-1 left-2 z-50"
-				variant={showResolved ? 'default' : 'outline'}
-				size="icon"
-				onClick={() => setResolved(true, true)}
-				tooltip={
-					showResolved ? 'Show Unresolved Comments' : 'Show Resolved Comments'
-				}
+		<div className="bg-fm-surface-primary flex h-full flex-col">
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<IconButton
+						label="Filter comments"
+						icon={
+							<FilterBarRowIcon
+								className={cn('size-4 stroke-2', {
+									'text-fm-hotpink-600': showResolved,
+								})}
+							/>
+						}
+						className={cn('absolute top-3 right-15 z-20', {
+							'bg-fm-hotpink-50': showResolved,
+						})}
+						variant="ghost"
+						shape="square"
+						size="small"
+					/>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="end">
+					<DropdownMenuItem onClick={() => setResolved(true, true)}>
+						<If condition={showResolved}>
+							<TickIcon />
+						</If>
+						Resolved comments
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
+
+			<ScrollArea
+				className="h-full"
+				classes={{
+					viewport: '[&>div]:min-h-full [&>div]:h-full',
+				}}
 			>
-				<CheckCheck size={16} />
-			</Button>
-			<RenderReviews />
-			{!!myUserId && activeCommentId && !commentExists && (
-				<CommentCreateForm autoFocus />
-			)}
+				<div className="flex h-full flex-col gap-3 p-4">
+					<RenderReviews />
+					{!!myUserId && activeCommentId && !commentExists && (
+						<CommentCreateForm autoFocus />
+					)}
+				</div>
+			</ScrollArea>
 		</div>
 	)
 }

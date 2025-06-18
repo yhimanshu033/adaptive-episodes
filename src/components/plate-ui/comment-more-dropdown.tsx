@@ -2,7 +2,10 @@
 
 import React from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
-import { cn } from '@udecode/cn'
+import { EditBigIcon } from '@/icons/edit-big-icon'
+import { PageSearchIcon } from '@/icons/page-search-icon'
+import { VerticalMenuIcon } from '@/icons/test-icons'
+import { TrashIcon } from '@/icons/trash-icon'
 import {
 	useCommentDeleteButton,
 	useCommentDeleteButtonState,
@@ -11,14 +14,14 @@ import {
 	useCommentItemContentState,
 } from '@udecode/plate-comments/react'
 
-import { Icons } from '@/components/icons'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from '@/components/plate-ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
+} from '@/components/aural-ui/dropdown'
+
+import { IconButton } from '../aural-ui/icon-button'
 
 export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 	const editButtonState = useCommentEditButtonState()
@@ -30,19 +33,24 @@ export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
-				<Button
-					tooltip="More"
+				<IconButton
+					label="Trigger dropdown"
 					variant="ghost"
-					className={cn('text-muted-foreground h-6 p-1')}
-				>
-					<Icons.more className="size-4" />
-				</Button>
+					icon={<VerticalMenuIcon className="size-4" />}
+				></IconButton>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent>
-				<DropdownMenuItem {...editProps}>Edit comment</DropdownMenuItem>
-				<DropdownMenuItem {...deleteProps}>Delete comment</DropdownMenuItem>
+			<DropdownMenuContent align="end">
+				<DropdownMenuItem {...editProps}>
+					<EditBigIcon /> Edit comment
+				</DropdownMenuItem>
+				<DropdownMenuItem {...deleteProps}>
+					<TrashIcon />
+					Delete comment
+				</DropdownMenuItem>
 				{user?.id === AI_USER_ID && !comment?.parentId && (
-					<DropdownMenuItem onClick={onExample}>Show Example</DropdownMenuItem>
+					<DropdownMenuItem onClick={onExample}>
+						<PageSearchIcon /> Show Example
+					</DropdownMenuItem>
 				)}
 			</DropdownMenuContent>
 		</DropdownMenu>

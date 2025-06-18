@@ -1,32 +1,55 @@
 'use client'
 
 import React from 'react'
-import { cn } from '@udecode/cn'
 import {
-	CommentEditActions,
-	CommentEditTextarea,
+	useCommentEditCancelButton,
+	useCommentEditSaveButton,
+	useCommentEditSaveButtonState,
+	useCommentEditTextarea,
+	useCommentEditTextareaState,
 } from '@udecode/plate-comments/react'
 
-import { buttonVariants } from '@/components/plate-ui/button'
-import { inputVariants } from '@/components/plate-ui/input'
+import { Button } from '@/components/aural-ui/button'
+import TextArea from '@/components/aural-ui/textarea'
 
 export function CommentValue() {
-	return (
-		<div className="my-2 flex flex-col items-end gap-2">
-			<CommentEditTextarea className={cn(inputVariants(), 'min-h-[60px]')} />
+	const textareaState = useCommentEditTextareaState()
+	const { props: textareaProps } = useCommentEditTextarea(textareaState)
 
-			<div className="flex space-x-2">
-				<CommentEditActions.CancelButton
-					className={buttonVariants({ size: 'xs', variant: 'outline' })}
+	const saveButtonState = useCommentEditSaveButtonState()
+	const { props: saveButtonProps } = useCommentEditSaveButton(saveButtonState)
+	const { props: cancelButtonProps } = useCommentEditCancelButton()
+
+	return (
+		<div className="relative flex grow flex-col gap-2">
+			<TextArea
+				{...textareaProps}
+				minHeight={70}
+				autoGrow={true}
+				decoration="filled"
+				classes={{
+					textarea: 'pb-14',
+				}}
+			/>
+
+			<div className="border-fm-divider-secondary absolute inset-x-0 bottom-1 mx-3 flex items-center justify-end gap-4 border-t pr-2">
+				<Button
+					{...cancelButtonProps}
+					variant="text"
+					className="text-fm-primary"
+					innerClassName="translate-none"
+					size="sm"
 				>
 					Cancel
-				</CommentEditActions.CancelButton>
-
-				<CommentEditActions.SaveButton
-					className={buttonVariants({ size: 'xs', variant: 'default' })}
+				</Button>
+				<Button
+					{...saveButtonProps}
+					variant="text"
+					className="!text-fm-sm text-fm-secondary-800"
+					innerClassName="translate-none"
 				>
 					Save
-				</CommentEditActions.SaveButton>
+				</Button>
 			</div>
 		</div>
 	)

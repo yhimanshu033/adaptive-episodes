@@ -112,3 +112,5 @@ export const DEFAULT_INITIAL_PAGE = 1
 export const FAR_PADDING_TEXT = 8
 
 export const VIEW_SAVED_NOTES_URL = '/assets/save_notes_banner.webp'
+
+export const AI_AVATAR = '/assets/ai_avatar.webp'

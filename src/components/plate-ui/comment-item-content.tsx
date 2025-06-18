@@ -4,6 +4,7 @@ import React, { useMemo } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
+import useComments from '@/hooks/plate/use-comments'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
@@ -17,16 +18,19 @@ import { Copy } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useShallow } from 'zustand/react/shallow'
 
-import IfElse, { If } from '@/components/if-else'
+import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import { Typography } from '@/components/aural-ui/typography'
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
 import { CommentMoreDropdown } from '@/components/plate-ui/comment-more-dropdown'
 import { CommentResolveButton } from '@/components/plate-ui/comment-resolve-button'
 import { CommentValue } from '@/components/plate-ui/comment-value'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import StreamedResponse from '@/components/ui/streamed-response'
 
 import { PlateUser } from '@/types/plate-types'
+
+import Badge from '../aural-ui/badge'
+import Label from '../aural-ui/label'
 
 export default function CommentItemContent() {
 	const {
@@ -57,6 +61,8 @@ export default function CommentItemContent() {
 		[commentReplies]
 	)
 
+	const { activeCommentId } = useComments()
+
 	const readOnly = useEditorReadOnly()
 
 	const key = useMemo(
@@ -85,35 +91,25 @@ export default function CommentItemContent() {
 	}
 
 	return (
-		<div>
+		<div className="space-y-3">
 			<div className="relative flex items-center gap-2">
 				<CommentAvatar userId={comment?.userId} />
-
-				<h4 className="text-sm leading-none font-semibold">{user?.name}</h4>
-				<If condition={!!userTitle}>
-					<Badge
-						variant="outline"
-						className="bg-muted text-xxs text-muted-foreground leading-none"
-					>
-						{userTitle}
-					</Badge>
-				</If>
-
-				<div className="text-muted-foreground text-xs leading-none">
-					{formatDistance(comment.createdAt, Date.now())} ago
+				<div className="flex flex-col">
+					<div className="flex gap-2">
+						<Typography color="primary" variant="body-small">
+							{user?.name}
+						</Typography>
+						<If condition={!!userTitle}>
+							<Badge size="xs">{userTitle}</Badge>
+						</If>
+					</div>
+					<Typography variant="caption-medium" color="tertiary">
+						{formatDistance(comment.createdAt, Date.now())} ago
+					</Typography>
 				</div>
 
 				<If condition={!readOnly}>
 					<div className="absolute -top-0.5 -right-0.5 flex items-center space-x-1">
-						<If condition={replyCount > 0}>
-							<div className="bg-muted text-muted-foreground ml-2 flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
-								{replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}
-							</div>
-						</If>
-						<If condition={!isReplyComment}>
-							<CommentResolveButton />
-						</If>
-
 						<If condition={isReplyComment && user?.id === AI_USER_ID}>
 							<Button
 								asChild
@@ -131,18 +127,29 @@ export default function CommentItemContent() {
 						<If condition={!isResolved}>
 							<CommentMoreDropdown onExample={() => void onExample()} />
 						</If>
+
+						<If condition={!isReplyComment}>
+							<CommentResolveButton />
+						</If>
 					</div>
 				</If>
 			</div>
 
-			<div className="mb-4 pt-0.5 pl-7">
-				<IfElse
-					condition={!!editingValue}
-					if={<CommentValue />}
-					else={
-						<div className="text-sm whitespace-pre-wrap">{commentText}</div>
-					}
-				/>
+			<div className="mb-4 pt-0.5">
+				<IfElse condition={!!editingValue}>
+					<If>
+						<CommentValue />
+					</If>
+					<Else>
+						<Typography
+							className="whitespace-pre-wrap"
+							color="tertiary"
+							variant="body-small"
+						>
+							{commentText}
+						</Typography>
+					</Else>
+				</IfElse>
 			</div>
 			<If condition={!exampleData?.length && !!key}>
 				<div className="flex flex-col gap-2 p-2">
@@ -154,6 +161,11 @@ export default function CommentItemContent() {
 					<h2 className="text-sm font-semibold">{dict('example')}:</h2>
 					<StreamedResponse className="tex-xs" data={exampleData || []} />
 				</div>
+			</If>
+			<If condition={replyCount > 0 && activeCommentId !== comment.id}>
+				<Label className="text-fm-secondary-800">
+					{replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}
+				</Label>
 			</If>
 		</div>
 	)

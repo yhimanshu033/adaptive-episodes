@@ -37,6 +37,7 @@ interface TextAreaBaseProps {
 	onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
 	onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
 	onFocus?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
+	onInput?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
 	placeholder?: string
 	required?: boolean
 	rows?: number
