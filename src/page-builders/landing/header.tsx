@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { navLinks } from '@/constants/landing-constants'
 import { GoogleIcon } from '@/icons/google-icon'
+import { useGlobalStore } from '@/store/global-store'
 import { Menu } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
@@ -28,6 +30,7 @@ const Logo = () => {
 const Header = () => {
 	const [hasScrolled, setHasScrolled] = useState(false)
 	const [open, setOpen] = useState(false)
+	const userData = useGlobalStore(useShallow((state) => state.userData))
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -62,14 +65,24 @@ const Header = () => {
 					</a>
 				))}
 				<Link href="/projects">
-					<Button
-						variant="outline"
-						size="sm"
-						className="transition-transform hover:scale-105"
-						leftIcon={<GoogleIcon />}
-					>
-						Sign in with Google
-					</Button>
+					{userData ? (
+						<Button
+							variant="outline"
+							size="sm"
+							className="transition-transform hover:scale-105"
+						>
+							Try it for free
+						</Button>
+					) : (
+						<Button
+							variant="outline"
+							size="sm"
+							className="transition-transform hover:scale-105"
+							leftIcon={<GoogleIcon />}
+						>
+							Sign in with Google
+						</Button>
+					)}
 				</Link>
 			</div>
 
@@ -101,14 +114,20 @@ const Header = () => {
 								</li>
 							))}
 							<Link href="/projects">
-								<Button
-									variant="outline"
-									size="sm"
-									className="mt-4 w-full"
-									leftIcon={<GoogleIcon />}
-								>
-									Sign in with Google
-								</Button>
+								{userData ? (
+									<Button variant="outline" size="sm" className="mt-4 w-full">
+										Try it for free
+									</Button>
+								) : (
+									<Button
+										variant="outline"
+										size="sm"
+										className="mt-4 w-full"
+										leftIcon={<GoogleIcon />}
+									>
+										Sign in with Google
+									</Button>
+								)}
 							</Link>
 						</ul>
 					</SheetContent>
