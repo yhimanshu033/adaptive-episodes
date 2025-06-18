@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { TRANSITION_DURATION } from '@/constants/editor-constants'
-import DualViewSelector from '@/page-builders/plate-editor/dual-view/dual-view-selector'
+import useAccessChecks from '@/hooks/use-access-checks'
+import { CrossIcon } from '@/icons/cross-icon'
 import LocalDiffSection from '@/page-builders/plate-editor/dual-view/local-diff'
 import NextEpisode from '@/page-builders/plate-editor/dual-view/next-episode'
 import PreviousEpisode from '@/page-builders/plate-editor/dual-view/prev-episode'
@@ -11,20 +12,26 @@ import usePlateStore from '@/store/plate-store'
 import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
+import { IconButton } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { cn } from '@/lib/utils/helpers'
 
 import { EChatMode } from '@/types/ai-types'
-import { EDualVIewMode, TranslationProps } from '@/types/episode-type'
+import {
+	EDualVIewMode,
+	MODE_TO_TITLE,
+	TranslationProps,
+} from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
 import BaseScript from './base-script'
 
 const DualView = ({ translatedContent }: TranslationProps) => {
-	const { store } = usePlateStore()
+	const { store, setSidebar } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	const focusMode = store((state) => state.focusMode)
+	const { isGerman } = useAccessChecks()
 
 	const showDualView = sidebar === ESidebar.DUAL_VIEW && !focusMode
 
@@ -46,7 +53,8 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 		[translatedContent]
 	)
 
-	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+	const { store: useEpisodeIdStoreContext, setDualViewMode } =
+		useEpisodeIdStore()
 	const dualViewMode = useEpisodeIdStoreContext(
 		useShallow((state) => state.dualViewMode)
 	)
@@ -59,7 +67,23 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 	const isTransitioning =
 		(!debouncedShowDualView && showDualView) || !showDualView
 
-	if ((!showDualView && !debouncedShowDualView) || (!showDualView && sidebar)) {
+	const closeDualView = () => {
+		setDualViewMode(null)
+		setSidebar(null, false)
+	}
+
+	const modeToTitle = useMemo(() => {
+		if (!isGerman) {
+			MODE_TO_TITLE[EDualVIewMode.US_TRANSLATION] = 'Source Script'
+		}
+		return MODE_TO_TITLE
+	}, [isGerman])
+
+	if (
+		(!showDualView && !debouncedShowDualView) ||
+		(!showDualView && sidebar) ||
+		!dualViewMode
+	) {
 		return null
 	}
 
@@ -79,10 +103,19 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 					!showDualView && 'max-w-0'
 				)}
 			>
-				<ScrollArea className="h-full">
-					<div className="absolute top-0 right-0 z-20 w-fit pt-4 pr-4">
-						<DualViewSelector />
-					</div>
+				<div className="border-fm-divider-tertiary flex h-15.5 items-center justify-between gap-4 border-b py-3 pr-4 pl-7">
+					<h3 className="text-fm-primary leading-fm-md [font-size:var(--text-fm-md)] font-normal">
+						{modeToTitle[dualViewMode]}
+					</h3>
+					<IconButton
+						size="small"
+						variant="ghost"
+						icon={<CrossIcon />}
+						label="Close Dual View"
+						onClick={closeDualView}
+					/>
+				</div>
+				<ScrollArea className="h-[calc(100%-62px)]">
 					<div>{modeToComponent[dualViewMode]}</div>
 				</ScrollArea>
 			</ResizablePanel>
