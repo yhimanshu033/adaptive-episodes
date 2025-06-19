@@ -58,12 +58,13 @@ export function CommentResolveButton() {
 			variant="ghost"
 			{...deleteProps}
 			onClick={handleResolve}
-			className="p-2 hover:bg-transparent"
+			className="hover:!text-fm-primary text-fm-icon-inactive p-2"
+			size="small"
 			icon={
 				comment.isResolved ? (
-					<CircleCrossIcon className="text-fm-icon-inactive hover:text-fm-primary size-4.5" />
+					<CircleCrossIcon className="size-4.5 text-inherit" />
 				) : (
-					<CircleTickIcon className="text-fm-icon-inactive hover:text-fm-primary size-4.5" />
+					<CircleTickIcon className="size-4.5 text-inherit" />
 				)
 			}
 			tooltip={comment.isResolved ? 'Mark as Unresolved' : 'Mark as Resolved'}
@@ -71,6 +72,6 @@ export function CommentResolveButton() {
 				align: 'end',
 				side: 'bottom',
 			}}
-		></IconButton>
+		/>
 	)
 }

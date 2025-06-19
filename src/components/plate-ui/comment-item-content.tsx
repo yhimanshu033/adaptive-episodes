@@ -6,6 +6,7 @@ import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import { CopyIcon } from '@/icons/copy-icon'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
 import {
@@ -14,7 +15,6 @@ import {
 } from '@udecode/plate-comments/react'
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 import { formatDistance } from 'date-fns'
-import { Copy } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -24,12 +24,12 @@ import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
 import { CommentMoreDropdown } from '@/components/plate-ui/comment-more-dropdown'
 import { CommentResolveButton } from '@/components/plate-ui/comment-resolve-button'
 import { CommentValue } from '@/components/plate-ui/comment-value'
-import { Button } from '@/components/ui/button'
 import StreamedResponse from '@/components/ui/streamed-response'
 
 import { PlateUser } from '@/types/plate-types'
 
 import Badge from '../aural-ui/badge'
+import { IconButton } from '../aural-ui/icon-button'
 import Label from '../aural-ui/label'
 
 export default function CommentItemContent() {
@@ -92,40 +92,42 @@ export default function CommentItemContent() {
 
 	return (
 		<div className="space-y-3">
-			<div className="relative flex items-center gap-2">
-				<CommentAvatar userId={comment?.userId} />
-				<div className="flex flex-col">
-					<div className="flex gap-2">
-						<Typography color="primary" variant="body-small">
-							{user?.name}
+			<div className="group flex items-center justify-between gap-2">
+				<div className="flex items-center gap-2">
+					<CommentAvatar userId={comment?.userId} />
+					<div className="flex flex-col">
+						<div className="flex gap-2">
+							<Typography color="primary" variant="body-small">
+								{user?.name}
+							</Typography>
+							<If condition={!!userTitle}>
+								<Badge size="xs">{userTitle}</Badge>
+							</If>
+						</div>
+						<Typography variant="caption-medium" color="tertiary">
+							{formatDistance(comment.createdAt, Date.now())} ago
 						</Typography>
-						<If condition={!!userTitle}>
-							<Badge size="xs">{userTitle}</Badge>
-						</If>
 					</div>
-					<Typography variant="caption-medium" color="tertiary">
-						{formatDistance(comment.createdAt, Date.now())} ago
-					</Typography>
 				</div>
 
 				<If condition={!readOnly}>
-					<div className="absolute -top-0.5 -right-0.5 flex items-center space-x-1">
+					<div className="flex items-center">
 						<If condition={isReplyComment && user?.id === AI_USER_ID}>
-							<Button
-								asChild
-								tooltip="Copy"
-								size="icon"
+							<IconButton
+								label="copy button"
 								variant="ghost"
-								className="size-4"
-							>
-								<Copy
-									className="mr-1"
-									onClick={() => handleCopy(commentText)}
-								/>
-							</Button>
+								size="small"
+								onClick={() => handleCopy(commentText)}
+								className="hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity group-hover:opacity-100"
+								icon={<CopyIcon className="size-4 text-inherit" />}
+								shape="square"
+							/>
 						</If>
 						<If condition={!isResolved}>
-							<CommentMoreDropdown onExample={() => void onExample()} />
+							<CommentMoreDropdown
+								onExample={() => void onExample()}
+								showIconOnSelect={activeCommentId === comment.id}
+							/>
 						</If>
 
 						<If condition={!isReplyComment}>

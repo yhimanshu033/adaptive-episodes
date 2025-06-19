@@ -20,10 +20,16 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { cn } from '@/lib/aural-ui/utils'
 
-import { IconButton } from '../aural-ui/icon-button'
-
-export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
+export function CommentMoreDropdown({
+	onExample,
+	showIconOnSelect,
+}: {
+	onExample: () => void
+	showIconOnSelect: boolean
+}) {
 	const editButtonState = useCommentEditButtonState()
 	const { props: editProps } = useCommentEditButton(editButtonState)
 	const deleteButtonState = useCommentDeleteButtonState()
@@ -36,8 +42,14 @@ export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
 				<IconButton
 					label="Trigger dropdown"
 					variant="ghost"
-					icon={<VerticalMenuIcon className="size-4" />}
-				></IconButton>
+					icon={<VerticalMenuIcon className="size-4 text-inherit" />}
+					className={cn(
+						'hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100',
+						{ 'opacity-100': showIconOnSelect }
+					)}
+					shape="square"
+					size="small"
+				/>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
 				<DropdownMenuItem {...editProps}>
