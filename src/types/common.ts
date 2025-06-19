@@ -1,8 +1,6 @@
 import React, { ForwardRefExoticComponent, RefAttributes } from 'react'
-import { TooltipContentProps, TooltipProps } from '@radix-ui/react-tooltip'
 import { LucideProps } from 'lucide-react'
 
-import { ButtonProps } from '@/components/aural-ui/button'
 import { FetchRequestParams, FetchResponseResult } from '@/lib/fetch-api'
 
 import { SessionData } from '@/types/admin-types'
@@ -143,9 +141,3 @@ export type StartPollingParams<
 	delay: number
 	stop: (data: FetchResponseResult<ResponseDataT>) => boolean
 }
-
-export type TButtonWithTooltipProps = {
-	tooltip?: React.ReactNode
-	tooltipContentProps?: Omit<TooltipContentProps, 'children'>
-	tooltipProps?: Omit<TooltipProps, 'children'>
-} & Omit<ButtonProps, 'ref'>

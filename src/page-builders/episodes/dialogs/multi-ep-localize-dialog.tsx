@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Button } from '@/components/aural-ui/button'
+import { Button, ButtonProps } from '@/components/aural-ui/button'
 import {
 	Drawer,
 	DrawerContent,
@@ -8,12 +8,11 @@ import {
 	DrawerTrigger,
 } from '@/components/ui/drawer'
 
-import { TButtonWithTooltipProps } from '@/types/common'
-
 export default function MultiEpLocalizeDialog({
 	url,
 	...props
-}: { url: string } & TButtonWithTooltipProps) {
+}: { url: string } & ButtonProps &
+	React.ComponentPropsWithoutRef<typeof Button>) {
 	return (
 		<Drawer>
 			<DrawerTrigger asChild>

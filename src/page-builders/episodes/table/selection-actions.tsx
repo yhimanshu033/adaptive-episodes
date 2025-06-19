@@ -75,7 +75,7 @@ export default function SelectionActions({
 				</h4>
 			</div>
 			<div className="flex gap-3">
-				<If condition={language !== ELanguage.GERMAN_ORIGINAL}>
+				<If condition={language.parentLanguage !== ELanguage.GERMAN_ORIGINAL}>
 					<Button
 						disabled={Object.keys(selectedRowData).length < 1}
 						onClick={() => {
@@ -95,12 +95,16 @@ export default function SelectionActions({
 				<MultiEpLocalizeDialog
 					url={url}
 					disabled={Object.keys(selectedRowData).length <= 1}
-					// @ts-expect-error type mismatch
 					tooltip="Localize episodes"
 				>
 					<Replace size={18} />
 				</MultiEpLocalizeDialog>
-				<If condition={!language || language === ELanguage.GERMAN_ORIGINAL}>
+				<If
+					condition={
+						!language?.parentLanguage ||
+						language.parentLanguage === ELanguage.GERMAN_ORIGINAL
+					}
+				>
 					<Button
 						variant="outline"
 						disabled={Object.keys(selectedRowData).length <= 1}
