@@ -40,7 +40,7 @@ export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 			setShowActions(false)
 		}
 
-		if (activeCommentId && !comments[activeCommentId]) {
+		if (!text && activeCommentId && !comments[activeCommentId]) {
 			setOption('activeCommentId', null)
 		}
 	}
