@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useRef } from 'react'
 import {
 	useCommentEditCancelButton,
 	useCommentEditSaveButton,
@@ -11,6 +11,7 @@ import {
 
 import { Button } from '@/components/aural-ui/button'
 import TextArea from '@/components/aural-ui/textarea'
+import { cn } from '@/lib/aural-ui/utils'
 
 export function CommentValue() {
 	const textareaState = useCommentEditTextareaState()
@@ -19,6 +20,10 @@ export function CommentValue() {
 	const saveButtonState = useCommentEditSaveButtonState()
 	const { props: saveButtonProps } = useCommentEditSaveButton(saveButtonState)
 	const { props: cancelButtonProps } = useCommentEditCancelButton()
+
+	const initialValue = useRef<string | null>(textareaState.value)
+
+	const isUnchanged = initialValue.current === textareaState.value
 
 	return (
 		<div className="relative flex grow flex-col gap-2">
@@ -32,7 +37,7 @@ export function CommentValue() {
 				}}
 			/>
 
-			<div className="border-fm-divider-secondary absolute inset-x-0 bottom-1 mx-3 flex items-center justify-end gap-4 border-t pr-2">
+			<div className="border-fm-divider-secondary absolute inset-x-0 bottom-1 mx-3 flex items-center justify-end gap-1 border-t pr-2">
 				<Button
 					{...cancelButtonProps}
 					variant="text"
@@ -45,8 +50,11 @@ export function CommentValue() {
 				<Button
 					{...saveButtonProps}
 					variant="text"
-					className="!text-fm-sm text-fm-secondary-800"
-					innerClassName="translate-none"
+					innerClassName={cn('translate-none', {
+						'!text-fm-inactive': isUnchanged,
+					})}
+					size="sm"
+					disabled={isUnchanged}
 				>
 					Save
 				</Button>
