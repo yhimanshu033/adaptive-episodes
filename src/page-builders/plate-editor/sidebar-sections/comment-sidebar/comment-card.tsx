@@ -78,14 +78,12 @@ export default function CommentCard({
 				)}
 			>
 				<CommentItem commentId={comment.id} />
-				{!!myUserId && activeCommentId === comment.id && (
-					<>
-						<CommentReplyItems />
-						<If condition={!isVisible}>
-							<CommentCreateForm />
-						</If>
-					</>
-				)}
+				<If condition={!!myUserId && activeCommentId === comment.id}>
+					<CommentReplyItems />
+					<If condition={!isVisible}>
+						<CommentCreateForm />
+					</If>
+				</If>
 				<div id={`example-placeholder-${comment.id}`} className="mt-2" />
 			</div>
 		</CommentProvider>

@@ -105,8 +105,6 @@ export default function CommentItemContent() {
 
 		if (block && placeholder) {
 			placeholder.appendChild(block)
-			block.classList.remove('absolute')
-			block.setAttribute('data-visible', 'true')
 		}
 	}, [comment.id])
 
