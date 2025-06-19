@@ -32,7 +32,7 @@ const BaseScript: React.FC = () => {
 				readOnly
 				variant="ghost"
 				size="md"
-				className="pt-0! opacity-75"
+				className="bg-fm-surface-primary text-fm-tertiary px-0 py-14"
 			/>
 		</Plate>
 	)

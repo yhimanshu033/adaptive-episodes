@@ -3,17 +3,21 @@
 'use client'
 
 import React from 'react'
+import { CapitalALetterIcon } from '@/icons/capital-a-letter-icon'
 import { TickIcon } from '@/icons/tick-icon'
 import type { DropdownMenuItemProps } from '@radix-ui/react-dropdown-menu'
 import { cn } from '@udecode/cn'
-import { Ban } from 'lucide-react'
+import {
+	FontBackgroundColorPlugin,
+	FontColorPlugin,
+} from '@udecode/plate-font/react'
+import { cva } from 'class-variance-authority'
 
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from '@/components/aural-ui/tooltip'
-import { buttonVariants } from '@/components/plate-ui/button'
 import type { TColor } from '@/components/plate-ui/color-dropdown-menu'
 import { DropdownMenuItem } from '@/components/plate-ui/dropdown-menu'
 
@@ -21,38 +25,59 @@ type ColorDropdownMenuItemProps = {
 	isBrightColor: boolean
 	isSelected: boolean
 	name?: string
-	updateColor: (color: string) => void
+	nodeType?: string
+	updateColorAction: (color: string) => void
 	value: string
 } & DropdownMenuItemProps
 
+const itemVariants = cva(
+	'p-1 rounded-fm-m hover:border-fm-primary transition-all duration-200 border [&_svg:not([class*="text-"])]:!text-inherit relative overflow-hidden',
+	{
+		variants: {
+			nodeType: {
+				[FontColorPlugin.key]: 'border-fm-divider-primary',
+				[FontBackgroundColorPlugin.key]: 'border-transparent',
+			},
+		},
+	}
+)
+
 export function ColorDropdownMenuItem({
 	className,
-	isBrightColor,
 	isSelected,
 	name,
-	updateColor,
+	updateColorAction,
 	value,
+	nodeType,
 	...props
 }: ColorDropdownMenuItemProps) {
 	const content = (
 		<DropdownMenuItem
 			className={cn(
-				buttonVariants({
-					isMenu: true,
-					variant: 'outline',
+				itemVariants({
+					nodeType: nodeType as any,
 				}),
-				'border-fm-divider-primary flex size-6 items-center justify-center border border-solid p-0',
-				!isBrightColor && 'border-transparent text-white',
 				className
 			)}
-			style={{ backgroundColor: value }}
+			style={{
+				backgroundColor:
+					nodeType === FontBackgroundColorPlugin.key ? value : 'transparent',
+				color:
+					nodeType === FontColorPlugin.key ? value : 'var(--color-fm-primary)',
+				borderColor: isSelected ? 'var(--color-fm-primary)' : undefined,
+			}}
 			onSelect={(e) => {
 				e.preventDefault()
-				updateColor(value)
+				updateColorAction(value)
 			}}
 			{...props}
 		>
-			{isSelected ? <TickIcon /> : null}
+			<CapitalALetterIcon />
+			{isSelected ? (
+				<span className="text-fm-positive absolute inset-0 flex items-center justify-center bg-black/50">
+					<TickIcon />
+				</span>
+			) : null}
 		</DropdownMenuItem>
 	)
 
@@ -69,56 +94,31 @@ export function ColorDropdownMenuItem({
 type ColorDropdownMenuItemsProps = {
 	color?: string
 	colors: TColor[]
-	updateColor: (color: string) => void
+	nodeType?: string
+	updateColorAction: (color: string) => void
 } & React.HTMLAttributes<HTMLDivElement>
 
 export function ColorDropdownMenuItems({
 	className,
 	color,
 	colors,
-	clearColor,
-	updateColor,
+	updateColorAction,
+	nodeType,
 	...props
 }: ColorDropdownMenuItemsProps & { clearColor?: () => void }) {
-	function onSelect(e: Event) {
-		e.preventDefault()
-		clearColor?.()
-	}
-	const noneItem = (
-		<DropdownMenuItem
-			className={cn(
-				buttonVariants({
-					isMenu: true,
-					variant: 'outline',
-				}),
-				'border-fm-divider-primary flex size-6 items-center justify-center border border-solid p-0',
-				className
-			)}
-			style={{ backgroundColor: 'transparent' }}
-			onSelect={onSelect as any}
-			{...props}
-		>
-			<Ban />
-		</DropdownMenuItem>
-	)
-
 	return (
 		<div
-			className={cn('grid grid-cols-[repeat(10,1fr)] gap-1', className)}
+			className={cn('grid grid-cols-[repeat(10,1fr)] gap-2', className)}
 			{...props}
 		>
-			<Tooltip>
-				<TooltipTrigger>{noneItem}</TooltipTrigger>
-				<TooltipContent>None</TooltipContent>
-			</Tooltip>
 			{colors.map(({ isBrightColor, name, value }) => (
 				<ColorDropdownMenuItem
-					name={name}
 					key={name ?? value}
 					value={value}
 					isBrightColor={isBrightColor}
 					isSelected={color === value}
-					updateColor={updateColor}
+					updateColorAction={updateColorAction}
+					nodeType={nodeType}
 				/>
 			))}
 		</div>

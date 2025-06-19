@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { Copy } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/aural-ui/icon-button'
 
 export default function CopyAll({
 	id,
@@ -24,13 +24,13 @@ export default function CopyAll({
 	}
 
 	return (
-		<Button
+		<IconButton
 			onClick={copyAll}
 			tooltip="Copy All"
-			size="icon"
-			className="pointer-events-[all] bg-background/30 sticky top-16 left-4 z-20 mt-4 ml-4 backdrop-blur-[1px]"
-		>
-			<Copy />
-		</Button>
+			variant="ghost"
+			className="pointer-events-[all] sticky top-16 left-4 z-20 mt-4 ml-4"
+			icon={<Copy className="h-4 w-4" />}
+			label="Copy All"
+		/>
 	)
 }

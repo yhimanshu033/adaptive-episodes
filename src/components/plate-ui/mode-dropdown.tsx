@@ -86,6 +86,7 @@ export function ModeDropdown(props: SelectProps) {
 			<SelectContent
 				align="end"
 				classes={{
+					root: 'min-w-50',
 					scrollButton: {
 						icon: 'size-4',
 					},

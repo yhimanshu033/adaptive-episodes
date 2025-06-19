@@ -26,7 +26,7 @@ export default function PreviousEpisode() {
 				readOnly
 				variant="ghost"
 				size="md"
-				className="py-[126px] opacity-75"
+				className="bg-fm-surface-primary text-fm-tertiary"
 			/>
 		</Plate>
 	)

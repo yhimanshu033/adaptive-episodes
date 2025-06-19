@@ -7,8 +7,8 @@ import { Plate } from '@udecode/plate-common/react'
 import { Check, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
+import { IconButton } from '@/components/aural-ui/icon-button'
 import { editorVariants } from '@/components/plate-ui/editor-static'
-import { Button } from '@/components/ui/button'
 import DiffView from '@/lib/plate/plugins/diff'
 import { cn } from '@/lib/utils/helpers'
 import { removeValue } from '@/lib/utils/indexed-db'
@@ -57,17 +57,25 @@ export default function LocalDiffSection() {
 						editorVariants({
 							focused: false,
 						}),
-						'rounded-none border-none bg-neutral-900 px-16 py-[126px] opacity-75'
+						'bg-fm-surface-primary text-fm-tertiary rounded-none border-none px-18 py-14'
 					)}
 				/>
 			</Plate>
 			<div className="bg-background/60 sticky bottom-0 z-50 flex w-full justify-end gap-4 px-6 py-2 backdrop-blur-[1px]">
-				<Button tooltip="Import Local Changes" onClick={handleAccept}>
-					<Check />
-				</Button>
-				<Button tooltip="Reject Local Changes" onClick={handleReject}>
-					<X />
-				</Button>
+				<IconButton
+					variant="ghost"
+					tooltip="Import Local Changes"
+					label="Import Local Changes"
+					onClick={handleAccept}
+					icon={<Check />}
+				/>
+				<IconButton
+					variant="ghost"
+					tooltip="Reject Local Changes"
+					label="Reject Local Changes"
+					onClick={handleReject}
+					icon={<X />}
+				/>
 			</div>
 		</div>
 	)

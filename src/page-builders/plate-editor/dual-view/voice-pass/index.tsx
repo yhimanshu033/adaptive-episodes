@@ -94,9 +94,9 @@ export default function VoicePass({
 	}
 
 	return (
-		<div className="grid bg-neutral-900 *:[grid-area:1/-1]">
+		<div className="bg-fm-surface-primary grid *:[grid-area:1/-1]">
 			<CopyAll id={data} streamedData={finalData} />
-			<div className="flex flex-col px-16 py-[126px]">
+			<div className="bg-fm-surface-primary text-fm-tertiary flex flex-col px-18 py-14">
 				{streamedData.map((data, idx) => (
 					<Block key={idx} data={data} />
 				))}

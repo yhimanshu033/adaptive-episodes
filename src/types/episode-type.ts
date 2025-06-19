@@ -191,7 +191,7 @@ export type TGetDocxFromHtmlBody = {
 export type EpisodeIdStoreType = {
 	activeNoteId: string | null
 	currentTitle: string
-	dualViewMode: EDualVIewMode
+	dualViewMode: EDualVIewMode | null
 	episodeId: number
 	importedLocal: boolean
 	resolvedComments: TCustomComment[]
