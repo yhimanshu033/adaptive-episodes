@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react'
+import useShowExampleVisibility from '@/store/comment-store'
 import {
 	CommentProvider,
 	SCOPE_ACTIVE_COMMENT,
 } from '@udecode/plate-comments/react'
 
+import { If } from '@/components/aural-ui/if-else'
 import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { CommentItem } from '@/components/plate-ui/comment-item'
 import { CommentReplyItems } from '@/components/plate-ui/comment-reply-items'
@@ -23,6 +25,7 @@ export default function CommentCard({
 	setActiveComment: (comment: TCustomComment) => void
 }) {
 	const ref = React.useRef<HTMLDivElement>(null)
+	const isVisible = useShowExampleVisibility((s) => s.isVisible(comment.id))
 
 	const handleCommentCardClick = () => {
 		setActiveComment(comment)
@@ -63,9 +66,12 @@ export default function CommentCard({
 				{!!myUserId && activeCommentId === comment.id && (
 					<>
 						<CommentReplyItems />
-						<CommentCreateForm />
+						<If condition={!isVisible}>
+							<CommentCreateForm />
+						</If>
 					</>
 				)}
+				<div id={`example-placeholder-${comment.id}`} className="mt-2" />
 			</div>
 		</CommentProvider>
 	)

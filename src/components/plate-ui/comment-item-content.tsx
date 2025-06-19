@@ -1,13 +1,16 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { AI_AVATAR } from '@/constants/editor-constants'
 import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { CopyIcon } from '@/icons/copy-icon'
+import { StopIcon } from '@/icons/stop-icon'
 import useAIStore from '@/store/ai-store'
+import useShowExampleVisibility from '@/store/comment-store'
 import usePlateStore from '@/store/plate-store'
 import {
 	useCommentItemContentState,
@@ -28,7 +31,10 @@ import StreamedResponse from '@/components/ui/streamed-response'
 
 import { PlateUser } from '@/types/plate-types'
 
+import { Avatar, AvatarImage } from '../aural-ui/avatar'
 import Badge from '../aural-ui/badge'
+import { Button } from '../aural-ui/button'
+import { Divider } from '../aural-ui/divider'
 import { IconButton } from '../aural-ui/icon-button'
 import Label from '../aural-ui/label'
 
@@ -40,6 +46,7 @@ export default function CommentItemContent() {
 		isReplyComment,
 		user: defaultUser,
 	} = useCommentItemContentState()
+	const { setShowExample } = useShowExampleVisibility()
 
 	const dict = useTranslations('placeholders')
 
@@ -89,6 +96,31 @@ export default function CommentItemContent() {
 		}
 		void navigator.clipboard.writeText(data)
 	}
+
+	useEffect(() => {
+		const block = document.getElementById(`example-data-${comment.id}`)
+		const placeholder = document.getElementById(
+			`example-placeholder-${comment.id}`
+		)
+
+		if (block && placeholder) {
+			placeholder.appendChild(block)
+			block.classList.remove('absolute')
+			block.setAttribute('data-visible', 'true')
+		}
+	}, [comment.id])
+
+	useEffect(() => {
+		const isVisible =
+			(!!exampleData?.length && !taskEnded[key]) ||
+			(!exampleData?.length && !!key)
+
+		setShowExample(comment.id, isVisible)
+
+		return () => {
+			setShowExample(comment.id, false)
+		}
+	}, [comment.id, exampleData?.length, key, taskEnded, setShowExample])
 
 	return (
 		<div className="space-y-3">
@@ -153,17 +185,53 @@ export default function CommentItemContent() {
 					</Else>
 				</IfElse>
 			</div>
-			<If condition={!exampleData?.length && !!key}>
-				<div className="flex flex-col gap-2 p-2">
-					<h2 className="font-semibold">{dict('thinking')}</h2>
-				</div>
-			</If>
-			<If condition={!!exampleData?.length && !taskEnded[key]}>
-				<div className="flex flex-col gap-2 p-2">
-					<h2 className="text-sm font-semibold">{dict('example')}:</h2>
-					<StreamedResponse className="tex-xs" data={exampleData || []} />
-				</div>
-			</If>
+			<div id={`example-data-${comment.id}`}>
+				<If condition={!exampleData?.length && !!key}>
+					<div className="mt-4 flex items-center gap-2">
+						<Avatar className="size-8">
+							<AvatarImage alt="AI avatar" src={AI_AVATAR} />
+						</Avatar>
+						<div className="bg-fm-surface-frosted/20 border-fm-divider-secondary flex h-10 w-full items-center justify-between rounded-[0.5px] border p-3 pl-4">
+							<Typography variant="body-small">{dict('thinking')}</Typography>
+							<IconButton
+								label="Stop example generation"
+								variant="ghost"
+								size="small"
+								onClick={() => {}}
+								className="hover:!text-fm-primary text-fm-icon-inactive"
+								icon={<StopIcon className="size-4 text-inherit" />}
+							/>
+						</div>
+					</div>
+				</If>
+				<If condition={!!exampleData?.length && !taskEnded[key]}>
+					<div className="mt-4 flex gap-2">
+						<Avatar className="mt-2 size-8">
+							<AvatarImage alt="AI avatar" src={AI_AVATAR} />
+						</Avatar>
+
+						<div className="bg-fm-surface-frosted/20 border-fm-divider-secondary flex w-full flex-col gap-2 rounded-xs border p-2">
+							<Typography variant="body-small">{dict('example')}:</Typography>
+							<StreamedResponse
+								className="text-fm-md"
+								data={exampleData || []}
+							/>
+							<Divider />
+							<div className="flex justify-end">
+								<Button
+									variant="text"
+									className="!w-fit"
+									size="sm"
+									innerClassName="!w-fit !pb-0"
+									onClick={() => {}}
+								>
+									Stop
+								</Button>
+							</div>
+						</div>
+					</div>
+				</If>
+			</div>
 			<If condition={replyCount > 0 && activeCommentId !== comment.id}>
 				<Label className="text-fm-secondary-800">
 					{replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}
