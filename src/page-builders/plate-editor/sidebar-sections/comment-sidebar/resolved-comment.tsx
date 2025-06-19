@@ -1,15 +1,17 @@
 import React from 'react'
 import { roleToData } from '@/constants/global-constants'
 import useComments from '@/hooks/plate/use-comments'
+import { CircleCrossIcon } from '@/icons/circle-cross-icon'
+import { CircleTickIcon } from '@/icons/circle-tick-icon'
 import { formatDistance } from 'date-fns'
-import { ReplyIcon, Undo } from 'lucide-react'
 
-import { Icons } from '@/components/icons'
+import Badge from '@/components/aural-ui/badge'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { If } from '@/components/aural-ui/if-else'
+import { Typography } from '@/components/aural-ui/typography'
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/aural-ui/utils'
 import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
-import { buttonVariants, cn } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
 
 import { TCustomComment } from '@/types/editor-types'
@@ -43,79 +45,88 @@ export default function ResolvedCommentItem({
 		deleteResolvedComment(resolvedComment)
 	}
 
+	const handleResolvedCommentCardClick = () => {
+		makeResolvedCommentActive(resolvedComment.id)
+		const elem = document.getElementById(
+			'resolved-comment-leaf-' + resolvedComment.id
+		)
+		if (!elem) {
+			return
+		}
+		elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+	}
+
 	return (
 		<div
 			role="button"
-			onMouseDown={() => {
-				makeResolvedCommentActive(resolvedComment.id)
-				const elem = document.getElementById(
-					'resolved-comment-leaf-' + resolvedComment.id
-				)
-				if (!elem) {
-					return
-				}
-				elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
-			}}
+			onMouseDown={handleResolvedCommentCardClick}
 			className={cn(
-				'p-4',
-				activeResolvedCommentId === resolvedComment.id
-					? '~border-b border-b-primary bg-background/90 border-l-2'
-					: 'hover:bg-background/30'
+				'border-fm-divider-tertiary rounded-xs border bg-transparent p-4',
+				{
+					'border-fm-divider-secondary bg-fm-divider-secondary/15':
+						activeResolvedCommentId === resolvedComment.id,
+				}
 			)}
 		>
-			<div>
-				<div className="text-muted-foreground flex items-center gap-1 pb-2 text-xs">
-					<ReplyIcon size={8} className="rotate-180" />
-					<h1 className="w-64 truncate">{resolvedComment.node.text}</h1>
-				</div>
-				<div className="relative flex items-center gap-2">
-					<CommentAvatar userId={resolvedComment?.userId} />
+			<div className="space-y-3">
+				<div className="group flex items-center justify-between gap-2">
+					<div className="flex items-center gap-2">
+						<CommentAvatar userId={resolvedComment?.userId} />
+						<div className="flex flex-col">
+							<div className="flex gap-2">
+								<Typography color="primary" variant="body-small">
+									{user?.name}
+								</Typography>
+								<If condition={!!userTitle}>
+									<Badge size="xs">{userTitle}</Badge>
+								</If>
+							</div>
 
-					<h4 className="text-sm leading-none font-semibold">{user?.name}</h4>
-					{userTitle && (
-						<Badge
-							variant="outline"
-							className="bg-muted text-xxs text-muted-foreground leading-none"
-						>
-							{userTitle}
-						</Badge>
-					)}
-
-					<div className="text-muted-foreground text-xs leading-none">
-						{formatDistance(resolvedComment.createdAt, Date.now())} ago
+							<Typography variant="caption-medium" color="tertiary">
+								{formatDistance(resolvedComment.createdAt, Date.now())} ago
+							</Typography>
+						</div>
 					</div>
 
-					<div className="absolute -top-0.5 -right-0.5 flex space-x-1">
-						<Button
+					<div className="flex items-center">
+						<IconButton
+							label="Accept"
 							variant="ghost"
-							tooltip="Accept"
+							size="small"
 							onClick={handleResolve}
-							className={cn(
-								buttonVariants({ variant: 'ghost' }),
-								'text-muted-foreground h-6 p-1'
-							)}
-						>
-							<Icons.check className="size-4" />
-						</Button>
-						<Button
-							tooltip="Unresolve"
+							className="hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity group-hover:opacity-100"
+							icon={<CircleTickIcon className="size-4 text-inherit" />}
+							shape="square"
+							tooltip={'Accept'}
+							tooltipContentProps={{
+								align: 'end',
+								side: 'bottom',
+							}}
+						/>
+						<IconButton
+							label="Unresolve"
 							variant="ghost"
+							size="small"
 							onClick={handleRestore}
-							className={cn(
-								buttonVariants({ variant: 'ghost' }),
-								'text-muted-foreground h-6 p-1'
-							)}
-						>
-							<Undo className="size-4" />
-						</Button>
+							className="hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity group-hover:opacity-100"
+							icon={<CircleCrossIcon className="size-4.5 text-inherit" />}
+							shape="square"
+							tooltip={'Unresolve'}
+							tooltipContentProps={{
+								align: 'end',
+								side: 'bottom',
+							}}
+						/>
 					</div>
 				</div>
 
-				<div className="mb-4 pt-0.5 pl-7">
-					<div className="text-sm whitespace-pre-wrap">
-						{getText(resolvedComment.value)}
-					</div>
-				</div>
+				<Typography
+					className="whitespace-pre-wrap"
+					color="tertiary"
+					variant="body-small"
+				>
+					{getText(resolvedComment.value)}
+				</Typography>
 			</div>
 		</div>
 	)
