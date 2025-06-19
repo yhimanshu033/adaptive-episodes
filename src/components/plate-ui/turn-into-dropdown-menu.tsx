@@ -18,7 +18,6 @@ import { Icons } from '@/components/icons'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuLabel,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
@@ -127,9 +126,7 @@ export function TurnIntoDropdownMenu({
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent className="min-w-0" align="start">
-				<DropdownMenuLabel>Turn into</DropdownMenuLabel>
-
+			<DropdownMenuContent className="min-w-50" align="start">
 				<DropdownMenuRadioGroup
 					className="flex flex-col gap-0.5"
 					value={value}

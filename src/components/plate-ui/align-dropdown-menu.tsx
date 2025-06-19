@@ -54,16 +54,19 @@ export function AlignDropdownMenu({ children, ...props }: DropdownMenuProps) {
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent className="min-w-0" align="start">
+			<DropdownMenuContent className="min-w-40" align="end">
 				<DropdownMenuRadioGroup
-					className="flex flex-col gap-0.5"
+					className="flex flex-row items-center justify-between gap-1"
 					{...radioGroupProps}
 				>
 					{items.map(({ icon: Icon, value: itemValue }) => (
 						<DropdownMenuRadioItem
 							key={itemValue}
 							value={itemValue}
-							className="min-w-24 py-2 [font-size:var(--text-fm-md)]"
+							className="p-2 [font-size:var(--text-fm-md)]"
+							classes={{
+								indicator: 'hidden',
+							}}
 						>
 							<Icon className={iconVariants({ variant: 'toolbar' })} />
 						</DropdownMenuRadioItem>

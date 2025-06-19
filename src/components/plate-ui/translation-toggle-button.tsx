@@ -96,13 +96,17 @@ export default function TranslationToggleButton({
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent className="min-w-60" align="end">
+			<DropdownMenuContent className="min-w-50" align="end">
 				<DropdownMenuRadioGroup
 					value={dualViewMode ? dualViewMode : undefined}
 					onValueChange={onTranslation}
 				>
 					{modes.map((mode) => (
-						<DropdownMenuRadioItem key={mode} value={mode}>
+						<DropdownMenuRadioItem
+							key={mode}
+							value={mode}
+							className="[font-size:var(--text-fm-md)]"
+						>
 							{modeToTitle[mode]}
 						</DropdownMenuRadioItem>
 					))}

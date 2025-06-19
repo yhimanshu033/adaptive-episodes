@@ -7,7 +7,6 @@ import { focusEditor, useEditorRef } from '@udecode/plate-common/react'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuLabel,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
@@ -38,8 +37,7 @@ export function ZoomDropdownMenu(props: DropdownMenuProps) {
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent className="min-w-0" align="start">
-				<DropdownMenuLabel>Zoom</DropdownMenuLabel>
+			<DropdownMenuContent className="min-w-50" align="start">
 				<DropdownMenuRadioGroup
 					className="flex flex-col gap-0.5"
 					value={String(selectedItem)}

@@ -5,7 +5,8 @@ import { Headphones } from 'lucide-react'
 
 import IfElse from '@/components/if-else'
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
-import Spinner from '@/components/ui/spinner'
+
+import CircularLoader from '../aural-ui/circular-loader'
 
 export default function TtsToolbarButton() {
 	const { mutate, isPending } = useStreamedTTS()
@@ -22,7 +23,7 @@ export default function TtsToolbarButton() {
 		>
 			<IfElse
 				condition={isPending}
-				if={<Spinner className="size-4" />}
+				if={<CircularLoader className="size-4" />}
 				else={<Headphones className="size-4" />}
 			/>
 		</ToolbarButton>

@@ -229,7 +229,7 @@ function DropdownMenuRadioItem({
 			data-slot="dropdown-menu-radio-item"
 			className={cn(
 				// Base styles
-				'rounded-fm-s relative flex cursor-default items-center gap-2 px-4 py-3 pl-8',
+				'rounded-fm-s relative flex cursor-default items-center gap-2 px-4 py-3',
 				'text-fm-primary font-fm-text leading-fm-lg [font-size:var(--text-fm-lg)] tracking-wide',
 				'transition-colors duration-200 outline-none select-none',
 				// Hover and focus states
@@ -245,14 +245,9 @@ function DropdownMenuRadioItem({
 			)}
 			{...props}
 		>
-			<span className="pointer-events-none absolute left-4 flex size-3.5 items-center justify-center">
+			<span className="pointer-events-none absolute right-4 flex size-3.5 items-center justify-center">
 				<DropdownMenuPrimitive.ItemIndicator>
-					<TickIcon
-						className={cn(
-							'text-fm-icon-active size-2 fill-current',
-							classes?.indicator
-						)}
-					/>
+					<TickIcon className={cn('text-fm-icon-active', classes?.indicator)} />
 				</DropdownMenuPrimitive.ItemIndicator>
 			</span>
 			{children}
