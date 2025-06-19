@@ -44,6 +44,21 @@ export default function CommentCard({
 			})
 		}
 	}, [ref, activeCommentId, comment.id])
+
+	useEffect(() => {
+		if (isVisible) {
+			const placeholder = document.getElementById(
+				`example-placeholder-${comment.id}`
+			)
+			if (placeholder) {
+				placeholder.scrollIntoView({
+					behavior: 'smooth',
+					block: 'center',
+				})
+			}
+		}
+	}, [isVisible, comment.id])
+
 	return (
 		<CommentProvider
 			id={comment.id}
