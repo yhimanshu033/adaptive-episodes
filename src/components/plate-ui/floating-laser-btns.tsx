@@ -33,11 +33,11 @@ export default function FloatingLaserBtns() {
 					tooltip="Laser (⌘+B)"
 					size="floating"
 				>
-					<SparklesSoftIcon />
+					<SparklesSoftIcon className="text-fm-secondary-800" />
 				</MarkToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent align="end">
+			<DropdownMenuContent align="end" className="min-w-50">
 				{rephraseMethods.map((method, idx) => (
 					<div key={method.id}>
 						<DropdownMenuItem

@@ -68,7 +68,7 @@ export function ColorDropdownMenu({
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent align="start">
+			<DropdownMenuContent align="start" className="min-w-50">
 				<ColorPicker
 					color={state.selectedColor || state.color}
 					clearColor={clearColor}
@@ -76,6 +76,7 @@ export function ColorDropdownMenu({
 					customColors={state.customColors}
 					updateColor={state.updateColorAndClose}
 					updateCustomColor={state.updateColor}
+					nodeType={nodeType}
 				/>
 			</DropdownMenuContent>
 		</DropdownMenu>

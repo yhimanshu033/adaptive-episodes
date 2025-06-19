@@ -33,8 +33,8 @@ const toolbarButtonVariants = cva(
 	cn(
 		'inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-fm-primary focus-visible:ring-offset-fm-neutral-0 text-fm-icon-active disabled:text-fm-icon-inactive [font-size:var(--text-fm-md)]',
 		'[&_svg:not([data-icon])]:size-5',
-		'data-[state=open]:bg-fm-surface-frosted/20 data-[state=open]:text-fm-secondary-800',
-		'aria-checked:bg-fm-surface-frosted/20 aria-checked:text-fm-secondary-800'
+		'data-[state=open]:bg-fm-secondary-50 data-[state=open]:text-fm-secondary-800',
+		'aria-checked:bg-fm-secondary-50 aria-checked:text-fm-secondary-800'
 	),
 	{
 		defaultVariants: {
@@ -50,10 +50,10 @@ const toolbarButtonVariants = cva(
 			},
 			variant: {
 				default:
-					'bg-transparent hover:text-fm-secondary-800 hover:bg-fm-surface-frosted/20 disabled:bg-transparent data-[state=open]:bg-fm-surface-frosted/20 data-[state=open]:text-fm-secondary-800',
+					'bg-transparent hover:text-fm-secondary-800 hover:bg-fm-secondary-50 disabled:bg-transparent',
 				outline:
 					'border border-solid border-fm-divider-primary hover:border-fm-surface-frosted disabled:border-fm-divider-tertiary',
-				active: 'bg-fm-surface-frosted/20 text-fm-secondary-800',
+				active: 'bg-fm-secondary-50 text-fm-secondary-800',
 			},
 		},
 	}

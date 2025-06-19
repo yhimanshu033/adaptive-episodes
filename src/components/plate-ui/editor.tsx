@@ -325,13 +325,13 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 									size,
 									variant,
 								}),
-								'h-fit origin-top-left *:px-6 *:first-of-type:pt-(--editor-break-padding)',
+								'h-fit origin-top-left *:px-6',
 								{
 									'px-6 *:first-of-type:-mx-6 *:first-of-type:px-6':
 										isEmpty && !focusMode,
 									'counter-parent first-of-type:*:pt-[var(--editor-break-padding) bg-background-editor':
 										focusMode,
-									'border-fm-divider-tertiary bg-fm-neutral-100 border-x border-b py-16 pb-6 *:px-32':
+									'border-fm-divider-tertiary bg-fm-neutral-100 border-x border-b py-14 *:px-18':
 										!focusMode,
 								},
 								className

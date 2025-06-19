@@ -8,7 +8,6 @@ import { useShallow } from 'zustand/react/shallow'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuLabel,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
@@ -53,9 +52,7 @@ export function FontDropdownMenu(props: DropdownMenuProps) {
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent className="min-w-0" align="start">
-				<DropdownMenuLabel>Font Family</DropdownMenuLabel>
-
+			<DropdownMenuContent className="min-w-50" align="start">
 				<DropdownMenuRadioGroup
 					className="flex flex-col gap-0.5"
 					value={fontFamily}
