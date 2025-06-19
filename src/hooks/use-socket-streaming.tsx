@@ -89,44 +89,47 @@ export const SocketStreamingProvider = ({
 				task_id: string,
 				payload: {
 					chunk?: Record<string, string> | string
-					status: ESocketStatus
+					status?: ESocketStatus
 					task_id: string
 				}
 			) => {
-				if (payload.status) {
-					if (payload.status === ESocketStatus.STARTED) {
-						setTaskEnded((prev) => ({ ...prev, [task_id]: false }))
-					}
-					if (
-						(payload.status === ESocketStatus.COMPLETED ||
-							payload.chunk === ']') &&
-						!taskEnded[task_id]
-					) {
-						const callback = taskCallbacksRef.current[task_id]
-						if (callback) {
-							callback(responsesRef.current[task_id])
-						}
-						setTaskEnded((prev) => ({ ...prev, [task_id]: true }))
-					}
+				const { chunk, status } = payload
+
+				// Handle task start
+				if (status === ESocketStatus.STARTED) {
+					setTaskEnded((prev) => ({ ...prev, [task_id]: false }))
 				}
+
+				// Handle task completion
+				const isCompleted = status === ESocketStatus.COMPLETED || chunk === ']'
+				if (isCompleted && !taskEnded[task_id]) {
+					const callback = taskCallbacksRef.current[task_id]
+					if (callback) {
+						callback(responsesRef.current[task_id])
+					}
+					setTaskEnded((prev) => ({ ...prev, [task_id]: true }))
+				}
+
 				if (!responses) {
 					setResponses((prev) => ({ ...prev, [task_id]: [] }))
 					responsesRef.current[task_id] = []
 				}
+
 				if (!payload.chunk || payload.chunk === ']') {
 					return
 				}
-				let chunk = payload.chunk
-				if (typeof chunk === 'object') {
-					chunk = JSON.stringify(chunk)
-				}
+
+				const normalizedChunk =
+					typeof chunk === 'object' ? JSON.stringify(chunk) : String(chunk)
+
 				setResponses((prev) => ({
 					...prev,
-					[task_id]: [...(prev[task_id] || []), String(chunk)],
+					[task_id]: [...(prev[task_id] || []), String(normalizedChunk)],
 				}))
+
 				responsesRef.current[task_id] = [
 					...(responsesRef.current[task_id] || []),
-					String(chunk),
+					String(normalizedChunk),
 				]
 			}
 		)
