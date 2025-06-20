@@ -69,7 +69,7 @@ export default function ResolvedCommentItem({
 			)}
 		>
 			<div className="space-y-3">
-				<div className="group flex items-center justify-between gap-2">
+				<div className="flex items-center justify-between gap-2">
 					<div className="flex items-center gap-2">
 						<CommentAvatar userId={resolvedComment?.userId} />
 						<div className="flex flex-col">
@@ -94,7 +94,7 @@ export default function ResolvedCommentItem({
 							variant="ghost"
 							size="small"
 							onClick={handleResolve}
-							className="hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity group-hover:opacity-100"
+							className="hover:!text-fm-primary text-fm-icon-inactive"
 							icon={<CircleTickIcon className="size-4 text-inherit" />}
 							shape="square"
 							tooltip={'Accept'}
@@ -108,7 +108,7 @@ export default function ResolvedCommentItem({
 							variant="ghost"
 							size="small"
 							onClick={handleRestore}
-							className="hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity group-hover:opacity-100"
+							className="hover:!text-fm-primary text-fm-icon-inactive"
 							icon={<CircleCrossIcon className="size-4.5 text-inherit" />}
 							shape="square"
 							tooltip={'Unresolve'}

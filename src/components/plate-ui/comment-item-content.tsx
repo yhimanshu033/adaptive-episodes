@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { AI_AVATAR } from '@/constants/editor-constants'
 import { roleToData } from '@/constants/global-constants'
@@ -39,6 +40,8 @@ import { IconButton } from '../aural-ui/icon-button'
 import Label from '../aural-ui/label'
 
 export default function CommentItemContent() {
+	const scrollRef = useRef<HTMLDivElement>(null)
+
 	const {
 		comment,
 		commentText,
@@ -58,7 +61,7 @@ export default function CommentItemContent() {
 	const activeCommentExampleMap = store(
 		useShallow((state) => state.activeCommentExampleMap)
 	)
-	const { responses, taskEnded } = useSocketStreaming()
+	const { responses, taskEnded, stopTask } = useSocketStreaming()
 	const { mutateAsync, data } = useCommentExampleHook()
 
 	const commentReplies = useCommentReplies(comment.id)
@@ -76,6 +79,8 @@ export default function CommentItemContent() {
 		() => data || activeCommentExampleMap[comment.id] || '',
 		[data, activeCommentExampleMap, comment.id]
 	)
+	const taskEndStatus = taskEnded[key]
+
 	const exampleData = useMemo(() => {
 		if (user?.id !== AI_USER_ID || !key) {
 			return null
@@ -96,6 +101,9 @@ export default function CommentItemContent() {
 		}
 		void navigator.clipboard.writeText(data)
 	}
+	const handelStopTask = () => {
+		stopTask(key)
+	}
 
 	useEffect(() => {
 		const block = document.getElementById(`example-data-${comment.id}`)
@@ -109,16 +117,23 @@ export default function CommentItemContent() {
 	}, [comment.id])
 
 	useEffect(() => {
-		const isVisible =
-			(!!exampleData?.length && !taskEnded[key]) ||
-			(!exampleData?.length && !!key)
+		const isVisible = taskEnded[key]
+			? false
+			: (!!exampleData?.length && !taskEnded[key]) ||
+				(!exampleData?.length && !!key)
 
 		setShowExample(comment.id, isVisible)
 
 		return () => {
 			setShowExample(comment.id, false)
 		}
-	}, [comment.id, exampleData?.length, key, taskEnded, setShowExample])
+	}, [comment.id, exampleData?.length, key, taskEndStatus])
+
+	useEffect(() => {
+		if (scrollRef.current) {
+			scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+		}
+	}, [exampleData])
 
 	return (
 		<div className="space-y-3">
@@ -174,7 +189,7 @@ export default function CommentItemContent() {
 					</If>
 					<Else>
 						<Typography
-							className="whitespace-pre-wrap"
+							className="break-words whitespace-pre-wrap"
 							color="tertiary"
 							variant="body-small"
 						>
@@ -184,18 +199,20 @@ export default function CommentItemContent() {
 				</IfElse>
 			</div>
 			<div id={`example-data-${comment.id}`}>
-				<If condition={!exampleData?.length && !!key}>
+				<If condition={taskEndStatus ? false : !exampleData?.length && !!key}>
 					<div className="mt-4 flex items-center gap-2">
 						<Avatar className="size-8">
 							<AvatarImage alt="AI avatar" src={AI_AVATAR} />
 						</Avatar>
 						<div className="bg-fm-surface-frosted/20 border-fm-divider-secondary flex h-10 w-full items-center justify-between rounded-[0.5px] border p-3 pl-4">
-							<Typography variant="body-small">{dict('thinking')}</Typography>
+							<div className="leading-fm-md [background-image:linear-gradient(270deg,var(--color-fm-placeholder)_12.22%,var(--color-fm-primary)_31.77%,var(--color-fm-primary)_67.87%,var(--color-fm-placeholder)_96.75%)] bg-clip-text [font-size:var(--text-fm-md)] font-medium text-transparent">
+								{dict('thinking')}
+							</div>
 							<IconButton
 								label="Stop example generation"
 								variant="ghost"
 								size="small"
-								onClick={() => {}}
+								onClick={handelStopTask}
 								className="hover:!text-fm-primary text-fm-icon-inactive"
 								icon={<StopIcon className="size-4 text-inherit" />}
 							/>
@@ -209,11 +226,17 @@ export default function CommentItemContent() {
 						</Avatar>
 
 						<div className="bg-fm-surface-frosted/20 border-fm-divider-secondary flex w-full flex-col gap-2 rounded-xs border p-2">
-							<Typography variant="body-small">{dict('example')}:</Typography>
-							<StreamedResponse
-								className="text-fm-md"
-								data={exampleData || []}
-							/>
+							<div
+								ref={scrollRef}
+								className="flex max-h-20 flex-col gap-2 overflow-y-auto"
+							>
+								<Typography variant="body-small">{dict('example')}:</Typography>
+								<StreamedResponse
+									className="text-fm-md"
+									data={exampleData || []}
+								/>
+							</div>
+
 							<Divider />
 							<div className="flex justify-end">
 								<Button
@@ -221,7 +244,7 @@ export default function CommentItemContent() {
 									className="!w-fit"
 									size="sm"
 									innerClassName="!w-fit !pb-0"
-									onClick={() => {}}
+									onClick={handelStopTask}
 								>
 									Stop
 								</Button>

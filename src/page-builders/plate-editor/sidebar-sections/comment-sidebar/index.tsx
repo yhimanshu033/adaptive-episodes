@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
+import { FilterBarRowIcon } from '@/icons/filter-bar-row-icon'
 import { TickIcon } from '@/icons/tick-icon'
 import ResolvedCommentItem from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/resolved-comment'
 import SuggestionBlock from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
@@ -14,7 +15,6 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
-import { FilterBarRowIcon } from '@/components/aural-ui/filter-bar-row-icon'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/aural-ui/if-else'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
