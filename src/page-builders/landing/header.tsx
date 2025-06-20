@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { navLinks } from '@/constants/landing-constants'
+import { GoogleIcon } from '@/icons/google-icon'
+import { useGlobalStore } from '@/store/global-store'
 import { Menu } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
@@ -13,7 +16,7 @@ import {
 	SheetTrigger,
 } from '@/components/aural-ui/sheet'
 
-const Heading = () => {
+const Logo = () => {
 	return (
 		<div className="not-sm:flex not-sm:flex-col">
 			<span className="font-display text-fm-xl sm:text-fm-4xl">COPILOT</span>
@@ -27,6 +30,7 @@ const Heading = () => {
 const Header = () => {
 	const [hasScrolled, setHasScrolled] = useState(false)
 	const [open, setOpen] = useState(false)
+	const userData = useGlobalStore(useShallow((state) => state.userData))
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -47,7 +51,7 @@ const Header = () => {
 		<nav
 			className={`text-fm-primary animate-fade-in-down sticky top-0 z-20 flex items-center justify-between p-4 transition-all duration-300 sm:p-6 ${hasScrolled ? 'bg-fm-surface-frosted/20 shadow-sm backdrop-blur-xl' : 'bg-transparent'}`}
 		>
-			<Heading />
+			<Logo />
 
 			{/* Desktop Navigation */}
 			<div className="font-display text-fm-secondary text-fm-sm hidden items-center gap-3 md:flex lg:gap-6">
@@ -60,13 +64,26 @@ const Header = () => {
 						{link.label}
 					</a>
 				))}
-				<Button
-					variant="outline"
-					size="sm"
-					className="transition-transform hover:scale-105"
-				>
-					<Link href="/projects">Try it for free</Link>
-				</Button>
+				<Link href="/projects">
+					{userData ? (
+						<Button
+							variant="outline"
+							size="sm"
+							className="transition-transform hover:scale-105"
+						>
+							Try it for free
+						</Button>
+					) : (
+						<Button
+							variant="outline"
+							size="sm"
+							className="transition-transform hover:scale-105"
+							leftIcon={<GoogleIcon />}
+						>
+							Sign in with Google
+						</Button>
+					)}
+				</Link>
 			</div>
 
 			{/* Mobile Navigation */}
@@ -81,7 +98,7 @@ const Header = () => {
 						/>
 					</SheetTrigger>
 					<SheetContent side="top" className="w-full">
-						<Heading />
+						<Logo />
 						<SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 						<ul className="font-display text-fm-sm flex list-none flex-col py-4 pl-0">
 							{navLinks.map((link) => (
@@ -96,9 +113,22 @@ const Header = () => {
 									<Divider variant="dashed" />
 								</li>
 							))}
-							<Button variant="outline" size="sm" className="mt-2">
-								<Link href="/projects">Try it for free</Link>
-							</Button>
+							<Link href="/projects">
+								{userData ? (
+									<Button variant="outline" size="sm" className="mt-4 w-full">
+										Try it for free
+									</Button>
+								) : (
+									<Button
+										variant="outline"
+										size="sm"
+										className="mt-4 w-full"
+										leftIcon={<GoogleIcon />}
+									>
+										Sign in with Google
+									</Button>
+								)}
+							</Link>
 						</ul>
 					</SheetContent>
 				</Sheet>

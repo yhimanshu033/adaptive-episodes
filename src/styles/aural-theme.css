@@ -213,7 +213,7 @@
 	--color-fm-tertiary: var(--color-fm-neutral-600);
 	--color-fm-placeholder: var(--color-fm-neutral-400);
 	--color-fm-contrast: var(--color-fm-neutral-100);
-	--color-fm-inactive: var(--color-fm-neutral-300);
+	--color-fm-inactive: var(--color-fm-neutral-500);
 	--color-fm-info: var(--color-fm-blue-500);
 	--color-fm-info-sec: var(--color-fm-blue-900);
 	--color-fm-info-tert: var(--color-fm-blue-100);
@@ -297,6 +297,7 @@
 	--color-fm-surface-info-alpha-15: rgba(25, 186, 255, 0.15);
 	--color-fm-surface-warning-alpha-15: rgba(255, 191, 0, 0.15);
 	--color-fm-divider-secondary-alpha-80: rgba(47, 47, 47, 0.8);
+	--color-fm-divider-contrast-alpha-80: rgb(157, 157, 157, 0.8);
 	--color-fm-green-500-alpha-80: rgba(27, 203, 100, 0.8);
 	--color-fm-red-500-alpha-80: rgba(255, 64, 0, 0.8);
 	--color-fm-blue-500-alpha-80: rgba(25, 186, 255, 0.8);
@@ -381,27 +382,17 @@
 	--animate-fm-slideOutRight: slideOutRight 0.5s ease 0s 1 normal both;
 	--animate-fm-slideInUp: slideInUp 0.5s ease 0s 1 normal both;
 	--animate-fm-slideOutUp: slideOutUp 0.5s ease 0s 1 normal both;
+	--animate-fm-shadowPulse: shadowPulse 1s linear infinite;
 }
 
 :root {
 	/* BUTTON STYLES */
-	--button-fm-foreground: radial-gradient(
-		148.94deg,
-		var(--color-fm-primary-600) 0%,
-		var(--color-fm-secondary-300) 100%
-	);
 
 	--button-fm-background: linear-gradient(
 		to right,
 		var(--color-fm-secondary-400),
 		var(--color-fm-primary-300),
 		var(--color-fm-secondary-400)
-	);
-
-	--gradient-fm-pressed: radial-gradient(
-		144.33deg,
-		var(--color-fm-primary-600) 0%,
-		var(--color-fm-secondary-300) 100%
 	);
 
 	--gradient-fm-stroke: linear-gradient(
@@ -441,29 +432,71 @@
 		var(--surface-warningYellow, rgba(255, 191, 0, 0.15)) 100%
 	);
 
+	--gradient-fm-stroke-neutral: linear-gradient(
+		var(--stroke-direction, 270deg),
+		var(--color-fm-divider-secondary-alpha-80) -1.27%,
+		var(--color-fm-divider-contrast-alpha-80) 50.35%,
+		var(--color-fm-divider-secondary-alpha-80) 100%
+	);
+
 	--gradient-fm-stroke-positive: linear-gradient(
-		270deg,
+		var(--stroke-direction, 270deg),
 		var(--color-fm-divider-secondary-alpha-80) -1.27%,
 		var(--color-fm-green-500-alpha-80) 50.35%,
 		var(--color-fm-divider-secondary-alpha-80) 100%
 	);
 
 	--gradient-fm-stroke-negative: linear-gradient(
-		270deg,
+		var(--stroke-direction, 270deg),
 		var(--color-fm-divider-secondary-alpha-80) -1.27%,
 		var(--color-fm-red-500-alpha-80) 50.35%,
 		var(--color-fm-divider-secondary-alpha-80) 100%
 	);
 
 	--gradient-fm-stroke-info: linear-gradient(
-		270deg,
+		var(--stroke-direction, 270deg),
 		var(--color-fm-divider-secondary-alpha-80) -1.27%,
 		var(--color-fm-blue-500-alpha-80) 50.35%,
 		var(--color-fm-divider-secondary-alpha-80) 100%
 	);
 
 	--gradient-fm-stroke-warning: linear-gradient(
-		270deg,
+		var(--stroke-direction, 270deg),
+		var(--color-fm-divider-secondary-alpha-80) -1.27%,
+		var(--color-fm-yellow-500-alpha-80) 50.35%,
+		var(--color-fm-divider-secondary-alpha-80) 100%
+	);
+
+	--gradient-fm-stroke-neutral-vertical: linear-gradient(
+		var(--stroke-direction, 180deg),
+		var(--color-fm-divider-secondary-alpha-80) -1.27%,
+		var(--color-fm-divider-contrast-alpha-80) 50.35%,
+		var(--color-fm-divider-secondary-alpha-80) 100%
+	);
+
+	--gradient-fm-stroke-positive-vertical: linear-gradient(
+		var(--stroke-direction, 180deg),
+		var(--color-fm-divider-secondary-alpha-80) -1.27%,
+		var(--color-fm-green-500-alpha-80) 50.35%,
+		var(--color-fm-divider-secondary-alpha-80) 100%
+	);
+
+	--gradient-fm-stroke-negative-vertical: linear-gradient(
+		var(--stroke-direction, 180deg),
+		var(--color-fm-divider-secondary-alpha-80) -1.27%,
+		var(--color-fm-red-500-alpha-80) 50.35%,
+		var(--color-fm-divider-secondary-alpha-80) 100%
+	);
+
+	--gradient-fm-stroke-info-vertical: linear-gradient(
+		var(--stroke-direction, 180deg),
+		var(--color-fm-divider-secondary-alpha-80) -1.27%,
+		var(--color-fm-blue-500-alpha-80) 50.35%,
+		var(--color-fm-divider-secondary-alpha-80) 100%
+	);
+
+	--gradient-fm-stroke-warning-vertical: linear-gradient(
+		var(--stroke-direction, 180deg),
 		var(--color-fm-divider-secondary-alpha-80) -1.27%,
 		var(--color-fm-yellow-500-alpha-80) 50.35%,
 		var(--color-fm-divider-secondary-alpha-80) 100%
@@ -475,6 +508,7 @@
 	--top-sheet-shadow: 0 21px 24.8px -27px;
 	--left-sheet-shadow: 21px 0 24.8px -27px;
 	--right-sheet-shadow: -21px 0 24.8px -27px;
+	--toast-shadow: 0 6px 20px -9px;
 
 	--button-fm-noise-low: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%20100%20100%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20opacity%3D%270.2%27%3E%3Cfilter%20id%3D%27noiseFilter%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%274%27%20numOctaves%3D%271%27%20stitchTiles%3D%27stitch%27/%3E%3C/filter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url(%23noiseFilter)%27/%3E%3C/svg%3E');
 
@@ -842,4 +876,192 @@
 .animate__slideOutUp {
 	-webkit-animation-name: slideOutUp;
 	animation-name: slideOutUp;
+}
+
+.popover-content {
+	animation-duration: 200ms;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	animation-fill-mode: forwards;
+}
+
+/* Open animations */
+.popover-content[data-state='open'] {
+	animation-name: popover-in;
+}
+
+.popover-content[data-state='open'][data-side='top'] {
+	animation-name: popover-in-from-bottom;
+}
+
+.popover-content[data-state='open'][data-side='bottom'] {
+	animation-name: popover-in-from-top;
+}
+
+.popover-content[data-state='open'][data-side='left'] {
+	animation-name: popover-in-from-right;
+}
+
+.popover-content[data-state='open'][data-side='right'] {
+	animation-name: popover-in-from-left;
+}
+
+/* Close animations */
+.popover-content[data-state='closed'] {
+	animation-name: popover-out;
+}
+
+.popover-content[data-state='closed'][data-side='top'] {
+	animation-name: popover-out-to-bottom;
+}
+
+.popover-content[data-state='closed'][data-side='bottom'] {
+	animation-name: popover-out-to-top;
+}
+
+.popover-content[data-state='closed'][data-side='left'] {
+	animation-name: popover-out-to-right;
+}
+
+.popover-content[data-state='closed'][data-side='right'] {
+	animation-name: popover-out-to-left;
+}
+
+/* Keyframes for opening animations */
+@keyframes popover-in {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes popover-in-from-top {
+	from {
+		opacity: 0;
+		transform: scale(0.95) translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
+
+@keyframes popover-in-from-bottom {
+	from {
+		opacity: 0;
+		transform: scale(0.95) translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
+
+@keyframes popover-in-from-left {
+	from {
+		opacity: 0;
+		transform: scale(0.95) translateX(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateX(0);
+	}
+}
+
+@keyframes popover-in-from-right {
+	from {
+		opacity: 0;
+		transform: scale(0.95) translateX(8px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateX(0);
+	}
+}
+
+/* Keyframes for closing animations */
+@keyframes popover-out {
+	from {
+		opacity: 1;
+		transform: scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+}
+
+@keyframes popover-out-to-top {
+	from {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.95) translateY(-8px);
+	}
+}
+
+@keyframes popover-out-to-bottom {
+	from {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.95) translateY(8px);
+	}
+}
+
+@keyframes popover-out-to-left {
+	from {
+		opacity: 1;
+		transform: scale(1) translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.95) translateX(-8px);
+	}
+}
+
+@keyframes popover-out-to-right {
+	from {
+		opacity: 1;
+		transform: scale(1) translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.95) translateX(8px);
+	}
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+	.popover-content {
+		animation-duration: 0ms;
+	}
+}
+
+@keyframes shadowPulse {
+	33% {
+		background: var(--dot-color, --color-fm-secondary-800);
+		box-shadow:
+			-24px 0 var(--active-dot-color, --color-fm-secondary-500),
+			24px 0 var(--dot-color, --color-fm-secondary-800);
+	}
+	66% {
+		background: var(--active-dot-color, --color-fm-secondary-500);
+		box-shadow:
+			-24px 0 var(--dot-color, --color-fm-secondary-800),
+			24px 0 var(--dot-color, --color-fm-secondary-800);
+	}
+	100% {
+		background: var(--dot-color, --color-fm-secondary-800);
+		box-shadow:
+			-24px 0 var(--dot-color, --color-fm-secondary-800),
+			24px 0 var(--active-dot-color, --color-fm-secondary-500);
+	}
 }
