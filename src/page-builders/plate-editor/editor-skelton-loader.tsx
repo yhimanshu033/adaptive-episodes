@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/aural-ui/skelton'
 
 function EditorSkeletonLoader() {
 	return (
-		<div className="flex h-screen flex-col border-r border-b border-l border-gray-800 bg-black text-white">
+		<div className="mb-4 flex h-[calc(100vh-20px)] flex-col border-r border-b border-l border-gray-800 bg-black text-white">
 			{/* Header */}
 			<div className="flex h-22 items-center justify-between border-b border-gray-800 p-4">
 				<div className="flex items-center gap-4">

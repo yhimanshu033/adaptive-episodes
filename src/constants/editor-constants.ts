@@ -101,6 +101,15 @@ export enum farSearchModes {
 	WHOLE_WORD = 'whole-word',
 }
 
+export const FAR_FILTER_OPTIONS = [
+	{
+		type: farSearchModes.CASE_SENSITIVE,
+		label: 'Match case',
+		key: 'caseSensitive',
+	},
+	{ type: farSearchModes.WHOLE_WORD, label: 'Whole word', key: 'wholeWord' },
+]
+
 export const SAVE_EPISODE_BUTTON_ID = 'save-episode-button'
 
 export const EXCLUDE_BREAKDOWN_KEYS = ['laser']

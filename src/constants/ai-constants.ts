@@ -161,11 +161,11 @@ export const SFX_INFO = {
 export const INITIAL_FAR_OPTIONS: FindReplaceConfig['options'] = {
 	search: '',
 	replace: '',
-	replaceEnabled: false,
+	replaceEnabled: true,
 	currentId: [0, 0, 0],
-	caseSensitive: true,
-	wholeWord: true,
-	genitive: true,
+	caseSensitive: false,
+	wholeWord: false,
+	genitive: false,
 }
 
 export const LSMappingGenders = [ELSMappingGender.MALE, ELSMappingGender.FEMALE]
@@ -186,6 +186,8 @@ export const sidebarToTitle: Record<ESidebar, string> = {
 }
 
 export const sidebarButtons: ESidebar[] = [ESidebar.CHATBOT, ESidebar.OUTLINE]
+
+export const HIDE_SIDEBAR_HEADER: ESidebar[] = [ESidebar.FAR]
 
 export const SAMPLE_LS_DATA: LSMappingOutputItem[] = [
 	{

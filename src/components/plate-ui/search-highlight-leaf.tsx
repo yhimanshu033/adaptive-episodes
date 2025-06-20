@@ -26,7 +26,6 @@ export const SearchHighlightLeaf = ({
 	const { store } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	const { useOption, setOption } = useEditorPlugin(FindReplacePlugin)
-	const replaceWith = useOption('replace')
 	const replaceEnabled = useOption('replaceEnabled')
 	const currentId = useOption('currentId') || [0, 0, 0]
 	const id = leaf.id as number[]
@@ -52,15 +51,22 @@ export const SearchHighlightLeaf = ({
 	function renderContent() {
 		if (isArrayEqual(id, currentId) && replaceEnabled) {
 			return (
-				<>
-					<del className="bg-red-500/60">{children}</del>
-					<span className="bg-blue-500/60">{replaceWith}</span>
-				</>
+				<span className="bg-fm-surface-positive text-fm-contrast">
+					{children}
+				</span>
 			)
 		} else if (isArrayEqual(id, currentId)) {
-			return <span className="bg-yellow-500/60">{children}</span>
+			return (
+				<span className="bg-fm-surface-positive text-fm-contrast">
+					{children}
+				</span>
+			)
 		} else {
-			return <span className="bg-green-500/60">{children}</span>
+			return (
+				<span className="bg-fm-surface-positive/30 border-fm-divider-positive border-b">
+					{children}
+				</span>
+			)
 		}
 	}
 	return sidebar === ESidebar.FAR || !!globalLocalize ? (
