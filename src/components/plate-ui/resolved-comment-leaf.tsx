@@ -27,7 +27,8 @@ export function ResolvedCommentLeaf({
 			id={`resolved-comment-leaf-${id}`}
 			{...props}
 			className={cn(
-				isActive(id) && 'border-b-2 border-b-yellow-400/80 bg-yellow-400/60',
+				isActive(id) &&
+					'border-fm-lemon-400/50 bg-fm-lemon-200/50 hover:border-fm-lemon-400 hover:bg-fm-lemon-200 border-b-1',
 				className
 			)}
 			nodeProps={{
