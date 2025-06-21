@@ -37,7 +37,15 @@ export default function FindAndReplace() {
 
 	return (
 		<div className="bg-fm-surface-primary">
-			<FarHeader />
+			<FarHeader
+				sheetURL={value.sheetURL}
+				isWriter={isWriter}
+				value={{
+					caseSensitive: value.caseSensitive,
+					wholeWord: value.wholeWord,
+					toggleSearchMode: value.toggleSearchMode,
+				}}
+			/>
 			<FindAndReplaceUI {...farUiprops} />
 		</div>
 	)

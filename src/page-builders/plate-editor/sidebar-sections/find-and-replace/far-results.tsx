@@ -37,7 +37,20 @@ const FindAndReplaceResults = ({
 	}
 
 	if (occurrences === 0) {
-		return <p>No Result Found</p>
+		return (
+			<div className="border-fm-divider-tertiary flex items-center justify-between gap-2 border-b p-6">
+				<Typography
+					variant="caption-medium"
+					as="span"
+					color="tertiary"
+					transform="uppercase"
+					className="tracking-wider"
+				>
+					No match for <span className="text-fm-primary">{search}</span>. You
+					can add it to the list.
+				</Typography>
+			</div>
+		)
 	}
 
 	return (

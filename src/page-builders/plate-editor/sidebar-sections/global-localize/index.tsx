@@ -4,13 +4,23 @@ import FindAndReplaceUI from '@/page-builders/plate-editor/sidebar-sections/find
 
 import useProjectId from '@/providers/project-id-provider'
 
+import FarHeader from '../find-and-replace/far-header'
+
 export default function GlobalLocalize() {
 	const props = useGlobalFindAndReplace()
 
 	const { isWriter } = useProjectId()
 
 	return (
-		<div className="sticky top-0 size-fit">
+		<div className="bg-fm-surface-primary sticky top-0 size-fit">
+			<FarHeader
+				isWriter={isWriter}
+				value={{
+					caseSensitive: props.caseSensitive,
+					wholeWord: props.wholeWord,
+					toggleSearchMode: props.toggleSearchMode,
+				}}
+			/>
 			<FindAndReplaceUI {...props} isWriter={isWriter} />
 		</div>
 	)

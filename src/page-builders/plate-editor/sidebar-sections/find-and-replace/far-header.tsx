@@ -7,9 +7,17 @@ import { useShallow } from 'zustand/react/shallow'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Typography } from '@/components/aural-ui/typography'
 
+import { IFindAndReplaceUIProps } from './far'
 import FarFilterDropdown from './far-filter-dropdown'
 
-const FarHeader = () => {
+type FarHeaderProps = Pick<IFindAndReplaceUIProps, 'sheetURL' | 'isWriter'> & {
+	value: Pick<
+		IFindAndReplaceUIProps,
+		'caseSensitive' | 'wholeWord' | 'toggleSearchMode'
+	>
+}
+
+const FarHeader = ({ sheetURL, isWriter, value }: FarHeaderProps) => {
 	const { store: plateStore, setSidebar } = usePlateStore()
 	const sidebar = plateStore(useShallow((state) => state.sidebar))
 
@@ -23,7 +31,11 @@ const FarHeader = () => {
 				{sidebarToTitle[sidebar]}
 			</Typography>
 			<div className="flex items-center gap-2">
-				<FarFilterDropdown />
+				<FarFilterDropdown
+					sheetURL={sheetURL}
+					isWriter={isWriter}
+					value={value}
+				/>
 				<IconButton
 					label="Close Sidebar"
 					variant="ghost"

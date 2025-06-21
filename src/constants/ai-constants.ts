@@ -38,35 +38,35 @@ export enum DiffStatus {
 }
 
 export enum LocalizationType {
-	CONCEPT = 'concept',
-	OBJECT = 'object',
-	PERSON = 'character',
-	PLACE = 'place',
+	Concept = 'concept',
+	Object = 'object',
+	Person = 'character',
+	Place = 'place',
 }
 
 export const localizationTypes: (keyof typeof LocalizationType)[] = [
-	'PERSON',
-	'PLACE',
-	'CONCEPT',
-	'OBJECT',
+	'Person',
+	'Place',
+	'Concept',
+	'Object',
 ]
 
 export const typeToKey: Record<
 	keyof typeof LocalizationType,
 	keyof TLocalizeResponse['result']
 > = {
-	CONCEPT: 'concepts',
-	OBJECT: 'objects',
-	PERSON: 'characters',
-	PLACE: 'places',
+	Concept: 'concepts',
+	Object: 'objects',
+	Person: 'characters',
+	Place: 'places',
 }
 
 export const typeToLocalizedKey: Record<keyof typeof LocalizationType, string> =
 	{
-		CONCEPT: 'localized_concept',
-		OBJECT: 'localized_object',
-		PERSON: 'localized_name',
-		PLACE: 'localized_place',
+		Concept: 'localized_concept',
+		Object: 'localized_object',
+		Person: 'localized_name',
+		Place: 'localized_place',
 	}
 
 export enum ESocketStatus {
