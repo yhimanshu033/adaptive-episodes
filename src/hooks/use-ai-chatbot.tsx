@@ -179,6 +179,12 @@ export function ChatbotProvider({
 		if (suggestion.action === EChatMode.VOICE2_XML) {
 			setDualViewMode(EDualVIewMode.VOICE_PASS)
 			setSidebar(ESidebar.DUAL_VIEW)
+			addMessages({
+				taskId: nanoid(),
+				content: 'Voice Pass Started',
+				role: EMessenger.ASSISTANT,
+				action: EAction.VOICE2_XML,
+			})
 			return
 		}
 		if (suggestion.action === EChatMode.PROMPTS) {

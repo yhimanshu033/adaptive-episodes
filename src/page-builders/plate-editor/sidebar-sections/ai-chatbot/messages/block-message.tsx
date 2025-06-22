@@ -59,6 +59,9 @@ const BlockContentMessage = ({
 	taskEnded: Record<string, boolean>
 }) => {
 	const messageResponses = responses[message.taskId] || []
+	if (messageResponses.length > 0) {
+		messageResponses[0] = messageResponses[0].trimStart()
+	}
 
 	if (!messageResponses.length) {
 		return <ChatbotStatus isRunning={true} />

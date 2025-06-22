@@ -65,12 +65,6 @@ export default function VoicePass({
 			[[]] as string[][]
 		)
 
-		// CAN WE REMOVE THIS FOR STREAMING DISPLAY?
-		// if (voiceMode === EChatMode.VOICE2_XML) {
-		// 	const prettifiedData = pretifyVoiceXMLData(responses[data].join(""))
-		// 	concatenatedResponse = prettifiedData.split("\n").map((item) => [item])
-		// }
-
 		return concatenatedResponse
 	}, [data, responses])
 
