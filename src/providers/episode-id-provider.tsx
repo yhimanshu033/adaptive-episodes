@@ -4,7 +4,6 @@ import React, { createContext, ReactNode, useContext } from 'react'
 import { DEFAULT_FONT_FAMILY } from '@/constants/editor-constants'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
 import { EpisodeContentProvider } from '@/hooks/query/use-episode-content'
-import { dummyUserMessages } from '@/mock-data/testing'
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -28,7 +27,7 @@ const initialState: PlateStoreData = {
 }
 
 const initialAiState: AIStoreType = {
-	messages: dummyUserMessages.slice(0, 2),
+	messages: [],
 	responseValue: null,
 	prevValue: null,
 	acceptedValue: null,
