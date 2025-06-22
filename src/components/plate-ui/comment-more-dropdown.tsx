@@ -13,6 +13,7 @@ import {
 	useCommentEditButtonState,
 	useCommentItemContentState,
 } from '@udecode/plate-comments/react'
+import { toast } from 'sonner'
 
 import {
 	DropdownMenu,
@@ -36,6 +37,11 @@ export function CommentMoreDropdown({
 	const { props: deleteProps } = useCommentDeleteButton(deleteButtonState)
 	const { user, comment } = useCommentItemContentState()
 
+	const handelDelete = () => {
+		toast.success('Comment deleted successfully')
+		deleteProps.onClick()
+	}
+
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
@@ -55,7 +61,7 @@ export function CommentMoreDropdown({
 				<DropdownMenuItem {...editProps}>
 					<EditBigIcon /> Edit comment
 				</DropdownMenuItem>
-				<DropdownMenuItem {...deleteProps}>
+				<DropdownMenuItem {...deleteProps} onClick={handelDelete}>
 					<TrashIcon />
 					Delete comment
 				</DropdownMenuItem>

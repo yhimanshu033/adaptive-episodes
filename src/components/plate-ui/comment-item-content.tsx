@@ -20,9 +20,16 @@ import {
 import { useEditorReadOnly } from '@udecode/plate-common/react'
 import { formatDistance } from 'date-fns'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
+import { Avatar, AvatarImage } from '@/components/aural-ui/avatar'
+import Badge from '@/components/aural-ui/badge'
+import { Button } from '@/components/aural-ui/button'
+import { Divider } from '@/components/aural-ui/divider'
+import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import Label from '@/components/aural-ui/label'
 import { Typography } from '@/components/aural-ui/typography'
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
 import { CommentMoreDropdown } from '@/components/plate-ui/comment-more-dropdown'
@@ -31,13 +38,6 @@ import { CommentValue } from '@/components/plate-ui/comment-value'
 import StreamedResponse from '@/components/ui/streamed-response'
 
 import { PlateUser } from '@/types/plate-types'
-
-import { Avatar, AvatarImage } from '../aural-ui/avatar'
-import Badge from '../aural-ui/badge'
-import { Button } from '../aural-ui/button'
-import { Divider } from '../aural-ui/divider'
-import { IconButton } from '../aural-ui/icon-button'
-import Label from '../aural-ui/label'
 
 export default function CommentItemContent() {
 	const scrollRef = useRef<HTMLDivElement>(null)
@@ -99,6 +99,7 @@ export default function CommentItemContent() {
 		if (!data) {
 			return
 		}
+		toast.success('Comment copied successfully.')
 		void navigator.clipboard.writeText(data)
 	}
 	const handelStopTask = () => {

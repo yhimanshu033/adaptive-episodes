@@ -4,6 +4,7 @@ import useComments from '@/hooks/plate/use-comments'
 import { CircleCrossIcon } from '@/icons/circle-cross-icon'
 import { CircleTickIcon } from '@/icons/circle-tick-icon'
 import { formatDistance } from 'date-fns'
+import { toast } from 'sonner'
 
 import Badge from '@/components/aural-ui/badge'
 import { IconButton } from '@/components/aural-ui/icon-button'
@@ -37,11 +38,13 @@ export default function ResolvedCommentItem({
 	const userTitle = user ? roleToData[user.role]?.title : ''
 
 	function handleRestore() {
+		toast.success('Comment unresolved successfully.')
 		addComment(resolvedComment)
 		removeResolvedComment(resolvedComment)
 	}
 
 	function handleResolve() {
+		toast.success('Resolved comment accepted successfully.')
 		deleteResolvedComment(resolvedComment)
 	}
 

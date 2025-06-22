@@ -8,6 +8,7 @@ import {
 	useCommentEditTextarea,
 	useCommentEditTextareaState,
 } from '@udecode/plate-comments/react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
 import TextArea from '@/components/aural-ui/textarea'
@@ -24,6 +25,11 @@ export function CommentValue() {
 	const initialValue = useRef<string | null>(textareaState.value)
 
 	const isUnchanged = initialValue.current === textareaState.value
+
+	const handleSave = () => {
+		toast.success('Comment updated successfully.')
+		saveButtonProps.onClick()
+	}
 
 	return (
 		<div className="relative flex grow flex-col gap-2">
@@ -49,6 +55,7 @@ export function CommentValue() {
 				</Button>
 				<Button
 					{...saveButtonProps}
+					onClick={handleSave}
 					variant="text"
 					innerClassName={cn('translate-none', {
 						'!text-fm-inactive': isUnchanged,

@@ -11,6 +11,7 @@ import {
 	useCommentDeleteButton,
 	useCommentDeleteButtonState,
 } from '@udecode/plate-comments/react'
+import { toast } from 'sonner'
 
 import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 
@@ -41,6 +42,7 @@ export function CommentResolveButton() {
 		if (!currentComment) {
 			return
 		}
+		toast.success('Comment resolved successfully.')
 		addResolvedComment(currentComment)
 		deleteProps.onClick()
 	}, [

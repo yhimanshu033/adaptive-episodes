@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from 'react'
-import { SuggestionActions } from '@/constants/editor-constants'
+// import { SuggestionActions } from '@/constants/editor-constants'
 import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import usePlateStore from '@/store/plate-store'
 import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
 import { TSuggestionText } from '@udecode/plate-suggestion'
-import { Check, X } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
@@ -18,23 +16,29 @@ export default function SuggestionLeaf({
 	...props
 }: PlateLeafProps<TSuggestionText>) {
 	const { children, leaf, nodeProps } = props
-	const { activeSuggestionId, set, suggestionAction, isLastLeaf } =
-		useSuggestions()
-	const { set: setCommentOptions, activeCommentId } = useComments()
+	const {
+		// activeSuggestionId,
+		set,
+		//  suggestionAction, isLastLeaf
+	} = useSuggestions()
+	const {
+		set: setCommentOptions,
+		//  activeCommentId
+	} = useComments()
 	const { setSidebar, setResolved } = usePlateStore()
 
-	const isActive = activeCommentId
-		? false
-		: activeSuggestionId === leaf.suggestionId && isLastLeaf(leaf)
+	// const isActive = activeCommentId
+	// 	? false
+	// 	: activeSuggestionId === leaf.suggestionId && isLastLeaf(leaf)
 
 	return (
 		<PlateLeaf
 			{...props}
 			id={`suggestion-leaf-${leaf.suggestionId}`}
 			className={cn(
-				'relative border-b-2 border-b-green-800/20 bg-green-600/40 hover:bg-green-600/80',
-				leaf.suggestionDeletion && 'italic line-through',
-				isActive && 'bg-green-600/80',
+				'text-fm-tag-emerald relative bg-transparent hover:bg-transparent',
+				leaf.suggestionDeletion &&
+					'text-fm-primary decoration-fm-emerald-300 border-fm-emerald-200 border-2 border-x-0 border-y line-through',
 				className
 			)}
 			onClick={() => {
@@ -45,7 +49,7 @@ export default function SuggestionLeaf({
 			}}
 			nodeProps={{ ...nodeProps }}
 		>
-			{isActive && (
+			{/* {isActive && (
 				<div className="absolute right-0 bottom-0 z-50 flex translate-x-1/2 translate-y-full gap-2 p-1">
 					<Button
 						variant="outline"
@@ -70,7 +74,7 @@ export default function SuggestionLeaf({
 						<X size={16} />
 					</Button>
 				</div>
-			)}
+			)} */}
 
 			{children}
 		</PlateLeaf>

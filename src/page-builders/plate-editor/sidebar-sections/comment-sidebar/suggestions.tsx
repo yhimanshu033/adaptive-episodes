@@ -7,14 +7,17 @@ import {
 import { roleToData } from '@/constants/global-constants'
 import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
+import { CrossIcon } from '@/icons/cross-icon'
+import { TickIcon } from '@/icons/tick-icon'
 import { useEditorPlugin } from '@udecode/plate-common/react'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 
-import { Icons } from '@/components/icons'
+import Badge from '@/components/aural-ui/badge'
+import { Button } from '@/components/aural-ui/button'
+import { If } from '@/components/aural-ui/if-else'
+import { Typography } from '@/components/aural-ui/typography'
 import { SuggestionAvatar } from '@/components/plate-ui/suggestion-avatar'
-import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
 
 import { PlateUser } from '@/types/plate-types'
@@ -66,8 +69,8 @@ const SuggestionBlock = ({
 		<div
 			ref={ref}
 			className={cn(
-				'cursor-pointer p-2',
-				isActive ? 'bg-background/90 border-l-2' : 'hover:bg-background/30'
+				'border-fm-divider-tertiary rounded-xs border bg-transparent p-4',
+				{ 'border-fm-divider-secondary bg-fm-divider-secondary/15': isActive }
 			)}
 			onClick={() => {
 				setCommentOption({ activeCommentId: null })
@@ -81,47 +84,64 @@ const SuggestionBlock = ({
 				elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
 			}}
 		>
-			<div className="relative flex items-center gap-2">
-				<SuggestionAvatar user={user} />
-				<h4 className="text-sm leading-none font-semibold">{user?.name}</h4>
-				{userTitle && (
-					<Badge
-						variant="outline"
-						className="bg-muted text-xxs text-muted-foreground leading-none"
+			<div className="space-y-3">
+				<div className="relative flex items-center gap-2">
+					<div className="flex items-center gap-2">
+						<SuggestionAvatar user={user} />
+						<div className="flex flex-col">
+							<div className="flex gap-2">
+								<Typography color="primary" variant="body-small">
+									{user?.name}
+								</Typography>
+								<If condition={!!userTitle}>
+									<Badge size="xs">{userTitle}</Badge>
+								</If>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div>
+					<Typography
+						as="span"
+						color="primary"
+						variant="body-small"
+						transform="uppercase"
 					>
-						{userTitle}
-					</Badge>
-				)}
-				<div
-					title="Accept Suggestion"
-					className={cn(
-						buttonVariants({ variant: 'ghost' }),
-						'text-muted-foreground ml-auto h-6 p-1'
-					)}
-					onClick={() =>
-						suggestionAction(SuggestionActions.ACCEPT, description)
-					}
-				>
-					<Icons.check className="size-4" />
+						{SuggestionTypesMap[description.type]} :{' '}
+					</Typography>
+					<Typography
+						as="span"
+						className="break-words whitespace-pre-wrap"
+						color="tertiary"
+						variant="body-small"
+					>
+						{suggestedText}
+					</Typography>
 				</div>
-				<div
-					title="Reject Suggestion"
-					className={cn(
-						buttonVariants({ variant: 'ghost' }),
-						'text-muted-foreground h-6 p-1'
-					)}
-					onClick={() =>
-						suggestionAction(SuggestionActions.REJECT, description)
-					}
-				>
-					<Icons.clear className="size-4" />
+				<div className="item-center flex gap-2">
+					<Button
+						variant="outline"
+						onClick={() =>
+							suggestionAction(SuggestionActions.REJECT, description)
+						}
+						className="w-full"
+						innerClassName="h-9 border-fm-divider-secondary text-fm-sm"
+						leftIcon={<CrossIcon className="size-3 stroke-2" />}
+					>
+						Reject
+					</Button>
+					<Button
+						variant="outline"
+						onClick={() =>
+							suggestionAction(SuggestionActions.ACCEPT, description)
+						}
+						leftIcon={<TickIcon className="size-4" />}
+						className="w-full"
+						innerClassName="h-9 border-fm-divider-secondary text-fm-sm"
+					>
+						Accept
+					</Button>
 				</div>
-			</div>
-			<div className="pl-7">
-				<span className="text-xs font-bold">
-					{SuggestionTypesMap[description.type]} :{' '}
-				</span>
-				<span className="text-xs italic">{suggestedText} </span>
 			</div>
 		</div>
 	)

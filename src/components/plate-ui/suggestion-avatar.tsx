@@ -3,7 +3,11 @@
 import React from 'react'
 import { SuggestionUser } from '@udecode/plate-suggestion'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from '@/components/aural-ui/avatar'
 
 export function SuggestionAvatar({ user }: { user: SuggestionUser | null }) {
 	if (!user) {
@@ -11,11 +15,9 @@ export function SuggestionAvatar({ user }: { user: SuggestionUser | null }) {
 	}
 
 	return (
-		<Avatar className="size-5">
+		<Avatar className="size-8">
 			<AvatarImage alt={user.name} src={user.avatarUrl} />
-			<AvatarFallback className="text-xs text-white" colorString={user.name}>
-				{user.name?.[0]}
-			</AvatarFallback>
+			<AvatarFallback>{user.name?.[0]}</AvatarFallback>
 		</Avatar>
 	)
 }
