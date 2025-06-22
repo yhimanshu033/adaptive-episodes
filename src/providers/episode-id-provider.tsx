@@ -28,7 +28,7 @@ const initialState: PlateStoreData = {
 }
 
 const initialAiState: AIStoreType = {
-	messages: dummyUserMessages,
+	messages: dummyUserMessages.slice(0, 2),
 	responseValue: null,
 	prevValue: null,
 	acceptedValue: null,

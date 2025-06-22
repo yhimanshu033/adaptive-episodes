@@ -23,7 +23,7 @@ const AIChatbot = () => {
 	}, [])
 	return (
 		<>
-			<div className="flex h-full flex-col overflow-hidden py-4 text-clip">
+			<div className="flex h-full min-h-full flex-col overflow-hidden py-4 text-clip">
 				<MessagesList isPending={isPending} />
 				<Divider className="mb-3 opacity-80" variant="secondary" />
 				<div className="px-4">

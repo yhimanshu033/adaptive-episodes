@@ -67,6 +67,10 @@ export function getSampleGetEpisodeResponse(id: number): TGetEpisodeResponse {
 
 export const dummyUserMessages: TMessage[] = [
 	{
+		content: 'Hey there! How can I help you today?',
+		role: EMessenger.USER,
+	},
+	{
 		content:
 			"I'm working on a complex fantasy novel and need help developing the intricate world-building elements. The story takes place in a realm where magic is tied to emotions, and different emotional states can manifest as physical phenomena in the environment. I want to explore how this affects the political landscape, social hierarchies, and daily life of the inhabitants. Can you help me brainstorm how a society might function when people's inner emotional states directly influence their surroundings? Consider aspects like governance, law enforcement, education systems, and interpersonal relationships. I'm particularly interested in how conflicts might arise between those who can control their emotions well versus those who cannot, and how this might create new forms of discrimination or privilege.",
 		role: EMessenger.USER,

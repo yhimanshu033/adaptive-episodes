@@ -23,8 +23,13 @@ const MessagesList = ({ isPending }: { isPending: boolean }) => {
 	}, [messages])
 
 	return (
-		<div className="min-h-0 flex-1">
-			<ScrollArea className="h-full px-4">
+		<div className="max-h-full flex-1">
+			<ScrollArea
+				className="h-full px-4"
+				classes={{
+					viewport: ' [&>div:first-child]:block! [&>div:first-child]:max-h-0 ',
+				}}
+			>
 				<div className="flex flex-col">
 					<IfElse condition={!!messages.length}>
 						<If>
