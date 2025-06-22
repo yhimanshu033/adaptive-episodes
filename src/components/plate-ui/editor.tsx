@@ -310,7 +310,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 								size,
 								variant,
 							}),
-							'px-6 py-5',
+							'min-h-screen px-6 py-5',
 							className
 						)}
 					/>

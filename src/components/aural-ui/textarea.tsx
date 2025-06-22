@@ -37,6 +37,7 @@ interface TextAreaBaseProps {
 	onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
 	onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
 	onFocus?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
+	onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
 	placeholder?: string
 	required?: boolean
 	rows?: number
@@ -235,6 +236,7 @@ const TextAreaBase = forwardRef<HTMLTextAreaElement, TextAreaBaseProps>(
 			onChange,
 			onBlur,
 			onFocus,
+			onKeyDown,
 			id,
 			name,
 			required = false,
@@ -322,6 +324,7 @@ const TextAreaBase = forwardRef<HTMLTextAreaElement, TextAreaBaseProps>(
 				onChange={handleChange}
 				onFocus={handleFocus}
 				onBlur={handleBlur}
+				onKeyDown={onKeyDown}
 				required={required}
 				rows={autoGrow ? 1 : rows}
 				maxLength={maxLength}

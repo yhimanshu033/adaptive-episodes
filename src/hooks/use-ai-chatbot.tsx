@@ -4,11 +4,13 @@ import React, {
 	useContext,
 	useEffect,
 	useMemo,
+	useRef,
 	useState,
 } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import ReviewAdded from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages/review-added'
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
@@ -124,6 +126,8 @@ export function ChatbotProvider({
 
 	const { data: aiResponse, isPending, reset } = aiChatbotMutation
 
+	const commentsCount = useRef<number>(0)
+
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) {
@@ -184,7 +188,10 @@ export function ChatbotProvider({
 		addMessages({ role: EMessenger.USER, content: suggestion.value })
 		aiChatbotMutation.mutate({
 			aiChatbotData: {
-				messages,
+				messages: messages.map((message) => ({
+					content: message.content || '',
+					role: message.role,
+				})),
 				user_message: suggestion.value,
 				ep_number: episodeContent?.chapter.seq_number?.toString(),
 				ep_text: episodeContent?.text as string,
@@ -255,6 +262,7 @@ export function ChatbotProvider({
 				createdAt: Date.now(),
 			})
 		})
+		commentsCount.current = resp.comments.length
 		editor.tf.setValue(breakDownValue(resp.value))
 	}
 
@@ -285,7 +293,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.REVIEW,
-					content: 'Adding review...',
+					content: 'Reviewing you content',
 				})
 			} else if (requestedAction === EChatMode.SFX) {
 				setOriginalChildren(children)
@@ -294,15 +302,15 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.CHANGES,
-					content: 'Adding MUSIC/SFX/AMBIENT Tags...',
+					content: 'Inserting SFX to you content',
 				})
-			} else if (requestedAction === EChatMode.VOICE) {
+			} else if (requestedAction === EChatMode.VOICE2_XML) {
 				setOriginalChildren(children)
 				addMessages({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.VOICE,
-					content: 'Voice Pass ist active...',
+					content: 'Voice Parsing',
 				})
 			} else {
 				handleBlock({ text: '', taskId: aiResponse })
@@ -371,8 +379,9 @@ export function ChatbotProvider({
 				{
 					role: EMessenger.ASSISTANT,
 					action: EAction.REVIEW,
-					content: 'StoryChat added review in comments',
+					content: 'Completed',
 					taskId: reviewStreaming,
+					component: <ReviewAdded count={commentsCount.current} />,
 				},
 				messages.length - 1
 			)
