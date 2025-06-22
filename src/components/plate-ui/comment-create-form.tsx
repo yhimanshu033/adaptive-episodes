@@ -12,11 +12,11 @@ import {
 } from '@udecode/plate-comments/react'
 import { useEditorPlugin, useEditorReadOnly } from '@udecode/plate-common/react'
 
+import { Button, buttonVariants } from '@/components/aural-ui/button'
+import { Divider } from '@/components/aural-ui/divider'
+import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import TextArea from '@/components/aural-ui/textarea'
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
-
-import { Button, buttonVariants } from '../aural-ui/button'
-import { Else, If, IfElse } from '../aural-ui/if-else'
-import TextArea from '../aural-ui/textarea'
 
 export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 	const { useOption, setOption } = useEditorPlugin(CommentsPlugin)
@@ -32,9 +32,16 @@ export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 	const { props: textAreaProps } = useCommentNewTextarea(textAreaState)
 
 	const [showActions, setShowActions] = useState(false)
+	const [focused, setFocused] = useState(false)
+
+	const handleFocus = () => {
+		setFocused(true)
+	}
 
 	const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
 		const text = e.target.value.trim()
+
+		setFocused(false)
 
 		if (!text) {
 			setShowActions(false)
@@ -78,7 +85,7 @@ export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 			<If condition={!!activeCommentId && !comments[activeCommentId]}>
 				<CommentAvatar userId={myUserId} />
 			</If>
-			<div className="relative flex grow flex-col gap-2">
+			<div className="relative flex w-full flex-col">
 				<TextArea
 					{...textAreaProps}
 					autoFocus={autoFocus}
@@ -86,35 +93,50 @@ export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 					value={textAreaValue}
 					onInput={handleInput}
 					onBlur={handleBlur}
+					onFocus={handleFocus}
 					decoration="filled"
 					minHeight={showActions ? 90 : 35}
 					autoGrow={true}
 					classes={{
-						textarea: !showActions ? '!h-fit' : 'pb-12',
+						textarea: cn('', {
+							'!border-b-0 !rounded-b-none mb-9': showActions,
+							'!h-fit': !showActions,
+						}),
 					}}
 				/>
 				<IfElse condition={showActions}>
 					<If>
-						<div className="border-fm-divider-secondary absolute inset-x-0 bottom-1 mx-3 flex items-center justify-end gap-4 border-t pr-2">
-							<Button
-								onClick={handleCancel}
-								variant="text"
-								className="text-fm-primary"
-								innerClassName="translate-none"
-								size="sm"
-							>
-								Cancel
-							</Button>
-							<CommentNewSubmitButton
-								className={cn(
-									buttonVariants({
-										variant: 'text',
-									}),
-									'!text-fm-sm text-fm-secondary-800'
-								)}
-							>
-								Comment
-							</CommentNewSubmitButton>
+						<div
+							className={cn(
+								'border-fm-divider-primary rounded-b-fm-s absolute inset-x-0 bottom-0 flex flex-col border border-t-0',
+								{
+									'border-fm-divider-contrast': focused,
+								}
+							)}
+						>
+							<Divider className="mt-2 w-[90%]" />
+
+							<div className="bg-fm-surface-frosted/20 flex items-center justify-end gap-4 pr-4">
+								<Button
+									onClick={handleCancel}
+									variant="text"
+									className="text-fm-primary"
+									innerClassName="translate-none"
+									size="sm"
+								>
+									Cancel
+								</Button>
+								<CommentNewSubmitButton
+									className={cn(
+										buttonVariants({
+											variant: 'text',
+										}),
+										'!text-fm-sm text-fm-secondary-800'
+									)}
+								>
+									Comment
+								</CommentNewSubmitButton>
+							</div>
 						</div>
 					</If>
 					<Else>
