@@ -38,7 +38,7 @@ const PromptsSheet = ({
 		<Sheet open={open} onOpenChange={setOpen}>
 			<SheetTitle />
 			<SheetContent
-				container={containerRef?.current}
+				container={containerRef?.current || null}
 				className="bg-fm-surface-frosted/5 p-0"
 				classes={{
 					overlay: 'absolute inset-x-0 bg-none',

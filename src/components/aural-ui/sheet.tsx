@@ -303,7 +303,7 @@ interface SheetContentProps
 	extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
 		VariantProps<typeof sheetVariants>,
 		ISheetOverlay {
-	container?: HTMLElement | null
+	container: HTMLElement | null
 }
 
 const SheetContent = React.forwardRef<
@@ -320,30 +320,26 @@ const SheetContent = React.forwardRef<
 			noise,
 			children,
 			classes,
+			container,
 			...props
 		},
 		ref
 	) => (
-		<SheetPortal container={props.container}>
+		<SheetPortal container={container}>
 			<SheetOverlay
 				opacity={opacity}
 				glass={glass}
 				noise={noise}
-				className={cn(classes?.overlay)}
+				className={classes?.overlay}
 			/>
 
 			<SheetPrimitive.Content
 				ref={ref}
-				className={cn(
-					sheetWrapperVariants({ side }),
-
-					classes?.content
-				)}
+				className={cn(sheetWrapperVariants({ side }), classes?.content)}
 			>
 				<div
 					className={cn(
 						sheetVariants({ side, variant }),
-
 						className,
 						classes?.root
 					)}
