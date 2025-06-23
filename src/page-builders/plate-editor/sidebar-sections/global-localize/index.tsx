@@ -12,7 +12,7 @@ export default function GlobalLocalize() {
 	const { isWriter } = useProjectId()
 
 	return (
-		<div className="bg-fm-surface-primary sticky top-0 size-fit">
+		<div className="bg-fm-surface-primary sticky top-0 h-[calc(100dvh-16px)] w-125">
 			<FarHeader
 				isWriter={isWriter}
 				value={{
@@ -20,6 +20,7 @@ export default function GlobalLocalize() {
 					wholeWord: props.wholeWord,
 					toggleSearchMode: props.toggleSearchMode,
 				}}
+				hideCloseButton
 			/>
 			<FindAndReplaceUI {...props} isWriter={isWriter} />
 		</div>

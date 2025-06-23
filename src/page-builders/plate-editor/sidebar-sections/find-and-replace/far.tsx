@@ -8,9 +8,11 @@ import FindAndReplaceLocalizedList from './far-localized-list'
 import FindAndReplaceResults from './far-results'
 
 export interface IFindAndReplaceUIProps extends UseGlobalFARRet {
+	handleScanEpisode?: () => Promise<void>
 	isWriter: boolean
 	setData?: Dispatch<SetStateAction<TLocalizeResponse['result'] | undefined>>
 	sheetURL?: string
+	updateLOCPending?: boolean
 }
 
 export default function FindAndReplaceUI({
@@ -35,6 +37,8 @@ export default function FindAndReplaceUI({
 	wholeWord,
 	toggleSearchMode,
 	setData,
+	handleScanEpisode,
+	updateLOCPending,
 }: IFindAndReplaceUIProps) {
 	return (
 		<>
@@ -66,6 +70,9 @@ export default function FindAndReplaceUI({
 				isFetching={isFetching}
 				localized_entities={localized_entities}
 				handleSuggestionClick={handleSuggestionClick}
+				handleScanEpisode={handleScanEpisode}
+				isWriter={isWriter}
+				updateLOCPending={updateLOCPending}
 			/>
 		</>
 	)

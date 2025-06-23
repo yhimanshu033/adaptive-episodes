@@ -1,5 +1,6 @@
 import React from 'react'
 import useIsGerman from '@/hooks/use-is-german'
+import { SearchIcon } from '@/icons/search-icon'
 import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/aural-ui/button'
@@ -14,13 +15,21 @@ import { IFindAndReplaceUIProps } from './far'
 
 type FindAndReplaceLocalizedListProps = Pick<
 	IFindAndReplaceUIProps,
-	'isFetching' | 'localized_entities' | 'handleSuggestionClick'
+	| 'isFetching'
+	| 'localized_entities'
+	| 'handleSuggestionClick'
+	| 'handleScanEpisode'
+	| 'isWriter'
+	| 'updateLOCPending'
 >
 
 const FindAndReplaceLocalizedList = ({
 	isFetching,
 	localized_entities,
 	handleSuggestionClick,
+	handleScanEpisode,
+	isWriter,
+	updateLOCPending,
 }: FindAndReplaceLocalizedListProps) => {
 	const dict = useTranslations('placeholders')
 	const isGerman = useIsGerman()
@@ -39,7 +48,7 @@ const FindAndReplaceLocalizedList = ({
 
 	return (
 		<section className="p-6">
-			<div className="border-fm-divider-secondary mb-6 border-b border-dashed pb-2.5">
+			<div className="border-fm-divider-secondary mb-6 flex items-center justify-between gap-4 border-b border-dashed pb-2.5">
 				<Typography
 					color="primary"
 					variant="caption-medium"
@@ -48,6 +57,24 @@ const FindAndReplaceLocalizedList = ({
 				>
 					Or Select from Below
 				</Typography>
+				<Button
+					onClick={() => void handleScanEpisode?.()}
+					disabled={!isWriter || updateLOCPending}
+					isDisabled={!isWriter || updateLOCPending}
+					className="gap-2"
+					variant="text"
+					size="sm"
+					innerClassName="translate-y-0 py-fm-sm px-0"
+					leftIcon={
+						updateLOCPending ? (
+							<CircularLoader className="size-3" />
+						) : (
+							<SearchIcon className="size-3" />
+						)
+					}
+				>
+					Scan
+				</Button>
 			</div>
 			<div className="flex h-full flex-col gap-6">
 				<ForEach data={localized_entities}>

@@ -5,19 +5,26 @@ import usePlateStore from '@/store/plate-store'
 import { useShallow } from 'zustand/react/shallow'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
+import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
 
 import { IFindAndReplaceUIProps } from './far'
 import FarFilterDropdown from './far-filter-dropdown'
 
 type FarHeaderProps = Pick<IFindAndReplaceUIProps, 'sheetURL' | 'isWriter'> & {
+	hideCloseButton?: boolean
 	value: Pick<
 		IFindAndReplaceUIProps,
 		'caseSensitive' | 'wholeWord' | 'toggleSearchMode'
 	>
 }
 
-const FarHeader = ({ sheetURL, isWriter, value }: FarHeaderProps) => {
+const FarHeader = ({
+	sheetURL,
+	isWriter,
+	value,
+	hideCloseButton,
+}: FarHeaderProps) => {
 	const { store: plateStore, setSidebar } = usePlateStore()
 	const sidebar = plateStore(useShallow((state) => state.sidebar))
 
@@ -36,14 +43,16 @@ const FarHeader = ({ sheetURL, isWriter, value }: FarHeaderProps) => {
 					isWriter={isWriter}
 					value={value}
 				/>
-				<IconButton
-					label="Close Sidebar"
-					variant="ghost"
-					size="small"
-					onClick={() => setSidebar(null)}
-					icon={<CrossIcon className="size-4" />}
-					shape="square"
-				/>
+				<If condition={!hideCloseButton}>
+					<IconButton
+						label="Close Sidebar"
+						variant="ghost"
+						size="small"
+						onClick={() => setSidebar(null)}
+						icon={<CrossIcon className="size-4" />}
+						shape="square"
+					/>
+				</If>
 			</div>
 		</section>
 	)
