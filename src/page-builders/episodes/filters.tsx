@@ -167,7 +167,7 @@ const Filters = ({
 			</If>
 			<MultiEpLocalizeDialog
 				url={url}
-				size="icon"
+				size="sm"
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}
 				tooltip="Localize episodes"
 			>
