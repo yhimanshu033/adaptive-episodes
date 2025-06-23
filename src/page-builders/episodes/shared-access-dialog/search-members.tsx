@@ -34,13 +34,12 @@ export default function SearchMembers() {
 		form.reset()
 		setMemberQuery('')
 	}
-	console.log(form.watch('email'), form.watch('role'))
+
 	return (
 		<Form {...form}>
 			<form
 				onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
 				className="relative my-6"
-				// className="border-fm-divider-secondary bg-fm-surface-frosted/20 rounded-fm-3xl font-fm-text text-fm-placeholder relative my-6 flex items-center border-1 p-3 text-sm"
 			>
 				<FormField
 					control={form.control}
