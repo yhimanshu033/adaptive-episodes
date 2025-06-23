@@ -1,3 +1,4 @@
+import { ELLMModel } from '@/constants/episodes-constants'
 import {
 	ACCEPTED_DOCX_TYPES,
 	ACCEPTED_IMAGE_TYPES,
@@ -46,6 +47,7 @@ export const storyImportFormSchema = z.object({
 	input_language: z.string(),
 	run_adaptation: z.boolean(),
 	target_language: z.string().optional(),
+	llm_model: z.string(),
 })
 
 export type StoryImportFormSchema = z.infer<typeof storyImportFormSchema>
@@ -64,5 +66,6 @@ export const useStoryImportFormResolver = () =>
 			input_language: ELanguage.ENGLISH,
 			run_adaptation: false,
 			target_language: undefined,
+			llm_model: ELLMModel.GEMINI,
 		},
 	})

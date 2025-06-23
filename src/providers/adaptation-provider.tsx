@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { PREFERABLE_LANGUAGES } from '@/constants/ai-constants'
+import { ELLMModel } from '@/constants/episodes-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
 import AdaptationDialog from '@/page-builders/episodes/adaptation-dialog'
 
@@ -22,6 +23,7 @@ function useAdaptationUtil() {
 	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
 	const [isFetchingLSSheet, setFetchingLSSheet] = useState<boolean>(false)
 	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
+	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.GEMINI)
 
 	const {
 		createLSMutation: { mutate, isPending, data, reset },
@@ -136,6 +138,8 @@ function useAdaptationUtil() {
 		storyData,
 		isEpisodeAdaptation,
 		setEpisodeAdaptation,
+		llmModel,
+		setLLMModel,
 	}
 }
 
