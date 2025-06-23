@@ -11,7 +11,8 @@ import {
 export default function MultiEpLocalizeDialog({
 	url,
 	...props
-}: { url: string } & ButtonProps) {
+}: { url: string } & ButtonProps &
+	React.ComponentPropsWithoutRef<typeof Button>) {
 	return (
 		<Drawer>
 			<DrawerTrigger asChild>

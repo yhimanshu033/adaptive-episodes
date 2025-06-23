@@ -303,7 +303,7 @@ interface SheetContentProps
 	extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
 		VariantProps<typeof sheetVariants>,
 		ISheetOverlay {
-	container: HTMLElement | null
+	container?: HTMLElement | null
 }
 
 const SheetContent = React.forwardRef<
