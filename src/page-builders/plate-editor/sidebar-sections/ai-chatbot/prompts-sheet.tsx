@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import { QUICK_PROMPTS, QUICK_PROMPTS_EN } from '@/constants/ai-constants'
 import useAIChatbot from '@/hooks/use-ai-chatbot'
 import useIsGerman from '@/hooks/use-is-german'
@@ -27,12 +27,7 @@ const PromptsSheet = ({
 	const { handleSuggestion } = useAIChatbot()
 	const isGerman = useIsGerman()
 
-	const prompts = useMemo(() => {
-		if (!isGerman) {
-			return QUICK_PROMPTS_EN
-		}
-		return QUICK_PROMPTS
-	}, [isGerman])
+	const prompts = isGerman ? QUICK_PROMPTS : QUICK_PROMPTS_EN
 
 	return (
 		<Sheet open={open} onOpenChange={setOpen}>

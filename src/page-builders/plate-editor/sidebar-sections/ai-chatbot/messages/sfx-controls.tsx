@@ -61,7 +61,7 @@ const SFXControls = ({
 				variant="ghost"
 				disabled={sfxIndex >= diffIdList.length - 1}
 				onClick={() => setActiveDiffId(diffIdList[sfxIndex + 1])}
-				className="text-fm-secondary-800"
+				className="text-fm-icon-brand-secondary"
 				icon={<ChevronDownIcon className="h-5 w-5" />}
 			/>
 		</div>
