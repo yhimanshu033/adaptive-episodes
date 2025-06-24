@@ -75,7 +75,7 @@ const ChatbotInput = () => {
 							'bg-fm-primary size-6 !p-0 transition-all duration-200',
 							{ 'border-fm-divider-primary bg-transparent': !hasText }
 						)}
-						variant="outlined"
+						variant={disabled ? 'ghost' : 'outlined'}
 						icon={
 							disabled ? (
 								<StopIcon width={20} height={20} />
