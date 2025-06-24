@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { AI_USER_ID } from '@/constants/ai-constants'
 import useComments from '@/hooks/plate/use-comments'
 import usePlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
@@ -19,13 +20,17 @@ export function CommentLeaf({
 }: PlateLeafProps<TCommentText>) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { children, leaf, nodeProps } = props
-	const { set } = useComments()
+	const { comments, set } = useComments()
 	const { store, setSidebar, setResolved } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
 
 	const isActive = sidebar === ESidebar.COMMENTS && state.isActive
+
+	const comment = comments.find((item) => item.id === state.lastCommentId)
+
+	const isAi = comment?.userId === AI_USER_ID
 
 	if (!state.commentCount) {
 		return children as React.ReactNode
@@ -44,8 +49,15 @@ export function CommentLeaf({
 			id={`comment-leaf-${state.lastCommentId}`}
 			{...props}
 			className={cn(
-				'border-b-primary/40 hover:bg-primary/40 border-b-2',
-				isActive ? 'bg-primary/40' : 'bg-primary/20',
+				'border-fm-emerald-400/50 bg-fm-emerald-200/50 hover:border-fm-emerald-400 hover:bg-fm-emerald-200 border-b-1',
+				{
+					'border-fm-hotpink-400/50 bg-fm-hotpink-200/50 hover:border-fm-hotpink-400 hover:bg-fm-hotpink-200':
+						isAi,
+					'border-fm-hotpink-400 bg-fm-hotpink-400 hover:border-fm-hotpink-400 hover:bg-fm-hotpink-400 text-fm-hotpink-50':
+						isActive && isAi,
+					'border-fm-emerald-400 bg-fm-emerald-400 hover:border-fm-emerald-400 hover:bg-fm-emerald-400 text-fm-emerald-50':
+						isActive && !isAi,
+				},
 				className
 			)}
 			nodeProps={{

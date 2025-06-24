@@ -10,7 +10,7 @@ export const CopyIcon = (
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
 			stroke="currentColor"
-			{...props} // allows width, height, className etc. to be passed in
+			{...props}
 		>
 			<path
 				d="M8.75 8.75V2.75H21.25V15.25H15.25M15.25 8.75H2.75V21.25H15.25V8.75Z"

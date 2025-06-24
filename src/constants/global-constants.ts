@@ -5,6 +5,7 @@ import { ERole } from '@/types/admin-types'
 
 export const COPILOT_LOGO_URL = '/assets/pocket-copilot-logo.webp'
 export const FALLBACK_USER_URL = '/assets/placeholder-user.webp'
+export const AI_AVATAR_ASSET = '/assets/ai_avatar.webp'
 
 export const DB_NAME = 'COPILOT_DB'
 export const STORE_NAME = 'EPISODE_DATA_STORE'

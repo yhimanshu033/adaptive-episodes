@@ -2,7 +2,10 @@
 
 import React from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
-import { cn } from '@udecode/cn'
+import { EditBigIcon } from '@/icons/edit-big-icon'
+import { PageSearchIcon } from '@/icons/page-search-icon'
+import { VerticalMenuIcon } from '@/icons/test-icons'
+import { TrashIcon } from '@/icons/trash-icon'
 import {
 	useCommentDeleteButton,
 	useCommentDeleteButtonState,
@@ -10,39 +13,62 @@ import {
 	useCommentEditButtonState,
 	useCommentItemContentState,
 } from '@udecode/plate-comments/react'
+import { toast } from 'sonner'
 
-import { Icons } from '@/components/icons'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from '@/components/plate-ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
+} from '@/components/aural-ui/dropdown'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { cn } from '@/lib/aural-ui/utils'
 
-export function CommentMoreDropdown({ onExample }: { onExample: () => void }) {
+export function CommentMoreDropdown({
+	onExample,
+	showIconOnSelect,
+}: {
+	onExample: () => void
+	showIconOnSelect: boolean
+}) {
 	const editButtonState = useCommentEditButtonState()
 	const { props: editProps } = useCommentEditButton(editButtonState)
 	const deleteButtonState = useCommentDeleteButtonState()
 	const { props: deleteProps } = useCommentDeleteButton(deleteButtonState)
 	const { user, comment } = useCommentItemContentState()
 
+	const handelDelete = () => {
+		toast.success('Comment deleted successfully')
+		deleteProps.onClick()
+	}
+
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
-				<Button
-					tooltip="More"
+				<IconButton
+					label="Trigger dropdown"
 					variant="ghost"
-					className={cn('text-muted-foreground h-6 p-1')}
-				>
-					<Icons.more className="size-4" />
-				</Button>
+					icon={<VerticalMenuIcon className="size-4 text-inherit" />}
+					className={cn(
+						'hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100',
+						{ 'opacity-100': showIconOnSelect }
+					)}
+					shape="square"
+					size="small"
+				/>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent>
-				<DropdownMenuItem {...editProps}>Edit comment</DropdownMenuItem>
-				<DropdownMenuItem {...deleteProps}>Delete comment</DropdownMenuItem>
+			<DropdownMenuContent align="end">
+				<DropdownMenuItem {...editProps}>
+					<EditBigIcon /> Edit comment
+				</DropdownMenuItem>
+				<DropdownMenuItem {...deleteProps} onClick={handelDelete}>
+					<TrashIcon />
+					Delete comment
+				</DropdownMenuItem>
 				{user?.id === AI_USER_ID && !comment?.parentId && (
-					<DropdownMenuItem onClick={onExample}>Show Example</DropdownMenuItem>
+					<DropdownMenuItem onClick={onExample}>
+						<PageSearchIcon /> Show Example
+					</DropdownMenuItem>
 				)}
 			</DropdownMenuContent>
 		</DropdownMenu>

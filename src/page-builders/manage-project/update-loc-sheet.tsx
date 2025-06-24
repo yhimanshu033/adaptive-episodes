@@ -27,7 +27,6 @@ const UpdateLOCSheet = () => {
 	const updateLOCSheetMutation = useUpdateLOCSheetMutation()
 
 	const handleSubmit = ({ link }: UploadLOCSheetSchema) => {
-		console.log('submit click', link)
 		updateLOCSheetMutation.mutate(link)
 	}
 

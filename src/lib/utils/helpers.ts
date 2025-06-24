@@ -809,3 +809,14 @@ export function getSelectableLanguages(
 	}
 	return AVAILABLE_TARGET_LANGUAGES.filter((lang) => lang !== currentLanguage)
 }
+
+export function getFirstName(name: string | null | undefined): string {
+	if (!name) {
+		return ''
+	}
+	const parts = name.split(' ')
+	if (parts.length === 0) {
+		return ''
+	}
+	return parts[0]
+}

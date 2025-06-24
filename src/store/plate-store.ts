@@ -50,6 +50,10 @@ export function usePlateStore() {
 		})
 	}
 
+	const setDiffIdList = (diffIdList: PlateStoreData['diffIdList']) => {
+		usePlateStoreContext.setState({ diffIdList })
+	}
+
 	return {
 		store: usePlateStoreContext,
 		setSidebar,
@@ -61,6 +65,7 @@ export function usePlateStore() {
 		setFontFamily,
 		setLocalDiffValue,
 		setFocusMode,
+		setDiffIdList,
 	}
 }
 

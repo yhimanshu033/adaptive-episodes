@@ -36,6 +36,7 @@ export const saveContent = async ({
 }: SaveEpisodeParams) => {
 	const word_count =
 		data.word_count || (data.text ? getWordCountFromString(data.text) : 0)
+
 	const responseData = await fetchAPI<
 		TPatchEpisodeBody,
 		TPatchEpisodeUrlParams,

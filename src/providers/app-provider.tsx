@@ -71,7 +71,10 @@ const AppProvider = ({
 										skipDelayDuration={0}
 									>
 										<AdaptationProvider>
-											<NextTopLoader color="hsl(var(--primary))" />
+											<NextTopLoader
+												color="var(--color-fm-secondary-800)"
+												showSpinner={false}
+											/>
 											<PlayerProvider>
 												<Player />
 												{children}
