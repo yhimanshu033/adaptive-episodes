@@ -24,14 +24,16 @@ const EN_LANG = {
 		copiedToClipBoard: 'Copied to clipboard!',
 	},
 	placeholders: {
-		initialAiMessage: 'How can I help you with your revision today?',
-		enterMessage: 'Enter your message...',
+		initialAiMessage:
+			'Ask me anything, or just tap one of the topic to get started',
+		enterMessage: 'Ask me anything...',
 		localizationLoading: 'Searching for localized names, please wait...',
 		somethingWentWrong: 'Something went wrong',
 		notesError: 'Your notes could not be added',
 		localChanges: 'Local Changes',
 		contentChanged: 'The content appears to have changed',
 		thinking: 'Thinking...',
+		completed: 'Completed',
 		example: 'Example',
 		words: 'Words',
 	},

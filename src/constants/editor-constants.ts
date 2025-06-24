@@ -1,3 +1,11 @@
+'use client'
+
+import { BubbleSparkleIcon } from '@/icons/bubble-sparkle-icon'
+import { HeadIcon } from '@/icons/head-icon'
+import { MusicalNoteIcon } from '@/icons/musical-note-icon'
+import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
+import { LucideIcon } from 'lucide-react'
+
 import { EChatMode, TStoryChatSuggestion } from '@/types/ai-types'
 
 export const rephraseMethods = [
@@ -8,26 +16,31 @@ export const rephraseMethods = [
 	{ id: 'custom', method: 'Prompt', status: 'Running custom prompt...' },
 ]
 
-export const storyChatSuggestions: Array<TStoryChatSuggestion> = [
+export const storyChatSuggestions: Array<
+	TStoryChatSuggestion & {
+		addSuggestion?: boolean
+		icon: LucideIcon | React.ComponentType<React.SVGProps<SVGSVGElement>>
+	}
+> = [
 	{
-		value: 'Music / SFX 🎶',
+		value: 'SFX / Music',
 		action: EChatMode.SFX,
+		icon: MusicalNoteIcon,
 	},
 	{
-		value: 'Voice Pass 🎙️',
-		action: EChatMode.VOICE2_XML,
-	},
-	{
-		value: 'Review ✅',
+		value: 'Review Content',
 		action: EChatMode.REVIEW,
+		icon: BubbleSparkleIcon,
 	},
 	{
-		value: 'Quick Prompts 💬',
+		value: 'Voice Pass',
+		action: EChatMode.VOICE2_XML,
+		icon: HeadIcon,
+	},
+	{
+		value: 'Quick Prompts',
 		action: EChatMode.PROMPTS,
-	},
-	{
-		value: 'Localise 🌍',
-		action: EChatMode.LOCALIZE,
+		icon: VerticalMenuIcon,
 	},
 ]
 

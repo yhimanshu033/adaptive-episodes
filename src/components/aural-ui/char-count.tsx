@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 
-import { cn } from '@/lib/aural-ui/utils'
+import { cn } from '../../lib/aural-ui/utils'
 
 interface CharCountProps {
 	'aria-live'?: 'polite' | 'assertive' | 'off'

@@ -1,4 +1,3 @@
-import { aiInitialMessage } from '@/constants/ai-constants'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
 
 import { useEpisodeContext } from '@/providers/episode-id-provider'
@@ -28,7 +27,7 @@ function useAIStore() {
 	}
 
 	const clearMessages = () => {
-		useAiStoreContext.setState({ messages: aiInitialMessage })
+		useAiStoreContext.setState({ messages: [] })
 	}
 
 	const setResponseValue = (value: AIStoreType['responseValue']) => {

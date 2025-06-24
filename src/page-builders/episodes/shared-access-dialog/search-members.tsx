@@ -34,7 +34,6 @@ export default function SearchMembers() {
 		form.reset()
 		setMemberQuery('')
 	}
-	console.log(form.watch('email'), form.watch('role'))
 	return (
 		<Form {...form}>
 			<form

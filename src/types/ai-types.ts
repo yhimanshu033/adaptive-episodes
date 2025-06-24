@@ -93,17 +93,18 @@ export type TStoryChatSuggestion = {
 	value: string
 }
 
-export type TMessage =
-	| {
-			content: string
-			role: EMessenger.USER
-	  }
-	| {
-			action: EAction
-			content: string
-			role: EMessenger.ASSISTANT
-			taskId: string
-	  }
+export type TUserMessage = {
+	content: string
+	role: EMessenger.USER
+}
+export type TAssistantMessage = {
+	action: EAction
+	component?: React.ReactNode | null
+	content: string
+	role: EMessenger.ASSISTANT
+	taskId: string
+}
+export type TMessage = TUserMessage | TAssistantMessage
 
 export type StoryExplorerConfiguration = {
 	current_ep: boolean

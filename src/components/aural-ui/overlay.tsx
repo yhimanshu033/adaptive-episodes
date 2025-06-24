@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../../lib/aural-ui/utils'
 
 const overlayVariants = cva(
-	'fixed inset-0 z-40 data-[state=open]:animate-fm-fadeIn data-[state=closed]:animate-fm-fadeOut ',
+	'fixed inset-0 z-40 data-[state=open]:animate-fm-fadeIn data-[state=closed]:animate-fm-fadeOut',
 	{
 		variants: {
 			opacity: {

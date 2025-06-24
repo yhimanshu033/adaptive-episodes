@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { AiDiffOperation, DiffStatus } from '@/constants/ai-constants'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
@@ -20,8 +20,10 @@ import {
 	createPlateEditor,
 	Plate,
 	PlateContent,
+	PlateEditor,
 	PlateLeaf,
 	toPlatePlugin,
+	useEditorState,
 	usePlateEditor,
 	type PlateLeafProps,
 } from '@udecode/plate-common/react'
@@ -34,7 +36,8 @@ import {
 } from '@udecode/plate-diff'
 import { Check, X } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/aural-ui/button'
+import { IconButton } from '@/components/aural-ui/icon-button'
 
 const diffOperationColors: Record<DiffOperation['type'], string> = {
 	[AiDiffOperation.DELETE]: 'bg-red-500/40',
@@ -82,7 +85,6 @@ const describeUpdate = ({ newProperties, properties }: DiffUpdate) => {
 			)
 		})
 	}
-
 	return descriptionParts.join('\n')
 }
 
@@ -151,7 +153,11 @@ function DiffLeaf({
 	const activeDiffId = readonly ? null : store((state) => state.activeDiffId)
 
 	const handleStatusChange = useCallback(
-		(status: DiffStatus) => {
+		(
+			e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+			status: DiffStatus
+		) => {
+			e.stopPropagation()
 			function findNode(node: TDescendant) {
 				if ('diff' in node) {
 					if (node.diff_id === leaf.diff_id) {
@@ -178,6 +184,7 @@ function DiffLeaf({
 		operation === AiDiffOperation.UPDATE
 	return (
 		<PlateLeaf
+			id={`diff-leaf-${leaf.diff_id}`}
 			onClick={() => {
 				if (readonly) {
 					return
@@ -197,29 +204,30 @@ function DiffLeaf({
 					}
 				>
 					{isActive && (
-						<div className="absolute bottom-0 z-50 flex translate-y-full gap-2 rounded-md p-1">
+						<div className="absolute top-2/5 right-0 flex translate-x-full gap-2 pl-10">
 							<Button
 								variant="outline"
 								size="sm"
-								tooltip="Accept Status"
-								onClick={() => handleStatusChange(DiffStatus.ACCEPTED)}
+								onClick={(e) => handleStatusChange(e, DiffStatus.ACCEPTED)}
+								innerClassName="h-8 "
 							>
 								<Check size={16} />
+								<p>Apply</p>
 							</Button>
-							<Button
-								variant="outline"
-								size="sm"
-								tooltip="Reject Status"
-								onClick={() => handleStatusChange(DiffStatus.REJECTED)}
-							>
-								<X size={16} />
-							</Button>
+							<IconButton
+								variant="outlined"
+								size="small"
+								tooltip="Reject SFX"
+								label="Reject SFX"
+								onClick={(e) => handleStatusChange(e, DiffStatus.REJECTED)}
+								icon={<X size={16} />}
+							/>
 						</div>
 					)}
 					{children}
 				</Component>
 			) : (
-				show && <>{children}</>
+				show && <p>{children}</p>
 			)}
 		</PlateLeaf>
 	)
@@ -323,6 +331,31 @@ export const useDiffEditor = ({
 	return editor
 }
 
+const DiffContent = ({ className }: { className?: string }) => {
+	const editor = useEditorState()
+	const { setDiffIdList } = usePlateStore()
+	const findAllDiffNodes = <E extends PlateEditor>(
+		editor: E
+	): Array<{ node: any; path: any }> =>
+		Array.from(
+			editor.nodes({
+				match: (n) => DiffPlugin.key in n,
+				at: [],
+			}),
+			([node, path]) => ({ node, path })
+		)
+
+	const diffNodes = useMemo(() => {
+		return findAllDiffNodes(editor)
+	}, [editor])
+
+	useEffect(() => {
+		setDiffIdList(diffNodes.map((n) => n.node.diff_id as string))
+	}, [diffNodes, setDiffIdList])
+
+	return <PlateContent className={cn('rounded-md border p-3', className)} />
+}
+
 export function DiffView({
 	current,
 	previous,
@@ -337,7 +370,7 @@ export function DiffView({
 	}
 	return (
 		<Plate editor={editor} readOnly>
-			<PlateContent className={cn('rounded-md border p-3', className)} />
+			<DiffContent className={className} />
 		</Plate>
 	)
 }

@@ -1,10 +1,9 @@
 import React, { forwardRef, ReactNode } from 'react'
-import { AlertIcon } from '@/icons/alert-icon'
-import { CrossCircleIcon } from '@/icons/cross-circle-icon'
-import { TickCircleIcon } from '@/icons/tick-circle-icon'
 
-import { cn } from '@/lib/aural-ui/utils'
-
+import { AlertIcon } from '../../icons/alert-icon'
+import { CrossCircleIcon } from '../../icons/cross-circle-icon'
+import { TickCircleIcon } from '../../icons/tick-circle-icon'
+import { cn } from '../../lib/aural-ui/utils'
 import { Case, Default, SwitchCase } from './switch-case'
 import { Tag } from './tag'
 
@@ -27,7 +26,11 @@ const HelperText = forwardRef<HTMLSpanElement, HelperTextProps>(
 						className={cn('w-full justify-normal normal-case', className)}
 						ref={ref}
 						variant="system"
-						leftIcon={<CrossCircleIcon color="var(--color-fm-icon-negative)" />}
+						leftIcon={
+							<span className="inline-block w-4">
+								<CrossCircleIcon color="var(--color-fm-icon-negative)" />
+							</span>
+						}
 						size="sm"
 						color="negative"
 						id={id}
@@ -40,7 +43,11 @@ const HelperText = forwardRef<HTMLSpanElement, HelperTextProps>(
 						className={cn('w-full justify-normal normal-case', className)}
 						ref={ref}
 						variant="system"
-						leftIcon={<AlertIcon color="var(--color-fm-icon-warning)" />}
+						leftIcon={
+							<span className="inline-block w-4">
+								<AlertIcon color="var(--color-fm-icon-contrast)" />
+							</span>
+						}
 						size="sm"
 						color="warning"
 						id={id}
@@ -53,7 +60,11 @@ const HelperText = forwardRef<HTMLSpanElement, HelperTextProps>(
 						className={cn('w-full justify-normal normal-case', className)}
 						ref={ref}
 						variant="system"
-						leftIcon={<TickCircleIcon color="var(--color-fm-icon-positive)" />}
+						leftIcon={
+							<span className="inline-block w-4">
+								<TickCircleIcon color="var(--color-fm-icon-positive)" />
+							</span>
+						}
 						size="sm"
 						color="positive"
 						id={id}
