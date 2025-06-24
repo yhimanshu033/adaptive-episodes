@@ -78,7 +78,9 @@ const Sidebar = () => {
 						>
 							<div className="flex h-full flex-col">
 								<SidebarTopBar />
-								<div className="flex-1">{renderSidebar[sidebarToDisplay]}</div>
+								<div className="flex flex-1 flex-col">
+									{renderSidebar[sidebarToDisplay]}
+								</div>
 							</div>
 						</ScrollArea>
 					</div>

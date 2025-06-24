@@ -167,11 +167,11 @@ const Filters = ({
 			</If>
 			<MultiEpLocalizeDialog
 				url={url}
-				size="sm"
+				isDisabled={disabled || Object.keys(selectedRowData).length <= 1}
 				disabled={disabled || Object.keys(selectedRowData).length <= 1}
 				tooltip="Localize episodes"
 			>
-				<Replace size={16} />
+				<Replace size={18} />
 			</MultiEpLocalizeDialog>
 			<If condition={isGerman || isOriginal}>
 				<Button

@@ -2,20 +2,20 @@
 
 import React, { useCallback, useMemo } from 'react'
 import useComments from '@/hooks/plate/use-comments'
+import { CircleCrossIcon } from '@/icons/circle-cross-icon'
+import { CircleTickIcon } from '@/icons/circle-tick-icon'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
-import { cn } from '@udecode/cn'
 import {
 	useComment,
 	useCommentDeleteButton,
 	useCommentDeleteButtonState,
 } from '@udecode/plate-comments/react'
-import { Undo } from 'lucide-react'
+import { toast } from 'sonner'
 
-import { Icons } from '@/components/icons'
-import { Button } from '@/components/plate-ui/button'
-import { buttonVariants } from '@/components/ui/button'
 import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
+
+import { IconButton } from '../aural-ui/icon-button'
 
 export function CommentResolveButton() {
 	const comment = useComment()!
@@ -42,6 +42,7 @@ export function CommentResolveButton() {
 		if (!currentComment) {
 			return
 		}
+		toast.success('Comment resolved successfully.')
 		addResolvedComment(currentComment)
 		deleteProps.onClick()
 	}, [
@@ -54,21 +55,25 @@ export function CommentResolveButton() {
 	])
 
 	return (
-		<Button
+		<IconButton
+			label={comment.isResolved ? 'Unresolve' : 'Resolve'}
 			variant="ghost"
 			{...deleteProps}
 			onClick={handleResolve}
-			title={comment.isResolved ? 'Unresolve' : 'Resolve'}
-			className={cn(
-				buttonVariants({ variant: 'ghost' }),
-				'text-muted-foreground h-6 p-1'
-			)}
-		>
-			{comment.isResolved ? (
-				<Undo className="size-4" />
-			) : (
-				<Icons.check className="size-4" />
-			)}
-		</Button>
+			className="hover:!text-fm-primary text-fm-icon-inactive p-2"
+			size="small"
+			icon={
+				comment.isResolved ? (
+					<CircleCrossIcon className="size-4.5 text-inherit" />
+				) : (
+					<CircleTickIcon className="size-4.5 text-inherit" />
+				)
+			}
+			tooltip={comment.isResolved ? 'Mark as Unresolved' : 'Mark as Resolved'}
+			tooltipContentProps={{
+				align: 'end',
+				side: 'bottom',
+			}}
+		/>
 	)
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import { FilterBarRowIcon } from '@/icons/filter-bar-row-icon'
 import useAIStore from '@/store/ai-store'
 
 import {
@@ -9,7 +10,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
-import { FilterBarRowIcon } from '@/components/aural-ui/filter-bar-row-icon'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { RadioGroup, RadioGroupItem } from '@/components/aural-ui/radio'
 import { Label } from '@/components/ui/label'
