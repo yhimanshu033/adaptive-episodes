@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
 import {
+	ELLMModel,
 	ImportStoryStep,
 	ImportStoryType,
 	sourceLanguages,
@@ -53,7 +54,9 @@ import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Stepper } from '@/components/aural-ui/stepper'
 import { Typography } from '@/components/aural-ui/typography'
 import { If } from '@/components/if-else'
-import LanguageSelector from '@/components/plate-ui/language-selector'
+import LanguageSelector, {
+	LLMModelSelector,
+} from '@/components/plate-ui/language-selector'
 import SwitchCase, { Case } from '@/components/switch-case'
 import { cn } from '@/lib/aural-ui/utils'
 import { FetchResponseResult } from '@/lib/fetch-api'
@@ -311,7 +314,11 @@ export function ImportStory() {
 													</FormItem>
 												)}
 											/>
-											<If condition={isInternal}>
+											<If
+												condition={
+													isInternal && storyType === ImportStoryType.IMPORT
+												}
+											>
 												<FormField
 													control={form.control}
 													name="run_adaptation"
@@ -350,6 +357,22 @@ export function ImportStory() {
 																	selectableLanguages={
 																		AVAILABLE_TARGET_LANGUAGES
 																	}
+																	onValueChange={field.onChange}
+																/>
+															</FormControl>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
+												<FormField
+													control={form.control}
+													name="llm_model"
+													render={({ field }) => (
+														<FormItem className="space-y-2">
+															<FormLabel htmlFor="language">AI Model</FormLabel>
+															<FormControl>
+																<LLMModelSelector
+																	value={field.value as ELLMModel}
 																	onValueChange={field.onChange}
 																/>
 															</FormControl>

@@ -4,7 +4,9 @@ import { languageToTitle } from '@/constants/episodes-constants'
 import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
 import { ArrowRight, CheckCircle, Info } from 'lucide-react'
 
-import LanguageSelector from '@/components/plate-ui/language-selector'
+import LanguageSelector, {
+	LLMModelSelector,
+} from '@/components/plate-ui/language-selector'
 import SwitchCase, { Case } from '@/components/switch-case'
 import { Button } from '@/components/ui/button'
 import {
@@ -48,6 +50,8 @@ export default function AdaptationDialog({
 		storyData,
 		isEpisodeAdaptation,
 		setEpisodeAdaptation,
+		llmModel,
+		setLLMModel,
 	} = useAdaptation()
 
 	// Validate props: Either both custom dialog props must be provided or neither
@@ -152,7 +156,12 @@ export default function AdaptationDialog({
 								selectableLanguages={selectableLanguages}
 							/>
 						</div>
-						<DialogFooter className="flex justify-end">
+						<DialogFooter>
+							<LLMModelSelector
+								value={llmModel}
+								onValueChange={setLLMModel}
+								className="w-fit"
+							/>
 							<Button
 								onClick={() =>
 									mutate({
@@ -160,6 +169,7 @@ export default function AdaptationDialog({
 										selectedRowData,
 										storyData,
 										currentLanguage,
+										llmModel,
 									})
 								}
 							>
@@ -185,6 +195,7 @@ export default function AdaptationDialog({
 												? selectedAdaptingLanguage
 												: storyData?.parent_language) || ELanguage.GERMAN,
 										selectedRowData,
+										llmModel,
 									},
 									{ onSuccess: () => setEpisodeAdaptation(false) }
 								)

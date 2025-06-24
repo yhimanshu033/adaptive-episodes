@@ -148,3 +148,27 @@ export const switchableStepsInfo: { title: string; type: ImportStoryStep }[] = [
 	{ type: ImportStoryStep.CONTENT, title: 'Import content' },
 ]
 export const EXCLUDED_HEADERS_LS_SHEET = ['created_by']
+
+export enum ELLMModel {
+	CLAUDE = 'claude',
+	DEEPSEEK = 'deepseek',
+	GEMINI = 'gemini',
+	GPT = 'gpt',
+	HYBRID = 'hybrid',
+}
+
+export const LLM_MODELS: ELLMModel[] = [
+	ELLMModel.GEMINI,
+	ELLMModel.CLAUDE,
+	ELLMModel.DEEPSEEK,
+	ELLMModel.GPT,
+	ELLMModel.HYBRID,
+]
+
+export const modelToTitle: Record<ELLMModel, string> = {
+	[ELLMModel.CLAUDE]: 'Claude',
+	[ELLMModel.DEEPSEEK]: 'DeepSeek',
+	[ELLMModel.GEMINI]: 'Gemini',
+	[ELLMModel.GPT]: 'GPT',
+	[ELLMModel.HYBRID]: 'Hybrid',
+}
