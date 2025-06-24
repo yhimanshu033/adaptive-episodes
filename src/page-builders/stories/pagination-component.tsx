@@ -17,7 +17,7 @@ export default function PaginationComponent({
 	isLoading,
 	changeParams,
 }: IStoryPaginationProps) {
-	const { currentPage, pageSize, setPage } = usePagination()
+	const { currentPage, pageSize, setPage, totalPages } = usePagination()
 
 	useEffect(() => {
 		changeParams({ page: currentPage })
@@ -27,6 +27,10 @@ export default function PaginationComponent({
 		changeParams({ limit: Number(pageSize), page: 1 })
 		setPage(1)
 	}, [pageSize])
+
+	if (totalPages <= 1) {
+		return null
+	}
 
 	return (
 		<div className="mb-6 flex flex-col justify-between gap-4 py-4">

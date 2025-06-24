@@ -23,7 +23,7 @@ const Filters = ({
 		<Search
 			onSearch={debouncedSetSearch}
 			placeholder="Search Story"
-			initialValue=""
+			initialValue={search}
 		/>
 	)
 }
