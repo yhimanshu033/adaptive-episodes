@@ -15,7 +15,6 @@ import Sidebar from '@/page-builders/plate-editor/sidebar'
 import { cn } from '@udecode/cn'
 import { Plate } from '@udecode/plate-common/react'
 
-import DotLoader from '@/components/aural-ui/dot-loader'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { CursorOverlay } from '@/components/plate-ui/cursor-overlay'
 import { Editor } from '@/components/plate-ui/editor'
@@ -28,6 +27,7 @@ import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 import { TCustomComment } from '@/types/editor-types'
 
+import { EditorSkeletonLoader } from './editor-skelton-loader'
 import EpisodeHeader from './episode-header'
 
 export default function PlateEditor() {
@@ -46,11 +46,7 @@ export default function PlateEditor() {
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
 	if (!content || !latestStatus) {
-		return (
-			<div className="flex min-h-dvh flex-1 items-center justify-center">
-				<DotLoader />
-			</div>
-		)
+		return <EditorSkeletonLoader />
 	}
 
 	return (
