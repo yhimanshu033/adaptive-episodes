@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import React, { forwardRef } from 'react'
 import { cva } from 'class-variance-authority'
 
@@ -23,8 +22,8 @@ interface TagProps {
 	emphasis?: 'primary' | 'secondary' | 'tertiary'
 	iconProps?: React.SVGProps<SVGSVGElement>
 	id?: string
-	leftIcon?: React.ReactNode | boolean
-	rightIcon?: React.ReactNode | boolean
+	leftIcon?: React.ReactNode
+	rightIcon?: React.ReactNode
 	size?: 'xs' | 'sm' | 'md'
 	variant?: 'promotional' | 'system'
 }
@@ -284,7 +283,7 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(
 		},
 		ref
 	) => {
-		const renderIcon = (icon: React.ReactNode | boolean) => {
+		const renderIcon = (icon: React.ReactNode) => {
 			if (!icon) {
 				return null
 			}

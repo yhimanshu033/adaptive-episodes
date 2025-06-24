@@ -7,12 +7,16 @@ import { Pagination, usePagination } from '@/components/aural-ui/pagination'
 
 const EpisodesPagination = () => {
 	const { setLimit, setCurrentPage } = usePageState()
-	const { currentPage, pageSize } = usePagination()
+	const { currentPage, pageSize, totalPages } = usePagination()
 
 	useEffect(() => {
 		void setLimit(pageSize)
 		void setCurrentPage(currentPage)
 	}, [pageSize, currentPage, setLimit, setCurrentPage])
+
+	if (totalPages <= 1) {
+		return null // No pagination needed if there's only one page
+	}
 
 	return (
 		<div>

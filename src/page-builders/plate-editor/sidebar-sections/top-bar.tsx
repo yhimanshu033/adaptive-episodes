@@ -1,5 +1,9 @@
 import React from 'react'
-import { sidebarButtons, sidebarToTitle } from '@/constants/ai-constants'
+import {
+	HIDE_SIDEBAR_HEADER,
+	sidebarButtons,
+	sidebarToTitle,
+} from '@/constants/ai-constants'
 import { CrossIcon } from '@/icons/cross-icon'
 import usePlateStore from '@/store/plate-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -13,7 +17,7 @@ export default function SidebarTopBar() {
 	const { store: plateStore, setSidebar } = usePlateStore()
 	const sidebar = plateStore(useShallow((state) => state.sidebar))
 
-	if (!sidebar) {
+	if (!sidebar || HIDE_SIDEBAR_HEADER.includes(sidebar)) {
 		return null
 	}
 

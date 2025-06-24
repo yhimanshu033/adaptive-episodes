@@ -10,7 +10,6 @@ import { useEpisodeStore } from '@/store/episode-store'
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
 	DialogHeader,
 	DialogTitle,
 } from '@/components/aural-ui/dialog'
@@ -33,11 +32,12 @@ export default function ShareAccessDialog() {
 				variant="neutral"
 				classes={{
 					content: 'w-full',
+					root: 'px-0',
 				}}
 				noise="none"
 				showCloseButton={false}
 			>
-				<ScrollArea className="[&>[data-radix-scroll-area-viewport]]:max-h-[90vh]">
+				<ScrollArea className="px-4 [&>[data-radix-scroll-area-viewport]]:max-h-[90vh]">
 					<DialogHeader>
 						<DialogTitle className="pt-2">
 							<div className="flex items-center justify-between py-3">
@@ -50,10 +50,10 @@ export default function ShareAccessDialog() {
 									label="cross icon"
 								/>
 							</div>
+						</DialogTitle>
+						<div>
 							<Divider variant="dashed" />
 							<SearchMembers />
-						</DialogTitle>
-						<DialogDescription>
 							<h3 className="font-fm-brand mb-4 text-sm tracking-wider uppercase">
 								Shared with
 							</h3>
@@ -66,7 +66,7 @@ export default function ShareAccessDialog() {
 							<UpdateLOCSheet />
 							<UpdateDriveFolder folderType={EFolderType.CMS} />
 							<UpdateSlackChannel />
-						</DialogDescription>
+						</div>
 					</DialogHeader>
 				</ScrollArea>
 			</DialogContent>

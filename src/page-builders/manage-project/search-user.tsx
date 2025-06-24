@@ -56,6 +56,7 @@ const SearchUser = ({
 		<Command
 			classes={{
 				list: 'backdrop-blur-none bg-transparent',
+				root: 'relative overflow-visible',
 			}}
 		>
 			<CommandInput
@@ -67,50 +68,56 @@ const SearchUser = ({
 				onValueChange={handleValueChange}
 				autoComplete="off"
 			/>
-			<ScrollArea
+			<div
 				className={cn(
 					addMemberQuery.length < 2 && 'hidden',
-					'max-h-32 rounded-md'
+					'absolute top-11 right-0 left-0 z-50'
 				)}
 			>
-				<CommandList>
-					<IfElse condition={isLoading}>
-						<If>
-							{Array.from({ length: 2 }).map((_, index) => (
-								<CommandItem key={index} disabled>
-									<Skeleton className="h-8 w-full" />
-								</CommandItem>
-							))}
-						</If>
-						<Else>
-							<If condition={!selectedValue}>
-								<CommandGroup>
-									{users.map((user, index) => (
-										<CommandItem
-											className="bg-fm-surface-frosted/20"
-											key={index}
-											onMouseDown={(e) => e.preventDefault()}
-											onSelect={() => handleSelect(user)}
-										>
-											<div>
-												<h3 className="text-sm">
-													{user?.fullname ?? 'Anonymous'}
-												</h3>
-												<span className="text-fm-secondary text-xs">
-													{user.email}
-												</span>
-											</div>
-										</CommandItem>
-									))}
-								</CommandGroup>
-								<CommandEmpty className="text-muted-foreground py-2 text-sm">
-									No user found
-								</CommandEmpty>
+				<ScrollArea
+					classes={{
+						viewport: 'max-h-32',
+					}}
+				>
+					<CommandList className="bg-fm-surface-secondary max-h-none rounded-md shadow-lg">
+						<IfElse condition={isLoading}>
+							<If>
+								{Array.from({ length: 2 }).map((_, index) => (
+									<CommandItem key={index} disabled>
+										<Skeleton className="h-8 w-full" />
+									</CommandItem>
+								))}
 							</If>
-						</Else>
-					</IfElse>
-				</CommandList>
-			</ScrollArea>
+							<Else>
+								<If condition={!selectedValue}>
+									<CommandGroup className="p-0">
+										{users.map((user, index) => (
+											<CommandItem
+												className="bg-fm-surface-frosted/20"
+												key={index}
+												onMouseDown={(e) => e.preventDefault()}
+												onSelect={() => handleSelect(user)}
+											>
+												<div>
+													<h3 className="text-sm">
+														{user?.fullname ?? 'Anonymous'}
+													</h3>
+													<span className="text-fm-secondary text-xs">
+														{user.email}
+													</span>
+												</div>
+											</CommandItem>
+										))}
+									</CommandGroup>
+									<CommandEmpty className="text-muted-foreground py-2 text-sm">
+										No user found
+									</CommandEmpty>
+								</If>
+							</Else>
+						</IfElse>
+					</CommandList>
+				</ScrollArea>
+			</div>
 		</Command>
 	)
 }
