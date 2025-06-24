@@ -52,6 +52,7 @@
 		forwards;
 	--animate-fade-in-up: fade-in-up 1s var(--animation-delay, 0ms) ease forwards;
 	--animate-slow-flash: flash 1s ease;
+	--animate-gradient-slide: gradient-slide 2s linear infinite;
 
 	@keyframes accordion-down {
 		from {
@@ -97,6 +98,15 @@
 		50% {
 			background-color: var(--color-fm-secondary-100);
 			opacity: 0.5;
+		}
+	}
+
+	@keyframes gradient-slide {
+		0% {
+			background-position: 200% 0%;
+		}
+		100% {
+			background-position: -200% 0%;
 		}
 	}
 }
@@ -344,4 +354,16 @@
 /* aural-ui tokens class and ID definitions */
 .popover-content {
 	animation-duration: 0ms;
+}
+
+.animate-gradient-slide {
+	background-image: linear-gradient(
+		270deg,
+		var(--color-fm-placeholder) 12.22%,
+		var(--color-fm-primary) 31.77%,
+		var(--color-fm-primary) 67.87%,
+		var(--color-fm-placeholder) 96.75%
+	);
+	background-size: 200% 100%;
+	animation: var(--animate-gradient-slide);
 }

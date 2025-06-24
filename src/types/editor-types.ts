@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
+import { storyChatSuggestions } from '@/constants/editor-constants'
 import { colorOptions } from '@/constants/global-constants'
 import { Value } from '@udecode/plate'
 import { TComment, TCommentText } from '@udecode/plate-comments'
@@ -94,3 +95,4 @@ export type TLocalizationObject = [
 		title: 'Objects'
 	},
 ]
+export type TSuggestions = (typeof storyChatSuggestions)[number]

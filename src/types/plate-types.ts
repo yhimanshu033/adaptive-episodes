@@ -49,6 +49,7 @@ export enum ESidebar {
 export type PlateStoreData = {
 	activeDiffId: string | null
 	currentDiffValue: Value | null
+	diffIdList: string[]
 	focusMode: boolean
 	fontFamily: string
 	localDiffValue: Value | null

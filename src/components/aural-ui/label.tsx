@@ -6,8 +6,7 @@ import React, {
 } from 'react'
 import * as LabelPrimitive from '@radix-ui/react-label'
 
-import { cn } from '@/lib/aural-ui/utils'
-
+import { cn } from '../../lib/aural-ui/utils'
 import { If } from './if-else'
 
 export interface LabelProps {
@@ -25,7 +24,7 @@ export const Label = forwardRef<
 	<LabelPrimitive.Root
 		ref={ref}
 		className={cn(
-			'leading-fm-xs font-fm-brand block [font-size:var(--text-fm-sm)] tracking-wider uppercase',
+			'leading-fm-xs font-fm-brand flex items-center gap-2 [font-size:var(--text-fm-sm)] tracking-wider uppercase',
 			{
 				'text-fm-inactive': disabled,
 				'text-fm-primary': !disabled,

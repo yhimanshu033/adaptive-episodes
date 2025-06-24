@@ -101,7 +101,7 @@ export default function SelectionActions({
 				</MultiEpLocalizeDialog>
 				<If
 					condition={
-						!language?.parentLanguage ||
+						!language.parentLanguage ||
 						language.parentLanguage === ELanguage.GERMAN_ORIGINAL
 					}
 				>
