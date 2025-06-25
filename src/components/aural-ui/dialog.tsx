@@ -1,10 +1,9 @@
 import * as React from 'react'
-import { CrossIcon } from '@/icons/cross-icon'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { cva, VariantProps } from 'class-variance-authority'
 
-import { cn } from '@/lib/aural-ui/utils'
-
+import { CrossIcon } from '../../icons/cross-icon'
+import { cn } from '../../lib/aural-ui/utils'
 import { Overlay } from './overlay'
 
 const Dialog = DialogPrimitive.Root
@@ -203,6 +202,41 @@ const DialogDescription = React.forwardRef<
 	/>
 ))
 DialogDescription.displayName = DialogPrimitive.Description.displayName
+
+export const useDialogCleanup = ({
+	threshold = 1000,
+}: {
+	threshold: number
+}) => {
+	const handleDialogClose = () => {
+		setTimeout(() => {
+			if (document.body.style.pointerEvents === 'none') {
+				document.body.style.pointerEvents = ''
+			}
+		}, threshold)
+	}
+
+	const handleEscape = (event: KeyboardEvent) => {
+		if (event.key === 'Escape') {
+			handleDialogClose()
+		}
+	}
+
+	React.useEffect(() => {
+		document.addEventListener('keydown', handleEscape)
+
+		const cleanup = () => {
+			document.removeEventListener('keydown', handleEscape)
+			handleDialogClose()
+		}
+
+		// Cleanup on unmount
+		return cleanup
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
+
+	return { handleDialogClose, handleEscape }
+}
 
 export {
 	Dialog,
