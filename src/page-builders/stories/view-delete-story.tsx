@@ -39,8 +39,8 @@ const ViewDeleteStory = ({ onOpenChange }: IViewDeleteStoryProps) => {
 						<PencilIcon className="size-4" /> View
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem onClick={onDelete}>
-						<TrashIcon /> Delete
+					<DropdownMenuItem onClick={onDelete} disabled>
+						<TrashIcon className="text-fm-icon-inactive" /> Delete
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>

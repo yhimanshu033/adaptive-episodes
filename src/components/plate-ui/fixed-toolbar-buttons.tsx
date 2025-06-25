@@ -1,6 +1,7 @@
 import React from 'react'
 import { PaintRollIcon } from '@/icons/paint-roll-icon'
 import { TextColorIcon } from '@/icons/text-color-icon'
+import ViewLS from '@/page-builders/episodes/info/view-ls'
 import usePlateStore from '@/store/plate-store'
 import {
 	BoldPlugin,
@@ -150,6 +151,9 @@ export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
 								</ToolbarGroup>
 								<ToolbarGroup>
 									<TranslationToggleButton />
+								</ToolbarGroup>
+								<ToolbarGroup>
+									<ViewLS />
 								</ToolbarGroup>
 							</div>
 						</Else>

@@ -62,8 +62,8 @@ export default function SelectionActions({
 	}
 
 	return (
-		<div className="flex items-center justify-between gap-3 py-3">
-			<div className="flex items-center gap-1 py-4">
+		<div className="bg-fm-surface-primary mt-10 mb-4 flex min-h-17 items-center justify-between gap-3 px-6 pr-4 pl-0">
+			<div className="flex items-center gap-1">
 				<IconButton
 					onClick={() => void table.resetRowSelection()}
 					variant="ghost"
@@ -87,8 +87,9 @@ export default function SelectionActions({
 						}}
 						variant="outline"
 						className="gap-2 rounded-3xl"
+						innerClassName="h-9"
+						leftIcon={<MagicBookIcon width={16} height={16} />}
 					>
-						<MagicBookIcon width={20} height={20} />
 						<span>AI Adaptation</span>
 					</Button>
 				</If>
@@ -96,8 +97,9 @@ export default function SelectionActions({
 					url={url}
 					disabled={Object.keys(selectedRowData).length <= 1}
 					tooltip="Localize episodes"
+					innerClassName="h-9"
 				>
-					<Replace size={18} />
+					<Replace size={16} />
 				</MultiEpLocalizeDialog>
 				<If
 					condition={
@@ -107,19 +109,27 @@ export default function SelectionActions({
 				>
 					<Button
 						variant="outline"
+						innerClassName="h-9"
 						disabled={Object.keys(selectedRowData).length <= 1}
 						onClick={() => handleMerge(selectedRowData)}
+						leftIcon={<GitForkIcon width={16} height={16} />}
 					>
-						<GitForkIcon width={18} height={18} />
-						<span>Combine</span>
+						Combine
 					</Button>
 					<Button
 						variant="outline"
 						disabled={selectedRowData.length !== 1}
 						onClick={() => handleUnmerge(selectedRowModel)}
+						innerClassName="h-9"
+						leftIcon={
+							<GitBranchIcon
+								className="text-fm-primary"
+								width={16}
+								height={16}
+							/>
+						}
 					>
-						<GitBranchIcon className="text-fm-primary" width={18} height={18} />
-						<span>Separate</span>
+						Separate
 					</Button>
 				</If>
 			</div>

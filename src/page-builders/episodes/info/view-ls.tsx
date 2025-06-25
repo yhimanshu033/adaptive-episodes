@@ -3,8 +3,6 @@ import useLSSheetQuery from '@/hooks/mutation/use-ls-sheet'
 import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
 import { Sheet } from 'lucide-react'
 
-import IfElse, { Else, If } from '@/components/if-else'
-import { ToolbarButton } from '@/components/plate-ui/toolbar'
 import {
 	Dialog,
 	DialogContent,
@@ -12,7 +10,9 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@/components/aural-ui/dialog'
+import IfElse, { Else, If } from '@/components/if-else'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 import { parseInputLSMapping } from '@/lib/utils/helpers'
 
 export default function ViewLS() {

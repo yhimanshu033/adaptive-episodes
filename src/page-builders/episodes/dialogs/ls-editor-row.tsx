@@ -6,19 +6,19 @@ import {
 } from '@/constants/ai-constants'
 import { EXCLUDED_HEADERS_LS_SHEET } from '@/constants/episodes-constants'
 
-import IfElse, { Else, If } from '@/components/if-else'
-import SwitchCase, { Case } from '@/components/switch-case'
-import { Checkbox } from '@/components/ui/checkbox'
-import ForEach from '@/components/ui/for-each'
-import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/aural-ui/checkbox'
+import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import Input from '@/components/aural-ui/input'
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '@/components/ui/select'
-import { TableCell, TableRow } from '@/components/ui/table'
+} from '@/components/aural-ui/select'
+import { TableCell, TableRow } from '@/components/aural-ui/table'
+import SwitchCase, { Case } from '@/components/switch-case'
+import ForEach from '@/components/ui/for-each'
 import { isUpperCase } from '@/lib/utils/helpers'
 
 import {
@@ -79,7 +79,7 @@ const LSEditorRow = memo(
 										value={item.type}
 										onValueChange={(value) => updateField(index, 'type', value)}
 									>
-										<SelectTrigger>
+										<SelectTrigger decoration="filled">
 											<SelectValue placeholder="Type" />
 										</SelectTrigger>
 										<SelectContent>
@@ -104,7 +104,7 @@ const LSEditorRow = memo(
 													updateField(index, 'gender', value)
 												}
 											>
-												<SelectTrigger>
+												<SelectTrigger decoration="filled">
 													<SelectValue placeholder="Gender" />
 												</SelectTrigger>
 												<SelectContent>
@@ -137,6 +137,7 @@ const LSEditorRow = memo(
 										value={item[key]}
 										onChange={(e) => updateField(index, key, e.target.value)}
 										placeholder={key}
+										decoration="filled"
 									/>
 								</Case>
 							</SwitchCase>

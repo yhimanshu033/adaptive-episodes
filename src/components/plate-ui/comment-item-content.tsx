@@ -8,6 +8,7 @@ import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CopyIcon } from '@/icons/copy-icon'
 import { StopIcon } from '@/icons/stop-icon'
 import useAIStore from '@/store/ai-store'
@@ -99,7 +100,9 @@ export default function CommentItemContent() {
 		if (!data) {
 			return
 		}
-		toast.success('Comment copied successfully.')
+		toast.success('Comment copied successfully.', {
+			icon: <BubbleCheckIcon />,
+		})
 		void navigator.clipboard.writeText(data)
 	}
 	const handelStopTask = () => {
