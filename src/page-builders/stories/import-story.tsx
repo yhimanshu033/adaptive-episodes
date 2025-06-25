@@ -117,6 +117,19 @@ export function ImportStory() {
 		return 'Continue'
 	}, [step, lastStep, storyUploadMutation.isPending])
 
+	const PrimaryBtnText = useMemo(() => {
+		if (storyUploadMutation.isPending) {
+			return 'Uploading'
+		}
+		if (storyType === ImportStoryType.EMPTY) {
+			return 'Create New Story'
+		}
+		if (step === lastStep) {
+			return 'Import a Story'
+		}
+		return 'Continue'
+	}, [storyUploadMutation.isPending, storyType, step, lastStep])
+
 	const handleDiscardImage = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
 	) => {
@@ -411,7 +424,11 @@ export function ImportStory() {
 																onDragOver={handleDrag}
 																onDragLeave={handleDrag}
 																onDrop={handleImageDrop}
-																onClick={() => imageInputRef.current?.click()}
+																onClick={() =>
+																	!imageSrc
+																		? imageInputRef.current?.click()
+																		: {}
+																}
 															>
 																<If condition={!field.value}>
 																	<IconButton
@@ -571,7 +588,11 @@ export function ImportStory() {
 																onDragOver={handleDrag}
 																onDragLeave={handleDrag}
 																onDrop={handleDrop}
-																onClick={() => storyInputRef.current?.click()}
+																onClick={() =>
+																	!field.value
+																		? storyInputRef.current?.click()
+																		: {}
+																}
 															>
 																<If condition={!field.value}>
 																	<IconButton
@@ -755,11 +776,7 @@ export function ImportStory() {
 										}
 										type="submit"
 									>
-										{storyUploadMutation.isPending
-											? 'Uploading'
-											: storyType === ImportStoryType.EMPTY
-												? 'Create New Story'
-												: 'Import a Story'}
+										{PrimaryBtnText}
 									</Button>
 								</div>
 							</div>

@@ -15,6 +15,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/aural-ui/dialog'
+import { Divider } from '@/components/aural-ui/divider'
 import { If } from '@/components/aural-ui/if-else'
 import Label from '@/components/aural-ui/label'
 import { Stepper } from '@/components/aural-ui/stepper'
@@ -158,11 +159,11 @@ export default function AdaptationDialog({
 				variant="neutral"
 				glass="high"
 				classes={{ content: 'w-full' }}
-				className="h-[90vh] w-[90vw] gap-0 p-6 pt-0 max-2xl:max-w-[60vw]"
+				className="h-[90vh] w-[90vw] gap-0 p-0 max-2xl:max-w-[60vw]"
 				noise="none"
 				showCloseButton={false}
 			>
-				<div className="flex min-h-28 items-center justify-center overflow-x-auto">
+				<div className="ml-8 flex min-h-28 items-center justify-center overflow-x-auto px-6">
 					<Stepper
 						steps={stepLabels.length}
 						activeStep={step === -1 ? 3 : step - 1}
@@ -171,13 +172,13 @@ export default function AdaptationDialog({
 						stepLabels={stepLabels}
 					/>
 				</div>
+				<div className="px-6">
+					<Divider variant="dashed" />
+				</div>
 				<div
-					className={cn(
-						'border-fm-divider-primary h-full overflow-y-auto border-t border-dashed pt-5',
-						{
-							'mb-4 border-y py-10': step !== 3,
-						}
-					)}
+					className={cn('h-full overflow-y-auto pt-5', {
+						'mb-4 py-10': step !== 3,
+					})}
 				>
 					<DialogHeader>
 						<DialogTitle className="sr-only">Ai Adaptation Dialog</DialogTitle>
@@ -187,7 +188,7 @@ export default function AdaptationDialog({
 					</DialogHeader>
 					<SwitchCase value={step}>
 						<Case value={-1}>
-							<div className="flex h-full flex-col items-center justify-center gap-5">
+							<div className="flex h-full flex-col items-center justify-center gap-5 px-6">
 								<CircularLoader className="size-12" />
 								<div className="animate-gradient-slide bg-clip-text text-transparent">
 									Episodes{' '}
@@ -197,7 +198,7 @@ export default function AdaptationDialog({
 							</div>
 						</Case>
 						<Case value={1}>
-							<div className="flex h-full flex-col gap-4">
+							<div className="flex h-full flex-col gap-4 px-6">
 								<div className="flex w-full items-center gap-4">
 									<div className="flex flex-1 flex-col justify-center gap-3">
 										<Label htmlFor="curr_language">Current language</Label>
@@ -216,12 +217,10 @@ export default function AdaptationDialog({
 											value={selectedAdaptingLanguage}
 											onValueChange={setSelectedAdaptingLanguage}
 											selectableLanguages={selectableLanguages}
+											showSeparator
 											classes={{
 												trigger: {
 													root: 'h-12 border-fm-divider-secondary',
-												},
-												content: {
-													root: 'px-2',
 												},
 											}}
 										/>
@@ -234,13 +233,14 @@ export default function AdaptationDialog({
 											value={llmModel}
 											onValueChange={setLLMModel}
 											className="w-1/2"
+											showSeparator
 										/>
 									</div>
 								</div>
 							</div>
 						</Case>
 						<Case value={2}>
-							<div className="flex h-full flex-col items-center justify-center gap-5">
+							<div className="flex h-full flex-col items-center justify-center gap-5 px-6">
 								<CircularLoader className="size-12" />
 								<p className="animate-gradient-slide bg-clip-text text-transparent">
 									Adaptation in progress...
@@ -272,7 +272,7 @@ export default function AdaptationDialog({
 							/>
 						</Case>
 						<Case value={4}>
-							<div className="flex h-full flex-col items-center justify-center gap-4">
+							<div className="flex h-full flex-col items-center justify-center gap-4 px-6">
 								<TickCircleIcon className="size-10" />
 								<Typography>
 									Selected episode&apos;s adaptation is registered successfully
@@ -282,8 +282,11 @@ export default function AdaptationDialog({
 					</SwitchCase>
 				</div>
 				<If condition={step !== 3}>
+					<div className="px-6">
+						<Divider variant="dashed" />
+					</div>
 					<DialogFooter
-						className={cn('mt-5 flex-row !justify-between', {
+						className={cn('mt-5 flex-row !justify-between px-6 pb-6', {
 							'!justify-end': step === -1,
 						})}
 					>

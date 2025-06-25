@@ -119,6 +119,7 @@ function useAdaptationUtil() {
 			setSelectedRowData([])
 			setAbort(false)
 			setLLMModel(ELLMModel.GEMINI)
+			setSelectedAdaptingLanguage(ELanguage.GERMAN)
 			return
 		}
 	}, [step, open, resetMutations, abort])

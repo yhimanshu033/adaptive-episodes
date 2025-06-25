@@ -19,7 +19,7 @@ import {
 import { TableCell, TableRow } from '@/components/aural-ui/table'
 import SwitchCase, { Case } from '@/components/switch-case'
 import ForEach from '@/components/ui/for-each'
-import { isUpperCase } from '@/lib/utils/helpers'
+import { cn, isUpperCase } from '@/lib/utils/helpers'
 
 import {
 	ELSMappingChineseGender,
@@ -65,7 +65,9 @@ const LSEditorRow = memo(
 			return LSMappingChineseGenders
 		}, [defaultGender]) as unknown as ELSMappingGender[]
 		return (
-			<TableRow>
+			<TableRow
+				className={cn('', { 'bg-fm-surface-secondary': index % 2 !== 0 })}
+			>
 				<ForEach
 					data={rows}
 					filter={(key) => !EXCLUDED_HEADERS_LS_SHEET.includes(key)}

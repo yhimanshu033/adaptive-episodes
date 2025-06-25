@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { EXCLUDED_HEADERS_LS_SHEET } from '@/constants/episodes-constants'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { DownloadIcon } from '@/icons/download-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { UploadIcon } from '@/icons/upload-icon'
@@ -7,6 +8,7 @@ import LSEditorRow from '@/page-builders/episodes/dialogs/ls-editor-row'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
+import { Divider } from '@/components/aural-ui/divider'
 import {
 	IconButton,
 	iconButtonVariants,
@@ -121,7 +123,9 @@ const LSTableEditor = memo(
 				toast.error('Some error occurred while reading CSV')
 			}
 			reader.readAsText(file)
-			toast.success('CSV import completed!')
+			toast.success('CSV import completed!', {
+				icon: <BubbleCheckIcon />,
+			})
 		}
 
 		function handleDownloadCSV() {
@@ -149,7 +153,7 @@ const LSTableEditor = memo(
 			<div className="flex h-[calc(100%-64px)] flex-col gap-4">
 				<div className="flex h-full flex-col gap-4 overflow-x-auto">
 					<If condition={!viewOnly}>
-						<div className="flex items-center justify-end gap-2">
+						<div className="flex items-center justify-end gap-2 px-6">
 							<IconButton
 								label="Download Csv"
 								tooltip="Download CSV"
@@ -188,10 +192,10 @@ const LSTableEditor = memo(
 						</div>
 					</If>
 
-					<div className="h-full max-w-full overflow-y-auto">
-						<Table>
+					<div className="h-full max-w-full overflow-y-auto px-6">
+						<Table className="bg-transparent">
 							<TableHeader className="bg-fm-surface-secondary sticky top-0 z-10">
-								<TableRow>
+								<TableRow className="min-h-12">
 									<ForEach
 										data={keys}
 										filter={(key) => !EXCLUDED_HEADERS_LS_SHEET.includes(key)}
@@ -225,7 +229,10 @@ const LSTableEditor = memo(
 					</div>
 				</div>
 				<If condition={!viewOnly}>
-					<div className="border-fm-divider-primary flex justify-between border-t border-dashed pt-9">
+					<div className="px-6">
+						<Divider variant="dashed" />
+					</div>
+					<div className="flex justify-between border-dashed p-6">
 						<Button variant="text" onClick={handleClose} innerClassName="!px-0">
 							Exit & Discard
 						</Button>

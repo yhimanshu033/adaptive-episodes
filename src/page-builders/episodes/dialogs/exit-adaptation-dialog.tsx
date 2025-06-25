@@ -30,7 +30,7 @@ const ExitAdaptationDialog = () => {
 					overlay: 'z-60',
 					content: 'z-70',
 				}}
-				className=""
+				className="bg-fm-secondary/15"
 				noise="none"
 			>
 				<DialogHeader>

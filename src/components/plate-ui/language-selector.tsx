@@ -47,12 +47,14 @@ interface TLanguageSelectorProps {
 	onValueChange: (language: ELanguage) => void
 	placeholder?: string
 	selectableLanguages?: ELanguage[]
+	showSeparator?: boolean
 	value: ELanguage | undefined
 }
 
 interface TModelSelectorProps {
 	className?: string
 	onValueChange: (model: ELLMModel) => void
+	showSeparator?: boolean
 	value: string
 }
 
@@ -64,6 +66,7 @@ const LanguageSelector = ({
 	disabledLanguages = [],
 	classes = {},
 	placeholder = 'Language',
+	showSeparator,
 }: TLanguageSelectorProps) => {
 	return (
 		<Select value={value} onValueChange={onValueChange}>
@@ -91,8 +94,14 @@ const LanguageSelector = ({
 									else={languageToTitle[lang]}
 								/>
 							</SelectItem>
-							<If condition={selectableLanguages.length - 1 !== index}>
-								<SelectSeparator />
+							<If
+								condition={
+									selectableLanguages.length - 1 !== index && showSeparator
+								}
+							>
+								<div className="px-2">
+									<SelectSeparator />
+								</div>
 							</If>
 						</div>
 					)}
@@ -106,6 +115,7 @@ export const LLMModelSelector = ({
 	onValueChange,
 	value,
 	className,
+	showSeparator,
 }: TModelSelectorProps) => {
 	return (
 		<Select value={value} onValueChange={onValueChange}>
@@ -118,10 +128,17 @@ export const LLMModelSelector = ({
 			</SelectTrigger>
 			<SelectContent className="z-50" align="end">
 				<ForEach data={LLM_MODELS}>
-					{(model) => (
-						<SelectItem key={model} value={model}>
-							{modelToTitle[model]}
-						</SelectItem>
+					{(model, index) => (
+						<div key={`model-container-${model}`}>
+							<SelectItem key={model} value={model}>
+								{modelToTitle[model]}
+							</SelectItem>
+							<If condition={LLM_MODELS.length - 1 !== index && showSeparator}>
+								<div className="px-2">
+									<SelectSeparator />
+								</div>
+							</If>
+						</div>
 					)}
 				</ForEach>
 			</SelectContent>

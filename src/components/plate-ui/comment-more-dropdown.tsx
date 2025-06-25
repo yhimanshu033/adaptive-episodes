@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { EditBigIcon } from '@/icons/edit-big-icon'
 import { PageSearchIcon } from '@/icons/page-search-icon'
 import { VerticalMenuIcon } from '@/icons/test-icons'
@@ -38,7 +39,9 @@ export function CommentMoreDropdown({
 	const { user, comment } = useCommentItemContentState()
 
 	const handelDelete = () => {
-		toast.success('Comment deleted successfully')
+		toast.success('Comment deleted successfully', {
+			icon: <BubbleCheckIcon />,
+		})
 		deleteProps.onClick()
 	}
 
