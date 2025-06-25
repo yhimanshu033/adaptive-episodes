@@ -146,7 +146,7 @@ const LSTableEditor = memo(
 		}
 
 		return (
-			<div className="flex h-full flex-col gap-4">
+			<div className="flex h-[calc(100%-64px)] flex-col gap-4">
 				<div className="flex h-full flex-col gap-4 overflow-x-auto">
 					<If condition={!viewOnly}>
 						<div className="flex items-center justify-end gap-2">
