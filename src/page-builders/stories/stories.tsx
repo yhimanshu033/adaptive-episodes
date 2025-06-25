@@ -89,8 +89,8 @@ const Stories = ({
 								priority={false}
 							/>
 						</div>
-						<Link href={`/projects/${story.id}`}>
-							<div className="flex h-full flex-col gap-4 p-4">
+						<div className="flex h-full flex-col gap-4 p-4">
+							<Link href={`/projects/${story.id}`}>
 								<div className="relative aspect-square">
 									<div className="absolute inset-x-0 top-2 z-10 flex justify-between px-2">
 										<If
@@ -136,6 +136,11 @@ const Stories = ({
 										</div>
 									</If>
 								</div>
+							</Link>
+							<Link
+								href={`/projects/${story.id}`}
+								className="flex h-full flex-col justify-between"
+							>
 								<div className="flex h-full flex-col justify-between">
 									<div className="flex flex-col gap-2">
 										<Typography
@@ -164,13 +169,15 @@ const Stories = ({
 										Edited {formatDate(story.update_time)}
 									</Badge>
 								</div>
-								<ViewDeleteStory
-									onOpenChange={(open) =>
-										setOpenStoryId(open ? story.id.toString() : null)
-									}
-								/>
-							</div>
-						</Link>
+							</Link>
+							<ViewDeleteStory
+								onOpenChange={(open) =>
+									setOpenStoryId(open ? story.id.toString() : null)
+								}
+								storyTitle={story.project_title}
+								storyId={story.id}
+							/>
+						</div>
 					</div>
 				)
 			})}
