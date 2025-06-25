@@ -1,6 +1,7 @@
 import React from 'react'
 import { roleToData } from '@/constants/global-constants'
 import useComments from '@/hooks/plate/use-comments'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CircleCrossIcon } from '@/icons/circle-cross-icon'
 import { CircleTickIcon } from '@/icons/circle-tick-icon'
 import { formatDistance } from 'date-fns'
@@ -38,13 +39,17 @@ export default function ResolvedCommentItem({
 	const userTitle = user ? roleToData[user.role]?.title : ''
 
 	function handleRestore() {
-		toast.success('Comment unresolved successfully.')
+		toast.success('Comment unresolved successfully.', {
+			icon: <BubbleCheckIcon />,
+		})
 		addComment(resolvedComment)
 		removeResolvedComment(resolvedComment)
 	}
 
 	function handleResolve() {
-		toast.success('Resolved comment accepted successfully.')
+		toast.success('Resolved comment accepted successfully.', {
+			icon: <BubbleCheckIcon />,
+		})
 		deleteResolvedComment(resolvedComment)
 	}
 

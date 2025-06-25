@@ -1,23 +1,31 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { EXCLUDED_HEADERS_LS_SHEET } from '@/constants/episodes-constants'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
+import { DownloadIcon } from '@/icons/download-icon'
+import { PlusIcon } from '@/icons/plus-icon'
+import { UploadIcon } from '@/icons/upload-icon'
 import LSEditorRow from '@/page-builders/episodes/dialogs/ls-editor-row'
-import { Download, Plus, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { If } from '@/components/if-else'
-import { Button } from '@/components/ui/button'
-import ForEach from '@/components/ui/for-each'
+import { Button } from '@/components/aural-ui/button'
+import { Divider } from '@/components/aural-ui/divider'
+import {
+	IconButton,
+	iconButtonVariants,
+} from '@/components/aural-ui/icon-button'
+import { If } from '@/components/aural-ui/if-else'
 import {
 	Table,
 	TableBody,
 	TableHead,
 	TableHeader,
 	TableRow,
-} from '@/components/ui/table'
+} from '@/components/aural-ui/table'
+import ForEach from '@/components/ui/for-each'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { downloadBlobUrl } from '@/lib/utils/client-helpers'
 import {
-	buttonVariants,
+	cn,
 	isInvalidLSMapping,
 	parseOutputLSMapping,
 	toSnakeCase,
@@ -35,8 +43,10 @@ const LSTableEditor = memo(
 		tableData = [],
 		setTableData = () => {},
 		onSubmit = () => {},
+		handleClose = () => {},
 		viewOnly = false,
 	}: {
+		handleClose?: () => void
 		onSubmit?: (data: LSMappingOutput) => void
 		setTableData?: React.Dispatch<
 			React.SetStateAction<LSMappingOutput['ls_mapping']>
@@ -114,7 +124,9 @@ const LSTableEditor = memo(
 				toast.error('Some error occurred while reading CSV')
 			}
 			reader.readAsText(file)
-			toast.success('CSV import completed!')
+			toast.success('CSV import completed!', {
+				icon: <BubbleCheckIcon />,
+			})
 		}
 
 		function handleDownloadCSV() {
@@ -139,28 +151,31 @@ const LSTableEditor = memo(
 		}
 
 		return (
-			<div className="space-y-4 overflow-x-auto">
-				<If condition={!viewOnly}>
-					<h3 className="text-lg font-medium">Table Editor</h3>
-					<div className="flex items-center justify-between">
-						<div className="flex gap-2">
-							<Button
-								variant="outline"
-								size="icon"
+			<div
+				className={cn('flex h-full flex-col gap-4', {
+					'h-[calc(100%-64px)]': viewOnly,
+				})}
+			>
+				<div className="flex h-full flex-col gap-4 overflow-x-auto">
+					<If condition={!viewOnly}>
+						<div className="flex items-center justify-end gap-2 px-6">
+							<IconButton
+								label="Download Csv"
 								tooltip="Download CSV"
 								onClick={handleDownloadCSV}
-							>
-								<Download />
-							</Button>
+								icon={<DownloadIcon className="size-6" />}
+								shape="square"
+								variant="ghost"
+							/>
 							<TooltipComponent tooltip="Upload CSV">
 								<label
 									htmlFor="csv-input"
-									className={buttonVariants({
-										variant: 'outline',
-										size: 'icon',
+									className={iconButtonVariants({
+										variant: 'ghost',
+										shape: 'square',
 									})}
 								>
-									<Upload />
+									<UploadIcon />
 								</label>
 							</TooltipComponent>
 							<input
@@ -171,56 +186,67 @@ const LSTableEditor = memo(
 								value={[]}
 								onChange={(e) => handleCSV(e.target.files)}
 							/>
+							<Button
+								variant="outline"
+								onClick={addNewRow}
+								size="sm"
+								leftIcon={<PlusIcon />}
+							>
+								Add Row
+							</Button>
 						</div>
-						<Button onClick={addNewRow} size="sm">
-							<Plus className="mr-2 size-4" /> Add Row
-						</Button>
-					</div>
-				</If>
+					</If>
 
-				<div className="max-h-96 max-w-full overflow-auto">
-					<Table>
-						<TableHeader className="bg-background sticky top-0 z-10">
-							<TableRow>
-								<ForEach
-									data={keys}
-									filter={(key) => !EXCLUDED_HEADERS_LS_SHEET.includes(key)}
-								>
-									{(item, idx) => <TableHead key={idx}>{item}</TableHead>}
+					<div className="h-full max-w-full overflow-y-auto px-6">
+						<Table className="bg-transparent">
+							<TableHeader className="bg-fm-surface-secondary sticky top-0 z-10">
+								<TableRow className="min-h-12">
+									<ForEach
+										data={keys}
+										filter={(key) => !EXCLUDED_HEADERS_LS_SHEET.includes(key)}
+									>
+										{(item, idx) => <TableHead key={idx}>{item}</TableHead>}
+									</ForEach>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								<ForEach data={tableData}>
+									{(item, index) => (
+										<LSEditorRow
+											rows={keys}
+											disabled={viewOnly}
+											key={`table-row-${index}`}
+											index={index}
+											item={item}
+											removeRow={removeRow}
+											updateField={updateField}
+										/>
+									)}
 								</ForEach>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							<ForEach data={tableData}>
-								{(item, index) => (
-									<LSEditorRow
-										rows={keys}
-										disabled={viewOnly}
-										key={`table-row-${index}`}
-										index={index}
-										item={item}
-										removeRow={removeRow}
-										updateField={updateField}
-									/>
-								)}
-							</ForEach>
 
-							<If condition={tableData.length === 0}>
-								<div className="text-muted-foreground p-4 text-center">
-									No data available.
-								</div>
-							</If>
-						</TableBody>
-					</Table>
+								<If condition={tableData.length === 0}>
+									<div className="text-muted-foreground p-4 text-center">
+										No data available.
+									</div>
+								</If>
+							</TableBody>
+						</Table>
+					</div>
 				</div>
 				<If condition={!viewOnly}>
-					<div className="flex justify-end">
+					<div className="px-6">
+						<Divider variant="dashed" />
+					</div>
+					<div className="flex justify-between border-dashed p-6">
+						<Button variant="text" onClick={handleClose} innerClassName="!px-0">
+							Exit & Discard
+						</Button>
 						<Button
 							disabled={disabled}
+							isDisabled={disabled}
 							onClick={handleSubmit}
-							className="ml-auto"
 						>
-							Adapt
+							Save & Continue
 						</Button>
 					</div>
 				</If>

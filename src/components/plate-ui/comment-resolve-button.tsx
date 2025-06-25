@@ -2,6 +2,7 @@
 
 import React, { useCallback, useMemo } from 'react'
 import useComments from '@/hooks/plate/use-comments'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CircleCrossIcon } from '@/icons/circle-cross-icon'
 import { CircleTickIcon } from '@/icons/circle-tick-icon'
 import useEpisodeIdStore from '@/store/episode-id-store'
@@ -42,7 +43,9 @@ export function CommentResolveButton() {
 		if (!currentComment) {
 			return
 		}
-		toast.success('Comment resolved successfully.')
+		toast.success('Comment resolved successfully.', {
+			icon: <BubbleCheckIcon />,
+		})
 		addResolvedComment(currentComment)
 		deleteProps.onClick()
 	}, [
