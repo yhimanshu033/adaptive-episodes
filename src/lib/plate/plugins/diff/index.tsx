@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { AiDiffOperation, DiffStatus } from '@/constants/ai-constants'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
@@ -333,25 +333,23 @@ export const useDiffEditor = ({
 
 const DiffContent = ({ className }: { className?: string }) => {
 	const editor = useEditorState()
+
 	const { setDiffIdList } = usePlateStore()
 	const findAllDiffNodes = <E extends PlateEditor>(
 		editor: E
 	): Array<{ node: any; path: any }> =>
 		Array.from(
 			editor.nodes({
-				match: (n) => DiffPlugin.key in n,
+				match: (n: any) =>
+					DiffPlugin.key in n && n.status === DiffStatus.PENDING,
 				at: [],
 			}),
 			([node, path]) => ({ node, path })
 		)
 
-	const diffNodes = useMemo(() => {
-		return findAllDiffNodes(editor)
-	}, [editor])
-
 	useEffect(() => {
-		setDiffIdList(diffNodes.map((n) => n.node.diff_id as string))
-	}, [diffNodes, setDiffIdList])
+		setDiffIdList(findAllDiffNodes(editor).map((n) => n.node.diff_id as string))
+	}, [editor, setDiffIdList])
 
 	return <PlateContent className={cn('rounded-md border p-3', className)} />
 }

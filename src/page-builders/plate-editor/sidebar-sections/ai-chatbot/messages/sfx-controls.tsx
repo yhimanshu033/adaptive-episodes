@@ -7,6 +7,8 @@ import { Button } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Typography } from '@/components/aural-ui/typography'
 
+import SFXAlert from './sfx-alert'
+
 const SFXControls = ({
 	index,
 	handleAccept,
@@ -30,14 +32,15 @@ const SFXControls = ({
 			<TickIcon />
 			Apply all
 		</Button>
-		<Button
-			variant="outline"
-			size="sm"
-			onClick={() => handleAccept(index, true, true)}
-			innerClassName="border-fm-divider-primary/50 h-9"
-		>
-			Done
-		</Button>
+		<SFXAlert onConfirm={() => handleAccept(index, false, true)}>
+			<Button
+				variant="outline"
+				size="sm"
+				innerClassName="border-fm-divider-primary/50 h-9"
+			>
+				Done
+			</Button>
+		</SFXAlert>
 		<div className="flex flex-1 items-center justify-end gap-1">
 			<IconButton
 				size="small"

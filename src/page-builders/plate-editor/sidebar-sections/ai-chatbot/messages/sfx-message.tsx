@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { Divider } from '@/components/aural-ui/divider'
-import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
 import ChatbotStatus from '@/components/chatbot-status'
 
@@ -36,28 +35,26 @@ const SFXMessage = ({
 				isRunning={false}
 				text={diffIdList.length ? `SFX Inserted` : 'No SFX Inserted'}
 			/>
-			<If condition={!!diffIdList.length}>
-				<div className="border-fm-divider-primary/20 bg-fm-surface-secondary/30 rounded-fm-m my-2 w-full space-y-3 border p-3">
-					<Typography
-						variant="body-small"
-						as="p"
-						className="text-fm-secondary !text-fm-md"
-					>
-						SFX added at{' '}
-						<span className="text-fm-primary">
-							{diffIdList.length} breakpoints
-						</span>
-					</Typography>
-					<Divider />
-					<SFXControls
-						index={index}
-						handleAccept={handleAccept}
-						sfxIndex={sfxIndex}
-						diffIdList={diffIdList}
-						setActiveDiffId={setActiveDiffId}
-					/>
-				</div>
-			</If>
+			<div className="border-fm-divider-primary/20 bg-fm-surface-secondary/30 rounded-fm-m my-2 w-full space-y-3 border p-3">
+				<Typography
+					variant="body-small"
+					as="p"
+					className="text-fm-secondary !text-fm-md"
+				>
+					SFX pending at{' '}
+					<span className="text-fm-primary">
+						{diffIdList.length} breakpoints
+					</span>
+				</Typography>
+				<Divider />
+				<SFXControls
+					index={index}
+					handleAccept={handleAccept}
+					sfxIndex={sfxIndex}
+					diffIdList={diffIdList}
+					setActiveDiffId={setActiveDiffId}
+				/>
+			</div>
 		</>
 	)
 }
