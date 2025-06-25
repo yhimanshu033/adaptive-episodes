@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef } from 'react'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import {
 	useCommentEditCancelButton,
 	useCommentEditSaveButton,
@@ -27,7 +28,9 @@ export function CommentValue() {
 	const isUnchanged = initialValue.current === textareaState.value
 
 	const handleSave = () => {
-		toast.success('Comment updated successfully.')
+		toast.success('Comment updated successfully.', {
+			icon: <BubbleCheckIcon />,
+		})
 		saveButtonProps.onClick()
 	}
 

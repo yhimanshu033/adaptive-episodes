@@ -3,6 +3,7 @@ import { PREFERABLE_LANGUAGES } from '@/constants/ai-constants'
 import { ELLMModel } from '@/constants/episodes-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
 import AdaptationDialog from '@/page-builders/episodes/dialogs/adaptation-dialog'
+import ExitAdaptationDialog from '@/page-builders/episodes/dialogs/exit-adaptation-dialog'
 
 import {
 	getSelectableLanguages,
@@ -15,6 +16,7 @@ import { TStory } from '@/types/story-types'
 
 function useAdaptationUtil() {
 	const [open, setOpen] = useState(false)
+	const [openExitDialog, setOpenExitDialog] = useState(false)
 	const [selectedRowData, setSelectedRowData] = useState<TEpisode[]>([])
 	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
 		useState<ELanguage>(ELanguage.GERMAN)
@@ -24,6 +26,7 @@ function useAdaptationUtil() {
 	const [isFetchingLSSheet, setFetchingLSSheet] = useState<boolean>(false)
 	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
 	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.GEMINI)
+	const [abort, setAbort] = useState(false)
 
 	const {
 		createLSMutation: { mutate, isPending, data, reset },
@@ -33,7 +36,7 @@ function useAdaptationUtil() {
 			isPending: sendLSPending,
 			reset: resetSendLS,
 		},
-	} = useAdaptationMutation(() => setOpen(true))
+	} = useAdaptationMutation()
 
 	const step = useMemo(() => {
 		// return 3
@@ -110,13 +113,16 @@ function useAdaptationUtil() {
 	}, [selectedRowData, resetMutations])
 
 	useEffect(() => {
-		if (step === 4 && !open) {
+		if ((step === 4 && !open) || abort) {
 			resetMutations()
 			setFetchingLSSheet(false)
 			setSelectedRowData([])
+			setAbort(false)
+			setLLMModel(ELLMModel.GEMINI)
+			setSelectedAdaptingLanguage(ELanguage.GERMAN)
 			return
 		}
-	}, [step, open, resetMutations])
+	}, [step, open, resetMutations, abort])
 
 	return {
 		selectedRowData,
@@ -141,6 +147,9 @@ function useAdaptationUtil() {
 		setEpisodeAdaptation,
 		llmModel,
 		setLLMModel,
+		openExitDialog,
+		setOpenExitDialog,
+		setAbort,
 	}
 }
 
@@ -159,6 +168,7 @@ export const AdaptationProvider = ({
 		<AdaptationContext.Provider value={value}>
 			{children}
 			<AdaptationDialog />
+			<ExitAdaptationDialog />
 		</AdaptationContext.Provider>
 	)
 }

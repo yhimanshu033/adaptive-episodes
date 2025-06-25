@@ -8,6 +8,7 @@ import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useComments from '@/hooks/plate/use-comments'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CopyIcon } from '@/icons/copy-icon'
 import { StopIcon } from '@/icons/stop-icon'
 import useAIStore from '@/store/ai-store'
@@ -99,7 +100,9 @@ export default function CommentItemContent() {
 		if (!data) {
 			return
 		}
-		toast.success('Comment copied successfully.')
+		toast.success('Comment copied successfully.', {
+			icon: <BubbleCheckIcon />,
+		})
 		void navigator.clipboard.writeText(data)
 	}
 	const handelStopTask = () => {
@@ -206,7 +209,7 @@ export default function CommentItemContent() {
 							<AvatarImage alt="AI avatar" src={AI_AVATAR} />
 						</Avatar>
 						<div className="bg-fm-surface-frosted/20 border-fm-divider-secondary flex h-10 w-full items-center justify-between rounded-[0.5px] border p-3 pl-4">
-							<div className="leading-fm-md [background-image:linear-gradient(270deg,var(--color-fm-placeholder)_12.22%,var(--color-fm-primary)_31.77%,var(--color-fm-primary)_67.87%,var(--color-fm-placeholder)_96.75%)] bg-clip-text [font-size:var(--text-fm-md)] font-medium text-transparent">
+							<div className="animate-gradient-slide bg-clip-text text-transparent">
 								{dict('thinking')}
 							</div>
 							<IconButton

@@ -40,7 +40,7 @@ const CreateAndImport = ({ children }: ICreateAndImportProps) => {
 			<DialogTrigger asChild>{children}</DialogTrigger>
 			<DialogContent
 				noise="none"
-				showCloseButton={!showTitle}
+				showCloseButton={false}
 				opacity="high"
 				glass="high"
 				className="max-sm:[100vw] h-[85vh] w-[90vw] gap-5 px-0"

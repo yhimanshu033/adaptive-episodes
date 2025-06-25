@@ -32,8 +32,12 @@ const ActionAlert = () => {
 				noise="none"
 			>
 				<DialogHeader>
-					<DialogTitle className="flex items-center justify-center pt-4">
+					<div className="flex items-center justify-center pt-4">
 						{alertInfo?.icon}
+					</div>
+
+					<DialogTitle className="mt-4 text-center text-xl">
+						{alertInfo?.description}
 					</DialogTitle>
 					<DialogDescription asChild className="text-fm-text py-4 text-center">
 						<div>

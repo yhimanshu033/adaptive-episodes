@@ -12,6 +12,7 @@ import {
 	DialogClose,
 	DialogContent,
 	DialogDescription,
+	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/aural-ui/dialog'
@@ -25,7 +26,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/aural-ui/form'
-import { IconButton } from '@/components/aural-ui/icon-button'
+import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 
@@ -79,34 +80,36 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 		<Dialog>
 			<DialogTrigger asChild>{children}</DialogTrigger>
 			<DialogContent
-				variant="neutral"
-				classes={{
-					content: 'w-full',
-				}}
 				noise="none"
 				showCloseButton={false}
+				opacity="high"
+				glass="high"
+				className="w-[90vw] gap-5"
 			>
-				<DialogTitle>
-					<div className="flex items-center justify-between py-3">
-						<h3 className="font-fm-text text-xl">Edit series details</h3>
-						<DialogClose asChild>
-							<IconButton
-								variant="ghost"
-								size="small"
-								shape="square"
-								icon={<CrossIcon width={20} height={20} />}
-								label="cross icon"
-							/>
+				<DialogHeader>
+					<DialogTitle className="flex items-center justify-between gap-4">
+						Edit series details
+						<DialogClose
+							className={iconButtonVariants({
+								variant: 'ghost',
+								size: 'small',
+								shape: 'square',
+							})}
+						>
+							<CrossIcon className="h-4 w-4" />
 						</DialogClose>
-					</div>
+					</DialogTitle>
+
+					<DialogDescription className="sr-only">
+						Edit Project Title
+					</DialogDescription>
+
 					<Divider variant="dashed" />
-				</DialogTitle>
-				<DialogDescription className="sr-only">
-					Edit Project Title
-				</DialogDescription>
+				</DialogHeader>
+
 				<Form {...form}>
 					<form
-						className="mt-6 space-y-8"
+						className="space-y-8"
 						onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
 					>
 						<FormField
