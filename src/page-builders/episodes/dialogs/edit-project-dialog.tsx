@@ -11,6 +11,7 @@ import {
 	Dialog,
 	DialogClose,
 	DialogContent,
+	DialogDescription,
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/aural-ui/dialog'
@@ -92,6 +93,7 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 							<IconButton
 								variant="ghost"
 								size="small"
+								shape="square"
 								icon={<CrossIcon width={20} height={20} />}
 								label="cross icon"
 							/>
@@ -99,6 +101,9 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 					</div>
 					<Divider variant="dashed" />
 				</DialogTitle>
+				<DialogDescription className="sr-only">
+					Edit Project Title
+				</DialogDescription>
 				<Form {...form}>
 					<form
 						className="mt-6 space-y-8"

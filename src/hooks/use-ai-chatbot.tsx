@@ -308,7 +308,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.CHANGES,
-					content: 'Inserting SFX to you content',
+					content: 'Inserting SFX to your content',
 				})
 			} else if (requestedAction === EChatMode.VOICE2_XML) {
 				setOriginalChildren(children)
@@ -425,21 +425,21 @@ export function ChatbotProvider({
 			return
 		}
 		if (taskEnded[blockStreaming]) {
-			const lastIndex = messages.length - 1
-			if (lastIndex >= 0) {
-				updateMessages(
-					{
-						...messages[lastIndex],
-						content:
-							responses[blockStreaming].join('') ||
-							"Sorry, I don't have an answer to that at the moment.",
-					},
-					lastIndex
-				)
-			}
 			setBlockStreaming('')
 		}
-	}, [blockStreaming, taskEnded[blockStreaming]])
+		const lastIndex = messages.length - 1
+		if (lastIndex >= 0) {
+			updateMessages(
+				{
+					...messages[lastIndex],
+					content:
+						responses[blockStreaming]?.join('') ||
+						"Sorry, I don't have an answer to that at the moment.",
+				},
+				lastIndex
+			)
+		}
+	}, [blockStreaming, taskEnded[blockStreaming], responses[blockStreaming]])
 
 	const lastMessage = useMemo(() => messages[messages.length - 1], [messages])
 	const disabled = !!(
