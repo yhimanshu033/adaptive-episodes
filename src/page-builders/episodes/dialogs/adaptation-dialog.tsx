@@ -158,7 +158,6 @@ export default function AdaptationDialog({
 			<DialogContent
 				variant="neutral"
 				glass="high"
-				classes={{ content: 'w-full' }}
 				className="h-[90vh] w-[90vw] gap-0 p-0 max-2xl:max-w-[60vw]"
 				noise="none"
 				showCloseButton={false}

@@ -25,6 +25,7 @@ import ForEach from '@/components/ui/for-each'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { downloadBlobUrl } from '@/lib/utils/client-helpers'
 import {
+	cn,
 	isInvalidLSMapping,
 	parseOutputLSMapping,
 	toSnakeCase,
@@ -150,7 +151,11 @@ const LSTableEditor = memo(
 		}
 
 		return (
-			<div className="flex h-[calc(100%-64px)] flex-col gap-4">
+			<div
+				className={cn('flex h-full flex-col gap-4', {
+					'h-[calc(100%-64px)]': viewOnly,
+				})}
+			>
 				<div className="flex h-full flex-col gap-4 overflow-x-auto">
 					<If condition={!viewOnly}>
 						<div className="flex items-center justify-end gap-2 px-6">

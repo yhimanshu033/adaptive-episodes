@@ -32,6 +32,7 @@ export default function ViewLS() {
 			</DialogTrigger>
 			<DialogContent
 				showCloseButton={false}
+				noise="none"
 				className="h-[80vh] w-[90vw] gap-0 p-6 pt-0 max-2xl:max-w-[90vw]"
 			>
 				<DialogHeader>
