@@ -5,12 +5,11 @@ import React, {
 	RefAttributes,
 	useState,
 } from 'react'
-import { EyeCloseIcon } from '@/icons/eye-close-icon'
-import { EyeOpenIcon } from '@/icons/eye-open-icon'
 import { cva } from 'class-variance-authority'
 
-import { cn } from '@/lib/aural-ui/utils'
-
+import { EyeCloseIcon } from '../../icons/eye-close-icon'
+import { EyeOpenIcon } from '../../icons/eye-open-icon'
+import { cn } from '../../lib/aural-ui/utils'
 import CharCount from './char-count'
 import HelperText from './helper-text'
 import { Else, If, IfElse } from './if-else'
@@ -83,16 +82,16 @@ type InputProps = {
 		wrapper?: string
 	}
 	decoration?: InputDecoration
-	defaultValue?: string
+	defaultValue?: string | number
 	disabled?: boolean
 	endIcon?: ReactNode
 	fullWidth?: boolean
 	helperText?: ReactNode
 	id?: string
 	label?: ReactNode
-	max?: string
+	max?: number
 	maxLength?: number
-	min?: string
+	min?: number
 	name?: string
 	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
 	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -102,7 +101,7 @@ type InputProps = {
 	startIcon?: ReactNode
 	type?: string
 	unstyled?: boolean
-	value?: string
+	value?: string | number
 	variant?: InputVariant
 }
 
@@ -143,7 +142,7 @@ const InputWrapper = forwardRef<
 	HTMLDivElement,
 	React.PropsWithChildren<{ className?: string }>
 >(({ children, className = '' }, ref) => (
-	<div ref={ref} className={cn('relative', className)}>
+	<div ref={ref} className={cn('relative mt-1', className)}>
 		{children}
 	</div>
 ))

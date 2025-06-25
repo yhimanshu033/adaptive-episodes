@@ -36,36 +36,19 @@ const overlayVariants = cva(
 
 export interface OverlayProps
 	extends React.HTMLAttributes<HTMLDivElement>,
-		VariantProps<typeof overlayVariants> {
-	classes?: {
-		content?: string
-		root?: string
-		wrapper?: string
-	}
-}
+		VariantProps<typeof overlayVariants> {}
 
 const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
-	({ opacity, glass, noise, className, children, classes, ...props }, ref) => (
+	({ opacity, glass, noise, className, children, ...props }, ref) => (
 		<>
 			<div
 				ref={ref}
-				className={cn(
-					overlayVariants({ opacity, glass, noise }),
-					className,
-					classes?.root
-				)}
+				className={cn(overlayVariants({ opacity, glass, noise }), className)}
 				{...props}
 			/>
 			{children && (
-				<div
-					className={cn(
-						'pointer-events-none fixed inset-0 z-50 flex items-center justify-center',
-						classes?.wrapper
-					)}
-				>
-					<div className={cn('pointer-events-auto', classes?.content)}>
-						{children}
-					</div>
+				<div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center">
+					<div className="pointer-events-auto">{children}</div>
 				</div>
 			)}
 		</>

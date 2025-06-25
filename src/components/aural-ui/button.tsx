@@ -4,7 +4,6 @@ import { cva } from 'class-variance-authority'
 
 import { FeatureShineIcon } from '../../icons/feature-shine-icon'
 import { cn } from '../../lib/aural-ui/utils'
-import { withTooltip } from './tooltip'
 
 export const buttonVariants = cva(
 	'group relative font-fm-brand focus-visible:ring-fm-primary focus-visible:ring-offset-fm-contrast outline-none focus-visible:ring-2 focus-visible:ring-offset-6',
@@ -74,13 +73,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	iconProps?: React.SVGProps<SVGSVGElement>
 	innerClassName?: string
 	isDisabled?: boolean
-	leftIcon?: React.ReactNode
-	rightIcon?: React.ReactNode
+	leftIcon?: React.ReactNode | boolean
+	rightIcon?: React.ReactNode | boolean
 	size?: 'sm' | 'md' | 'lg'
 	variant?: 'primary' | 'secondary' | 'outline' | 'text'
 }
 
-export const RawButton = forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 	(
 		{
 			variant = 'primary',
@@ -102,7 +101,7 @@ export const RawButton = forwardRef<HTMLButtonElement, ButtonProps>(
 				? 'var(--color-fm-secondary-800)'
 				: 'var(--color-fm-primary)'
 
-		const renderIcon = (icon: React.ReactNode) => {
+		const renderIcon = (icon: React.ReactNode | boolean) => {
 			if (!icon) {
 				return null
 			}
@@ -159,7 +158,4 @@ export const RawButton = forwardRef<HTMLButtonElement, ButtonProps>(
 		)
 	}
 )
-
-RawButton.displayName = 'RawButton'
-
-export const Button = withTooltip(RawButton)
+Button.displayName = 'Button'

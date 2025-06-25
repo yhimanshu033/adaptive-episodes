@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { usePageState } from '@/hooks/use-page-state'
-import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { useDebounceCallback } from 'usehooks-ts'
 
 import Search from '@/components/aural-ui/search'
 import { Skeleton } from '@/components/aural-ui/skelton'
 import IfElse, { Else, If } from '@/components/if-else'
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormMessage,
-} from '@/components/ui/form'
 
 import { TEpisodeSearchForm } from '@/types/episode-type'
 
@@ -53,6 +46,11 @@ const Filters = ({
 		}
 	}
 
+	// Debounced search function for typing
+	const debouncedSearch = useDebounceCallback((value: string) => {
+		handleSearch({ input: value })
+	}, 500)
+
 	useEffect(() => {
 		if (
 			fetchedSeqNumber ||
@@ -68,51 +66,19 @@ const Filters = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [seqNumber, totalEpisodes])
 
-	const form = useForm<TEpisodeSearchForm>({
-		defaultValues: {
-			input: '',
-		},
-	})
-
-	useEffect(() => {
-		if (!search || search === form.getValues('input')) {
-			return
-		}
-
-		form.setValue('input', search)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [search])
-
 	return (
 		<>
-			<IfElse condition={isLoading}>
+			<IfElse condition={isLoading && !search?.trim()}>
 				<If>
 					<Skeleton className="mb-2 flex h-12 min-w-80 flex-1 items-center gap-2" />
 				</If>
 				<Else>
-					<Form {...form}>
-						<form
-							onSubmit={(e) => void form.handleSubmit(handleSearch)(e)}
-							className="mb-2 flex flex-1 items-center gap-2"
-						>
-							<FormField
-								control={form.control}
-								name="input"
-								render={({ field }) => (
-									<FormItem className="flex-1">
-										<FormControl>
-											<Search
-												placeholder="Search Episode"
-												className="min-w-72"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-						</form>
-					</Form>
+					<Search
+						placeholder="Search Episode"
+						className="min-w-72"
+						onSearch={debouncedSearch}
+						initialValue={search}
+					/>
 				</Else>
 			</IfElse>
 		</>

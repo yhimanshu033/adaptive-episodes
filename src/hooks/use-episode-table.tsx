@@ -83,7 +83,7 @@ const useEpisodeTable = () => {
 				description: 'Status change',
 				subDescription: `Status of selected episode will switch to ${titleToStatus[status]}`,
 				action: EpisodeActions.UPDATE,
-				secondAction: 'Update',
+				secondAction: 'Cancel',
 			})
 		} else if (hasConsistentStatus(selectedRows)) {
 			setAlertInfo({
@@ -97,7 +97,7 @@ const useEpisodeTable = () => {
 				description: 'Status update',
 				subDescription: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
 				action: EpisodeActions.UPDATE,
-				secondAction: 'Got it',
+				secondAction: 'Cancel',
 			})
 		} else {
 			setAlertInfo({
@@ -178,7 +178,7 @@ const useEpisodeTable = () => {
 				description: 'Episode merged',
 				subDescription: 'Selected episodes will get merged',
 				action: EpisodeActions.MERGE,
-				secondAction: 'Got it',
+				secondAction: 'Cancel',
 			})
 		}
 		setIsDialogOpen(true)
@@ -217,7 +217,7 @@ const useEpisodeTable = () => {
 				description: 'Unmerge Success',
 				subDescription: 'Selected Episode will get unmerged',
 				action: EpisodeActions.UNMERGE,
-				secondAction: 'Got it',
+				secondAction: 'Cancel',
 			})
 		}
 		setIsDialogOpen(true)
@@ -254,8 +254,27 @@ const useEpisodeTable = () => {
 		setIsDialogOpen(true)
 	}
 
+	const handleEpisodeInfo = ({
+		icon,
+		title,
+		description,
+	}: {
+		description: string
+		icon: React.ReactNode
+		title: string
+	}) => {
+		setAlertInfo({
+			action: EpisodeActions.INFO,
+			variant: 'info',
+			icon: icon,
+			description: title,
+			subDescription: description,
+		})
+		setIsDialogOpen(true)
+	}
+
 	const handleConfirm = async () => {
-		if (!alertInfo || !isWriter) {
+		if (!alertInfo || alertInfo.action === EpisodeActions.INFO || !isWriter) {
 			return
 		}
 		if (alertInfo.action === EpisodeActions.MERGE && selectedEpisodes) {
@@ -305,6 +324,7 @@ const useEpisodeTable = () => {
 		handleDeleteEpisode,
 		handleMerge,
 		handleUnmerge,
+		handleEpisodeInfo,
 	}
 }
 

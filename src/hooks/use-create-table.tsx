@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { statuses, titleToStatusText } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import useParentLanguage from '@/hooks/use-parent-language'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
-import ChevronRightIcon from '@/icons/chevron-right-icon'
+import ChevronUpIcon from '@/icons/chevron-up-icon'
 import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
 import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
 import { HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
@@ -38,11 +38,6 @@ import {
 	SelectWrapper,
 } from '@/components/aural-ui/select'
 import { Tag } from '@/components/aural-ui/tag'
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from '@/components/aural-ui/tooltip'
 import IfElse, { Else, If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
 import { HoverCard } from '@/components/ui/hover-card'
@@ -72,12 +67,25 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		number | null
 	>(null)
 
+	const editInputRef = useRef<HTMLInputElement>(null)
+
 	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
 		useEpisodeTable()
 
 	const { isWriter } = useProjectId()
 	const { parentLanguage } = useParentLanguage()
 	const { isGerman, isOriginal } = useAccessChecks()
+
+	useEffect(() => {
+		if (editingRowId && editInputRef.current) {
+			editInputRef.current.focus()
+			editInputRef.current.select()
+		}
+	}, [editingRowId])
+
+	const handleRenameCancel = () => {
+		setEditingRowId(null)
+	}
 
 	const handleRowSelection = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -125,7 +133,10 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						/>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" className="w-34">
-						<DropdownMenuItem onClick={() => setEditingRowId(row.original.id)}>
+						<DropdownMenuItem
+							disabled={editingRowId === row.original.id}
+							onClick={() => setEditingRowId(row.original.id)}
+						>
 							Rename
 						</DropdownMenuItem>
 						<DropdownMenuItem
@@ -206,7 +217,9 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 											>
 												{titleToStatusText[status]}
 											</SelectItem>
-											<SelectSeparator />
+											<If condition={index < statuses.length - 1}>
+												<SelectSeparator />
+											</If>
 										</div>
 									))}
 								</SelectContent>
@@ -282,82 +295,87 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				</HoverCard>
 			),
 			cell: ({ row }) =>
-				!row.depth &&
-				`${row.original.seq_number}${checked && row.original.original_seq_number ? `/${row.original.original_seq_number}` : ''}`,
+				!row.depth && (
+					<div className="flex items-center justify-start">
+						<div>
+							{row.original.seq_number}
+							{checked && row.original.original_seq_number
+								? `/${row.original.original_seq_number}`
+								: ''}
+						</div>
+						<div>
+							{row.getCanExpand() && (
+								<IconButton
+									variant="ghost"
+									label="Toggle row expansion"
+									className="text-fm-icon-inactive hover:text-fm-primary"
+									onClick={(e) => {
+										e.stopPropagation()
+										row.getToggleExpandedHandler()()
+									}}
+									tooltip={row.getIsExpanded() ? 'Collapse' : 'Expand'}
+									icon={
+										row.getIsExpanded() ? (
+											<ChevronUpIcon />
+										) : (
+											<ChevronDownIcon />
+										)
+									}
+								/>
+							)}
+						</div>
+					</div>
+				),
 		},
 		{
 			accessorKey: EEpisodeHeaderKeys.CHAPTER_TITLE,
 			header: 'Title',
 			cell: ({ row }) => (
-				<IfElse condition={editingRowId === row.original.id}>
-					<If>
-						<div className="border-fm-divider-tertiary flex w-full items-center justify-between border-1 pl-2">
-							<Input
-								type="text"
-								classes={{
-									input: '!text-xs !focus:border-none !border-none',
-									root: 'w-full',
-								}}
-								defaultValue={row.getValue('chapter_title')}
-							/>
-							<Button
-								variant="link"
-								className="text-fm-brand text-fm-tertiary cursor-pointer text-xs uppercase"
-								// TODO Rename functionality
+				<div className="relative">
+					<IfElse condition={editingRowId === row.original.id}>
+						<If>
+							<div
+								className="border-fm-divider-primary flex w-full items-center justify-between border-1 pl-2"
+								style={{ pointerEvents: 'all' }}
 							>
-								Submit
-							</Button>
-						</div>
-					</If>
-					<Else>
-						<div
-							className="font-fm-text flex cursor-pointer items-center gap-2 text-sm"
-							onClick={() =>
-								handleTitleClick(row.original.parent || row.original.id)
-							}
-						>
-							{row.getCanExpand() && (
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<Button
-											variant="link"
-											className="text-fm-icon-active cursor-pointer"
-											onClick={(e) => {
-												e.stopPropagation()
-												row.getToggleExpandedHandler()()
-											}}
-										>
-											<IfElse condition={row.getIsExpanded()}>
-												<If>
-													<ChevronDownIcon />
-												</If>
-												<Else>
-													<ChevronRightIcon />
-												</Else>
-											</IfElse>
-										</Button>
-									</TooltipTrigger>
-									<TooltipContent>
-										{row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
-									</TooltipContent>
-								</Tooltip>
-							)}
-							{row.getValue('chapter_title')}
-						</div>
-					</Else>
-				</IfElse>
+								<Input
+									ref={editInputRef}
+									type="text"
+									classes={{
+										input: '!text-xs !focus:border-none !border-none',
+										root: 'w-full',
+									}}
+									defaultValue={row.getValue('chapter_title')}
+									onBlur={handleRenameCancel}
+								/>
+								<Button
+									variant="link"
+									className="text-fm-brand text-fm-tertiary cursor-pointer text-xs uppercase"
+									// TODO Rename functionality
+								>
+									Submit
+								</Button>
+							</div>
+						</If>
+						<Else>
+							<div
+								className="font-fm-text flex cursor-pointer items-center gap-2 text-sm"
+								onClick={() =>
+									handleTitleClick(row.original.parent || row.original.id)
+								}
+							>
+								{row.getValue('chapter_title')}
+							</div>
+						</Else>
+					</IfElse>
+				</div>
 			),
 		},
 		{
 			accessorKey: EEpisodeHeaderKeys.WORD_COUNT,
 			header: 'Word Count',
 			cell: ({ row }) => (
-				<div
-					className="font-fm-text flex cursor-pointer items-center gap-2 text-sm"
-					onClick={() =>
-						handleTitleClick(row.original.parent || row.original.id)
-					}
-				>
+				<div className="font-fm-text flex cursor-pointer items-center gap-2 text-sm">
 					{row.original.word_count}
 				</div>
 			),
@@ -393,5 +411,5 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			expanded,
 		},
 	})
-	return { table, columnSize: columns.length, isWriter }
+	return { table, columnSize: columns.length, isWriter, editingRowId }
 }

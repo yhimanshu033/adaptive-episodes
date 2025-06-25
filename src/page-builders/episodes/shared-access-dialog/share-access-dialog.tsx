@@ -35,6 +35,7 @@ export default function ShareAccessDialog() {
 					root: 'px-0',
 				}}
 				noise="none"
+				aria-describedby="share-access-dialog"
 				showCloseButton={false}
 			>
 				<ScrollArea className="px-4 [&>[data-radix-scroll-area-viewport]]:max-h-[90vh]">

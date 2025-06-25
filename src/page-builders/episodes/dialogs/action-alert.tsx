@@ -7,12 +7,14 @@ import { useShallow } from 'zustand/react/shallow'
 import { Button } from '@/components/aural-ui/button'
 import {
 	Dialog,
+	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 } from '@/components/aural-ui/dialog'
+import { If } from '@/components/aural-ui/if-else'
 
 const ActionAlert = () => {
 	const { useEpisodeTableStore, setIsDialogOpen } = useEpisodeStore()
@@ -23,7 +25,6 @@ const ActionAlert = () => {
 	return (
 		<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 			<DialogContent
-				// @ts-expect-error type
 				variant={alertInfo?.variant ?? 'neutral'}
 				classes={{
 					root: 'w-80',
@@ -34,11 +35,13 @@ const ActionAlert = () => {
 					<DialogTitle className="flex items-center justify-center pt-4">
 						{alertInfo?.icon}
 					</DialogTitle>
-					<DialogDescription className="text-fm-text py-4 text-center">
-						<h3 className="text-xl">{alertInfo?.description}</h3>
-						<h4 className="text-fm-tertiary mt-4">
-							{alertInfo?.subDescription}
-						</h4>
+					<DialogDescription asChild className="text-fm-text py-4 text-center">
+						<div>
+							<h3 className="text-xl">{alertInfo?.description}</h3>
+							<h4 className="text-fm-tertiary mt-4">
+								{alertInfo?.subDescription}
+							</h4>
+						</div>
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className="w-full !flex-col gap-4">
@@ -54,10 +57,13 @@ const ActionAlert = () => {
 							{alertInfo?.action}
 						</Button>
 					)}
-
-					<Button variant="outline" className="w-full capitalize">
-						{alertInfo?.secondAction}
-					</Button>
+					<If condition={!!alertInfo?.secondAction}>
+						<DialogClose asChild>
+							<Button variant="outline" className="w-full capitalize">
+								{alertInfo?.secondAction}
+							</Button>
+						</DialogClose>
+					</If>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

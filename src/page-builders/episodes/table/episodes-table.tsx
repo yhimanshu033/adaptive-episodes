@@ -8,11 +8,11 @@ import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { UploadIcon } from '@/icons/upload-icon'
-import AdaptationContainer from '@/page-builders/episodes/adaptation-container'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
 import InventForm from '@/page-builders/episodes/dialogs/invent-form'
 import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
 import ShareAccessDialog from '@/page-builders/episodes/shared-access-dialog/share-access-dialog'
+import AdaptationContainer from '@/page-builders/episodes/table/adaptation-container'
 import Filters from '@/page-builders/episodes/table/filters'
 import SelectionActions from '@/page-builders/episodes/table/selection-actions'
 import { useEpisodeStore } from '@/store/episode-store'
@@ -20,12 +20,6 @@ import { flexRender } from '@tanstack/react-table'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/aural-ui/dropdown'
 import { PaginationProvider } from '@/components/aural-ui/pagination'
 import { Skeleton } from '@/components/aural-ui/skelton'
 import {
@@ -50,6 +44,8 @@ import { cn } from '@/lib/utils/helpers'
 import { ERole } from '@/types/admin-types'
 import { EEpisodeHeaderKeys } from '@/types/episode-type'
 
+import AddEpisode from './add-episode'
+
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const { setInventIndex, setIsInventOpen, setIsShareAccessDialogOpen } =
@@ -67,7 +63,8 @@ const EpisodesTable = () => {
 		() => data?.results?.data ?? [],
 		[data?.results?.data]
 	)
-	const { table, columnSize, isWriter } = useCreateTable(tableData)
+	const { table, columnSize, isWriter, editingRowId } =
+		useCreateTable(tableData)
 
 	useEffect(() => {
 		if (searchedRow && !isEpisodesLoading) {
@@ -102,11 +99,7 @@ const EpisodesTable = () => {
 	return (
 		<>
 			<div className="mb-4 flex items-center justify-between">
-				<StoryDetails
-					isLoading={isEpisodesLoading}
-					titleClassname="text-xl"
-					imageSize={40}
-				/>
+				<StoryDetails titleClassname="text-xl" imageSize={40} />
 				<div className="flex items-center gap-2">
 					<Filters
 						totalEpisodes={data?.count}
@@ -129,42 +122,13 @@ const EpisodesTable = () => {
 						</Button>
 					</If>
 					<AuthWrapper role={ERole.WRITER}>
-						{/* @ts-expect-error data count */}
-						<If condition={data?.count > 0}>
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button
-										variant="primary"
-										className="font-fm-brand h-11 text-sm"
-									>
-										<PlusIcon width={20} height={20} />
-										<span>Add</span>
-										<ChevronDownIcon width={20} height={20} />
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent align="end" className="mr-8">
-									<DropdownMenuItem
-										onClick={() => {
-											setIsInventOpen(true)
-											setInventIndex((data?.count ?? 0) - 1)
-										}}
-									>
-										<PlusIcon />
-										<span>Add new episode</span>
-									</DropdownMenuItem>
-									<DropdownMenuItem>
-										<PlusIcon />
-										<span>Import new episode</span>
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
-						</If>
+						<AddEpisode episodeCount={data?.count || 0} />
 					</AuthWrapper>
 				</div>
 			</div>
 			<Divider className="mt-4" />
 			<SelectionActions table={table} />
-			<Table>
+			<Table className={cn({ 'pointer-events-none': editingRowId })}>
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
