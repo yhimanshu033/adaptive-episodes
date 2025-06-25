@@ -31,14 +31,15 @@ const ActionAlert = () => {
 				noise="none"
 			>
 				<DialogHeader>
-					<DialogTitle className="flex items-center justify-center pt-4">
+					<div className="flex items-center justify-center pt-4">
 						{alertInfo?.icon}
+					</div>
+
+					<DialogTitle className="mt-4 text-center text-xl">
+						{alertInfo?.description}
 					</DialogTitle>
-					<DialogDescription className="text-fm-text py-4 text-center">
-						<h3 className="text-xl">{alertInfo?.description}</h3>
-						<h4 className="text-fm-tertiary mt-4">
-							{alertInfo?.subDescription}
-						</h4>
+					<DialogDescription className="text-fm-tertiary mt-2 mb-6 text-center">
+						{alertInfo?.subDescription}
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className="w-full !flex-col gap-4">
@@ -55,7 +56,11 @@ const ActionAlert = () => {
 						</Button>
 					)}
 
-					<Button variant="outline" className="w-full capitalize">
+					<Button
+						variant="outline"
+						className="w-full capitalize"
+						onClick={() => setIsDialogOpen(false)}
+					>
 						{alertInfo?.secondAction}
 					</Button>
 				</DialogFooter>
