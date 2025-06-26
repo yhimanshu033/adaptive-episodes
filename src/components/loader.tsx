@@ -4,6 +4,8 @@ import { LoaderCircle } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
 
+import DotLoader from './aural-ui/dot-loader'
+
 export function Loader({
 	loaderClass,
 	text,
@@ -46,10 +48,8 @@ export function FullScreenLoader({
 	text,
 	loaderClass,
 	textClass,
-	size = 5,
 }: {
 	loaderClass?: string
-	size?: number
 	text?: string
 	textClass?: string
 }) {
@@ -60,11 +60,9 @@ export function FullScreenLoader({
 			)}
 		>
 			<div className="flex flex-col items-center gap-2">
-				<Loader
-					loaderClass={loaderClass}
+				<DotLoader
 					text={text}
-					textClass={textClass}
-					size={size}
+					classes={{ text: textClass, dot: loaderClass }}
 				/>
 			</div>
 		</div>
