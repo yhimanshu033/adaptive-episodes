@@ -68,7 +68,10 @@ const EditNote = () => {
 	}
 
 	useEffect(() => {
-		form.reset()
+		return () => {
+			form.reset()
+			setActiveNoteId(null)
+		}
 	}, [isFormOpen])
 
 	return (
