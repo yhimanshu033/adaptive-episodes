@@ -283,3 +283,20 @@ export const AVAILABLE_TARGET_LANGUAGES: ELanguage[] = [
 	ELanguage.MEXICAN_SPANISH,
 	ELanguage.NEUTRAL_SPANISH,
 ]
+
+export const SOURCE_TO_TARGET_LANGUAGE_MAP: Partial<
+	Record<ELanguage, ELanguage[]>
+> = {
+	[ELanguage.ENGLISH]: [
+		ELanguage.GERMAN,
+		ELanguage.FRENCH,
+		ELanguage.NEUTRAL_SPANISH,
+		ELanguage.MEXICAN_SPANISH,
+		ELanguage.ITALIAN,
+	],
+	[ELanguage.CHINESE]: [ELanguage.ENGLISH],
+	[ELanguage.TRANSLATED_ENGLISH]: [ELanguage.ENGLISH],
+	[ELanguage.KOREAN]: [ELanguage.ENGLISH],
+	[ELanguage.GERMAN]: [ELanguage.ENGLISH, ELanguage.FRENCH],
+	[ELanguage.HINDI]: [ELanguage.ENGLISH],
+}
