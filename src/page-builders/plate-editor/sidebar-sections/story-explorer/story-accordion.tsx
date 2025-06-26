@@ -244,7 +244,7 @@ export function StoryAccordion({
 				return (
 					<Collapsible key={`${title}-${index}`}>
 						<CollapsibleTrigger asChild>
-							<button className="text-fm-icon-active flex w-full flex-1 cursor-pointer items-center justify-between text-left outline-none [&>.toggle-icon]:transition-transform [&>.toggle-icon]:duration-50 data-[state=open]:[&>.toggle-icon]:-rotate-180">
+							<button className="text-fm-icon-active data-[state=open]:[&>.toggle-icon]:text-fm-icon-active hover:[&>.toggle-icon]:text-fm-icon-active flex w-full flex-1 cursor-pointer items-center justify-between text-left outline-none [&>.toggle-icon]:transition-transform [&>.toggle-icon]:duration-50 data-[state=open]:[&>.toggle-icon]:-rotate-180">
 								<CollapsibleTitle className="text-fm-md">
 									{title}
 								</CollapsibleTitle>

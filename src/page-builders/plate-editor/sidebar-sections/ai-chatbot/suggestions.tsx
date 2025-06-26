@@ -142,7 +142,7 @@ export default function Suggestions() {
 						size="sm"
 						onClick={() => handleSuggestionClick({ action, value, icon: Icon })}
 						disabled={isDisabled}
-						className="text-fm-tertiary hover:text-fm-primary py-3 hover:bg-inherit"
+						className="text-fm-tertiary hover:text-fm-primary cursor-pointer py-3 hover:bg-inherit"
 					>
 						<Icon className="text-fm-tertiary mr-2 h-4 w-4" />
 						<p>{value}</p>

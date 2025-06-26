@@ -14,7 +14,7 @@ const EpisodesPagination = () => {
 		void setCurrentPage(currentPage)
 	}, [pageSize, currentPage, setLimit, setCurrentPage])
 
-	if (totalPages <= 1) {
+	if (totalPages <= 1 && pageSize === EPISODE_LIMITS[1]) {
 		return null // No pagination needed if there's only one page
 	}
 

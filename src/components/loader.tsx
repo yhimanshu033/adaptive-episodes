@@ -1,10 +1,12 @@
 import React from 'react'
+import { Portal } from '@radix-ui/react-portal'
 import { LoaderCircle } from 'lucide-react'
 
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
 
-import DotLoader from './aural-ui/dot-loader'
+import DotLoader, { DotLoaderProps } from './aural-ui/dot-loader'
+import { Overlay, OverlayProps } from './aural-ui/overlay'
 
 export function Loader({
 	loaderClass,
@@ -45,27 +47,25 @@ export function Loader({
 }
 
 export function FullScreenLoader({
-	text,
-	loaderClass,
-	textClass,
+	overlayProps,
+	loaderProps,
 }: {
-	loaderClass?: string
-	text?: string
-	textClass?: string
+	loaderProps?: DotLoaderProps
+	overlayProps?: OverlayProps
 }) {
 	return (
-		<div
-			className={cn(
-				'fixed inset-0 z-99 flex items-center justify-center bg-black/30'
-			)}
-		>
-			<div className="flex flex-col items-center gap-2">
-				<DotLoader
-					text={text}
-					classes={{ text: textClass, dot: loaderClass }}
-				/>
-			</div>
-		</div>
+		<Portal asChild>
+			<Overlay
+				classes={{
+					root: 'z-600',
+					wrapper: 'z-700',
+				}}
+				noise="none"
+				{...overlayProps}
+			>
+				<DotLoader {...loaderProps} />
+			</Overlay>
+		</Portal>
 	)
 }
 

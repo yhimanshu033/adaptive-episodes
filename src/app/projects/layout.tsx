@@ -16,11 +16,22 @@ export default function ProjectsLayout({
 	const isFullScreenLoading = useGlobalStore(
 		useShallow((state) => state.isFullScreenLoading)
 	)
+	const fullScreenLoadingMessage = useGlobalStore(
+		useShallow((state) => state.fullScreenLoadingMessage)
+	)
+
 	return (
 		<div className="flex min-h-screen flex-col">
 			<Header />
 			<If condition={isFullScreenLoading}>
-				<FullScreenLoader />
+				<FullScreenLoader
+					loaderProps={{
+						text: fullScreenLoadingMessage,
+						classes: {
+							text: 'text-fm-primary',
+						},
+					}}
+				/>
 			</If>
 			{children}
 		</div>
