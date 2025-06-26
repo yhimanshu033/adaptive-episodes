@@ -9,6 +9,7 @@ import { SaveEpisodeParams } from '@/types/episode-type'
 const initialState: GlobalStoreState = {
 	userData: null,
 	isFullScreenLoading: false,
+	fullScreenLoadingMessage: '',
 	unsavedEpisodeParams: {},
 }
 
@@ -20,6 +21,12 @@ export const updateUserData = (userData: SessionData | null) => {
 
 export const setFullScreenLoading = (isFullScreenLoading: boolean) => {
 	useGlobalStore.setState({ isFullScreenLoading })
+}
+
+export const setFullScreenLoadingMessage = (
+	fullScreenLoadingMessage: string
+) => {
+	useGlobalStore.setState({ fullScreenLoadingMessage })
 }
 
 export const setUnsavedEpisodeParams = (

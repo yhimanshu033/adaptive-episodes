@@ -2,7 +2,7 @@ import React from 'react'
 
 import { cn } from '../../lib/aural-ui/utils'
 
-interface DotLoaderProps {
+export interface DotLoaderProps {
 	activeDotColor?: string
 	/** Whether to announce loading state to screen readers */
 	announceToScreenReader?: boolean

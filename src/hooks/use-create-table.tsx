@@ -6,7 +6,6 @@ import ChevronDownIcon from '@/icons/chevron-down-icon'
 import ChevronUpIcon from '@/icons/chevron-up-icon'
 import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
 import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
-import { HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
 import {
 	ColumnDef,
 	ExpandedState,
@@ -26,6 +25,11 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from '@/components/aural-ui/hover-card'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
 import {
@@ -37,11 +41,11 @@ import {
 	SelectTrigger,
 	SelectWrapper,
 } from '@/components/aural-ui/select'
+import { Switch } from '@/components/aural-ui/switch'
 import { Tag } from '@/components/aural-ui/tag'
+import { Typography } from '@/components/aural-ui/typography'
 import IfElse, { Else, If } from '@/components/if-else'
 import { Button } from '@/components/ui/button'
-import { HoverCard } from '@/components/ui/hover-card'
-import { Switch } from '@/components/ui/switch'
 import useProjectId from '@/providers/project-id-provider'
 import { formatDate } from '@/lib/format-date'
 
@@ -286,9 +290,16 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			header: () => (
 				<HoverCard openDelay={0}>
 					<HoverCardTrigger> {`DE${checked ? '/US' : ''}`} </HoverCardTrigger>
-					<HoverCardContent className="bg-background z-100 mt-2 w-38 rounded-md p-2">
+					<HoverCardContent className="z-100 mt-5 w-38 p-2" align="start">
 						<div className="flex items-center justify-center gap-2">
-							<p>US Index:</p>
+							<Typography
+								variant="caption-medium"
+								color="secondary"
+								transform="uppercase"
+								lineHeight="normal"
+							>
+								US Index:
+							</Typography>
 							<Switch checked={checked} onCheckedChange={setChecked} />
 						</div>
 					</HoverCardContent>

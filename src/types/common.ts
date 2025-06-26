@@ -15,6 +15,7 @@ export type IconComponent = (
 ) => React.ReactNode
 
 export interface GlobalStoreState {
+	fullScreenLoadingMessage: string
 	isFullScreenLoading: boolean
 	unsavedEpisodeParams: Record<string, SaveEpisodeParams>
 	userData: SessionData | null

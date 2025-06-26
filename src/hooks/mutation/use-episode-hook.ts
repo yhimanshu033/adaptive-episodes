@@ -13,7 +13,10 @@ import {
 	unmergeEpisodes,
 	updateStatus,
 } from '@/server-action/episode-action'
-import { setFullScreenLoading } from '@/store/global-store'
+import {
+	setFullScreenLoading,
+	setFullScreenLoadingMessage,
+} from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TComment } from '@udecode/plate-comments'
 
@@ -205,6 +208,26 @@ const useEpisodeHook = () => {
 				episodeInventMutation.isPending ||
 				episodeDeleteMutation.isPending
 		)
+
+		switch (true) {
+			case episodeDeleteMutation.isPending:
+				setFullScreenLoadingMessage('Deleting episode...')
+				break
+			case episodeInventMutation.isPending:
+				setFullScreenLoadingMessage('Inventing episode...')
+				break
+			case episodeUnmergeMutation.isPending:
+				setFullScreenLoadingMessage('Unmerging episodes...')
+				break
+			case episodesMergeMutation.isPending:
+				setFullScreenLoadingMessage('Merging episodes...')
+				break
+			case saveEpisodeMutation.isPending && !episodeId:
+				setFullScreenLoadingMessage('Saving episode...')
+				break
+			default:
+				setFullScreenLoadingMessage('')
+		}
 	}, [
 		episodeDeleteMutation.isPending,
 		episodeId,

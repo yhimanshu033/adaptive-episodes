@@ -39,15 +39,21 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 
 	return (
 		<div className="flex flex-1 flex-col px-5 pt-4">
-			<div className="flex w-full justify-between gap-3">
+			<div className="flex w-full justify-between gap-4">
 				{categories.map(({ mode, id }, idx) => (
 					<Button
-						key={idx}
-						onClick={() => setActiveTab(id)}
 						variant="outline"
-						innerClassName={cn('h-8 uppercase', {
-							'bg-fm-surface-contrast text-fm-contrast': activeTab === id,
-						})}
+						key={idx}
+						size="sm"
+						className="group flex-1"
+						innerClassName={cn(
+							'font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary uppercase tracking-widest',
+							{
+								'border-fm-divider-contrast bg-fm-surface-contrast [color:var(--color-fm-contrast)]':
+									activeTab === id,
+							}
+						)}
+						onClick={() => setActiveTab(id)}
 					>
 						{mode}
 					</Button>
@@ -79,6 +85,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 												placeholder="Focus (optional)"
 												initialValue={inputFocus ?? ''}
 												onSearch={setInputFocus}
+												className="[&_svg]:size-3.5"
 											/>
 											<ExplorerSettings />
 										</div>
@@ -92,11 +99,11 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 												})}
 											>
 												<div
-													className="flex justify-between"
+													className="group flex cursor-pointer justify-between"
 													onClick={() => void handleRequest(actionId)}
 												>
 													{categoryNames[actionId]}
-													<ChevronRightIcon className="text-fm-icon-inactive size-5" />
+													<ChevronRightIcon className="text-fm-icon-inactive group-hover:text-fm-icon-active size-5" />
 												</div>
 												<Divider variant="secondary" />
 											</div>
