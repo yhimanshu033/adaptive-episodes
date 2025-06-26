@@ -8,6 +8,7 @@ import { Copy } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
+import CircularLoader from '@/components/aural-ui/circular-loader'
 import {
 	Form,
 	FormControl,
@@ -90,11 +91,16 @@ const UpdateSlackChannel = () => {
 								'text-sm !p-0 -translate-y-0 uppercase truncate'
 							)}
 						>
-							Update
+							{updateSlackChanelMutation.isPending ? (
+								<CircularLoader />
+							) : (
+								<span>Update</span>
+							)}
 						</Button>
 					</div>
 					<IconButton
 						shape="square"
+						disabled={!slack_channel_id}
 						variant="outlined"
 						icon={<Copy />}
 						label="redirect icon"

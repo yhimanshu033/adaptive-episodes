@@ -5,6 +5,8 @@ import {
 	UPDATE_SLACK_CHANNEL_MUTATION,
 } from '@/constants/query-constants'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
@@ -49,6 +51,7 @@ export function useSlackNotificationQuery() {
 export function useSlackNotificationMutation() {
 	const params = useParams()
 	const projectId = String(params?.id)
+	const dict = useTranslations('toasts')
 
 	async function updateSlackChannel(body: TUpdateSlackChannelBody) {
 		const response = await fetchAPI<
@@ -67,9 +70,19 @@ export function useSlackNotificationMutation() {
 		return response.data
 	}
 
+	const onSuccess = () => {
+		toast.success(dict('slackSuccess'))
+	}
+
+	const onError = () => {
+		toast.error(dict('slackError'))
+	}
+
 	const mutation = useMutation({
 		mutationKey: [UPDATE_SLACK_CHANNEL_MUTATION, projectId],
 		mutationFn: updateSlackChannel,
+		onSuccess,
+		onError,
 	})
 
 	return mutation

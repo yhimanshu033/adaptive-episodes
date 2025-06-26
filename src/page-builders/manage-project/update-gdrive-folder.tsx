@@ -8,6 +8,7 @@ import { useGDriveUpdateMutation } from '@/hooks/mutation/use-gdrive-hook'
 import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 
 import { Button } from '@/components/aural-ui/button'
+import CircularLoader from '@/components/aural-ui/circular-loader'
 import {
 	Form,
 	FormControl,
@@ -95,10 +96,20 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 								'text-sm !p-0 -translate-y-0 uppercase truncate'
 							)}
 						>
-							Update
+							{updateGDriveFolderMutation.isPending ? (
+								<CircularLoader />
+							) : (
+								<span>Update</span>
+							)}
 						</Button>
 					</div>
-					<Link href={link} target="_blank">
+					<Link
+						href={link}
+						tabIndex={link ? 0 : -1}
+						aria-disabled={!link}
+						className={cn(!link && 'pointer-events-none opacity-50')}
+						target="_blank"
+					>
 						<IconButton
 							shape="square"
 							variant="outlined"

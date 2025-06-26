@@ -39,10 +39,10 @@ export const typographyVariants = cva('', {
 		},
 		color: {
 			primary: '[color:var(--color-fm-primary)]',
-			secondary: '[color:var(--color-fm-secondary)]',
-			tertiary: '[color:var(--color-fm-tertiary)]',
-			contrast: '[color:var(--color-fm-contrast)]',
-			inactive: '[color:var(--color-fm-inactive)]',
+			secondary: '![color:var(--color-fm-secondary)]',
+			tertiary: '![color:var(--color-fm-tertiary)]',
+			contrast: '![color:var(--color-fm-contrast)]',
+			inactive: '![color:var(--color-fm-inactive)]',
 		},
 		transform: {
 			uppercase: 'uppercase',

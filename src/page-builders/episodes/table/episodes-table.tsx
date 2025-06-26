@@ -138,7 +138,10 @@ const EpisodesTable = () => {
 					</div>
 					<Divider className="mt-4" />
 					<SelectionActions table={table} />
-					<Table className={cn({ 'pointer-events-none': editingRowId })}>
+					<Table
+						className={cn({ 'pointer-events-none': editingRowId })}
+						onMouseLeave={() => setHoverIndex(null)}
+					>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
 								<TableRow key={headerGroup.id}>
@@ -277,7 +280,7 @@ const EpisodesTable = () => {
 					)}
 				</Else>
 			</IfElse>
-			<ActionAlert />
+			<ActionAlert table={table} />
 			<InventForm />
 			<ShareAccessDialog />
 		</>
