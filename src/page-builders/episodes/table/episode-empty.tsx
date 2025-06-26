@@ -6,6 +6,7 @@ import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
+import useProjectId from '@/providers/project-id-provider'
 
 import { TStory } from '@/types/story-types'
 
@@ -20,6 +21,7 @@ const EpisodeEmpty = ({
 	setIsInventOpen,
 	setInventIndex,
 }: IEpisodeEmptyProps) => {
+	const { isWriter } = useProjectId()
 	return (
 		<div className="container flex h-[calc(100dvh-200px)] grow flex-col items-center justify-center gap-6">
 			<Image
@@ -45,25 +47,41 @@ const EpisodeEmpty = ({
 					</div>
 				</If>
 				<Else>
-					<Button
-						className="my-2"
-						onClick={() => {
-							setIsInventOpen(true)
-							setInventIndex(-1)
-						}}
-					>
-						Create New Episode
-					</Button>
-					<Typography
-						color="tertiary"
-						align="center"
-						variant="body-small"
-						lineHeight="normal"
-					>
-						It&apos;s a clean slate, for now! Create episode and
-						<br />
-						they will appear here.
-					</Typography>
+					<IfElse condition={isWriter}>
+						<If>
+							<Button
+								className="my-2"
+								onClick={() => {
+									setIsInventOpen(true)
+									setInventIndex(-1)
+								}}
+							>
+								Create New Episode
+							</Button>
+							<Typography
+								color="tertiary"
+								align="center"
+								variant="body-small"
+								lineHeight="normal"
+							>
+								It&apos;s a clean slate, for now! Create episode and
+								<br />
+								they will appear here.
+							</Typography>
+						</If>
+						<Else>
+							<Typography
+								color="tertiary"
+								align="center"
+								variant="body-small"
+								lineHeight="normal"
+							>
+								No episodes yet!
+								<br />
+								Ask your writer to add some episodes to get started.
+							</Typography>
+						</Else>
+					</IfElse>
 				</Else>
 			</IfElse>
 		</div>

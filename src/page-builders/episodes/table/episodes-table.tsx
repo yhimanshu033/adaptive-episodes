@@ -7,11 +7,11 @@ import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { UploadIcon } from '@/icons/upload-icon'
-import AdaptationContainer from '@/page-builders/episodes/adaptation-container'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
 import InventForm from '@/page-builders/episodes/dialogs/invent-form'
 import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
 import ShareAccessDialog from '@/page-builders/episodes/shared-access-dialog/share-access-dialog'
+import AdaptationContainer from '@/page-builders/episodes/table/adaptation-container'
 import Filters from '@/page-builders/episodes/table/filters'
 import SelectionActions from '@/page-builders/episodes/table/selection-actions'
 import { useEpisodeStore } from '@/store/episode-store'
@@ -19,14 +19,8 @@ import { flexRender } from '@tanstack/react-table'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/aural-ui/dropdown'
-import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { PaginationProvider } from '@/components/aural-ui/pagination'
+import { Skeleton } from '@/components/aural-ui/skelton'
 import {
 	Table,
 	TableBody,
@@ -41,6 +35,7 @@ import {
 	TooltipTrigger,
 } from '@/components/aural-ui/tooltip'
 import AuthWrapper from '@/components/auth-wrapper'
+import IfElse, { Else, If } from '@/components/if-else'
 import StoryDetails from '@/components/story-details'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
@@ -48,14 +43,13 @@ import { cn } from '@/lib/utils/helpers'
 import { ERole } from '@/types/admin-types'
 import { EEpisodeHeaderKeys } from '@/types/episode-type'
 
+import AddEpisode from './add-episode'
 import EpisodeEmpty from './episode-empty'
-import EpisodesTableSkeleton from './episode-loading'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const { setInventIndex, setIsInventOpen, setIsShareAccessDialogOpen } =
 		useEpisodeStore()
-
 	const isGerman = useIsGerman()
 	const { initialStoryData } = useEpisodeTableContext()
 	const { currentPage, search, limit } = usePageState()
@@ -69,7 +63,8 @@ const EpisodesTable = () => {
 		() => data?.results?.data ?? [],
 		[data?.results?.data]
 	)
-	const { table, isWriter } = useCreateTable(tableData)
+	const { table, columnSize, isWriter, editingRowId } =
+		useCreateTable(tableData)
 
 	useEffect(() => {
 		if (searchedRow && !isEpisodesLoading) {
@@ -93,21 +88,13 @@ const EpisodesTable = () => {
 		}
 	}, [searchedRow, isEpisodesLoading])
 
-	if (isEpisodesLoading) {
-		return <EpisodesTableSkeleton />
-	}
-
-	if (
-		initialStoryData?.is_original &&
-		!isEpisodesLoading &&
-		!tableData.length
-	) {
+	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
 		return <AdaptationContainer />
 	}
 
 	return (
 		<>
-			<IfElse condition={!isEpisodesLoading && !tableData.length}>
+			<IfElse condition={!initialStoryData?.episode_count}>
 				<If>
 					<StoryDetails titleClassname="text-xl" imageSize={40} />
 					<Divider className="mt-4" />
@@ -124,6 +111,7 @@ const EpisodesTable = () => {
 							<Filters
 								totalEpisodes={data?.count}
 								setSearchedRow={setSearchedRow}
+								isLoading={isEpisodesLoading}
 							/>
 							<AuthWrapper role={ERole.ADMIN}>
 								<Button
@@ -144,42 +132,13 @@ const EpisodesTable = () => {
 								</Button>
 							</If>
 							<AuthWrapper role={ERole.WRITER}>
-								{/* @ts-expect-error data count */}
-								<If condition={data?.count > 0}>
-									<DropdownMenu>
-										<DropdownMenuTrigger asChild>
-											<Button
-												variant="primary"
-												className="font-fm-brand h-11 text-sm"
-											>
-												<PlusIcon width={20} height={20} />
-												<span>Add</span>
-												<ChevronDownIcon width={20} height={20} />
-											</Button>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align="end" className="mr-8">
-											<DropdownMenuItem
-												onClick={() => {
-													setIsInventOpen(true)
-													setInventIndex((data?.count ?? 0) - 1)
-												}}
-											>
-												<PlusIcon />
-												<span>Add new episode</span>
-											</DropdownMenuItem>
-											<DropdownMenuItem>
-												<PlusIcon />
-												<span>Import new episode</span>
-											</DropdownMenuItem>
-										</DropdownMenuContent>
-									</DropdownMenu>
-								</If>
+								<AddEpisode episodeCount={data?.count || 0} />
 							</AuthWrapper>
 						</div>
 					</div>
 					<Divider className="mt-4" />
 					<SelectionActions table={table} />
-					<Table>
+					<Table className={cn({ 'pointer-events-none': editingRowId })}>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
 								<TableRow key={headerGroup.id}>
@@ -219,57 +178,93 @@ const EpisodesTable = () => {
 							))}
 						</TableHeader>
 						<TableBody>
-							{table.getRowModel().rows.map((row, rowIndex) => (
-								<React.Fragment key={row.id}>
-									<TableRow
-										id={`row-${row.id}`}
-										className={cn({
-											selected: row.getIsSelected(),
-											'bg-fm-secondary-50': row.getIsSelected(),
-										})}
-									>
-										{row.getVisibleCells().map((cell) => (
-											<TableCell
-												key={cell.id}
-												onMouseEnter={
-													cell.column.id === 'select-col' && !row.depth
-														? () => setHoverIndex(rowIndex)
-														: () => setHoverIndex(null)
-												}
-											>
-												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext()
-												)}
-											</TableCell>
-										))}
+							<IfElse condition={isEpisodesLoading}>
+								<If>
+									<TableRow>
+										<TableCell colSpan={columnSize + 1}>
+											{Array.from({ length: limit }).map((_, index) => (
+												<Skeleton
+													key={`skeleton-${index}`}
+													className="mb-3 h-12"
+												/>
+											))}
+										</TableCell>
 									</TableRow>
+								</If>
+								<Else>
+									<IfElse condition={!!table.getRowModel().rows?.length}>
+										<If>
+											{table.getRowModel().rows.map((row, rowIndex) => (
+												<React.Fragment key={row.id}>
+													<TableRow
+														id={`row-${row.id}`}
+														className={cn({
+															selected: row.getIsSelected(),
+															'bg-fm-secondary-50': row.getIsSelected(),
+														})}
+													>
+														{row.getVisibleCells().map((cell) => (
+															<TableCell
+																key={cell.id}
+																onMouseEnter={
+																	cell.column.id === 'select-col' && !row.depth
+																		? () => setHoverIndex(rowIndex)
+																		: () => setHoverIndex(null)
+																}
+															>
+																{flexRender(
+																	cell.column.columnDef.cell,
+																	cell.getContext()
+																)}
+															</TableCell>
+														))}
+													</TableRow>
 
-									{hoverIndex === rowIndex && isWriter && (
-										<TableRow className="relative border-none">
-											<TableCell className="absolute -top-8 -left-10">
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<Button
-															variant="secondary"
-															size="sm"
-															disabled={!isWriter}
-															className="rounded-full"
-															onClick={() => {
-																setIsInventOpen(true)
-																setInventIndex(rowIndex)
-															}}
-														>
-															<PlusIcon width={16} height={16} />
-														</Button>
-													</TooltipTrigger>
-													<TooltipContent>Invent Episode</TooltipContent>
-												</Tooltip>
-											</TableCell>
-										</TableRow>
-									)}
-								</React.Fragment>
-							))}
+													{hoverIndex === rowIndex && isWriter && (
+														<TableRow className="relative border-none">
+															<TableCell className="absolute -top-8 -left-10">
+																<Tooltip>
+																	<TooltipTrigger asChild>
+																		<Button
+																			variant="secondary"
+																			size="sm"
+																			disabled={!isWriter}
+																			className="rounded-full"
+																			onClick={() => {
+																				setIsInventOpen(true)
+																				setInventIndex(rowIndex)
+																			}}
+																		>
+																			<PlusIcon width={16} height={16} />
+																		</Button>
+																	</TooltipTrigger>
+																	<TooltipContent>
+																		Invent Episode
+																	</TooltipContent>
+																</Tooltip>
+															</TableCell>
+														</TableRow>
+													)}
+												</React.Fragment>
+											))}
+										</If>
+										<Else>
+											<TableRow className="p-5 text-center">
+												<TableCell colSpan={columnSize + 1}>
+													<div className="flex flex-col items-center justify-center py-8">
+														<p className="text-fm-tertiary text-sm">
+															No episodes found for the current search criteria
+														</p>
+														<p className="text-fm-muted mt-1 text-xs">
+															Try adjusting your filters or search terms
+														</p>
+													</div>
+												</TableCell>
+											</TableRow>
+										</Else>
+									</IfElse>
+								</Else>
+							</IfElse>
 						</TableBody>
 					</Table>
 					{data && data.count > 0 && (

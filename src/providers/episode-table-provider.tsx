@@ -1,8 +1,8 @@
 'use client'
 
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useRef } from 'react'
 import { useStoryIdData } from '@/hooks/query/use-story-data'
-import { create } from 'zustand'
+import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
@@ -21,13 +21,23 @@ const initialState: EpisodeStoreState = {
 	notes: [],
 }
 
+type EpisodeStore = UseBoundStore<StoreApi<EpisodeStoreState>>
+
 function useEpisodeContextUtil() {
-	const useEpisodeStoreUtil = create(devtools(immer(() => initialState)))
+	// Use useRef to ensure the store is only created once per provider instance
+	// This prevents store recreation when useQuery hooks trigger re-renders
+	const storeRef = useRef<EpisodeStore | null>(null)
+
+	if (!storeRef.current) {
+		storeRef.current = create(
+			devtools(immer(() => initialState))
+		) as EpisodeStore
+	}
 
 	const { data } = useStoryIdData()
 
 	return {
-		useEpisodeStoreUtil,
+		useEpisodeStoreUtil: storeRef.current,
 		initialStoryData: data,
 	}
 }

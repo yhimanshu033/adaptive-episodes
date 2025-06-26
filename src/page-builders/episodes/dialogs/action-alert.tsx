@@ -13,6 +13,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/aural-ui/dialog'
+import { If } from '@/components/aural-ui/if-else'
 
 const ActionAlert = () => {
 	const { useEpisodeTableStore, setIsDialogOpen } = useEpisodeStore()
@@ -23,7 +24,6 @@ const ActionAlert = () => {
 	return (
 		<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 			<DialogContent
-				// @ts-expect-error type
 				variant={alertInfo?.variant ?? 'neutral'}
 				classes={{
 					root: 'w-80',
@@ -56,13 +56,15 @@ const ActionAlert = () => {
 						</Button>
 					)}
 
-					<Button
-						variant="outline"
-						className="w-full capitalize"
-						onClick={() => setIsDialogOpen(false)}
-					>
-						{alertInfo?.secondAction}
-					</Button>
+					<If condition={!!alertInfo?.secondAction}>
+						<Button
+							variant="outline"
+							className="w-full capitalize"
+							onClick={() => setIsDialogOpen(false)}
+						>
+							{alertInfo?.secondAction}
+						</Button>
+					</If>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

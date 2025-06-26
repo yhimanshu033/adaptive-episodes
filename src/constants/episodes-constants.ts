@@ -64,6 +64,7 @@ export const languageToTitle: Record<ELanguage, string> = {
 
 export enum EpisodeActions {
 	DELETE = 'delete',
+	INFO = 'close',
 	INVENT = 'invent',
 	MERGE = 'merge',
 	METATDATA = 'metadata',

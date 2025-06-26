@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react'
-import { CrossIcon } from '@/icons/cross-icon'
-import { SearchIcon } from '@/icons/search-icon'
 
-import { cn } from '@/lib/aural-ui/utils'
-
+import { CrossIcon } from '../../icons/cross-icon'
+import { SearchIcon } from '../../icons/search-icon'
+import { cn } from '../../lib/aural-ui/utils'
 import { IconButton } from './icon-button'
 import Input from './input'
 
@@ -17,10 +16,12 @@ export interface SearchProps {
 	className?: string
 	initialValue?: string
 	onChange?: (value: string) => void
+	// Add value prop for controlled component
 	onSearch?: (query: string) => void
 	placeholder?: string
+	// Add onChange for controlled component
 	results?: SearchResult[]
-	value?: string
+	value?: string // Children can be used to render custom search results
 }
 
 export const Search = React.forwardRef<HTMLDivElement, SearchProps>(

@@ -20,13 +20,16 @@ const useProjectAccessMutation = () => {
 	const { data } = useSession()
 	const queryClient = useQueryClient()
 
-	const dict = useTranslations('placeholders')
+	const dict1 = useTranslations('placeholders')
+	const dict2 = useTranslations('toasts')
 
 	const onSuccess = async (
 		action: EProjectAccessActions,
 		user_email: string
 	) => {
-		toast.success(projectAccessMessages[action], { description: user_email })
+		toast.success(dict2(projectAccessMessages[action]), {
+			description: user_email,
+		})
 		await queryClient.invalidateQueries({
 			queryKey: [ALL_USERS_QUERY_KEY],
 		})
@@ -51,7 +54,7 @@ const useProjectAccessMutation = () => {
 		mutationFn: onProjectAccessMutation,
 		onSuccess: (_, { action, body: { user_email } }) =>
 			onSuccess(action, user_email),
-		onError: () => toast.error(dict('somethingWentWrong')),
+		onError: () => toast.error(dict1('somethingWentWrong')),
 	})
 
 	return projectAccessMutation

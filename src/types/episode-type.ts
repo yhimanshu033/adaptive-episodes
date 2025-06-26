@@ -1,6 +1,9 @@
 import { ReactNode } from 'react'
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { TComment } from '@udecode/plate-comments'
+import { VariantProps } from 'class-variance-authority'
+
+import { dialogVariants } from '@/components/aural-ui/dialog'
 
 import { BASE_STATUS, EEpisodeType, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
@@ -14,7 +17,7 @@ export type EpisodeStoreState = {
 		secondAction?: string
 		subDescription?: string
 		type?: string
-		variant?: string
+		variant?: VariantProps<typeof dialogVariants>['variant']
 	} | null
 	currentInventIndex: number | null
 	currentPage: number

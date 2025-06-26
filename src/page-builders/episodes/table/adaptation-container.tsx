@@ -3,17 +3,17 @@ import { useParams } from 'next/navigation'
 import useAdaptationQuery from '@/hooks/query/use-adaptation-query'
 import { CheckCircle } from 'lucide-react'
 
-import IfElse, { Else, If } from '@/components/if-else'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/aural-ui/button'
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from '@/components/ui/card'
+} from '@/components/aural-ui/card'
+import CircularLoader from '@/components/aural-ui/circular-loader'
+import IfElse, { Else, If } from '@/components/if-else'
 import { Separator } from '@/components/ui/separator'
-import Spinner from '@/components/ui/spinner'
 import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { parseInputLSMapping } from '@/lib/utils/helpers'
@@ -56,7 +56,7 @@ const AdaptationContainer = () => {
 		<div>
 			<Separator className="w-full" />
 			<div className="flex h-[60vh] items-center justify-center">
-				<Card className="mx-4 w-full max-w-md">
+				<Card className="mx-4 w-full max-w-md rounded-md">
 					<CardHeader className="text-center">
 						<IfElse condition={step === 1}>
 							<If>
@@ -64,7 +64,7 @@ const AdaptationContainer = () => {
 									size={48}
 									className="mx-auto mb-4 text-green-500"
 								/>
-								<CardTitle className="text-xl font-semibold">
+								<CardTitle className="pb-4 text-xl font-semibold">
 									Adaptation Completed
 								</CardTitle>
 								<CardDescription className="text-muted-foreground">
@@ -73,8 +73,8 @@ const AdaptationContainer = () => {
 								</CardDescription>
 							</If>
 							<Else>
-								<Spinner className="mx-auto mb-4" />
-								<CardTitle className="text-xl font-semibold">
+								<CircularLoader className="mx-auto mb-4" />
+								<CardTitle className="pb-4 text-xl font-semibold">
 									Adaptation in Progress
 								</CardTitle>
 								<CardDescription className="text-muted-foreground">
@@ -90,7 +90,7 @@ const AdaptationContainer = () => {
 									setOpen(true)
 									setEpisodeAdaptation(false)
 								}}
-								variant="outline"
+								variant="secondary"
 								className="w-full"
 							>
 								View Status Details
