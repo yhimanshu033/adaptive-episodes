@@ -10,10 +10,10 @@ import { buttonVariants, cn } from '@/lib/utils/helpers'
 
 const AdminManageProject = () => {
 	const { id } = useParams()
-	const { isGerman } = useAccessChecks()
+	const { isGerman, isOriginal } = useAccessChecks()
 	const { isAdmin } = useProjectId()
 
-	if (!isGerman || !isAdmin) {
+	if (!((isGerman || isOriginal) && isAdmin)) {
 		return null
 	}
 	return (

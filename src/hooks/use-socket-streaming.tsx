@@ -107,7 +107,7 @@ export const SocketStreamingProvider = ({
 				}
 
 				// Handle task completion
-				const isCompleted = status === ESocketStatus.COMPLETED || chunk === ']'
+				const isCompleted = status === ESocketStatus.COMPLETED || chunk === ';]'
 				if (isCompleted && !taskEnded[task_id]) {
 					const callback = taskCallbacksRef.current[task_id]
 					if (callback) {
@@ -121,7 +121,7 @@ export const SocketStreamingProvider = ({
 					responsesRef.current[task_id] = []
 				}
 
-				if (!payload.chunk || payload.chunk === ']') {
+				if (!payload.chunk || payload.chunk === ';]') {
 					return
 				}
 
