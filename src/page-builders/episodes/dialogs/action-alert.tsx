@@ -15,6 +15,7 @@ import {
 	DialogTitle,
 } from '@/components/aural-ui/dialog'
 import { If } from '@/components/aural-ui/if-else'
+import { Typography } from '@/components/aural-ui/typography'
 
 import { TEpisode } from '@/types/episode-type'
 
@@ -42,11 +43,20 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 						{alertInfo?.icon}
 					</div>
 
-					<DialogTitle className="mt-4 text-center text-xl">
-						{alertInfo?.description}
+					<DialogTitle asChild>
+						<Typography
+							align="center"
+							className="mt-4"
+							as="h2"
+							variant="body-large"
+						>
+							{alertInfo?.description}
+						</Typography>
 					</DialogTitle>
-					<DialogDescription className="text-fm-tertiary mt-2 mb-6 text-center">
-						{alertInfo?.subDescription}
+					<DialogDescription asChild>
+						<Typography align="center" className="text-fm-tertiary mb-6">
+							{alertInfo?.subDescription}
+						</Typography>
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className="w-full !flex-col gap-4">
