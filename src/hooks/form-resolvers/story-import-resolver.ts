@@ -2,8 +2,8 @@ import { ELLMModel } from '@/constants/episodes-constants'
 import {
 	ACCEPTED_DOCX_TYPES,
 	ACCEPTED_IMAGE_TYPES,
-	MAX_DOCX_FILE_SIZE,
-	MAX_IMAGE_FILE_SIZE,
+	MAX_DOCX_FILE_SIZE_100,
+	MAX_IMAGE_FILE_SIZE_25,
 } from '@/constants/story-constants'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -26,8 +26,8 @@ export const storyImportFormSchema = z.object({
 		.instanceof(File)
 		.optional()
 		.refine(
-			(file) => !file || file.size <= MAX_IMAGE_FILE_SIZE,
-			`Max image size is 5MB.`
+			(file) => !file || file.size <= MAX_IMAGE_FILE_SIZE_25,
+			`File size exceeds the 25MB. Please upload a smaller file.`
 		)
 		.refine(
 			(file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type),
@@ -37,8 +37,8 @@ export const storyImportFormSchema = z.object({
 		.instanceof(File)
 		.optional()
 		.refine(
-			(file) => !file || (file && file.size <= MAX_DOCX_FILE_SIZE),
-			`Max document size is 10MB.`
+			(file) => !file || (file && file.size <= MAX_DOCX_FILE_SIZE_100),
+			`File size exceeds the 100MB. Please upload a smaller file.`
 		)
 		.refine(
 			(file) => !file || (file && ACCEPTED_DOCX_TYPES.includes(file.type)),

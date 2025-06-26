@@ -56,7 +56,7 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 					</AuthWrapper>
 				</div>
 				{!hideAuthor && (
-					<h4 className="font-fm-brand text-fm-tertiary ml-1 text-xs uppercase">
+					<h4 className="font-fm-brand text-fm-tertiary text-xs uppercase">
 						{storyData?.author ?? ''}
 					</h4>
 				)}
