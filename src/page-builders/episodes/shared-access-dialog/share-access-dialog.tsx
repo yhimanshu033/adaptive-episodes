@@ -32,7 +32,6 @@ export default function ShareAccessDialog() {
 		>
 			<DialogContent
 				noise="none"
-				aria-describedby="share-access-dialog"
 				showCloseButton={false}
 				opacity="high"
 				glass="high"

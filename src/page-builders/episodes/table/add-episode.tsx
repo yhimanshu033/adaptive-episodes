@@ -22,10 +22,13 @@ const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
 	return (
 		<DropdownMenu onOpenChange={handleDialogClose}>
 			<DropdownMenuTrigger asChild>
-				<Button variant="primary" className="font-fm-brand h-11 text-sm">
-					<PlusIcon width={20} height={20} />
-					<span>Add</span>
-					<ChevronDownIcon width={20} height={20} />
+				<Button
+					variant="primary"
+					className="font-fm-brand h-11 text-sm"
+					leftIcon={<PlusIcon width={20} height={20} />}
+					rightIcon={<ChevronDownIcon width={20} height={20} />}
+				>
+					Add
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="mr-8">
