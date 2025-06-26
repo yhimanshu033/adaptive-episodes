@@ -7,7 +7,6 @@ import { useShallow } from 'zustand/react/shallow'
 import { Button } from '@/components/aural-ui/button'
 import {
 	Dialog,
-	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
@@ -39,13 +38,8 @@ const ActionAlert = () => {
 					<DialogTitle className="mt-4 text-center text-xl">
 						{alertInfo?.description}
 					</DialogTitle>
-					<DialogDescription asChild className="text-fm-text py-4 text-center">
-						<div>
-							<h3 className="text-xl">{alertInfo?.description}</h3>
-							<h4 className="text-fm-tertiary mt-4">
-								{alertInfo?.subDescription}
-							</h4>
-						</div>
+					<DialogDescription className="text-fm-tertiary mt-2 mb-6 text-center">
+						{alertInfo?.subDescription}
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className="w-full !flex-col gap-4">
@@ -61,12 +55,15 @@ const ActionAlert = () => {
 							{alertInfo?.action}
 						</Button>
 					)}
+
 					<If condition={!!alertInfo?.secondAction}>
-						<DialogClose asChild>
-							<Button variant="outline" className="w-full capitalize">
-								{alertInfo?.secondAction}
-							</Button>
-						</DialogClose>
+						<Button
+							variant="outline"
+							className="w-full capitalize"
+							onClick={() => setIsDialogOpen(false)}
+						>
+							{alertInfo?.secondAction}
+						</Button>
 					</If>
 				</DialogFooter>
 			</DialogContent>
