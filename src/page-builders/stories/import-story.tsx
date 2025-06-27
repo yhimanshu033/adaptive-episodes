@@ -22,7 +22,7 @@ import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
 import useIsInternal from '@/hooks/use-is-internal'
 import useSocket from '@/hooks/use-socket'
 import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
-import { BubbleCrossIcon } from '@/icons/bubble-cross-icon'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { FeatureShineIcon } from '@/icons/feature-shine-icon'
 import { FileChartIcon } from '@/icons/file-chart-icon'
 import { LightBulbSimpleIcon } from '@/icons/light-bulb-simple-icon'
@@ -165,7 +165,7 @@ export function ImportStory() {
 
 		if (!isValid) {
 			toast.error(error || 'Invalid document file.', {
-				icon: <BubbleCrossIcon />,
+				icon: <BubbleCrossedIcon />,
 			})
 			form.setValue('story_file', undefined)
 			return false
@@ -192,7 +192,7 @@ export function ImportStory() {
 		if (!isValid) {
 			const message = form.formState.errors.image_file?.message
 			toast.error(message, {
-				icon: <BubbleCrossIcon />,
+				icon: <BubbleCrossedIcon />,
 			})
 			form.setValue('image_file', undefined)
 			setImageSrc('')

@@ -1,6 +1,6 @@
 import React from 'react'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
-import { BubbleCrossIcon } from '@/icons/bubble-cross-icon'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { uploadFile } from '@/server-action/file-upload'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -11,7 +11,7 @@ export default function useUploadFile() {
 		mutationFn: uploadFile,
 		onError: () => {
 			toast.error('Error in file upload!', {
-				icon: <BubbleCrossIcon />,
+				icon: <BubbleCrossedIcon />,
 			})
 		},
 		onSuccess: () => {
