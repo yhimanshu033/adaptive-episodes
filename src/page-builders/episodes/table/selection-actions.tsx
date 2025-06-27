@@ -95,8 +95,8 @@ export default function SelectionActions({
 				</If>
 				<MultiEpLocalizeDialog
 					url={url}
-					disabled={Object.keys(selectedRowData).length <= 1}
-					tooltip="Localize episodes"
+					isDisabled={selectedRowData.length <= 1}
+					tooltip="Multi Episode Localize"
 					innerClassName="h-9"
 				>
 					<Replace size={16} />

@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { statuses, titleToStatusText } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import useParentLanguage from '@/hooks/use-parent-language'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import ChevronUpIcon from '@/icons/chevron-up-icon'
 import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
+import { TitleCell } from '@/page-builders/episodes/table/title-cell'
 import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
 import {
 	ColumnDef,
@@ -31,7 +32,7 @@ import {
 	HoverCardTrigger,
 } from '@/components/aural-ui/hover-card'
 import { IconButton } from '@/components/aural-ui/icon-button'
-import Input from '@/components/aural-ui/input'
+import { If } from '@/components/aural-ui/if-else'
 import {
 	Select,
 	SelectContent,
@@ -44,14 +45,13 @@ import {
 import { Switch } from '@/components/aural-ui/switch'
 import { Tag } from '@/components/aural-ui/tag'
 import { Typography } from '@/components/aural-ui/typography'
-import IfElse, { Else, If } from '@/components/if-else'
-import { Button } from '@/components/ui/button'
 import useProjectId from '@/providers/project-id-provider'
 import { formatDate } from '@/lib/format-date'
 
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
+import useRenameTitleMutation from './mutation/use-rename-title'
 import useAccessChecks from './use-access-checks'
 
 const statusTagProps = {
@@ -71,25 +71,15 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		number | null
 	>(null)
 
-	const editInputRef = useRef<HTMLInputElement>(null)
+	const inputValueMapRef = React.useRef<Record<number, string>>({})
 
-	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
-		useEpisodeTable()
+	const { handleStatusChange, handleDeleteEpisode } = useEpisodeTable()
+
+	const { mutate: renameTitle, isPending } = useRenameTitleMutation()
 
 	const { isWriter } = useProjectId()
 	const { parentLanguage } = useParentLanguage()
 	const { isGerman, isOriginal } = useAccessChecks()
-
-	useEffect(() => {
-		if (editingRowId && editInputRef.current) {
-			editInputRef.current.focus()
-			editInputRef.current.select()
-		}
-	}, [editingRowId])
-
-	const handleRenameCancel = () => {
-		setEditingRowId(null)
-	}
 
 	const handleRowSelection = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -127,33 +117,34 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		{
 			accessorKey: EEpisodeHeaderKeys.ACTIONS,
 			header: 'Actions',
-			cell: ({ row }) => (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<IconButton
-							variant="ghost"
-							icon={<VerticalMenuIcon />}
-							label="episode menu icon"
-						/>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end" className="w-34">
-						<DropdownMenuItem
-							disabled={editingRowId === row.original.id}
-							onClick={() => setEditingRowId(row.original.id)}
-						>
-							Rename
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							disabled={!isWriter || !row.original.props?.creation_timestamp}
-							onClick={() =>
-								handleDeleteEpisode(row.original.id, row.original?.seq_number)
-							}
-						>
-							Delete
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			),
+			cell: ({ row }) =>
+				!row.depth && (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<IconButton
+								variant="ghost"
+								icon={<VerticalMenuIcon />}
+								label="episode menu icon"
+							/>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-34">
+							<DropdownMenuItem
+								disabled={editingRowId === row.original.id}
+								onClick={() => setEditingRowId(row.original.id)}
+							>
+								Rename
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								disabled={!isWriter || !row.original.props?.creation_timestamp}
+								onClick={() =>
+									handleDeleteEpisode(row.original.id, row.original?.seq_number)
+								}
+							>
+								Delete
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				),
 		},
 	]
 
@@ -238,13 +229,11 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			header: 'Writer',
 			cell: ({ row }) =>
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-				!row.depth ? (
+				!row.depth && (
 					<WriterCombobox
 						chapterId={String(row.original.id)}
 						selectedMemberId={String(row.original.writer || '')}
 					/>
-				) : (
-					row.getValue('writer') || 'Anonymous'
 				),
 		},
 	]
@@ -342,44 +331,14 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			accessorKey: EEpisodeHeaderKeys.CHAPTER_TITLE,
 			header: 'Title',
 			cell: ({ row }) => (
-				<div className="relative">
-					<IfElse condition={editingRowId === row.original.id}>
-						<If>
-							<div
-								className="border-fm-divider-primary flex w-full items-center justify-between border-1 pl-2"
-								style={{ pointerEvents: 'all' }}
-							>
-								<Input
-									ref={editInputRef}
-									type="text"
-									classes={{
-										input: '!text-xs !focus:border-none !border-none',
-										root: 'w-full',
-									}}
-									defaultValue={row.getValue('chapter_title')}
-									onBlur={handleRenameCancel}
-								/>
-								<Button
-									variant="link"
-									className="text-fm-brand text-fm-tertiary cursor-pointer text-xs uppercase"
-									// TODO Rename functionality
-								>
-									Submit
-								</Button>
-							</div>
-						</If>
-						<Else>
-							<div
-								className="font-fm-text flex cursor-pointer items-center gap-2 text-sm"
-								onClick={() =>
-									handleTitleClick(row.original.parent || row.original.id)
-								}
-							>
-								{row.getValue('chapter_title')}
-							</div>
-						</Else>
-					</IfElse>
-				</div>
+				<TitleCell
+					row={row}
+					editingRowId={editingRowId}
+					setEditingRowId={setEditingRowId}
+					inputValueMapRef={inputValueMapRef}
+					isPending={isPending}
+					renameTitle={renameTitle}
+				/>
 			),
 		},
 		{
@@ -422,5 +381,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			expanded,
 		},
 	})
+
 	return { table, columnSize: columns.length, isWriter, editingRowId }
 }

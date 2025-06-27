@@ -66,7 +66,6 @@ const DeleteStoryModal = ({
 						<Button
 							variant="secondary"
 							onClick={() => {
-								console.log('Delete')
 								onDialogChange(false)
 							}}
 						>

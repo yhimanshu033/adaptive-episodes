@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
+import useEpisodeTable from '@/hooks/use-episode-table'
 import useIsGerman from '@/hooks/use-is-german'
 import { usePageState } from '@/hooks/use-page-state'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
+import { MaintenanceIcon } from '@/icons/maintenance-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { UploadIcon } from '@/icons/upload-icon'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
@@ -41,7 +43,10 @@ import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
 
 import { ERole } from '@/types/admin-types'
-import { EEpisodeHeaderKeys } from '@/types/episode-type'
+import {
+	EEpisodeHeaderKeys,
+	episodeTableColumnWidths,
+} from '@/types/episode-type'
 
 import AddEpisode from './add-episode'
 import EpisodeEmpty from './episode-empty'
@@ -65,6 +70,8 @@ const EpisodesTable = () => {
 	)
 	const { table, columnSize, isWriter, editingRowId } =
 		useCreateTable(tableData)
+
+	const { handleEpisodeInfo } = useEpisodeTable()
 
 	useEffect(() => {
 		if (searchedRow && !isEpisodesLoading) {
@@ -126,6 +133,13 @@ const EpisodesTable = () => {
 								<Button
 									variant="secondary"
 									className="font-fm-brand h-11 text-sm"
+									onClick={() =>
+										handleEpisodeInfo({
+											icon: <MaintenanceIcon width={20} height={20} />,
+											description: 'Global adaptation feature coming soon!',
+											title: 'Coming Soon',
+										})
+									}
 								>
 									<MagicBookIcon width={20} height={20} />
 									<span>Adapt</span>
@@ -138,13 +152,25 @@ const EpisodesTable = () => {
 					</div>
 					<Divider className="mt-4" />
 					<SelectionActions table={table} />
-					<Table className={cn({ 'pointer-events-none': editingRowId })}>
+					<Table
+						className={cn('table-fixed', {
+							'pointer-events-none': editingRowId,
+						})}
+					>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
 								<TableRow key={headerGroup.id}>
 									{headerGroup.headers.map((header) => {
 										return (
-											<TableHead key={header.id}>
+											<TableHead
+												key={header.id}
+												style={{
+													width:
+														episodeTableColumnWidths[
+															header.id as EEpisodeHeaderKeys
+														] || 'auto',
+												}}
+											>
 												<If condition={!header.isPlaceholder}>
 													<div
 														className={cn(

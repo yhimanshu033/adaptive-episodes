@@ -1,8 +1,11 @@
 'use client'
 
 import { BubbleSparkleIcon } from '@/icons/bubble-sparkle-icon'
+import { EditBigIcon } from '@/icons/edit-big-icon'
+import { EyeOpenIcon } from '@/icons/eye-open-icon'
 import { HeadIcon } from '@/icons/head-icon'
 import { MusicalNoteIcon } from '@/icons/musical-note-icon'
+import { SuggestionIcon } from '@/icons/suggestion-icon'
 import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
 import { LucideIcon } from 'lucide-react'
 
@@ -66,6 +69,27 @@ export enum EditorModes {
 	suggesting = 'suggesting',
 	viewing = 'viewing',
 }
+
+export const editorModesList = [
+	{
+		mode: EditorModes.editing,
+		label: 'Edit doc',
+		description: 'Make changes directly',
+		icon: EditBigIcon,
+	},
+	{
+		mode: EditorModes.suggesting,
+		label: 'Suggest edits',
+		description: 'Without making direct changes',
+		icon: SuggestionIcon,
+	},
+	{
+		mode: EditorModes.viewing,
+		label: 'Viewing',
+		description: 'Read the episodes',
+		icon: EyeOpenIcon,
+	},
+]
 
 export const MAIN_EDITOR_ID = 'main-editor'
 export const TRANSLATION_EDITOR_ID = 'translation-editor'
