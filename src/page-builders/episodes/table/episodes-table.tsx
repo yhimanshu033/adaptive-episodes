@@ -103,15 +103,16 @@ const EpisodesTable = () => {
 		<>
 			<IfElse condition={!initialStoryData?.episode_count}>
 				<If>
-					<StoryDetails titleClassname="text-xl" imageSize={40} />
-					<Divider className="mt-4" />
 					<If condition={!isEpisodesLoading}>
-						<EpisodeEmpty
-							initialStoryData={initialStoryData}
-							setInventIndex={setInventIndex}
-							setIsInventOpen={setIsInventOpen}
-						/>
+						<StoryDetails titleClassname="text-xl" imageSize={40} />
+						<Divider className="mt-4" />
 					</If>
+					<EpisodeEmpty
+						initialStoryData={initialStoryData}
+						setInventIndex={setInventIndex}
+						setIsInventOpen={setIsInventOpen}
+						isLoading={isEpisodesLoading}
+					/>
 				</If>
 				<Else>
 					<div className="mb-4 flex items-center justify-between">

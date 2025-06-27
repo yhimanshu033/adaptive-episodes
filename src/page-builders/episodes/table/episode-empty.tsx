@@ -10,8 +10,11 @@ import useProjectId from '@/providers/project-id-provider'
 
 import { TStory } from '@/types/story-types'
 
+import EpisodesTableSkeleton from './episode-loading'
+
 interface IEpisodeEmptyProps {
 	initialStoryData?: TStory
+	isLoading?: boolean
 	setInventIndex: (index: number) => void
 	setIsInventOpen: (isOpen: boolean) => void
 }
@@ -20,8 +23,14 @@ const EpisodeEmpty = ({
 	initialStoryData,
 	setIsInventOpen,
 	setInventIndex,
+	isLoading = false,
 }: IEpisodeEmptyProps) => {
 	const { isWriter } = useProjectId()
+
+	if (isLoading) {
+		return <EpisodesTableSkeleton />
+	}
+
 	return (
 		<div className="container flex h-[calc(100dvh-200px)] grow flex-col items-center justify-center gap-6">
 			<Image
