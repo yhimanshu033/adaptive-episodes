@@ -12,6 +12,9 @@ import { cn } from '@/lib/utils/helpers'
 
 import { ERole } from '@/types/admin-types'
 
+import CircularLoader from './aural-ui/circular-loader'
+import { Else, If, IfElse } from './aural-ui/if-else'
+
 interface StoryDetailsProps {
 	handleClick?: () => void
 	hideAuthor?: boolean
@@ -27,8 +30,8 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 	hideAuthor,
 	handleClick = () => {},
 }) => {
-	const { initialStoryData: storyData } = useEpisodeTableContext()
-
+	const { initialStoryData: storyData, storyDataFetching: isFetching } =
+		useEpisodeTableContext()
 	return (
 		<div onClick={handleClick} className="flex items-start gap-4">
 			<div style={{ width: imageSize, height: imageSize }}>
@@ -46,13 +49,20 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 						{storyData?.project_title}
 					</h2>
 					<AuthWrapper role={ERole.ADMIN}>
-						<EditProjectDialog>
-							<EditBigIcon
-								width={20}
-								height={20}
-								className="text-fm-icon-brand-secondary cursor-pointer"
-							/>
-						</EditProjectDialog>
+						<IfElse condition={isFetching}>
+							<If>
+								<CircularLoader />
+							</If>
+							<Else>
+								<EditProjectDialog>
+									<EditBigIcon
+										width={20}
+										height={20}
+										className="text-fm-icon-brand-secondary cursor-pointer"
+									/>
+								</EditProjectDialog>
+							</Else>
+						</IfElse>
 					</AuthWrapper>
 				</div>
 				{!hideAuthor && (

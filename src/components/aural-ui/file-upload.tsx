@@ -1,14 +1,18 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import Image from 'next/image'
+import { useImageFileSize } from '@/hooks/use-image-size'
+import { BubbleCrossIcon } from '@/icons/bubble-cross-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { TrashIcon } from '@/icons/trash-icon'
+import { toast } from 'sonner'
 
+import { Button } from '@/components/aural-ui/button'
 import { FormDescription } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
+import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
-import IfElse, { Else, If } from '@/components/if-else'
-import { Button } from '@/components/ui/button'
-import Image from '@/components/ui/image'
-import { cn, trim } from '@/lib/utils/helpers'
+import DeleteModal from '@/components/delete-modal'
+import { cn, formatFileSize } from '@/lib/utils/helpers'
 
 type ImageUploadProps = {
 	classes?: {
@@ -17,8 +21,11 @@ type ImageUploadProps = {
 	}
 	defaultFile?: File | null
 	defaultUrl?: string
+	maxSize?: number
 	onFileSelect: ({ file, url }: { file: File; url: string }) => void
+	supportedFormat?: string
 } & React.ComponentProps<'input'>
+
 export default function FileUpload({
 	onFileSelect,
 	defaultFile = null,
@@ -27,11 +34,24 @@ export default function FileUpload({
 		root: '',
 		isDragging: '',
 	},
+	maxSize = 25,
+	supportedFormat = 'JPG, PNG',
 	...props
 }: ImageUploadProps) {
 	const [isDragging, setIsDragging] = useState(false)
 	const [file, setFile] = useState<File | null>(defaultFile)
 	const fileInputRef = useRef<HTMLInputElement>(null)
+
+	const validateFileSize = (file: File): boolean => {
+		const maxBytes = maxSize * 1024 * 1024
+		if (file.size > maxBytes) {
+			toast.error(`File exceeds ${maxSize}MB. Please upload a smaller file.`, {
+				icon: <BubbleCrossIcon />,
+			})
+			return false
+		}
+		return true
+	}
 
 	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault()
@@ -49,14 +69,18 @@ export default function FileUpload({
 
 		if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
 			const droppedFile = e.dataTransfer.files[0]
-			setFile(droppedFile)
+			if (validateFileSize(droppedFile)) {
+				setFile(droppedFile)
+			}
 		}
 	}
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files.length > 0) {
 			const selectedFile = e.target.files[0]
-			setFile(selectedFile)
+			if (validateFileSize(selectedFile)) {
+				setFile(selectedFile)
+			}
 		}
 	}
 
@@ -69,20 +93,14 @@ export default function FileUpload({
 
 	const resetState = () => {
 		handleRemoveFile()
-		if (defaultUrl) {
-			fileInputRef.current?.click()
-		}
 	}
-
-	const fileSize = useMemo(
-		() => ((file?.size || 0) / (1024 * 1024)).toFixed(2) + 'MB',
-		[file]
-	)
 
 	const url = useMemo(
 		() => (!file ? defaultUrl : URL.createObjectURL(file)),
 		[file, defaultUrl]
 	)
+
+	const fileSize = useImageFileSize(url)
 
 	useEffect(() => {
 		if (!file || !url) {
@@ -95,18 +113,18 @@ export default function FileUpload({
 		<>
 			<div
 				className={cn(
-					'mb-0.5 rounded-sm border-1 transition-colors',
+					'mb-0.5 flex cursor-pointer flex-col items-center justify-center gap-1 rounded-sm border-1 p-4 transition-colors',
 					classes.root,
 					isDragging
 						? `border-fm-divider-contrast`
 						: 'border-fm-divider-primary hover:border-fm-divider-contrast',
 					isDragging && classes.isDragging,
-					!url && 'border-dashed'
+					!url && 'border-dashed p-8'
 				)}
 				onDragOver={handleDragOver}
 				onDragLeave={handleDragLeave}
 				onDrop={handleDrop}
-				onClick={() => fileInputRef.current?.click()}
+				onClick={!url ? () => fileInputRef.current?.click() : () => {}}
 			>
 				<input
 					{...props}
@@ -115,72 +133,85 @@ export default function FileUpload({
 					onChange={handleFileChange}
 					className="hidden"
 				/>
-				<div className="flex flex-col items-center justify-center gap-2 text-center">
-					<IfElse condition={!url}>
-						<If>
-							<div className="px-4 py-8">
-								<IconButton
-									label="Upload file button"
-									size="small"
-									icon={<PlusIcon />}
-								/>
-								<Typography
-									color="tertiary"
-									variant="caption-large"
-									className="text-fm-primary pt-3"
-									weight="regular"
+				<IfElse condition={!url}>
+					<If>
+						<IconButton
+							label="Upload file button"
+							size="small"
+							icon={<PlusIcon />}
+						/>
+						<Typography
+							color="tertiary"
+							variant="caption-large"
+							className="text-fm-primary pt-3"
+							weight="regular"
+						>
+							Drag and drop or{' '}
+							<Typography as="span" className="text-fm-secondary-800">
+								upload story
+							</Typography>
+						</Typography>
+					</If>
+					<Else>
+						<div className="flex w-full items-center justify-between rounded-md">
+							<div className="flex max-w-3/5 gap-4">
+								<div
+									className="relative aspect-square h-9 shrink-0 overflow-hidden"
+									onClick={() => fileInputRef.current?.click()}
 								>
-									Drag and drop or{' '}
-									<Typography as="span" className="text-fm-secondary-800">
-										upload story
-									</Typography>
-								</Typography>
-							</div>
-						</If>
-						<Else>
-							<div className="w-full">
-								<div className="flex items-center justify-between rounded-md py-2 pl-4">
-									<div className="flex">
-										<Image
-											src={url}
-											alt={file?.name || 'Preview'}
-											className="size-9"
-										/>
-										<div className="ml-3">
-											<h3 className="truncate text-sm font-medium">
-												{trim(file?.name || 'Current File', 15)}
-											</h3>
-											<h3 className="font-fm-brand text-fm-tertiary -ml-9 text-xs">
-												20 M.B.
-											</h3>
-											<If condition={!!file?.size}>
-												<span className="font-fm-brand text-fm-tertiary text-xs">
-													{fileSize}
-												</span>
-											</If>
-										</div>
-									</div>
-									<Button
-										type="button"
-										variant="link"
-										className="text-fm-negative gap-2 text-xs"
-										onClick={(e) => {
-											e.stopPropagation()
-											resetState()
-										}}
+									<Image
+										src={url}
+										alt={file?.name || 'Preview'}
+										className="size-9 rounded-md"
+										layout="fill"
+										objectFit="cover"
+									/>
+								</div>
+								<div className="flex w-full flex-col">
+									<Typography
+										as="div"
+										variant="caption-large"
+										className="truncate overflow-hidden whitespace-nowrap"
 									>
-										<TrashIcon
-											height={16}
-											width={16}
-											className="text-fm-negative uppercase"
-										/>
-										Delete
-									</Button>
+										{file?.name || 'Current File'}
+									</Typography>
+									<Typography
+										as="div"
+										color="tertiary"
+										variant="caption-medium"
+										transform="uppercase"
+										className="font-fm-brand"
+									>
+										{formatFileSize(fileSize.size || 0)}
+									</Typography>
 								</div>
 							</div>
-						</Else>
-					</IfElse>
-				</div>
+							<DeleteModal
+								onPrimaryClick={resetState}
+								title="Delete uploaded image"
+								subTitle="Once deleted, this can't be undone. Don't worry! You can always upload a new image."
+							>
+								<Button
+									variant="text"
+									className={cn('text-fm-negative gap-2', {
+										'text-fm-tertiary/30': defaultUrl === url,
+									})}
+									innerClassName="!p-0"
+									disabled={defaultUrl === url}
+								>
+									<TrashIcon
+										height={16}
+										width={16}
+										className={cn('text-fm-negative uppercase', {
+											'text-fm-tertiary/30': defaultUrl === url,
+										})}
+									/>{' '}
+									DELETE
+								</Button>
+							</DeleteModal>
+						</div>
+					</Else>
+				</IfElse>
 			</div>
 			<FormDescription className="flex flex-col text-xs">
 				<div className="mb-4 flex w-full justify-between">
@@ -191,7 +222,7 @@ export default function FileUpload({
 						transform="uppercase"
 						className="font-fm-brand"
 					>
-						FORMATS: JPG, PNG
+						FORMATS: {supportedFormat}
 					</Typography>
 					<Typography
 						as="h4"
@@ -200,7 +231,7 @@ export default function FileUpload({
 						transform="uppercase"
 						className="font-fm-brand"
 					>
-						MAX SIZE: 25 MB
+						MAX SIZE: {maxSize} MB
 					</Typography>
 				</div>
 			</FormDescription>

@@ -1,4 +1,8 @@
 import React, { PropsWithChildren, useCallback, useEffect } from 'react'
+import {
+	ACCEPTED_IMAGE_TYPES,
+	MAX_IMAGE_FILE_SIZE_25,
+} from '@/constants/story-constants'
 import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
 import useUploadFile from '@/hooks/mutation/use-upload-file'
 import { CrossIcon } from '@/icons/cross-icon'
@@ -37,8 +41,17 @@ const editProjectSchema = z.object({
 		.string()
 		.min(2, 'Series title should have at least 2 characters'),
 	author: z.string().min(2, 'Author name should have at least 2 characters!'),
-	image: z.string().optional().nullable(),
+	image: z
+		.union([
+			z.string().url().optional().nullable(),
+			z.instanceof(File).refine((file) => file.size <= MAX_IMAGE_FILE_SIZE_25, {
+				message: 'File size exceeds the 25MB. Please upload a smaller file.',
+			}),
+		])
+		.optional()
+		.nullable(),
 })
+
 export default function EditProjectDialog({ children }: PropsWithChildren) {
 	const { initialStoryData: storyData } = useEpisodeTableContext()
 	const form = useForm<Partial<TStory> & { newImage: File | null }>({
@@ -52,7 +65,6 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 
 	const onSubmit = useCallback(async () => {
 		const values = form.getValues()
-
 		if (values.newImage) {
 			const newImageFile = await sendFile(values.newImage)
 			if (newImageFile?.url) {
@@ -158,11 +170,16 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 								<FormItem>
 									<FormLabel className="mb-2 text-xs">Thumbnail</FormLabel>
 									<FileUpload
-										accept="image/*"
 										defaultUrl={field.value}
 										onFileSelect={({ file }) => {
 											form.setValue('newImage', file)
 										}}
+										classes={{
+											isDragging:
+												'border-fm-divider-primary bg-fm-divider-primary/30',
+										}}
+										accept={ACCEPTED_IMAGE_TYPES.join(',')}
+										supportedFormat="JPEG, JPG, PNG & WEBP"
 									/>
 									<FormMessage />
 								</FormItem>
@@ -171,6 +188,7 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 						<DialogClose asChild>
 							<Button
 								disabled={isFileUploading || storyUpdateMutation.isPending}
+								isDisabled={isFileUploading || storyUpdateMutation.isPending}
 								className="mt-8 w-full"
 								type="submit"
 							>
