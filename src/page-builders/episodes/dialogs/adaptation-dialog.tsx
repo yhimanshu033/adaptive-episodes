@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { useParams } from 'next/navigation'
+import { SOURCE_TO_TARGET_LANGUAGE_MAP } from '@/constants/ai-constants'
 import { languageToTitle } from '@/constants/episodes-constants'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { TickCircleIcon } from '@/icons/tick-circle-icon'
@@ -43,7 +44,6 @@ export default function AdaptationDialog({
 	const {
 		currentLanguage,
 		mutate,
-		selectableLanguages,
 		open,
 		selectedAdaptingLanguage,
 		selectedRowData,
@@ -215,7 +215,9 @@ export default function AdaptationDialog({
 											placeholder="Select adaptation language "
 											value={selectedAdaptingLanguage}
 											onValueChange={setSelectedAdaptingLanguage}
-											selectableLanguages={selectableLanguages}
+											selectableLanguages={
+												SOURCE_TO_TARGET_LANGUAGE_MAP[selectedAdaptingLanguage]
+											}
 											showSeparator
 											classes={{
 												trigger: {
