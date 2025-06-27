@@ -178,7 +178,7 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 											isDragging:
 												'border-fm-divider-primary bg-fm-divider-primary/30',
 										}}
-										accept={ACCEPTED_IMAGE_TYPES.join(',')}
+										allowedTypes={ACCEPTED_IMAGE_TYPES}
 										supportedFormat="JPEG, JPG, PNG & WEBP"
 									/>
 									<FormMessage />

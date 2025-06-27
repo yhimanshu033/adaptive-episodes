@@ -1,10 +1,13 @@
 'use client'
 
+import React from 'react'
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
 import { LOC_SHEET_QUERY_KEY } from '@/constants/query-constants'
 import useIsGerman from '@/hooks/use-is-german'
 import useSocket from '@/hooks/use-socket'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
+import { BubbleCrossIcon } from '@/icons/bubble-cross-icon'
 import { updateLOCSheet } from '@/server-action/localization-action'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
@@ -127,18 +130,24 @@ export const useUpdateLOCSheetMutation = () => {
 
 	const onSuccess = async (url?: string) => {
 		if (url) {
-			toast.success(dict('localizationSuccess'))
+			toast.success(dict('localizationSuccess'), {
+				icon: <BubbleCheckIcon />,
+			})
 			await queryClient.invalidateQueries({
 				queryKey: [LOC_SHEET_QUERY_KEY, Number(id)],
 				exact: true,
 			})
 		} else {
-			toast.success(dict('localizationSync'))
+			toast.success(dict('localizationSync'), {
+				icon: <BubbleCheckIcon />,
+			})
 		}
 	}
 
 	const onError = () => {
-		toast.error(dict('localizationError'))
+		toast.error(dict('localizationError'), {
+			icon: <BubbleCrossIcon />,
+		})
 	}
 
 	const onUpdateLOCSheet = async (url?: string) => {

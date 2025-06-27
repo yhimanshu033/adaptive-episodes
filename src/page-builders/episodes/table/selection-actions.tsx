@@ -54,6 +54,7 @@ export default function SelectionActions({
 		setSelectedRowData,
 		setOpen,
 		setStory,
+		setEpisodeAdaptation,
 		selectedRowData: adaptationData,
 	} = useAdaptation()
 
@@ -79,9 +80,10 @@ export default function SelectionActions({
 					<Button
 						disabled={Object.keys(selectedRowData).length < 1}
 						onClick={() => {
-							setStory(initialStoryData)
 							if (adaptationData.length === 0) {
 								setSelectedRowData(selectedRowData)
+								setStory(initialStoryData)
+								setEpisodeAdaptation(true)
 							}
 							setOpen(true)
 						}}

@@ -1,3 +1,4 @@
+import React from 'react'
 import { useParams } from 'next/navigation'
 import { ELLMModel } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
@@ -5,6 +6,8 @@ import {
 	EPISODE_LIST_QUERY_KEY,
 	STORY_ID_QUERY_KEY,
 } from '@/constants/query-constants'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
+import { BubbleCrossIcon } from '@/icons/bubble-cross-icon'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -26,7 +29,13 @@ import {
 import { TEpisode } from '@/types/episode-type'
 import { TStory } from '@/types/story-types'
 
-export default function useAdaptationMutation(onSuccess = () => {}) {
+export default function useAdaptationMutation({
+	onSuccess = () => {},
+	abortController,
+}: {
+	abortController?: AbortController
+	onSuccess?: () => void
+}) {
 	const { data: session } = useSession()
 	const queryClient = useQueryClient()
 	const { id } = useParams()
@@ -83,6 +92,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 				}
 				return false
 			},
+			signal: abortController?.signal,
 		})
 
 		return pollingResp?.data
@@ -92,10 +102,14 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 		mutationFn: createAdaptation,
 		onSuccess: () => {
 			onSuccess()
-			toast.success('Localization sheet fetched!')
+			toast.success('Localization sheet fetched!', {
+				icon: <BubbleCheckIcon />,
+			})
 		},
-		onError: () => {
-			toast.error('Localization failed!')
+		onError: (error: Error) => {
+			toast.error(error.message || 'Localization Failed!', {
+				icon: <BubbleCrossIcon />,
+			})
 		},
 		mutationKey: ['create-adaptation-ls'],
 	})
