@@ -204,6 +204,19 @@ export function extract(str: string) {
 	)
 }
 
+export function patchBrokenJson(jsonStr: string): string {
+	return jsonStr.replace(
+		/"match_string"\s*:\s*"(.*?)"}/g,
+		(match, p1: string) => {
+			if (p1.includes('"')) {
+				const safeValue = p1.replace(/"/g, '\\"')
+				return `"match_string": "${safeValue}"}`
+			}
+			return match
+		}
+	)
+}
+
 export function parseOptimistically<T>(input: string) {
 	if (!input || input.trim() === '') {
 		return null
