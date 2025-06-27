@@ -56,7 +56,7 @@ const DeleteStoryModal = ({
 							</Typography>
 						</DialogTitle>
 						<DialogDescription asChild>
-							<Typography align="center" color="tertiary">
+							<Typography align="center" className="text-fm-tertiary">
 								Once deleted, this can&apos;t be undone. Don&apos;t worry! You
 								can always create a new story.
 							</Typography>
@@ -66,7 +66,6 @@ const DeleteStoryModal = ({
 						<Button
 							variant="secondary"
 							onClick={() => {
-								console.log('Delete')
 								onDialogChange(false)
 							}}
 						>

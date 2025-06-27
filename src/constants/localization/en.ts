@@ -38,6 +38,8 @@ const EN_LANG = {
 		words: 'Words',
 	},
 	toasts: {
+		slackSuccess: 'Slack Channel ID updated',
+		slackError: 'Error updating Slack Channel ID',
 		localizationSuccess: 'Localization sheet URL updated',
 		localizationSync: 'Synchronized updates of the localization sheet!',
 		localizationError: 'Error updating the localization sheet!',
