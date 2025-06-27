@@ -40,6 +40,8 @@ const DE_LANG: TLocaleDict = {
 		words: 'Worte',
 	},
 	toasts: {
+		slackSuccess: 'Slack Channel ID aktualisiert',
+		slackError: 'Fehler beim Aktualisieren slack channel ID',
 		localizationSuccess: 'URL des Lokalisierungsblatts aktualisiert',
 		localizationSync:
 			'Synchronisierte Aktualisierungen des Lokalisierungsblatts!',
