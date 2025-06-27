@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import useNotes from '@/hooks/use-notes'
 import { AngleDownIcon } from '@/icons/angle-down-icon'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CopyIcon } from '@/icons/copy-icon'
 import NotepadIcon from '@/icons/notepad-icon'
 import useAIStore from '@/store/ai-store'
@@ -64,7 +65,9 @@ export function ContentActions({
 	const handleCopy = () => {
 		const formattedText = formatExplorerData(htmlText || '')
 		void navigator.clipboard.writeText(formattedText)
-		toast.success('Text copied successfully')
+		toast.success('Text copied successfully', {
+			icon: <BubbleCheckIcon />,
+		})
 	}
 
 	const { icon: savedIcon, text: savedText } = useMemo(() => {
@@ -86,7 +89,7 @@ export function ContentActions({
 		}
 	}, [isPending, isSuccess])
 	return (
-		<div className="mt-6 flex max-h-0 w-full justify-end gap-4 overflow-hidden opacity-0 transition-all duration-300 ease-in-out group-hover:max-h-20 group-hover:opacity-100">
+		<div className="mt-6 flex w-full justify-end gap-4">
 			<Button
 				variant="text"
 				onClick={handleCopy}

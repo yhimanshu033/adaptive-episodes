@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
-import { STORIES_QUERY_KEY } from '@/constants/query-constants'
+import { STORY_ID_QUERY_KEY } from '@/constants/query-constants'
 import { StoryImportFormSchema } from '@/hooks/form-resolvers/story-import-resolver'
 import useSocket from '@/hooks/use-socket'
 import { uploadFile } from '@/server-action/file-upload'
@@ -22,7 +22,7 @@ const useStoryUploadHook = () => {
 	const onSuccess = async () => {
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		await queryClient.invalidateQueries({
-			queryKey: [STORIES_QUERY_KEY],
+			queryKey: [STORY_ID_QUERY_KEY, Number(id)],
 			type: 'all',
 		})
 		toast.success('Story details updated successfully')
@@ -72,6 +72,7 @@ const useStoryUploadHook = () => {
 	})
 
 	async function storyUpdate(body: Partial<TStory>) {
+		console.log({ body: body })
 		const resp = await fetchAPI<TNoParams, TIdParams, Partial<TStory>>({
 			method: 'PATCH',
 			url: API_URLS.PROJECT_UPDATE,
@@ -82,6 +83,7 @@ const useStoryUploadHook = () => {
 		if (resp.status !== 200) {
 			throw new Error('Invalid format')
 		}
+		console.log({ data: resp.data })
 		return resp.data
 	}
 

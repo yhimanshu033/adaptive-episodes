@@ -14,6 +14,7 @@ import {
 	switchableStepsInfo,
 } from '@/constants/episodes-constants'
 import { SAMPLE_DOC_LINK } from '@/constants/global-constants'
+import { ACCEPTED_IMAGE_TYPES } from '@/constants/story-constants'
 import {
 	StoryImportFormSchema,
 	useStoryImportFormResolver,
@@ -22,6 +23,7 @@ import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
 import useIsInternal from '@/hooks/use-is-internal'
 import useSocket from '@/hooks/use-socket'
 import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
+import { BubbleCrossIcon } from '@/icons/bubble-cross-icon'
 import { FeatureShineIcon } from '@/icons/feature-shine-icon'
 import { FileChartIcon } from '@/icons/file-chart-icon'
 import { LightBulbSimpleIcon } from '@/icons/light-bulb-simple-icon'
@@ -156,6 +158,23 @@ export function ImportStory() {
 		setIsDragging(e?.type === 'dragenter' || e?.type === 'dragover')
 	}
 
+	const handleDocValidation = async (file: File) => {
+		form.setValue('story_file', file)
+
+		const isValid = await form.trigger('story_file')
+		const error = form.getFieldState('story_file').error?.message
+
+		if (!isValid) {
+			toast.error(error || 'Invalid document file.', {
+				icon: <BubbleCrossIcon />,
+			})
+			form.setValue('story_file', undefined)
+			return false
+		}
+
+		return true
+	}
+
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault()
 		e.stopPropagation()
@@ -163,8 +182,25 @@ export function ImportStory() {
 
 		const file = e.dataTransfer.files[0]
 		if (file) {
-			form.setValue('story_file', file)
+			void handleDocValidation(file)
 		}
+	}
+
+	const handleImageValidation = async (file: File) => {
+		form.setValue('image_file', file)
+		const isValid = await form.trigger('image_file')
+
+		if (!isValid) {
+			const message = form.formState.errors.image_file?.message
+			toast.error(message, {
+				icon: <BubbleCrossIcon />,
+			})
+			form.setValue('image_file', undefined)
+			setImageSrc('')
+			return
+		}
+
+		setImageSrc(URL.createObjectURL(file))
 	}
 
 	const handleImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -172,11 +208,16 @@ export function ImportStory() {
 		e.stopPropagation()
 		setIsDragging(false)
 
-		const file = e.dataTransfer.files[0]
-		if (file && file.type.startsWith('image/')) {
-			form.setValue('image_file', file)
-			const imageURL = URL.createObjectURL(file)
-			setImageSrc(imageURL)
+		const file = e.dataTransfer.files?.[0]
+		if (file) {
+			void handleImageValidation(file)
+		}
+	}
+
+	const handelImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0]
+		if (file) {
+			void handleImageValidation(file)
 		}
 	}
 
@@ -394,7 +435,7 @@ export function ImportStory() {
 																color="tertiary"
 																variant="caption-small"
 																weight="regular"
-																className="font-fm-brand"
+																className="font-fm-brand !text-fm-xs text-inherit"
 															>
 																[Optional]
 															</Typography>
@@ -504,15 +545,8 @@ export function ImportStory() {
 																<input
 																	id="image"
 																	type="file"
-																	onChange={(e) => {
-																		if (e.target.files?.length) {
-																			const file = e.target.files[0]
-																			form.setValue('image_file', file)
-																			const imageURL = URL.createObjectURL(file)
-																			setImageSrc(imageURL)
-																		}
-																	}}
-																	accept="image/*"
+																	onChange={handelImageUpload}
+																	accept={ACCEPTED_IMAGE_TYPES.join(',')}
 																	ref={imageInputRef}
 																	className="hidden"
 																/>
@@ -527,7 +561,7 @@ export function ImportStory() {
 																	transform="uppercase"
 																	className="font-fm-brand"
 																>
-																	FORMATS: JPG, PNG
+																	FORMATS: JPG, JPEG, PNG & WEBP
 																</Typography>
 																<Typography
 																	as="h4"
@@ -558,7 +592,7 @@ export function ImportStory() {
 																color="tertiary"
 																variant="caption-small"
 																weight="regular"
-																className="font-fm-brand"
+																className="font-fm-brand !text-fm-xs text-inherit"
 															>
 																[Optional]
 															</Typography>
@@ -661,8 +695,9 @@ export function ImportStory() {
 																	className="hidden"
 																	onChange={(e) => {
 																		if (e.target.files?.length) {
-																			const file = e.target.files[0]
-																			field.onChange(file)
+																			void handleDocValidation(
+																				e.target.files[0]
+																			)
 																		}
 																	}}
 																/>

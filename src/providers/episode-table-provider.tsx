@@ -34,11 +34,12 @@ function useEpisodeContextUtil() {
 		) as EpisodeStore
 	}
 
-	const { data } = useStoryIdData()
+	const { data, isFetching } = useStoryIdData()
 
 	return {
 		useEpisodeStoreUtil: storeRef.current,
 		initialStoryData: data,
+		storyDataFetching: isFetching,
 	}
 }
 
