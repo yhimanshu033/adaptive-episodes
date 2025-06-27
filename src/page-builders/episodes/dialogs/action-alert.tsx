@@ -2,6 +2,7 @@
 import React from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { useEpisodeStore } from '@/store/episode-store'
+import { Table } from '@tanstack/react-table'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
@@ -14,8 +15,11 @@ import {
 	DialogTitle,
 } from '@/components/aural-ui/dialog'
 import { If } from '@/components/aural-ui/if-else'
+import { Typography } from '@/components/aural-ui/typography'
 
-const ActionAlert = () => {
+import { TEpisode } from '@/types/episode-type'
+
+const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 	const { useEpisodeTableStore, setIsDialogOpen } = useEpisodeStore()
 	const { isDialogOpen } = useEpisodeTableStore()
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
@@ -26,20 +30,33 @@ const ActionAlert = () => {
 			<DialogContent
 				variant={alertInfo?.variant ?? 'neutral'}
 				classes={{
-					root: 'w-80',
+					root: 'flex h-88 w-99 flex-col items-center px-6 py-8 text-center',
+					overlay: 'z-60',
+					content: 'z-70',
 				}}
 				noise="none"
+				opacity="high"
+				glass="high"
 			>
 				<DialogHeader>
 					<div className="flex items-center justify-center pt-4">
 						{alertInfo?.icon}
 					</div>
 
-					<DialogTitle className="mt-4 text-center text-xl">
-						{alertInfo?.description}
+					<DialogTitle asChild>
+						<Typography
+							align="center"
+							className="mt-4"
+							as="h2"
+							variant="body-large"
+						>
+							{alertInfo?.description}
+						</Typography>
 					</DialogTitle>
-					<DialogDescription className="text-fm-tertiary mt-2 mb-6 text-center">
-						{alertInfo?.subDescription}
+					<DialogDescription asChild>
+						<Typography align="center" className="text-fm-tertiary mb-6">
+							{alertInfo?.subDescription}
+						</Typography>
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className="w-full !flex-col gap-4">
@@ -50,6 +67,7 @@ const ActionAlert = () => {
 							onClick={() => {
 								void handleConfirm()
 								setIsDialogOpen(false)
+								table.resetRowSelection()
 							}}
 						>
 							{alertInfo?.action}

@@ -9,6 +9,7 @@ import useLOCSheetData from '@/hooks/query/use-loc-sheet-data'
 import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 
 import { Button } from '@/components/aural-ui/button'
+import CircularLoader from '@/components/aural-ui/circular-loader'
 import {
 	Form,
 	FormControl,
@@ -17,6 +18,7 @@ import {
 } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
+import IfElse from '@/components/if-else'
 import { cn } from '@/lib/utils/helpers'
 
 const UpdateLOCSheet = () => {
@@ -76,10 +78,20 @@ const UpdateLOCSheet = () => {
 								'text-sm !p-0 -translate-y-0 uppercase truncate'
 							)}
 						>
-							Update
+							<IfElse
+								condition={updateLOCSheetMutation.isPending}
+								else={<span>Update</span>}
+								if={<CircularLoader />}
+							/>
 						</Button>
 					</div>
-					<Link href={link} target="_blank">
+					<Link
+						href={link}
+						target="_blank"
+						tabIndex={link ? 0 : -1}
+						aria-disabled={!link}
+						className={cn(!link && 'pointer-events-none opacity-50')}
+					>
 						<IconButton
 							shape="square"
 							variant="outlined"

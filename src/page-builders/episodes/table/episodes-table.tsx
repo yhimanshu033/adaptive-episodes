@@ -98,11 +98,13 @@ const EpisodesTable = () => {
 				<If>
 					<StoryDetails titleClassname="text-xl" imageSize={40} />
 					<Divider className="mt-4" />
-					<EpisodeEmpty
-						initialStoryData={initialStoryData}
-						setInventIndex={setInventIndex}
-						setIsInventOpen={setIsInventOpen}
-					/>
+					<If condition={!isEpisodesLoading}>
+						<EpisodeEmpty
+							initialStoryData={initialStoryData}
+							setInventIndex={setInventIndex}
+							setIsInventOpen={setIsInventOpen}
+						/>
+					</If>
 				</If>
 				<Else>
 					<div className="mb-4 flex items-center justify-between">
@@ -138,7 +140,10 @@ const EpisodesTable = () => {
 					</div>
 					<Divider className="mt-4" />
 					<SelectionActions table={table} />
-					<Table className={cn({ 'pointer-events-none': editingRowId })}>
+					<Table
+						className={cn({ 'pointer-events-none': editingRowId })}
+						onMouseLeave={() => setHoverIndex(null)}
+					>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
 								<TableRow key={headerGroup.id}>
@@ -277,7 +282,7 @@ const EpisodesTable = () => {
 					)}
 				</Else>
 			</IfElse>
-			<ActionAlert />
+			<ActionAlert table={table} />
 			<InventForm />
 			<ShareAccessDialog />
 		</>
