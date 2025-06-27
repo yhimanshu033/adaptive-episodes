@@ -94,7 +94,7 @@ const EpisodesTable = () => {
 
 	return (
 		<>
-			<IfElse condition={!initialStoryData?.episode_count}>
+			<IfElse condition={!initialStoryData?.episode_count && data?.count === 0}>
 				<If>
 					<StoryDetails titleClassname="text-xl" imageSize={40} />
 					<Divider className="mt-4" />
