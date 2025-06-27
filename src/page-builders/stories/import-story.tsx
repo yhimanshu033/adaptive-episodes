@@ -4,8 +4,8 @@
 import React, { useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
-import { ELLMModel, sourceLanguages } from '@/constants/episodes-constants'
+import { SOURCE_TO_TARGET_LANGUAGE_MAP } from '@/constants/ai-constants'
+import { ELLMModel } from '@/constants/episodes-constants'
 import { SAMPLE_DOC_LINK } from '@/constants/global-constants'
 import {
 	StoryImportFormSchema,
@@ -158,7 +158,11 @@ export function ImportStory() {
 									<FormControl>
 										<LanguageSelector
 											value={field.value as ELanguage}
-											selectableLanguages={sourceLanguages}
+											selectableLanguages={
+												Object.keys(
+													SOURCE_TO_TARGET_LANGUAGE_MAP
+												) as ELanguage[]
+											}
 											onValueChange={field.onChange}
 										/>
 									</FormControl>
@@ -194,19 +198,38 @@ export function ImportStory() {
 							<FormField
 								control={form.control}
 								name="target_language"
-								render={({ field }) => (
-									<FormItem className="space-y-2">
-										<FormLabel htmlFor="language">Target Language</FormLabel>
-										<FormControl>
-											<LanguageSelector
-												value={field.value as ELanguage}
-												selectableLanguages={AVAILABLE_TARGET_LANGUAGES}
-												onValueChange={field.onChange}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
+								render={({ field }) => {
+									const inputLang = form.getValues(
+										'input_language'
+									) as ELanguage
+									const adaptedLanguages = SOURCE_TO_TARGET_LANGUAGE_MAP[
+										inputLang
+									] || [ELanguage.ENGLISH]
+									const currentTarget = field.value
+
+									// Auto-select the first adapted language if needed
+									if (
+										adaptedLanguages.length > 0 &&
+										(!currentTarget ||
+											!adaptedLanguages.includes(currentTarget as ELanguage))
+									) {
+										setTimeout(() => field.onChange(adaptedLanguages[0]), 0)
+									}
+
+									return (
+										<FormItem className="space-y-2">
+											<FormLabel htmlFor="language">Target Language</FormLabel>
+											<FormControl>
+												<LanguageSelector
+													value={field.value as ELanguage}
+													selectableLanguages={adaptedLanguages}
+													onValueChange={field.onChange}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)
+								}}
 							/>
 							<FormField
 								control={form.control}

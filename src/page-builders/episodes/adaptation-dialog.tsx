@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { useParams } from 'next/navigation'
+import { SOURCE_TO_TARGET_LANGUAGE_MAP } from '@/constants/ai-constants'
 import { languageToTitle } from '@/constants/episodes-constants'
 import LSTableEditor from '@/page-builders/episodes/ls-editor'
 import { ArrowRight, CheckCircle, Info } from 'lucide-react'
@@ -37,7 +38,6 @@ export default function AdaptationDialog({
 	const {
 		currentLanguage,
 		mutate,
-		selectableLanguages,
 		open,
 		selectedAdaptingLanguage,
 		selectedRowData,
@@ -153,7 +153,9 @@ export default function AdaptationDialog({
 							<LanguageSelector
 								value={selectedAdaptingLanguage}
 								onValueChange={setSelectedAdaptingLanguage}
-								selectableLanguages={selectableLanguages}
+								selectableLanguages={
+									SOURCE_TO_TARGET_LANGUAGE_MAP[selectedAdaptingLanguage]
+								}
 							/>
 						</div>
 						<DialogFooter>
