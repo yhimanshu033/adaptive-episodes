@@ -15,6 +15,7 @@ import DeleteModal from '@/components/delete-modal'
 import { cn, formatFileSize } from '@/lib/utils/helpers'
 
 type ImageUploadProps = {
+	allowedTypes?: string[]
 	classes?: {
 		isDragging?: string
 		root?: string
@@ -36,11 +37,25 @@ export default function FileUpload({
 	},
 	maxSize = 25,
 	supportedFormat = 'JPG, PNG',
+	allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
 	...props
 }: ImageUploadProps) {
 	const [isDragging, setIsDragging] = useState(false)
 	const [file, setFile] = useState<File | null>(defaultFile)
 	const fileInputRef = useRef<HTMLInputElement>(null)
+
+	const validateFileFormat = (file: File): boolean => {
+		if (!allowedTypes.includes(file.type)) {
+			toast.error(
+				`Invalid file format. Please upload ${supportedFormat} files only.`,
+				{
+					icon: <BubbleCrossIcon />,
+				}
+			)
+			return false
+		}
+		return true
+	}
 
 	const validateFileSize = (file: File): boolean => {
 		const maxBytes = maxSize * 1024 * 1024
@@ -51,6 +66,10 @@ export default function FileUpload({
 			return false
 		}
 		return true
+	}
+
+	const validateFile = (file: File): boolean => {
+		return validateFileFormat(file) && validateFileSize(file)
 	}
 
 	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -69,7 +88,7 @@ export default function FileUpload({
 
 		if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
 			const droppedFile = e.dataTransfer.files[0]
-			if (validateFileSize(droppedFile)) {
+			if (validateFile(droppedFile)) {
 				setFile(droppedFile)
 			}
 		}
@@ -78,7 +97,7 @@ export default function FileUpload({
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files.length > 0) {
 			const selectedFile = e.target.files[0]
-			if (validateFileSize(selectedFile)) {
+			if (validateFile(selectedFile)) {
 				setFile(selectedFile)
 			}
 		}
@@ -136,6 +155,7 @@ export default function FileUpload({
 					ref={fileInputRef}
 					onChange={handleFileChange}
 					className="hidden"
+					accept={allowedTypes.join(',')}
 				/>
 				<IfElse condition={!url}>
 					<If>

@@ -40,15 +40,10 @@ const useEpisodeHook = () => {
 	const { isGerman, isOriginal } = useAccessChecks()
 
 	const onSuccess = async () => {
-		await Promise.all([
-			queryClient.invalidateQueries({
-				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
-				type: 'all',
-			}),
-			queryClient.invalidateQueries({
-				queryKey: [STORY_ID_QUERY_KEY, Number(id)],
-			}),
-		])
+		await queryClient.invalidateQueries({
+			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
+			type: 'all',
+		})
 	}
 
 	const onSaveEpisode = useCallback(
@@ -188,7 +183,18 @@ const useEpisodeHook = () => {
 	const episodeInventMutation = useMutation({
 		mutationKey: [EpisodeActions.INVENT, id],
 		mutationFn: onEpisodeInvent,
-		onSuccess,
+		onSuccess: (_, variable) => {
+			void (async () => {
+				await Promise.all([
+					variable.seq_number === 1
+						? queryClient.invalidateQueries({
+								queryKey: [STORY_ID_QUERY_KEY, Number(id)],
+							})
+						: Promise.resolve(),
+					onSuccess(),
+				])
+			})()
+		},
 	})
 
 	const episodeDeleteMutation = useMutation({

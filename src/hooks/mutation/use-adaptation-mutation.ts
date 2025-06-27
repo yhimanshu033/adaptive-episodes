@@ -26,7 +26,13 @@ import {
 import { TEpisode } from '@/types/episode-type'
 import { TStory } from '@/types/story-types'
 
-export default function useAdaptationMutation(onSuccess = () => {}) {
+export default function useAdaptationMutation({
+	onSuccess = () => {},
+	abortController,
+}: {
+	abortController?: AbortController
+	onSuccess?: () => void
+}) {
 	const { data: session } = useSession()
 	const queryClient = useQueryClient()
 	const { id } = useParams()
@@ -83,6 +89,7 @@ export default function useAdaptationMutation(onSuccess = () => {}) {
 				}
 				return false
 			},
+			signal: abortController?.signal,
 		})
 
 		return pollingResp?.data

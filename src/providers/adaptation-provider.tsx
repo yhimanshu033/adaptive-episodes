@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { PREFERABLE_LANGUAGES } from '@/constants/ai-constants'
 import { ELLMModel } from '@/constants/episodes-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
@@ -27,6 +27,7 @@ function useAdaptationUtil() {
 	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
 	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.GEMINI)
 	const [abort, setAbort] = useState(false)
+	const abortControllerRef = useRef<AbortController | null>(null)
 
 	const {
 		createLSMutation: { mutate, isPending, data, reset },
@@ -36,7 +37,9 @@ function useAdaptationUtil() {
 			isPending: sendLSPending,
 			reset: resetSendLS,
 		},
-	} = useAdaptationMutation()
+	} = useAdaptationMutation({
+		abortController: abortControllerRef.current!,
+	})
 
 	const step = useMemo(() => {
 		// return 3
@@ -123,6 +126,21 @@ function useAdaptationUtil() {
 			return
 		}
 	}, [step, open, resetMutations, abort])
+
+	useEffect(() => {
+		abortControllerRef.current = new AbortController()
+		return () => {
+			abortControllerRef.current?.abort()
+		}
+	}, [])
+
+	useEffect(() => {
+		if (abort) {
+			abortControllerRef.current?.abort()
+			abortControllerRef.current = new AbortController()
+			setAbort(false)
+		}
+	}, [abort])
 
 	return {
 		selectedRowData,
