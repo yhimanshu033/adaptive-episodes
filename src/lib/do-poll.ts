@@ -1,4 +1,5 @@
 /* eslint-disable no-constant-condition */
+
 import { fetchAPI } from '@/lib/fetch-api'
 
 import { StartPollingParams, TNoParams } from '@/types/common'
@@ -36,12 +37,12 @@ export async function doPoll<
 			return data
 		}
 
-		await new Promise<void>((resolve) => {
+		await new Promise<void>((resolve, reject) => {
 			const timeout = setTimeout(resolve, delay)
 			if (signal) {
 				const abortHandler = () => {
 					clearTimeout(timeout)
-					resolve()
+					reject(new Error('Adaptation aborted'))
 				}
 				signal.addEventListener('abort', abortHandler, { once: true })
 			}

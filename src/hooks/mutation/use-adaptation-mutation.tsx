@@ -106,8 +106,8 @@ export default function useAdaptationMutation({
 				icon: <BubbleCheckIcon />,
 			})
 		},
-		onError: () => {
-			toast.error('Localization failed!', {
+		onError: (error: Error) => {
+			toast.error(error.message || 'Localization Failed!', {
 				icon: <BubbleCrossIcon />,
 			})
 		},
