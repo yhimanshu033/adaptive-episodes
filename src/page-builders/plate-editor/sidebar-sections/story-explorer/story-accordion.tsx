@@ -240,6 +240,8 @@ export function StoryAccordion({
 		)
 	}
 
+	console.log({ explorerData })
+
 	return (
 		<div className={cn('flex flex-col gap-4 px-6 pb-10', className)}>
 			{explorerData.map((data, index) => {

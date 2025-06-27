@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useImageFileSize } from '@/hooks/use-image-size'
-import { BubbleCrossIcon } from '@/icons/bubble-cross-icon'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import { toast } from 'sonner'
@@ -49,7 +49,7 @@ export default function FileUpload({
 			toast.error(
 				`Invalid file format. Please upload ${supportedFormat} files only.`,
 				{
-					icon: <BubbleCrossIcon />,
+					icon: <BubbleCrossedIcon />,
 				}
 			)
 			return false
@@ -61,7 +61,7 @@ export default function FileUpload({
 		const maxBytes = maxSize * 1024 * 1024
 		if (file.size > maxBytes) {
 			toast.error(`File exceeds ${maxSize}MB. Please upload a smaller file.`, {
-				icon: <BubbleCrossIcon />,
+				icon: <BubbleCrossedIcon />,
 			})
 			return false
 		}
