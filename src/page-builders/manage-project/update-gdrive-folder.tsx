@@ -18,6 +18,7 @@ import {
 } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
+import IfElse from '@/components/if-else'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
 
@@ -96,11 +97,11 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 								'text-sm !p-0 -translate-y-0 uppercase truncate'
 							)}
 						>
-							{updateGDriveFolderMutation.isPending ? (
-								<CircularLoader />
-							) : (
-								<span>Update</span>
-							)}
+							<IfElse
+								condition={updateGDriveFolderMutation.isPending}
+								else={<span>Update</span>}
+								if={<CircularLoader />}
+							/>
 						</Button>
 					</div>
 					<Link

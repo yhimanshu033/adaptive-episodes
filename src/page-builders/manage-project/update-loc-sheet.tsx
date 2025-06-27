@@ -18,6 +18,7 @@ import {
 } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
+import IfElse from '@/components/if-else'
 import { cn } from '@/lib/utils/helpers'
 
 const UpdateLOCSheet = () => {
@@ -77,11 +78,11 @@ const UpdateLOCSheet = () => {
 								'text-sm !p-0 -translate-y-0 uppercase truncate'
 							)}
 						>
-							{updateLOCSheetMutation.isPending ? (
-								<CircularLoader />
-							) : (
-								<span>Update</span>
-							)}
+							<IfElse
+								condition={updateLOCSheetMutation.isPending}
+								else={<span>Update</span>}
+								if={<CircularLoader />}
+							/>
 						</Button>
 					</div>
 					<Link
