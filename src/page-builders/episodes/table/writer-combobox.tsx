@@ -36,6 +36,9 @@ const WriterCombobox = ({
 	selectedMemberId?: string
 }) => {
 	const [value, setValue] = React.useState<string>(selectedMemberId || '')
+	const [open, setOpen] = React.useState(false)
+	const triggerRef = React.useRef<HTMLButtonElement>(null)
+
 	const { mutate } = useWriterUpdateMutation(chapterId || '')
 	const { isGerman, isOriginal } = useAccessChecks()
 
@@ -49,6 +52,14 @@ const WriterCombobox = ({
 	)
 	const dict = useTranslations('common')
 
+	// Handle focus removal when select closes
+	const handleOpenChange = (isOpen: boolean) => {
+		setOpen(isOpen)
+		if (!isOpen && triggerRef.current) {
+			triggerRef.current.blur()
+		}
+	}
+
 	if (!(isGerman || isOriginal)) {
 		return null
 	}
@@ -56,12 +67,12 @@ const WriterCombobox = ({
 	return (
 		<SelectRoot className={className}>
 			<SelectWrapper>
-				<Select>
+				<Select open={open} onOpenChange={handleOpenChange}>
 					<SelectTrigger
 						decoration="outline"
 						className="font-fm-brand text-xs tracking-wider uppercase"
 						classes={{
-							root: 'h-10 text-sm',
+							root: 'h-10 text-sm focus:border-fm-divider-primary',
 							icon: 'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
 						}}
 						disabled={!isWriter}
@@ -98,6 +109,7 @@ const WriterCombobox = ({
 												}
 												setValue(String(member.user.id))
 												mutate(member.user.id)
+												handleOpenChange(false)
 											}}
 										>
 											{member.user.fullname}

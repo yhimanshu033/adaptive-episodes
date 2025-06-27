@@ -96,6 +96,7 @@ type InputProps = {
 	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
 	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 	onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
+	onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
 	placeholder?: string
 	required?: boolean
 	startIcon?: ReactNode
@@ -347,6 +348,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 			onChange,
 			onBlur,
 			onFocus,
+			onKeyDown,
 			startIcon,
 			endIcon,
 			id,
@@ -430,6 +432,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 						onChange={handleChange}
 						onFocus={onFocus}
 						onBlur={onBlur}
+						onKeyDown={onKeyDown}
 						required={required}
 						maxLength={maxLength}
 						startIcon={!!startIcon}

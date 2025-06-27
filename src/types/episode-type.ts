@@ -259,6 +259,17 @@ export enum EEpisodeHeaderKeys {
 	WRITER = 'writer',
 }
 
+export const episodeTableColumnWidths: Record<EEpisodeHeaderKeys, string> = {
+	[EEpisodeHeaderKeys.SELECT_COL]: '5%',
+	[EEpisodeHeaderKeys.SERIAL_NUMBER]: '8%',
+	[EEpisodeHeaderKeys.CHAPTER_TITLE]: '24%',
+	[EEpisodeHeaderKeys.WRITER]: '18%',
+	[EEpisodeHeaderKeys.WORD_COUNT]: '10%',
+	[EEpisodeHeaderKeys.STATUS]: '15%',
+	[EEpisodeHeaderKeys.UPDATE_TIME]: '12%',
+	[EEpisodeHeaderKeys.ACTIONS]: '8%',
+}
+
 export const EPISODE_LIMIT_KEY = 'episodeLimit'
 
 export enum ENotesAction {

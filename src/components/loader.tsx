@@ -54,7 +54,7 @@ export function FullScreenLoader({
 	overlayProps?: OverlayProps
 }) {
 	return (
-		<Portal asChild>
+		<Portal>
 			<Overlay
 				classes={{
 					root: 'z-600',
