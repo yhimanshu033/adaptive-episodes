@@ -1,3 +1,4 @@
+import React from 'react'
 import { useParams } from 'next/navigation'
 import { ELLMModel } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
@@ -5,6 +6,8 @@ import {
 	EPISODE_LIST_QUERY_KEY,
 	STORY_ID_QUERY_KEY,
 } from '@/constants/query-constants'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
+import { BubbleCrossIcon } from '@/icons/bubble-cross-icon'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -99,10 +102,14 @@ export default function useAdaptationMutation({
 		mutationFn: createAdaptation,
 		onSuccess: () => {
 			onSuccess()
-			toast.success('Localization sheet fetched!')
+			toast.success('Localization sheet fetched!', {
+				icon: <BubbleCheckIcon />,
+			})
 		},
 		onError: () => {
-			toast.error('Localization failed!')
+			toast.error('Localization failed!', {
+				icon: <BubbleCrossIcon />,
+			})
 		},
 		mutationKey: ['create-adaptation-ls'],
 	})

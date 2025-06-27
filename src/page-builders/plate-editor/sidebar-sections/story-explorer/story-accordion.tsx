@@ -93,6 +93,7 @@ export function ContentActions({
 			<Button
 				variant="text"
 				onClick={handleCopy}
+				className="opacity-80 transition-opacity delay-100 hover:opacity-100"
 				disabled={enableNote}
 				leftIcon={<CopyIcon className="size-4 stroke-2" />}
 				size="sm"
@@ -105,6 +106,7 @@ export function ContentActions({
 				onClick={addToNote}
 				disabled={enableNote}
 				leftIcon={savedIcon}
+				className="opacity-80 transition-opacity delay-100 hover:opacity-100"
 				size="sm"
 				innerClassName="!p-0"
 			>

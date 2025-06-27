@@ -1,10 +1,12 @@
 'use client'
 
+import React from 'react'
 import { useParams } from 'next/navigation'
 import {
 	EPISODE_LIST_QUERY_KEY,
 	RENAME_EPISODE_MUTATION,
 } from '@/constants/query-constants'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { getEpisodeContent, saveContent } from '@/server-action/content-action'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -18,7 +20,9 @@ const useRenameTitleMutation = () => {
 			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
 			type: 'all',
 		})
-		toast.success('Title renamed successfully')
+		toast.success('Title renamed successfully', {
+			icon: <BubbleCheckIcon />,
+		})
 	}
 
 	const onError = (error: Error) => {

@@ -180,7 +180,11 @@ export default function FileUpload({
 						<div className="flex w-full items-center justify-between rounded-md">
 							<div
 								className="flex max-w-3/5 gap-4"
-								onClick={() => fileInputRef.current?.click()}
+								onClick={
+									!url || defaultUrl !== url
+										? () => fileInputRef.current?.click()
+										: () => {}
+								}
 							>
 								<div className="relative aspect-square h-9 shrink-0 overflow-hidden">
 									<Image
