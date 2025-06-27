@@ -30,14 +30,12 @@ import { TrashIcon } from '@/icons/trash-icon'
 import ChooseStoryTypes from '@/page-builders/stories/choose-story-types'
 import DeleteModal from '@/page-builders/stories/delete-modal'
 import useStoryStore from '@/store/story-store'
-import { Portal } from '@radix-ui/react-portal'
 import { toast } from 'sonner'
 
 import Badge from '@/components/aural-ui/badge'
 import { Button, buttonVariants } from '@/components/aural-ui/button'
 import { Checkbox } from '@/components/aural-ui/checkbox'
 import { Divider } from '@/components/aural-ui/divider'
-import DotLoader from '@/components/aural-ui/dot-loader'
 import {
 	Form,
 	FormControl,
@@ -49,11 +47,11 @@ import {
 } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
-import { Overlay } from '@/components/aural-ui/overlay'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Stepper } from '@/components/aural-ui/stepper'
 import { Typography } from '@/components/aural-ui/typography'
 import { If } from '@/components/if-else'
+import { FullScreenLoader } from '@/components/loader'
 import LanguageSelector, {
 	LLMModelSelector,
 } from '@/components/plate-ui/language-selector'
@@ -226,17 +224,7 @@ export function ImportStory() {
 			})}
 		>
 			<If condition={storyUploadMutation.isPending}>
-				<Portal asChild>
-					<Overlay
-						classes={{
-							root: 'z-60',
-							wrapper: 'z-70',
-						}}
-						noise="none"
-					>
-						<DotLoader />
-					</Overlay>
-				</Portal>
+				<FullScreenLoader />
 			</If>
 			<SwitchCase value={step}>
 				<Case value={ImportStoryStep.CHOOSE_TYPE}>
