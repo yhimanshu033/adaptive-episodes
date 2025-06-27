@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { EpisodeActions } from '@/constants/episodes-constants'
-import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
+import {
+	EPISODE_LIST_QUERY_KEY,
+	STORY_ID_QUERY_KEY,
+} from '@/constants/query-constants'
 // import useLanguage from '@/hooks/use-language'
 import useSocket from '@/hooks/use-socket'
 import { saveContent } from '@/server-action/content-action'
@@ -37,10 +40,15 @@ const useEpisodeHook = () => {
 	const { isGerman, isOriginal } = useAccessChecks()
 
 	const onSuccess = async () => {
-		await queryClient.invalidateQueries({
-			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
-			type: 'all',
-		})
+		await Promise.all([
+			queryClient.invalidateQueries({
+				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
+				type: 'all',
+			}),
+			queryClient.invalidateQueries({
+				queryKey: [STORY_ID_QUERY_KEY, Number(id)],
+			}),
+		])
 	}
 
 	const onSaveEpisode = useCallback(

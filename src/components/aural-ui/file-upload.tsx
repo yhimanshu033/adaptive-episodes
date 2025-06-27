@@ -124,7 +124,11 @@ export default function FileUpload({
 				onDragOver={handleDragOver}
 				onDragLeave={handleDragLeave}
 				onDrop={handleDrop}
-				onClick={!url ? () => fileInputRef.current?.click() : () => {}}
+				onClick={
+					!url || defaultUrl === url
+						? () => fileInputRef.current?.click()
+						: () => {}
+				}
 			>
 				<input
 					{...props}
@@ -154,11 +158,11 @@ export default function FileUpload({
 					</If>
 					<Else>
 						<div className="flex w-full items-center justify-between rounded-md">
-							<div className="flex max-w-3/5 gap-4">
-								<div
-									className="relative aspect-square h-9 shrink-0 overflow-hidden"
-									onClick={() => fileInputRef.current?.click()}
-								>
+							<div
+								className="flex max-w-3/5 gap-4"
+								onClick={() => fileInputRef.current?.click()}
+							>
+								<div className="relative aspect-square h-9 shrink-0 overflow-hidden">
 									<Image
 										src={url}
 										alt={file?.name || 'Preview'}
@@ -194,7 +198,7 @@ export default function FileUpload({
 								<Button
 									variant="text"
 									className={cn('text-fm-negative gap-2', {
-										'text-fm-tertiary/30': defaultUrl === url,
+										'text-fm-icon-inactive': defaultUrl === url,
 									})}
 									innerClassName="!p-0"
 									disabled={defaultUrl === url}
@@ -203,7 +207,7 @@ export default function FileUpload({
 										height={16}
 										width={16}
 										className={cn('text-fm-negative uppercase', {
-											'text-fm-tertiary/30': defaultUrl === url,
+											'text-fm-icon-inactive': defaultUrl === url,
 										})}
 									/>{' '}
 									DELETE
