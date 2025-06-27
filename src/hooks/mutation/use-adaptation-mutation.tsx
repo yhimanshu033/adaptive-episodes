@@ -7,7 +7,7 @@ import {
 	STORY_ID_QUERY_KEY,
 } from '@/constants/query-constants'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
-import { BubbleCrossIcon } from '@/icons/bubble-cross-icon'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -108,7 +108,7 @@ export default function useAdaptationMutation({
 		},
 		onError: (error: Error) => {
 			toast.error(error.message || 'Localization Failed!', {
-				icon: <BubbleCrossIcon />,
+				icon: <BubbleCrossedIcon />,
 			})
 		},
 		mutationKey: ['create-adaptation-ls'],
