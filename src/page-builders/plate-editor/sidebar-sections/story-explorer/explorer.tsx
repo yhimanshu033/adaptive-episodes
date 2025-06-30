@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Image from 'next/image'
 import { VIEW_SAVED_NOTES_URL } from '@/constants/editor-constants'
 import {
@@ -23,7 +23,6 @@ import { ESidebar } from '@/types/plate-types'
 import { ExplorerSettings } from './explorer-setting'
 
 const Explorer = ({ start, end }: { end: number; start: number }) => {
-	const [activeTab, setActiveTab] = useState(categories[0]?.id || '')
 	const isGermanUser = useIsGerman()
 	const { setSidebar } = usePlateStore()
 
@@ -35,6 +34,8 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		handleRequest,
 		isMetadataLoading,
 		isTaskEnded,
+		handleTabChange,
+		activeExplorerMode,
 	} = useStoryExplorer({ start, end })
 
 	return (
@@ -50,10 +51,10 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 							'font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary uppercase tracking-widest',
 							{
 								'border-fm-divider-contrast bg-fm-surface-contrast [color:var(--color-fm-contrast)]':
-									activeTab === id,
+									activeExplorerMode === id,
 							}
 						)}
-						onClick={() => setActiveTab(id)}
+						onClick={() => handleTabChange(id)}
 					>
 						{mode}
 					</Button>
@@ -77,7 +78,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 					</If>
 					<Else>
 						{categories.map(({ id, action }, idx) =>
-							activeTab === id ? (
+							activeExplorerMode === id ? (
 								<div key={idx} className="flex h-full flex-col gap-5">
 									<If condition={isGermanUser}>
 										<div className="flex items-center gap-2">
