@@ -19,7 +19,7 @@ import { TStory } from '@/types/story-types'
 
 function useAdaptationUtil() {
 	const [open, setOpen] = useState(false)
-	const [openExitDialog, setOpenExitDialog] = useState(true)
+	const [openExitDialog, setOpenExitDialog] = useState(false)
 	const [selectedRowData, setSelectedRowData] = useState<TEpisode[]>([])
 	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
 		useState<ELanguage>(ELanguage.GERMAN)
