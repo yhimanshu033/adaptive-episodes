@@ -20,6 +20,7 @@ import {
 } from '@tanstack/react-table'
 
 import { Checkbox } from '@/components/aural-ui/checkbox'
+import CircularLoader from '@/components/aural-ui/circular-loader'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -46,6 +47,7 @@ import { Switch } from '@/components/aural-ui/switch'
 import { Tag } from '@/components/aural-ui/tag'
 import { Typography } from '@/components/aural-ui/typography'
 import useProjectId from '@/providers/project-id-provider'
+import { cn } from '@/lib/aural-ui/utils'
 import { formatDate } from '@/lib/format-date'
 
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
@@ -73,7 +75,8 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 
 	const inputValueMapRef = React.useRef<Record<number, string>>({})
 
-	const { handleStatusChange, handleDeleteEpisode } = useEpisodeTable()
+	const { handleStatusChange, handleDeleteEpisode, statusUpdating } =
+		useEpisodeTable()
 
 	const { mutate: renameTitle, isPending } = useRenameTitleMutation()
 
@@ -179,6 +182,8 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 					)
 				}
 
+				const isUpdating = statusUpdating.includes(row.original.id)
+
 				return (
 					<SelectRoot>
 						<SelectWrapper>
@@ -186,19 +191,30 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 								onValueChange={(value) =>
 									handleStatusChange(row.original, value as EStatus, table)
 								}
-								disabled={!isSelected && Object.keys(rowSelection).length > 0}
+								disabled={
+									(!isSelected && Object.keys(rowSelection).length > 0) ||
+									isUpdating
+								}
 							>
 								<SelectTrigger
 									decoration="outline"
 									disabled={!isWriter}
 									classes={{
 										root: 'h-10 text-sm',
-										icon: 'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
+										icon: cn(
+											'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
+											{
+												hidden: isUpdating,
+											}
+										),
 									}}
 								>
 									<Tag {...tagProps} emphasis="secondary">
 										{titleToStatusText[latestStatus]}
 									</Tag>
+									<If condition={isUpdating}>
+										<CircularLoader className="size-3" />
+									</If>
 								</SelectTrigger>
 								<SelectContent>
 									{statuses.map((status, index) => (
