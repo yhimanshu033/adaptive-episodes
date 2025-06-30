@@ -31,6 +31,7 @@ export type EpisodeStoreState = {
 		episodes: TEpisode[]
 		status: EStatus | typeof BASE_STATUS
 	} | null
+	statusUpdating: number[]
 }
 
 type TEpisodeProps = {

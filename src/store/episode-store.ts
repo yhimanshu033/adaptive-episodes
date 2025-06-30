@@ -78,6 +78,14 @@ export function useEpisodeStore() {
 		})
 	}
 
+	const setStatusUpdating = (statusUpdating: number[]) => {
+		useEpisodeStoreUtil.setState(() => {
+			return {
+				statusUpdating,
+			}
+		})
+	}
+
 	return {
 		setCurrentPage,
 		setEpisodeSearch,
@@ -93,5 +101,6 @@ export function useEpisodeStore() {
 		deleteNote,
 		updateNote,
 		useEpisodeTableStore: useEpisodeStoreUtil,
+		setStatusUpdating,
 	}
 }

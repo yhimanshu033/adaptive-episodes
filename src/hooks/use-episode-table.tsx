@@ -41,9 +41,14 @@ const useEpisodeTable = () => {
 		setIsDialogOpen,
 		setIsInventOpen,
 		setSelectedEpisodes,
+		setStatusUpdating,
 	} = useEpisodeStore()
-	const { deleteEpisodeId, selectedEpisodes, currentInventIndex } =
-		useEpisodeTableStore()
+	const {
+		deleteEpisodeId,
+		selectedEpisodes,
+		currentInventIndex,
+		statusUpdating,
+	} = useEpisodeTableStore()
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 
 	const { currentPage, search, limit } = usePageState()
@@ -289,6 +294,10 @@ const useEpisodeTable = () => {
 		} else if (alertInfo.action === EpisodeActions.UPDATE && selectedEpisodes) {
 			const { episodes } = selectedEpisodes
 
+			const episodeIds = episodes.map((episode) => episode.id)
+
+			setStatusUpdating([...statusUpdating, ...episodeIds])
+
 			await Promise.all(
 				episodes.map(async (episode) => {
 					if (episode.status === BASE_STATUS) {
@@ -308,10 +317,13 @@ const useEpisodeTable = () => {
 					})
 				})
 			)
+
 			await queryClient.invalidateQueries({
 				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id), currentPage, search],
 				type: 'all',
 			})
+
+			setStatusUpdating(statusUpdating.filter((id) => !episodeIds.includes(id)))
 		} else if (alertInfo.action === EpisodeActions.DELETE && deleteEpisodeId) {
 			episodeDeleteMutation.mutate(deleteEpisodeId)
 		}
@@ -325,6 +337,7 @@ const useEpisodeTable = () => {
 		handleMerge,
 		handleUnmerge,
 		handleEpisodeInfo,
+		statusUpdating,
 	}
 }
 
