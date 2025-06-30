@@ -28,7 +28,7 @@ import { nanoid } from 'nanoid'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { addSFX, convertReviewResponse, minify } from '@/lib/utils/ai-chatbot'
-import { parseOptimistically } from '@/lib/utils/helpers'
+import { parseOptimistically, patchBrokenJson } from '@/lib/utils/helpers'
 import { breakDownValue, getText } from '@/lib/utils/plate'
 
 import {
@@ -326,7 +326,7 @@ export function ChatbotProvider({
 
 		try {
 			let parsedResponse = parseOptimistically<IndexedSFXResponse>(
-				responses[sfxStreaming].join('')
+				patchBrokenJson(responses[sfxStreaming].join(''))
 			)
 			if (!parsedResponse) {
 				return
