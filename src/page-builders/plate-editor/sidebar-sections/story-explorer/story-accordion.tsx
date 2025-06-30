@@ -138,7 +138,7 @@ export function RenderContent({
 	if (
 		!content ||
 		(typeof content === 'string' && content.trim() === '') ||
-		!content ||
+		!preContent ||
 		(typeof preContent === 'string' && preContent.trim() === '')
 	) {
 		return (
@@ -244,9 +244,9 @@ export function StoryAccordion({
 		<div className={cn('flex flex-col gap-4 px-6 pb-10', className)}>
 			{explorerData.map((data, index) => {
 				const episodeNo = start + index
-				const title = data.title
+				const processedData = preProcessData(data)
 
-				return (
+				return processedData.map(({ title, content, preContent }, index) => (
 					<Collapsible key={`${title}-${index}`}>
 						<CollapsibleTrigger asChild>
 							<button className="text-fm-icon-active data-[state=open]:[&>.toggle-icon]:text-fm-icon-active hover:[&>.toggle-icon]:text-fm-icon-active flex w-full flex-1 cursor-pointer items-center justify-between text-left outline-none [&>.toggle-icon]:transition-transform [&>.toggle-icon]:duration-50 data-[state=open]:[&>.toggle-icon]:-rotate-180">
@@ -258,16 +258,16 @@ export function StoryAccordion({
 						</CollapsibleTrigger>
 						<CollapsibleContent className="text-fm-md group !text-fm-tertiary pr-2">
 							<RenderContent
-								content={data.content}
-								preContent={data.preContent}
+								content={content}
+								preContent={preContent}
 								episodeNo={episodeNo}
 								enableNote={enableNote}
 							/>
 							<ContentActions
 								title={title}
 								content={{
-									preContent: data?.preContent,
-									content: data.content,
+									preContent: preContent,
+									content: content,
 								}}
 								episodeNo={episodeNo}
 								htmlText={formatExplorerData(data)}
@@ -275,7 +275,7 @@ export function StoryAccordion({
 							/>
 						</CollapsibleContent>
 					</Collapsible>
-				)
+				))
 			})}
 		</div>
 	)
