@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import useAIChatbot from '@/hooks/use-ai-chatbot'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import ChevronUpIcon from '@/icons/chevron-up-icon'
@@ -21,14 +21,17 @@ const ChatbotInput = () => {
 		input,
 		setInput,
 		cancelRequest,
+		isFocused,
+		setIsFocused,
+		textContainerRef,
 	} = useAIChatbot()
-	const [isFocused, setIsFocused] = useState(false)
 
 	const dict = useTranslations('placeholders')
 	const hasText = input.trim().length > 0
 
 	return (
 		<div
+			ref={textContainerRef}
 			className={cn(
 				textareaVariants({
 					variant: 'default',

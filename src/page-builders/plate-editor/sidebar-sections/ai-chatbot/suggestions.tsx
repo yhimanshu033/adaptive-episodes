@@ -144,7 +144,7 @@ export default function Suggestions() {
 						disabled={isDisabled}
 						className="text-fm-tertiary hover:text-fm-primary cursor-pointer py-3 hover:bg-inherit"
 					>
-						<Icon className="text-fm-tertiary mr-2 h-4 w-4" />
+						<Icon className="mr-2 size-4 text-inherit" />
 						<p>{value}</p>
 					</ListItem>
 					{index !== storyChatSuggestions.length - 1 && (

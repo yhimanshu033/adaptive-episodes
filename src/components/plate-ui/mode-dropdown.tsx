@@ -39,6 +39,9 @@ export function ModeDropdown(props: SelectProps) {
 
 	const { store } = useCustomPlateStore()
 	const viewMode = store((state) => state.viewMode)
+	const filteredModesList = editorModesList.filter(
+		({ mode }) => isWriter || mode === EditorModes.viewing
+	)
 
 	useEffect(() => {
 		if (simplifiedEditor) {
@@ -94,7 +97,7 @@ export function ModeDropdown(props: SelectProps) {
 					},
 				}}
 			>
-				{editorModesList.map(
+				{filteredModesList.map(
 					({ mode, label, description, icon: Icon }, idx) => (
 						<div key={idx}>
 							<SelectItem
@@ -127,7 +130,7 @@ export function ModeDropdown(props: SelectProps) {
 									</div>
 								</div>
 							</SelectItem>
-							{idx < editorModesList.length - 1 && <SelectSeparator />}
+							{idx < filteredModesList.length - 1 && <SelectSeparator />}
 						</div>
 					)
 				)}

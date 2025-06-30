@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react'
-import { Download } from 'lucide-react'
+import { DownloadIcon } from '@/icons/download-icon'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { Typography } from '@/components/aural-ui/typography'
 import usePlayer from '@/providers/player-provider'
 import { downloadBlobUrl } from '@/lib/utils/client-helpers'
 
@@ -24,21 +25,24 @@ export default function PlayerInfo() {
 	}
 
 	return (
-		<div className="flex w-full justify-between">
+		<div className="flex w-full items-center justify-between">
 			<div>
-				<h4 className="text-sm font-medium">{info.episode}</h4>
-				<h5 className="text-muted-foreground text-xs font-light">
+				<Typography variant="caption-medium" as="h4" weight="medium">
+					{info.episode}
+				</Typography>
+				<Typography as="h5" variant="caption-small" color="secondary">
 					{info.chapter}
-				</h5>
+				</Typography>
 			</div>
-			<Button
+			<IconButton
+				label="Download Audio"
 				tooltip="Download"
 				variant="ghost"
-				size="icon"
+				shape="square"
+				size="small"
+				icon={<DownloadIcon />}
 				onClick={handleDownload}
-			>
-				<Download />
-			</Button>
+			/>
 		</div>
 	)
 }
