@@ -75,7 +75,10 @@ export default function CommentSidebar() {
 
 		if (commentsAndDescriptions.length === 0) {
 			return (
-				<EmptyState description="No comments yet. Share your thoughts and start the conversation." />
+				<EmptyState
+					description="No comments yet. Share your thoughts and start the conversation."
+					classes={{ description: 'px-4' }}
+				/>
 			)
 		}
 
@@ -115,8 +118,8 @@ export default function CommentSidebar() {
 								})}
 							/>
 						}
-						className={cn('absolute top-3 right-15 z-20', {
-							'bg-fm-hotpink-50': showResolved,
+						className={cn('absolute top-3.5 right-15 z-20', {
+							'bg-fm-hotpink-50 hover:bg-fm-hotpink-100/80': showResolved,
 						})}
 						variant="ghost"
 						shape="square"
