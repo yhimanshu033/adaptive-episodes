@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { PREFERABLE_LANGUAGES } from '@/constants/ai-constants'
+import {
+	PREFERABLE_LANGUAGES,
+	SOURCE_TO_TARGET_LANGUAGE_MAP,
+} from '@/constants/ai-constants'
 import { ELLMModel } from '@/constants/episodes-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
 import AdaptationDialog from '@/page-builders/episodes/dialogs/adaptation-dialog'
@@ -16,7 +19,7 @@ import { TStory } from '@/types/story-types'
 
 function useAdaptationUtil() {
 	const [open, setOpen] = useState(false)
-	const [openExitDialog, setOpenExitDialog] = useState(false)
+	const [openExitDialog, setOpenExitDialog] = useState(true)
 	const [selectedRowData, setSelectedRowData] = useState<TEpisode[]>([])
 	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
 		useState<ELanguage>(ELanguage.GERMAN)
@@ -88,7 +91,9 @@ function useAdaptationUtil() {
 	)
 
 	const selectableLanguages = useMemo(
-		() => getSelectableLanguages(currentLanguage),
+		() =>
+			SOURCE_TO_TARGET_LANGUAGE_MAP[currentLanguage] ||
+			getSelectableLanguages(currentLanguage),
 		[currentLanguage]
 	)
 
@@ -122,7 +127,7 @@ function useAdaptationUtil() {
 			setSelectedRowData([])
 			setAbort(false)
 			setLLMModel(ELLMModel.GEMINI)
-			setSelectedAdaptingLanguage(ELanguage.GERMAN)
+			// setSelectedAdaptingLanguage(ELanguage.GERMAN)
 			return
 		}
 	}, [step, open, resetMutations, abort])

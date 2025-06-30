@@ -392,7 +392,7 @@ export function ImportStory() {
 													control={form.control}
 													name="target_language"
 													render={({ field }) => {
-														const inputLang = form.getValues(
+														const inputLang = form.watch(
 															'input_language'
 														) as ELanguage
 														const adaptedLanguages =
