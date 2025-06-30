@@ -88,49 +88,53 @@ const FindAndReplaceForm = ({
 						})}
 					</div>
 				</If>
-				<Input
-					startIcon={<ArrowRightIcon />}
-					placeholder="Replace with..."
-					decoration="filled"
-					id="replce-with-input"
-					value={replace}
-					onChange={onReplaceChange}
-					className="text-fm-icon-inactive focus-within:text-fm-icon-active"
-					classes={{
-						input: 'h-11',
-					}}
-				/>
+				<If condition={isWriter}>
+					<Input
+						startIcon={<ArrowRightIcon />}
+						placeholder="Replace with..."
+						decoration="filled"
+						id="replce-with-input"
+						value={replace}
+						onChange={onReplaceChange}
+						className="text-fm-icon-inactive focus-within:text-fm-icon-active"
+						classes={{
+							input: 'h-11',
+						}}
+					/>
+				</If>
 			</div>
-			<div className="flex items-center justify-between gap-2">
-				<AddFormPopover
-					isWriter={isWriter}
-					search={search}
-					replace={replace}
-					setData={setData}
-				/>
-				<Button
-					variant="outline"
-					size="sm"
-					className="flex-1"
-					disabled={!search || !replace}
-					isDisabled={!search || !replace}
-					innerClassName="border-fm-divider-secondary bg-transparent group-disabled:text-fm-tertiary translate-y-0 group-hover:text-fm-primary group-hover:border-fm-divider-contrast group-disabled:border-fm-divider-secondary"
-					onClick={onReplace}
-				>
-					Replace
-				</Button>
-				<Button
-					variant="outline"
-					size="sm"
-					className="flex-1"
-					disabled={!search || !replace}
-					isDisabled={!search || !replace}
-					innerClassName="border-fm-divider-secondary bg-transparent group-disabled:text-fm-tertiary translate-y-0 group-hover:text-fm-primary group-hover:border-fm-divider-contrast group-disabled:border-fm-divider-secondary"
-					onClick={onReplaceAll}
-				>
-					Replace all
-				</Button>
-			</div>
+			<If condition={isWriter}>
+				<div className="flex items-center justify-between gap-2">
+					<AddFormPopover
+						isWriter={isWriter}
+						search={search}
+						replace={replace}
+						setData={setData}
+					/>
+					<Button
+						variant="outline"
+						size="sm"
+						className="flex-1"
+						disabled={!search || !replace}
+						isDisabled={!search || !replace}
+						innerClassName="border-fm-divider-secondary bg-transparent group-disabled:text-fm-tertiary translate-y-0 group-hover:text-fm-primary group-hover:border-fm-divider-contrast group-disabled:border-fm-divider-secondary"
+						onClick={onReplace}
+					>
+						Replace
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						className="flex-1"
+						disabled={!search || !replace}
+						isDisabled={!search || !replace}
+						innerClassName="border-fm-divider-secondary bg-transparent group-disabled:text-fm-tertiary translate-y-0 group-hover:text-fm-primary group-hover:border-fm-divider-contrast group-disabled:border-fm-divider-secondary"
+						onClick={onReplaceAll}
+					>
+						Replace all
+					</Button>
+				</div>
+			</If>
 		</section>
 	)
 }

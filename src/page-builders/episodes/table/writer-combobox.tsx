@@ -72,14 +72,17 @@ const WriterCombobox = ({
 						decoration="outline"
 						className="font-fm-brand text-xs tracking-wider uppercase"
 						classes={{
-							root: 'h-10 text-sm focus:border-fm-divider-primary',
-							icon: 'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
+							root: cn('h-10 text-sm focus:border-fm-divider-primary', {
+								'pl-0 border-0 cursor-default': !isWriter,
+							}),
+							icon: cn(
+								'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
+								{ hidden: !isWriter }
+							),
 						}}
 						disabled={!isWriter}
 					>
-						<span
-							className={cn(isWriter ? 'text-fm-primary' : 'text-fm-secondary')}
-						>
+						<span className="text-fm-primary">
 							{!selectedMember?.user
 								? dict('unassigned')
 								: selectedMember?.user?.fullname}
