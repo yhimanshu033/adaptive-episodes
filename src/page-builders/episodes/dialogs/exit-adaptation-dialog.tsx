@@ -20,8 +20,13 @@ const ExitAdaptationDialog = () => {
 		setAbort,
 	} = useAdaptation()
 
+	const handleDialogChange = () => {
+		setOpen(true)
+		setOpenExitDialog(false)
+	}
+
 	return (
-		<Dialog open={open} onOpenChange={setOpenExitDialog}>
+		<Dialog open={open} onOpenChange={handleDialogChange}>
 			<DialogContent
 				variant="negative"
 				glass="high"

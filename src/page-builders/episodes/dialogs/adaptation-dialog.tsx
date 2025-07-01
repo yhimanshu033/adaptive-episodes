@@ -153,18 +153,18 @@ export default function AdaptationDialog({
 		)
 	}
 
+	const handleDialogChange = () => {
+		setOpenExitDialog(true)
+	}
+
 	return (
-		<Dialog open={adaptOpen} onOpenChange={setAdaptDialogOpen}>
+		<Dialog open={adaptOpen} onOpenChange={handleDialogChange}>
 			<DialogContent
 				variant="neutral"
 				glass="high"
 				className="h-[90vh] w-[90vw] gap-0 p-0 max-2xl:max-w-[60vw]"
 				noise="none"
 				showCloseButton={false}
-				onInteractOutside={(e: Event) => {
-					e.preventDefault()
-					setOpenExitDialog(true)
-				}}
 			>
 				<div className="ml-8 flex min-h-28 items-center justify-center overflow-x-auto px-6">
 					<Stepper

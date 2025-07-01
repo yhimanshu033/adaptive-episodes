@@ -83,7 +83,6 @@ export const dialogVariants = cva(
 interface DialogContentProps
 	extends React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof dialogVariants> {
-	onInteractOutside?: (event: Event) => void
 	showCloseButton?: boolean
 }
 
@@ -101,7 +100,6 @@ const DialogContent = React.forwardRef<
 			children,
 			classes,
 			showCloseButton = true,
-			onInteractOutside,
 			...props
 		},
 		ref
@@ -119,7 +117,6 @@ const DialogContent = React.forwardRef<
 					'data-[state=open]:animate-fm-zoomIn data-[state=closed]:animate-fm-zoomOut fixed top-1/2 left-1/2 z-50 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 duration-200',
 					classes?.content
 				)}
-				onInteractOutside={onInteractOutside}
 				{...props}
 			>
 				{showCloseButton && (
