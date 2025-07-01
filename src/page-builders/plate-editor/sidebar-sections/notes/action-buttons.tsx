@@ -52,7 +52,7 @@ export function ActionButtons({
 			}
 		}
 		return {
-			icon: <TrashIcon className="text-fm-negative size-4 stroke-2" />,
+			icon: <TrashIcon className="size-4 stroke-2 text-inherit" />,
 			text: 'Delete',
 		}
 	}, [isPending])
@@ -63,6 +63,7 @@ export function ActionButtons({
 				<Button
 					variant="text"
 					onClick={handleExpand}
+					className="opacity-80 hover:opacity-100"
 					leftIcon={
 						expanded ? (
 							<EyeCloseIcon className="size-4 stroke-2" />
@@ -81,6 +82,7 @@ export function ActionButtons({
 					variant="text"
 					onClick={handleEdit}
 					leftIcon={<EditBigIcon className="size-4 stroke-2" />}
+					className="opacity-80 hover:opacity-100"
 					size="sm"
 					innerClassName="!p-0"
 				>
@@ -97,7 +99,7 @@ export function ActionButtons({
 					leftIcon={deleteIcon}
 					size="sm"
 					innerClassName="!p-0"
-					className="text-fm-negative"
+					className="text-fm-negative/80 hover:text-fm-negative"
 				>
 					{deleteText}
 				</Button>
