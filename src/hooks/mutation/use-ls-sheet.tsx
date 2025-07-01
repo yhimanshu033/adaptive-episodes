@@ -1,8 +1,10 @@
+import React from 'react'
 import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
 import { GET_LS_SHEET_QUERY_KEY } from '@/constants/query-constants'
 import useLanguage from '@/hooks/use-language'
 import useParentLanguage from '@/hooks/use-parent-language'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -29,7 +31,9 @@ export default function useLSSheetQuery() {
 		})
 
 		if (!resp.data) {
-			toast.error('LS sheet not found!')
+			toast.error('LS sheet not found!', {
+				icon: <BubbleCrossedIcon />,
+			})
 		}
 
 		return resp.data

@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { DownloadIcon } from '@/icons/download-icon'
 import { toast } from 'sonner'
 
@@ -14,7 +15,9 @@ export default function PlayerInfo() {
 
 	const handleDownload = useCallback(() => {
 		if (!audioRef.current) {
-			return toast.error('Audio not found!')
+			return toast.error('Audio not found!', {
+				icon: <BubbleCrossedIcon />,
+			})
 		}
 		const src = audioRef.current?.src
 		downloadBlobUrl(src, `${info?.chapter} - ${info?.episode}.mp3`)

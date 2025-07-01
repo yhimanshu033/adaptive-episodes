@@ -249,6 +249,7 @@ export function ImportStory() {
 					if (data?.success === false) {
 						toast.error('Story upload failed, please retry!', {
 							description: 'There might be an issue with the format.',
+							icon: <BubbleCrossedIcon />,
 						})
 					}
 				},

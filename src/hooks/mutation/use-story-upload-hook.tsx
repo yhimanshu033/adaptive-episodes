@@ -1,10 +1,12 @@
 'use client'
 
+import React from 'react'
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
 import { STORY_ID_QUERY_KEY } from '@/constants/query-constants'
 import { StoryImportFormSchema } from '@/hooks/form-resolvers/story-import-resolver'
 import useSocket from '@/hooks/use-socket'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { uploadFile } from '@/server-action/file-upload'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -31,6 +33,7 @@ const useStoryUploadHook = () => {
 	const onError = (error: Error) => {
 		toast.error('Error: Please check story format!', {
 			description: error.message,
+			icon: <BubbleCrossedIcon />,
 		})
 	}
 

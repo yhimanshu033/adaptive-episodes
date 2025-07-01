@@ -166,7 +166,9 @@ export default function useAdaptationMutation({
 			})
 		},
 		onError: () => {
-			toast.error('Adaptation failed!')
+			toast.error('Adaptation failed!', {
+				icon: <BubbleCrossedIcon />,
+			})
 		},
 		mutationKey: ['send-adaptation-ls'],
 	})

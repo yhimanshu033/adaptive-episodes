@@ -1,9 +1,11 @@
+import React from 'react'
 import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
 import {
 	GET_SLACK_CHANNEL_QUERY_KEY,
 	UPDATE_SLACK_CHANNEL_MUTATION,
 } from '@/constants/query-constants'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -75,7 +77,9 @@ export function useSlackNotificationMutation() {
 	}
 
 	const onError = () => {
-		toast.error(dict('slackError'))
+		toast.error(dict('slackError'), {
+			icon: <BubbleCrossedIcon />,
+		})
 	}
 
 	const mutation = useMutation({
