@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
 	EditNoteFormSchemaFormSchema,
 	useEditNoteFormResolver,
@@ -31,11 +30,7 @@ import { TNote } from '@/types/plate-types'
 const EditNote = () => {
 	const { useEpisodeTableStore } = useEpisodeStore()
 	const notes = useEpisodeTableStore(useShallow((state) => state.notes))
-	const {
-		mode: primaryButtonText,
-		setFormOpen,
-		isFormOpen,
-	} = useEditorNoteStore()
+	const { mode: primaryButtonText, setFormOpen } = useEditorNoteStore()
 	const { store, setActiveNoteId } = useEpisodeIdStore()
 	const id = store(useShallow((state) => state.activeNoteId))
 	const note = id ? notes.find((note) => note.id === id) : null
@@ -51,8 +46,6 @@ const EditNote = () => {
 		const { title, description } = data
 		if (id) {
 			handleUpdateNotes(id, { title: title, content: description })
-			setActiveNoteId(null)
-			setFormOpen(false)
 		} else {
 			const id = nanoid()
 			const newNote: TNote = {
@@ -63,16 +56,11 @@ const EditNote = () => {
 				updateTime: new Date().toString(),
 			}
 			handleAddNote(newNote, true)
-			setFormOpen(false)
 		}
+		setFormOpen(false)
+		setActiveNoteId(null)
+		form.reset()
 	}
-
-	useEffect(() => {
-		return () => {
-			form.reset()
-			setActiveNoteId(null)
-		}
-	}, [isFormOpen])
 
 	return (
 		<div className="bg-fm-surface-primary absolute inset-0 top-0 px-6 pt-22">
@@ -133,6 +121,7 @@ const EditNote = () => {
 							variant="text"
 							onClick={() => {
 								form.reset()
+								setActiveNoteId(null)
 								setFormOpen(false)
 							}}
 							innerClassName="h-9 text-fm-sm"

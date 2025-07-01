@@ -48,8 +48,9 @@ export default function SidebarTopBar() {
 						<IconButton
 							label="Close Sidebar"
 							variant="ghost"
-							className="hover:bg-transparent"
 							onClick={() => setSidebar(null)}
+							shape="square"
+							size="small"
 							icon={<CrossIcon className="size-4" />}
 						/>
 					</div>

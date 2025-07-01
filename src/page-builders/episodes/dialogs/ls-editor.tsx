@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react'
 import { EXCLUDED_HEADERS_LS_SHEET } from '@/constants/episodes-constants'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { DownloadIcon } from '@/icons/download-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { UploadIcon } from '@/icons/upload-icon'
@@ -121,7 +122,9 @@ const LSTableEditor = memo(
 				setTableData(data)
 			}
 			reader.onerror = () => {
-				toast.error('Some error occurred while reading CSV')
+				toast.error('Some error occurred while reading CSV', {
+					icon: <BubbleCrossedIcon />,
+				})
 			}
 			reader.readAsText(file)
 			toast.success('CSV import completed!', {

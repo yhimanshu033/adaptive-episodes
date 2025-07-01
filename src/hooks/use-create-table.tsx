@@ -254,7 +254,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		},
 	]
 
-	const columns: ColumnDef<TEpisode>[] = [
+	const writerOnlySelectColumns: ColumnDef<TEpisode>[] = [
 		{
 			id: EEpisodeHeaderKeys.SELECT_COL,
 			header: ({ table, column }) => {
@@ -290,6 +290,10 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 					/>
 				),
 		},
+	]
+
+	const columns: ColumnDef<TEpisode>[] = [
+		...(isWriter ? writerOnlySelectColumns : []),
 		{
 			accessorKey: EEpisodeHeaderKeys.SERIAL_NUMBER,
 			header: () => (

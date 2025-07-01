@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useParams } from 'next/navigation'
 import {
 	ALL_USERS_QUERY_KEY,
@@ -7,6 +8,7 @@ import {
 	USER_LIST_QUERY_KEY,
 } from '@/constants/query-constants'
 import { projectAccessMessages } from '@/constants/user-constants'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { updateProjectAccess } from '@/server-action/user-action'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
@@ -54,7 +56,10 @@ const useProjectAccessMutation = () => {
 		mutationFn: onProjectAccessMutation,
 		onSuccess: (_, { action, body: { user_email } }) =>
 			onSuccess(action, user_email),
-		onError: () => toast.error(dict1('somethingWentWrong')),
+		onError: () =>
+			toast.error(dict1('somethingWentWrong'), {
+				icon: <BubbleCrossedIcon />,
+			}),
 	})
 
 	return projectAccessMutation

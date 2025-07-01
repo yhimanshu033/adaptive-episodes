@@ -1,14 +1,14 @@
 'use client'
 
 import React, { useCallback, useMemo, useState } from 'react'
+import { CrossCircleIcon } from '@/icons/cross-circle-icon'
 import PlayerInfo from '@/page-builders/plate-editor/player/info'
-import { Pause, Play, X } from 'lucide-react'
+import { Pause, Play } from 'lucide-react'
 
-import IfElse from '@/components/if-else'
-import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { Slider } from '@/components/aural-ui/slider'
 import { CircularProgressBar } from '@/components/ui/circular-progress'
 import Image from '@/components/ui/image'
-import { Slider } from '@/components/ui/slider'
 import usePlayer from '@/providers/player-provider'
 import { formatDuration } from '@/lib/utils/helpers'
 
@@ -68,55 +68,62 @@ export default function PlayerAudio() {
 				onDurationChange={(e) => setDuration(e.currentTarget.duration)}
 				className="hidden"
 			/>
-			<div className="bg-background/50 flex rounded-md p-2 backdrop-blur-[1px]">
-				<div className="h-full max-h-0 w-0 overflow-hidden px-0 transition-all group-hover:max-h-20 group-hover:w-64 group-hover:pr-4 group-hover:pl-2">
+			<div className="bg-fm-neutral-0/50 flex h-full items-center rounded-md p-2 backdrop-blur-[1px]">
+				<div className="h-full w-0 gap-2 overflow-hidden px-0 transition-all group-hover:w-64 group-hover:pr-4 group-hover:pl-2">
 					<PlayerInfo />
-					<div className="mt-2 flex grow flex-col gap-2">
-						<Slider
-							className='*:h-1 [&_span[role="slider"]]:size-3 [&_span[role="slider"]]:-translate-y-1/3'
-							value={[time]}
-							max={duration}
-							min={0}
-							onValueChange={(v) => handleTimeUpdate(v[0])}
-						/>
-						<div className="flex w-full items-center justify-between text-[8px] font-light">
-							<p>{formatDuration(time)}</p>
+					<div className="flex h-full flex-col gap-1">
+						<div className="flex w-full items-center justify-end text-[8px] font-light">
 							<p>{formatDuration(duration)}</p>
+						</div>
+						<div className="h-6">
+							<Slider
+								variant="secondary"
+								className="rounded-md"
+								value={[time]}
+								max={duration}
+								min={0}
+								onValueChange={(v) => handleTimeUpdate(v[0])}
+								showLabel
+								classes={{
+									thumb: 'rounded-md text-[8px]',
+								}}
+								label={formatDuration(time)}
+							/>
 						</div>
 					</div>
 				</div>
 				<div className="relative size-20">
-					<Button
+					<IconButton
+						label="Remove audio player"
 						onClick={handleCancel}
 						tooltip="Remove"
-						className="border-foreground absolute top-0.5 right-0.5 size-4 rounded-full border p-0.5 opacity-0 group-hover:opacity-100"
-						size="icon"
-					>
-						<X />
-					</Button>
+						className="border-fm-primary absolute top-0.5 right-0.5 size-4 border opacity-0 group-hover:opacity-100"
+						icon={<CrossCircleIcon />}
+					/>
 					<CircularProgressBar
 						className="absolute inset-0 -z-10 size-full"
 						value={time}
 						min={0}
 						max={duration}
-						gaugePrimaryColor="hsl(var(--primary))"
-						gaugeSecondaryColor="hsl(var(--secondary))"
+						gaugePrimaryColor="var(--color-fm-green-500)"
+						gaugeSecondaryColor="var(--color-fm-neutral-200)"
 					>
 						<Image
 							src={info.img || ''}
 							className="size-full rounded-full p-0.5"
 							alt={info.chapter || 'chapter-image'}
 						/>
+						<div className="bg-fm-neutral-50/50 absolute inset-0 m-1 rounded-full opacity-0 transition-opacity group-hover:opacity-100" />
 					</CircularProgressBar>
-					<Button
-						className="*:fill-primary! *:text-primary! z-20 size-full rounded-full p-3 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-transparent"
+					<IconButton
+						label={isPlaying ? 'Pause Btn' : 'Play Btn'}
+						className="*:fill-fm-icon-active! *:text-fm-icon-active! absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 transform rounded-full p-3 opacity-0 transition-opacity group-hover:opacity-100"
 						onClick={handlePlayPause}
 						variant="ghost"
-						size="icon"
 						tooltip={isPlaying ? 'Pause' : 'Play'}
-					>
-						<IfElse condition={isPlaying} if={<Pause />} else={<Play />} />
-					</Button>
+						size="small"
+						icon={isPlaying ? <Pause /> : <Play />}
+					/>
 				</div>
 			</div>
 		</div>

@@ -18,10 +18,11 @@ import { cn } from '@/lib/aural-ui/utils'
 
 import { TNote } from '@/types/plate-types'
 
+import DeleteNote from './delete-note'
 import EditNote from './edit-note'
 
 const Notes = () => {
-	const { isFormOpen, setFormOpen } = useEditorNoteStore()
+	const { isFormOpen, setFormOpen, showDelete } = useEditorNoteStore()
 	const { useEpisodeTableStore, setNotes } = useEpisodeStore()
 	const notes = useEpisodeTableStore(useShallow((state) => state.notes))
 	const { data, isLoading } = useNotesData()
@@ -75,6 +76,9 @@ const Notes = () => {
 				</If>
 				<If condition={isFormOpen}>
 					<EditNote />
+				</If>
+				<If condition={showDelete}>
+					<DeleteNote />
 				</If>
 			</div>
 		)

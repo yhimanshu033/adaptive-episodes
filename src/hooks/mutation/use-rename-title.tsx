@@ -7,6 +7,7 @@ import {
 	RENAME_EPISODE_MUTATION,
 } from '@/constants/query-constants'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { getEpisodeContent, saveContent } from '@/server-action/content-action'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -27,7 +28,10 @@ const useRenameTitleMutation = () => {
 
 	const onError = (error: Error) => {
 		toast.error(
-			error.message || 'Something went wrong while renaming the title'
+			error.message || 'Something went wrong while renaming the title',
+			{
+				icon: <BubbleCrossedIcon />,
+			}
 		)
 	}
 

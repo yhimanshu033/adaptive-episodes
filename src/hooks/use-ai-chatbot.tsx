@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
 	createContext,
+	RefObject,
 	useContext,
 	useEffect,
 	useMemo,
@@ -55,9 +56,13 @@ type TChatbotContext = {
 	handleSendMessage: (e: React.FormEvent) => void
 	handleSuggestion: (suggestion: TStoryChatSuggestion) => void
 	input: string
+	isFocused: boolean
 	isPending: boolean
 	removeReview: () => void
 	setInput: React.Dispatch<React.SetStateAction<string>>
+	setIsFocused: React.Dispatch<React.SetStateAction<boolean>>
+	textContainerRef: React.RefObject<HTMLDivElement>
+	textareaRef: React.RefObject<HTMLTextAreaElement>
 }
 
 const ChatbotContext = createContext<TChatbotContext>({
@@ -72,6 +77,10 @@ const ChatbotContext = createContext<TChatbotContext>({
 	setInput: () => {},
 	isPending: false,
 	removeReview: () => {},
+	isFocused: false,
+	setIsFocused: () => {},
+	textContainerRef: null as unknown as RefObject<HTMLDivElement>,
+	textareaRef: null as unknown as RefObject<HTMLTextAreaElement>,
 })
 
 export function ChatbotProvider({
@@ -86,6 +95,9 @@ export function ChatbotProvider({
 	const [reviewStreaming, setReviewStreaming] = useState<string>('')
 	const [originalChildren, setOriginalChildren] = useState<Value>()
 	const [blockStreaming, setBlockStreaming] = useState<string>('')
+	const [isFocused, setIsFocused] = useState<boolean>(false)
+	const textContainerRef = useRef<HTMLDivElement>(null)
+	const textareaRef = useRef<HTMLTextAreaElement>(null)
 
 	const {
 		store,
@@ -189,6 +201,8 @@ export function ChatbotProvider({
 		}
 		if (suggestion.action === EChatMode.PROMPTS) {
 			setInput(suggestion.value)
+			setIsFocused(true)
+			setTimeout(() => textareaRef.current?.focus(), 0)
 			return
 		}
 		addMessages({ role: EMessenger.USER, content: suggestion.value })
@@ -441,6 +455,22 @@ export function ChatbotProvider({
 		}
 	}, [blockStreaming, taskEnded[blockStreaming], responses[blockStreaming]])
 
+	useEffect(() => {
+		function handleClickOutside(event: MouseEvent) {
+			if (
+				textContainerRef.current &&
+				!textContainerRef.current.contains(event.target as Node)
+			) {
+				setIsFocused(false)
+			}
+		}
+
+		document.addEventListener('mousedown', handleClickOutside)
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside)
+		}
+	}, [setIsFocused])
+
 	const lastMessage = useMemo(() => messages[messages.length - 1], [messages])
 	const disabled = !!(
 		changesPending ||
@@ -464,8 +494,12 @@ export function ChatbotProvider({
 		handleSendMessage,
 		input,
 		setInput,
+		isFocused,
+		setIsFocused,
 		cancelRequest,
 		clearMessages,
+		textContainerRef,
+		textareaRef,
 	}
 
 	return (

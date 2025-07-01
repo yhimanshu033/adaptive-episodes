@@ -111,11 +111,14 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 										))}
 									</div>
 									<div className="flex h-full items-end justify-center">
-										<div onClick={() => setSidebar(ESidebar.NOTES, true)}>
+										<div
+											className="cursor-pointer"
+											onClick={() => setSidebar(ESidebar.NOTES, true)}
+										>
 											<Image
 												src={VIEW_SAVED_NOTES_URL}
-												width={300}
-												height={44}
+												width={350}
+												height={52}
 												alt="Notes Banner"
 												priority
 											/>

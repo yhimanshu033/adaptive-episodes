@@ -249,6 +249,7 @@ export function ImportStory() {
 					if (data?.success === false) {
 						toast.error('Story upload failed, please retry!', {
 							description: 'There might be an issue with the format.',
+							icon: <BubbleCrossedIcon />,
 						})
 					}
 				},
@@ -392,7 +393,7 @@ export function ImportStory() {
 													control={form.control}
 													name="target_language"
 													render={({ field }) => {
-														const inputLang = form.getValues(
+														const inputLang = form.watch(
 															'input_language'
 														) as ELanguage
 														const adaptedLanguages =

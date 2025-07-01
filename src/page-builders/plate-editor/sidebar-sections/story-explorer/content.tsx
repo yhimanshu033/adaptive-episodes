@@ -41,6 +41,8 @@ const Content = ({
 					onClick={() => {
 						setActiveExplorerActions(activeExplorerMode, null)
 					}}
+					shape="square"
+					size="small"
 					icon={<CrossIcon className="size-4" />}
 				/>
 			</div>
