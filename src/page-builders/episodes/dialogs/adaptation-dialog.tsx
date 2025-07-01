@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
 import { useParams } from 'next/navigation'
-import { SOURCE_TO_TARGET_LANGUAGE_MAP } from '@/constants/ai-constants'
 import { languageToTitle } from '@/constants/episodes-constants'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { TickCircleIcon } from '@/icons/tick-circle-icon'
@@ -42,6 +41,7 @@ export default function AdaptationDialog({
 	setOpenDialog,
 }: AdaptationDialogProps) {
 	const {
+		selectableLanguages,
 		currentLanguage,
 		mutate,
 		open,
@@ -153,8 +153,12 @@ export default function AdaptationDialog({
 		)
 	}
 
+	const handleDialogChange = () => {
+		setOpenExitDialog(true)
+	}
+
 	return (
-		<Dialog open={adaptOpen} onOpenChange={setAdaptDialogOpen}>
+		<Dialog open={adaptOpen} onOpenChange={handleDialogChange}>
 			<DialogContent
 				variant="neutral"
 				glass="high"
@@ -215,9 +219,7 @@ export default function AdaptationDialog({
 											placeholder="Select adaptation language "
 											value={selectedAdaptingLanguage}
 											onValueChange={setSelectedAdaptingLanguage}
-											selectableLanguages={
-												SOURCE_TO_TARGET_LANGUAGE_MAP[selectedAdaptingLanguage]
-											}
+											selectableLanguages={selectableLanguages}
 											showSeparator
 											classes={{
 												trigger: {
