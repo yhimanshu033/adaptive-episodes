@@ -10,6 +10,7 @@ import useEpisodeIdStore from '@/store/episode-id-store'
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
 import { If } from '@/components/aural-ui/if-else'
+import DeleteModal from '@/components/delete-modal'
 
 export function ActionButtons({
 	id,
@@ -36,6 +37,11 @@ export function ActionButtons({
 
 	const handelDelete = () => {
 		handleDeleteNote(id)
+	}
+
+	const deleteModalContent = {
+		title: 'Are you sure you want to delete this?',
+		subTitle: "Once deleted, this can't be undone.",
 	}
 
 	const { icon: deleteIcon, text: deleteText } = useMemo(() => {
@@ -81,16 +87,21 @@ export function ActionButtons({
 					Edit
 				</Button>
 			</If>
-			<Button
-				variant="text"
-				onClick={handelDelete}
-				leftIcon={deleteIcon}
-				size="sm"
-				innerClassName="!p-0"
-				className="text-fm-negative"
+			<DeleteModal
+				onPrimaryClick={handelDelete}
+				title={deleteModalContent.title}
+				subTitle={deleteModalContent.subTitle}
 			>
-				{deleteText}
-			</Button>
+				<Button
+					variant="text"
+					leftIcon={deleteIcon}
+					size="sm"
+					innerClassName="!p-0"
+					className="text-fm-negative"
+				>
+					{deleteText}
+				</Button>
+			</DeleteModal>
 		</div>
 	)
 }

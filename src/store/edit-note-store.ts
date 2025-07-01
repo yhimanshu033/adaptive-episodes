@@ -9,6 +9,8 @@ type TEditNoteState = {
 	mode: EditNoteMode
 	setFormOpen: (isOpen: boolean) => void
 	setMode: (mode: EditNoteMode) => void
+	setShowDelete: (showDelete: boolean) => void
+	showDelete: boolean
 }
 
 const useEditorNoteStore = create<TEditNoteState>()(
@@ -16,6 +18,7 @@ const useEditorNoteStore = create<TEditNoteState>()(
 		immer((set) => ({
 			mode: 'Add',
 			isFormOpen: false,
+			showDelete: false,
 			setMode: (mode) => {
 				set((state) => {
 					state.mode = mode
@@ -24,6 +27,11 @@ const useEditorNoteStore = create<TEditNoteState>()(
 			setFormOpen: (isOpen) => {
 				set((state) => {
 					state.isFormOpen = isOpen
+				})
+			},
+			setShowDelete: (showDelete) => {
+				set((state) => {
+					state.showDelete = showDelete
 				})
 			},
 		}))
