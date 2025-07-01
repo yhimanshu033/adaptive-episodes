@@ -10,7 +10,6 @@ import useEpisodeIdStore from '@/store/episode-id-store'
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
 import { If } from '@/components/aural-ui/if-else'
-import DeleteModal from '@/components/delete-modal'
 
 export function ActionButtons({
 	id,
@@ -25,8 +24,8 @@ export function ActionButtons({
 	id: string
 	isExpandable: boolean
 }) {
-	const { setFormOpen, setMode } = useEditorNoteStore()
-	const { handleDeleteNote, isPending } = useNotes()
+	const { setFormOpen, setMode, setShowDelete } = useEditorNoteStore()
+	const { isPending } = useNotes()
 	const { setActiveNoteId } = useEpisodeIdStore()
 
 	const handleEdit = () => {
@@ -36,12 +35,8 @@ export function ActionButtons({
 	}
 
 	const handelDelete = () => {
-		handleDeleteNote(id)
-	}
-
-	const deleteModalContent = {
-		title: 'Are you sure you want to delete this?',
-		subTitle: "Once deleted, this can't be undone.",
+		setActiveNoteId(id)
+		setShowDelete(true)
 	}
 
 	const { icon: deleteIcon, text: deleteText } = useMemo(() => {
@@ -89,21 +84,16 @@ export function ActionButtons({
 					Edit
 				</Button>
 			</If>
-			<DeleteModal
-				onPrimaryClick={handelDelete}
-				title={deleteModalContent.title}
-				subTitle={deleteModalContent.subTitle}
+			<Button
+				variant="text"
+				leftIcon={deleteIcon}
+				size="sm"
+				innerClassName="!p-0"
+				className="text-fm-negative/80 hover:text-fm-negative"
+				onClick={handelDelete}
 			>
-				<Button
-					variant="text"
-					leftIcon={deleteIcon}
-					size="sm"
-					innerClassName="!p-0"
-					className="text-fm-negative/80 hover:text-fm-negative"
-				>
-					{deleteText}
-				</Button>
-			</DeleteModal>
+				{deleteText}
+			</Button>
 		</div>
 	)
 }
