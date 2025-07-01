@@ -77,6 +77,7 @@ export default function PlayerAudio() {
 						</div>
 						<div className="h-6">
 							<Slider
+								variant="secondary"
 								className="rounded-md"
 								value={[time]}
 								max={duration}
@@ -99,13 +100,12 @@ export default function PlayerAudio() {
 						className="border-fm-primary absolute top-0.5 right-0.5 size-4 border opacity-0 group-hover:opacity-100"
 						icon={<CrossCircleIcon />}
 					/>
-					{/* bg-fm-neutral-500 ring-fm-neutral-200 */}
 					<CircularProgressBar
 						className="absolute inset-0 -z-10 size-full"
 						value={time}
 						min={0}
 						max={duration}
-						gaugePrimaryColor="var(--color-fm-neutral-500)"
+						gaugePrimaryColor="var(--color-fm-green-500)"
 						gaugeSecondaryColor="var(--color-fm-neutral-200)"
 					>
 						<Image
@@ -113,7 +113,7 @@ export default function PlayerAudio() {
 							className="size-full rounded-full p-0.5"
 							alt={info.chapter || 'chapter-image'}
 						/>
-						<div className="bg-fm-neutral-50/50 absolute inset-0 rounded-full opacity-0 transition-opacity group-hover:opacity-100" />
+						<div className="bg-fm-neutral-50/50 absolute inset-0 m-1 rounded-full opacity-0 transition-opacity group-hover:opacity-100" />
 					</CircularProgressBar>
 					<IconButton
 						label={isPlaying ? 'Pause Btn' : 'Play Btn'}

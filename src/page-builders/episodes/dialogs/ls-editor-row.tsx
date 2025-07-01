@@ -81,7 +81,16 @@ const LSEditorRow = memo(
 										value={item.type}
 										onValueChange={(value) => updateField(index, 'type', value)}
 									>
-										<SelectTrigger decoration="filled">
+										<SelectTrigger
+											decoration="filled"
+											classes={{
+												root: cn('', {
+													'border-0 bg-fm-transparent pl-0 !cursor-text':
+														disabled,
+												}),
+												icon: cn('', { hidden: disabled }),
+											}}
+										>
 											<SelectValue placeholder="Type" />
 										</SelectTrigger>
 										<SelectContent>
@@ -106,7 +115,16 @@ const LSEditorRow = memo(
 													updateField(index, 'gender', value)
 												}
 											>
-												<SelectTrigger decoration="filled">
+												<SelectTrigger
+													decoration="filled"
+													classes={{
+														root: cn({
+															'border-0 bg-fm-transparent pl-0 !cursor-text':
+																disabled,
+														}),
+														icon: cn({ hidden: disabled }),
+													}}
+												>
 													<SelectValue placeholder="Gender" />
 												</SelectTrigger>
 												<SelectContent>
@@ -140,6 +158,12 @@ const LSEditorRow = memo(
 										onChange={(e) => updateField(index, key, e.target.value)}
 										placeholder={key}
 										decoration="filled"
+										classes={{
+											input: cn('', {
+												'border-0 pl-0 !text-fm-primary bg-transparent !cursor-text':
+													disabled,
+											}),
+										}}
 									/>
 								</Case>
 							</SwitchCase>

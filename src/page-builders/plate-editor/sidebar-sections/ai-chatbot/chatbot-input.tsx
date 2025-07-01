@@ -3,6 +3,7 @@ import useAIChatbot from '@/hooks/use-ai-chatbot'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import ChevronUpIcon from '@/icons/chevron-up-icon'
 import { StopIcon } from '@/icons/stop-icon'
+import { CheckboxDropdown } from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/checkbox-dropdown'
 import { Settings } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
@@ -10,8 +11,6 @@ import { Button } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import TextArea, { textareaVariants } from '@/components/aural-ui/textarea'
 import { cn } from '@/lib/aural-ui/utils'
-
-import { CheckboxDropdown } from './checkbox-dropdown'
 
 const ChatbotInput = () => {
 	const {
@@ -24,6 +23,7 @@ const ChatbotInput = () => {
 		isFocused,
 		setIsFocused,
 		textContainerRef,
+		textareaRef,
 	} = useAIChatbot()
 
 	const dict = useTranslations('placeholders')
@@ -42,6 +42,7 @@ const ChatbotInput = () => {
 		>
 			<form onSubmit={handleSendMessage}>
 				<TextArea
+					ref={textareaRef}
 					fullWidth
 					value={input}
 					disabled={disabled}

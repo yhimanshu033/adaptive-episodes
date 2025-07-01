@@ -62,6 +62,7 @@ type TChatbotContext = {
 	setInput: React.Dispatch<React.SetStateAction<string>>
 	setIsFocused: React.Dispatch<React.SetStateAction<boolean>>
 	textContainerRef: React.RefObject<HTMLDivElement>
+	textareaRef: React.RefObject<HTMLTextAreaElement>
 }
 
 const ChatbotContext = createContext<TChatbotContext>({
@@ -79,6 +80,7 @@ const ChatbotContext = createContext<TChatbotContext>({
 	isFocused: false,
 	setIsFocused: () => {},
 	textContainerRef: null as unknown as RefObject<HTMLDivElement>,
+	textareaRef: null as unknown as RefObject<HTMLTextAreaElement>,
 })
 
 export function ChatbotProvider({
@@ -95,6 +97,7 @@ export function ChatbotProvider({
 	const [blockStreaming, setBlockStreaming] = useState<string>('')
 	const [isFocused, setIsFocused] = useState<boolean>(false)
 	const textContainerRef = useRef<HTMLDivElement>(null)
+	const textareaRef = useRef<HTMLTextAreaElement>(null)
 
 	const {
 		store,
@@ -199,6 +202,7 @@ export function ChatbotProvider({
 		if (suggestion.action === EChatMode.PROMPTS) {
 			setInput(suggestion.value)
 			setIsFocused(true)
+			setTimeout(() => textareaRef.current?.focus(), 0)
 			return
 		}
 		addMessages({ role: EMessenger.USER, content: suggestion.value })
@@ -495,6 +499,7 @@ export function ChatbotProvider({
 		cancelRequest,
 		clearMessages,
 		textContainerRef,
+		textareaRef,
 	}
 
 	return (
