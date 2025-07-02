@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import {
 	BaseCommentsPlugin,
 	getCommentKey,
@@ -23,44 +23,66 @@ export default function useComments() {
 	const editor = useEditorRef()
 	const commentsOption = useOption('comments')
 
-	const allComments: TComment[] = commentsOption
-		? Object.values(commentsOption)
-		: []
-	const activeCommentId = useOption('activeCommentId')
-
-	const replies = allComments.filter((elm) => !!elm.parentId)
-
-	const comments: (TComment & { replies: TComment[] })[] = allComments
-		.filter((elm) => !elm.parentId)
-		.map((elm) => ({ ...elm, replies: [] }))
-
-	comments.forEach((comment) => {
-		comment.replies = replies.filter((reply) => reply.parentId === comment.id)
-	})
-
-	const nodes = getCommentNodeEntries(editor)
+	// Memoize nodes to prevent unnecessary recalculations
+	const nodes = useMemo(() => getCommentNodeEntries(editor), [editor])
 
 	const { children, tf } = useEditorState()
 
-	const sortedComments: TCustomComment[] = (nodes as TCommentText[][])
-		.filter(([node]) => node.comment)
-		.map(([node]) => {
-			const comment = comments.find((comment) =>
-				Object.keys(node).includes(getCommentKey(comment.id))
-			)
-			if (comment) {
-				return { ...comment, node }
-			}
+	const allComments: TComment[] = useMemo(
+		() => (commentsOption ? Object.values(commentsOption) : []),
+		[commentsOption]
+	)
+
+	const activeCommentId = useOption('activeCommentId')
+
+	const replies = useMemo(
+		() => allComments.filter((elm) => !!elm.parentId),
+		[allComments]
+	)
+
+	const comments: (TComment & { replies: TComment[] })[] = useMemo(
+		() =>
+			allComments
+				.filter((elm) => !elm.parentId)
+				.map((elm) => ({
+					...elm,
+					replies: replies.filter((reply) => reply.parentId === elm.id),
+				})),
+		[allComments, replies]
+	)
+
+	// Create a comment lookup map for O(1) access instead of O(n) find operations
+	const commentMap = useMemo(() => {
+		const map = new Map<string, TComment & { replies: TComment[] }>()
+		comments.forEach((comment) => {
+			map.set(getCommentKey(comment.id), comment)
 		})
-		.filter((comment) => !!comment)
-		.reduce((uniqueComments, comment) => {
-			if (
-				!uniqueComments.some((uniqueComment) => uniqueComment.id === comment.id)
-			) {
-				uniqueComments.push(comment)
+		return map
+	}, [comments])
+
+	// Optimized sortedComments with better algorithm complexity
+	const sortedComments: TCustomComment[] = useMemo(() => {
+		const seenComments = new Set<string>()
+		const result: TCustomComment[] = []
+
+		for (const [node] of nodes as TCommentText[][]) {
+			if (!node.comment) {
+				continue
 			}
-			return uniqueComments
-		}, [] as TCustomComment[])
+
+			// Use for...in for better performance than Object.keys()
+			for (const key in node) {
+				const comment = commentMap.get(key)
+				if (comment && !seenComments.has(comment.id)) {
+					seenComments.add(comment.id)
+					result.push({ ...comment, node })
+					break // Exit inner loop once comment is found
+				}
+			}
+		}
+
+		return result
+	}, [nodes, commentMap])
 
 	const resetActiveComments = useCallback(() => {
 		if (!someNode(editor, { match: (n) => n[BaseCommentsPlugin.key] })) {
@@ -70,13 +92,21 @@ export default function useComments() {
 		}
 	}, [editor, setOptions])
 
-	const commentExists = comments.find(
-		(comment) => comment.id === activeCommentId
+	const commentExists = useMemo(
+		() => comments.find((comment) => comment.id === activeCommentId),
+		[activeCommentId, comments]
 	)
 
-	const isCommented = (id: string) => {
-		return sortedComments.some((comment) => comment.id === id)
-	}
+	// Optimized isCommented using Set for O(1) lookup
+	const commentIdSet = useMemo(
+		() => new Set(sortedComments.map((comment) => comment.id)),
+		[sortedComments]
+	)
+
+	const isCommented = useCallback(
+		(id: string) => commentIdSet.has(id),
+		[commentIdSet]
+	)
 
 	const addComment = useCallback(
 		(comment: TCustomComment) => {
