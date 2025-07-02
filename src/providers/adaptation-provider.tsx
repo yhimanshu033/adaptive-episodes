@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { PREFERABLE_LANGUAGES } from '@/constants/ai-constants'
+import {
+	PREFERABLE_LANGUAGES,
+	SOURCE_TO_TARGET_LANGUAGE_MAP,
+} from '@/constants/ai-constants'
 import { ELLMModel } from '@/constants/episodes-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
 import AdaptationDialog from '@/page-builders/episodes/adaptation-dialog'
@@ -81,7 +84,9 @@ function useAdaptationUtil() {
 	)
 
 	const selectableLanguages = useMemo(
-		() => getSelectableLanguages(currentLanguage),
+		() =>
+			SOURCE_TO_TARGET_LANGUAGE_MAP[currentLanguage] ||
+			getSelectableLanguages(currentLanguage),
 		[currentLanguage]
 	)
 
@@ -109,13 +114,13 @@ function useAdaptationUtil() {
 	}, [selectedRowData, resetMutations])
 
 	useEffect(() => {
-		if (step === 4 && !open) {
+		if (!open) {
 			resetMutations()
 			setFetchingLSSheet(false)
 			setSelectedRowData([])
 			return
 		}
-	}, [step, open, resetMutations])
+	}, [open, resetMutations])
 
 	return {
 		selectedRowData,
