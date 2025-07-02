@@ -114,13 +114,13 @@ function useAdaptationUtil() {
 	}, [selectedRowData, resetMutations])
 
 	useEffect(() => {
-		if (!open) {
+		if (step === 4 && !open) {
 			resetMutations()
 			setFetchingLSSheet(false)
 			setSelectedRowData([])
 			return
 		}
-	}, [open, resetMutations])
+	}, [open, resetMutations, step])
 
 	return {
 		selectedRowData,
