@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { PREFERABLE_LANGUAGES } from '@/constants/ai-constants'
 import { ELLMModel } from '@/constants/episodes-constants'
+import { INDEXED_DB_KEYS } from '@/constants/global-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
 import AdaptationDialog from '@/page-builders/episodes/adaptation-dialog'
 
@@ -8,6 +9,7 @@ import {
 	getSelectableLanguages,
 	parseInputLSMapping,
 } from '@/lib/utils/helpers'
+import { getRecentStore } from '@/lib/utils/indexed-db'
 
 import { ELanguage, LSMappingOutput, TSourceLanguage } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
@@ -23,7 +25,7 @@ function useAdaptationUtil() {
 	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
 	const [isFetchingLSSheet, setFetchingLSSheet] = useState<boolean>(false)
 	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
-	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.GEMINI)
+	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.HYBRID)
 
 	const {
 		createLSMutation: { mutate, isPending, data, reset },
@@ -116,6 +118,21 @@ function useAdaptationUtil() {
 			return
 		}
 	}, [step, open, resetMutations])
+
+	useEffect(() => {
+		if (step !== 3) {
+			return
+		}
+		const fetchLlmModel = async () => {
+			const model =
+				(await getRecentStore<ELLMModel>(INDEXED_DB_KEYS.LLM_MODEL)) ||
+				ELLMModel.HYBRID
+			if (model) {
+				setLLMModel(model)
+			}
+		}
+		void fetchLlmModel()
+	}, [step])
 
 	return {
 		selectedRowData,

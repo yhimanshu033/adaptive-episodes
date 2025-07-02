@@ -230,6 +230,13 @@ export function parseOptimistically<T>(input: string) {
 	} catch (e) {
 		console.log('Jsonrepair failed:', e)
 	}
+	try {
+		const patchedString = patchBrokenJson(cleanedInput)
+		const repaired = jsonrepair(patchedString)
+		return parse(repaired) as T
+	} catch (e) {
+		console.log('Patch broken JSON failed:', e)
+	}
 
 	// Needs to debug why this is not working
 	// try {
