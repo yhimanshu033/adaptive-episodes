@@ -6,7 +6,6 @@ import { AI_USER_ID } from '@/constants/ai-constants'
 import { AI_AVATAR } from '@/constants/editor-constants'
 import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
-import useComments from '@/hooks/plate/use-comments'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CopyIcon } from '@/icons/copy-icon'
@@ -15,10 +14,11 @@ import useAIStore from '@/store/ai-store'
 import useShowExampleVisibility from '@/store/comment-store'
 import usePlateStore from '@/store/plate-store'
 import {
+	CommentsPlugin,
 	useCommentItemContentState,
 	useCommentReplies,
 } from '@udecode/plate-comments/react'
-import { useEditorReadOnly } from '@udecode/plate-common/react'
+import { useEditorPlugin, useEditorReadOnly } from '@udecode/plate-common/react'
 import { formatDistance } from 'date-fns'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -41,6 +41,9 @@ import StreamedResponse from '@/components/ui/streamed-response'
 import { PlateUser } from '@/types/plate-types'
 
 export default function CommentItemContent() {
+	const { useOption } = useEditorPlugin(CommentsPlugin)
+	const activeCommentId = useOption('activeCommentId')
+
 	const scrollRef = useRef<HTMLDivElement>(null)
 
 	const {
@@ -71,8 +74,6 @@ export default function CommentItemContent() {
 		() => Object.values(commentReplies).length,
 		[commentReplies]
 	)
-
-	const { activeCommentId } = useComments()
 
 	const readOnly = useEditorReadOnly()
 
