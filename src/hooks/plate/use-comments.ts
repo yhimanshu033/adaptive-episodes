@@ -24,32 +24,24 @@ export default function useComments() {
 	const commentsOption = useOption('comments')
 
 	// Memoize nodes to prevent unnecessary recalculations
-	const nodes = useMemo(() => getCommentNodeEntries(editor), [editor])
+	const nodes = getCommentNodeEntries(editor)
 
 	const { children, tf } = useEditorState()
 
-	const allComments: TComment[] = useMemo(
-		() => (commentsOption ? Object.values(commentsOption) : []),
-		[commentsOption]
-	)
+	const allComments: TComment[] = commentsOption
+		? Object.values(commentsOption)
+		: []
 
 	const activeCommentId = useOption('activeCommentId')
 
-	const replies = useMemo(
-		() => allComments.filter((elm) => !!elm.parentId),
-		[allComments]
-	)
+	const replies = allComments.filter((elm) => !!elm.parentId)
 
-	const comments: (TComment & { replies: TComment[] })[] = useMemo(
-		() =>
-			allComments
-				.filter((elm) => !elm.parentId)
-				.map((elm) => ({
-					...elm,
-					replies: replies.filter((reply) => reply.parentId === elm.id),
-				})),
-		[allComments, replies]
-	)
+	const comments: (TComment & { replies: TComment[] })[] = allComments
+		.filter((elm) => !elm.parentId)
+		.map((elm) => ({
+			...elm,
+			replies: replies.filter((reply) => reply.parentId === elm.id),
+		}))
 
 	// Create a comment lookup map for O(1) access instead of O(n) find operations
 	const commentMap = useMemo(() => {
