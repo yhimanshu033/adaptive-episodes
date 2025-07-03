@@ -1,65 +1,90 @@
 'use client'
 
-import React from 'react'
-import useComments from '@/hooks/plate/use-comments'
+import React, { useCallback, useMemo } from 'react'
 import usePlateStore from '@/store/plate-store'
 import { cn } from '@udecode/cn'
 import type { TCommentText } from '@udecode/plate-comments'
 import {
+	CommentsPlugin,
 	useCommentLeaf,
 	useCommentLeafState,
 } from '@udecode/plate-comments/react'
-import { PlateLeaf, type PlateLeafProps } from '@udecode/plate-common/react'
+import {
+	PlateLeaf,
+	useEditorPlugin,
+	type PlateLeafProps,
+} from '@udecode/plate-common/react'
 
 import { ESidebar } from '@/types/plate-types'
 
-export function CommentLeaf({
+export const CommentLeaf = React.memo(function CommentLeaf({
 	className,
 	...props
 }: PlateLeafProps<TCommentText>) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { children, leaf, nodeProps } = props
-	const { set } = useComments()
+	const { setOptions: set } = useEditorPlugin(CommentsPlugin)
 	const { store, setSidebar, setResolved } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
 
-	const isActive = sidebar === ESidebar.COMMENTS && state.isActive
+	// Memoize expensive computations
+	const isActive = useMemo(
+		() => sidebar === ESidebar.COMMENTS && state.isActive,
+		[sidebar, state.isActive]
+	)
 
+	const aboveChildren = useMemo(() => {
+		if (isActive || state.commentCount <= 1) {
+			return children as React.ReactNode
+		}
+
+		let result = children as React.ReactNode
+		for (let i = 1; i < state.commentCount; i++) {
+			result = <span className="bg-primary/20">{result}</span>
+		}
+		return result
+	}, [children, state.commentCount, isActive])
+
+	const handleMouseDown = useCallback(
+		(e: React.MouseEvent) => {
+			setSidebar(ESidebar.COMMENTS)
+			setResolved(false)
+			set({ activeCommentId: state.lastCommentId })
+			props?.onClick?.(e as React.MouseEvent<HTMLSpanElement, MouseEvent>)
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[setSidebar, setResolved, set, state.lastCommentId, props.onClick]
+	)
+
+	const commentClassName = useMemo(
+		() =>
+			cn(
+				'border-b-primary/40 hover:bg-primary/40 border-b-2',
+				isActive ? 'bg-primary/40' : 'bg-primary/20',
+				className
+			),
+		[isActive, className]
+	)
+
+	// Early return for no comments
 	if (!state.commentCount) {
 		return children as React.ReactNode
-	}
-
-	let aboveChildren = children as React.ReactNode
-
-	if (!isActive) {
-		for (let i = 1; i < state.commentCount; i++) {
-			aboveChildren = <span className="bg-primary/20">{aboveChildren}</span>
-		}
 	}
 
 	return (
 		<PlateLeaf
 			id={`comment-leaf-${state.lastCommentId}`}
 			{...props}
-			className={cn(
-				'border-b-primary/40 hover:bg-primary/40 border-b-2',
-				isActive ? 'bg-primary/40' : 'bg-primary/20',
-				className
-			)}
+			className={commentClassName}
 			nodeProps={{
 				...rootProps,
 				...nodeProps,
 			}}
-			onMouseDown={(e) => {
-				setSidebar(ESidebar.COMMENTS)
-				setResolved(false)
-				set({ activeCommentId: state.lastCommentId })
-				props.onClick?.(e)
-			}}
+			onMouseDown={handleMouseDown}
 		>
 			{aboveChildren}
 		</PlateLeaf>
 	)
-}
+})

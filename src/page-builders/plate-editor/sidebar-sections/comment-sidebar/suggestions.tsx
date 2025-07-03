@@ -5,8 +5,8 @@ import {
 	SuggestionTypesMap,
 } from '@/constants/editor-constants'
 import { roleToData } from '@/constants/global-constants'
-import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
+import { CommentsPlugin } from '@udecode/plate-comments/react'
 import { useEditorPlugin } from '@udecode/plate-common/react'
 import { TSuggestionDescription } from '@udecode/plate-suggestion'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
@@ -25,7 +25,10 @@ const SuggestionBlock = ({
 	description: TSuggestionDescription
 }) => {
 	const { useOption } = useEditorPlugin(SuggestionPlugin)
-	const { activeCommentId, set: setCommentOption } = useComments()
+	const { useOption: useCommentOption, setOptions: setCommentOption } =
+		useEditorPlugin(CommentsPlugin)
+	const activeCommentId = useCommentOption('activeCommentId')
+
 	const user = useOption('suggestionUserById', description?.userId) as
 		| PlateUser
 		| undefined
