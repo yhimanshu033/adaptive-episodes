@@ -8,31 +8,48 @@ import {
 } from '@udecode/plate-comments'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
 import { someNode } from '@udecode/plate-common'
+import { useEditorPlugin, useEditorRef } from '@udecode/plate-common/react'
+
+import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import {
-	useEditorPlugin,
-	useEditorRef,
-	useEditorState,
-} from '@udecode/plate-common/react'
+	addUnresolvedCommentInChildren,
+	sortCommentsAndDescriptions,
+} from '@/lib/utils/plate'
 
-import { addUnresolvedCommentInChildren } from '@/lib/utils/plate'
+import { TCustomComment, TReview } from '@/types/editor-types'
 
-import { TCustomComment } from '@/types/editor-types'
+import useSuggestions from './use-suggestions'
+
+// Custom hook that only subscribes to comment-related state
+const useCommentEditorState = () => {
+	const editor = useEditorRef()
+
+	// Subscribe only to comment-related changes
+	const commentsOption = editor.useOption(CommentsPlugin, 'comments')
+	const activeCommentId = editor.useOption(CommentsPlugin, 'activeCommentId')
+
+	return {
+		editor,
+		children: editor.children,
+		tf: editor.tf,
+		commentsOption,
+		activeCommentId,
+	}
+}
 
 export default function useComments() {
 	const { useOption, setOptions } = useEditorPlugin(CommentsPlugin)
-	const editor = useEditorRef()
-	const commentsOption = useOption('comments')
+	const { editor, children, tf, commentsOption, activeCommentId } =
+		useCommentEditorState()
+	const { descriptions } = useSuggestions()
+	const { resolvedComments } = useResolvedComments()
 
 	// Memoize nodes to prevent unnecessary recalculations
 	const nodes = getCommentNodeEntries(editor)
 
-	const { children, tf } = useEditorState()
-
 	const allComments: TComment[] = commentsOption
 		? Object.values(commentsOption)
 		: []
-
-	const activeCommentId = useOption('activeCommentId')
 
 	const replies = allComments.filter((elm) => !!elm.parentId)
 
@@ -117,6 +134,31 @@ export default function useComments() {
 		[children, setOptions, tf, commentsOption]
 	)
 
+	const setActiveComment = useCallback(
+		(comment: TCustomComment) => {
+			editor.setOption(BaseCommentsPlugin, 'activeCommentId', comment.id)
+		},
+		[editor]
+	)
+
+	// Memoize unresolved comments filtering
+	const unresolvedComments = useMemo(
+		() => [...sortedComments].filter((comment) => !comment.isResolved),
+		[sortedComments]
+	)
+
+	// Memoize comments and descriptions sorting - remove editor.children dependency
+	const commentsAndDescriptions: TReview[] = useMemo(
+		() =>
+			sortCommentsAndDescriptions(
+				editor.children,
+				unresolvedComments,
+				descriptions
+			),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[unresolvedComments, descriptions] // Removed editor.children to prevent re-renders on content changes
+	)
+
 	return {
 		allComments,
 		comments,
@@ -129,5 +171,8 @@ export default function useComments() {
 		commentExists,
 		isCommented,
 		addComment,
+		setActiveComment,
+		resolvedComments,
+		commentsAndDescriptions,
 	}
 }
