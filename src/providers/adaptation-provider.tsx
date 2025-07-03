@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { PREFERABLE_LANGUAGES } from '@/constants/ai-constants'
+import {
+	PREFERABLE_LANGUAGES,
+	SOURCE_TO_TARGET_LANGUAGE_MAP,
+} from '@/constants/ai-constants'
 import { ELLMModel } from '@/constants/episodes-constants'
 import { INDEXED_DB_KEYS } from '@/constants/global-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
@@ -83,7 +86,9 @@ function useAdaptationUtil() {
 	)
 
 	const selectableLanguages = useMemo(
-		() => getSelectableLanguages(currentLanguage),
+		() =>
+			SOURCE_TO_TARGET_LANGUAGE_MAP[currentLanguage] ||
+			getSelectableLanguages(currentLanguage),
 		[currentLanguage]
 	)
 
@@ -117,7 +122,7 @@ function useAdaptationUtil() {
 			setSelectedRowData([])
 			return
 		}
-	}, [step, open, resetMutations])
+	}, [open, resetMutations, step])
 
 	useEffect(() => {
 		if (step !== 3) {
