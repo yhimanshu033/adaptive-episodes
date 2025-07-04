@@ -14,8 +14,8 @@ import { useEditorPlugin, useEditorReadOnly } from '@udecode/plate-common/react'
 
 import { Button, buttonVariants } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
-import { Else, If, IfElse } from '@/components/aural-ui/if-else'
-import TextArea from '@/components/aural-ui/textarea'
+import { If } from '@/components/aural-ui/if-else'
+import { TextAreaBase } from '@/components/aural-ui/textarea'
 import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
 
 export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
@@ -85,8 +85,16 @@ export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 			<If condition={!!activeCommentId && !comments[activeCommentId]}>
 				<CommentAvatar userId={myUserId} />
 			</If>
-			<div className="relative flex w-full flex-col">
-				<TextArea
+			<div
+				className={cn(
+					'border-fm-divider-primary bg-fm-surface-frosted/20 rounded-fm-s relative flex w-full flex-col overflow-hidden border py-2 transition-all duration-300 ease-in-out',
+					{
+						'border-fm-divider-contrast': focused,
+						'gap-2 pb-1': showActions,
+					}
+				)}
+			>
+				<TextAreaBase
 					{...textAreaProps}
 					autoFocus={autoFocus}
 					placeholder="Reply"
@@ -95,54 +103,49 @@ export function CommentCreateForm({ autoFocus }: { autoFocus?: boolean }) {
 					onBlur={handleBlur}
 					onFocus={handleFocus}
 					decoration="filled"
-					minHeight={showActions ? 90 : 35}
+					minHeight={showActions ? 40 : 20}
+					maxHeight={showActions ? 90 : 20}
 					autoGrow={true}
-					classes={{
-						textarea: cn('', {
-							'!border-b-0 !rounded-b-none mb-9': showActions,
-							'!h-fit': !showActions,
-						}),
-					}}
+					unstyled={true}
+					className="placeholder:text-fm-tertiary w-full resize-none px-3 text-sm outline-none placeholder:text-sm"
 				/>
-				<IfElse condition={showActions}>
-					<If>
-						<div
-							className={cn(
-								'border-fm-divider-primary rounded-b-fm-s absolute inset-x-0 bottom-0 flex flex-col border border-t-0',
-								{
-									'border-fm-divider-contrast': focused,
-								}
-							)}
-						>
-							<Divider className="mt-2 w-[90%]" />
-
-							<div className="bg-fm-surface-frosted/20 flex items-center justify-end gap-4 pr-4">
-								<Button
-									onClick={handleCancel}
-									variant="text"
-									className="text-fm-primary"
-									innerClassName="translate-none"
-									size="sm"
-								>
-									Cancel
-								</Button>
-								<CommentNewSubmitButton
-									className={cn(
-										buttonVariants({
-											variant: 'text',
-										}),
-										'!text-fm-sm text-fm-secondary-800'
-									)}
-								>
-									Comment
-								</CommentNewSubmitButton>
-							</div>
+				<div
+					className={cn(
+						'max-h-0 overflow-hidden px-3 opacity-0 transition-all duration-300 ease-in-out',
+						{ 'max-h-10 opacity-100': showActions }
+					)}
+				>
+					<div className="flex flex-col gap-1">
+						<Divider />
+						<div className="flex items-center justify-end gap-4">
+							<Button
+								onClick={handleCancel}
+								variant="text"
+								className="text-fm-primary"
+								innerClassName="translate-none"
+								size="sm"
+							>
+								Cancel
+							</Button>
+							<CommentNewSubmitButton
+								className={cn(
+									buttonVariants({
+										variant: 'text',
+									}),
+									'!text-fm-sm text-fm-secondary-800'
+								)}
+							>
+								Comment
+							</CommentNewSubmitButton>
 						</div>
-					</If>
-					<Else>
-						<PaperPlaneIcon className="text-fm-icon-inactive absolute top-3 right-3 size-4.5" />
-					</Else>
-				</IfElse>
+					</div>
+				</div>
+				<PaperPlaneIcon
+					className={cn(
+						'text-fm-icon-inactive absolute top-2 right-3 size-4.5 opacity-100 transition-opacity duration-300',
+						{ 'opacity-0': showActions }
+					)}
+				/>
 			</div>
 		</div>
 	)
