@@ -162,17 +162,20 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						? EStatus.FIRST_DRAFT
 						: row.getValue('status')
 				const latestIndex = statuses.indexOf(latestStatus)
+				// @ts-expect-error type any
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const tagProps = statusTagProps[latestStatus]
 
 				if (!(isGerman || isOriginal)) {
 					return null
 				}
 				if (row.depth) {
-					return latestStatus
+					return (
+						<Tag {...tagProps} emphasis="secondary" className="ml-4">
+							{titleToStatusText[latestStatus]}
+						</Tag>
+					)
 				}
-
-				// @ts-expect-error type any
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				const tagProps = statusTagProps[latestStatus]
 
 				if (!isWriter) {
 					return (
@@ -220,9 +223,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 									{statuses.map((status, index) => (
 										<div key={status}>
 											<SelectItem
-												disabled={
-													index < latestIndex || index > latestIndex + 1
-												}
+												disabled={index != latestIndex + 1}
 												value={status}
 												className="h-10 !text-sm"
 											>

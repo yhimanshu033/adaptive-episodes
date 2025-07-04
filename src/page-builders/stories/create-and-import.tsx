@@ -4,6 +4,7 @@ import { CI_DIALOG_TITLE } from '@/constants/story-constants'
 import { CrossIcon } from '@/icons/cross-icon'
 import { ImportStory } from '@/page-builders/stories/import-story'
 import useStoryStore from '@/store/story-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import {
 	Dialog,
@@ -24,7 +25,16 @@ interface ICreateAndImportProps {
 
 const CreateAndImport = ({ children }: ICreateAndImportProps) => {
 	const { isFormOpen, title, showTitle, setFormOpen, setTitle, setShowTitle } =
-		useStoryStore()
+		useStoryStore(
+			useShallow((state) => ({
+				isFormOpen: state.isFormOpen,
+				title: state.title,
+				showTitle: state.showTitle,
+				setFormOpen: state.setFormOpen,
+				setTitle: state.setTitle,
+				setShowTitle: state.setShowTitle,
+			}))
+		)
 
 	const onOpenChange = (open: boolean) => {
 		setFormOpen(open)

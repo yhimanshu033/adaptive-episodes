@@ -17,7 +17,12 @@ import {
 import { Typography } from '@/components/aural-ui/typography'
 
 const DeleteNote = () => {
-	const { showDelete: isOpen, setShowDelete } = useEditorNoteStore()
+	const { isOpen, setShowDelete } = useEditorNoteStore(
+		useShallow((state) => ({
+			isOpen: state.showDelete,
+			setShowDelete: state.setShowDelete,
+		}))
+	)
 	const { store, setActiveNoteId } = useEpisodeIdStore()
 	const id = store(useShallow((state) => state.activeNoteId))
 	const { handleDeleteNote } = useNotes()
