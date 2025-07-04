@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils/helpers'
 
 import { TCustomComment } from '@/types/editor-types'
 
-export default function CommentCard({
+export default React.memo(function CommentCard({
 	comment,
 	activeCommentId,
 	myUserId,
@@ -88,4 +88,4 @@ export default function CommentCard({
 			</div>
 		</CommentProvider>
 	)
-}
+})

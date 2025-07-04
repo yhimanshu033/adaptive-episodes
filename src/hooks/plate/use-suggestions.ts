@@ -24,15 +24,35 @@ import {
 } from '@udecode/plate-suggestion'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 
-const useSuggestions = () => {
+// Custom hook that only subscribes to suggestion-related state
+const useSuggestionEditorState = () => {
 	const editor = useEditorRef()
-	const { setOption, useOption } = useEditorPlugin(SuggestionPlugin)
-	const activeSuggestionId = useOption('activeSuggestionId')
+
+	// Subscribe only to suggestion-related changes
+	const activeSuggestionId = editor.useOption(
+		SuggestionPlugin,
+		'activeSuggestionId'
+	)
+	const users = editor.useOption(SuggestionPlugin, 'users')
+	const currentUserId = editor.useOption(SuggestionPlugin, 'currentUserId')
+
+	return {
+		editor,
+		activeSuggestionId,
+		users,
+		currentUserId,
+	}
+}
+
+const useSuggestions = () => {
+	const { editor, activeSuggestionId } = useSuggestionEditorState()
+	const { setOption } = useEditorPlugin(SuggestionPlugin)
 	const activeSuggestionDescription = getActiveSuggestionDescriptions(editor)[0]
 
-	// Memoize all suggestion nodes to prevent repeated calculations
-	const allSuggestionNodes = useMemo(
-		() =>
+	const findAllSuggestionNodes = useCallback(
+		<E extends PlateEditor>(
+			editor: E
+		): Array<{ node: TSuggestionText; path: any }> =>
 			Array.from(
 				editor.nodes<TSuggestionText>({
 					match: (n) => BaseSuggestionPlugin.key in n,
@@ -40,23 +60,8 @@ const useSuggestions = () => {
 				}),
 				([node, path]) => ({ node, path })
 			),
-		[editor]
+		[]
 	)
-
-	// Create a map of suggestion nodes grouped by suggestionId for O(1) lookup
-	const suggestionNodesMap = useMemo(() => {
-		const map = new Map<string, Array<{ node: TSuggestionText; path: any }>>()
-
-		allSuggestionNodes.forEach(({ node, path }) => {
-			const suggestionId = node.suggestionId!
-			if (!map.has(suggestionId)) {
-				map.set(suggestionId, [])
-			}
-			map.get(suggestionId)!.push({ node, path })
-		})
-
-		return map
-	}, [allSuggestionNodes])
 
 	const createSuggestionDescription = useCallback(
 		({
@@ -113,23 +118,20 @@ const useSuggestions = () => {
 		[]
 	)
 
-	// Memoize all suggestion descriptions to prevent repeated calculations
-	const getAllSuggestionDescriptions = useMemo(
-		() =>
-			(editor: PlateEditor): TSuggestionDescription[] => {
-				const descriptions: TSuggestionDescription[] = []
+	const getAllSuggestionDescriptions = useCallback(
+		(editor: PlateEditor): TSuggestionDescription[] => {
+			const processedSuggestionIds = new Set<string>()
 
-				// Use the pre-computed map instead of filtering on every iteration
-				for (const [suggestionId, suggestionNodes] of suggestionNodesMap) {
-					const userIds = new Set<string>()
+			return findAllSuggestionNodes(editor).reduce<TSuggestionDescription[]>(
+				(descriptions, { node }) => {
+					const suggestionId = node.suggestionId!
+					if (processedSuggestionIds.has(suggestionId)) {
+						return descriptions
+					}
 
-					// Collect unique user IDs for this suggestion
-					suggestionNodes.forEach(({ node }) => {
-						getSuggestionUserIds(node).forEach((userId) => userIds.add(userId))
-					})
+					processedSuggestionIds.add(suggestionId)
 
-					// Process each user ID
-					userIds.forEach((userId) => {
+					getSuggestionUserIds(node).forEach((userId) => {
 						const nodes = Array.from(
 							getSuggestionNodeEntries(editor, suggestionId, {
 								match: (n: any) => n[getSuggestionKey(userId)],
@@ -147,31 +149,41 @@ const useSuggestions = () => {
 							descriptions.push(description)
 						}
 					})
-				}
 
-				return descriptions
-			},
-		[suggestionNodesMap, createSuggestionDescription]
-	)
-
-	const suggestionAction = useCallback(
-		(action: SuggestionActions, description?: TSuggestionDescription) => {
-			if (action === SuggestionActions.REJECT) {
-				rejectSuggestion(editor, description || activeSuggestionDescription)
-			} else {
-				acceptSuggestion(editor, description || activeSuggestionDescription)
-			}
+					return descriptions
+				},
+				[]
+			)
 		},
-		[editor, activeSuggestionDescription]
+		[findAllSuggestionNodes, createSuggestionDescription]
 	)
+
+	const suggestionAction = (
+		action: SuggestionActions,
+		description?: TSuggestionDescription
+	) => {
+		if (action === SuggestionActions.REJECT) {
+			rejectSuggestion(editor, description || activeSuggestionDescription)
+		} else {
+			acceptSuggestion(editor, description || activeSuggestionDescription)
+		}
+	}
 
 	const isLastLeaf = useCallback(
 		(leaf: TSuggestionText) => {
-			const nodes = suggestionNodesMap.get(leaf.suggestionId!) || []
-			return nodes.length > 0 && nodes[nodes.length - 1].node.text === leaf.text
+			const nodes = findAllSuggestionNodes(editor).filter(
+				({ node }) => node.suggestionId === leaf.suggestionId
+			)
+			return nodes[nodes.length - 1].node.text === leaf.text
 		},
-		[suggestionNodesMap]
+		[editor, findAllSuggestionNodes]
 	)
+
+	// Memoize descriptions to avoid recalculating on every render
+	// Only recalculate when suggestion nodes change
+	const descriptions = useMemo(() => {
+		return getAllSuggestionDescriptions(editor)
+	}, [getAllSuggestionDescriptions, editor])
 
 	return {
 		activeSuggestionId,
@@ -180,6 +192,7 @@ const useSuggestions = () => {
 		activeSuggestionDescription,
 		getAllSuggestionDescriptions,
 		isLastLeaf,
+		descriptions,
 	}
 }
 
