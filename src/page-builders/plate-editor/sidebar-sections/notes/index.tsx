@@ -22,9 +22,13 @@ import DeleteNote from './delete-note'
 import EditNote from './edit-note'
 
 const Notes = () => {
-	const isFormOpen = useEditorNoteStore((state) => state.isFormOpen)
-	const setFormOpen = useEditorNoteStore((state) => state.setFormOpen)
-	const showDelete = useEditorNoteStore((state) => state.showDelete)
+	const { isFormOpen, setFormOpen, showDelete } = useEditorNoteStore(
+		useShallow((state) => ({
+			isFormOpen: state.isFormOpen,
+			setFormOpen: state.setFormOpen,
+			showDelete: state.showDelete,
+		}))
+	)
 
 	const { useEpisodeTableStore, setNotes } = useEpisodeStore()
 	const notes = useEpisodeTableStore(useShallow((state) => state.notes))

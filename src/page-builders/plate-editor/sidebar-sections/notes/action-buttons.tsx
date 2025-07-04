@@ -6,6 +6,7 @@ import { EyeOpenIcon } from '@/icons/eye-open-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import useEditorNoteStore from '@/store/edit-note-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
@@ -24,9 +25,13 @@ export function ActionButtons({
 	id: string
 	isExpandable: boolean
 }) {
-	const setFormOpen = useEditorNoteStore((state) => state.setFormOpen)
-	const setMode = useEditorNoteStore((state) => state.setMode)
-	const setShowDelete = useEditorNoteStore((state) => state.setShowDelete)
+	const { setFormOpen, setMode, setShowDelete } = useEditorNoteStore(
+		useShallow((state) => ({
+			setFormOpen: state.setFormOpen,
+			setMode: state.setMode,
+			setShowDelete: state.setShowDelete,
+		}))
+	)
 
 	const { isPending } = useNotes()
 	const { setActiveNoteId } = useEpisodeIdStore()

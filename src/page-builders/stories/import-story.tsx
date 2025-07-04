@@ -32,6 +32,7 @@ import ChooseStoryTypes from '@/page-builders/stories/choose-story-types'
 import DeleteModal from '@/page-builders/stories/delete-modal'
 import useStoryStore from '@/store/story-store'
 import { toast } from 'sonner'
+import { useShallow } from 'zustand/react/shallow'
 
 import Badge from '@/components/aural-ui/badge'
 import { Button, buttonVariants } from '@/components/aural-ui/button'
@@ -70,9 +71,13 @@ export function ImportStory() {
 	const [imageSrc, setImageSrc] = useState<string | null>(null)
 	const imageInputRef = useRef<HTMLInputElement | null>(null)
 	const storyInputRef = useRef<HTMLInputElement | null>(null)
-	const setFormOpen = useStoryStore((state) => state.setFormOpen)
-	const setShowTitle = useStoryStore((state) => state.setShowTitle)
-	const showTitle = useStoryStore((state) => state.showTitle)
+	const { setFormOpen, setShowTitle, showTitle } = useStoryStore(
+		useShallow((state) => ({
+			setFormOpen: state.setFormOpen,
+			setShowTitle: state.setShowTitle,
+			showTitle: state.showTitle,
+		}))
+	)
 	const { storyUploadMutation } = useStoryUploadHook()
 	const { getResponse } = useSocket()
 
