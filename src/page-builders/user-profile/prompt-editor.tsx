@@ -37,7 +37,8 @@ const promptTypes = [
 ]
 
 const PromptEditor = () => {
-	const { isFormOpen, setFormOpen } = usePromptEditorStore()
+	const isFormOpen = usePromptEditorStore((state) => state.isFormOpen)
+	const setFormOpen = usePromptEditorStore((state) => state.setFormOpen)
 	const [selectedType, setSelectedType] = useState(promptTypes[0].value)
 	const [promptText, setPromptText] = useState(selectedType)
 

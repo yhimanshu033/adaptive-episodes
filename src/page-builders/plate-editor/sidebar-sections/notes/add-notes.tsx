@@ -5,7 +5,7 @@ import useEditorNoteStore from '@/store/edit-note-store'
 import { Button } from '@/components/aural-ui/button'
 
 const AddNotes = () => {
-	const { setFormOpen } = useEditorNoteStore()
+	const setFormOpen = useEditorNoteStore((state) => state.setFormOpen)
 
 	const onClickAddNote = () => {
 		setFormOpen(true)

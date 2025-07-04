@@ -24,7 +24,10 @@ export function ActionButtons({
 	id: string
 	isExpandable: boolean
 }) {
-	const { setFormOpen, setMode, setShowDelete } = useEditorNoteStore()
+	const setFormOpen = useEditorNoteStore((state) => state.setFormOpen)
+	const setMode = useEditorNoteStore((state) => state.setMode)
+	const setShowDelete = useEditorNoteStore((state) => state.setShowDelete)
+
 	const { isPending } = useNotes()
 	const { setActiveNoteId } = useEpisodeIdStore()
 

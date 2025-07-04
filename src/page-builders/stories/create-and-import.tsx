@@ -23,8 +23,12 @@ interface ICreateAndImportProps {
 }
 
 const CreateAndImport = ({ children }: ICreateAndImportProps) => {
-	const { isFormOpen, title, showTitle, setFormOpen, setTitle, setShowTitle } =
-		useStoryStore()
+	const isFormOpen = useStoryStore((state) => state.isFormOpen)
+	const title = useStoryStore((state) => state.title)
+	const showTitle = useStoryStore((state) => state.showTitle)
+	const setFormOpen = useStoryStore((state) => state.setFormOpen)
+	const setTitle = useStoryStore((state) => state.setTitle)
+	const setShowTitle = useStoryStore((state) => state.setShowTitle)
 
 	const onOpenChange = (open: boolean) => {
 		setFormOpen(open)

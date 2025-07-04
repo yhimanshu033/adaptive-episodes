@@ -50,7 +50,7 @@ const ChooseStoryTypes = ({
 	buttonText,
 	nextStep,
 }: IChooseStoryPropsType) => {
-	const { setTitle } = useStoryStore()
+	const setTitle = useStoryStore((state) => state.setTitle)
 
 	const handleButtonClick = () => {
 		if (storyType === ImportStoryType.EMPTY) {

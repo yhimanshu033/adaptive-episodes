@@ -28,7 +28,7 @@ type IUserProfileDropDownProps = {
 const UserProfileDropDown = ({ children }: IUserProfileDropDownProps) => {
 	const { session } = useAuth()
 	const isInternal = useIsInternal()
-	const { setFormOpen } = useEditPromptsStore()
+	const setFormOpen = useEditPromptsStore((state) => state.setFormOpen)
 	const user = session?.data?.user
 	const fallbackInitial = user?.fullname?.charAt(0) ?? '?'
 

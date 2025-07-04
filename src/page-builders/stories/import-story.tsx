@@ -70,8 +70,9 @@ export function ImportStory() {
 	const [imageSrc, setImageSrc] = useState<string | null>(null)
 	const imageInputRef = useRef<HTMLInputElement | null>(null)
 	const storyInputRef = useRef<HTMLInputElement | null>(null)
-	const { setFormOpen, setShowTitle, showTitle } = useStoryStore()
-
+	const setFormOpen = useStoryStore((state) => state.setFormOpen)
+	const setShowTitle = useStoryStore((state) => state.setShowTitle)
+	const showTitle = useStoryStore((state) => state.showTitle)
 	const { storyUploadMutation } = useStoryUploadHook()
 	const { getResponse } = useSocket()
 
