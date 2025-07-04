@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { SOURCE_TO_TARGET_LANGUAGE_MAP } from '@/constants/ai-constants'
 import { ELLMModel } from '@/constants/episodes-constants'
-import { SAMPLE_DOC_LINK } from '@/constants/global-constants'
+import { INDEXED_DB_KEYS, SAMPLE_DOC_LINK } from '@/constants/global-constants'
 import {
 	StoryImportFormSchema,
 	useStoryImportFormResolver,
@@ -39,6 +39,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { FetchResponseResult } from '@/lib/fetch-api'
 import { cn } from '@/lib/utils/helpers'
+import { setRecentStore } from '@/lib/utils/indexed-db'
 
 import { ELanguage } from '@/types/common'
 
@@ -238,7 +239,10 @@ export function ImportStory() {
 										<FormControl>
 											<LLMModelSelector
 												value={field.value as ELLMModel}
-												onValueChange={field.onChange}
+												onValueChange={(e) => {
+													field.onChange(e)
+													void setRecentStore(INDEXED_DB_KEYS.LLM_MODEL, e)
+												}}
 											/>
 										</FormControl>
 										<FormMessage />

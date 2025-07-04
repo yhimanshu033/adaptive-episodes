@@ -65,11 +65,7 @@ const EpisodesTable = () => {
 		}
 	}, [searchedRow, isEpisodesLoading])
 
-	if (
-		initialStoryData?.is_original &&
-		!isEpisodesLoading &&
-		!tableData.length
-	) {
+	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
 		return <AdaptationContainer />
 	}
 

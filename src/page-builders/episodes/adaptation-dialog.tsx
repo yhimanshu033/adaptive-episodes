@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { languageToTitle } from '@/constants/episodes-constants'
+import { INDEXED_DB_KEYS } from '@/constants/global-constants'
 import LSTableEditor from '@/page-builders/episodes/ls-editor'
 import { ArrowRight, CheckCircle, Info } from 'lucide-react'
 
@@ -21,6 +22,7 @@ import {
 import Spinner from '@/components/ui/spinner'
 import useAdaptation from '@/providers/adaptation-provider'
 import { getSourceLanguage } from '@/lib/utils/helpers'
+import { setRecentStore } from '@/lib/utils/indexed-db'
 
 import { ELanguage } from '@/types/common'
 
@@ -159,7 +161,10 @@ export default function AdaptationDialog({
 						<DialogFooter>
 							<LLMModelSelector
 								value={llmModel}
-								onValueChange={setLLMModel}
+								onValueChange={(model) => {
+									setLLMModel(model)
+									void setRecentStore(INDEXED_DB_KEYS.LLM_MODEL, model)
+								}}
 								className="w-fit"
 							/>
 							<Button

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import {
 	SuggestionActions,
 	SuggestionTypes,
@@ -24,113 +24,139 @@ import {
 } from '@udecode/plate-suggestion'
 import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 
-const useSuggestions = () => {
+// Custom hook that only subscribes to suggestion-related state
+const useSuggestionEditorState = () => {
 	const editor = useEditorRef()
-	const { setOption, useOption } = useEditorPlugin(SuggestionPlugin)
-	const activeSuggestionId = useOption('activeSuggestionId')
+
+	// Subscribe only to suggestion-related changes
+	const activeSuggestionId = editor.useOption(
+		SuggestionPlugin,
+		'activeSuggestionId'
+	)
+	const users = editor.useOption(SuggestionPlugin, 'users')
+	const currentUserId = editor.useOption(SuggestionPlugin, 'currentUserId')
+
+	return {
+		editor,
+		activeSuggestionId,
+		users,
+		currentUserId,
+	}
+}
+
+const useSuggestions = () => {
+	const { editor, activeSuggestionId } = useSuggestionEditorState()
+	const { setOption } = useEditorPlugin(SuggestionPlugin)
 	const activeSuggestionDescription = getActiveSuggestionDescriptions(editor)[0]
 
-	const findAllSuggestionNodes = <E extends PlateEditor>(
-		editor: E
-	): Array<{ node: TSuggestionText; path: any }> =>
-		Array.from(
-			editor.nodes<TSuggestionText>({
-				match: (n) => BaseSuggestionPlugin.key in n,
-				at: [],
-			}),
-			([node, path]) => ({ node, path })
-		)
+	const findAllSuggestionNodes = useCallback(
+		<E extends PlateEditor>(
+			editor: E
+		): Array<{ node: TSuggestionText; path: any }> =>
+			Array.from(
+				editor.nodes<TSuggestionText>({
+					match: (n) => BaseSuggestionPlugin.key in n,
+					at: [],
+				}),
+				([node, path]) => ({ node, path })
+			),
+		[]
+	)
 
-	const createSuggestionDescription = ({
-		suggestionId,
-		userId,
-		nodes,
-	}: {
-		nodes: TSuggestionText[]
-		suggestionId: string
-		userId: string
-	}): TSuggestionDescription | null => {
-		const { insertedText, deletedText } = nodes.reduce(
-			(acc, node) => {
-				if (node.suggestionDeletion) {
-					acc.deletedText += node.text
-				} else {
-					acc.insertedText += node.text
+	const createSuggestionDescription = useCallback(
+		({
+			suggestionId,
+			userId,
+			nodes,
+		}: {
+			nodes: TSuggestionText[]
+			suggestionId: string
+			userId: string
+		}): TSuggestionDescription | null => {
+			const { insertedText, deletedText } = nodes.reduce(
+				(acc, node) => {
+					if (node.suggestionDeletion) {
+						acc.deletedText += node.text
+					} else {
+						acc.insertedText += node.text
+					}
+					return acc
+				},
+				{ insertedText: '', deletedText: '' }
+			)
+
+			if (insertedText && deletedText) {
+				return {
+					deletedText,
+					insertedText,
+					suggestionId,
+					type: SuggestionTypes.REPLACEMENT,
+					userId,
 				}
-				return acc
-			},
-			{ insertedText: '', deletedText: '' }
-		)
-
-		if (insertedText && deletedText) {
-			return {
-				deletedText,
-				insertedText,
-				suggestionId,
-				type: SuggestionTypes.REPLACEMENT,
-				userId,
 			}
-		}
 
-		if (deletedText) {
-			return {
-				deletedText,
-				suggestionId,
-				type: SuggestionTypes.DELETION,
-				userId,
-			}
-		}
-
-		if (insertedText) {
-			return {
-				insertedText,
-				suggestionId,
-				type: SuggestionTypes.INSERTION,
-				userId,
-			}
-		}
-
-		return null
-	}
-
-	const getAllSuggestionDescriptions = (
-		editor: PlateEditor
-	): TSuggestionDescription[] => {
-		const processedSuggestionIds = new Set<string>()
-
-		return findAllSuggestionNodes(editor).reduce<TSuggestionDescription[]>(
-			(descriptions, { node }) => {
-				const suggestionId = node.suggestionId!
-				if (processedSuggestionIds.has(suggestionId)) {
-					return descriptions
+			if (deletedText) {
+				return {
+					deletedText,
+					suggestionId,
+					type: SuggestionTypes.DELETION,
+					userId,
 				}
+			}
 
-				processedSuggestionIds.add(suggestionId)
+			if (insertedText) {
+				return {
+					insertedText,
+					suggestionId,
+					type: SuggestionTypes.INSERTION,
+					userId,
+				}
+			}
 
-				getSuggestionUserIds(node).forEach((userId) => {
-					const nodes = Array.from(
-						getSuggestionNodeEntries(editor, suggestionId, {
-							match: (n: any) => n[getSuggestionKey(userId)],
-						}),
-						([node]) => node
-					)
+			return null
+		},
+		[]
+	)
 
-					const description = createSuggestionDescription({
-						suggestionId,
-						userId,
-						nodes,
+	const getAllSuggestionDescriptions = useCallback(
+		(editor: PlateEditor): TSuggestionDescription[] => {
+			const processedSuggestionIds = new Set<string>()
+
+			return findAllSuggestionNodes(editor).reduce<TSuggestionDescription[]>(
+				(descriptions, { node }) => {
+					const suggestionId = node.suggestionId!
+					if (processedSuggestionIds.has(suggestionId)) {
+						return descriptions
+					}
+
+					processedSuggestionIds.add(suggestionId)
+
+					getSuggestionUserIds(node).forEach((userId) => {
+						const nodes = Array.from(
+							getSuggestionNodeEntries(editor, suggestionId, {
+								match: (n: any) => n[getSuggestionKey(userId)],
+							}),
+							([node]) => node
+						)
+
+						const description = createSuggestionDescription({
+							suggestionId,
+							userId,
+							nodes,
+						})
+
+						if (description) {
+							descriptions.push(description)
+						}
 					})
 
-					if (description) {
-						descriptions.push(description)
-					}
-				})
-
-				return descriptions
-			},
-			[]
-		)
-	}
+					return descriptions
+				},
+				[]
+			)
+		},
+		[findAllSuggestionNodes, createSuggestionDescription]
+	)
 
 	const suggestionAction = (
 		action: SuggestionActions,
@@ -150,8 +176,14 @@ const useSuggestions = () => {
 			)
 			return nodes[nodes.length - 1].node.text === leaf.text
 		},
-		[editor]
+		[editor, findAllSuggestionNodes]
 	)
+
+	// Memoize descriptions to avoid recalculating on every render
+	// Only recalculate when suggestion nodes change
+	const descriptions = useMemo(() => {
+		return getAllSuggestionDescriptions(editor)
+	}, [getAllSuggestionDescriptions, editor])
 
 	return {
 		activeSuggestionId,
@@ -160,6 +192,7 @@ const useSuggestions = () => {
 		activeSuggestionDescription,
 		getAllSuggestionDescriptions,
 		isLastLeaf,
+		descriptions,
 	}
 }
 

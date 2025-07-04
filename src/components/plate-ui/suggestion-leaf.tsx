@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { SuggestionActions } from '@/constants/editor-constants'
-import useComments from '@/hooks/plate/use-comments'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import usePlateStore from '@/store/plate-store'
-import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
+import { CommentsPlugin } from '@udecode/plate-comments/react'
+import {
+	PlateLeaf,
+	PlateLeafProps,
+	useEditorPlugin,
+} from '@udecode/plate-common/react'
 import { TSuggestionText } from '@udecode/plate-suggestion'
 import { Check, X } from 'lucide-react'
 
@@ -13,36 +17,79 @@ import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 
-export default function SuggestionLeaf({
+const SuggestionLeaf = ({
 	className,
 	...props
-}: PlateLeafProps<TSuggestionText>) {
+}: PlateLeafProps<TSuggestionText>) => {
 	const { children, leaf, nodeProps } = props
 	const { activeSuggestionId, set, suggestionAction, isLastLeaf } =
 		useSuggestions()
-	const { set: setCommentOptions, activeCommentId } = useComments()
+
+	const { setOption: setCommentOption, useOption } =
+		useEditorPlugin(CommentsPlugin)
+	const activeCommentId = useOption('activeCommentId')
+
 	const { setSidebar, setResolved } = usePlateStore()
 
-	const isActive = activeCommentId
-		? false
-		: activeSuggestionId === leaf.suggestionId && isLastLeaf(leaf)
+	// Memoize active state calculation
+	const isActive = useMemo(
+		() =>
+			activeCommentId
+				? false
+				: activeSuggestionId === leaf.suggestionId && isLastLeaf(leaf),
+		[activeCommentId, activeSuggestionId, isLastLeaf, leaf]
+	)
 
-	return (
-		<PlateLeaf
-			{...props}
-			id={`suggestion-leaf-${leaf.suggestionId}`}
-			className={cn(
+	// Memoize className calculation
+	const leafClassName = useMemo(
+		() =>
+			cn(
 				'relative border-b-2 border-b-green-800/20 bg-green-600/40 hover:bg-green-600/80',
 				leaf.suggestionDeletion && 'italic line-through',
 				isActive && 'bg-green-600/80',
 				className
-			)}
-			onClick={() => {
-				setCommentOptions({ activeCommentId: null })
-				set('activeSuggestionId', leaf.suggestionId || '')
-				setSidebar(ESidebar.COMMENTS)
-				setResolved(false)
-			}}
+			),
+		[leaf.suggestionDeletion, isActive, className]
+	)
+
+	// Memoize click handler to prevent recreation on every render
+	const handleClick = useCallback(() => {
+		setCommentOption('activeCommentId', null)
+		set('activeSuggestionId', leaf.suggestionId || '')
+		setSidebar(ESidebar.COMMENTS)
+		setResolved(false)
+	}, [setCommentOption, set, leaf.suggestionId, setSidebar, setResolved])
+
+	// Memoize accept handler
+	const handleAccept = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation()
+			suggestionAction(SuggestionActions.ACCEPT)
+		},
+		[suggestionAction]
+	)
+
+	// Memoize reject handler
+	const handleReject = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation()
+			suggestionAction(SuggestionActions.REJECT)
+		},
+		[suggestionAction]
+	)
+
+	// Memoize suggestion ID for DOM element
+	const suggestionElementId = useMemo(
+		() => `suggestion-leaf-${leaf.suggestionId}`,
+		[leaf.suggestionId]
+	)
+
+	return (
+		<PlateLeaf
+			{...props}
+			id={suggestionElementId}
+			className={leafClassName}
+			onClick={handleClick}
 			nodeProps={{ ...nodeProps }}
 		>
 			{isActive && (
@@ -51,10 +98,7 @@ export default function SuggestionLeaf({
 						variant="outline"
 						size="sm"
 						tooltip="Accept"
-						onClick={(e) => {
-							e.stopPropagation()
-							suggestionAction(SuggestionActions.ACCEPT)
-						}}
+						onClick={handleAccept}
 					>
 						<Check size={16} />
 					</Button>
@@ -62,10 +106,7 @@ export default function SuggestionLeaf({
 						variant="outline"
 						tooltip="Reject"
 						size="sm"
-						onClick={(e) => {
-							e.stopPropagation()
-							suggestionAction(SuggestionActions.REJECT)
-						}}
+						onClick={handleReject}
 					>
 						<X size={16} />
 					</Button>
@@ -76,3 +117,7 @@ export default function SuggestionLeaf({
 		</PlateLeaf>
 	)
 }
+
+SuggestionLeaf.displayName = 'SuggestionLeaf'
+
+export default SuggestionLeaf
