@@ -21,7 +21,6 @@ const CommentReplaceButton = () => {
 	const { props: deleteProps } = useCommentDeleteButton(deleteButtonState)
 
 	const findNodes = (id: string) => {
-		console.log(editor.children)
 		return Array.from(
 			editor.nodes<TCommentText>({
 				at: [],
