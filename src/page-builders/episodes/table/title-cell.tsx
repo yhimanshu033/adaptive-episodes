@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import useEpisodeTable from '@/hooks/use-episode-table'
+import Link from 'next/link'
 import { UseMutateFunction } from '@tanstack/react-query'
 import { Row } from '@tanstack/react-table'
 
@@ -35,7 +35,6 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 	renameTitle,
 	isPending = false,
 }) => {
-	const { handleTitleClick } = useEpisodeTable()
 	const editInputRef = useRef<HTMLInputElement>(null)
 	const [inputValue, setInputValue] = useState<string>(
 		row.original?.chapter_title || 'Untitled'
@@ -125,16 +124,14 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 					</div>
 				</If>
 				<Else>
-					<div
+					<Link
 						className="font-fm-text flex cursor-pointer items-center gap-2 text-sm"
-						onClick={() =>
-							handleTitleClick(row.original.parent || row.original.id)
-						}
+						href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/content`}
 					>
 						{isPending && inputValueMapRef.current[row.original.id]
 							? inputValueMapRef.current[row.original.id]
 							: row.getValue('chapter_title')}
-					</div>
+					</Link>
 				</Else>
 			</IfElse>
 		</div>

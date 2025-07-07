@@ -113,6 +113,7 @@
     "next-themes": "^0.4.4",
     "nextjs-toploader": "^3.7.15",
     "nuqs": "^2.2.3",
+    "platejs": "^49.1.5",
     "prismjs": "^1.29.0",
     "react": "^18",
     "react-day-picker": "^9.4.1",
