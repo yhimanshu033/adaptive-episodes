@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
-import { useMemo } from 'react'
 import { withProps } from '@udecode/cn'
 import { AlignPlugin } from '@udecode/plate-alignment/react'
 import { AutoformatPlugin } from '@udecode/plate-autoformat/react'
@@ -22,7 +20,6 @@ import {
 import { CodeBlockPlugin } from '@udecode/plate-code-block/react'
 import { TComment } from '@udecode/plate-comments'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
-// Memoize static plugin configurations
 import {
 	HtmlPlugin,
 	isBlockAboveEmpty,
@@ -93,7 +90,6 @@ const extraPlugins = [
 	HorizontalRulePlugin,
 	ResolvedCommentsPlugin,
 ]
-
 const extraPluginComponents = {
 	[LaserPlugin.key]: LaserLeaf,
 	[FindReplacePlugin.key]: SearchHighlightLeaf,
@@ -102,173 +98,6 @@ const extraPluginComponents = {
 	[SuggestionPlugin.key]: SuggestionLeaf,
 	[ResolvedCommentsPlugin.key]: ResolvedCommentLeaf,
 }
-
-const createBaseComponents = () =>
-	withPlaceholders({
-		[HorizontalRulePlugin.key]: HrElement,
-		[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
-		[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
-		[HEADING_KEYS.h3]: withProps(HeadingElement, { variant: 'h3' }),
-		[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
-		[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
-		[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
-		[BlockquotePlugin.key]: BlockquoteElement,
-		[ParagraphPlugin.key]: ParagraphElement,
-		[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
-		[HighlightPlugin.key]: HighlightLeaf,
-		[ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
-		[KbdPlugin.key]: KbdLeaf,
-		[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
-		[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
-	})
-
-// Memoize static plugin configurations
-const createStaticPlugins = () => [
-	// Marks
-	BoldPlugin,
-	ItalicPlugin,
-	UnderlinePlugin,
-	StrikethroughPlugin,
-	FontColorPlugin,
-	FontBackgroundColorPlugin,
-	HighlightPlugin,
-	KbdPlugin,
-	BlockquotePlugin,
-	// Block Style
-	BlockquotePlugin,
-	AlignPlugin.configure({
-		inject: {
-			targetPlugins: [ParagraphPlugin.key, ...HEADING_LEVELS],
-		},
-	}),
-	IndentPlugin.configure({
-		inject: {
-			nodeProps: {
-				styleKey: 'paddingLeft',
-			},
-		},
-		options: {
-			offset: 48,
-			unit: 'px',
-		},
-	}),
-	IndentListPlugin.configure({
-		inject: {
-			targetPlugins: [
-				ParagraphPlugin.key,
-				BlockquotePlugin.key,
-				...HEADING_LEVELS,
-			],
-		},
-		render: {
-			node: withProps(ListElement, { variant: 'ul' }),
-		},
-		options: {
-			listStyleTypes: {
-				todo: {
-					liComponent: TodoLi,
-					markerComponent: TodoMarker,
-					type: 'todo',
-				},
-			},
-		},
-	}),
-	LineHeightPlugin.configure({
-		inject: {
-			nodeProps: {
-				defaultNodeValue: 1.5,
-				validNodeValues: [1, 1.2, 1.5, 2, 3],
-			},
-			targetPlugins: [ParagraphPlugin.key, ...HEADING_LEVELS],
-		},
-	}),
-	// Functionality
-	AutoformatPlugin.configure({
-		options: {
-			rules: autoformatRules,
-			enableUndoOnDelete: true,
-		},
-	}),
-	ExitBreakPlugin.configure({
-		options: {
-			rules: [
-				{
-					hotkey: 'mod+enter',
-				},
-				{
-					hotkey: 'mod+shift+enter',
-					before: true,
-				},
-				{
-					hotkey: 'enter',
-					query: {
-						start: true,
-						end: true,
-						allow: HEADING_LEVELS,
-					},
-					relative: true,
-					level: 1,
-				},
-			],
-		},
-	}),
-	NodeIdPlugin,
-	ResetNodePlugin.configure({
-		options: {
-			rules: [
-				{
-					types: [BlockquotePlugin.key, TodoListPlugin.key],
-					defaultType: ParagraphPlugin.key,
-					hotkey: 'Enter',
-					predicate: isBlockAboveEmpty,
-				},
-				{
-					types: [BlockquotePlugin.key, TodoListPlugin.key],
-					defaultType: ParagraphPlugin.key,
-					hotkey: 'Backspace',
-					predicate: isSelectionAtBlockStart,
-				},
-				{
-					types: [CodeBlockPlugin.key],
-					defaultType: ParagraphPlugin.key,
-					onReset: unwrapCodeBlock,
-					hotkey: 'Enter',
-					predicate: isCodeBlockEmpty,
-				},
-				{
-					types: [CodeBlockPlugin.key],
-					defaultType: ParagraphPlugin.key,
-					onReset: unwrapCodeBlock,
-					hotkey: 'Backspace',
-					predicate: isSelectionAtCodeBlockStart,
-				},
-			],
-		},
-	}),
-	SelectOnBackspacePlugin.configure({
-		options: {
-			query: {
-				allow: [ImagePlugin.key, HorizontalRulePlugin.key],
-			},
-		},
-	}),
-	SoftBreakPlugin,
-	TrailingBlockPlugin.configure({
-		options: { type: ParagraphPlugin.key },
-	}),
-	DragOverCursorPlugin,
-	// Deserialization
-	DocxPlugin,
-	MarkdownPlugin,
-	JuicePlugin,
-	HtmlReactPlugin,
-	HtmlPlugin,
-]
-
-// Cache static configurations
-const staticPlugins = createStaticPlugins()
-const baseComponents = createBaseComponents()
-
 const useMyEditor = ({
 	content,
 	id,
@@ -287,15 +116,147 @@ const useMyEditor = ({
 		me: { user: userData },
 	} = useProjectId()
 
-	// Memoize processed content
-	const processedValue = useMemo(() => {
-		const initialValue = jsonify(content)
-		return breakDownValue(initialValue)
-	}, [content])
+	const initialValue = jsonify(content)
+	const value = breakDownValue(initialValue)
+	const editor = createPlateEditor({
+		plugins: [
+			...(simplified ? [] : extraPlugins),
+			// Marks
+			BoldPlugin,
+			ItalicPlugin,
+			UnderlinePlugin,
+			StrikethroughPlugin,
+			FontColorPlugin,
+			FontBackgroundColorPlugin,
+			HighlightPlugin,
+			KbdPlugin,
+			BlockquotePlugin,
+			// Block Style
+			BlockquotePlugin,
+			AlignPlugin.configure({
+				inject: {
+					targetPlugins: [ParagraphPlugin.key, ...HEADING_LEVELS],
+				},
+			}),
+			IndentPlugin.configure({
+				inject: {
+					nodeProps: {
+						styleKey: 'paddingLeft',
+					},
+				},
+				options: {
+					offset: 48,
+					unit: 'px',
+				},
+			}),
+			IndentListPlugin.configure({
+				inject: {
+					targetPlugins: [
+						ParagraphPlugin.key,
+						BlockquotePlugin.key,
+						...HEADING_LEVELS,
+					],
+				},
+				render: {
+					node: withProps(ListElement, { variant: 'ul' }),
+				},
+				options: {
+					listStyleTypes: {
+						todo: {
+							liComponent: TodoLi,
+							markerComponent: TodoMarker,
+							type: 'todo',
+						},
+					},
+				},
+			}),
+			LineHeightPlugin.configure({
+				inject: {
+					nodeProps: {
+						defaultNodeValue: 1.5,
+						validNodeValues: [1, 1.2, 1.5, 2, 3],
+					},
+					targetPlugins: [ParagraphPlugin.key, ...HEADING_LEVELS],
+				},
+			}),
 
-	// Memoize collaboration plugins that depend on dynamic data
-	const collaborationPlugins = useMemo(
-		() => [
+			// Functionality
+			AutoformatPlugin.configure({
+				options: {
+					rules: autoformatRules,
+					enableUndoOnDelete: true,
+				},
+			}),
+			ExitBreakPlugin.configure({
+				options: {
+					rules: [
+						{
+							hotkey: 'mod+enter',
+						},
+						{
+							hotkey: 'mod+shift+enter',
+							before: true,
+						},
+						{
+							hotkey: 'enter',
+							query: {
+								start: true,
+								end: true,
+								allow: HEADING_LEVELS,
+							},
+							relative: true,
+							level: 1,
+						},
+					],
+				},
+			}),
+			NodeIdPlugin,
+			ResetNodePlugin.configure({
+				options: {
+					rules: [
+						{
+							types: [BlockquotePlugin.key, TodoListPlugin.key],
+							defaultType: ParagraphPlugin.key,
+							hotkey: 'Enter',
+							predicate: isBlockAboveEmpty,
+						},
+						{
+							types: [BlockquotePlugin.key, TodoListPlugin.key],
+							defaultType: ParagraphPlugin.key,
+							hotkey: 'Backspace',
+							predicate: isSelectionAtBlockStart,
+						},
+						{
+							types: [CodeBlockPlugin.key],
+							defaultType: ParagraphPlugin.key,
+							onReset: unwrapCodeBlock,
+							hotkey: 'Enter',
+							predicate: isCodeBlockEmpty,
+						},
+						{
+							types: [CodeBlockPlugin.key],
+							defaultType: ParagraphPlugin.key,
+							onReset: unwrapCodeBlock,
+							hotkey: 'Backspace',
+							predicate: isSelectionAtCodeBlockStart,
+						},
+					],
+				},
+			}),
+			SelectOnBackspacePlugin.configure({
+				options: {
+					query: {
+						allow: [ImagePlugin.key, HorizontalRulePlugin.key],
+					},
+				},
+			}),
+			SoftBreakPlugin,
+			TrailingBlockPlugin.configure({
+				options: { type: ParagraphPlugin.key },
+			}),
+			DragOverCursorPlugin,
+
+			// Collaboration
 			CommentsPlugin.configure({
 				options: {
 					users,
@@ -314,45 +275,37 @@ const useMyEditor = ({
 					currentUserId: String(userData?.user?.id),
 				},
 			}),
+
+			// Deserialization
+			DocxPlugin,
+			MarkdownPlugin,
+			JuicePlugin,
+			HtmlReactPlugin,
+			HtmlPlugin,
 		],
-		[users, comments, userData?.user?.id, resolvedComments]
-	)
-
-	// Memoize final plugins array
-	const plugins = useMemo(
-		() => [
-			...(simplified ? [] : extraPlugins),
-			...staticPlugins,
-			...collaborationPlugins,
-		],
-		[simplified, collaborationPlugins]
-	)
-
-	// Memoize components
-	const components = useMemo(
-		() => ({
-			...(simplified
-				? baseComponents
-				: { ...baseComponents, ...extraPluginComponents }),
-		}),
-		[simplified]
-	)
-
-	// Memoize editor configuration
-	const editorConfig = useMemo(
-		() => ({
-			plugins,
-			override: {
-				components,
-			},
-			value: processedValue,
-			...(id ? { id } : {}),
-		}),
-		[plugins, components, processedValue, id]
-	)
-
-	// Create editor with memoized config
-	const editor = useMemo(() => createPlateEditor(editorConfig), [editorConfig])
+		override: {
+			components: withPlaceholders({
+				...(simplified ? {} : extraPluginComponents),
+				[HorizontalRulePlugin.key]: HrElement,
+				[HEADING_KEYS.h1]: withProps(HeadingElement, { variant: 'h1' }),
+				[HEADING_KEYS.h2]: withProps(HeadingElement, { variant: 'h2' }),
+				[HEADING_KEYS.h3]: withProps(HeadingElement, { variant: 'h3' }),
+				[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: 'h4' }),
+				[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: 'h5' }),
+				[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: 'h6' }),
+				[BlockquotePlugin.key]: BlockquoteElement,
+				[ParagraphPlugin.key]: ParagraphElement,
+				[BoldPlugin.key]: withProps(PlateLeaf, { as: 'strong' }),
+				[HighlightPlugin.key]: HighlightLeaf,
+				[ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
+				[KbdPlugin.key]: KbdLeaf,
+				[StrikethroughPlugin.key]: withProps(PlateLeaf, { as: 's' }),
+				[UnderlinePlugin.key]: withProps(PlateLeaf, { as: 'u' }),
+			}),
+		},
+		value,
+		...(id ? { id } : {}),
+	})
 
 	return editor
 }

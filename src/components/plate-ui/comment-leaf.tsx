@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useMemo } from 'react'
+import React from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import useComments from '@/hooks/plate/use-comments'
 import usePlateStore from '@/store/plate-store'
@@ -14,7 +14,7 @@ import { PlateLeaf, type PlateLeafProps } from '@udecode/plate-common/react'
 
 import { ESidebar } from '@/types/plate-types'
 
-export const CommentLeaf = React.memo(function CommentLeaf({
+export function CommentLeaf({
 	className,
 	...props
 }: PlateLeafProps<TCommentText>) {
@@ -26,84 +26,52 @@ export const CommentLeaf = React.memo(function CommentLeaf({
 	const state = useCommentLeafState({ leaf })
 	const { props: rootProps } = useCommentLeaf(state)
 
-	// Memoize expensive computations
-	const isActive = useMemo(
-		() => sidebar === ESidebar.COMMENTS && state.isActive,
-		[sidebar, state.isActive]
-	)
+	const isActive = sidebar === ESidebar.COMMENTS && state.isActive
 
-	const comment = useMemo(
-		() => comments.find((item) => item.id === state.lastCommentId),
-		[comments, state.lastCommentId]
-	)
+	const comment = comments.find((item) => item.id === state.lastCommentId)
 
-	const isAi = useMemo(() => comment?.userId === AI_USER_ID, [comment?.userId])
+	const isAi = comment?.userId === AI_USER_ID
 
-	// Memoize the nested spans creation
-	const aboveChildren = useMemo(() => {
-		if (!state.commentCount) {
-			return children as React.ReactNode
-		}
-
-		if (isActive || state.commentCount <= 1) {
-			return children as React.ReactNode
-		}
-
-		let result = children as React.ReactNode
-		for (let i = 1; i < state.commentCount; i++) {
-			result = <span className="bg-primary/20">{result}</span>
-		}
-		return result
-	}, [children, state.commentCount, isActive])
-
-	// Memoize className computation
-	const computedClassName = useMemo(() => {
-		return cn(
-			'border-fm-emerald-400/50 bg-fm-emerald-200/50 hover:border-fm-emerald-400 hover:bg-fm-emerald-200 border-b-1',
-			{
-				'border-fm-hotpink-400/50 bg-fm-hotpink-200/50 hover:border-fm-hotpink-400 hover:bg-fm-hotpink-200':
-					isAi,
-				'border-fm-hotpink-400 bg-fm-hotpink-400 hover:border-fm-hotpink-400 hover:bg-fm-hotpink-400 text-fm-hotpink-50':
-					isActive && isAi,
-				'border-fm-emerald-400 bg-fm-emerald-400 hover:border-fm-emerald-400 hover:bg-fm-emerald-400 text-fm-emerald-50':
-					isActive && !isAi,
-			},
-			className
-		)
-	}, [isAi, isActive, className])
-
-	// Memoize combined nodeProps
-	const combinedNodeProps = useMemo(
-		() => ({ ...rootProps, ...nodeProps }),
-		[rootProps, nodeProps]
-	)
-
-	// Memoize mouse down handler
-	const handleMouseDown = useCallback(
-		(e: React.MouseEvent) => {
-			setSidebar(ESidebar.COMMENTS)
-			setResolved(false)
-			set({ activeCommentId: state.lastCommentId })
-			props?.onClick?.(e as React.MouseEvent<HTMLSpanElement, MouseEvent>)
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[setSidebar, setResolved, set, state.lastCommentId, props.onClick]
-	)
-
-	// Early return for no comments
 	if (!state.commentCount) {
 		return children as React.ReactNode
+	}
+
+	let aboveChildren = children as React.ReactNode
+
+	if (!isActive) {
+		for (let i = 1; i < state.commentCount; i++) {
+			aboveChildren = <span className="bg-primary/20">{aboveChildren}</span>
+		}
 	}
 
 	return (
 		<PlateLeaf
 			id={`comment-leaf-${state.lastCommentId}`}
 			{...props}
-			className={computedClassName}
-			nodeProps={combinedNodeProps}
-			onMouseDown={handleMouseDown}
+			className={cn(
+				'border-fm-emerald-400/50 bg-fm-emerald-200/50 hover:border-fm-emerald-400 hover:bg-fm-emerald-200 border-b-1',
+				{
+					'border-fm-hotpink-400/50 bg-fm-hotpink-200/50 hover:border-fm-hotpink-400 hover:bg-fm-hotpink-200':
+						isAi,
+					'border-fm-hotpink-400 bg-fm-hotpink-400 hover:border-fm-hotpink-400 hover:bg-fm-hotpink-400 text-fm-hotpink-50':
+						isActive && isAi,
+					'border-fm-emerald-400 bg-fm-emerald-400 hover:border-fm-emerald-400 hover:bg-fm-emerald-400 text-fm-emerald-50':
+						isActive && !isAi,
+				},
+				className
+			)}
+			nodeProps={{
+				...rootProps,
+				...nodeProps,
+			}}
+			onMouseDown={(e) => {
+				setSidebar(ESidebar.COMMENTS)
+				setResolved(false)
+				set({ activeCommentId: state.lastCommentId })
+				props.onClick?.(e)
+			}}
 		>
 			{aboveChildren}
 		</PlateLeaf>
 	)
-})
+}

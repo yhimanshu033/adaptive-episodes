@@ -1,10 +1,13 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import useComments from '@/hooks/plate/use-comments'
+import useSuggestions from '@/hooks/plate/use-suggestions'
 import { FilterBarRowIcon } from '@/icons/filter-bar-row-icon'
 import { TickIcon } from '@/icons/tick-icon'
 import ResolvedCommentItem from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/resolved-comment'
 import SuggestionBlock from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
 import usePlateStore from '@/store/plate-store'
+import { BaseCommentsPlugin } from '@udecode/plate-comments'
+import { useEditorState } from '@udecode/plate-common/react'
 
 import {
 	DropdownMenu,
@@ -17,26 +20,46 @@ import { If } from '@/components/aural-ui/if-else'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { cn } from '@/lib/aural-ui/utils'
+import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
+import { sortCommentsAndDescriptions } from '@/lib/utils/plate'
 
-import { EReviewType } from '@/types/editor-types'
+import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
 
 import CommentCard from './comment-card'
 import EmptyState from './empty-state'
 
 export default function CommentSidebar() {
-	const {
-		get,
-		activeCommentId,
-		commentExists,
-		setActiveComment,
-		resolvedComments,
-		commentsAndDescriptions,
-		addComment,
-	} = useComments()
+	const editor = useEditorState()
+	const { get, sortedComments, activeCommentId, commentExists } = useComments()
 	const myUserId = get('myUserId')
+	const { getAllSuggestionDescriptions } = useSuggestions()
+	const descriptions = getAllSuggestionDescriptions(editor)
+
+	const { resolvedComments } = useResolvedComments()
+
+	const setActiveComment = useCallback(
+		(comment: TCustomComment) => {
+			editor.setOption(BaseCommentsPlugin, 'activeCommentId', comment.id)
+		},
+		[editor]
+	)
+
+	const unresolvedComments = [...sortedComments].filter(
+		(comment) => !comment.isResolved
+	)
 
 	const { store, setResolved } = usePlateStore()
 	const showResolved = store((state) => state.resolved)
+
+	const commentsAndDescriptions: TReview[] = useMemo(
+		() =>
+			sortCommentsAndDescriptions(
+				editor.children,
+				unresolvedComments,
+				descriptions
+			),
+		[editor.children, unresolvedComments, descriptions]
+	)
 
 	const RenderReviews = useCallback(() => {
 		if (showResolved) {
@@ -46,11 +69,7 @@ export default function CommentSidebar() {
 				)
 			}
 			return resolvedComments.map((item, idx) => (
-				<ResolvedCommentItem
-					key={`resolved-${item.id}-${idx}`}
-					resolvedComment={item}
-					addComment={addComment}
-				/>
+				<ResolvedCommentItem key={idx} resolvedComment={item} />
 			))
 		}
 
@@ -67,7 +86,7 @@ export default function CommentSidebar() {
 			if (item.type === EReviewType.COMMENT) {
 				return (
 					<CommentCard
-						key={`comment-${item.data.id}-${index}`}
+						key={index}
 						setActiveComment={setActiveComment}
 						comment={item.data}
 						activeCommentId={activeCommentId}
@@ -75,17 +94,14 @@ export default function CommentSidebar() {
 					/>
 				)
 			}
-			return (
-				<SuggestionBlock key={`suggestion-${index}`} description={item.data} />
-			)
+			return <SuggestionBlock key={index} description={item.data} />
 		})
 	}, [
 		showResolved,
-		commentsAndDescriptions,
 		resolvedComments,
-		addComment,
-		setActiveComment,
+		commentsAndDescriptions,
 		activeCommentId,
+		setActiveComment,
 		myUserId,
 	])
 

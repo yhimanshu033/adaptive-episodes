@@ -1,5 +1,6 @@
 import React from 'react'
 import { roleToData } from '@/constants/global-constants'
+import useComments from '@/hooks/plate/use-comments'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CircleCrossIcon } from '@/icons/circle-cross-icon'
 import { CircleTickIcon } from '@/icons/circle-tick-icon'
@@ -18,11 +19,9 @@ import { getText } from '@/lib/utils/plate'
 import { TCustomComment } from '@/types/editor-types'
 import { PlateUser } from '@/types/plate-types'
 
-export default React.memo(function ResolvedCommentItem({
+export default function ResolvedCommentItem({
 	resolvedComment,
-	addComment,
 }: {
-	addComment: (comment: TCustomComment) => void
 	resolvedComment: TCustomComment
 }) {
 	const {
@@ -32,6 +31,8 @@ export default React.memo(function ResolvedCommentItem({
 		removeResolvedComment,
 		deleteResolvedComment,
 	} = useResolvedComments()
+
+	const { addComment } = useComments()
 
 	const user = getUser(resolvedComment?.userId) as PlateUser | undefined
 
@@ -137,4 +138,4 @@ export default React.memo(function ResolvedCommentItem({
 			</div>
 		</div>
 	)
-})
+}

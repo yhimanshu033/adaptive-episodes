@@ -1,66 +1,82 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React, { memo, useCallback, useMemo } from 'react'
+import React from 'react'
+// import { SuggestionActions } from '@/constants/editor-constants'
+import useComments from '@/hooks/plate/use-comments'
+import useSuggestions from '@/hooks/plate/use-suggestions'
 import usePlateStore from '@/store/plate-store'
-import { CommentsPlugin } from '@udecode/plate-comments/react'
-import {
-	PlateLeaf,
-	PlateLeafProps,
-	useEditorPlugin,
-} from '@udecode/plate-common/react'
+import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
 import { TSuggestionText } from '@udecode/plate-suggestion'
-import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
 
 import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 
-const SuggestionLeaf = memo(function SuggestionLeaf({
+export default function SuggestionLeaf({
 	className,
 	...props
 }: PlateLeafProps<TSuggestionText>) {
 	const { children, leaf, nodeProps } = props
-	const { setOptions: setCommentOptions } = useEditorPlugin(CommentsPlugin)
-	const { setOption: set } = useEditorPlugin(SuggestionPlugin)
+	const {
+		// activeSuggestionId,
+		set,
+		//  suggestionAction, isLastLeaf
+	} = useSuggestions()
+	const {
+		set: setCommentOptions,
+		//  activeCommentId
+	} = useComments()
 	const { setSidebar, setResolved } = usePlateStore()
 
-	// Memoize the computed className to avoid recalculation on every render
-	const computedClassName = useMemo(() => {
-		return cn(
-			'text-fm-tag-emerald relative bg-transparent hover:bg-transparent',
-			leaf.suggestionDeletion &&
-				'text-fm-primary decoration-fm-emerald-300 border-fm-emerald-200 border-2 border-x-0 border-y line-through',
-			className
-		)
-	}, [leaf.suggestionDeletion, className])
-
-	// Memoize the ID to avoid string concatenation on every render
-	const leafId = useMemo(
-		() => `suggestion-leaf-${leaf.suggestionId}`,
-		[leaf.suggestionId]
-	)
-
-	// Memoize the click handler to prevent unnecessary re-renders
-	const handleClick = useCallback(() => {
-		setCommentOptions({ activeCommentId: null })
-		set('activeSuggestionId', leaf.suggestionId || '')
-		setSidebar(ESidebar.COMMENTS)
-		setResolved(false)
-	}, [setCommentOptions, set, setSidebar, setResolved, leaf.suggestionId])
-
-	// Memoize nodeProps to avoid object recreation
-	const memoizedNodeProps = useMemo(() => ({ ...nodeProps }), [nodeProps])
+	// const isActive = activeCommentId
+	// 	? false
+	// 	: activeSuggestionId === leaf.suggestionId && isLastLeaf(leaf)
 
 	return (
 		<PlateLeaf
 			{...props}
-			id={leafId}
-			className={computedClassName}
-			onClick={handleClick}
-			nodeProps={memoizedNodeProps}
+			id={`suggestion-leaf-${leaf.suggestionId}`}
+			className={cn(
+				'text-fm-tag-emerald relative bg-transparent hover:bg-transparent',
+				leaf.suggestionDeletion &&
+					'text-fm-primary decoration-fm-emerald-300 border-fm-emerald-200 border-2 border-x-0 border-y line-through',
+				className
+			)}
+			onClick={() => {
+				setCommentOptions({ activeCommentId: null })
+				set('activeSuggestionId', leaf.suggestionId || '')
+				setSidebar(ESidebar.COMMENTS)
+				setResolved(false)
+			}}
+			nodeProps={{ ...nodeProps }}
 		>
+			{/* {isActive && (
+				<div className="absolute right-0 bottom-0 z-50 flex translate-x-1/2 translate-y-full gap-2 p-1">
+					<Button
+						variant="outline"
+						size="sm"
+						tooltip="Accept"
+						onClick={(e) => {
+							e.stopPropagation()
+							suggestionAction(SuggestionActions.ACCEPT)
+						}}
+					>
+						<Check size={16} />
+					</Button>
+					<Button
+						variant="outline"
+						tooltip="Reject"
+						size="sm"
+						onClick={(e) => {
+							e.stopPropagation()
+							suggestionAction(SuggestionActions.REJECT)
+						}}
+					>
+						<X size={16} />
+					</Button>
+				</div>
+			)} */}
+
 			{children}
 		</PlateLeaf>
 	)
-})
-
-export default SuggestionLeaf
+}

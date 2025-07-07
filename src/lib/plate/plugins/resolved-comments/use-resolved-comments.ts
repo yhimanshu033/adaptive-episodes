@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import usePlateStore from '@/store/plate-store'
 import { CommentsPlugin } from '@udecode/plate-comments/react'
-import { useEditorPlugin, useEditorRef } from '@udecode/plate-common/react'
+import { useEditorPlugin, useEditorState } from '@udecode/plate-common/react'
 
 import { ResolvedCommentsPlugin } from '@/lib/plate/plugins/resolved-comments'
 import {
@@ -12,40 +12,20 @@ import {
 import { TCustomComment } from '@/types/editor-types'
 import { ESidebar } from '@/types/plate-types'
 
-// Custom hook that only subscribes to resolved comment-related state
-const useResolvedCommentEditorState = () => {
-	const editor = useEditorRef()
-
-	// Subscribe only to resolved comment-related changes
-	const resolvedComments = editor.useOption(
-		ResolvedCommentsPlugin,
-		'resolvedComments'
-	)
-	const activeResolvedCommentId = editor.useOption(
-		ResolvedCommentsPlugin,
-		'activeResolvedCommentId'
-	)
-
-	return {
-		editor,
-		children: editor.children,
-		tf: editor.tf,
-		resolvedComments,
-		activeResolvedCommentId,
-	}
-}
-
 export default function useResolvedComments() {
-	const { setOptions } = useEditorPlugin(ResolvedCommentsPlugin)
-	const { children, tf, resolvedComments, activeResolvedCommentId } =
-		useResolvedCommentEditorState()
+	const { setOptions, useOption } = useEditorPlugin(ResolvedCommentsPlugin)
+	const resolvedComments = useOption('resolvedComments')
+	const activeResolvedCommentId = useOption('activeResolvedCommentId')
 
 	const { store, setResolved, setSidebar } = usePlateStore()
 	const showResolved = store((state) => state.resolved)
 	const sidebar = store((state) => state.sidebar)
 
 	const { useOption: useCommentOption } = useEditorPlugin(CommentsPlugin)
+
 	const users = useCommentOption('users')
+
+	const { children, tf } = useEditorState()
 
 	function addResolvedComment(comment: TCustomComment) {
 		setOptions({ resolvedComments: [...resolvedComments, comment] })
