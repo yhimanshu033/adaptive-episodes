@@ -55,8 +55,8 @@ const CreateAndImport = ({ children }: ICreateAndImportProps) => {
 				glass="high"
 				className="max-sm:[100vw] h-[85vh] w-[90vw] gap-5 px-0"
 			>
-				<DialogHeader className={cn('space-y-2 px-8', { hidden: !showTitle })}>
-					<DialogTitle className="flex items-center justify-between gap-4">
+				<DialogHeader className={cn('space-y-0 px-8', { hidden: !showTitle })}>
+					<DialogTitle className="flex h-14 items-center justify-between gap-4">
 						{title}
 						<DialogClose
 							className={iconButtonVariants({

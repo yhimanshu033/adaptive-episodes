@@ -85,10 +85,14 @@ const ChooseStoryTypes = ({
 									className="bg-fm-surface-frosted/20 border-fm-divider-primary/50 flex min-h-24 items-center justify-between rounded border pl-2"
 								>
 									<div className="flex items-center gap-2">
-										<RadioGroupItem value={item.type} id={item.type} />
+										<RadioGroupItem
+											value={item.type}
+											id={item.type}
+											className="cursor-pointer"
+										/>
 										<Label
 											htmlFor={item.type}
-											className="!font-fm-text flex flex-col items-start gap-1 normal-case"
+											className="!font-fm-text flex cursor-pointer flex-col items-start gap-1 normal-case"
 										>
 											<Typography
 												align="left"
@@ -110,9 +114,9 @@ const ChooseStoryTypes = ({
 									</div>
 									<Label
 										htmlFor={item.type}
-										className="flex h-full items-end normal-case"
+										className="flex h-full cursor-pointer items-end normal-case"
 									>
-										<item.icon className="text-fm-tertiary/20 size-15 stroke-1" />
+										<item.icon className="text-fm-secondary/50 size-15 stroke-1" />
 									</Label>
 								</div>
 							)}
