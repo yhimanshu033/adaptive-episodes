@@ -27,6 +27,8 @@ import { Button } from '@/components/ui/button'
 
 import { PlateUser } from '@/types/plate-types'
 
+import CommentReplaceButton from './comment-replace-button'
+
 export default function CommentItemContent() {
 	const {
 		comment,
@@ -110,6 +112,7 @@ export default function CommentItemContent() {
 							</div>
 						</If>
 						<If condition={!isReplyComment}>
+							<CommentReplaceButton />
 							<CommentResolveButton />
 						</If>
 

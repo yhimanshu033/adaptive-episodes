@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import WriterCombobox from '@/page-builders/episodes/writer-combobox'
@@ -44,8 +45,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		number | null
 	>(null)
 
-	const { handleTitleClick, handleStatusChange, handleDeleteEpisode } =
-		useEpisodeTable()
+	const { handleStatusChange, handleDeleteEpisode } = useEpisodeTable()
 
 	const { isWriter } = useProjectId()
 	const { isGerman, isOriginal } = useAccessChecks()
@@ -136,12 +136,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			accessorKey: EEpisodeHeaderKeys.CHAPTER_TITLE,
 			header: 'Title',
 			cell: ({ row }) => (
-				<div
-					className="flex cursor-pointer items-center gap-2 font-medium"
-					onClick={() =>
-						handleTitleClick(row.original.parent || row.original.id)
-					}
-				>
+				<div className="flex cursor-pointer items-center gap-2 font-medium">
 					{row.getCanExpand() && (
 						<Button
 							tooltip={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
@@ -155,7 +150,12 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							{row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
 						</Button>
 					)}
-					{row.getValue('chapter_title')} ({row.original.word_count} words)
+					<Link
+						href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/editor`}
+						className="flex-1"
+					>
+						{row.getValue('chapter_title')} ({row.original.word_count} words)
+					</Link>
 				</div>
 			),
 		},
