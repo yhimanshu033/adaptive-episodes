@@ -128,6 +128,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 								variant="ghost"
 								icon={<VerticalMenuIcon />}
 								label="episode menu icon"
+								shape="square"
 							/>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-34">
@@ -203,7 +204,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 									decoration="outline"
 									disabled={!isWriter}
 									classes={{
-										root: 'h-10 text-sm',
+										root: 'h-10 text-sm border-fm-divider-tertiary',
 										icon: cn(
 											'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
 											{
@@ -317,7 +318,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			),
 			cell: ({ row }) =>
 				!row.depth && (
-					<div className="flex items-center justify-start">
+					<div className="flex items-center justify-start gap-1">
 						<div>
 							{row.original.seq_number}
 							{checked && row.original.original_seq_number
@@ -330,6 +331,8 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 									variant="ghost"
 									label="Toggle row expansion"
 									className="text-fm-icon-inactive hover:text-fm-primary"
+									size="small"
+									shape="square"
 									onClick={(e) => {
 										e.stopPropagation()
 										row.getToggleExpandedHandler()()

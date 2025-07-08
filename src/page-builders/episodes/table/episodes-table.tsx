@@ -105,7 +105,7 @@ const EpisodesTable = () => {
 				<If>
 					<If condition={!isEpisodesLoading}>
 						<StoryDetails titleClassname="text-xl" imageSize={40} />
-						<Divider className="mt-4" />
+						<Divider className="mt-6 mb-10" variant="secondary" />
 					</If>
 					<EpisodeEmpty
 						initialStoryData={initialStoryData}
@@ -115,7 +115,7 @@ const EpisodesTable = () => {
 					/>
 				</If>
 				<Else>
-					<div className="mb-4 flex items-center justify-between">
+					<div className="flex items-center justify-between">
 						<StoryDetails titleClassname="text-xl" imageSize={40} />
 						<div className="flex items-center gap-2">
 							<Filters
@@ -153,15 +153,15 @@ const EpisodesTable = () => {
 							</AuthWrapper>
 						</div>
 					</div>
-					<Divider className="mt-4" />
+					<Divider className="mt-6 mb-10" variant="secondary" />
 					<SelectionActions table={table} />
 					<Table
-						className={cn('table-fixed', {
+						className={cn('bg-fm-transparent table-fixed', {
 							'pointer-events-none': editingRowId,
 						})}
 						onMouseLeave={() => setHoverIndex(null)}
 					>
-						<TableHeader>
+						<TableHeader className="bg-fm-surface-primary">
 							{table.getHeaderGroups().map((headerGroup) => (
 								<TableRow key={headerGroup.id}>
 									{headerGroup.headers.map((header) => {
@@ -207,7 +207,7 @@ const EpisodesTable = () => {
 								</TableRow>
 							))}
 						</TableHeader>
-						<TableBody>
+						<TableBody className="[&_tr]:hover:bg-fm-surface-frosted/15">
 							<IfElse condition={isEpisodesLoading}>
 								<If>
 									<TableRow>
@@ -230,6 +230,7 @@ const EpisodesTable = () => {
 														id={`row-${row.id}`}
 														className={cn({
 															selected: row.getIsSelected(),
+															'bg-fm-surface-primary': rowIndex % 2 !== 0,
 															'bg-fm-secondary-50': row.getIsSelected(),
 														})}
 													>

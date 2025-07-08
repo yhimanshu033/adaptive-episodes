@@ -202,7 +202,7 @@ const useEpisodeTable = () => {
 						height={44}
 					/>
 				),
-				description: 'Merge episode fail',
+				description: 'Separate episode fail',
 				subDescription: 'Please select a merged episode',
 				secondAction: 'Got it',
 			})
