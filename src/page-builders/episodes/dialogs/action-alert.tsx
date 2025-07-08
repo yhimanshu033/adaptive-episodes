@@ -25,12 +25,16 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 	const { handleConfirm } = useEpisodeTable()
 
+	const capitalizeFirstLetter = (str: string) => {
+		return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+	}
+
 	return (
 		<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 			<DialogContent
 				variant={alertInfo?.variant ?? 'neutral'}
 				classes={{
-					root: 'flex h-88 w-99 flex-col items-center px-6 py-8 text-center',
+					root: 'flex max-h-88 w-99 flex-col items-center px-6 py-8 text-center',
 					overlay: 'z-60',
 					content: 'z-70',
 				}}
@@ -63,24 +67,25 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 					{alertInfo?.action && (
 						<Button
 							variant="secondary"
-							className="w-full capitalize"
+							className="w-full"
 							onClick={() => {
 								void handleConfirm()
 								setIsDialogOpen(false)
 								table.resetRowSelection()
 							}}
 						>
-							{alertInfo?.action}
+							{alertInfo?.action && capitalizeFirstLetter(alertInfo.action)}
 						</Button>
 					)}
 
 					<If condition={!!alertInfo?.secondAction}>
 						<Button
 							variant="outline"
-							className="w-full capitalize"
+							className="w-full"
 							onClick={() => setIsDialogOpen(false)}
 						>
-							{alertInfo?.secondAction}
+							{alertInfo?.secondAction &&
+								capitalizeFirstLetter(alertInfo.secondAction)}
 						</Button>
 					</If>
 				</DialogFooter>

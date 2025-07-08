@@ -4,6 +4,7 @@ import { EpisodeActions, titleToStatus } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
+import { GitBranchIcon } from '@/icons/git-branch-icon'
 import { GitForkIcon } from '@/icons/git-fork-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import { useEpisodeStore } from '@/store/episode-store'
@@ -150,8 +151,8 @@ const useEpisodeTable = () => {
 						height={44}
 					/>
 				),
-				description: 'Cannot combine episode',
-				subDescription: `You cannot merge episodes with different statuses`,
+				description: 'Couldn’t combine episodes',
+				subDescription: 'You can only combine episodes with the same status',
 				secondAction: 'Got it',
 			})
 		} else if (!isContinuous) {
@@ -180,9 +181,9 @@ const useEpisodeTable = () => {
 						height={44}
 					/>
 				),
-				description: 'Episode merged',
-				subDescription: 'Selected episodes will get merged',
-				action: EpisodeActions.MERGE,
+				description: `Combine <${selectedRowData.length}> episodes`,
+				subDescription: 'You can merge selected episodes into one',
+				action: EpisodeActions.COMBINE,
 				secondAction: 'Cancel',
 			})
 		}
@@ -196,7 +197,7 @@ const useEpisodeTable = () => {
 		if (!selectedRowModel[0].getCanExpand()) {
 			setAlertInfo({
 				icon: (
-					<GitForkIcon
+					<GitBranchIcon
 						className="text-fm-icon-brand-secondary"
 						width={44}
 						height={44}
@@ -213,7 +214,7 @@ const useEpisodeTable = () => {
 			})
 			setAlertInfo({
 				icon: (
-					<GitForkIcon
+					<GitBranchIcon
 						className="text-fm-icon-brand-secondary"
 						width={44}
 						height={44}
