@@ -1,22 +1,21 @@
-'use client'
-
 import React from 'react'
-import { Plate, usePlateEditor } from 'platejs/react'
+import { EditorExtendedStateProvider } from '@/hooks/use-editor-extend-state'
+import { GlobalFindAndReplaceProvider } from '@/hooks/use-global-find-and-replace'
 
-import { Editor, EditorContainer } from '@/components/ui/editor'
+import { PlateEditor } from '@/components/editor/plate-editor'
 
-export default function MyEditorPage() {
-	const editor = usePlateEditor() // Initializes the editor instance
+export default async function Page({
+	params,
+}: {
+	params: Promise<{ episodeId: string }>
+}) {
+	const { episodeId } = await params
 
 	return (
-		<Plate editor={editor}>
-			{' '}
-			{/* Provides editor context */}
-			<EditorContainer>
-				{' '}
-				{/* Styles the editor area */}
-				<Editor placeholder="Type your amazing content here..." />
-			</EditorContainer>
-		</Plate>
+		<EditorExtendedStateProvider episodeId={Number(episodeId)}>
+			<GlobalFindAndReplaceProvider>
+				<PlateEditor />
+			</GlobalFindAndReplaceProvider>
+		</EditorExtendedStateProvider>
 	)
 }
