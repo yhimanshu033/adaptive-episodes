@@ -207,7 +207,7 @@ const EpisodesTable = () => {
 								</TableRow>
 							))}
 						</TableHeader>
-						<TableBody className="[&_tr]:hover:bg-fm-surface-frosted/15">
+						<TableBody>
 							<IfElse condition={isEpisodesLoading}>
 								<If>
 									<TableRow>

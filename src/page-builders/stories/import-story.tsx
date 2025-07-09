@@ -292,7 +292,7 @@ export function ImportStory() {
 											steps={2}
 											activeStep={storySteps.indexOf(step) - 1}
 											variant="primary"
-											className="mx-auto w-full max-w-90 pb-4"
+											className="mx-auto w-full max-w-90 pt-4 pb-8"
 											stepLabels={switchableStepsInfo.map((item) => item.title)}
 											onStepClick={handleStepClick}
 										/>
@@ -302,7 +302,8 @@ export function ImportStory() {
 								<ScrollArea
 									className={cn('px-8', {
 										'h-full': storyType !== ImportStoryType.IMPORT,
-										'h-[calc(100%-96px)]': storyType === ImportStoryType.IMPORT,
+										'h-[calc(100%-125px)]':
+											storyType === ImportStoryType.IMPORT,
 									})}
 								>
 									<div className="flex flex-col gap-4">
@@ -585,7 +586,7 @@ export function ImportStory() {
 																/>
 															</div>
 														</FormControl>
-														<FormDescription className="flex flex-col text-xs">
+														<FormDescription className="flex flex-col py-0 text-xs">
 															<div className="mb-4 flex w-full justify-between">
 																<Typography
 																	as="h4"
