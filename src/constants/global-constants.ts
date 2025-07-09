@@ -1,5 +1,5 @@
 import { PRIMARY_KEYS_TO_COMPARE } from '@/constants/episodes-constants'
-import { SuggestionUser } from '@udecode/plate-suggestion'
+import { SuggestionUser } from '@platejs/suggestion'
 
 import { ERole } from '@/types/admin-types'
 
@@ -124,6 +124,7 @@ export const pathsWithoutGlobalHeader = [
 	'/editor',
 	'/manage-project',
 	'/preview',
+	'/content',
 ]
 
 export const GDRIVE_BROADCAST_CHANNEL = 'gdrive-channel'

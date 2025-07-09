@@ -9,7 +9,7 @@ import {
 } from '@/constants/editor-constants'
 import useLocalizeHook from '@/hooks/mutation/use-localize-hook'
 import useEditorExtendedStore from '@/store/extended-store'
-import { Value } from '@udecode/plate'
+import { Value } from 'platejs'
 import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 

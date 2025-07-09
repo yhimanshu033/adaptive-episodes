@@ -70,7 +70,8 @@ export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
 		return
 	}
 
-	return (props) => (
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const BlockCommentContentWrapper = (props: any) => (
 		<BlockCommentContent
 			blockPath={blockPath}
 			commentNodes={commentNodes}
@@ -79,6 +80,8 @@ export const BlockDiscussion: RenderNodeWrapper<AnyPluginConfig> = (props) => {
 			{...props}
 		/>
 	)
+	BlockCommentContentWrapper.displayName = 'BlockCommentContentWrapper'
+	return BlockCommentContentWrapper
 }
 
 const BlockCommentContent = ({
@@ -284,6 +287,8 @@ const BlockCommentContent = ({
 		</div>
 	)
 }
+
+BlockCommentContent.displayName = 'BlockCommentContent'
 
 function BlockComment({
 	discussion,

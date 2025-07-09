@@ -7,7 +7,7 @@ import { AI_AVATAR_ASSET, DEFAULT_USER } from '@/constants/global-constants'
 import userMembersQuery from '@/hooks/query/user-members-data'
 import useParentLanguage from '@/hooks/use-parent-language'
 import { useGlobalStore } from '@/store/global-store'
-import { SuggestionUser } from '@udecode/plate-suggestion'
+import { SuggestionUser } from '@platejs/suggestion'
 import { useShallow } from 'zustand/react/shallow'
 
 import { isAuthorized } from '@/lib/utils/helpers'
