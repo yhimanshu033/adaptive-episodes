@@ -34,7 +34,7 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 			<DialogContent
 				variant={alertInfo?.variant ?? 'neutral'}
 				classes={{
-					root: 'flex max-h-88 w-99 flex-col items-center gap-8 px-6 py-8 text-center bg-fm-surface-frosted/25',
+					root: 'flex max-h-88 w-99 flex-col items-center gap-8 px-6 py-8 text-center bg-fm-surface-frosted/20',
 					overlay: 'z-60',
 					content: 'z-70',
 				}}
