@@ -24,10 +24,10 @@ import { useEditorPlugin, useEditorRef, usePluginOption } from 'platejs/react'
 
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
 import {
-	discussionPlugin,
+	useCreateDiscussionKit,
 	type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
-import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
+import { useSuggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
 import {
 	Popover,
 	PopoverAnchor,
@@ -97,6 +97,7 @@ const BlockCommentContent = ({
 	suggestionNodes: NodeEntry<TElement | TSuggestionText>[]
 }) => {
 	const editor = useEditorRef()
+	const suggestionPlugin = useSuggestionPlugin()
 
 	const resolvedSuggestions = useResolveSuggestion(suggestionNodes, blockPath)
 	const resolvedDiscussions = useResolvedDiscussion(commentNodes, blockPath)
@@ -327,6 +328,7 @@ const useResolvedDiscussion = (
 	blockPath: Path
 ) => {
 	const { api, getOption, setOption } = useEditorPlugin(commentPlugin)
+	const discussionPlugin = useCreateDiscussionKit()
 
 	const discussions = usePluginOption(discussionPlugin, 'discussions')
 

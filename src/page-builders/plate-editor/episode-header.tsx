@@ -10,9 +10,11 @@ import { MessageIcon } from '@/icons/message-icon'
 import HomeButton from '@/page-builders/plate-editor/buttons/home-button'
 import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
 import Title from '@/page-builders/plate-editor/title'
+import { useEditorPlugin, useEditorState } from 'platejs/react'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import { useCreateDiscussionKit } from '@/components/editor/plugins/discussion-kit'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import Languages from '@/components/plate-ui/languages'
 import { ModeDropdown } from '@/components/plate-ui/mode-dropdown'
@@ -34,8 +36,14 @@ const EpisodeHeader = ({
 }) => {
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
+	const discussionPlugin = useCreateDiscussionKit()
 	const isInternalUser = useIsInternal()
 	const { isAccessible } = useProjectId()
+
+	const { children } = useEditorState()
+	const { getOptions } = useEditorPlugin(discussionPlugin)
+
+	console.log(getOptions())
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),

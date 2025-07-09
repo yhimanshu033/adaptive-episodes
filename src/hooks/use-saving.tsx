@@ -7,12 +7,16 @@ import {
 	addUnsavedEpisodeParams,
 	removeUnsavedEpisodeParams,
 } from '@/store/global-store'
-import { useEditorPlugin, useEditorRef, useEditorString } from 'platejs/react'
+import {
+	elementStore,
+	useEditorPlugin,
+	useEditorRef,
+	useEditorString,
+} from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
-import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
-import { TComment } from '@/components/plate-ui-v2/comment'
+import { useCreateDiscussionKit } from '@/components/editor/plugins/discussion-kit'
 import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import { setValue } from '@/lib/utils/indexed-db'
 import {
@@ -44,12 +48,13 @@ export function SavingContextProvider({
 	const { id } = useParams()
 	const { children } = useEditorRef()
 	const editorText = useEditorString()
+	const discussionPlugin = useCreateDiscussionKit()
 	const { api, setOption, getOption } = useEditorPlugin(discussionPlugin)
 
 	// const { allComments, set } = useComments()
 	const allComments = getOption('discussions')
-	const set = () => {}
-	console.log({ comments: getOption('discussions'), editorText })
+	// const set = () => {}
+	// console.log({ comments: getOption('discussions'), editorText })
 
 	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()
 
@@ -75,10 +80,10 @@ export function SavingContextProvider({
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 
-	const { cleanedComments, cleanedCommentsRecord } = useMemo(
-		() => getUniqueAllComments(children, allComments),
-		[allComments, children]
-	)
+	// const { allComments, cleanedCommentsRecord } = useMemo(
+	// 	() => getUniqueAllComments(children, allComments),
+	// 	[allComments, children]
+	// )
 
 	const pathname = usePathname()
 	const isSaved = useMemo(() => {
@@ -86,7 +91,7 @@ export function SavingContextProvider({
 			return false
 		}
 		const currentChildren = JSON.stringify(children)
-		const currentComments = JSON.stringify(cleanedComments)
+		const currentComments = JSON.stringify(allComments)
 		const currentResolvedComments = JSON.stringify(resolvedComments)
 		const storedResolvedComments =
 			savedResolvedCommentsRef.current === JSON.stringify([])
@@ -103,7 +108,7 @@ export function SavingContextProvider({
 		)
 	}, [
 		children,
-		cleanedComments,
+		allComments,
 		currentTitle,
 		data?.chapter,
 		forceSave,
@@ -125,7 +130,7 @@ export function SavingContextProvider({
 			}
 
 			try {
-				// if (cleanedComments.length !== allComments.length) {
+				// if (allComments.length !== allComments.length) {
 				// 	set({
 				// 		comments: cleanedCommentsRecord,
 				// 	})
@@ -134,7 +139,7 @@ export function SavingContextProvider({
 				const words = editorText.split(/\s+/)
 				const word_count = words.length
 				savedRef.current = JSON.stringify(children)
-				savedCommentsRef.current = JSON.stringify(cleanedComments)
+				savedCommentsRef.current = JSON.stringify(allComments)
 				savedTitleRef.current = currentTitle
 				setForceSave(false)
 				const clearedLaser = clearLasers(children)
@@ -153,7 +158,7 @@ export function SavingContextProvider({
 					language,
 					props: {
 						...data?.chapter.props,
-						comments: cleanedComments,
+						comments: allComments,
 						resolvedComments,
 					},
 					chapter_title: currentTitle || data?.chapter.chapter_title,
@@ -177,7 +182,7 @@ export function SavingContextProvider({
 					chapterId,
 					text,
 					word_count,
-					comments: cleanedComments,
+					comments: allComments,
 					prevProps: data?.chapter.props,
 					language,
 					resolvedComments,
@@ -197,7 +202,7 @@ export function SavingContextProvider({
 			setStartOverlayLoading,
 			editorText,
 			children,
-			cleanedComments,
+			allComments,
 			currentTitle,
 			id,
 			resolvedComments,
@@ -230,7 +235,7 @@ export function SavingContextProvider({
 			language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
 			props: {
 				...data?.chapter.props,
-				comments: cleanedComments,
+				comments: allComments,
 				resolvedComments,
 			},
 			chapter_title: currentTitle || data?.chapter.chapter_title,
@@ -243,7 +248,7 @@ export function SavingContextProvider({
 	}, [
 		id,
 		children,
-		cleanedComments,
+		allComments,
 		data?.chapter,
 		currentTitle,
 		pathname,
@@ -259,10 +264,10 @@ export function SavingContextProvider({
 	}, [data?.chapter, pathname, id])
 
 	useEffect(() => {
-		if (savedCommentsRef.current !== JSON.stringify(cleanedComments)) {
+		if (savedCommentsRef.current !== JSON.stringify(allComments)) {
 			void handleSave()
 		}
-	}, [cleanedComments, handleSave, currentTitle])
+	}, [allComments, handleSave, currentTitle])
 
 	useEffect(() => {
 		const handleBeforeUnload = () => {
@@ -302,7 +307,7 @@ export function SavingContextProvider({
 	}, [
 		isSaved,
 		children,
-		cleanedComments,
+		allComments,
 		currentTitle,
 		handleRemoveGlobalStore,
 		handleSaveGlobalStore,

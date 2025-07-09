@@ -2,7 +2,6 @@
 
 import React from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
 import { SavingContextProvider } from '@/hooks/use-saving'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
 import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelton-loader'
@@ -16,8 +15,8 @@ import { Editor, EditorContainer } from '@/components/plate-ui-v2/editor'
 import { SuggestionToolbarButton } from '../plate-ui-v2/suggestion-toolbar-button'
 import { Toolbar } from '../plate-ui-v2/toolbar'
 import { CommentKit } from './plugins/comment-kit'
-import { DiscussionKit } from './plugins/discussion-kit'
-import { SuggestionKit } from './plugins/suggestion-kit'
+import { useCreateDiscussionKit } from './plugins/discussion-kit'
+import { useSuggestionPlugin } from './plugins/suggestion-kit'
 
 export function PlateEditor() {
 	const {
@@ -26,15 +25,18 @@ export function PlateEditor() {
 		importedLocal,
 	} = useEpisodeContent()
 
+	const discussionPlugin = useCreateDiscussionKit()
+	const suggestionPlugin = useSuggestionPlugin()
+
 	const value = content?.text ? (JSON.parse(content.text) as Value) : ''
 
 	const editor = usePlateEditor(
 		{
 			plugins: [
 				...BasicNodesKit,
-				...SuggestionKit,
+				suggestionPlugin,
 				...CommentKit,
-				...DiscussionKit,
+				discussionPlugin,
 			],
 			value,
 			id: 'editor',

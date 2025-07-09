@@ -24,10 +24,10 @@ import {
 import { useEditorPlugin, usePluginOption } from 'platejs/react'
 
 import {
-	discussionPlugin,
+	useCreateDiscussionKit,
 	type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
-import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
+import { useSuggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
@@ -63,9 +63,15 @@ const TYPE_TEXT_MAP: Record<string, (node?: TElement) => string> = {
 	[KEYS.img]: () => 'Image',
 	[KEYS.mediaEmbed]: () => 'Media',
 	[KEYS.p]: (node) => {
-		if (node?.[KEYS.listType] === KEYS.listTodo) return 'Todo List'
-		if (node?.[KEYS.listType] === KEYS.ol) return 'Ordered List'
-		if (node?.[KEYS.listType] === KEYS.ul) return 'List'
+		if (node?.[KEYS.listType] === KEYS.listTodo) {
+			return 'Todo List'
+		}
+		if (node?.[KEYS.listType] === KEYS.ol) {
+			return 'Ordered List'
+		}
+		if (node?.[KEYS.listType] === KEYS.ul) {
+			return 'List'
+		}
 
 		return 'Paragraph'
 	},
@@ -78,7 +84,9 @@ const TYPE_TEXT_MAP: Record<string, (node?: TElement) => string> = {
 export function BlockSuggestion({ element }: { element: TSuggestionElement }) {
 	const suggestionData = element.suggestion
 
-	if (suggestionData?.isLineBreak) return null
+	if (suggestionData?.isLineBreak) {
+		return null
+	}
 
 	const isRemove = suggestionData?.type === 'remove'
 
@@ -103,6 +111,7 @@ export function BlockSuggestionCard({
 	suggestion: ResolvedSuggestion
 }) {
 	const { api, editor } = useEditorPlugin(SuggestionPlugin)
+	const discussionPlugin = useCreateDiscussionKit()
 
 	const userInfo = usePluginOption(discussionPlugin, 'user', suggestion.userId)
 
@@ -121,7 +130,9 @@ export function BlockSuggestionCard({
 	const [hovering, setHovering] = React.useState(false)
 
 	const suggestionText2Array = (text: string) => {
-		if (text === BLOCK_SUGGESTION) return ['line breaks']
+		if (text === BLOCK_SUGGESTION) {
+			return ['line breaks']
+		}
 
 		return text.split(BLOCK_SUGGESTION).filter(Boolean)
 	}
@@ -280,6 +291,8 @@ export const useResolveSuggestion = (
 	suggestionNodes: NodeEntry<TElement | TSuggestionText>[],
 	blockPath: Path
 ) => {
+	const discussionPlugin = useCreateDiscussionKit()
+	const suggestionPlugin = useSuggestionPlugin()
 	const discussions = usePluginOption(discussionPlugin, 'discussions')
 
 	const { api, editor, getOption, setOption } =
@@ -289,7 +302,9 @@ export const useResolveSuggestion = (
 		const id = api.suggestion.nodeId(node)
 		const map = getOption('uniquePathMap')
 
-		if (!id) return
+		if (!id) {
+			return
+		}
 
 		const previousPath = map.get(id)
 
@@ -315,7 +330,9 @@ export const useResolveSuggestion = (
 	const resolvedSuggestion: ResolvedSuggestion[] = React.useMemo(() => {
 		const map = getOption('uniquePathMap')
 
-		if (suggestionNodes.length === 0) return []
+		if (suggestionNodes.length === 0) {
+			return []
+		}
 
 		const suggestionIds = new Set(
 			suggestionNodes
@@ -326,7 +343,9 @@ export const useResolveSuggestion = (
 							(data) => data.type === 'update'
 						)
 
-						if (!includeUpdate) return api.suggestion.nodeId(node)
+						if (!includeUpdate) {
+							return api.suggestion.nodeId(node)
+						}
 
 						return dataList
 							.filter((data) => data.type === 'update')
@@ -342,12 +361,18 @@ export const useResolveSuggestion = (
 		const res: ResolvedSuggestion[] = []
 
 		suggestionIds.forEach((id) => {
-			if (!id) return
+			if (!id) {
+				return
+			}
 
 			const path = map.get(id)
 
-			if (!path || !PathApi.isPath(path)) return
-			if (!PathApi.equals(path, blockPath)) return
+			if (!path || !PathApi.isPath(path)) {
+				return
+			}
+			if (!PathApi.equals(path, blockPath)) {
+				return
+			}
 
 			const entries = [
 				...editor.api.nodes<TElement | TSuggestionText>({
@@ -375,7 +400,9 @@ export const useResolveSuggestion = (
 					const dataList = api.suggestion.dataList(node)
 
 					dataList.forEach((data) => {
-						if (data.id !== id) return
+						if (data.id !== id) {
+							return
+						}
 
 						switch (data.type) {
 							case 'insert': {
@@ -411,7 +438,9 @@ export const useResolveSuggestion = (
 						? node.suggestion
 						: undefined
 
-					if (lineBreakData?.id !== keyId2SuggestionId(id)) return
+					if (lineBreakData?.id !== keyId2SuggestionId(id)) {
+						return
+					}
 					if (lineBreakData.type === 'insert') {
 						newText += lineBreakData.isLineBreak
 							? BLOCK_SUGGESTION
@@ -424,11 +453,15 @@ export const useResolveSuggestion = (
 				}
 			})
 
-			if (entries.length === 0) return
+			if (entries.length === 0) {
+				return
+			}
 
 			const nodeData = api.suggestion.suggestionData(entries[0][0])
 
-			if (!nodeData) return
+			if (!nodeData) {
+				return
+			}
 
 			// const comments = data?.discussions.find((d) => d.id === id)?.comments;
 			const comments =

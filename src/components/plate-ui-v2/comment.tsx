@@ -29,7 +29,7 @@ import {
 
 import { BasicMarksKit } from '@/components/editor/plugins/basic-marks-kit'
 import {
-	discussionPlugin,
+	useCreateDiscussionKit,
 	type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -46,10 +46,10 @@ import { cn } from '@/lib/utils/helpers'
 import { Editor, EditorContainer } from './editor'
 
 export interface TComment {
-	id: string
 	contentRich: Value
 	createdAt: Date
 	discussionId: string
+	id: string
 	isEdited: boolean
 	userId: string
 }
@@ -57,12 +57,12 @@ export interface TComment {
 export function Comment(props: {
 	comment: TComment
 	discussionLength: number
+	documentContent?: string
 	editingId: string | null
 	index: number
-	setEditingId: React.Dispatch<React.SetStateAction<string | null>>
-	documentContent?: string
-	showDocumentContent?: boolean
 	onEditorClick?: () => void
+	setEditingId: React.Dispatch<React.SetStateAction<string | null>>
+	showDocumentContent?: boolean
 }) {
 	const {
 		comment,
@@ -75,6 +75,7 @@ export function Comment(props: {
 		onEditorClick,
 	} = props
 
+	const discussionPlugin = useCreateDiscussionKit()
 	const editor = useEditorRef()
 	const userInfo = usePluginOption(discussionPlugin, 'user', comment.userId)
 	const currentUserId = usePluginOption(discussionPlugin, 'currentUserId')
@@ -99,9 +100,9 @@ export function Comment(props: {
 	}
 
 	const updateComment = async (input: {
-		id: string
 		contentRich: Value
 		discussionId: string
+		id: string
 		isEdited: boolean
 	}) => {
 		const updatedDiscussions = editor
@@ -289,10 +290,10 @@ export function Comment(props: {
 function CommentMoreDropdown(props: {
 	comment: TComment
 	dropdownOpen: boolean
-	setDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
-	setEditingId: React.Dispatch<React.SetStateAction<string | null>>
 	onCloseAutoFocus?: () => void
 	onRemoveComment?: () => void
+	setDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
+	setEditingId: React.Dispatch<React.SetStateAction<string | null>>
 }) {
 	const {
 		comment,
@@ -304,12 +305,14 @@ function CommentMoreDropdown(props: {
 	} = props
 
 	const editor = useEditorRef()
+	const discussionPlugin = useCreateDiscussionKit()
 
 	const selectedEditCommentRef = React.useRef<boolean>(false)
 
 	const onDeleteComment = React.useCallback(() => {
-		if (!comment.id)
+		if (!comment.id) {
 			return alert('You are operating too quickly, please try again later.')
+		}
 
 		// Find and update the discussion
 		const updatedDiscussions = editor
@@ -343,8 +346,9 @@ function CommentMoreDropdown(props: {
 	const onEditComment = React.useCallback(() => {
 		selectedEditCommentRef.current = true
 
-		if (!comment.id)
+		if (!comment.id) {
 			return alert('You are operating too quickly, please try again later.')
+		}
 
 		setEditingId(comment.id)
 	}, [comment.id, setEditingId])
@@ -414,6 +418,7 @@ export function CommentCreateForm({
 	discussionId?: string
 	focusOnMount?: boolean
 }) {
+	const discussionPlugin = useCreateDiscussionKit()
 	const discussions = usePluginOption(discussionPlugin, 'discussions')
 
 	const editor = useEditorRef()
@@ -438,7 +443,9 @@ export function CommentCreateForm({
 	}, [commentEditor, focusOnMount])
 
 	const onAddComment = React.useCallback(async () => {
-		if (!commentValue) return
+		if (!commentValue) {
+			return
+		}
 
 		commentEditor.tf.reset()
 
@@ -501,7 +508,9 @@ export function CommentCreateForm({
 			.getApi(CommentPlugin)
 			.comment.nodes({ at: [], isDraft: true })
 
-		if (commentsNodeEntry.length === 0) return
+		if (commentsNodeEntry.length === 0) {
+			return
+		}
 
 		const documentContent = commentsNodeEntry
 			.map(([node]) => node.text)

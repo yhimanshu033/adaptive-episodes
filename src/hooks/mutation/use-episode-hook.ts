@@ -21,8 +21,9 @@ import {
 	setFullScreenLoadingMessage,
 } from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { TComment } from '@udecode/plate-comments'
 
+import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
+import { TComment } from '@/components/plate-ui-v2/comment'
 import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
@@ -60,7 +61,7 @@ const useEpisodeHook = () => {
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
-			comments?: TComment[]
+			comments?: TDiscussion[]
 			language?: ELanguage
 			prevProps?: Record<string, unknown>
 			resolvedComments?: TCustomComment[]

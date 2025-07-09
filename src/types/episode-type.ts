@@ -1,9 +1,9 @@
 import { ReactNode } from 'react'
 import { EpisodeActions } from '@/constants/episodes-constants'
-import { TComment } from '@udecode/plate-comments'
 import { VariantProps } from 'class-variance-authority'
 
 import { dialogVariants } from '@/components/aural-ui/dialog'
+import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 
 import { BASE_STATUS, EEpisodeType, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
@@ -55,7 +55,7 @@ export type TEpisode = {
 	parent: number | null
 	project: number
 	props?: Record<string, unknown> & {
-		comments?: TComment[]
+		comments?: TDiscussion[]
 		creation_timestamp?: number
 		llm_memories?: TEpisodeProps
 		merged_chapter_ids?: number[]
