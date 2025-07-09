@@ -72,11 +72,11 @@ const InventForm = () => {
 				showCloseButton={false}
 				opacity="high"
 				glass="high"
-				className="w-[90vw] gap-5 px-0"
+				className="max-sm:[100vw] h-[85vh] w-[90vw] gap-5 px-0"
 			>
 				<DialogHeader className="px-4">
-					<DialogTitle className="flex items-center justify-between gap-4">
-						{!currentInventIndex ? 'Add' : 'Invent'} New Episode
+					<DialogTitle className="mb-0 flex items-center justify-between gap-4 py-2">
+						{!currentInventIndex ? 'Add' : 'Invent'} new episode
 						<DialogClose
 							className={iconButtonVariants({
 								variant: 'ghost',
@@ -97,7 +97,7 @@ const InventForm = () => {
 						onSubmit={(e) =>
 							void form.handleSubmit((data) => handleAddEpisode(data))(e)
 						}
-						className="space-y-4 px-4"
+						className="flex h-full flex-col gap-4 px-4"
 					>
 						<FormField
 							control={form.control}
@@ -112,6 +112,7 @@ const InventForm = () => {
 											}}
 											placeholder="What's the episode name"
 											variant={fieldState.error ? 'error' : 'default'}
+											decoration="outline"
 											id="title"
 											{...field}
 										/>
@@ -120,9 +121,15 @@ const InventForm = () => {
 								</FormItem>
 							)}
 						/>
-						<Button type="submit" className="mt-40 w-full">
-							Create
-						</Button>
+						<div className="flex flex-1 flex-col justify-end">
+							<Button
+								isDisabled={!form.formState.isValid}
+								type="submit"
+								className="w-full"
+							>
+								Create
+							</Button>
+						</div>
 					</form>
 				</Form>
 			</DialogContent>

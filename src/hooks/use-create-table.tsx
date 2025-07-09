@@ -226,12 +226,17 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 											<SelectItem
 												disabled={index != latestIndex + 1}
 												value={status}
-												className="h-10 !text-sm"
+												className={cn('h-10 border-0 !text-sm', {
+													'data-[disabled]:bg-fm-transparent':
+														index != latestIndex + 1,
+												})}
 											>
 												{titleToStatusText[status]}
 											</SelectItem>
 											<If condition={index < statuses.length - 1}>
-												<SelectSeparator />
+												<div className="px-2">
+													<SelectSeparator />
+												</div>
 											</If>
 										</div>
 									))}

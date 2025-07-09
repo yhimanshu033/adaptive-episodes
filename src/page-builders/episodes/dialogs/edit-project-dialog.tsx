@@ -32,6 +32,7 @@ import {
 } from '@/components/aural-ui/form'
 import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import Input from '@/components/aural-ui/input'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 import { TStory } from '@/types/story-types'
@@ -96,10 +97,10 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 				showCloseButton={false}
 				opacity="high"
 				glass="high"
-				className="w-[90vw] gap-5"
+				className="max-sm:[100vw] h-[85vh] w-[90vw] gap-5 px-0"
 			>
-				<DialogHeader>
-					<DialogTitle className="flex items-center justify-between gap-4">
+				<DialogHeader className="px-4">
+					<DialogTitle className="mb-0 flex items-center justify-between gap-4 py-2">
 						Edit series details
 						<DialogClose
 							className={iconButtonVariants({
@@ -121,80 +122,103 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 
 				<Form {...form}>
 					<form
-						className="space-y-8"
+						className="h-full"
 						onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
 					>
-						<FormField
-							control={form.control}
-							name="project_title"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="mb-2 text-xs">Series title</FormLabel>
-									<FormControl>
-										<Input
-											className="text-sm"
-											decoration="outline"
-											placeholder="Enter series title"
-											id="project_title"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="author"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="mb-2 text-xs">Author</FormLabel>
-									<FormControl>
-										<Input
-											decoration="outline"
-											className="text-sm"
-											placeholder="Enter author name"
-											id="project_title"
-											{...field}
-											value={field.value || ''}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="image"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="mb-2 text-xs">Thumbnail</FormLabel>
-									<FileUpload
-										defaultUrl={field.value}
-										onFileSelect={({ file }) => {
-											form.setValue('newImage', file)
-										}}
-										classes={{
-											isDragging:
-												'border-fm-divider-primary bg-fm-divider-primary/30',
-										}}
-										allowedTypes={ACCEPTED_IMAGE_TYPES}
-										supportedFormat="JPEG, JPG, PNG & WEBP"
-									/>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<DialogClose asChild>
-							<Button
-								disabled={isFileUploading || storyUpdateMutation.isPending}
-								isDisabled={isFileUploading || storyUpdateMutation.isPending}
-								className="mt-8 w-full"
-								type="submit"
+						<div className="flex h-full flex-col justify-between gap-2">
+							<ScrollArea
+								className="h-[calc(100%-60px)] px-4"
+								classes={{
+									viewport:
+										'[&>div]:!flex [&>div]:flex-col [&>div]:gap-4 [&>div]:h-full',
+								}}
 							>
-								Save
-							</Button>
-						</DialogClose>
+								<FormField
+									control={form.control}
+									name="project_title"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel className="mb-2 text-xs">
+												Series title
+											</FormLabel>
+											<FormControl>
+												<Input
+													className="text-sm"
+													decoration="outline"
+													placeholder="Enter series title"
+													id="project_title"
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="author"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel className="mb-2 text-xs">Author</FormLabel>
+											<FormControl>
+												<Input
+													decoration="outline"
+													className="text-sm"
+													placeholder="Enter author name"
+													id="project_title"
+													{...field}
+													value={field.value || ''}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="image"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel className="mb-2 text-xs">Thumbnail</FormLabel>
+											<FileUpload
+												defaultUrl={field.value}
+												onFileSelect={({ file }) => {
+													form.setValue('newImage', file)
+												}}
+												classes={{
+													isDragging:
+														'border-fm-divider-primary bg-fm-divider-primary/30',
+												}}
+												allowedTypes={ACCEPTED_IMAGE_TYPES}
+												supportedFormat="JPEG, JPG, PNG & WEBP"
+											/>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							</ScrollArea>
+
+							<div className="px-4">
+								<DialogClose asChild>
+									<Button
+										disabled={
+											isFileUploading ||
+											storyUpdateMutation.isPending ||
+											!form.formState.isDirty
+										}
+										isDisabled={
+											isFileUploading ||
+											storyUpdateMutation.isPending ||
+											!form.formState.isDirty
+										}
+										className="w-full"
+										type="submit"
+									>
+										Save
+									</Button>
+								</DialogClose>
+							</div>
+						</div>
 					</form>
 				</Form>
 			</DialogContent>
