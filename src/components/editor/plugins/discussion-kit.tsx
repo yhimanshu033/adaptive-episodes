@@ -6,12 +6,12 @@ import { BlockDiscussion } from '@/components/plate-ui-v2/block-discussion'
 import type { TComment } from '@/components/plate-ui-v2/comment'
 
 export interface TDiscussion {
-	id: string
 	comments: TComment[]
 	createdAt: Date
+	documentContent?: string
+	id: string
 	isResolved: boolean
 	userId: string
-	documentContent?: string
 }
 
 const discussionsData: TDiscussion[] = [
@@ -108,7 +108,7 @@ const avatarUrl = (seed: string) =>
 
 const usersData: Record<
 	string,
-	{ id: string; avatarUrl: string; name: string; hue?: number }
+	{ avatarUrl: string; hue?: number; id: string; name: string }
 > = {
 	alice: {
 		id: 'alice',

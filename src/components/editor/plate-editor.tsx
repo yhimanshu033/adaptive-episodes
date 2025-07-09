@@ -2,7 +2,11 @@
 
 import React from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
+import { SavingContextProvider } from '@/hooks/use-saving'
+import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
 import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelton-loader'
+import EpisodeHeader from '@/page-builders/plate-editor/episode-header'
 import { Value } from 'platejs'
 import { Plate, usePlateEditor } from 'platejs/react'
 
@@ -16,7 +20,11 @@ import { DiscussionKit } from './plugins/discussion-kit'
 import { SuggestionKit } from './plugins/suggestion-kit'
 
 export function PlateEditor() {
-	const { data: content } = useEpisodeContent()
+	const {
+		data: content,
+		latestStatus = 'BASE',
+		importedLocal,
+	} = useEpisodeContent()
 
 	const value = content?.text ? (JSON.parse(content.text) as Value) : ''
 
@@ -40,12 +48,19 @@ export function PlateEditor() {
 
 	return (
 		<Plate editor={editor}>
-			<Toolbar>
-				<SuggestionToolbarButton />
-			</Toolbar>
-			<EditorContainer>
-				<Editor variant="demo" placeholder="Type..." />
-			</EditorContainer>
+			<SavingContextProvider data={content} initialForceSave={importedLocal}>
+				<div className="flex h-screen flex-col">
+					<EditorOverlayLoader />
+					<EpisodeHeader {...{ content, latestStatus }} />
+
+					<Toolbar>
+						<SuggestionToolbarButton />
+					</Toolbar>
+					<EditorContainer>
+						<Editor variant="demo" placeholder="Type..." />
+					</EditorContainer>
+				</div>
+			</SavingContextProvider>
 		</Plate>
 	)
 }

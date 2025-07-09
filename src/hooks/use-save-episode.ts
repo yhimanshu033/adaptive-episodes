@@ -4,7 +4,7 @@
 import { useEffect } from 'react'
 import useSaving from '@/hooks/use-saving'
 import usePlateStore from '@/store/plate-store'
-import { useEditorReadOnly, useEditorState } from '@udecode/plate-common/react'
+import { useEditorReadOnly, useEditorState } from 'platejs/react'
 
 const useSaveEpisode = () => {
 	const { children } = useEditorState()

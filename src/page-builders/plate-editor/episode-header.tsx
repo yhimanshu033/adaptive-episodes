@@ -108,8 +108,8 @@ const EpisodeHeader = ({
 				</Link>
 
 				<Languages />
-				<ModeDropdown />
-				<IfElse
+				{/* <ModeDropdown /> */}
+				{/* <IfElse
 					condition={isInternalUser && isCmsReady && isAccessible(ERole.WRITER)}
 				>
 					<If>
@@ -118,7 +118,7 @@ const EpisodeHeader = ({
 					<Else>
 						<DownloadDocxButton latestStatus={latestStatus} />
 					</Else>
-				</IfElse>
+				</IfElse> */}
 			</div>
 		</div>
 	)

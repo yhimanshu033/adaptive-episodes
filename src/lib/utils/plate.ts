@@ -88,7 +88,7 @@ export function clearLasers(ogVal: Value): Value {
 			})
 			delete node.laser
 		} else if ('children' in node) {
-			;(node.children as Descendant[]).forEach(traverse)
+			void (node.children as Descendant[]).forEach(traverse)
 		}
 	}
 	val.forEach(traverse)

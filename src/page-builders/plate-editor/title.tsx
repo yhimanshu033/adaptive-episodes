@@ -3,7 +3,7 @@ import { statuses } from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { useEditorReadOnly } from '@udecode/plate-common/react'
+import { useEditorReadOnly } from 'platejs/react'
 
 import EditableText from '@/components/editable-text'
 import { If } from '@/components/if-else'
@@ -17,7 +17,7 @@ const Title = ({
 	memberId?: string
 }) => {
 	const { data: episodeContent } = useEpisodeContent()
-	const readOnly = useEditorReadOnly()
+	const readOnly = useEditorReadOnly('editor')
 	const { setCurrentTitle } = useEpisodeIdStore()
 	const { data } = useUserMembersQuery()
 	const members = data?.members || []

@@ -32,7 +32,9 @@ export const commentPlugin = toTPlatePlugin<CommentConfig>(BaseCommentPlugin, {
 				isSet = true
 			}
 
-			if (!isSlateString(leaf)) unsetActiveSuggestion()
+			if (!isSlateString(leaf)) {
+				unsetActiveSuggestion()
+			}
 
 			while (leaf.parentElement) {
 				if (leaf.classList.contains(`slate-${type}`)) {
@@ -55,7 +57,9 @@ export const commentPlugin = toTPlatePlugin<CommentConfig>(BaseCommentPlugin, {
 				leaf = leaf.parentElement
 			}
 
-			if (!isSet) unsetActiveSuggestion()
+			if (!isSet) {
+				unsetActiveSuggestion()
+			}
 		},
 	},
 	options: {

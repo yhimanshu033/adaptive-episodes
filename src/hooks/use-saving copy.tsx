@@ -7,11 +7,10 @@ import {
 	addUnsavedEpisodeParams,
 	removeUnsavedEpisodeParams,
 } from '@/store/global-store'
-import { useEditorPlugin, useEditorRef, useEditorString } from 'platejs/react'
+import { useEditorPlugin, useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
-import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
 import { TComment } from '@/components/plate-ui-v2/comment'
 import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import { setValue } from '@/lib/utils/indexed-db'
@@ -43,23 +42,20 @@ export function SavingContextProvider({
 }) {
 	const { id } = useParams()
 	const { children } = useEditorRef()
-	const editorText = useEditorString()
-	const { api, setOption, getOption } = useEditorPlugin(discussionPlugin)
 
 	// const { allComments, set } = useComments()
-	const allComments = getOption('discussions')
+	const allComments = [] as TComment[]
 	const set = () => {}
-	console.log({ comments: getOption('discussions'), editorText })
+	const { api, setOption } = useEditorPlugin(commentPlugin)
+	console.log(api.comment.nodes())
 
 	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()
-
 	const {
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
 		setResolvedComments,
 		setStartOverlayLoading,
 	} = useEpisodeIdStore()
-
 	const currentTitle = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
 	)
@@ -119,20 +115,16 @@ export function SavingContextProvider({
 			if (!data?.chapter || (!forced && isSaved)) {
 				return
 			}
-
 			if (startOverlayLoading) {
 				setStartOverlayLoading(true)
 			}
-
 			try {
-				// if (cleanedComments.length !== allComments.length) {
-				// 	set({
-				// 		comments: cleanedCommentsRecord,
-				// 	})
-				// }
-
-				const words = editorText.split(/\s+/)
-				const word_count = words.length
+				if (cleanedComments.length !== allComments.length) {
+					set({
+						comments: cleanedCommentsRecord,
+					})
+				}
+				const word_count = getWordCount(children)
 				savedRef.current = JSON.stringify(children)
 				savedCommentsRef.current = JSON.stringify(cleanedComments)
 				savedTitleRef.current = currentTitle
@@ -142,7 +134,6 @@ export function SavingContextProvider({
 				let status = data?.chapter.status || BASE_STATUS
 				const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
 				const chapterId = data?.chapter.id
-
 				const dataToSave: SaveEpisodeParams = {
 					projectId: Number(id),
 					status,
@@ -158,7 +149,6 @@ export function SavingContextProvider({
 					},
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				}
-
 				void setValue(`${String(id)}_${String(chapterId)}`, dataToSave)
 
 				if (language === ELanguage.GERMAN_ORIGINAL && status === BASE_STATUS) {
@@ -169,9 +159,7 @@ export function SavingContextProvider({
 					})
 					status = EStatus.FIRST_DRAFT
 				}
-
 				setLastSaved(new Date())
-
 				await saveEpisodeMutation.mutateAsync({
 					status,
 					chapterId,
@@ -192,17 +180,20 @@ export function SavingContextProvider({
 			}
 		},
 		[
+			set,
 			data?.chapter,
 			isSaved,
 			setStartOverlayLoading,
-			editorText,
 			children,
 			cleanedComments,
+			allComments,
+			cleanedCommentsRecord,
 			currentTitle,
 			id,
 			resolvedComments,
 			saveEpisodeMutation,
 			statusUpdateMutation,
+			setLastSaved,
 		]
 	)
 
