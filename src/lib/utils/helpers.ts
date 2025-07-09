@@ -735,15 +735,6 @@ export function isUpperCase(str: string): boolean {
 	return str === str.toUpperCase()
 }
 
-export function getSourceLanguage(language?: ELanguage) {
-	const sourceLang = language || ELanguage.ENGLISH_US
-
-	if (sourceLang === ELanguage.ENGLISH) {
-		return ELanguage.ENGLISH_US
-	}
-	return sourceLang
-}
-
 export function getSelectableLanguages(
 	currentLanguage: ELanguage
 ): ELanguage[] {

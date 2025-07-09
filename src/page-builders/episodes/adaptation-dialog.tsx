@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/dialog'
 import Spinner from '@/components/ui/spinner'
 import useAdaptation from '@/providers/adaptation-provider'
-import { getSourceLanguage } from '@/lib/utils/helpers'
 import { setRecentStore } from '@/lib/utils/indexed-db'
 
 import { ELanguage } from '@/types/common'
@@ -194,7 +193,7 @@ export default function AdaptationDialog({
 									{
 										inputls,
 										projectId: Number(id),
-										sourceLang: getSourceLanguage(currentLanguage),
+										sourceLang: currentLanguage || ELanguage.ENGLISH,
 										language:
 											(isEpisodeAdaptation
 												? selectedAdaptingLanguage
