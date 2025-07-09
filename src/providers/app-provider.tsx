@@ -14,7 +14,7 @@ import NextTopLoader from 'nextjs-toploader'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { Toaster } from '@/components/aural-ui/toast'
-import { TooltipProvider } from '@/components/plate-ui/tooltip'
+import { TooltipProvider } from '@/components/plate-ui-v2/tooltip'
 import { AdaptationProvider } from '@/providers/adaptation-provider'
 import { PlayerProvider } from '@/providers/player-provider'
 import { PollingProvider } from '@/providers/polling-provider'

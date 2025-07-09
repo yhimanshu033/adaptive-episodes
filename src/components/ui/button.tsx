@@ -4,7 +4,7 @@ import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { type VariantProps } from 'class-variance-authority'
 
-import { withTooltip } from '@/components/plate-ui/tooltip'
+import { withTooltip } from '@/components/aural-ui/tooltip'
 import { buttonVariants, cn } from '@/lib/utils/helpers'
 
 export interface ButtonProps

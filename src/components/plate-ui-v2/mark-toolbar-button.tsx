@@ -10,8 +10,8 @@ export function MarkToolbarButton({
 	nodeType,
 	...props
 }: React.ComponentProps<typeof ToolbarButton> & {
-	clear?: string[] | string
 	nodeType: string
+	clear?: string[] | string
 }) {
 	const state = useMarkToolbarButtonState({ clear, nodeType })
 	const { props: buttonProps } = useMarkToolbarButton(state)
