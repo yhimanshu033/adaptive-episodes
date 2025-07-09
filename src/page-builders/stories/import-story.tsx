@@ -84,12 +84,6 @@ export function ImportStory() {
 	}
 
 	const onSubmit = (data: StoryImportFormSchema) => {
-		if (
-			data.input_language === (ELanguage.ENGLISH as string) &&
-			data.run_adaptation
-		) {
-			data.input_language = ELanguage.ENGLISH_US
-		}
 		storyUploadMutation.mutate(data, {
 			onSuccess: async (taskId) => {
 				form.reset()

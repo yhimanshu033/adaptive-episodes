@@ -70,6 +70,5 @@ export const getStoryData = async (
 		)
 		return story
 	}
-
 	return response.data
 }
