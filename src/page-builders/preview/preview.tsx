@@ -3,10 +3,11 @@ import { useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useMyEditor from '@/hooks/use-my-editor'
 import { CrossIcon } from '@/icons/cross-icon'
-import { Plate, PlateContent } from '@udecode/plate-common/react'
+import { Plate } from 'platejs/react'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import { Editor, EditorContainer } from '@/components/plate-ui-v2/editor'
 
 const PreviewContent = () => {
 	const router = useRouter()
@@ -45,7 +46,9 @@ const PreviewContent = () => {
 					</div>
 					<div className="px-14 py-12">
 						<Plate editor={editor} readOnly>
-							<PlateContent />
+							<EditorContainer>
+								<Editor variant="demo" />
+							</EditorContainer>
 						</Plate>
 					</div>
 				</ScrollArea>
