@@ -12,6 +12,7 @@ import {
 	useEditorPlugin,
 	useEditorRef,
 	useEditorString,
+	usePluginOption,
 } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -49,10 +50,9 @@ export function SavingContextProvider({
 	const { children } = useEditorRef()
 	const editorText = useEditorString()
 	const discussionPlugin = useCreateDiscussionKit()
-	const { api, setOption, getOption } = useEditorPlugin(discussionPlugin)
 
 	// const { allComments, set } = useComments()
-	const allComments = getOption('discussions')
+	const allComments = usePluginOption(discussionPlugin, 'discussions')
 	// const set = () => {}
 	// console.log({ comments: getOption('discussions'), editorText })
 
@@ -70,13 +70,13 @@ export function SavingContextProvider({
 	)
 
 	// const { resolvedComments } = useResolvedComments()
-	const resolvedComments = [] as TCustomComment[]
+	// const resolvedComments = [] as TCustomComment[]
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
-	const savedResolvedCommentsRef = useRef(
-		JSON.stringify(data?.chapter.props?.resolvedComments || [])
-	)
+	// const savedResolvedCommentsRef = useRef(
+	// 	JSON.stringify(data?.chapter.props?.resolvedComments || [])
+	// )
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 
@@ -92,19 +92,20 @@ export function SavingContextProvider({
 		}
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(allComments)
-		const currentResolvedComments = JSON.stringify(resolvedComments)
-		const storedResolvedComments =
-			savedResolvedCommentsRef.current === JSON.stringify([])
-				? savedResolvedCommentsRef.current
-				: JSON.stringify(data?.chapter.props?.resolvedComments || [])
+		// const currentResolvedComments = JSON.stringify(resolvedComments)
+		// const storedResolvedComments =
+		// 	savedResolvedCommentsRef.current === JSON.stringify([])
+		// 		? savedResolvedCommentsRef.current
+		// 		: JSON.stringify(data?.chapter.props?.resolvedComments || [])
 		const storedTitle = savedTitleRef.current
 			? savedTitleRef.current
 			: data?.chapter?.chapter_title
 		return (
 			savedRef.current === currentChildren &&
 			savedCommentsRef.current === currentComments &&
-			currentTitle === storedTitle &&
-			storedResolvedComments === currentResolvedComments
+			currentTitle === storedTitle
+			// &&
+			// storedResolvedComments === currentResolvedComments
 		)
 	}, [
 		children,
@@ -112,7 +113,7 @@ export function SavingContextProvider({
 		currentTitle,
 		data?.chapter,
 		forceSave,
-		resolvedComments,
+		// resolvedComments,
 	])
 
 	const handleSave = useCallback(
@@ -159,7 +160,7 @@ export function SavingContextProvider({
 					props: {
 						...data?.chapter.props,
 						comments: allComments,
-						resolvedComments,
+						// resolvedComments,
 					},
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				}
@@ -185,7 +186,7 @@ export function SavingContextProvider({
 					comments: allComments,
 					prevProps: data?.chapter.props,
 					language,
-					resolvedComments,
+					// resolvedComments,
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
 			} catch (error) {
@@ -205,7 +206,7 @@ export function SavingContextProvider({
 			allComments,
 			currentTitle,
 			id,
-			resolvedComments,
+			// resolvedComments,
 			saveEpisodeMutation,
 			statusUpdateMutation,
 		]
@@ -236,7 +237,7 @@ export function SavingContextProvider({
 			props: {
 				...data?.chapter.props,
 				comments: allComments,
-				resolvedComments,
+				// resolvedComments,
 			},
 			chapter_title: currentTitle || data?.chapter.chapter_title,
 		}
@@ -252,7 +253,7 @@ export function SavingContextProvider({
 		data?.chapter,
 		currentTitle,
 		pathname,
-		resolvedComments,
+		// resolvedComments,
 	])
 
 	const handleRemoveGlobalStore = useCallback(() => {
