@@ -43,8 +43,6 @@ const EpisodeHeader = ({
 	const { children } = useEditorState()
 	const { getOptions } = useEditorPlugin(discussionPlugin)
 
-	console.log(getOptions())
-
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
 		[latestStatus]

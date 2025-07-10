@@ -34,8 +34,8 @@ export function PlateEditor() {
 		{
 			plugins: [
 				...BasicNodesKit,
-				suggestionPlugin,
 				...CommentKit,
+				suggestionPlugin,
 				discussionPlugin,
 			],
 			value,
