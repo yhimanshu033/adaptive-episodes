@@ -18,12 +18,15 @@ import {
 import { Divider } from '@/components/aural-ui/divider'
 import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import { Typography } from '@/components/aural-ui/typography'
 
 import { EFolderType } from '@/types/admin-types'
 
 export default function ShareAccessDialog() {
 	const { useEpisodeTableStore, setIsShareAccessDialogOpen } = useEpisodeStore()
-	const { isSharedAccessDialogOpen } = useEpisodeTableStore()
+	const isSharedAccessDialogOpen = useEpisodeTableStore(
+		(state) => state.isSharedAccessDialogOpen
+	)
 
 	return (
 		<Dialog
@@ -35,11 +38,11 @@ export default function ShareAccessDialog() {
 				showCloseButton={false}
 				opacity="high"
 				glass="high"
-				className="w-[90vw] gap-5 px-0"
+				className="h-[90vh] w-[90vh] max-w-137.5 gap-5 px-0"
 			>
-				<ScrollArea className="px-4 [&>[data-radix-scroll-area-viewport]]:max-h-[90vh]">
-					<DialogHeader>
-						<DialogTitle className="flex items-center justify-between gap-4">
+				<ScrollArea className="h-full">
+					<DialogHeader className="space-y-0 px-8">
+						<DialogTitle className="mb-0 flex h-14 items-center justify-between gap-4">
 							Share access
 							<DialogClose
 								className={iconButtonVariants({
@@ -56,22 +59,42 @@ export default function ShareAccessDialog() {
 							New Episode
 						</DialogDescription>
 
-						<Divider variant="dashed" />
+						<Divider variant="dashed" className="border-fm-divider-secondary" />
 					</DialogHeader>
 					<div>
 						<SearchMembers />
-						<h3 className="font-fm-brand mb-4 text-sm tracking-wider uppercase">
-							Shared with
-						</h3>
-						<Divider variant="dashed" />
+						<div className="px-8">
+							<Typography
+								transform="uppercase"
+								variant="caption-medium"
+								className="font-fm-brand mb-4"
+							>
+								Shared with
+							</Typography>
+							<Divider
+								variant="dashed"
+								className="border-fm-divider-secondary"
+							/>
+						</div>
 						<SharedList />
-						<h3 className="font-fm-brand my-5 text-sm tracking-wider uppercase">
-							Other Links
-						</h3>
-						<Divider variant="dashed" />
-						<UpdateLOCSheet />
-						<UpdateDriveFolder folderType={EFolderType.CMS} />
-						<UpdateSlackChannel />
+						<div className="mt-10 px-8">
+							<Typography
+								transform="uppercase"
+								variant="caption-medium"
+								className="font-fm-brand mb-4"
+							>
+								Other Links
+							</Typography>
+							<Divider
+								variant="dashed"
+								className="border-fm-divider-secondary"
+							/>
+						</div>
+						<div className="flex flex-col gap-6 px-8 pt-6">
+							<UpdateLOCSheet />
+							<UpdateDriveFolder folderType={EFolderType.CMS} />
+							<UpdateSlackChannel />
+						</div>
 					</div>
 				</ScrollArea>
 			</DialogContent>

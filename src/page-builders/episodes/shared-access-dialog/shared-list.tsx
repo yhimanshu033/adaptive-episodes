@@ -4,8 +4,10 @@ import useProjectAccessMutation from '@/hooks/mutation/use-project-access-mutati
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import { useProjectUsersTable } from '@/hooks/use-project-users-table'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
+import { TickIcon } from '@/icons/tick-icon'
 
 import { Button } from '@/components/aural-ui/button'
+import { Divider } from '@/components/aural-ui/divider'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,7 +18,7 @@ import {
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Skeleton } from '@/components/aural-ui/skelton'
 import IfElse, { Else, If } from '@/components/if-else'
-import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/aural-ui/utils'
 
 import { EProjectAccessActions, ERole } from '@/types/admin-types'
 
@@ -54,7 +56,7 @@ export default function SharedList() {
 	}
 
 	return (
-		<ScrollArea className="w-full [&>[data-radix-scroll-area-viewport]]:max-h-36">
+		<ScrollArea className="w-full px-8 [&>[data-radix-scroll-area-viewport]]:max-h-36">
 			<IfElse condition={isMembersLoading}>
 				<If>
 					<ShareListSkeletonLoader />
@@ -66,7 +68,12 @@ export default function SharedList() {
 								{table.getRowModel().rows.map((row, rowIndex) => (
 									<li
 										key={rowIndex}
-										className="border-fm-divider-secondary font-fm-text flex items-center justify-between border-t-1 border-dashed py-4"
+										className={cn(
+											'border-fm-divider-secondary font-fm-text flex items-center justify-between border-t-1 border-dashed py-4',
+											{
+												'border-t-0': rowIndex === 0,
+											}
+										)}
 									>
 										<div>
 											<h3 className="text-sm">
@@ -88,28 +95,40 @@ export default function SharedList() {
 														<Button
 															variant="outline"
 															size="sm"
-															className="gap-2 text-xs"
+															className="group gap-2 text-xs"
 														>
 															{row.original.role}
-															<ChevronDownIcon className="h-4 w-4" />
+															<ChevronDownIcon className="h-4 w-4 transition-all duration-300 group-data-[state=open]:!rotate-180" />
 														</Button>
 													</DropdownMenuTrigger>
 													<DropdownMenuContent align="end">
 														<DropdownMenuGroup>
 															{rolesArray.map((role, index) => (
-																<DropdownMenuItem
-																	key={index}
-																	className="!text-xs"
-																	onClick={() =>
-																		handleUpdateRole(
-																			row.original.user.email,
-																			role as ERole
-																		)
-																	}
-																>
-																	{role}
-																	<DropdownMenuSeparator className="border-fm-secondary border-dashed" />
-																</DropdownMenuItem>
+																<div key={`user-role-${index}`}>
+																	<DropdownMenuItem
+																		className="!text-xs"
+																		onClick={() =>
+																			handleUpdateRole(
+																				row.original.user.email,
+																				role as ERole
+																			)
+																		}
+																	>
+																		<div className="flex w-full items-center justify-between">
+																			{role}
+																			<If
+																				condition={role === row.original.role}
+																			>
+																				<TickIcon className="size-4" />
+																			</If>
+																		</div>
+																	</DropdownMenuItem>
+																	<If condition={index < rolesArray.length - 1}>
+																		<div className="px-2">
+																			<Divider variant="dashed" />
+																		</div>
+																	</If>
+																</div>
 															))}
 														</DropdownMenuGroup>
 													</DropdownMenuContent>
