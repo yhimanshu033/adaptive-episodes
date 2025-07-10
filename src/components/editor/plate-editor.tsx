@@ -1,6 +1,8 @@
 'use client'
 
 import React from 'react'
+import { useSearchParams } from 'next/navigation'
+import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useMyEditor from '@/hooks/use-my-editor'
 import { SavingContextProvider } from '@/hooks/use-saving'
@@ -11,6 +13,7 @@ import { Plate } from 'platejs/react'
 
 import { Editor, EditorContainer } from '@/components/plate-ui-v2/editor'
 
+import { ScrollArea } from '../aural-ui/scroll-area'
 import { SuggestionToolbarButton } from '../plate-ui-v2/suggestion-toolbar-button'
 import { Toolbar } from '../plate-ui-v2/toolbar'
 
@@ -26,6 +29,9 @@ export function PlateEditor() {
 		id: 'root-editor',
 	})
 
+	const searchParams = useSearchParams()
+	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
+
 	if (!content) {
 		return <EditorSkeletonLoader />
 	}
@@ -40,8 +46,16 @@ export function PlateEditor() {
 					<Toolbar>
 						<SuggestionToolbarButton />
 					</Toolbar>
+
 					<EditorContainer>
-						<Editor variant="demo" placeholder="Type..." />
+						<ScrollArea className="max-h-[calc(100vh-152px)] overflow-y-auto">
+							<Editor
+								placeholder="Type..."
+								autoFocus
+								variant="aural"
+								readOnly={!!simplifiedEditor}
+							/>
+						</ScrollArea>
 					</EditorContainer>
 				</div>
 			</SavingContextProvider>

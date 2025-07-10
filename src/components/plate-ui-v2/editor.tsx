@@ -9,7 +9,7 @@ import { PlateContainer, PlateContent, PlateView } from 'platejs/react'
 import { cn } from '@/lib/utils/helpers'
 
 const editorContainerVariants = cva(
-	'relative w-full cursor-text overflow-y-auto caret-primary select-text selection:bg-brand/25 focus-visible:outline-none [&_.slate-selection-area]:z-50 [&_.slate-selection-area]:border [&_.slate-selection-area]:border-brand/25 [&_.slate-selection-area]:bg-brand/15',
+	'relative w-full cursor-text overflow-y-auto caret-white select-text selection:bg-brand/25 focus-visible:outline-none [&_.slate-selection-area]:z-50 [&_.slate-selection-area]:border [&_.slate-selection-area]:border-brand/25 [&_.slate-selection-area]:bg-brand/15',
 	{
 		defaultVariants: {
 			variant: 'default',
@@ -80,6 +80,8 @@ const editorVariants = cva(
 				fullWidth: 'size-full px-16 pt-4 pb-72 text-base sm:px-24',
 				none: '',
 				select: 'px-3 py-2 text-base data-readonly:w-fit',
+				aural:
+					'size-full text-base border-fm-divider-tertiary bg-fm-neutral-100 border-x border-b py-14 px-18 min-h-[calc(100vh-152px)] rounded-none',
 			},
 		},
 	}
