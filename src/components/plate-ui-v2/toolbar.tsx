@@ -6,13 +6,12 @@ import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { ChevronDown } from 'lucide-react'
 
+import { Divider } from '@/components/aural-ui/divider'
 import {
 	DropdownMenuLabel,
 	DropdownMenuRadioGroup,
 	DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu'
-import { Separator } from '@/components/ui/separator'
-import { Tooltip, TooltipTrigger } from '@/components/ui/tooltip'
+} from '@/components/aural-ui/dropdown'
 import { cn } from '@/lib/utils/helpers'
 
 import { withTooltip } from '../aural-ui/tooltip'
@@ -67,22 +66,30 @@ export function ToolbarSeparator({
 
 // From toggleVariants
 const toolbarButtonVariants = cva(
-	"inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-[color,box-shadow] outline-none hover:bg-muted hover:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-checked:bg-accent aria-checked:text-accent-foreground aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+	cn(
+		'inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-fm-primary focus-visible:ring-offset-fm-neutral-0 text-fm-icon-active disabled:text-fm-icon-inactive [font-size:var(--text-fm-md)]',
+		'[&_svg:not([data-icon])]:size-5',
+		'data-[state=open]:bg-fm-secondary-50 data-[state=open]:text-fm-secondary-800',
+		'aria-checked:bg-fm-secondary-50 aria-checked:text-fm-secondary-800'
+	),
 	{
 		defaultVariants: {
-			size: 'default',
+			size: 'sm',
 			variant: 'default',
 		},
 		variants: {
 			size: {
-				default: 'h-9 min-w-9 px-2',
-				lg: 'h-10 min-w-10 px-2.5',
-				sm: 'h-8 min-w-8 px-1.5',
+				default: 'h-10 p-3',
+				lg: 'h-11 p-5',
+				sm: 'h-9 p-2',
+				floating: 'p-3 h-full',
 			},
 			variant: {
-				default: 'bg-transparent',
+				default:
+					'bg-transparent hover:text-fm-secondary-800 hover:bg-fm-secondary-50 disabled:bg-transparent',
 				outline:
-					'border border-input bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground',
+					'border border-solid border-fm-divider-primary hover:border-fm-surface-frosted disabled:border-fm-divider-tertiary',
+				active: 'bg-fm-secondary-50 text-fm-secondary-800',
 			},
 		},
 	}
@@ -266,70 +273,27 @@ export function ToolbarToggleItem({
 export function ToolbarGroup({
 	children,
 	className,
-}: React.ComponentProps<'div'>) {
+	noSeparator,
+	seperatorProps,
+}: React.ComponentProps<'div'> & {
+	noSeparator?: boolean
+	seperatorProps?: React.ComponentProps<typeof Divider>
+}) {
 	return (
-		<div
-			className={cn(
-				'group/toolbar-group',
-				'relative hidden has-[button]:flex',
-				className
+		<div className={cn('group/toolbar-group', 'relative flex', className)}>
+			{!noSeparator && (
+				<Divider
+					orientation="vertical"
+					variant="secondary"
+					{...seperatorProps}
+				/>
 			)}
-		>
-			<div className="flex items-center">{children}</div>
-
-			<div className="mx-1.5 py-0.5 group-last/toolbar-group:hidden!">
-				<Separator orientation="vertical" />
-			</div>
+			<div className="mx-1 flex items-center gap-1">{children}</div>
 		</div>
 	)
 }
 
-type TooltipProps<T extends React.ElementType> = {
-	tooltip?: React.ReactNode
-	tooltipContentProps?: Omit<
-		React.ComponentPropsWithoutRef<typeof TooltipContent>,
-		'children'
-	>
-	tooltipProps?: Omit<
-		React.ComponentPropsWithoutRef<typeof Tooltip>,
-		'children'
-	>
-	tooltipTriggerProps?: React.ComponentPropsWithoutRef<typeof TooltipTrigger>
-} & React.ComponentProps<T>
-
-// function withTooltip<T extends React.ElementType>(Component: T) {
-// 	return function ExtendComponent({
-// 		tooltip,
-// 		tooltipContentProps,
-// 		tooltipProps,
-// 		tooltipTriggerProps,
-// 		...props
-// 	}: TooltipProps<T>) {
-// 		const [mounted, setMounted] = React.useState(false)
-
-// 		React.useEffect(() => {
-// 			setMounted(true)
-// 		}, [])
-
-// 		const component = <Component {...(props as React.ComponentProps<T>)} />
-
-// 		if (tooltip && mounted) {
-// 			return (
-// 				<Tooltip {...tooltipProps}>
-// 					<TooltipTrigger asChild {...tooltipTriggerProps}>
-// 						{component}
-// 					</TooltipTrigger>
-
-// 					<TooltipContent {...tooltipContentProps}>{tooltip}</TooltipContent>
-// 				</Tooltip>
-// 			)
-// 		}
-
-// 		return component
-// 	}
-// }
-
-function TooltipContent({
+export function TooltipContent({
 	children,
 	className,
 	// CHANGE
@@ -379,9 +343,7 @@ export function ToolbarMenuGroup({
 				)}
 			>
 				{label && (
-					<DropdownMenuLabel className="text-muted-foreground text-xs font-semibold select-none">
-						{label}
-					</DropdownMenuLabel>
+					<DropdownMenuLabel className="px-0">{label}</DropdownMenuLabel>
 				)}
 				{children}
 			</DropdownMenuRadioGroup>

@@ -1,35 +1,23 @@
 'use client'
 
 import * as React from 'react'
+import { PaintRollIcon } from '@/icons/paint-roll-icon'
+import { TextColorIcon } from '@/icons/text-color-icon'
 import ViewLS from '@/page-builders/episodes/info/view-ls'
-import {
-	ArrowUpToLineIcon,
-	BaselineIcon,
-	BoldIcon,
-	Code2Icon,
-	ItalicIcon,
-	PaintBucketIcon,
-	StrikethroughIcon,
-	UnderlineIcon,
-	WandSparklesIcon,
-} from 'lucide-react'
+import { BoldIcon, ItalicIcon, UnderlineIcon } from 'lucide-react'
 import { KEYS } from 'platejs'
 import { useEditorReadOnly } from 'platejs/react'
 
+import { iconVariants } from '../icons'
 import { FontDropdownMenu } from '../plate-ui/font-dropdown-menu'
 import ToggleFindAndReplace from '../plate-ui/toggle-find-and-replace'
 import TranslationToggleButton from '../plate-ui/translation-toggle-button'
 import TtsToolbarButton from '../plate-ui/tts-toolbar-button'
 import WordCountButton from '../plate-ui/word-count-button'
-import { ZoomDropdownMenu } from '../plate-ui/zoom-dropdown'
-import { AIToolbarButton } from './ai-toolbar-button'
 import { AlignToolbarButton } from './align-toolbar-button'
-import { ExportToolbarButton } from './export-toolbar-button'
 import { FontColorToolbarButton } from './font-color-toolbar-button'
 import { FontSizeToolbarButton } from './font-size-toolbar-button'
 import { RedoToolbarButton, UndoToolbarButton } from './history-toolbar-button'
-import { ImportToolbarButton } from './import-toolbar-button'
-import { InsertToolbarButton } from './insert-toolbar-button'
 import { LineHeightToolbarButton } from './line-height-toolbar-button'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import { ToolbarGroup } from './toolbar'
@@ -44,7 +32,7 @@ export function FixedToolbarButtons() {
 
 	return (
 		<div className="flex w-full">
-			<ToolbarGroup className="inline-flex">
+			<ToolbarGroup noSeparator>
 				<WordCountButton />
 			</ToolbarGroup>
 			<ToolbarGroup>
@@ -57,7 +45,6 @@ export function FixedToolbarButtons() {
 			</ToolbarGroup>
 
 			<ToolbarGroup>
-				<TurnIntoToolbarButton />
 				<FontSizeToolbarButton />
 			</ToolbarGroup>
 
@@ -73,27 +60,20 @@ export function FixedToolbarButtons() {
 				<MarkToolbarButton nodeType={KEYS.underline} tooltip="Underline (⌘+U)">
 					<UnderlineIcon />
 				</MarkToolbarButton>
-
-				<MarkToolbarButton
-					nodeType={KEYS.strikethrough}
-					tooltip="Strikethrough (⌘+⇧+M)"
-				>
-					<StrikethroughIcon />
-				</MarkToolbarButton>
-
-				<MarkToolbarButton nodeType={KEYS.code} tooltip="Code (⌘+E)">
-					<Code2Icon />
-				</MarkToolbarButton>
-
+			</ToolbarGroup>
+			<ToolbarGroup>
+				<TurnIntoToolbarButton />
+			</ToolbarGroup>
+			<ToolbarGroup>
 				<FontColorToolbarButton nodeType={KEYS.color} tooltip="Text color">
-					<BaselineIcon />
+					<TextColorIcon className={iconVariants({ variant: 'toolbar' })} />
 				</FontColorToolbarButton>
 
 				<FontColorToolbarButton
 					nodeType={KEYS.backgroundColor}
 					tooltip="Background color"
 				>
-					<PaintBucketIcon />
+					<PaintRollIcon className={iconVariants({ variant: 'toolbar' })} />
 				</FontColorToolbarButton>
 			</ToolbarGroup>
 

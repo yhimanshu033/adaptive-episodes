@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { Redo2Icon, Undo2Icon } from 'lucide-react'
+import { ArrowCornerUpLeftIcon } from '@/icons/arrow-corner-up-left-icon'
+import { ArrowCornerUpRightIcon } from '@/icons/arrow-corner-up-right-icon'
 import { useEditorRef, useEditorSelector } from 'platejs/react'
 
 import { ToolbarButton } from './toolbar'
@@ -21,9 +22,9 @@ export function RedoToolbarButton(
 			disabled={disabled}
 			onClick={() => editor.redo()}
 			onMouseDown={(e) => e.preventDefault()}
-			tooltip="Redo"
+			tooltip="Redo (⌘+⇧+Z)"
 		>
-			<Redo2Icon />
+			<ArrowCornerUpRightIcon />
 		</ToolbarButton>
 	)
 }
@@ -43,9 +44,9 @@ export function UndoToolbarButton(
 			disabled={disabled}
 			onClick={() => editor.undo()}
 			onMouseDown={(e) => e.preventDefault()}
-			tooltip="Undo"
+			tooltip="Undo (⌘+Z)"
 		>
-			<Undo2Icon />
+			<ArrowCornerUpLeftIcon />
 		</ToolbarButton>
 	)
 }

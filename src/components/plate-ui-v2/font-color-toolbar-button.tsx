@@ -1,31 +1,54 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import React from 'react'
+import { CapitalALetterIcon } from '@/icons/capital-a-letter-icon'
+import { TickIcon } from '@/icons/tick-icon'
 import type {
 	DropdownMenuItemProps,
 	DropdownMenuProps,
 } from '@radix-ui/react-dropdown-menu'
 import { useComposedRef } from '@udecode/cn'
+import { cva } from 'class-variance-authority'
 import debounce from 'lodash/debounce.js'
-import { EraserIcon, PlusIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
+import { KEYS } from 'platejs'
 import { useEditorRef, useEditorSelector } from 'platejs/react'
 
-import { buttonVariants } from '@/components/ui/button'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/aural-ui/dropdown'
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/aural-ui/tooltip'
 import { cn } from '@/lib/utils/helpers'
 
+import { Button } from '../aural-ui/button'
+import { Divider } from '../aural-ui/divider'
+import {
+	DEFAULT_COLORS,
+	DEFAULT_CUSTOM_COLORS,
+} from '../plate-ui/color-constants'
 import { ToolbarButton, ToolbarMenuGroup } from './toolbar'
+
+const itemVariants = cva(
+	'p-1 rounded-fm-m hover:border-fm-primary transition-all duration-200 border [&_svg:not([class*="text-"])]:!text-inherit relative overflow-hidden',
+	{
+		variants: {
+			nodeType: {
+				[KEYS.color]: 'border-fm-divider-primary',
+				[KEYS.backgroundColor]: 'border-transparent',
+			},
+		},
+	}
+)
 
 export function FontColorToolbarButton({
 	children,
@@ -109,14 +132,15 @@ export function FontColorToolbarButton({
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent align="start">
+			<DropdownMenuContent align="start" className="min-w-50">
 				<ColorPicker
 					color={selectedColor || color}
 					clearColor={clearColor}
 					colors={DEFAULT_COLORS}
 					customColors={DEFAULT_CUSTOM_COLORS}
-					updateColor={updateColorAndClose}
+					updateColorAction={updateColorAndClose}
 					updateCustomColor={updateColor}
+					nodeType={nodeType}
 				/>
 			</DropdownMenuContent>
 		</DropdownMenu>
@@ -129,45 +153,57 @@ function PureColorPicker({
 	color,
 	colors,
 	customColors,
-	updateColor,
+	updateColorAction,
 	updateCustomColor,
+	nodeType,
 	...props
 }: React.ComponentProps<'div'> & {
+	clearColor: () => void
+	color?: string
 	colors: TColor[]
 	customColors: TColor[]
-	clearColor: () => void
-	updateColor: (color: string) => void
+	nodeType?: string
+	updateColorAction: (color: string) => void
 	updateCustomColor: (color: string) => void
-	color?: string
 }) {
 	return (
-		<div className={cn('flex flex-col', className)} {...props}>
+		<div className={cn('flex flex-col items-start p-4', className)} {...props}>
 			<ToolbarMenuGroup label="Custom Colors">
 				<ColorCustom
 					color={color}
-					className="px-2"
 					colors={colors}
 					customColors={customColors}
-					updateColor={updateColor}
+					updateColor={updateColorAction}
 					updateCustomColor={updateCustomColor}
+					nodeType={nodeType}
 				/>
 			</ToolbarMenuGroup>
+			<Divider
+				className="bg-fm-divider-primary"
+				wrapperClassName="w-full my-4"
+			/>
 			<ToolbarMenuGroup label="Default Colors">
 				<ColorDropdownMenuItems
 					color={color}
-					className="px-2"
 					colors={colors}
-					updateColor={updateColor}
+					updateColorAction={updateColorAction}
+					nodeType={nodeType}
 				/>
 			</ToolbarMenuGroup>
-			{color && (
-				<ToolbarMenuGroup>
-					<DropdownMenuItem className="p-2" onClick={clearColor}>
-						<EraserIcon />
-						<span>Clear</span>
-					</DropdownMenuItem>
-				</ToolbarMenuGroup>
-			)}
+			<Divider
+				className="bg-fm-divider-primary not-disabled:hover:bg-fm-surface-frosted/20"
+				wrapperClassName="w-full my-4"
+			/>
+			<Button
+				variant="text"
+				size="sm"
+				innerClassName="translate-y-0 bg-transparent transition-all rounded-md border-0 not-group-disabled:[color:var(--color-fm-primary)] not-group-disabled:hover:bg-fm-surface-frosted/20"
+				onClick={() => clearColor()}
+				disabled={!color}
+				isDisabled={!color}
+			>
+				Clear
+			</Button>
 		</div>
 	)
 }
@@ -187,13 +223,15 @@ function ColorCustom({
 	customColors,
 	updateColor,
 	updateCustomColor,
+	nodeType,
 	...props
 }: {
+	color?: string
 	colors: TColor[]
 	customColors: TColor[]
+	nodeType?: string
 	updateColor: (color: string) => void
 	updateCustomColor: (color: string) => void
-	color?: string
 } & React.ComponentPropsWithoutRef<'div'>) {
 	const [customColor, setCustomColor] = React.useState<string>()
 	const [value, setValue] = React.useState<string>(color || '#000000')
@@ -236,7 +274,8 @@ function ColorCustom({
 			<ColorDropdownMenuItems
 				color={color}
 				colors={computedColors}
-				updateColor={updateColor}
+				updateColorAction={updateColor}
+				nodeType={nodeType}
 			>
 				<ColorInput
 					value={value}
@@ -247,11 +286,9 @@ function ColorCustom({
 				>
 					<DropdownMenuItem
 						className={cn(
-							buttonVariants({
-								size: 'icon',
-								variant: 'outline',
-							}),
-							'absolute top-1 right-2 bottom-2 flex size-8 items-center justify-center rounded-full'
+							itemVariants({
+								nodeType: nodeType as any,
+							})
 						)}
 						onSelect={(e) => {
 							e.preventDefault()
@@ -270,14 +307,17 @@ function ColorInput({
 	children,
 	className,
 	value = '#000000',
+	ref,
 	...props
-}: React.ComponentProps<'input'>) {
+}: React.ComponentProps<'input'> & { ref?: React.Ref<HTMLInputElement> }) {
 	const inputRef = React.useRef<HTMLInputElement | null>(null)
 
 	return (
 		<div className="flex flex-col items-center">
 			{React.Children.map(children, (child) => {
-				if (!child) return child
+				if (!child) {
+					return child
+				}
 
 				return React.cloneElement(
 					child as React.ReactElement<{
@@ -290,7 +330,7 @@ function ColorInput({
 			})}
 			<input
 				{...props}
-				ref={useComposedRef(props.ref, inputRef)}
+				ref={useComposedRef(ref, inputRef)}
 				className={cn('size-0 overflow-hidden border-0 p-0', className)}
 				value={value}
 				type="color"
@@ -307,44 +347,53 @@ type TColor = {
 
 function ColorDropdownMenuItem({
 	className,
-	isBrightColor,
 	isSelected,
 	name,
 	updateColor,
 	value,
+	nodeType,
 	...props
 }: {
 	isBrightColor: boolean
 	isSelected: boolean
-	value: string
-	updateColor: (color: string) => void
 	name?: string
+	nodeType?: string
+	updateColor: (color: string) => void
+	value: string
 } & DropdownMenuItemProps) {
 	const content = (
 		<DropdownMenuItem
 			className={cn(
-				buttonVariants({
-					size: 'icon',
-					variant: 'outline',
+				itemVariants({
+					nodeType: nodeType as any,
 				}),
-				'border-muted my-1 flex size-6 items-center justify-center rounded-full border border-solid p-0 transition-all hover:scale-125',
-				!isBrightColor && 'border-transparent',
-				isSelected && 'border-primary border-2',
 				className
 			)}
-			style={{ backgroundColor: value }}
+			style={{
+				backgroundColor:
+					nodeType === KEYS.backgroundColor ? value : 'transparent',
+				color: nodeType === KEYS.color ? value : 'var(--color-fm-primary)',
+				borderColor: isSelected ? 'var(--color-fm-primary)' : undefined,
+			}}
 			onSelect={(e) => {
 				e.preventDefault()
 				updateColor(value)
 			}}
 			{...props}
-		/>
+		>
+			<CapitalALetterIcon />
+			{isSelected ? (
+				<span className="text-fm-positive absolute inset-0 flex items-center justify-center bg-black/50">
+					<TickIcon />
+				</span>
+			) : null}
+		</DropdownMenuItem>
 	)
 
 	return name ? (
 		<Tooltip>
 			<TooltipTrigger>{content}</TooltipTrigger>
-			<TooltipContent className="mb-1 capitalize">{name}</TooltipContent>
+			<TooltipContent className="capitalize">{name}</TooltipContent>
 		</Tooltip>
 	) : (
 		content
@@ -355,19 +404,18 @@ export function ColorDropdownMenuItems({
 	className,
 	color,
 	colors,
-	updateColor,
+	updateColorAction,
+	nodeType,
 	...props
 }: {
-	colors: TColor[]
-	updateColor: (color: string) => void
 	color?: string
+	colors: TColor[]
+	nodeType?: string
+	updateColorAction: (color: string) => void
 } & React.ComponentProps<'div'>) {
 	return (
 		<div
-			className={cn(
-				'grid grid-cols-[repeat(10,1fr)] place-items-center gap-x-1',
-				className
-			)}
+			className={cn('grid grid-cols-[repeat(10,1fr)] gap-2', className)}
 			{...props}
 		>
 			<TooltipProvider>
@@ -378,7 +426,8 @@ export function ColorDropdownMenuItems({
 						value={value}
 						isBrightColor={isBrightColor}
 						isSelected={color === value}
-						updateColor={updateColor}
+						updateColor={updateColorAction}
+						nodeType={nodeType}
 					/>
 				))}
 				{props.children}
@@ -386,440 +435,3 @@ export function ColorDropdownMenuItems({
 		</div>
 	)
 }
-
-export const DEFAULT_COLORS = [
-	{
-		isBrightColor: false,
-		name: 'black',
-		value: '#000000',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 4',
-		value: '#434343',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 3',
-		value: '#666666',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 2',
-		value: '#999999',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 1',
-		value: '#B7B7B7',
-	},
-	{
-		isBrightColor: false,
-		name: 'grey',
-		value: '#CCCCCC',
-	},
-	{
-		isBrightColor: false,
-		name: 'light grey 1',
-		value: '#D9D9D9',
-	},
-	{
-		isBrightColor: true,
-		name: 'light grey 2',
-		value: '#EFEFEF',
-	},
-	{
-		isBrightColor: true,
-		name: 'light grey 3',
-		value: '#F3F3F3',
-	},
-	{
-		isBrightColor: true,
-		name: 'white',
-		value: '#FFFFFF',
-	},
-	{
-		isBrightColor: false,
-		name: 'red berry',
-		value: '#980100',
-	},
-	{
-		isBrightColor: false,
-		name: 'red',
-		value: '#FE0000',
-	},
-	{
-		isBrightColor: false,
-		name: 'orange',
-		value: '#FE9900',
-	},
-	{
-		isBrightColor: true,
-		name: 'yellow',
-		value: '#FEFF00',
-	},
-	{
-		isBrightColor: false,
-		name: 'green',
-		value: '#00FF00',
-	},
-	{
-		isBrightColor: false,
-		name: 'cyan',
-		value: '#00FFFF',
-	},
-	{
-		isBrightColor: false,
-		name: 'cornflower blue',
-		value: '#4B85E8',
-	},
-	{
-		isBrightColor: false,
-		name: 'blue',
-		value: '#1300FF',
-	},
-	{
-		isBrightColor: false,
-		name: 'purple',
-		value: '#9900FF',
-	},
-	{
-		isBrightColor: false,
-		name: 'magenta',
-		value: '#FF00FF',
-	},
-
-	{
-		isBrightColor: false,
-		name: 'light red berry 3',
-		value: '#E6B8AF',
-	},
-	{
-		isBrightColor: false,
-		name: 'light red 3',
-		value: '#F4CCCC',
-	},
-	{
-		isBrightColor: true,
-		name: 'light orange 3',
-		value: '#FCE4CD',
-	},
-	{
-		isBrightColor: true,
-		name: 'light yellow 3',
-		value: '#FFF2CC',
-	},
-	{
-		isBrightColor: true,
-		name: 'light green 3',
-		value: '#D9EAD3',
-	},
-	{
-		isBrightColor: false,
-		name: 'light cyan 3',
-		value: '#D0DFE3',
-	},
-	{
-		isBrightColor: false,
-		name: 'light cornflower blue 3',
-		value: '#C9DAF8',
-	},
-	{
-		isBrightColor: true,
-		name: 'light blue 3',
-		value: '#CFE1F3',
-	},
-	{
-		isBrightColor: true,
-		name: 'light purple 3',
-		value: '#D9D2E9',
-	},
-	{
-		isBrightColor: true,
-		name: 'light magenta 3',
-		value: '#EAD1DB',
-	},
-
-	{
-		isBrightColor: false,
-		name: 'light red berry 2',
-		value: '#DC7E6B',
-	},
-	{
-		isBrightColor: false,
-		name: 'light red 2',
-		value: '#EA9999',
-	},
-	{
-		isBrightColor: false,
-		name: 'light orange 2',
-		value: '#F9CB9C',
-	},
-	{
-		isBrightColor: true,
-		name: 'light yellow 2',
-		value: '#FFE598',
-	},
-	{
-		isBrightColor: false,
-		name: 'light green 2',
-		value: '#B7D6A8',
-	},
-	{
-		isBrightColor: false,
-		name: 'light cyan 2',
-		value: '#A1C4C9',
-	},
-	{
-		isBrightColor: false,
-		name: 'light cornflower blue 2',
-		value: '#A4C2F4',
-	},
-	{
-		isBrightColor: false,
-		name: 'light blue 2',
-		value: '#9FC5E8',
-	},
-	{
-		isBrightColor: false,
-		name: 'light purple 2',
-		value: '#B5A7D5',
-	},
-	{
-		isBrightColor: false,
-		name: 'light magenta 2',
-		value: '#D5A6BD',
-	},
-
-	{
-		isBrightColor: false,
-		name: 'light red berry 1',
-		value: '#CC4125',
-	},
-	{
-		isBrightColor: false,
-		name: 'light red 1',
-		value: '#E06666',
-	},
-	{
-		isBrightColor: false,
-		name: 'light orange 1',
-		value: '#F6B26B',
-	},
-	{
-		isBrightColor: false,
-		name: 'light yellow 1',
-		value: '#FFD966',
-	},
-	{
-		isBrightColor: false,
-		name: 'light green 1',
-		value: '#93C47D',
-	},
-	{
-		isBrightColor: false,
-		name: 'light cyan 1',
-		value: '#76A5AE',
-	},
-	{
-		isBrightColor: false,
-		name: 'light cornflower blue 1',
-		value: '#6C9EEB',
-	},
-	{
-		isBrightColor: false,
-		name: 'light blue 1',
-		value: '#6FA8DC',
-	},
-	{
-		isBrightColor: false,
-		name: 'light purple 1',
-		value: '#8D7CC3',
-	},
-	{
-		isBrightColor: false,
-		name: 'light magenta 1',
-		value: '#C27BA0',
-	},
-
-	{
-		isBrightColor: false,
-		name: 'dark red berry 1',
-		value: '#A61B00',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark red 1',
-		value: '#CC0000',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark orange 1',
-		value: '#E59138',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark yellow 1',
-		value: '#F1C231',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark green 1',
-		value: '#6AA74F',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark cyan 1',
-		value: '#45818E',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark cornflower blue 1',
-		value: '#3B78D8',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark blue 1',
-		value: '#3E84C6',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark purple 1',
-		value: '#664EA6',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark magenta 1',
-		value: '#A64D78',
-	},
-
-	{
-		isBrightColor: false,
-		name: 'dark red berry 2',
-		value: '#84200D',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark red 2',
-		value: '#990001',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark orange 2',
-		value: '#B45F05',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark yellow 2',
-		value: '#BF9002',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark green 2',
-		value: '#38761D',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark cyan 2',
-		value: '#124F5C',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark cornflower blue 2',
-		value: '#1155CB',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark blue 2',
-		value: '#0C5394',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark purple 2',
-		value: '#351C75',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark magenta 2',
-		value: '#741B47',
-	},
-
-	{
-		isBrightColor: false,
-		name: 'dark red berry 3',
-		value: '#5B0F00',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark red 3',
-		value: '#660000',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark orange 3',
-		value: '#783F04',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark yellow 3',
-		value: '#7E6000',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark green 3',
-		value: '#274E12',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark cyan 3',
-		value: '#0D343D',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark cornflower blue 3',
-		value: '#1B4487',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark blue 3',
-		value: '#083763',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark purple 3',
-		value: '#1F124D',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark magenta 3',
-		value: '#4C1130',
-	},
-]
-
-const DEFAULT_CUSTOM_COLORS = [
-	{
-		isBrightColor: false,
-		name: 'dark orange 3',
-		value: '#783F04',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 3',
-		value: '#666666',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark grey 2',
-		value: '#999999',
-	},
-	{
-		isBrightColor: false,
-		name: 'light cornflower blue 1',
-		value: '#6C9EEB',
-	},
-	{
-		isBrightColor: false,
-		name: 'dark magenta 3',
-		value: '#4C1130',
-	},
-]

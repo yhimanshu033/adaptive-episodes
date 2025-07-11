@@ -42,8 +42,6 @@ export function PlateEditor() {
 				<div className="flex h-screen flex-col">
 					<EditorOverlayLoader />
 					<EpisodeHeader {...{ content, latestStatus }} />
-
-					<FixedToolbar />
 					<EditorContainer>
 						<ScrollArea className="max-h-[calc(100vh-152px)] overflow-y-auto">
 							<Editor

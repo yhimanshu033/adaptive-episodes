@@ -2,100 +2,69 @@
 
 import * as React from 'react'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
-import { DropdownMenuItemIndicator } from '@radix-ui/react-dropdown-menu'
-import {
-	CheckIcon,
-	ChevronRightIcon,
-	Columns3Icon,
-	FileCodeIcon,
-	Heading1Icon,
-	Heading2Icon,
-	Heading3Icon,
-	ListIcon,
-	ListOrderedIcon,
-	PilcrowIcon,
-	QuoteIcon,
-	SquareIcon,
-} from 'lucide-react'
 import type { TElement } from 'platejs'
 import { KEYS } from 'platejs'
 import { useEditorRef, useSelectionFragmentProp } from 'platejs/react'
 
-import { getBlockType, setBlockType } from '@/components/editor/transforms'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/aural-ui/dropdown'
+import { getBlockType, setBlockType } from '@/components/editor/transforms'
 
+import { Icons } from '../icons'
 import { ToolbarButton, ToolbarMenuGroup } from './toolbar'
 
 export const turnIntoItems = [
 	{
-		icon: <PilcrowIcon />,
+		icon: Icons.paragraph,
 		keywords: ['paragraph'],
 		label: 'Text',
 		value: KEYS.p,
 	},
 	{
-		icon: <Heading1Icon />,
+		icon: Icons.h1,
 		keywords: ['title', 'h1'],
 		label: 'Heading 1',
 		value: 'h1',
 	},
 	{
-		icon: <Heading2Icon />,
+		icon: Icons.h2,
 		keywords: ['subtitle', 'h2'],
 		label: 'Heading 2',
 		value: 'h2',
 	},
 	{
-		icon: <Heading3Icon />,
+		icon: Icons.h3,
 		keywords: ['subtitle', 'h3'],
 		label: 'Heading 3',
 		value: 'h3',
 	},
 	{
-		icon: <ListIcon />,
-		keywords: ['unordered', 'ul', '-'],
-		label: 'Bulleted list',
-		value: KEYS.ul,
+		icon: Icons.h4,
+		keywords: ['subtitle', 'h4'],
+		label: 'Heading 4',
+		value: 'h4',
 	},
 	{
-		icon: <ListOrderedIcon />,
-		keywords: ['ordered', 'ol', '1'],
-		label: 'Numbered list',
-		value: KEYS.ol,
+		icon: Icons.h5,
+		keywords: ['subtitle', 'h5'],
+		label: 'Heading 5',
+		value: 'h5',
 	},
 	{
-		icon: <SquareIcon />,
-		keywords: ['checklist', 'task', 'checkbox', '[]'],
-		label: 'To-do list',
-		value: KEYS.listTodo,
+		icon: Icons.h6,
+		keywords: ['subtitle', 'h6'],
+		label: 'Heading 6',
+		value: 'h6',
 	},
 	{
-		icon: <ChevronRightIcon />,
-		keywords: ['collapsible', 'expandable'],
-		label: 'Toggle list',
-		value: KEYS.toggle,
-	},
-	{
-		icon: <FileCodeIcon />,
-		keywords: ['```'],
-		label: 'Code',
-		value: KEYS.codeBlock,
-	},
-	{
-		icon: <QuoteIcon />,
+		icon: Icons.blockquote,
 		keywords: ['citation', 'blockquote', '>'],
 		label: 'Quote',
 		value: KEYS.blockquote,
-	},
-	{
-		icon: <Columns3Icon />,
-		label: '3 columns',
-		value: 'action_three_columns',
 	},
 ]
 
@@ -114,46 +83,41 @@ export function TurnIntoToolbarButton(props: DropdownMenuProps) {
 		[value]
 	)
 
+	const { icon: SelectedItemIcon } = selectedItem
+
 	return (
 		<DropdownMenu open={open} onOpenChange={setOpen} modal={false} {...props}>
 			<DropdownMenuTrigger asChild>
-				<ToolbarButton
-					className="min-w-[125px]"
-					pressed={open}
-					tooltip="Turn into"
-					isDropdown
-				>
-					{selectedItem.label}
+				<ToolbarButton pressed={open} tooltip="Turn into" isDropdown>
+					<SelectedItemIcon className="size-5 lg:hidden" />
+					<span className="max-lg:hidden">
+						<SelectedItemIcon />
+					</span>
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
 			<DropdownMenuContent
-				className="ignore-click-outside/toolbar min-w-0"
+				className="ignore-click-outside/toolbar min-w-50"
+				align="start"
 				onCloseAutoFocus={(e) => {
 					e.preventDefault()
 					editor.tf.focus()
 				}}
-				align="start"
 			>
 				<ToolbarMenuGroup
+					className="flex flex-col gap-0.5"
 					value={value}
 					onValueChange={(type) => {
 						setBlockType(editor, type)
 					}}
-					label="Turn into"
 				>
-					{turnIntoItems.map(({ icon, label, value: itemValue }) => (
+					{turnIntoItems.map(({ icon: Icon, label, value: itemValue }) => (
 						<DropdownMenuRadioItem
 							key={itemValue}
-							className="min-w-[180px] pl-2 *:first:[span]:hidden"
+							className="min-w-[180px] py-2 [font-size:var(--text-fm-md)]"
 							value={itemValue}
 						>
-							<span className="pointer-events-none absolute right-2 flex size-3.5 items-center justify-center">
-								<DropdownMenuItemIndicator>
-									<CheckIcon />
-								</DropdownMenuItemIndicator>
-							</span>
-							{icon}
+							<Icon className="mr-2 size-4" />
 							{label}
 						</DropdownMenuRadioItem>
 					))}

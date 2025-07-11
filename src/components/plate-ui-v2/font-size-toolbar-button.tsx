@@ -12,9 +12,10 @@ import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from '@/components/ui/popover'
+} from '@/components/aural-ui/popover'
 import { cn } from '@/lib/utils/helpers'
 
+import { List, ListItem } from '../aural-ui/list'
 import { ToolbarButton } from './toolbar'
 
 const DEFAULT_FONT_SIZE = '16'
@@ -56,7 +57,9 @@ export function FontSizeToolbarButton() {
 
 		const [block] = editor.api.block<TElement>() || []
 
-		if (!block?.type) return DEFAULT_FONT_SIZE
+		if (!block?.type) {
+			return DEFAULT_FONT_SIZE
+		}
 
 		return block.type in FONT_SIZE_MAP
 			? FONT_SIZE_MAP[block.type as keyof typeof FONT_SIZE_MAP]
@@ -87,7 +90,7 @@ export function FontSizeToolbarButton() {
 	const displayValue = isFocused ? inputValue : cursorFontSize
 
 	return (
-		<div className="bg-muted/60 flex h-7 items-center gap-1 rounded-md p-0">
+		<div className="flex h-7 items-center gap-1 rounded-md p-0">
 			<ToolbarButton onClick={() => handleFontSizeChange(-1)}>
 				<Minus />
 			</ToolbarButton>
@@ -96,7 +99,7 @@ export function FontSizeToolbarButton() {
 				<PopoverTrigger asChild>
 					<input
 						className={cn(
-							'hover:bg-muted h-full w-10 shrink-0 bg-transparent px-1 text-center text-sm'
+							'hover:bg-fm-secondary-50 h-full w-10 shrink-0 bg-transparent px-1 text-center text-sm'
 						)}
 						value={displayValue}
 						onBlur={() => {
@@ -119,25 +122,26 @@ export function FontSizeToolbarButton() {
 					/>
 				</PopoverTrigger>
 				<PopoverContent
-					className="w-10 px-px py-1"
+					align="start"
+					className="w-50 backdrop-blur-xs"
 					onOpenAutoFocus={(e) => e.preventDefault()}
 				>
-					{FONT_SIZES.map((size) => (
-						<button
-							key={size}
-							className={cn(
-								'hover:bg-accent data-[highlighted=true]:bg-accent flex h-8 w-full items-center justify-center text-sm'
-							)}
-							onClick={() => {
-								tf.fontSize.addMark(`${size}px`)
-								setIsFocused(false)
-							}}
-							data-highlighted={size === displayValue}
-							type="button"
-						>
-							{size}
-						</button>
-					))}
+					<List className="bg-transparent">
+						{FONT_SIZES.map((size) => (
+							<ListItem
+								key={size}
+								selected={size === displayValue}
+								onClick={() => {
+									tf.fontSize.addMark(`${size}px`)
+									setIsFocused(false)
+								}}
+								data-highlighted={size === displayValue}
+								className="py-2"
+							>
+								{size}
+							</ListItem>
+						))}
+					</List>
 				</PopoverContent>
 			</Popover>
 
