@@ -30,7 +30,7 @@ import { EProjectAccessActions } from '@/types/admin-types'
 export default function SearchMembers() {
 	const form = useAddUserFormResolver()
 	const projectAccessMutation = useProjectAccessMutation()
-	const { useEpisodeTableStore } = useEpisodeStore()
+	const { useEpisodeTableStore, setShowSharedList } = useEpisodeStore()
 	const isSharedAccessDialogOpen = useEpisodeTableStore(
 		(state) => state.isSharedAccessDialogOpen
 	)
@@ -38,6 +38,7 @@ export default function SearchMembers() {
 	const reset = () => {
 		form.reset()
 		setMemberQuery('')
+		setShowSharedList(true)
 	}
 
 	const onSubmit = (data: AddUserFormSchema) => {

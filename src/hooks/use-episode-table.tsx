@@ -187,7 +187,7 @@ const useEpisodeTable = () => {
 				),
 				description: `Combine <${selectedRowData.length}> episodes`,
 				subDescription: 'You can merge selected episodes into one',
-				action: EpisodeActions.COMBINE,
+				action: EpisodeActions.MERGE,
 				secondAction: 'Cancel',
 			})
 		}

@@ -3,6 +3,7 @@ import useAllUsersData from '@/hooks/query/use-all-users-data'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import { CrossIcon } from '@/icons/cross-icon'
 import useAdminStore, { setMemberQuery } from '@/store/admin-store'
+import { useEpisodeStore } from '@/store/episode-store'
 
 import {
 	Command,
@@ -12,7 +13,6 @@ import {
 	CommandItem,
 	CommandList,
 } from '@/components/aural-ui/command'
-import { Divider } from '@/components/aural-ui/divider'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Skeleton } from '@/components/aural-ui/skelton'
@@ -31,6 +31,7 @@ const SearchUser = ({
 	const { data, isLoading } = useAllUsersData('')
 	const { data: membersData } = useUserMembersQuery()
 	const addMemberQuery = useAdminStore((state) => state.addMemberQuery)
+	const { setShowSharedList } = useEpisodeStore()
 
 	const users = React.useMemo(() => {
 		if (!data || !membersData) {
@@ -45,6 +46,11 @@ const SearchUser = ({
 
 	const handleValueChange = (value: string) => {
 		setMemberQuery(value)
+		if (value.length >= 2) {
+			setShowSharedList(false)
+		} else {
+			setShowSharedList(true)
+		}
 		if (selectedValue) {
 			onUserSelect('')
 		}
@@ -53,6 +59,7 @@ const SearchUser = ({
 	const handleSelect = (user: UserData) => {
 		onUserSelect(user.email)
 		setMemberQuery(user.fullname)
+		setShowSharedList(true)
 	}
 
 	return (
@@ -98,7 +105,7 @@ const SearchUser = ({
 						viewport: 'h-51',
 					}}
 				>
-					<CommandList className="bg-fm-surface-secondary max-h-none shadow-lg">
+					<CommandList className="bg-fm-surface-frosted/20 max-h-none shadow-lg">
 						<IfElse condition={isLoading}>
 							<If>
 								{Array.from({ length: 2 }).map((_, index) => (
@@ -111,15 +118,24 @@ const SearchUser = ({
 								<If condition={!selectedValue}>
 									<CommandGroup className="p-0">
 										{users.map((user, index) => (
-											<div
-												key={`user-${index}`}
-												className="bg-fm-surface-frosted/20"
-											>
+											<div key={`user-${index}`}>
 												<CommandItem
 													onMouseDown={(e) => e.preventDefault()}
 													onSelect={() => handleSelect(user)}
+													className="p-0"
+													classes={{
+														root: 'py-0 px-2',
+													}}
 												>
-													<div className="relative w-full">
+													<div
+														className={cn(
+															'flex h-15 w-full flex-col justify-center px-2',
+															{
+																'border-fm-divider-primary border-b border-dashed':
+																	index < users.length - 1,
+															}
+														)}
+													>
 														<h3 className="text-sm">
 															{user?.fullname ?? 'Anonymous'}
 														</h3>
@@ -128,15 +144,10 @@ const SearchUser = ({
 														</div>
 													</div>
 												</CommandItem>
-												<If condition={index < users.length - 1}>
-													<div className="px-2">
-														<Divider variant="dashed" />
-													</div>
-												</If>
 											</div>
 										))}
 									</CommandGroup>
-									<CommandEmpty className="text-fm-primary bg-fm-surface-frosted/20 py-3 text-sm">
+									<CommandEmpty className="text-fm-primary h-full py-3 text-sm">
 										No user found
 									</CommandEmpty>
 									<div className="absolute top-0 right-0 left-0 block h-0.5 w-full bg-(image:--gradient-fm-stroke-neutral)"></div>

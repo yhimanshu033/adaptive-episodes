@@ -6,6 +6,7 @@ import UpdateDriveFolder from '@/page-builders/manage-project/update-gdrive-fold
 import UpdateLOCSheet from '@/page-builders/manage-project/update-loc-sheet'
 import UpdateSlackChannel from '@/page-builders/manage-project/update-slack-channel'
 import { useEpisodeStore } from '@/store/episode-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import {
 	Dialog,
@@ -19,13 +20,17 @@ import { Divider } from '@/components/aural-ui/divider'
 import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Typography } from '@/components/aural-ui/typography'
+import { cn } from '@/lib/aural-ui/utils'
 
 import { EFolderType } from '@/types/admin-types'
 
 export default function ShareAccessDialog() {
 	const { useEpisodeTableStore, setIsShareAccessDialogOpen } = useEpisodeStore()
-	const isSharedAccessDialogOpen = useEpisodeTableStore(
-		(state) => state.isSharedAccessDialogOpen
+	const { showSharedList, isSharedAccessDialogOpen } = useEpisodeTableStore(
+		useShallow((state) => ({
+			showSharedList: state.showSharedList,
+			isSharedAccessDialogOpen: state.isSharedAccessDialogOpen,
+		}))
 	)
 
 	return (
@@ -63,20 +68,26 @@ export default function ShareAccessDialog() {
 					</DialogHeader>
 					<div>
 						<SearchMembers />
-						<div className="px-8">
-							<Typography
-								transform="uppercase"
-								variant="caption-medium"
-								className="font-fm-brand mb-4"
-							>
-								Shared with
-							</Typography>
-							<Divider
-								variant="dashed"
-								className="border-fm-divider-secondary"
-							/>
+						<div
+							className={cn('transition-opacity duration-200', {
+								'opacity-0': !showSharedList,
+							})}
+						>
+							<div className="px-8">
+								<Typography
+									transform="uppercase"
+									variant="caption-medium"
+									className="font-fm-brand mb-4"
+								>
+									Shared with
+								</Typography>
+								<Divider
+									variant="dashed"
+									className="border-fm-divider-secondary"
+								/>
+							</div>
+							<SharedList />
 						</div>
-						<SharedList />
 						<div className="mt-10 px-8">
 							<Typography
 								transform="uppercase"
