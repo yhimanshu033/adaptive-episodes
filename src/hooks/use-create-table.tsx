@@ -199,6 +199,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 									(!isSelected && Object.keys(rowSelection).length > 0) ||
 									isUpdating
 								}
+								value={latestStatus}
 							>
 								<SelectTrigger
 									decoration="outline"
@@ -229,7 +230,15 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 												className={cn('h-10 border-0 !text-sm', {
 													'data-[disabled]:bg-fm-transparent':
 														index != latestIndex + 1,
+													'data-[disabled]:text-fm-primary':
+														index === latestIndex,
 												})}
+												classes={{
+													icon: cn({
+														'group-data-[disabled]:text-fm-icon-active':
+															index === latestIndex,
+													}),
+												}}
 											>
 												{titleToStatusText[status]}
 											</SelectItem>

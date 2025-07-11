@@ -4,14 +4,18 @@ import { EpisodeActions, titleToStatus } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
+import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { GitBranchIcon } from '@/icons/git-branch-icon'
 import { GitForkIcon } from '@/icons/git-fork-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import { useEpisodeStore } from '@/store/episode-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { Row, Table } from '@tanstack/react-table'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
+import { Button } from '@/components/aural-ui/button'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
 
@@ -234,11 +238,49 @@ const useEpisodeTable = () => {
 			return
 		}
 		// TODO add episode on last
-		episodeInventMutation.mutate({
-			chapter_title: data.title,
-			seq_number: (currentInventIndex || 0) + 2 + (currentPage - 1) * limit,
-			language: storyData?.parent_language,
-		})
+		episodeInventMutation.mutate(
+			{
+				chapter_title: data.title,
+				seq_number: (currentInventIndex || 0) + 2 + (currentPage - 1) * limit,
+				language: storyData?.parent_language,
+			},
+			{
+				onSuccess: (data) => {
+					toast.custom(
+						(id) => (
+							<div className="text-fm-contrast item-center flex w-full justify-between">
+								<div className="flex items-center gap-2">
+									<BubbleCheckIcon className="size-6" />
+									<div>New episode created successfully</div>
+								</div>
+								<Button
+									variant="outline"
+									innerClassName="!h-8 text-fm-contrast !text-fm-sm border-fm-divider-tertiary"
+									onClick={() => {
+										toast.dismiss(id)
+										router.push(
+											`/projects/${data?.project_id}/${data?.id}/editor`
+										)
+									}}
+								>
+									View
+								</Button>
+							</div>
+						),
+						{
+							duration: 3000,
+							className: 'w-md max-w-none',
+						}
+					)
+				},
+
+				onError: () => {
+					toast.error('Failed to add episode', {
+						icon: <BubbleCrossedIcon />,
+					})
+				},
+			}
+		)
 		setIsInventOpen(false)
 	}
 
