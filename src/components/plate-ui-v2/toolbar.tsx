@@ -15,6 +15,8 @@ import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils/helpers'
 
+import { withTooltip } from '../aural-ui/tooltip'
+
 export function Toolbar({
 	className,
 	...props
@@ -295,37 +297,37 @@ type TooltipProps<T extends React.ElementType> = {
 	tooltipTriggerProps?: React.ComponentPropsWithoutRef<typeof TooltipTrigger>
 } & React.ComponentProps<T>
 
-function withTooltip<T extends React.ElementType>(Component: T) {
-	return function ExtendComponent({
-		tooltip,
-		tooltipContentProps,
-		tooltipProps,
-		tooltipTriggerProps,
-		...props
-	}: TooltipProps<T>) {
-		const [mounted, setMounted] = React.useState(false)
+// function withTooltip<T extends React.ElementType>(Component: T) {
+// 	return function ExtendComponent({
+// 		tooltip,
+// 		tooltipContentProps,
+// 		tooltipProps,
+// 		tooltipTriggerProps,
+// 		...props
+// 	}: TooltipProps<T>) {
+// 		const [mounted, setMounted] = React.useState(false)
 
-		React.useEffect(() => {
-			setMounted(true)
-		}, [])
+// 		React.useEffect(() => {
+// 			setMounted(true)
+// 		}, [])
 
-		const component = <Component {...(props as React.ComponentProps<T>)} />
+// 		const component = <Component {...(props as React.ComponentProps<T>)} />
 
-		if (tooltip && mounted) {
-			return (
-				<Tooltip {...tooltipProps}>
-					<TooltipTrigger asChild {...tooltipTriggerProps}>
-						{component}
-					</TooltipTrigger>
+// 		if (tooltip && mounted) {
+// 			return (
+// 				<Tooltip {...tooltipProps}>
+// 					<TooltipTrigger asChild {...tooltipTriggerProps}>
+// 						{component}
+// 					</TooltipTrigger>
 
-					<TooltipContent {...tooltipContentProps}>{tooltip}</TooltipContent>
-				</Tooltip>
-			)
-		}
+// 					<TooltipContent {...tooltipContentProps}>{tooltip}</TooltipContent>
+// 				</Tooltip>
+// 			)
+// 		}
 
-		return component
-	}
-}
+// 		return component
+// 	}
+// }
 
 function TooltipContent({
 	children,

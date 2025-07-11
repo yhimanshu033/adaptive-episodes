@@ -1,8 +1,7 @@
 import React from 'react'
 import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
-import { collapseSelection } from '@udecode/plate-common'
-import { focusEditor, useEditorRef } from '@udecode/plate-common/react'
+import { useEditorRef } from 'platejs/react'
 
 import {
 	DropdownMenu,
@@ -43,8 +42,8 @@ export function ZoomDropdownMenu(props: DropdownMenuProps) {
 					value={String(selectedItem)}
 					onValueChange={(type) => {
 						setScale(Number(type))
-						collapseSelection(editor)
-						focusEditor(editor)
+						editor.tf.collapse()
+						editor.tf.focus({ edge: 'end' })
 					}}
 				>
 					<DropdownMenuRadioItem

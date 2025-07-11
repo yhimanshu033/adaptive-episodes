@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import * as React from 'react'
@@ -24,14 +27,14 @@ import {
 import { useEditorPlugin, usePluginOption } from 'platejs/react'
 
 import {
-	useCreateDiscussionKit,
+	discussionPlugin,
 	type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
-import { useSuggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
 
+import { suggestionPlugin } from '../editor/plugins/suggestion-kit'
 import {
 	Comment,
 	CommentCreateForm,
@@ -111,7 +114,6 @@ export function BlockSuggestionCard({
 	suggestion: ResolvedSuggestion
 }) {
 	const { api, editor } = useEditorPlugin(SuggestionPlugin)
-	const discussionPlugin = useCreateDiscussionKit()
 
 	const userInfo = usePluginOption(discussionPlugin, 'user', suggestion.userId)
 
@@ -291,8 +293,6 @@ export const useResolveSuggestion = (
 	suggestionNodes: NodeEntry<TElement | TSuggestionText>[],
 	blockPath: Path
 ) => {
-	const discussionPlugin = useCreateDiscussionKit()
-	const suggestionPlugin = useSuggestionPlugin()
 	const discussions = usePluginOption(discussionPlugin, 'discussions')
 
 	const { api, editor, getOption, setOption } =

@@ -29,7 +29,7 @@ import {
 
 import { BasicMarksKit } from '@/components/editor/plugins/basic-marks-kit'
 import {
-	useCreateDiscussionKit,
+	discussionPlugin,
 	type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -75,7 +75,6 @@ export function Comment(props: {
 		onEditorClick,
 	} = props
 
-	const discussionPlugin = useCreateDiscussionKit()
 	const editor = useEditorRef()
 	const userInfo = usePluginOption(discussionPlugin, 'user', comment.userId)
 	const currentUserId = usePluginOption(discussionPlugin, 'currentUserId')
@@ -305,7 +304,6 @@ function CommentMoreDropdown(props: {
 	} = props
 
 	const editor = useEditorRef()
-	const discussionPlugin = useCreateDiscussionKit()
 
 	const selectedEditCommentRef = React.useRef<boolean>(false)
 
@@ -418,7 +416,6 @@ export function CommentCreateForm({
 	discussionId?: string
 	focusOnMount?: boolean
 }) {
-	const discussionPlugin = useCreateDiscussionKit()
 	const discussions = usePluginOption(discussionPlugin, 'discussions')
 
 	const editor = useEditorRef()

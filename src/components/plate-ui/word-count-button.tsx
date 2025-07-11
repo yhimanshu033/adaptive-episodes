@@ -1,21 +1,26 @@
 import React, { useMemo } from 'react'
-import { useEditorState } from '@udecode/plate-common/react'
 import { WholeWordIcon } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
+import { useEditorString } from 'platejs/react'
 
-import { TooltipComponent } from '@/components/ui/tooltip-component'
 import { prettifyNumber } from '@/lib/utils/helpers'
-import { getWordCount } from '@/lib/utils/plate'
+
+import { ToolbarButton } from '../plate-ui-v2/toolbar'
+import { Tooltip } from '../plate-ui-v2/tooltip'
+import { TooltipComponent } from '../ui/tooltip-component'
 
 export default function WordCountButton() {
-	const { children } = useEditorState()
+	const editorText = useEditorString()
+	console.log(editorText)
 	const locale = useLocale()
 	const dict = useTranslations('placeholders')
 
 	const wordCount = useMemo(() => {
-		const words = getWordCount(children)
+		const words = editorText
+			.split(/\s+/)
+			.filter((word) => word.length > 0).length
 		return prettifyNumber(words, locale)
-	}, [children, locale])
+	}, [editorText, locale])
 
 	return (
 		<TooltipComponent tooltip={`${dict('words')}: ${wordCount}`}>

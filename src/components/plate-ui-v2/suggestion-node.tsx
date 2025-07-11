@@ -7,13 +7,12 @@ import type { PlateLeafProps, RenderNodeWrapper } from 'platejs/react'
 import { PlateLeaf, useEditorPlugin, usePluginOption } from 'platejs/react'
 
 import {
-	useSuggestionPlugin,
+	suggestionPlugin,
 	type SuggestionConfig,
 } from '@/components/editor/plugins/suggestion-kit'
 import { cn } from '@/lib/utils/helpers'
 
 export function SuggestionLeaf(props: PlateLeafProps<TSuggestionText>) {
-	const suggestionPlugin = useSuggestionPlugin()
 	const { api, setOption } = useEditorPlugin(suggestionPlugin)
 	const leaf = props.leaf
 
@@ -82,7 +81,6 @@ function SuggestionLineBreakContent({
 }: {
 	suggestionData: TSuggestionData
 }) {
-	const suggestionPlugin = useSuggestionPlugin()
 	const { type } = suggestionData
 	const isRemove = type === 'remove'
 	const isInsert = type === 'insert'

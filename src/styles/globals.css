@@ -1,4 +1,8 @@
 @import 'tailwindcss';
+/*
+  ---break---
+*/
+@plugin 'tailwind-scrollbar-hide';
 @import './aural-theme.css';
 
 @custom-variant dark (&: is(.dark *));

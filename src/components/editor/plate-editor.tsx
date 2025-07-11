@@ -14,8 +14,7 @@ import { Plate } from 'platejs/react'
 import { Editor, EditorContainer } from '@/components/plate-ui-v2/editor'
 
 import { ScrollArea } from '../aural-ui/scroll-area'
-import { SuggestionToolbarButton } from '../plate-ui-v2/suggestion-toolbar-button'
-import { Toolbar } from '../plate-ui-v2/toolbar'
+import { FixedToolbar } from '../plate-ui-v2/fixed-toolbar'
 
 export function PlateEditor() {
 	const {
@@ -27,6 +26,7 @@ export function PlateEditor() {
 	const editor = useMyEditor({
 		content: content?.text || '',
 		id: 'root-editor',
+		discussions: content?.chapter?.props?.comments,
 	})
 
 	const searchParams = useSearchParams()
@@ -43,10 +43,7 @@ export function PlateEditor() {
 					<EditorOverlayLoader />
 					<EpisodeHeader {...{ content, latestStatus }} />
 
-					<Toolbar>
-						<SuggestionToolbarButton />
-					</Toolbar>
-
+					<FixedToolbar />
 					<EditorContainer>
 						<ScrollArea className="max-h-[calc(100vh-152px)] overflow-y-auto">
 							<Editor

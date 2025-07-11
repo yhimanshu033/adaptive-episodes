@@ -1,15 +1,13 @@
 import { useMemo } from 'react'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { useEditorState } from '@udecode/plate-common/react'
+import { useEditorString } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import usePlayer from '@/providers/player-provider'
-import { getText } from '@/lib/utils/plate'
 
 export default function useStreamedTTS() {
-	const { children } = useEditorState()
-	const text = useMemo(() => getText(children, '.\n'), [children])
+	const text = useEditorString()
 	const { initialStoryData } = useEpisodeTableContext()
 	const { store: episodeStore } = useEpisodeIdStore()
 	const episodeTitle = episodeStore(useShallow((state) => state.currentTitle))

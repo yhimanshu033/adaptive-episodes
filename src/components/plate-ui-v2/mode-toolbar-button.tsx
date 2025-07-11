@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import useCustomPlateStore from '@/store/plate-store'
+import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
 	useEditorPlugin,
@@ -25,15 +26,13 @@ import useProjectId from '@/providers/project-id-provider'
 import { toPascalCase } from '@/lib/utils/helpers'
 
 import { Typography } from '../aural-ui/typography'
-import { useSuggestionPlugin } from '../editor/plugins/suggestion-kit'
 
 export function ModeToolbarButton(props: DropdownMenuProps) {
 	const [readOnly, setReadOnly] = usePlateState('readOnly')
-	const suggestionPlugin = useSuggestionPlugin()
 	const editorRef = useEditorRef()
 
-	const isSuggesting = usePluginOption(suggestionPlugin, 'isSuggesting')
-	const { setOption } = useEditorPlugin(suggestionPlugin)
+	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
+	const { setOption } = useEditorPlugin(SuggestionPlugin)
 
 	useFocusEditorEvents({ editorRef })
 

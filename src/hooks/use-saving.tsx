@@ -17,7 +17,7 @@ import {
 import { useShallow } from 'zustand/react/shallow'
 
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
-import { useCreateDiscussionKit } from '@/components/editor/plugins/discussion-kit'
+import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
 import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import { setValue } from '@/lib/utils/indexed-db'
 import {
@@ -49,8 +49,6 @@ export function SavingContextProvider({
 	const { id } = useParams()
 	const { children } = useEditorRef()
 	const editorText = useEditorString()
-	const discussionPlugin = useCreateDiscussionKit()
-	const { api, setOption, getOption } = useEditorPlugin(discussionPlugin)
 
 	// const { allComments, set } = useComments()
 	const allComments = usePluginOption(discussionPlugin, 'discussions')
