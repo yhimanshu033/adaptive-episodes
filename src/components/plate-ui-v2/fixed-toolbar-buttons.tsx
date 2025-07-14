@@ -27,6 +27,8 @@ import TtsToolbarButton from '@/components/plate-ui-v2/tts-toolbar-button'
 import { TurnIntoToolbarButton } from '@/components/plate-ui-v2/turn-into-toolbar-button'
 import WordCountButton from '@/components/plate-ui-v2/word-count-button'
 
+import { ScrollArea } from '../aural-ui/scroll-area'
+
 const toolbarIconVariants = iconVariants({ variant: 'toolbar' })
 
 const markButtons = [
@@ -88,7 +90,7 @@ SimplifiedToolbar.displayName = 'SimplifiedToolbar'
 
 const RightToolbarSection = React.memo(() => (
 	<div className="flex">
-		<ToolbarGroup>
+		<ToolbarGroup noSeparator>
 			<TtsToolbarButton />
 		</ToolbarGroup>
 		<ToolbarGroup>
@@ -97,7 +99,7 @@ const RightToolbarSection = React.memo(() => (
 		<ToolbarGroup>
 			<TranslationToggleButton />
 		</ToolbarGroup>
-		<ToolbarGroup>
+		<ToolbarGroup noSeparator>
 			<ViewLS />
 		</ToolbarGroup>
 	</div>
@@ -108,39 +110,43 @@ RightToolbarSection.displayName = 'RightToolbarSection'
 // Memoized full toolbar content
 const FullToolbarContent = React.memo(() => (
 	<div className="flex w-full">
-		<ToolbarGroup noSeparator>
-			<WordCountButton />
-		</ToolbarGroup>
-		<ToolbarGroup>
-			<UndoToolbarButton />
-			<RedoToolbarButton />
-		</ToolbarGroup>
+		<ScrollArea orientation="horizontal" className="w-full">
+			<div className="flex w-full px-6 py-3">
+				<ToolbarGroup noSeparator>
+					<WordCountButton />
+				</ToolbarGroup>
+				<ToolbarGroup>
+					<UndoToolbarButton />
+					<RedoToolbarButton />
+				</ToolbarGroup>
 
-		<ToolbarGroup>
-			<FontDropdownMenu />
-		</ToolbarGroup>
+				<ToolbarGroup>
+					<FontDropdownMenu />
+				</ToolbarGroup>
 
-		<ToolbarGroup>
-			<FontSizeToolbarButton />
-		</ToolbarGroup>
+				<ToolbarGroup>
+					<FontSizeToolbarButton />
+				</ToolbarGroup>
 
-		<SimplifiedToolbar simplified={false}>
-			<ToolbarGroup>
-				<TurnIntoToolbarButton />
-			</ToolbarGroup>
-		</SimplifiedToolbar>
+				<SimplifiedToolbar simplified={false}>
+					<ToolbarGroup>
+						<TurnIntoToolbarButton />
+					</ToolbarGroup>
+				</SimplifiedToolbar>
 
-		<ToolbarGroup>
-			<LineHeightToolbarButton />
-		</ToolbarGroup>
+				<ToolbarGroup>
+					<LineHeightToolbarButton />
+				</ToolbarGroup>
 
-		<ToolbarGroup>
-			<AlignToolbarButton />
-		</ToolbarGroup>
+				<ToolbarGroup>
+					<AlignToolbarButton />
+				</ToolbarGroup>
 
-		<div className="grow" />
+				<div className="grow" />
 
-		<RightToolbarSection />
+				<RightToolbarSection />
+			</div>
+		</ScrollArea>
 		<ChatbotToolbarButton />
 	</div>
 ))

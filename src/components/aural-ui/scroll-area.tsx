@@ -7,6 +7,7 @@ function ScrollArea({
 	className,
 	classes = {},
 	children,
+	orientation = 'vertical',
 	...props
 }: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
 	classes?: {
@@ -16,6 +17,7 @@ function ScrollArea({
 		thumb?: string
 		viewport?: string
 	}
+	orientation?: 'vertical' | 'horizontal'
 }) {
 	return (
 		<ScrollAreaPrimitive.Root
@@ -32,7 +34,7 @@ function ScrollArea({
 			>
 				{children}
 			</ScrollAreaPrimitive.Viewport>
-			<ScrollBar className={classes.scrollbar} />
+			<ScrollBar orientation={orientation} className={classes.scrollbar} />
 			<ScrollAreaPrimitive.Corner className={classes.corner} />
 		</ScrollAreaPrimitive.Root>
 	)

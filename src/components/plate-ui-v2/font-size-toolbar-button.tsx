@@ -102,7 +102,18 @@ export function FontSizeToolbarButton() {
 							'hover:bg-fm-secondary-50 h-full w-10 shrink-0 bg-transparent px-1 text-center text-sm'
 						)}
 						value={displayValue}
-						onBlur={() => {
+						onBlur={(e) => {
+							// Check if the blur is caused by clicking inside the popover
+							const relatedTarget = e.relatedTarget as HTMLElement
+							const popoverContent = e.currentTarget.closest(
+								'[data-radix-popper-content-wrapper]'
+							)
+
+							// If clicking inside popover, don't close it
+							if (relatedTarget && popoverContent?.contains(relatedTarget)) {
+								return
+							}
+
 							setIsFocused(false)
 							handleInputChange()
 						}}
@@ -125,6 +136,10 @@ export function FontSizeToolbarButton() {
 					align="start"
 					className="w-50 backdrop-blur-xs"
 					onOpenAutoFocus={(e) => e.preventDefault()}
+					onMouseDown={(e) => {
+						// Prevent blur when clicking inside popover
+						e.preventDefault()
+					}}
 				>
 					<List className="bg-transparent">
 						{FONT_SIZES.map((size) => (
@@ -133,7 +148,9 @@ export function FontSizeToolbarButton() {
 								selected={size === displayValue}
 								onClick={() => {
 									tf.fontSize.addMark(`${size}px`)
+									setInputValue(size)
 									setIsFocused(false)
+									editor.tf.focus()
 								}}
 								data-highlighted={size === displayValue}
 								className="py-2"

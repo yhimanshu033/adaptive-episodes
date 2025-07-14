@@ -67,12 +67,12 @@ export function PlateEditor() {
 									<ResizablePanel
 										minSize={30}
 										order={1}
-										className="flex w-full flex-col overflow-visible"
+										className="flex w-full flex-col overflow-visible!"
 									>
-										<FixedToolbar>
+										<FixedToolbar className="overflow-visible! px-0 py-0">
 											<FixedToolbarButtons />
 										</FixedToolbar>
-										<ScrollArea className="max-h-[calc(100vh-152px)] overflow-y-auto">
+										<ScrollArea className="max-h-[calc(100vh-168px)] overflow-y-auto">
 											<Editor
 												placeholder="Type..."
 												autoFocus
