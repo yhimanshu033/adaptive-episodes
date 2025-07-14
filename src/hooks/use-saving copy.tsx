@@ -47,7 +47,6 @@ export function SavingContextProvider({
 	const allComments = [] as TComment[]
 	const set = () => {}
 	const { api, setOption } = useEditorPlugin(commentPlugin)
-	console.log(api.comment.nodes())
 
 	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()
 	const {

@@ -17,14 +17,14 @@ import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 
-const renderSidebar: Record<ESidebar, React.ReactNode> = {
-	[ESidebar.COMMENTS]: <CommentSidebar />,
-	[ESidebar.OUTLINE]: <StoryExplorer />,
-	[ESidebar.FAR]: <FindAndReplace />,
-	[ESidebar.CHATBOT]: <AiChatbot />,
-	[ESidebar.DUAL_VIEW]: null,
-	[ESidebar.NOTES]: <Notes />,
-}
+// const renderSidebar: Record<ESidebar, React.ReactNode> = {
+// 	[ESidebar.COMMENTS]: <CommentSidebar />,
+// 	[ESidebar.OUTLINE]: <StoryExplorer />,
+// 	[ESidebar.FAR]: <FindAndReplace />,
+// 	[ESidebar.CHATBOT]: <AiChatbot />,
+// 	[ESidebar.DUAL_VIEW]: null,
+// 	[ESidebar.NOTES]: <Notes />,
+// }
 
 const Sidebar = () => {
 	const { store } = usePlateStore()
@@ -69,21 +69,22 @@ const Sidebar = () => {
 				)}
 			>
 				{sidebarToDisplay && (
-					<div className="relative flex size-full flex-col transition-all duration-200">
-						<ScrollArea
-							className="h-full"
-							classes={{
-								viewport: '[&>div]:min-h-full [&>div]:h-full ',
-							}}
-						>
-							<div className="flex h-full flex-col">
-								<SidebarTopBar />
-								<div className="flex flex-1 flex-col">
-									{renderSidebar[sidebarToDisplay]}
-								</div>
-							</div>
-						</ScrollArea>
-					</div>
+					<div>Sidebar</div>
+					// <div className="relative flex size-full flex-col transition-all duration-200">
+					// 	<ScrollArea
+					// 		className="h-full"
+					// 		classes={{
+					// 			viewport: '[&>div]:min-h-full [&>div]:h-full ',
+					// 		}}
+					// 	>
+					// 		<div className="flex h-full flex-col">
+					// 			<SidebarTopBar />
+					// 			<div className="flex flex-1 flex-col">
+					// 				{renderSidebar[sidebarToDisplay]}
+					// 			</div>
+					// 		</div>
+					// 	</ScrollArea>
+					// </div>
 				)}
 			</ResizablePanel>
 		</>

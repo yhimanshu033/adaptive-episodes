@@ -52,8 +52,6 @@ export function SavingContextProvider({
 
 	// const { allComments, set } = useComments()
 	const allComments = usePluginOption(discussionPlugin, 'discussions')
-	// const set = () => {}
-	// console.log({ comments: getOption('discussions'), editorText })
 
 	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()
 

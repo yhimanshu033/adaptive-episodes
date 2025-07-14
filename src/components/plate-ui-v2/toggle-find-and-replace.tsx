@@ -6,7 +6,7 @@ import { Search } from 'lucide-react'
 
 import { ESidebar } from '@/types/plate-types'
 
-import { ToolbarButton } from './toolbar'
+import { ToolbarButton } from '../plate-ui/toolbar'
 
 export default function ToggleFindAndReplace() {
 	const { store, setSidebar } = usePlateStore()

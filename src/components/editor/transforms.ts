@@ -80,7 +80,9 @@ export const insertBlock = (editor: PlateEditor, type: string) => {
 	editor.tf.withoutNormalizing(() => {
 		const block = editor.api.block()
 
-		if (!block) return
+		if (!block) {
+			return
+		}
 		if (type in insertBlockMap) {
 			insertBlockMap[type](editor, type)
 		} else {

@@ -14,9 +14,13 @@ import {
 } from '@/components/editor/plugins/discussion-kit'
 import { ExitBreakKit } from '@/components/editor/plugins/exit-break-kit'
 import { FixedToolbarKit } from '@/components/editor/plugins/fixed-toolbar-kit'
+import { FloatingToolbarKit } from '@/components/editor/plugins/floating-toolbar-kit'
 import { FontKit } from '@/components/editor/plugins/font-kit'
 import { LineHeightKit } from '@/components/editor/plugins/line-height-kit'
-import { SuggestionKit } from '@/components/editor/plugins/suggestion-kit'
+import {
+	SuggestionKit,
+	suggestionPlugin,
+} from '@/components/editor/plugins/suggestion-kit'
 import { BlockDiscussion } from '@/components/plate-ui-v2/block-discussion'
 import useProjectId from '@/providers/project-id-provider'
 
@@ -35,6 +39,10 @@ const useMyEditor = ({
 		me: { user: userData },
 	} = useProjectId()
 
+	if (content) {
+		console.log(JSON.parse(content))
+	}
+
 	const value = content ? (JSON.parse(content) as Value) : ''
 	const editor = usePlateEditor(
 		{
@@ -42,17 +50,16 @@ const useMyEditor = ({
 				// Marks
 				...BasicNodesKit,
 				...FontKit,
-				// Block Style
 
+				// Block Style
 				...AlignKit,
 				...LineHeightKit,
 
 				// Collaboration
-				...CommentKit,
 				...SuggestionKit,
 				discussionPlugin.configure({
 					options: {
-						currentUserId: String(userData?.user.id || '1'),
+						currentUserId: String(userData?.user.id),
 						discussions,
 						users,
 					},
@@ -60,18 +67,20 @@ const useMyEditor = ({
 						aboveNodes: BlockDiscussion,
 					},
 				}),
+				...CommentKit,
+
 				// Editing
 				...AutoformatKit,
 				...ExitBreakKit,
 				TrailingBlockPlugin,
 
-				//UI
-				...FixedToolbarKit,
+				// UI
+				...FloatingToolbarKit,
 			],
 			value,
 			id,
 		},
-		[value]
+		[value, users, userData?.user.id, discussions, id]
 	)
 
 	return editor
