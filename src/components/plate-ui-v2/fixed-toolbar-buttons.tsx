@@ -4,9 +4,11 @@ import * as React from 'react'
 import { PaintRollIcon } from '@/icons/paint-roll-icon'
 import { TextColorIcon } from '@/icons/text-color-icon'
 import ViewLS from '@/page-builders/episodes/info/view-ls'
+import usePlateStore from '@/store/plate-store'
 import { BoldIcon, ItalicIcon, UnderlineIcon } from 'lucide-react'
 import { KEYS } from 'platejs'
 import { useEditorReadOnly } from 'platejs/react'
+import { useShallow } from 'zustand/react/shallow'
 
 import { iconVariants } from '@/components/icons'
 import { AlignToolbarButton } from '@/components/plate-ui-v2/align-toolbar-button'
@@ -27,6 +29,9 @@ import TtsToolbarButton from '@/components/plate-ui-v2/tts-toolbar-button'
 import { TurnIntoToolbarButton } from '@/components/plate-ui-v2/turn-into-toolbar-button'
 import WordCountButton from '@/components/plate-ui-v2/word-count-button'
 
+import { ESidebar } from '@/types/plate-types'
+
+import { If } from '../aural-ui/if-else'
 import { ScrollArea } from '../aural-ui/scroll-area'
 
 const toolbarIconVariants = iconVariants({ variant: 'toolbar' })
@@ -108,48 +113,55 @@ const RightToolbarSection = React.memo(() => (
 RightToolbarSection.displayName = 'RightToolbarSection'
 
 // Memoized full toolbar content
-const FullToolbarContent = React.memo(() => (
-	<div className="flex w-full">
-		<ScrollArea orientation="horizontal" className="w-full">
-			<div className="flex w-full px-6 py-3">
-				<ToolbarGroup noSeparator>
-					<WordCountButton />
-				</ToolbarGroup>
-				<ToolbarGroup>
-					<UndoToolbarButton />
-					<RedoToolbarButton />
-				</ToolbarGroup>
+const FullToolbarContent = React.memo(() => {
+	const readOnly = useEditorReadOnly()
+	const { store: usePlateContextStore } = usePlateStore()
+	const sidebar = usePlateContextStore(useShallow((state) => state.sidebar))
 
-				<ToolbarGroup>
-					<FontDropdownMenu />
-				</ToolbarGroup>
+	return (
+		<div className="flex w-full">
+			<ScrollArea orientation="horizontal" className="w-full">
+				<div className="flex w-full px-6 py-3">
+					<If condition={!readOnly && sidebar !== ESidebar.DUAL_VIEW}>
+						<ToolbarGroup noSeparator>
+							<WordCountButton />
+						</ToolbarGroup>
+						<ToolbarGroup>
+							<UndoToolbarButton />
+							<RedoToolbarButton />
+						</ToolbarGroup>
 
-				<ToolbarGroup>
-					<FontSizeToolbarButton />
-				</ToolbarGroup>
+						<ToolbarGroup>
+							<FontDropdownMenu />
+						</ToolbarGroup>
 
-				<SimplifiedToolbar simplified={false}>
-					<ToolbarGroup>
-						<TurnIntoToolbarButton />
-					</ToolbarGroup>
-				</SimplifiedToolbar>
+						<ToolbarGroup>
+							<FontSizeToolbarButton />
+						</ToolbarGroup>
 
-				<ToolbarGroup>
-					<LineHeightToolbarButton />
-				</ToolbarGroup>
+						<SimplifiedToolbar simplified={false}>
+							<ToolbarGroup>
+								<TurnIntoToolbarButton />
+							</ToolbarGroup>
+						</SimplifiedToolbar>
 
-				<ToolbarGroup>
-					<AlignToolbarButton />
-				</ToolbarGroup>
+						<ToolbarGroup>
+							<LineHeightToolbarButton />
+						</ToolbarGroup>
 
-				<div className="grow" />
+						<ToolbarGroup>
+							<AlignToolbarButton />
+						</ToolbarGroup>
+					</If>
+					<div className="grow" />
 
-				<RightToolbarSection />
-			</div>
-		</ScrollArea>
-		<ChatbotToolbarButton />
-	</div>
-))
+					<RightToolbarSection />
+				</div>
+			</ScrollArea>
+			<ChatbotToolbarButton />
+		</div>
+	)
+})
 
 FullToolbarContent.displayName = 'FullToolbarContent'
 
@@ -162,11 +174,6 @@ const SimplifiedToolbarContent = React.memo(() => (
 SimplifiedToolbarContent.displayName = 'SimplifiedToolbarContent'
 
 export function FixedToolbarButtons({ simplified }: { simplified?: boolean }) {
-	const readOnly = useEditorReadOnly()
-
-	if (readOnly) {
-		return null
-	}
 	if (simplified) {
 		return <SimplifiedToolbarContent />
 	}
