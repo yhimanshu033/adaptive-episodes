@@ -1,9 +1,9 @@
 import React, { HTMLAttributes } from 'react'
 import { DEFAULT_FONT_FAMILY, FONT_RECORD } from '@/constants/editor-constants'
-import usePlateStore from '@/store/plate-store'
+import { FontFamilyPlugin } from '@platejs/basic-styles/react'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { ChevronDown } from 'lucide-react'
-import { useShallow } from 'zustand/react/shallow'
+import { useEditorPlugin, useEditorSelector } from 'platejs/react'
 
 import {
 	DropdownMenu,
@@ -11,7 +11,7 @@ import {
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-} from '@/components/plate-ui/dropdown-menu'
+} from '@/components/aural-ui/dropdown'
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
 
 const items = Object.keys(FONT_RECORD).map((key) => ({
@@ -25,19 +25,26 @@ const items = Object.keys(FONT_RECORD).map((key) => ({
 		</span>
 	),
 	label: key,
-	value: FONT_RECORD[key],
+	value: `var(${FONT_RECORD[key]})`,
 }))
 
-const defaultItem = items.find((item) => item.value === DEFAULT_FONT_FAMILY)!
+const DEFAULT_FAMILY = `var(${DEFAULT_FONT_FAMILY})`
+
+const defaultItem = items.find((item) => item.value === DEFAULT_FAMILY)!
 
 export function FontDropdownMenu(props: DropdownMenuProps) {
-	const { store: usePlateStoreContext, setFontFamily } = usePlateStore()
-	const fontFamily = usePlateStoreContext(
-		useShallow((state) => state.fontFamily)
+	const { editor, tf } = useEditorPlugin(FontFamilyPlugin)
+
+	const fontFamily = useEditorSelector(
+		(editor) => editor.api.mark('fontFamily') as string,
+		[]
 	)
 
+	// Get current font family from editor selection
+	const currentFontFamily = fontFamily || DEFAULT_FAMILY
+
 	const selectedItem =
-		items.find((item) => item.value === fontFamily) ?? defaultItem
+		items.find((item) => item.value === currentFontFamily) ?? defaultItem
 	const { icon: SelectedItemIcon } = selectedItem
 
 	return (
@@ -55,9 +62,11 @@ export function FontDropdownMenu(props: DropdownMenuProps) {
 			<DropdownMenuContent className="min-w-50" align="start">
 				<DropdownMenuRadioGroup
 					className="flex flex-col gap-0.5"
-					value={fontFamily}
-					onValueChange={(type) => {
-						setFontFamily(type)
+					value={currentFontFamily}
+					onValueChange={(fontFamily) => {
+						// Use PlateJS internal API to set font family
+						tf.fontFamily.addMark(fontFamily)
+						editor.tf.focus()
 					}}
 				>
 					{items.map(({ icon: Icon, value: itemValue }) => (
