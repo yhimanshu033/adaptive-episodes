@@ -1,10 +1,9 @@
 'use client'
 
 import * as React from 'react'
+import { TextIndicatorIcon } from '@/icons/text-indicator-icon'
 import { LineHeightPlugin } from '@platejs/basic-styles/react'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
-import { DropdownMenuItemIndicator } from '@radix-ui/react-dropdown-menu'
-import { CheckIcon, WrapText } from 'lucide-react'
 import { useEditorRef, useSelectionFragmentProp } from 'platejs/react'
 
 import {
@@ -13,7 +12,7 @@ import {
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/aural-ui/dropdown'
 
 import { ToolbarButton } from './toolbar'
 
@@ -33,13 +32,14 @@ export function LineHeightToolbarButton(props: DropdownMenuProps) {
 		<DropdownMenu open={open} onOpenChange={setOpen} modal={false} {...props}>
 			<DropdownMenuTrigger asChild>
 				<ToolbarButton pressed={open} tooltip="Line height" isDropdown>
-					<WrapText />
+					<TextIndicatorIcon />
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent className="min-w-0" align="start">
+			<DropdownMenuContent className="min-w-50" align="start">
 				<DropdownMenuRadioGroup
 					value={value}
+					className="flex flex-col gap-0.5"
 					onValueChange={(newValue) => {
 						editor
 							.getTransforms(LineHeightPlugin)
@@ -50,14 +50,9 @@ export function LineHeightToolbarButton(props: DropdownMenuProps) {
 					{values.map((value) => (
 						<DropdownMenuRadioItem
 							key={value}
-							className="min-w-[180px] pl-2 *:first:[span]:hidden"
+							className="min-w-24 py-2 [font-size:var(--text-fm-md)]"
 							value={value}
 						>
-							<span className="pointer-events-none absolute right-2 flex size-3.5 items-center justify-center">
-								<DropdownMenuItemIndicator>
-									<CheckIcon />
-								</DropdownMenuItemIndicator>
-							</span>
 							{value}
 						</DropdownMenuRadioItem>
 					))}

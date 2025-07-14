@@ -4,12 +4,6 @@ import * as React from 'react'
 import type { Alignment } from '@platejs/basic-styles'
 import { TextAlignPlugin } from '@platejs/basic-styles/react'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
-import {
-	AlignCenterIcon,
-	AlignJustifyIcon,
-	AlignLeftIcon,
-	AlignRightIcon,
-} from 'lucide-react'
 import { useEditorPlugin, useSelectionFragmentProp } from 'platejs/react'
 
 import {
@@ -18,25 +12,26 @@ import {
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/aural-ui/dropdown'
 
+import { Icons, iconVariants } from '../icons'
 import { ToolbarButton } from './toolbar'
 
 const items = [
 	{
-		icon: AlignLeftIcon,
+		icon: Icons.alignLeft,
 		value: 'left',
 	},
 	{
-		icon: AlignCenterIcon,
+		icon: Icons.alignCenter,
 		value: 'center',
 	},
 	{
-		icon: AlignRightIcon,
+		icon: Icons.alignRight,
 		value: 'right',
 	},
 	{
-		icon: AlignJustifyIcon,
+		icon: Icons.alignJustify,
 		value: 'justify',
 	},
 ]
@@ -51,7 +46,7 @@ export function AlignToolbarButton(props: DropdownMenuProps) {
 
 	const [open, setOpen] = React.useState(false)
 	const IconValue =
-		items.find((item) => item.value === value)?.icon ?? AlignLeftIcon
+		items.find((item) => item.value === value)?.icon ?? Icons.alignLeft
 
 	return (
 		<DropdownMenu open={open} onOpenChange={setOpen} modal={false} {...props}>
@@ -61,9 +56,10 @@ export function AlignToolbarButton(props: DropdownMenuProps) {
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent className="min-w-0" align="start">
+			<DropdownMenuContent className="min-w-40" align="end">
 				<DropdownMenuRadioGroup
 					value={value}
+					className="flex flex-row items-center justify-between gap-1"
 					onValueChange={(value) => {
 						tf.textAlign.setNodes(value as Alignment)
 						editor.tf.focus()
@@ -72,10 +68,13 @@ export function AlignToolbarButton(props: DropdownMenuProps) {
 					{items.map(({ icon: Icon, value: itemValue }) => (
 						<DropdownMenuRadioItem
 							key={itemValue}
-							className="data-[state=checked]:bg-accent pl-2 *:first:[span]:hidden"
+							className="p-2 [font-size:var(--text-fm-md)]"
+							classes={{
+								indicator: 'hidden',
+							}}
 							value={itemValue}
 						>
-							<Icon />
+							<Icon className={iconVariants({ variant: 'toolbar' })} />
 						</DropdownMenuRadioItem>
 					))}
 				</DropdownMenuRadioGroup>
