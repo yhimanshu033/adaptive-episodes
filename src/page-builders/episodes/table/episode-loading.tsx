@@ -28,7 +28,7 @@ const EpisodesTableSkeleton = () => {
 					<Skeleton className="h-11 w-20" />
 				</div>
 			</div>
-			<Divider className="mt-4" />
+			<Divider className="mt-4 mb-10" variant="secondary" />
 			<Table>
 				<TableHeader>
 					<TableRow>

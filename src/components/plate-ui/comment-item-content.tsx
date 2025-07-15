@@ -50,7 +50,9 @@ export default function CommentItemContent() {
 		isReplyComment,
 		user: defaultUser,
 	} = useCommentItemContentState()
-	const { setShowExample } = useShowExampleVisibility()
+	const setShowExample = useShowExampleVisibility(
+		(state) => state.setShowExample
+	)
 
 	const dict = useTranslations('placeholders')
 

@@ -26,6 +26,10 @@ export function useEpisodeStore() {
 		useEpisodeStoreUtil.setState({ isSharedAccessDialogOpen })
 	}
 
+	const setShowSharedList = (showSharedList: boolean) => {
+		useEpisodeStoreUtil.setState({ showSharedList })
+	}
+
 	const setAlertInfo = (alertInfo: EpisodeStoreState['alertInfo']) => {
 		useEpisodeStoreUtil.setState({ alertInfo })
 	}
@@ -91,6 +95,7 @@ export function useEpisodeStore() {
 		setEpisodeSearch,
 		setIsDialogOpen,
 		setIsInventOpen,
+		setShowSharedList,
 		setIsShareAccessDialogOpen,
 		setAlertInfo,
 		setSelectedEpisodes,

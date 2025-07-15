@@ -25,12 +25,16 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 	const { handleConfirm } = useEpisodeTable()
 
+	const capitalizeFirstLetter = (str: string) => {
+		return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+	}
+
 	return (
 		<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 			<DialogContent
 				variant={alertInfo?.variant ?? 'neutral'}
 				classes={{
-					root: 'flex h-88 w-99 flex-col items-center px-6 py-8 text-center',
+					root: 'flex max-h-88 w-99 flex-col items-center gap-8 px-6 py-8 text-center bg-fm-surface-frosted/20',
 					overlay: 'z-60',
 					content: 'z-70',
 				}}
@@ -38,49 +42,48 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 				opacity="high"
 				glass="high"
 			>
-				<DialogHeader>
-					<div className="flex items-center justify-center pt-4">
+				<DialogHeader className="space-y-8">
+					<div className="flex items-center justify-center">
 						{alertInfo?.icon}
 					</div>
-
-					<DialogTitle asChild>
-						<Typography
-							align="center"
-							className="mt-4"
-							as="h2"
-							variant="body-large"
-						>
-							{alertInfo?.description}
-						</Typography>
-					</DialogTitle>
-					<DialogDescription asChild>
-						<Typography align="center" className="text-fm-tertiary mb-6">
-							{alertInfo?.subDescription}
-						</Typography>
-					</DialogDescription>
+					<div className="flex flex-col items-center justify-center gap-2">
+						<DialogTitle>
+							<Typography align="center" as="h2" variant="body-large">
+								{alertInfo?.description}
+							</Typography>
+						</DialogTitle>
+						<DialogDescription className="px-4">
+							<Typography align="center" color="tertiary">
+								{alertInfo?.subDescription}
+							</Typography>
+						</DialogDescription>
+					</div>
 				</DialogHeader>
-				<DialogFooter className="w-full !flex-col gap-4">
+				<DialogFooter className="w-full !flex-col gap-5">
 					{alertInfo?.action && (
 						<Button
 							variant="secondary"
-							className="w-full capitalize"
+							className="w-full"
 							onClick={() => {
 								void handleConfirm()
 								setIsDialogOpen(false)
 								table.resetRowSelection()
 							}}
 						>
-							{alertInfo?.action}
+							{alertInfo?.action && capitalizeFirstLetter(alertInfo.action)}
 						</Button>
 					)}
 
 					<If condition={!!alertInfo?.secondAction}>
 						<Button
-							variant="outline"
-							className="w-full capitalize"
+							variant={
+								alertInfo?.secondAction === 'Got it' ? 'secondary' : 'outline'
+							}
+							className="w-full"
 							onClick={() => setIsDialogOpen(false)}
 						>
-							{alertInfo?.secondAction}
+							{alertInfo?.secondAction &&
+								capitalizeFirstLetter(alertInfo.secondAction)}
 						</Button>
 					</If>
 				</DialogFooter>

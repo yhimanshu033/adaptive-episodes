@@ -224,7 +224,7 @@ export default function FileUpload({
 									className={cn('text-fm-negative gap-2', {
 										'text-fm-icon-inactive': defaultUrl === url,
 									})}
-									innerClassName="!p-0"
+									innerClassName="!p-0 translate-y-0"
 									disabled={defaultUrl === url}
 								>
 									<TrashIcon

@@ -17,49 +17,59 @@ import {
 	FormItem,
 } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
-import Input from '@/components/aural-ui/input'
+import { InputBase } from '@/components/aural-ui/input'
+import { Typography } from '@/components/aural-ui/typography'
 import IfElse from '@/components/if-else'
 import { cn } from '@/lib/utils/helpers'
 
 const UpdateLOCSheet = () => {
 	const { data } = useLOCSheetData()
-	const currentLOCSheetURL = data ? data.loc_sheet_url : ''
+	const currentLOCSheetURL = data?.loc_sheet_url ?? ''
 
 	const form = useUploadLOCSheetResolver()
 	const updateLOCSheetMutation = useUpdateLOCSheetMutation()
+
+	const link = form.watch('link')
 
 	const handleSubmit = ({ link }: UploadLOCSheetSchema) => {
 		updateLOCSheetMutation.mutate(link)
 	}
 
-	const link = form.watch('link')
-
 	useEffect(() => {
 		if (currentLOCSheetURL) {
-			form.setValue('link', currentLOCSheetURL)
+			form.reset({ link: currentLOCSheetURL })
 		}
 	}, [currentLOCSheetURL, form])
 
+	const isSubmitDisabled =
+		updateLOCSheetMutation.isPending ||
+		!form.formState.isDirty ||
+		link.trim().length < 3
+
 	return (
-		<>
-			<h3 className="font-fm-brand mt-4 text-sm tracking-wider uppercase">
+		<div className="space-y-3">
+			<Typography
+				transform="uppercase"
+				variant="caption-medium"
+				className="font-fm-brand"
+			>
 				Localization Sheet
-			</h3>
+			</Typography>
 			<Form {...form}>
 				<form
 					onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
-					className="mt-2.5 flex w-full items-center gap-2"
+					className="flex h-11 w-full items-center gap-3"
 				>
-					<div className="border-fm-divider-secondary flex w-11/12 items-center justify-between border-1 p-3">
+					<div className="border-fm-divider-secondary focus-within:border-fm-divider-contrast flex w-11/12 items-center justify-between rounded-xs border-1 px-4 py-2 transition-all duration-300">
 						<FormField
 							control={form.control}
 							name="link"
 							render={({ field }) => (
 								<FormItem className="w-full">
 									<FormControl>
-										<Input
+										<InputBase
 											unstyled
-											className="w-full border-none pr-4 outline-none"
+											className="placeholder:text-fm-md text-fm-md w-full border-none pr-4 outline-none"
 											placeholder="Paste the google sheet link here"
 											{...field}
 										/>
@@ -69,13 +79,11 @@ const UpdateLOCSheet = () => {
 						/>
 						<Button
 							type="submit"
-							disabled={updateLOCSheetMutation.isPending}
+							disabled={isSubmitDisabled}
 							variant="text"
 							innerClassName={cn(
-								(form.getValues('link').length < 3 ||
-									updateLOCSheetMutation.isPending) &&
-									'text-fm-tertiary',
-								'text-sm !p-0 -translate-y-0 uppercase truncate'
+								'text-sm !p-0 translate-y-0 uppercase',
+								isSubmitDisabled && 'text-fm-tertiary cursor-disabled'
 							)}
 						>
 							<IfElse
@@ -93,16 +101,17 @@ const UpdateLOCSheet = () => {
 						className={cn(!link && 'pointer-events-none opacity-50')}
 					>
 						<IconButton
+							type="button"
 							shape="square"
 							variant="outlined"
-							icon={<ArrowRightUpIcon />}
 							label="redirect icon"
-							type="button"
+							icon={<ArrowRightUpIcon />}
+							className="border-fm-divider-secondary"
 						/>
 					</Link>
 				</form>
 			</Form>
-		</>
+		</div>
 	)
 }
 

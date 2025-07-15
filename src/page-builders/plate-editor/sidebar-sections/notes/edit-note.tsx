@@ -30,7 +30,12 @@ import { TNote } from '@/types/plate-types'
 const EditNote = () => {
 	const { useEpisodeTableStore } = useEpisodeStore()
 	const notes = useEpisodeTableStore(useShallow((state) => state.notes))
-	const { mode: primaryButtonText, setFormOpen } = useEditorNoteStore()
+	const { primaryButtonText, setFormOpen } = useEditorNoteStore(
+		useShallow((state) => ({
+			primaryButtonText: state.mode,
+			setFormOpen: state.setFormOpen,
+		}))
+	)
 	const { store, setActiveNoteId } = useEpisodeIdStore()
 	const id = store(useShallow((state) => state.activeNoteId))
 	const note = id ? notes.find((note) => note.id === id) : null

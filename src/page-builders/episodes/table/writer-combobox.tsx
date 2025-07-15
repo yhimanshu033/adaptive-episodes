@@ -16,6 +16,7 @@ import {
 	CommandList,
 } from '@/components/aural-ui/command'
 import { Divider } from '@/components/aural-ui/divider'
+import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import {
 	Select,
 	SelectContent,
@@ -23,6 +24,7 @@ import {
 	SelectTrigger,
 	SelectWrapper,
 } from '@/components/aural-ui/select'
+import { Tag } from '@/components/aural-ui/tag'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/utils/helpers'
 
@@ -52,6 +54,10 @@ const WriterCombobox = ({
 	)
 	const dict = useTranslations('common')
 
+	const selectedUser = !selectedMember?.user
+		? dict('unassigned')
+		: selectedMember?.user?.fullname
+
 	// Handle focus removal when select closes
 	const handleOpenChange = (isOpen: boolean) => {
 		setOpen(isOpen)
@@ -72,9 +78,12 @@ const WriterCombobox = ({
 						decoration="outline"
 						className="font-fm-brand text-xs tracking-wider uppercase"
 						classes={{
-							root: cn('h-10 text-sm focus:border-fm-divider-primary', {
-								'pl-0 border-0 cursor-default': !isWriter,
-							}),
+							root: cn(
+								'h-10 text-sm focus:border-fm-divider-primary border-fm-divider-tertiary',
+								{
+									'pl-0 border-0 cursor-default': !isWriter,
+								}
+							),
 							icon: cn(
 								'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
 								{ hidden: !isWriter }
@@ -82,11 +91,14 @@ const WriterCombobox = ({
 						}}
 						disabled={!isWriter}
 					>
-						<span className="text-fm-primary">
-							{!selectedMember?.user
-								? dict('unassigned')
-								: selectedMember?.user?.fullname}
-						</span>
+						<IfElse condition={selectedUser === dict('unassigned')}>
+							<If>
+								<span className="text-fm-primary">{selectedUser}</span>
+							</If>
+							<Else>
+								<Tag>{selectedUser}</Tag>
+							</Else>
+						</IfElse>
 					</SelectTrigger>
 					<SelectContent>
 						<Command

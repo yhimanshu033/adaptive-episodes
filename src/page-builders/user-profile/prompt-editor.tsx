@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { QUICK_PROMPTS } from '@/constants/ai-constants'
 import { CrossIcon } from '@/icons/cross-icon'
 import usePromptEditorStore from '@/store/prompt-editor-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import {
@@ -37,7 +38,12 @@ const promptTypes = [
 ]
 
 const PromptEditor = () => {
-	const { isFormOpen, setFormOpen } = usePromptEditorStore()
+	const { isFormOpen, setFormOpen } = usePromptEditorStore(
+		useShallow((state) => ({
+			isFormOpen: state.isFormOpen,
+			setFormOpen: state.setFormOpen,
+		}))
+	)
 	const [selectedType, setSelectedType] = useState(promptTypes[0].value)
 	const [promptText, setPromptText] = useState(selectedType)
 

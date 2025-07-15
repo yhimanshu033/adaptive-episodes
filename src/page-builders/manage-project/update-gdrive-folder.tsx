@@ -17,7 +17,8 @@ import {
 	FormMessage,
 } from '@/components/aural-ui/form'
 import { IconButton } from '@/components/aural-ui/icon-button'
-import Input from '@/components/aural-ui/input'
+import { InputBase } from '@/components/aural-ui/input'
+import { Typography } from '@/components/aural-ui/typography'
 import IfElse from '@/components/if-else'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
@@ -39,6 +40,7 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 
 	const form = useUploadGDriveFolderResolver()
 	const updateGDriveFolderMutation = useGDriveUpdateMutation()
+	const link = form.watch('link')
 
 	const handleSubmit = ({ link }: UploadGDriveFolderSchema) => {
 		updateGDriveFolderMutation.mutate({
@@ -47,38 +49,42 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 		})
 	}
 
-	const link = form.watch('link')
-
 	useEffect(() => {
-		if (!defaultLink) {
-			return
+		if (defaultLink) {
+			form.reset({ link: defaultLink })
 		}
+	}, [defaultLink, form])
 
-		form.setValue('link', defaultLink)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [defaultLink])
+	const isSubmitDisabled =
+		updateGDriveFolderMutation.isPending ||
+		!form.formState.isDirty ||
+		link.trim().length < 3
 
 	return (
-		<>
-			<h3 className="font-fm-brand mt-4 text-sm tracking-wider uppercase">
+		<div className="space-y-3">
+			<Typography
+				transform="uppercase"
+				variant="caption-medium"
+				className="font-fm-brand"
+			>
 				Google Drive Folder
-			</h3>
+			</Typography>
 			<Form {...form}>
 				<form
 					onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
-					className="mt-2.5 flex w-full items-center gap-2"
+					className="flex h-11 w-full items-center gap-3"
 				>
-					<div className="border-fm-divider-secondary flex w-11/12 items-center justify-between border-1 p-3">
+					<div className="border-fm-divider-secondary focus-within:border-fm-divider-contrast flex w-11/12 items-center justify-between rounded-xs border-1 px-4 py-2 transition-all duration-300">
 						<FormField
 							control={form.control}
 							name="link"
 							render={({ field }) => (
 								<FormItem className="w-full">
 									<FormControl>
-										<Input
+										<InputBase
 											unstyled
-											className="w-full border-none pr-4 outline-none"
-											placeholder="Paste the goolge drive folder link here"
+											className="placeholder:text-fm-md text-fm-md w-full border-none pr-4 outline-none"
+											placeholder="Paste the google drive folder link here"
 											{...field}
 										/>
 									</FormControl>
@@ -88,14 +94,11 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 						/>
 						<Button
 							type="submit"
-							disabled={updateGDriveFolderMutation.isPending}
+							disabled={isSubmitDisabled}
 							variant="text"
-							innerClassName={cn(
-								(form.getValues('link').length < 3 ||
-									updateGDriveFolderMutation.isPending) &&
-									'text-fm-tertiary',
-								'text-sm !p-0 -translate-y-0 uppercase truncate'
-							)}
+							innerClassName={cn('text-sm !p-0 translate-y-0 uppercase', {
+								'text-fm-tertiary cursor-disabled': isSubmitDisabled,
+							})}
 						>
 							<IfElse
 								condition={updateGDriveFolderMutation.isPending}
@@ -106,22 +109,23 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 					</div>
 					<Link
 						href={link}
+						target="_blank"
 						tabIndex={link ? 0 : -1}
 						aria-disabled={!link}
 						className={cn(!link && 'pointer-events-none opacity-50')}
-						target="_blank"
 					>
 						<IconButton
+							type="button"
 							shape="square"
 							variant="outlined"
-							icon={<ArrowRightUpIcon />}
 							label="redirect icon"
-							type="button"
+							icon={<ArrowRightUpIcon />}
+							className="border-fm-divider-secondary"
 						/>
 					</Link>
 				</form>
 			</Form>
-		</>
+		</div>
 	)
 }
 
