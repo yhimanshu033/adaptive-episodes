@@ -73,7 +73,7 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 				align="end"
 				side="bottom"
 			>
-				<div className="border-fm-divider-primary mb-5 flex items-center justify-between border-b pb-5">
+				<div className="border-fm-divider-primary mt-1 mb-5 flex items-center justify-between border-b pb-5">
 					<div>
 						<Typography
 							as="h3"
@@ -147,10 +147,11 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 							<Button
 								variant="outline"
 								size="sm"
-								className="w-full hover:scale-105"
 								type="submit"
 								isDisabled={form.formState.isSubmitting || isPending}
 								disabled={form.formState.isSubmitting || isPending}
+								className="group w-full"
+								innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary group-data-[state=open]:border-fm-divider-contrast"
 							>
 								{form.formState.isSubmitting || isPending ? (
 									<>

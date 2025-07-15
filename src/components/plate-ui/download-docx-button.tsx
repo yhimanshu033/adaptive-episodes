@@ -1,6 +1,5 @@
 import React from 'react'
-
-// import useDocxDownloadHook from '@/hooks/mutation/use-docx-download-hook'
+import useDocxDownloadHook from '@/hooks/mutation/use-docx-download-hook'
 
 import { DownloadDocxParams } from '@/types/episode-type'
 
@@ -10,15 +9,9 @@ import CircularLoader from '../ui/circular-loader'
 export default function DownloadDocxButton({
 	latestStatus,
 }: DownloadDocxParams) {
-	// const { isPending, showButton, mutate } = useDocxDownloadHook({
-	// 	latestStatus,
-	// })
-	const showButton = true
-	const isPending = false
-	const mutate = () => {
-		console.log('Download button clicked')
-		// Here you would call the actual download function
-	}
+	const { isPending, showButton, mutate } = useDocxDownloadHook({
+		latestStatus,
+	})
 
 	return (
 		showButton && (

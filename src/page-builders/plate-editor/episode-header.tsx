@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { statuses } from '@/constants/episodes-constants'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
+import useIsInternal from '@/hooks/use-is-internal'
 import { ArtBoardIcon } from '@/icons/art-borad-icon'
 import { FileTextIcon } from '@/icons/file-text-icon'
 import { MessageIcon } from '@/icons/message-icon'
@@ -11,10 +12,15 @@ import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
 import Title from '@/page-builders/plate-editor/title'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
+import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { ModeToolbarButton } from '@/components/plate-ui-v2/mode-toolbar-button'
+import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import Languages from '@/components/plate-ui/languages'
+import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
 import { SidebarToggleButton } from '@/components/plate-ui/sidebar-toggle-button'
+import useProjectId from '@/providers/project-id-provider'
 
+import { ERole } from '@/types/admin-types'
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TGetEpisodeResponse } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
@@ -33,6 +39,10 @@ const EpisodeHeader = ({
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
 		[latestStatus]
 	)
+
+	const isInternalUser = useIsInternal()
+	const isCmsReady = statuses[latestIndex] === EStatus.PUBLISHED
+	const { isAccessible } = useProjectId()
 
 	if (simplifiedEditor) {
 		return (
@@ -99,6 +109,16 @@ const EpisodeHeader = ({
 
 				<Languages />
 				<ModeToolbarButton />
+				<IfElse
+					condition={isInternalUser && isCmsReady && isAccessible(ERole.WRITER)}
+				>
+					<If>
+						<UploadDocxButton latestStatus={latestStatus} />
+					</If>
+					<Else>
+						<DownloadDocxButton latestStatus={latestStatus} />
+					</Else>
+				</IfElse>
 			</div>
 		</div>
 	)
