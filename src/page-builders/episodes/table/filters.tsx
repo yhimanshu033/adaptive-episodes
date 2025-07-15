@@ -75,7 +75,7 @@ const Filters = ({
 				<Else>
 					<Search
 						placeholder="Search Episode"
-						className="min-w-72"
+						className="[&_input]:border-fm-divider-secondary min-w-72"
 						onSearch={debouncedSearch}
 						initialValue={search}
 					/>

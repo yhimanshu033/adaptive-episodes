@@ -128,6 +128,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 								variant="ghost"
 								icon={<VerticalMenuIcon />}
 								label="episode menu icon"
+								shape="square"
 							/>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-34">
@@ -198,12 +199,13 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 									(!isSelected && Object.keys(rowSelection).length > 0) ||
 									isUpdating
 								}
+								value={latestStatus}
 							>
 								<SelectTrigger
 									decoration="outline"
 									disabled={!isWriter}
 									classes={{
-										root: 'h-10 text-sm',
+										root: 'h-10 text-sm border-fm-divider-tertiary',
 										icon: cn(
 											'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
 											{
@@ -225,12 +227,25 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 											<SelectItem
 												disabled={index != latestIndex + 1}
 												value={status}
-												className="h-10 !text-sm"
+												className={cn('h-10 border-0 !text-sm', {
+													'data-[disabled]:bg-fm-transparent':
+														index != latestIndex + 1,
+													'data-[disabled]:text-fm-primary':
+														index === latestIndex,
+												})}
+												classes={{
+													icon: cn({
+														'group-data-[disabled]:text-fm-icon-active':
+															index === latestIndex,
+													}),
+												}}
 											>
 												{titleToStatusText[status]}
 											</SelectItem>
 											<If condition={index < statuses.length - 1}>
-												<SelectSeparator />
+												<div className="px-2">
+													<SelectSeparator />
+												</div>
 											</If>
 										</div>
 									))}
@@ -317,7 +332,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			),
 			cell: ({ row }) =>
 				!row.depth && (
-					<div className="flex items-center justify-start">
+					<div className="flex items-center justify-start gap-1">
 						<div>
 							{row.original.seq_number}
 							{checked && row.original.original_seq_number
@@ -330,6 +345,8 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 									variant="ghost"
 									label="Toggle row expansion"
 									className="text-fm-icon-inactive hover:text-fm-primary"
+									size="small"
+									shape="square"
 									onClick={(e) => {
 										e.stopPropagation()
 										row.getToggleExpandedHandler()()

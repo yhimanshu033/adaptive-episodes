@@ -5,8 +5,9 @@ import {
 	GET_SLACK_CHANNEL_QUERY_KEY,
 	UPDATE_SLACK_CHANNEL_MUTATION,
 } from '@/constants/query-constants'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
@@ -54,6 +55,7 @@ export function useSlackNotificationMutation() {
 	const params = useParams()
 	const projectId = String(params?.id)
 	const dict = useTranslations('toasts')
+	const queryClient = useQueryClient()
 
 	async function updateSlackChannel(body: TUpdateSlackChannelBody) {
 		const response = await fetchAPI<
@@ -72,8 +74,14 @@ export function useSlackNotificationMutation() {
 		return response.data
 	}
 
-	const onSuccess = () => {
-		toast.success(dict('slackSuccess'))
+	const onSuccess = async () => {
+		toast.success(dict('slackSuccess'), {
+			icon: <BubbleCheckIcon />,
+		})
+		await queryClient.invalidateQueries({
+			queryKey: [GET_SLACK_CHANNEL_QUERY_KEY, projectId],
+			exact: true,
+		})
 	}
 
 	const onError = () => {

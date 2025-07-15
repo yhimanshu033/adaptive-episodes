@@ -11,6 +11,8 @@ import { CrossIcon } from '@/icons/cross-icon'
 import { GitBranchIcon } from '@/icons/git-branch-icon'
 import { GitForkIcon } from '@/icons/git-fork-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
+import { MaintenanceIcon } from '@/icons/maintenance-icon'
+import { TrashIcon } from '@/icons/trash-icon'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/dialogs/multi-ep-localize-dialog'
 import { Table } from '@tanstack/react-table'
 import { Replace } from 'lucide-react'
@@ -21,6 +23,7 @@ import { If } from '@/components/if-else'
 import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
+import { cn } from '@/lib/aural-ui/utils'
 
 import { ELanguage } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
@@ -37,7 +40,7 @@ export default function SelectionActions({
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
 
-	const { handleMerge, handleUnmerge } = useEpisodeTable()
+	const { handleMerge, handleUnmerge, handleEpisodeInfo } = useEpisodeTable()
 
 	const { id } = useParams()
 
@@ -63,15 +66,17 @@ export default function SelectionActions({
 	}
 
 	return (
-		<div className="bg-fm-surface-primary mt-10 mb-4 flex min-h-17 items-center justify-between gap-3 px-6 pr-4 pl-0">
-			<div className="flex items-center gap-1">
+		<div className="bg-fm-surface-primary mb-4 flex min-h-17 items-center justify-between gap-3 px-6 pr-4 pl-0">
+			<div className="flex items-center gap-1 pl-1.5">
 				<IconButton
 					onClick={() => void table.resetRowSelection()}
 					variant="ghost"
 					icon={<CrossIcon width={20} height={20} />}
 					label="cross selection icon"
+					shape="square"
+					size="small"
 				/>
-				<h4 className="font-fm-brand text-sm">
+				<h4 className="font-fm-brand text-sm uppercase">
 					{selectedRowData.length} Episodes selected
 				</h4>
 			</div>
@@ -89,17 +94,30 @@ export default function SelectionActions({
 						}}
 						variant="outline"
 						className="gap-2 rounded-3xl"
-						innerClassName="h-9"
-						leftIcon={<MagicBookIcon width={16} height={16} />}
+						innerClassName={cn('border-fm-divider-secondary h-9', {
+							'border-fm-divider-tertiary !text-fm-icon-inactive':
+								Object.keys(selectedRowData).length < 1,
+						})}
+						leftIcon={
+							<MagicBookIcon
+								className={cn('size-4', {
+									'text-fm-icon-inactive':
+										Object.keys(selectedRowData).length < 1,
+								})}
+							/>
+						}
 					>
-						<span>AI Adaptation</span>
+						AI Adaptation
 					</Button>
 				</If>
 				<MultiEpLocalizeDialog
 					url={url}
-					isDisabled={selectedRowData.length <= 1}
+					disabled={selectedRowData.length <= 1}
 					tooltip="Multi Episode Localize"
-					innerClassName="h-9"
+					innerClassName={cn('border-fm-divider-secondary h-9', {
+						'border-fm-divider-tertiary !text-fm-icon-inactive':
+							selectedRowData.length <= 1,
+					})}
 				>
 					<Replace size={16} />
 				</MultiEpLocalizeDialog>
@@ -111,29 +129,70 @@ export default function SelectionActions({
 				>
 					<Button
 						variant="outline"
-						innerClassName="h-9"
+						innerClassName={cn('border-fm-divider-secondary h-9', {
+							'border-fm-divider-tertiary !text-fm-icon-inactive':
+								Object.keys(selectedRowData).length <= 1,
+						})}
 						disabled={Object.keys(selectedRowData).length <= 1}
 						onClick={() => handleMerge(selectedRowData)}
-						leftIcon={<GitForkIcon width={16} height={16} />}
+						leftIcon={
+							<GitForkIcon
+								className={cn('size-4', {
+									'text-fm-icon-inactive':
+										Object.keys(selectedRowData).length <= 1,
+								})}
+							/>
+						}
 					>
 						Combine
 					</Button>
 					<Button
 						variant="outline"
-						disabled={selectedRowData.length !== 1}
+						disabled={
+							selectedRowData.length !== 1 ||
+							!selectedRowModel[0].getCanExpand()
+						}
 						onClick={() => handleUnmerge(selectedRowModel)}
-						innerClassName="h-9"
+						innerClassName={cn('border-fm-divider-secondary h-9', {
+							'border-fm-divider-tertiary !text-fm-icon-inactive':
+								selectedRowData.length !== 1 ||
+								!selectedRowModel[0].getCanExpand(),
+						})}
 						leftIcon={
 							<GitBranchIcon
-								className="text-fm-primary"
-								width={16}
-								height={16}
+								className={cn('text-fm-primary size-4', {
+									'text-fm-icon-inactive':
+										selectedRowData.length !== 1 ||
+										!selectedRowModel[0].getCanExpand(),
+								})}
 							/>
 						}
 					>
 						Separate
 					</Button>
 				</If>
+				<Button
+					variant="outline"
+					onClick={() =>
+						handleEpisodeInfo({
+							icon: (
+								<MaintenanceIcon
+									className="text-fm-icon-info"
+									width={44}
+									height={44}
+								/>
+							),
+							description:
+								'We’re working on bringing you the ability to delete episodes. This feature will be available soon, giving you more control over your content.',
+							title: 'Feature Coming Soon',
+						})
+					}
+					className="text-fm-negative"
+					innerClassName="border-fm-divider-secondary h-9"
+					leftIcon={<TrashIcon className="text-inherit" />}
+				>
+					Delete
+				</Button>
 			</div>
 		</div>
 	)

@@ -15,6 +15,7 @@ const initialState: EpisodeStoreState = {
 	isInventOpen: false,
 	statusUpdating: [],
 	isSharedAccessDialogOpen: false,
+	showSharedList: true,
 	alertInfo: null,
 	deleteEpisodeId: null,
 	selectedEpisodes: null,

@@ -127,10 +127,10 @@ export function ImportStory() {
 			return 'Uploading'
 		}
 		if (storyType === ImportStoryType.EMPTY) {
-			return 'Create New Story'
+			return 'Create new series'
 		}
 		if (step === lastStep) {
-			return 'Import a Story'
+			return 'Import a Series'
 		}
 		return 'Continue'
 	}, [storyUploadMutation.isPending, storyType, step, lastStep])
@@ -292,7 +292,7 @@ export function ImportStory() {
 											steps={2}
 											activeStep={storySteps.indexOf(step) - 1}
 											variant="primary"
-											className="mx-auto w-full max-w-90 pb-4"
+											className="mx-auto w-full max-w-90 pt-4 pb-8"
 											stepLabels={switchableStepsInfo.map((item) => item.title)}
 											onStepClick={handleStepClick}
 										/>
@@ -302,7 +302,8 @@ export function ImportStory() {
 								<ScrollArea
 									className={cn('px-8', {
 										'h-full': storyType !== ImportStoryType.IMPORT,
-										'h-[calc(100%-96px)]': storyType === ImportStoryType.IMPORT,
+										'h-[calc(100%-125px)]':
+											storyType === ImportStoryType.IMPORT,
 									})}
 								>
 									<div className="flex flex-col gap-4">
@@ -476,7 +477,7 @@ export function ImportStory() {
 														<FormControl>
 															<div
 																className={cn(
-																	'border-fm-divider-secondary hover:border-fm-divider-primary flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-1 border-dashed p-8 transition-colors duration-200',
+																	'border-fm-divider-secondary hover:border-fm-divider-primary flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xs border-1 border-dashed p-8 transition-colors duration-200',
 																	{
 																		'border-fm-divider-primary bg-fm-divider-primary/30':
 																			isDragging,
@@ -528,7 +529,7 @@ export function ImportStory() {
 																						alt="Story Thumbnail"
 																						layout="fill"
 																						objectFit="cover"
-																						className="rounded-md"
+																						className="rounded-xs"
 																					/>
 																				</div>
 																			)}
@@ -555,7 +556,7 @@ export function ImportStory() {
 																		</div>
 																		<DeleteModal
 																			onPrimaryClick={handleDiscardImage}
-																			title="Delete uploaded image"
+																			title="Delete uploaded file"
 																			subTitle="Once deleted, this can't be
 																					undone. Don't worry! You can
 																					always upload a new image."
@@ -563,7 +564,7 @@ export function ImportStory() {
 																			<Button
 																				variant="text"
 																				className="text-fm-negative gap-2"
-																				innerClassName="!p-0"
+																				innerClassName="!p-0 translate-y-0"
 																			>
 																				<TrashIcon
 																					height={16}
@@ -585,7 +586,7 @@ export function ImportStory() {
 																/>
 															</div>
 														</FormControl>
-														<FormDescription className="flex flex-col text-xs">
+														<FormDescription className="flex flex-col py-0 text-xs">
 															<div className="mb-4 flex w-full justify-between">
 																<Typography
 																	as="h4"
@@ -633,7 +634,7 @@ export function ImportStory() {
 														<FormControl>
 															<div
 																className={cn(
-																	'border-fm-divider-secondary hover:border-fm-divider-primary flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-1 border-dashed p-8 transition-colors duration-200',
+																	'border-fm-divider-secondary hover:border-fm-divider-primary flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xs border-1 border-dashed p-8 transition-colors duration-200',
 																	{
 																		'border-fm-divider-primary bg-fm-divider-primary/30':
 																			isDragging,
@@ -708,7 +709,7 @@ export function ImportStory() {
 																			<Button
 																				variant="text"
 																				className="text-fm-negative gap-2"
-																				innerClassName="!p-0"
+																				innerClassName="!p-0 translate-y-0"
 																			>
 																				<TrashIcon
 																					height={16}
@@ -758,7 +759,7 @@ export function ImportStory() {
 																</Typography>
 															</div>
 															<div className="relative z-0 flex flex-col gap-5 px-3 py-4">
-																<div className="absolute inset-0 z-[-1] bg-[url('/assets/dusky_bg.webp')] bg-cover bg-center opacity-5" />
+																<div className="absolute inset-0 z-[-1] bg-[url('/assets/dusky_bg.webp')] bg-cover bg-center opacity-16" />
 																<div className="flex items-center justify-between">
 																	<Badge className="flex gap-2" size="sm">
 																		<LightBulbSimpleIcon className="size-4" />
@@ -778,22 +779,24 @@ export function ImportStory() {
 																		</div>
 																	</Link>
 																</div>
-																<Typography
-																	as="h4"
-																	color="tertiary"
-																	variant="caption-medium"
-																>
-																	Make sure each episode is numbered correctly
-																	in your file names so we can import them in
-																	the right order
-																</Typography>
-																<Typography
-																	as="h4"
-																	variant="caption-medium"
-																	className="bg-fm-blue-200 text-fm-info-sec rounded p-1"
-																>
-																	Example: Episode 01 - Shadowed Realms
-																</Typography>
+																<div className="flex flex-col gap-2">
+																	<Typography
+																		as="h4"
+																		color="tertiary"
+																		variant="caption-medium"
+																	>
+																		Make sure each episode is numbered correctly
+																		in your file names so we can import them in
+																		the right order
+																	</Typography>
+																	<Typography
+																		as="h4"
+																		variant="caption-medium"
+																		className="bg-fm-info-tert text-fm-info-sec rounded p-1"
+																	>
+																		Example: Episode 01 - Shadowed Realms
+																	</Typography>
+																</div>
 															</div>
 														</FormDescription>
 														<FormMessage />
