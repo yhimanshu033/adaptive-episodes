@@ -95,6 +95,7 @@ export function BlockSuggestion({ element }: { element: TSuggestionElement }) {
 
 	return (
 		<div
+			id="himanshu"
 			className={cn(
 				'border-brand/[0.8] pointer-events-none absolute inset-0 z-1 border-2 transition-opacity',
 				isRemove && 'border-gray-300'

@@ -17,29 +17,31 @@ import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Editor } from '@/components/plate-ui-v2/editor'
 import { FixedToolbar } from '@/components/plate-ui-v2/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui-v2/fixed-toolbar-buttons'
+import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
+
+import { EStatus } from '@/types/common'
+import { TGetEpisodeResponse } from '@/types/episode-type'
 
 import { ResizablePanel, ResizablePanelGroup } from '../ui/resizable'
 
-export function PlateEditor() {
-	const {
-		data: content,
-		latestStatus = 'BASE',
-		importedLocal,
-	} = useEpisodeContent()
-
+function MyEditor({
+	content,
+	latestStatus,
+	importedLocal,
+}: {
+	content: TGetEpisodeResponse
+	importedLocal: boolean
+	latestStatus: EStatus | 'BASE'
+}) {
 	const editor = useMyEditor({
-		content: content?.text || '',
+		content: content?.text,
 		id: 'root-editor',
 		discussions: content?.chapter?.props?.comments,
 	})
 
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
-
-	if (!content) {
-		return <EditorSkeletonLoader />
-	}
 
 	return (
 		<Plate editor={editor}>
@@ -93,4 +95,21 @@ export function PlateEditor() {
 	)
 }
 
-export default PlateEditor
+export default function PlateEditor() {
+	const {
+		data: content,
+		latestStatus = 'BASE',
+		importedLocal,
+	} = useEpisodeContent()
+
+	const {
+		users,
+		me: { user: userData },
+	} = useProjectId()
+
+	if (!content || !users || !userData) {
+		return <EditorSkeletonLoader />
+	}
+
+	return <MyEditor {...{ content, latestStatus, importedLocal }} />
+}

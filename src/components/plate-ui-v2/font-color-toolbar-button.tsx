@@ -376,6 +376,7 @@ function ColorDropdownMenuItem({
 				borderColor: isSelected ? 'var(--color-fm-primary)' : undefined,
 			}}
 			onSelect={(e) => {
+				e.stopPropagation()
 				e.preventDefault()
 				updateColor(value)
 			}}

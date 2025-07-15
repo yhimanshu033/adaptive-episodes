@@ -22,6 +22,10 @@ import {
 	suggestionPlugin,
 } from '@/components/editor/plugins/suggestion-kit'
 import { BlockDiscussion } from '@/components/plate-ui-v2/block-discussion'
+import {
+	SuggestionLeaf,
+	SuggestionLineBreak,
+} from '@/components/plate-ui-v2/suggestion-node'
 import useProjectId from '@/providers/project-id-provider'
 
 const useMyEditor = ({
@@ -56,7 +60,6 @@ const useMyEditor = ({
 				...LineHeightKit,
 
 				// Collaboration
-				...SuggestionKit,
 				discussionPlugin.configure({
 					options: {
 						currentUserId: String(userData?.user.id),
@@ -68,6 +71,15 @@ const useMyEditor = ({
 					},
 				}),
 				...CommentKit,
+				suggestionPlugin.configure({
+					options: {
+						currentUserId: String(userData?.user.id),
+					},
+					render: {
+						node: SuggestionLeaf,
+						belowNodes: SuggestionLineBreak as any,
+					},
+				}),
 
 				// Editing
 				...AutoformatKit,

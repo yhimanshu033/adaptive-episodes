@@ -18,8 +18,8 @@ import {
 } from '@udecode/plate-font/react'
 
 import { Icons, iconVariants } from '@/components/icons'
+import FloatingLaserBtns from '@/components/plate-ui-v2/floating-laser-btns'
 import { ColorDropdownMenu } from '@/components/plate-ui/color-dropdown-menu'
-import FloatingLaserBtns from '@/components/plate-ui/floating-laser-btns'
 import { MarkToolbarButton } from '@/components/plate-ui/mark-toolbar-button'
 import { ToolbarGroup } from '@/components/plate-ui/toolbar'
 import { TurnIntoDropdownMenu } from '@/components/plate-ui/turn-into-dropdown-menu'

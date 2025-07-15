@@ -134,7 +134,7 @@ export function FontSizeToolbarButton() {
 				</PopoverTrigger>
 				<PopoverContent
 					align="start"
-					className="w-50 backdrop-blur-xs"
+					className="w-16 backdrop-blur-xs"
 					onOpenAutoFocus={(e) => e.preventDefault()}
 					onMouseDown={(e) => {
 						// Prevent blur when clicking inside popover
