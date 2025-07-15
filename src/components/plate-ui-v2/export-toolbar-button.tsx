@@ -5,7 +5,7 @@ import { MarkdownPlugin } from '@platejs/markdown'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { ArrowDownToLineIcon } from 'lucide-react'
 import { createSlateEditor, serializeHtml } from 'platejs'
-import { useEditorRef } from 'platejs/react'
+import { useEditorRef, useEditorString } from 'platejs/react'
 
 import { BaseEditorKit } from '@/components/editor/editor-base-kit'
 import {
@@ -24,6 +24,7 @@ const siteUrl = 'https://platejs.org'
 export function ExportToolbarButton(props: DropdownMenuProps) {
 	const editor = useEditorRef()
 	const [open, setOpen] = React.useState(false)
+	const editorText = useEditorString()
 
 	const getCanvas = async () => {
 		const { default: html2canvas } = await import('html2canvas-pro')
@@ -142,6 +143,45 @@ export function ExportToolbarButton(props: DropdownMenuProps) {
 		await downloadFile(url, 'plate.md')
 	}
 
+	const exportToWord = async () => {
+		const { Document, Packer, Paragraph, TextRun } = await import('docx')
+
+		// Create a new document
+		const doc = new Document({
+			sections: [
+				{
+					properties: {},
+					children: [
+						new Paragraph({
+							children: [
+								new TextRun({
+									text: editorText,
+									font: 'Arial',
+									size: 24, // 12pt font (size is in half-points)
+								}),
+							],
+						}),
+					],
+				},
+			],
+		})
+
+		// Generate the document as a blob
+		const blob = await Packer.toBlob(doc)
+		const blobUrl = window.URL.createObjectURL(blob)
+
+		// Download the file
+		const link = document.createElement('a')
+		link.href = blobUrl
+		link.download = 'plate.docx'
+		document.body.append(link)
+		link.click()
+		link.remove()
+
+		// Clean up the blob URL
+		window.URL.revokeObjectURL(blobUrl)
+	}
+
 	return (
 		<DropdownMenu open={open} onOpenChange={setOpen} modal={false} {...props}>
 			<DropdownMenuTrigger asChild>
@@ -163,6 +203,9 @@ export function ExportToolbarButton(props: DropdownMenuProps) {
 					</DropdownMenuItem>
 					<DropdownMenuItem onSelect={exportToMarkdown}>
 						Export as Markdown
+					</DropdownMenuItem>
+					<DropdownMenuItem onSelect={exportToWord}>
+						Export as Word
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>

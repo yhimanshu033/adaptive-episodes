@@ -27,29 +27,54 @@ export function FloatingToolbarButtons() {
 	return (
 		<div className="group flex [&.group_.toolbar-group-content]:mx-0">
 			<ToolbarGroup noSeparator>
-				<TurnIntoToolbarButton />
+				<TurnIntoToolbarButton
+					buttonProps={{
+						size: 'floating',
+					}}
+				/>
 			</ToolbarGroup>
 
 			<ToolbarGroup>
-				<MarkToolbarButton nodeType={KEYS.bold} tooltip="Bold (⌘+B)">
+				<MarkToolbarButton
+					nodeType={KEYS.bold}
+					tooltip="Bold (⌘+B)"
+					size="floating"
+				>
 					<BoldIcon />
 				</MarkToolbarButton>
 
-				<MarkToolbarButton nodeType={KEYS.italic} tooltip="Italic (⌘+I)">
+				<MarkToolbarButton
+					nodeType={KEYS.italic}
+					tooltip="Italic (⌘+I)"
+					size="floating"
+				>
 					<ItalicIcon />
 				</MarkToolbarButton>
 
-				<MarkToolbarButton nodeType={KEYS.underline} tooltip="Underline (⌘+U)">
+				<MarkToolbarButton
+					nodeType={KEYS.underline}
+					tooltip="Underline (⌘+U)"
+					size="floating"
+				>
 					<UnderlineIcon />
 				</MarkToolbarButton>
 
-				<FontColorToolbarButton nodeType={KEYS.color} tooltip="Text color">
+				<FontColorToolbarButton
+					nodeType={KEYS.color}
+					tooltip="Text color"
+					buttonProps={{
+						size: 'floating',
+					}}
+				>
 					<TextColorIcon className={iconVariants({ variant: 'toolbar' })} />
 				</FontColorToolbarButton>
 
 				<FontColorToolbarButton
 					nodeType={KEYS.backgroundColor}
 					tooltip="Background color"
+					buttonProps={{
+						size: 'floating',
+					}}
 				>
 					<PaintRollIcon className={iconVariants({ variant: 'toolbar' })} />
 				</FontColorToolbarButton>
@@ -63,9 +88,21 @@ export function FloatingToolbarButtons() {
 				<FloatingLaserBtns />
 			</ToolbarGroup>
 
-			<ToolbarGroup>
-				<CommentToolbarButton />
-				<SuggestionToolbarButton />
+			<ToolbarGroup
+				seperatorProps={{
+					variant: 'primary',
+				}}
+			>
+				<CommentToolbarButton
+					buttonProps={{
+						size: 'floating',
+					}}
+				/>
+				<SuggestionToolbarButton
+					buttonProps={{
+						size: 'floating',
+					}}
+				/>
 			</ToolbarGroup>
 		</div>
 	)

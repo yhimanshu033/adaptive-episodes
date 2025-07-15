@@ -22,17 +22,17 @@ import {
 import type { PlateElementProps, RenderNodeWrapper } from 'platejs/react'
 import { useEditorPlugin, useEditorRef, usePluginOption } from 'platejs/react'
 
-import { commentPlugin } from '@/components/editor/plugins/comment-kit'
-import {
-	discussionPlugin,
-	type TDiscussion,
-} from '@/components/editor/plugins/discussion-kit'
 import {
 	Popover,
 	PopoverAnchor,
 	PopoverContent,
 	PopoverTrigger,
-} from '@/components/plate-ui-v2/popover'
+} from '@/components/aural-ui/popover'
+import { commentPlugin } from '@/components/editor/plugins/comment-kit'
+import {
+	discussionPlugin,
+	type TDiscussion,
+} from '@/components/editor/plugins/discussion-kit'
 import { Button } from '@/components/ui/button'
 
 import { suggestionPlugin } from '../editor/plugins/suggestion-kit'
@@ -262,7 +262,7 @@ const BlockCommentContent = ({
 						<PopoverTrigger asChild>
 							<Button
 								variant="ghost"
-								className="text-muted-foreground/80 hover:text-muted-foreground/80 data-[active=true]:bg-muted mt-1 ml-1 flex h-6 gap-1 !px-1.5 py-0"
+								className="hover:bg-fm-button-stroke text-fm-icon-active disabled:text-fm-icon-inactive data-[active=true]:bg-fm-button-stroke mt-1 ml-1 flex h-6 gap-1 bg-transparent p-0 !px-1.5 py-0 opacity-100 disabled:bg-transparent"
 								data-active={open}
 								contentEditable={false}
 							>

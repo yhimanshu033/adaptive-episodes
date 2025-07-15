@@ -50,14 +50,18 @@ const itemVariants = cva(
 	}
 )
 
+type FontColorToolbarButtonProps = {
+	buttonProps?: React.ComponentProps<typeof ToolbarButton>
+	nodeType: string
+	tooltip?: string
+} & DropdownMenuProps
+
 export function FontColorToolbarButton({
 	children,
 	nodeType,
 	tooltip,
-}: {
-	nodeType: string
-	tooltip?: string
-} & DropdownMenuProps) {
+	buttonProps,
+}: FontColorToolbarButtonProps) {
 	const editor = useEditorRef()
 
 	const selectionDefined = useEditorSelector((editor) => !!editor.selection, [])
@@ -127,7 +131,7 @@ export function FontColorToolbarButton({
 			modal={false}
 		>
 			<DropdownMenuTrigger asChild>
-				<ToolbarButton pressed={open} tooltip={tooltip}>
+				<ToolbarButton pressed={open} tooltip={tooltip} {...buttonProps}>
 					{children}
 				</ToolbarButton>
 			</DropdownMenuTrigger>

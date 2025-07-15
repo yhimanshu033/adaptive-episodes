@@ -68,7 +68,12 @@ export const turnIntoItems = [
 	},
 ]
 
-export function TurnIntoToolbarButton(props: DropdownMenuProps) {
+export function TurnIntoToolbarButton({
+	buttonProps,
+	...props
+}: DropdownMenuProps & {
+	buttonProps?: React.ComponentProps<typeof ToolbarButton>
+}) {
 	const editor = useEditorRef()
 	const [open, setOpen] = React.useState(false)
 
@@ -88,7 +93,12 @@ export function TurnIntoToolbarButton(props: DropdownMenuProps) {
 	return (
 		<DropdownMenu open={open} onOpenChange={setOpen} modal={false} {...props}>
 			<DropdownMenuTrigger asChild>
-				<ToolbarButton pressed={open} tooltip="Turn into" isDropdown>
+				<ToolbarButton
+					pressed={open}
+					tooltip="Turn into"
+					isDropdown
+					{...buttonProps}
+				>
 					<SelectedItemIcon className="size-5 lg:hidden" />
 					<span className="max-lg:hidden">
 						<SelectedItemIcon />

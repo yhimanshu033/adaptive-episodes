@@ -8,7 +8,11 @@ import { commentPlugin } from '@/components/editor/plugins/comment-kit'
 
 import { ToolbarButton } from './toolbar'
 
-export function CommentToolbarButton() {
+export function CommentToolbarButton({
+	buttonProps,
+}: {
+	buttonProps?: React.ComponentProps<typeof ToolbarButton>
+}) {
 	const editor = useEditorRef()
 
 	return (
@@ -18,6 +22,7 @@ export function CommentToolbarButton() {
 			}}
 			data-plate-prevent-overlay
 			tooltip="Comment"
+			{...buttonProps}
 		>
 			<MessageSquareTextIcon />
 		</ToolbarButton>

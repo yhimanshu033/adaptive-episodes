@@ -106,15 +106,17 @@ const dropdownArrowVariants = cva(
 		},
 		variants: {
 			size: {
-				default: 'h-9 w-6',
-				lg: 'h-10 w-8',
-				sm: 'h-8 w-4',
+				default: 'h-10 p-3',
+				lg: 'h-11 p-5',
+				sm: 'h-9 p-2',
+				floating: 'p-3 h-full',
 			},
 			variant: {
 				default:
-					'bg-transparent hover:bg-muted hover:text-muted-foreground aria-checked:bg-accent aria-checked:text-accent-foreground',
+					'bg-transparent hover:text-fm-secondary-800 hover:bg-fm-secondary-50 disabled:bg-transparent',
 				outline:
-					'border border-l-0 border-input bg-transparent hover:bg-accent hover:text-accent-foreground',
+					'border border-solid border-fm-divider-primary hover:border-fm-surface-frosted disabled:border-fm-divider-tertiary',
+				active: 'bg-fm-secondary-50 text-fm-secondary-800',
 			},
 		},
 	}

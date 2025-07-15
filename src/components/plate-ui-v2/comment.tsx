@@ -27,23 +27,27 @@ import {
 	usePluginOption,
 } from 'platejs/react'
 
-import { BasicMarksKit } from '@/components/editor/plugins/basic-marks-kit'
 import {
-	discussionPlugin,
-	type TDiscussion,
-} from '@/components/editor/plugins/discussion-kit'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from '@/components/aural-ui/avatar'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/aural-ui/dropdown'
+import { BasicMarksKit } from '@/components/editor/plugins/basic-marks-kit'
+import {
+	discussionPlugin,
+	type TDiscussion,
+} from '@/components/editor/plugins/discussion-kit'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
 
-import { Editor, EditorContainer } from './editor'
+import { Editor } from './editor'
 
 export interface TComment {
 	contentRich: Value
@@ -198,7 +202,7 @@ export function Comment(props: {
 						{index === 0 && (
 							<Button
 								variant="ghost"
-								className="text-muted-foreground h-6 p-1"
+								className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent p-0 opacity-100 disabled:bg-transparent"
 								onClick={onResolveComment}
 								type="button"
 							>
@@ -239,47 +243,50 @@ export function Comment(props: {
 
 			<div className="relative my-1 pl-[26px]">
 				{!isLast && (
-					<div className="bg-muted absolute top-0 left-3 h-full w-0.5 shrink-0" />
+					<div className="bg-muted absolute top-0 left-[9px] h-full w-0.5 shrink-0" />
 				)}
 				<Plate readOnly={!isEditing} editor={commentEditor}>
-					<EditorContainer variant="comment">
+					<div className="relative w-full">
 						<Editor
 							variant="comment"
-							className="w-auto grow"
+							className={cn(
+								'placeholder:text-fm-placeholder font-fm-text text-fm-primary rounded-fm-s leading-fm-md block min-h-[25px] w-full grow border border-solid border-transparent py-2 pr-14 pl-2 [font-size:var(--text-fm-md)] tracking-wide ring-offset-transparent transition-all duration-200 focus:outline-none',
+								{
+									'focus:border-fm-divider-contrast border-fm-divider-primary':
+										isEditing,
+								}
+							)}
 							onClick={() => onEditorClick?.()}
 						/>
 
 						{isEditing && (
-							<div className="ml-auto flex shrink-0 gap-1">
+							<div className="absolute top-1/2 right-1 ml-auto flex shrink-0 -translate-y-1/2 gap-1">
 								<Button
 									size="icon"
 									variant="ghost"
-									className="size-[28px]"
+									className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent opacity-100 disabled:bg-transparent"
 									onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
 										e.stopPropagation()
 										void onCancel()
 									}}
 								>
-									<div className="bg-primary/40 flex size-5 shrink-0 items-center justify-center rounded-[50%]">
-										<XIcon className="text-background size-3 stroke-[3px]" />
-									</div>
+									<XIcon size={16} />
 								</Button>
 
 								<Button
 									size="icon"
 									variant="ghost"
+									className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent opacity-100 disabled:bg-transparent"
 									onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
 										e.stopPropagation()
 										void onSave()
 									}}
 								>
-									<div className="bg-brand flex size-5 shrink-0 items-center justify-center rounded-[50%]">
-										<CheckIcon className="text-background size-3 stroke-[3px]" />
-									</div>
+									<CheckIcon size={16} />
 								</Button>
 							</div>
 						)}
-					</EditorContainer>
+					</div>
 				</Plate>
 			</div>
 		</div>
@@ -358,12 +365,21 @@ function CommentMoreDropdown(props: {
 			modal={false}
 		>
 			<DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-				<Button variant="ghost" className={cn('text-muted-foreground h-6 p-1')}>
+				<Button
+					variant="ghost"
+					className={cn(
+						'hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent p-0 opacity-80 hover:opacity-100 disabled:bg-transparent',
+						{
+							'bg-fm-button-shadow-secondary opacity-100': dropdownOpen,
+						}
+					)}
+				>
 					<MoreHorizontalIcon className="size-4" />
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent
 				className="w-48"
+				align="end"
 				onCloseAutoFocus={(e) => {
 					if (selectedEditCommentRef.current) {
 						onCloseAutoFocus?.()
@@ -374,11 +390,17 @@ function CommentMoreDropdown(props: {
 				}}
 			>
 				<DropdownMenuGroup>
-					<DropdownMenuItem onClick={onEditComment}>
+					<DropdownMenuItem
+						onClick={onEditComment}
+						className="py-2 [font-size:var(--text-fm-md)]"
+					>
 						<PencilIcon className="size-4" />
 						Edit comment
 					</DropdownMenuItem>
-					<DropdownMenuItem onClick={onDeleteComment}>
+					<DropdownMenuItem
+						onClick={onDeleteComment}
+						className="py-2 [font-size:var(--text-fm-md)]"
+					>
 						<TrashIcon className="size-4" />
 						Delete comment
 					</DropdownMenuItem>
@@ -568,10 +590,10 @@ export function CommentCreateForm({
 					}}
 					editor={commentEditor}
 				>
-					<EditorContainer variant="comment">
+					<div className="relative w-full">
 						<Editor
 							variant="comment"
-							className="min-h-[25px] grow pt-0.5 pr-8"
+							className="placeholder:text-fm-placeholder font-fm-text text-fm-primary border-fm-divider-primary focus:border-fm-divider-contrast rounded-fm-s leading-fm-md block min-h-[25px] w-full grow border border-solid py-2 pr-8 pl-2 [font-size:var(--text-fm-md)] tracking-wide ring-offset-transparent transition-all duration-200 focus:outline-none"
 							onKeyDown={(e) => {
 								if (e.key === 'Enter' && !e.shiftKey) {
 									e.preventDefault()
@@ -586,18 +608,16 @@ export function CommentCreateForm({
 						<Button
 							size="icon"
 							variant="ghost"
-							className="absolute right-0.5 bottom-0.5 ml-auto size-6 shrink-0"
+							className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive absolute top-1/2 right-1 ml-auto size-6 shrink-0 -translate-y-1/2 bg-transparent opacity-100 disabled:bg-transparent"
 							disabled={commentContent.trim().length === 0}
 							onClick={(e) => {
 								e.stopPropagation()
 								onAddComment()
 							}}
 						>
-							<div className="flex size-6 items-center justify-center rounded-full">
-								<ArrowUpIcon />
-							</div>
+							<ArrowUpIcon size={16} />
 						</Button>
-					</EditorContainer>
+					</div>
 				</Plate>
 			</div>
 		</div>

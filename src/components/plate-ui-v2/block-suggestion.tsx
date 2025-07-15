@@ -27,10 +27,14 @@ import {
 import { useEditorPlugin, usePluginOption } from 'platejs/react'
 
 import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from '@/components/aural-ui/avatar'
+import {
 	discussionPlugin,
 	type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
 
@@ -204,30 +208,33 @@ export function BlockSuggestionCard({
 
 						{suggestion.type === 'replace' && (
 							<div className="flex flex-col gap-2">
-								{suggestionText2Array(suggestion.newText!).map(
-									(text, index) => (
-										<React.Fragment key={index}>
-											<div
-												key={index}
-												className="text-brand/80 flex items-start gap-2"
-											>
-												<span className="text-sm">with:</span>
-												<span className="text-sm">{text || 'line breaks'}</span>
-											</div>
-										</React.Fragment>
-									)
-								)}
-
 								{suggestionText2Array(suggestion.text!).map((text, index) => (
 									<React.Fragment key={index}>
 										<div key={index} className="flex items-start gap-2">
 											<span className="text-muted-foreground text-sm">
 												{index === 0 ? 'Replace:' : 'Delete:'}
 											</span>
-											<span className="text-sm">{text || 'line breaks'}</span>
+											<span className="text-fm-negative text-sm">
+												{text || 'line breaks'}
+											</span>
 										</div>
 									</React.Fragment>
 								))}
+
+								{suggestionText2Array(suggestion.newText!).map(
+									(text, index) => (
+										<React.Fragment key={index}>
+											<div key={index} className="flex items-start gap-2">
+												<span className="text-muted-foreground text-sm">
+													With:
+												</span>
+												<span className="text-fm-positive text-sm">
+													{text || 'line breaks'}
+												</span>
+											</div>
+										</React.Fragment>
+									)
+								)}
 							</div>
 						)}
 
@@ -266,7 +273,7 @@ export function BlockSuggestionCard({
 					<div className="absolute top-4 right-4 flex gap-2">
 						<Button
 							variant="ghost"
-							className="text-muted-foreground size-6 p-1"
+							className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent p-0 opacity-100 disabled:bg-transparent"
 							onClick={() => accept(suggestion)}
 						>
 							<CheckIcon className="size-4" />
@@ -274,7 +281,7 @@ export function BlockSuggestionCard({
 
 						<Button
 							variant="ghost"
-							className="text-muted-foreground size-6 p-1"
+							className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent p-0 opacity-100 disabled:bg-transparent"
 							onClick={() => reject(suggestion)}
 						>
 							<XIcon className="size-4" />
