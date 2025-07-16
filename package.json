@@ -47,6 +47,7 @@
     "@platejs/table": "^49.0.19",
     "@platejs/toc": "^49.0.0",
     "@platejs/toggle": "^49.0.0",
+    "@platejs/utils": "^49.1.5",
     "@radix-ui/react-accessible-icon": "^1.1.7",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-alert-dialog": "^1.1.14",

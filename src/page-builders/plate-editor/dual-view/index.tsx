@@ -35,23 +35,23 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 
 	const showDualView = sidebar === ESidebar.DUAL_VIEW && !focusMode
 
-	// const modeToComponent: Record<EDualVIewMode, React.ReactNode> = useMemo(
-	// 	() => ({
-	// 		[EDualVIewMode.US_TRANSLATION]: (
-	// 			<Translation
-	// 				translatedContent={translatedContent || 'No Content Found'}
-	// 			/>
-	// 		),
-	// 		[EDualVIewMode.BASE_SCRIPT]: <BaseScript />,
-	// 		[EDualVIewMode.PREV_EP]: <PreviousEpisode />,
-	// 		[EDualVIewMode.NEXT_EP]: <NextEpisode />,
-	// 		[EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
-	// 		[EDualVIewMode.VOICE_PASS]: (
-	// 			<VoicePass voiceMode={EChatMode.VOICE2_XML} />
-	// 		),
-	// 	}),
-	// 	[translatedContent]
-	// )
+	const modeToComponent: Record<EDualVIewMode, React.ReactNode> = useMemo(
+		() => ({
+			[EDualVIewMode.US_TRANSLATION]: (
+				<Translation
+					translatedContent={translatedContent || 'No Content Found'}
+				/>
+			),
+			[EDualVIewMode.BASE_SCRIPT]: <BaseScript />,
+			[EDualVIewMode.PREV_EP]: <PreviousEpisode />,
+			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
+			// [EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
+			[EDualVIewMode.VOICE_PASS]: (
+				<VoicePass voiceMode={EChatMode.VOICE2_XML} />
+			),
+		}),
+		[translatedContent]
+	)
 
 	const { store: useEpisodeIdStoreContext, setDualViewMode } =
 		useEpisodeIdStore()
@@ -67,17 +67,17 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 	const isTransitioning =
 		(!debouncedShowDualView && showDualView) || !showDualView
 
-	// const closeDualView = () => {
-	// 	setDualViewMode(null)
-	// 	setSidebar(null, false)
-	// }
+	const closeDualView = () => {
+		setDualViewMode(null)
+		setSidebar(null, false)
+	}
 
-	// const modeToTitle = useMemo(() => {
-	// 	if (!isGerman) {
-	// 		MODE_TO_TITLE[EDualVIewMode.US_TRANSLATION] = 'Source Script'
-	// 	}
-	// 	return MODE_TO_TITLE
-	// }, [isGerman])
+	const modeToTitle = useMemo(() => {
+		if (!isGerman) {
+			MODE_TO_TITLE[EDualVIewMode.US_TRANSLATION] = 'Source Script'
+		}
+		return MODE_TO_TITLE
+	}, [isGerman])
 
 	if (
 		(!showDualView && !debouncedShowDualView) ||
@@ -103,8 +103,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 					!showDualView && 'max-w-0'
 				)}
 			>
-				<div>Dual view</div>
-				{/* <div className="border-fm-divider-tertiary flex h-15.5 items-center justify-between gap-4 border-b py-3 pr-4 pl-7">
+				<div className="border-fm-divider-tertiary flex h-15.5 items-center justify-between gap-4 border-b py-3 pr-4 pl-7">
 					<h3 className="text-fm-primary leading-fm-md [font-size:var(--text-fm-md)] font-normal">
 						{modeToTitle[dualViewMode]}
 					</h3>
@@ -118,7 +117,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 				</div>
 				<ScrollArea className="h-[calc(100%-62px)]">
 					<div>{modeToComponent[dualViewMode]}</div>
-				</ScrollArea> */}
+				</ScrollArea>
 			</ResizablePanel>
 		</>
 	)

@@ -5,7 +5,7 @@ import useSocketStreaming from '@/hooks/use-socket-streaming'
 import DualViewLoader from '@/page-builders/plate-editor/dual-view/dual-view-loader'
 import Block from '@/page-builders/plate-editor/dual-view/voice-pass/block'
 import CopyAll from '@/page-builders/plate-editor/dual-view/voice-pass/copy-all'
-import { useEditorState } from '@udecode/plate-common/react'
+import { useEditorState } from 'platejs/react'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { minify } from '@/lib/utils/ai-chatbot'
