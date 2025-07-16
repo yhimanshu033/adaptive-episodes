@@ -10,7 +10,6 @@ import { MessageIcon } from '@/icons/message-icon'
 import HomeButton from '@/page-builders/plate-editor/buttons/home-button'
 import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
 import Title from '@/page-builders/plate-editor/title'
-import { useEditorState } from 'platejs/react'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
@@ -44,9 +43,6 @@ const EpisodeHeader = ({
 	const isInternalUser = useIsInternal()
 	const isCmsReady = statuses[latestIndex] === EStatus.PUBLISHED
 	const { isAccessible } = useProjectId()
-
-	const { children } = useEditorState()
-	console.log(children)
 
 	if (simplifiedEditor) {
 		return (

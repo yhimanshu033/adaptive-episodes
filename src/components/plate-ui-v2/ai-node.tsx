@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { AIChatPlugin } from '@platejs/ai/react'
 import {
 	PlateElement,

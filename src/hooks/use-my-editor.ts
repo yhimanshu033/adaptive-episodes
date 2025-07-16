@@ -3,14 +3,18 @@
 'use client'
 
 import { useMemo } from 'react'
+import { AIChatPlugin } from '@platejs/ai/react'
 import { TrailingBlockPlugin, Value } from 'platejs'
 import { usePlateEditor } from 'platejs/react'
 
+import { AIKit } from '@/components/editor/plugins/ai-kit'
 import { AlignKit } from '@/components/editor/plugins/align-kit'
 import { AutoformatKit } from '@/components/editor/plugins/autoformat-kit'
 import { BasicNodesKit } from '@/components/editor/plugins/basic-nodes-kit'
+import { BlockMenuKit } from '@/components/editor/plugins/block-menu-kit'
 import { CommentKit } from '@/components/editor/plugins/comment-kit'
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
+import { DndKit } from '@/components/editor/plugins/dnd-kit'
 import { ExitBreakKit } from '@/components/editor/plugins/exit-break-kit'
 import { FloatingToolbarKit } from '@/components/editor/plugins/floating-toolbar-kit'
 import { FontKit } from '@/components/editor/plugins/font-kit'
@@ -88,6 +92,13 @@ const useMyEditor = ({
 
 				// UI
 				...FloatingToolbarKit,
+
+				// AI
+				...AIKit,
+				...BlockMenuKit,
+				AIChatPlugin,
+
+				...DndKit,
 			],
 			value,
 			id,

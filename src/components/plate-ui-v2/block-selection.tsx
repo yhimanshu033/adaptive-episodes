@@ -29,8 +29,9 @@ export function BlockSelection(props: PlateElementProps) {
 		!isBlockSelected ||
 		props.plugin.key === 'tr' ||
 		props.plugin.key === 'table'
-	)
+	) {
 		return null
+	}
 
 	return (
 		<div
