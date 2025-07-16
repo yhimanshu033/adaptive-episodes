@@ -28,8 +28,8 @@ import { isEqual } from 'lodash'
 import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
+import DiffEditor from '@/components/editor/diff-editor'
 import useEpisodeId from '@/providers/episode-id-provider'
-import DiffView from '@/lib/plate/plugins/diff'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import { clearColors } from '@/lib/utils/plate'
 
@@ -299,7 +299,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 					</style>
 				)}
 				{isDiff ? (
-					<DiffView
+					<DiffEditor
 						current={responseValue}
 						previous={prevValue}
 						className={cn(

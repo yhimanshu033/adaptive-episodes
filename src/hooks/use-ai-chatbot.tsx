@@ -15,7 +15,6 @@ import ReviewAdded from '@/page-builders/plate-editor/sidebar-sections/ai-chatbo
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
-import { WithPartial } from '@udecode/utils'
 import { parse } from 'best-effort-json-parser'
 import { jsonrepair } from 'jsonrepair'
 import { nanoid } from 'nanoid'
@@ -27,8 +26,10 @@ import {
 	useEditorState,
 } from 'platejs/react'
 
-import { commentPlugin } from '@/components/editor/plugins/comment-kit'
-import { TComment } from '@/components/plate-ui-v2/comment'
+import {
+	discussionPlugin,
+	TDiscussion,
+} from '@/components/editor/plugins/discussion-kit'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { addSFX, convertReviewResponse, minify } from '@/lib/utils/ai-chatbot'
 import { parseOptimistically } from '@/lib/utils/helpers'
@@ -123,7 +124,7 @@ export function ChatbotProvider({
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
-	const { api, setOptions } = useEditorPlugin(commentPlugin)
+	const { setOptions } = useEditorPlugin(discussionPlugin)
 
 	const changesPending = prevValue && value
 
@@ -162,23 +163,19 @@ export function ChatbotProvider({
 		setRequestedAction(EChatMode.BLOCK)
 	}
 
-	const addComment = (value: TComment) => {
-		// const id = value.id ?? nanoid()
-		// if (!value) {
-		// 	return
-		// }
-		// const newComment: WithPartial<TComment, 'userId'> = {
-		// 	...value,
-		// }
-		// if (newComment?.userId) {
-		// 	setOptions((draft) => {
-		// 		if (!draft.comments) {
-		// 			draft.comments = {}
-		// 		}
-		// 		draft.comments[id] = newComment as TComment
-		// 	})
-		// }
-		// return newComment
+	const addComment = (
+		value: TDiscussion | null | undefined
+	): TDiscussion | undefined => {
+		if (!value?.userId) {
+			return
+		}
+
+		setOptions((draft) => {
+			draft.discussions ??= []
+			draft.discussions.push(value)
+		})
+
+		return value
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
@@ -261,25 +258,37 @@ export function ChatbotProvider({
 			if (!comment?.id || !comment?.text) {
 				return
 			}
-			// addComment({
-			// 	value: [
-			// 		{
-			// 			type: ParagraphPlugin.key,
-			// 			children: [
-			// 				{
-			// 					text: comment.text
-			// 						.trim()
-			// 						.replaceAll('•', '-')
-			// 						.replace(/(?<=\s)-/g, '\n-')
-			// 						.replace('</comment_format> <comment_format>', ''),
-			// 				},
-			// 			],
-			// 		},
-			// 	],
-			// 	id: comment.id,
-			// 	userId: AI_USER_ID,
-			// 	createdAt: Date.now(),
-			// })
+			addComment({
+				id: comment.id,
+				userId: AI_USER_ID,
+				createdAt: new Date(),
+				isResolved: false,
+				documentContent: comment.nodeText,
+				comments: [
+					{
+						id: nanoid(),
+						userId: AI_USER_ID,
+						createdAt: new Date(),
+						isEdited: false,
+						discussionId: comment.id,
+						contentRich: [
+							{
+								id: nanoid(),
+								type: ParagraphPlugin.key,
+								children: [
+									{
+										text: comment.text
+											.trim()
+											.replace(/•/g, '-')
+											.replace(/(?<=\s)-/g, '\n-')
+											.replace('</comment_format> <comment_format>', ''),
+									},
+								],
+							},
+						],
+					},
+				],
+			})
 		})
 		commentsCount.current = resp.comments.length
 		editor.tf.setValue(breakDownValue(resp.value))
@@ -289,17 +298,20 @@ export function ChatbotProvider({
 		if (!reviewStreaming || !responses[reviewStreaming]) {
 			return
 		}
-		// const reviewResponse = parse(
-		// 	jsonrepair(responses[reviewStreaming].join(''))
-		// ) as IndexedCommentsResponse[]
-		// const children = originalChildren
-		// if (!children) {
-		// 	return
-		// }
-		// const resp = convertReviewResponse(reviewResponse, children)
-		// resp.comments.forEach((comment) => {
-		// 	api.comment.removeComment(comment.id)
-		// })
+		const reviewResponse = parse(
+			jsonrepair(responses[reviewStreaming].join(''))
+		) as IndexedCommentsResponse[]
+		const children = originalChildren
+		if (!children) {
+			return
+		}
+		const resp = convertReviewResponse(reviewResponse, children)
+		resp.comments.forEach((comment) => {
+			const updatedDiscussions = editor
+				.getOption(discussionPlugin, 'discussions')
+				.filter((discussion) => discussion.id !== comment.id)
+			editor.setOption(discussionPlugin, 'discussions', updatedDiscussions)
+		})
 		editor.tf.setValue(breakDownValue(children))
 	}
 

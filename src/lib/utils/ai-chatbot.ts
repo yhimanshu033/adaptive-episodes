@@ -1,5 +1,5 @@
 import { FAR_PADDING_TEXT } from '@/constants/editor-constants'
-import { Descendant, Element, nanoid, Text, Value } from 'platejs'
+import { Descendant, Element, nanoid, TCommentText, Text, Value } from 'platejs'
 
 import { extractWords, generateGenitives } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
@@ -152,18 +152,24 @@ export function convertReviewResponse(
 						segments.push({ ...rest, text: text.slice(lastIndex, start) })
 					}
 
+					const id = nanoid()
+					const key = `comment_${id}`
+					const textFragment = text.slice(start, end)
+
 					const commentSegment = {
 						...rest,
-						text: text.slice(start, end),
+						text: textFragment,
 						comment: true,
-					} as Text
-
-					const id = nanoid()
-					const commentKey = `comment_${id}`
-					commentSegment[commentKey] = true
-					comments.push({ id, text: matchingValue.comment || '' })
+						[key]: true,
+					} as TCommentText
 
 					segments.push(commentSegment)
+					comments.push({
+						id,
+						text: matchingValue.comment || '',
+						nodeText: textFragment,
+						nodeId,
+					})
 
 					lastIndex = end
 				}

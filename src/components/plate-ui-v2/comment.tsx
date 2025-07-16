@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { AI_USER_ID } from '@/constants/ai-constants'
 import { getCommentKey, getDraftCommentKey } from '@platejs/comment'
 import { CommentPlugin, useCommentId } from '@platejs/comment/react'
 import {
@@ -133,7 +134,8 @@ export function Comment(props: {
 	const { tf } = useEditorPlugin(CommentPlugin)
 
 	// Replace to your own backend or refer to potion
-	const isMyComment = currentUserId === comment.userId
+	const isMyComment =
+		currentUserId === comment.userId || comment.userId === AI_USER_ID
 
 	const initialValue = comment.contentRich
 
@@ -234,7 +236,7 @@ export function Comment(props: {
 			{isFirst && showDocumentContent && (
 				<div className="text-subtle-foreground relative mt-1 flex pl-[32px] text-sm">
 					{discussionLength > 1 && (
-						<div className="bg-muted absolute top-[5px] left-3 h-full w-0.5 shrink-0" />
+						<div className="bg-muted absolute top-[5px] left-[9px] h-full w-0.5 shrink-0" />
 					)}
 					<div className="bg-highlight my-px w-0.5 shrink-0" />
 					{documentContent && <div className="ml-2">{documentContent}</div>}

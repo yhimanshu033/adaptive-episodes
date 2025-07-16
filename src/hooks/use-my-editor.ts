@@ -15,10 +15,12 @@ import { BlockMenuKit } from '@/components/editor/plugins/block-menu-kit'
 import { CommentKit } from '@/components/editor/plugins/comment-kit'
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
 import { DndKit } from '@/components/editor/plugins/dnd-kit'
+import { DocxKit } from '@/components/editor/plugins/docx-kit'
 import { ExitBreakKit } from '@/components/editor/plugins/exit-break-kit'
 import { FloatingToolbarKit } from '@/components/editor/plugins/floating-toolbar-kit'
 import { FontKit } from '@/components/editor/plugins/font-kit'
 import { LineHeightKit } from '@/components/editor/plugins/line-height-kit'
+import { MarkdownKit } from '@/components/editor/plugins/markdown-kit'
 import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
 import { BlockDiscussion } from '@/components/plate-ui-v2/block-discussion'
 import {
@@ -46,10 +48,17 @@ const useMyEditor = ({
 		me: { user: userData },
 	} = useProjectId()
 
-	const value = useMemo(
-		() => (content ? migrateOldSuggestions(JSON.parse(content) as Value) : ''),
-		[content]
-	)
+	const value = useMemo(() => {
+		if (!content) {
+			return ''
+		}
+		try {
+			return migrateOldSuggestions(JSON.parse(content) as Value)
+		} catch {
+			return content
+		}
+	}, [content])
+
 	const discussions = migrateOldComments(comments, value)
 
 	const editor = usePlateEditor(
@@ -92,6 +101,10 @@ const useMyEditor = ({
 
 				// UI
 				...FloatingToolbarKit,
+
+				//Parsers
+				...DocxKit,
+				...MarkdownKit,
 
 				// AI
 				...AIKit,

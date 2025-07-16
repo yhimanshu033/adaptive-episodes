@@ -97,6 +97,7 @@ export const NEXT_EP_EDITOR_ID = 'next-ep-editor'
 export const PREV_EP_EDITOR_ID = 'prev-ep-editor'
 export const BASE_SCRIPT_EDITOR_ID = 'base-script-editor'
 export const NOTE_EDITOR_BASE_ID = 'notes-editor'
+export const DIFF_EDITOR_ID = 'diff-editor'
 export const LINES = 30
 
 export const AFTER_PAGE_BREAK_CLASSNAME = 'after-editor-page' // CHECK WITH GLOBALS CSS

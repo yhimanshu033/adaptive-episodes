@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelton-loader'
 import EpisodeNavigation from '@/page-builders/plate-editor/episode-navigation'
+import { PlateController } from 'platejs/react'
 
 import { EpisodeIdProvider } from '@/providers/episode-id-provider'
 
@@ -25,7 +26,9 @@ export function Editor() {
 						key={String(episodeId)}
 						episodeId={Number(episodeId)}
 					>
-						<PlateEditor />
+						<PlateController>
+							<PlateEditor />
+						</PlateController>
 					</EpisodeIdProvider>
 				</div>
 			</div>

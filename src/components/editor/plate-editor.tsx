@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
+import { MAIN_EDITOR_ID } from '@/constants/editor-constants'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { ChatbotProvider } from '@/hooks/use-ai-chatbot'
@@ -12,7 +13,7 @@ import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loa
 import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelton-loader'
 import EpisodeHeader from '@/page-builders/plate-editor/episode-header'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
-import { Plate, useEditorRef } from 'platejs/react'
+import { Plate } from 'platejs/react'
 
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Editor } from '@/components/plate-ui-v2/editor'
@@ -20,12 +21,13 @@ import { FixedToolbar } from '@/components/plate-ui-v2/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui-v2/fixed-toolbar-buttons'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
-import { migrateOldComments } from '@/lib/plate/migrateOldComments'
 
 import { EStatus } from '@/types/common'
 import { TGetEpisodeResponse } from '@/types/episode-type'
+import { ESidebar } from '@/types/plate-types'
 
 import { ResizablePanel, ResizablePanelGroup } from '../ui/resizable'
+import EditorModes from './editor-modes'
 
 function MyEditor({
 	content,
@@ -38,12 +40,9 @@ function MyEditor({
 }) {
 	const editor = useMyEditor({
 		content: content?.text,
-		id: 'root-editor',
+		id: MAIN_EDITOR_ID,
 		comments: content?.chapter?.props?.comments,
 	})
-
-	const searchParams = useSearchParams()
-	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
 	return (
 		<Plate editor={editor}>
@@ -78,12 +77,7 @@ function MyEditor({
 												<FixedToolbarButtons />
 											</FixedToolbar>
 											<ScrollArea className="overflow-y-auto">
-												<Editor
-													placeholder="Type..."
-													autoFocus
-													variant="aural"
-													readOnly={!!simplifiedEditor}
-												/>
+												<EditorModes />
 											</ScrollArea>
 										</ResizablePanel>
 										<DualView translatedContent={content.translation_text} />

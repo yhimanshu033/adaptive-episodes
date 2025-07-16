@@ -1,5 +1,8 @@
+import { DiffStatus } from '@/constants/ai-constants'
+import { DiffProps as LegacyProps } from '@platejs/diff'
 import { SuggestionUser } from '@platejs/suggestion'
 import { Descendant, Value } from 'platejs'
+import { PlatePlugin } from 'platejs/react'
 
 import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 
@@ -94,3 +97,15 @@ export type TOldComment = {
 }
 
 export type TCommentGeneric = TDiscussion | TOldComment
+
+export interface DiffViewProps {
+	className?: string
+	current: Value | null
+	plugins?: PlatePlugin[]
+	previous: Value | null
+	readonly?: boolean
+}
+export interface DiffProps extends LegacyProps {
+	diff_id: string
+	status: DiffStatus
+}

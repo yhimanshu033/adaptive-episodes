@@ -8,8 +8,8 @@ import { Plate } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
+import DiffEditor from '@/components/editor/diff-editor'
 import { editorVariants } from '@/components/plate-ui-v2/editor-static'
-import DiffView from '@/lib/plate/plugins/diff'
 import { cn } from '@/lib/utils/helpers'
 import { removeValue } from '@/lib/utils/indexed-db'
 
@@ -49,7 +49,7 @@ export default function LocalDiffSection() {
 	return (
 		<div className="relative h-full">
 			<Plate readOnly editor={editor}>
-				<DiffView
+				<DiffEditor
 					current={localDiffValue}
 					readonly
 					previous={editor?.children}

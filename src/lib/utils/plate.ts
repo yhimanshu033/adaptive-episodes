@@ -398,6 +398,16 @@ export function getText(val: Value, separator?: string) {
 	return text
 }
 
+/**
+ * Breaks down a string or Plate.js editor Value into clean paragraph blocks.
+ *
+ * - Splits text by newlines into separate paragraph (`<p>`) blocks.
+ * - Preserves formatting and avoids splitting nodes with excluded marks (e.g. comments).
+ * - Useful for normalizing pasted or unstructured input before rendering in the editor.
+ *
+ * @param {Value | string} ogVal - Raw text or editor Value to normalize.
+ * @returns {Value} - A normalized array of paragraph blocks.
+ */
 export function breakDownValue(ogVal: Value | string): Value {
 	const newVal: Value = []
 
@@ -708,43 +718,47 @@ export function keyNodeOperationOnce(
 	return children
 }
 
-export function getUniqueAllComments(
-	children: Value,
-	allComments: TCustomComment[]
-) {
-	const uniqueChildrenCommentIds: Record<string, boolean> = {}
+/**
+ * Currently this function is not used anywhere in the codebase.
+ */
 
-	function traverse(child: Descendant) {
-		if (child.comment) {
-			const keys = Object.keys(child)
-			const commentKey = keys.find((key) => key.startsWith('comment_'))
-			const commentId = commentKey?.replace('comment_', '')
-			if (!commentId) {
-				return
-			}
-			uniqueChildrenCommentIds[commentId] = true
-		}
-		if (child.children) {
-			;(child.children as Descendant[]).forEach((c) => traverse(c))
-		}
-	}
+// export function getUniqueAllComments(
+// 	children: Value,
+// 	allComments: TCustomComment[]
+// ) {
+// 	const uniqueChildrenCommentIds: Record<string, boolean> = {}
 
-	structuredClone(children).forEach((node) => {
-		traverse(node)
-	})
+// 	function traverse(child: Descendant) {
+// 		if (child.comment) {
+// 			const keys = Object.keys(child)
+// 			const commentKey = keys.find((key) => key.startsWith('comment_'))
+// 			const commentId = commentKey?.replace('comment_', '')
+// 			if (!commentId) {
+// 				return
+// 			}
+// 			uniqueChildrenCommentIds[commentId] = true
+// 		}
+// 		if (child.children) {
+// 			;(child.children as Descendant[]).forEach((c) => traverse(c))
+// 		}
+// 	}
 
-	const cleanedComments: TCustomComment[] = allComments.filter(
-		(comment) =>
-			uniqueChildrenCommentIds[comment.id] ||
-			(comment.parentId && uniqueChildrenCommentIds[comment.parentId])
-	)
+// 	structuredClone(children).forEach((node) => {
+// 		traverse(node)
+// 	})
 
-	const cleanedCommentsRecord = cleanedComments.reduce<
-		Record<string, TCustomComment>
-	>((acc, comment) => ({ ...acc, [comment.id]: comment }), {})
+// 	const cleanedComments: TCustomComment[] = allComments.filter(
+// 		(comment) =>
+// 			uniqueChildrenCommentIds[comment.id] ||
+// 			(comment.parentId && uniqueChildrenCommentIds[comment.parentId])
+// 	)
 
-	return { cleanedCommentsRecord, cleanedComments }
-}
+// 	const cleanedCommentsRecord = cleanedComments.reduce<
+// 		Record<string, TCustomComment>
+// 	>((acc, comment) => ({ ...acc, [comment.id]: comment }), {})
+
+// 	return { cleanedCommentsRecord, cleanedComments }
+// }
 
 export const getParentWidth = (ref: React.RefObject<HTMLDivElement>) => {
 	const blockAncestor = ref.current?.closest('[data-block-id]') as HTMLElement

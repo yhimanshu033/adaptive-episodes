@@ -3,7 +3,6 @@ import { EpisodeActions } from '@/constants/episodes-constants'
 import { VariantProps } from 'class-variance-authority'
 
 import { dialogVariants } from '@/components/aural-ui/dialog'
-import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 
 import { BASE_STATUS, EEpisodeType, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
