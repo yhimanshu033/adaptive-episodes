@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import useLaserStore from '@/store/laser-store'
 import { cn } from '@udecode/cn'
-import { TDescendant, TText } from '@udecode/plate-common'
+import { Descendant, Text } from 'platejs'
 import {
 	PlateLeaf,
 	PlateLeafProps,
 	useEditorRef,
 	useEditorState,
-} from '@udecode/plate-common/react'
+} from 'platejs/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
 import {
@@ -18,11 +18,11 @@ import {
 
 import { TLaserLeafChildren } from '@/types/plate-types'
 
-function getLaserKey(elem: TText) {
+function getLaserKey(elem: Text) {
 	return Object.keys(elem).find((key) => key.startsWith('laser-id-'))
 }
 
-function getMethodId(elem: TText) {
+function getMethodId(elem: Text) {
 	const method = Object.keys(elem).find((key) =>
 		key.startsWith('laser-method-')
 	)
@@ -83,7 +83,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		let prevtext = ''
 		let nexttext = ''
 
-		const descendants: TDescendant[] = (children as TLaserLeafChildren).props
+		const descendants: Descendant[] = (children as TLaserLeafChildren).props
 			.parent.children
 		const texts = descendants.map((child) => child.text)
 
@@ -118,7 +118,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	}, [key, leaf, children, allChildren])
 
 	const traverse = useCallback(
-		(node: TDescendant) => {
+		(node: Descendant) => {
 			if (!key) {
 				return
 			}
@@ -128,7 +128,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 					delete node[key]
 				})
 			} else if ('children' in node) {
-				;(node.children as TDescendant[]).forEach(traverse)
+				;(node.children as Descendant[]).forEach(traverse)
 			}
 		},
 		[key]
@@ -231,7 +231,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		<PlateLeaf
 			ref={areaRef}
 			{...props}
-			onClick={handleClick}
+			attributes={{
+				onClick: handleClick,
+			}}
 			className={cn(
 				'relative border-b-2 border-b-blue-500/70',
 				'bg-blue-500/40',

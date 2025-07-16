@@ -26,6 +26,8 @@ import { EStatus } from '@/types/common'
 import { TGetEpisodeResponse } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
+import FloatingLaserResponse from '../plate-ui/floating-laser-response'
+import FloatingPrompt from '../plate-ui/floating-prompt'
 import { ResizablePanel, ResizablePanelGroup } from '../ui/resizable'
 import EditorModes from './editor-modes'
 
@@ -86,6 +88,8 @@ function MyEditor({
 								<Sidebar />
 							</ResizablePanelGroup>
 						</div>
+						<FloatingPrompt />
+						<FloatingLaserResponse />
 					</div>
 				</ChatbotProvider>
 			</SavingContextProvider>

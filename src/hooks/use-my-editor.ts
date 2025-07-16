@@ -20,6 +20,8 @@ import { ExitBreakKit } from '@/components/editor/plugins/exit-break-kit'
 import { FindAndReplaceKit } from '@/components/editor/plugins/find-and-replace-kit'
 import { FloatingToolbarKit } from '@/components/editor/plugins/floating-toolbar-kit'
 import { FontKit } from '@/components/editor/plugins/font-kit'
+import { LaserKit } from '@/components/editor/plugins/laser-kit'
+import { LaserPromptKit } from '@/components/editor/plugins/laser-prompt-kit'
 import { LineHeightKit } from '@/components/editor/plugins/line-height-kit'
 import { MarkdownKit } from '@/components/editor/plugins/markdown-kit'
 import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
@@ -107,6 +109,9 @@ const useMyEditor = ({
 				...DocxKit,
 				...MarkdownKit,
 
+				//laser
+				...LaserKit,
+				...LaserPromptKit,
 				// AI
 				...AIKit,
 				...BlockMenuKit,

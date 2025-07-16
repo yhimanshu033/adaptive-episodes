@@ -82,7 +82,7 @@ export function FloatingToolbarButtons() {
 				</FontColorToolbarButton>
 			</ToolbarGroup>
 
-			<ToolbarGroup
+			{/* <ToolbarGroup
 				seperatorProps={{
 					variant: 'primary',
 				}}
@@ -90,6 +90,14 @@ export function FloatingToolbarButtons() {
 				<AIToolbarButton tooltip="Laser (⌘+B)" size="floating">
 					<SparklesSoftIcon className="text-fm-secondary-800" />
 				</AIToolbarButton>
+			</ToolbarGroup> */}
+
+			<ToolbarGroup
+				seperatorProps={{
+					variant: 'primary',
+				}}
+			>
+				<FloatingLaserBtns />
 			</ToolbarGroup>
 
 			<ToolbarGroup
