@@ -18,23 +18,6 @@ export default function FindAndReplace() {
 		isWriter,
 	}
 
-	// return (
-	// 	<>
-	// 		<FindAndReplaceUI {...farUiprops} />
-	// 		<hr />
-	// 		<ReScan
-	// 			handleScanEpisode={() => void value.handleScanEpisode()}
-	// 			isFetching={value.isFetching}
-	// 			isWriter={isWriter}
-	// 			sheetURL={value.sheetURL}
-	// 			updateLOCPending={value.updateLOCPending}
-	// 		/>
-	// 		<If condition={isWriter}>
-	// 			<AddForm setData={value.setData} />
-	// 		</If>
-	// 	</>
-	// )
-
 	return (
 		<div className="bg-fm-surface-primary">
 			<FarHeader

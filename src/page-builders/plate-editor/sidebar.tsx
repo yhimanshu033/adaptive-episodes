@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 
+import FindAndReplace from './sidebar-sections/find-and-replace'
+
 // const renderSidebar: Record<ESidebar, React.ReactNode> = {
 // 	[ESidebar.COMMENTS]: <CommentSidebar />,
 // 	[ESidebar.OUTLINE]: <StoryExplorer />,
@@ -29,7 +31,7 @@ import { ESidebar } from '@/types/plate-types'
 const renderSidebar: Record<ESidebar, React.ReactNode> = {
 	[ESidebar.COMMENTS]: <>Comments</>,
 	[ESidebar.OUTLINE]: <StoryExplorer />,
-	[ESidebar.FAR]: <>Find and replace</>,
+	[ESidebar.FAR]: <FindAndReplace />,
 	[ESidebar.CHATBOT]: <AIChatbot />,
 	[ESidebar.DUAL_VIEW]: null,
 	[ESidebar.NOTES]: <Notes />,

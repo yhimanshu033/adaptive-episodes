@@ -10,7 +10,8 @@ import {
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
-} from '@udecode/plate-common/react'
+	usePluginOptions,
+} from 'platejs/react'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import useProjectId from '@/providers/project-id-provider'
@@ -32,15 +33,24 @@ import { TLocalizeArrayItem, TLocalizeResponse } from '@/types/ai-types'
 import useLOCSheetData from './query/use-loc-sheet-data'
 
 export default function useFindAndReplace() {
-	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
+	const { setOptions } = useEditorPlugin(FindReplacePlugin)
 	const language = useLanguage()
 
-	const search = useOption('search') || ''
-	const replace = useOption('replace') || ''
-	const replaceEnabled = useOption('replaceEnabled')
-	const caseSensitive = useOption('caseSensitive')
-	const wholeWord = useOption('wholeWord')
-	const genitive = useOption('genitive')
+	const {
+		search,
+		replace,
+		replaceEnabled,
+		caseSensitive,
+		wholeWord,
+		genitive,
+	} = usePluginOptions(FindReplacePlugin, (state) => ({
+		search: state.search || '',
+		replace: state.replace || '',
+		replaceEnabled: state.replaceEnabled || false,
+		caseSensitive: state.caseSensitive || false,
+		wholeWord: state.wholeWord || false,
+		genitive: state.genitive || false,
+	}))
 	const [ptr, setPtr] = useState(0)
 
 	const { children } = useEditorState()

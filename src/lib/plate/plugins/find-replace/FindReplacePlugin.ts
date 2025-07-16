@@ -1,5 +1,5 @@
 import { INITIAL_FAR_OPTIONS } from '@/constants/ai-constants'
-import { createTSlatePlugin, type PluginConfig } from '@udecode/plate-common'
+import { createTSlatePlugin, KEYS, type PluginConfig } from 'platejs'
 
 import { decorateFindReplace } from '@/lib/plate/plugins/find-replace/decorateFindReplace'
 
@@ -17,7 +17,7 @@ export type FindReplaceConfig = PluginConfig<
 >
 
 export const FindReplacePlugin = createTSlatePlugin<FindReplaceConfig>({
-	key: 'search_highlight',
+	key: KEYS.searchHighlight,
 	decorate: decorateFindReplace,
 	node: { isLeaf: true },
 	options: INITIAL_FAR_OPTIONS,
