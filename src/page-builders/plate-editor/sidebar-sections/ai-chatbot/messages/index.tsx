@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
-import useAiChatbotMessages from '@/hooks/use-ai-chatbot-messages'
 import RenderMessage from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages/render-messages'
+import useAIStore from '@/store/ai-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
@@ -9,7 +10,8 @@ import ChatbotStatus from '@/components/chatbot-status'
 import WelcomeMessage from './welcome-message'
 
 const MessagesList = ({ isPending }: { isPending: boolean }) => {
-	const { messages } = useAiChatbotMessages()
+	const { store } = useAIStore()
+	const messages = store(useShallow((state) => state.messages))
 
 	const messageEndRef = useRef<HTMLDivElement>(null)
 

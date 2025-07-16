@@ -15,20 +15,20 @@ import ReviewAdded from '@/page-builders/plate-editor/sidebar-sections/ai-chatbo
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
-import { TComment } from '@udecode/plate-comments'
-import { CommentsPlugin } from '@udecode/plate-comments/react'
+import { WithPartial } from '@udecode/utils'
+import { parse } from 'best-effort-json-parser'
+import { jsonrepair } from 'jsonrepair'
+import { nanoid } from 'nanoid'
+import { Value } from 'platejs'
 import {
 	ParagraphPlugin,
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
-} from '@udecode/plate-common/react'
-import { Value } from '@udecode/slate'
-import { WithPartial } from '@udecode/utils'
-import { parse } from 'best-effort-json-parser'
-import { jsonrepair } from 'jsonrepair'
-import { nanoid } from 'nanoid'
+} from 'platejs/react'
 
+import { commentPlugin } from '@/components/editor/plugins/comment-kit'
+import { TComment } from '@/components/plate-ui-v2/comment'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { addSFX, convertReviewResponse, minify } from '@/lib/utils/ai-chatbot'
 import { parseOptimistically } from '@/lib/utils/helpers'
@@ -123,7 +123,7 @@ export function ChatbotProvider({
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
-	const { api, setOptions } = useEditorPlugin(CommentsPlugin)
+	const { api, setOptions } = useEditorPlugin(commentPlugin)
 
 	const changesPending = prevValue && value
 
@@ -163,24 +163,22 @@ export function ChatbotProvider({
 	}
 
 	const addComment = (value: TComment) => {
-		const id = value.id ?? nanoid()
-		if (!value) {
-			return
-		}
-		const newComment: WithPartial<TComment, 'userId'> = {
-			...value,
-		}
-
-		if (newComment?.userId) {
-			setOptions((draft) => {
-				if (!draft.comments) {
-					draft.comments = {}
-				}
-				draft.comments[id] = newComment as TComment
-			})
-		}
-
-		return newComment
+		// const id = value.id ?? nanoid()
+		// if (!value) {
+		// 	return
+		// }
+		// const newComment: WithPartial<TComment, 'userId'> = {
+		// 	...value,
+		// }
+		// if (newComment?.userId) {
+		// 	setOptions((draft) => {
+		// 		if (!draft.comments) {
+		// 			draft.comments = {}
+		// 		}
+		// 		draft.comments[id] = newComment as TComment
+		// 	})
+		// }
+		// return newComment
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
@@ -249,6 +247,7 @@ export function ChatbotProvider({
 		setReviewStreaming('')
 		setBlockStreaming('')
 	}
+
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
 		const children = originalChildren
 		if (!children) {
@@ -262,25 +261,25 @@ export function ChatbotProvider({
 			if (!comment?.id || !comment?.text) {
 				return
 			}
-			addComment({
-				value: [
-					{
-						type: ParagraphPlugin.key,
-						children: [
-							{
-								text: comment.text
-									.trim()
-									.replaceAll('•', '-')
-									.replace(/(?<=\s)-/g, '\n-')
-									.replace('</comment_format> <comment_format>', ''),
-							},
-						],
-					},
-				],
-				id: comment.id,
-				userId: AI_USER_ID,
-				createdAt: Date.now(),
-			})
+			// addComment({
+			// 	value: [
+			// 		{
+			// 			type: ParagraphPlugin.key,
+			// 			children: [
+			// 				{
+			// 					text: comment.text
+			// 						.trim()
+			// 						.replaceAll('•', '-')
+			// 						.replace(/(?<=\s)-/g, '\n-')
+			// 						.replace('</comment_format> <comment_format>', ''),
+			// 				},
+			// 			],
+			// 		},
+			// 	],
+			// 	id: comment.id,
+			// 	userId: AI_USER_ID,
+			// 	createdAt: Date.now(),
+			// })
 		})
 		commentsCount.current = resp.comments.length
 		editor.tf.setValue(breakDownValue(resp.value))
@@ -290,17 +289,17 @@ export function ChatbotProvider({
 		if (!reviewStreaming || !responses[reviewStreaming]) {
 			return
 		}
-		const reviewResponse = parse(
-			jsonrepair(responses[reviewStreaming].join(''))
-		) as IndexedCommentsResponse[]
-		const children = originalChildren
-		if (!children) {
-			return
-		}
-		const resp = convertReviewResponse(reviewResponse, children)
-		resp.comments.forEach((comment) => {
-			api.comment.removeComment(comment.id)
-		})
+		// const reviewResponse = parse(
+		// 	jsonrepair(responses[reviewStreaming].join(''))
+		// ) as IndexedCommentsResponse[]
+		// const children = originalChildren
+		// if (!children) {
+		// 	return
+		// }
+		// const resp = convertReviewResponse(reviewResponse, children)
+		// resp.comments.forEach((comment) => {
+		// 	api.comment.removeComment(comment.id)
+		// })
 		editor.tf.setValue(breakDownValue(children))
 	}
 

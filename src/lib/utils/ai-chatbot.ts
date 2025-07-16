@@ -1,11 +1,5 @@
 import { FAR_PADDING_TEXT } from '@/constants/editor-constants'
-import {
-	nanoid,
-	TDescendant,
-	TElement,
-	TText,
-	Value,
-} from '@udecode/plate-common'
+import { Descendant, Element, nanoid, Text, Value } from 'platejs'
 
 import { extractWords, generateGenitives } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
@@ -32,7 +26,7 @@ import {
 } from '@/types/editor-types'
 
 export const minify = (children: Value): MinifiedValue => {
-	const traverse = (nodes: TDescendant[], path: number[]): MinifiedValue => {
+	const traverse = (nodes: Descendant[], path: number[]): MinifiedValue => {
 		return nodes.flatMap((node, index) => {
 			const currentPath = [...path, index]
 			if ('text' in node) {
@@ -48,7 +42,7 @@ export const minify = (children: Value): MinifiedValue => {
 }
 
 export const maxify = (minified: MinifiedValue, children: Value): Value => {
-	const applyText = (nodes: TDescendant[], path: number[]): TDescendant[] => {
+	const applyText = (nodes: Descendant[], path: number[]): Descendant[] => {
 		return nodes.map((node, index) => {
 			const currentPath = [...path, index]
 
@@ -100,10 +94,7 @@ export function convertReviewResponse(
 ) {
 	const comments: ReviewComment[] = []
 
-	const applyComment = (
-		nodes: TDescendant[],
-		path: number[]
-	): TDescendant[] => {
+	const applyComment = (nodes: Descendant[], path: number[]): Descendant[] => {
 		return nodes.flatMap((node, index) => {
 			const currentPath = [...path, index]
 
@@ -115,8 +106,8 @@ export function convertReviewResponse(
 
 			if ('text' in node) {
 				const nodeId = currentPath.join('_')
-				const { text, ...rest } = node as TText
-				const segments: TText[] = []
+				const { text, ...rest } = node as Text
+				const segments: Text[] = []
 				let lastIndex = 0
 				const sortedMatchingValues = response
 					.filter((item) => item.id === nodeId && !!item.path)
@@ -165,7 +156,7 @@ export function convertReviewResponse(
 						...rest,
 						text: text.slice(start, end),
 						comment: true,
-					} as TText
+					} as Text
 
 					const id = nanoid()
 					const commentKey = `comment_${id}`
@@ -260,7 +251,7 @@ export function addSFX(
 	children: Value,
 	key: string
 ): Value {
-	const applyText = (nodes: TDescendant[], path: number[]): TDescendant[] => {
+	const applyText = (nodes: Descendant[], path: number[]): Descendant[] => {
 		return nodes.flatMap((node, index) => {
 			const currentPath = [...path, index]
 
@@ -273,7 +264,7 @@ export function addSFX(
 					return [node]
 				}
 
-				const segments: TDescendant[] = []
+				const segments: Descendant[] = []
 				let currentIndex = 0
 				const text = node.text as string
 
@@ -331,7 +322,7 @@ export function addVoicePass(
 	voicePass: IndexedVoicePassResponse,
 	children: Value
 ): Value {
-	const applyText = (nodes: TDescendant[], path: number[]): TDescendant[] => {
+	const applyText = (nodes: Descendant[], path: number[]): Descendant[] => {
 		return nodes.flatMap((node, index) => {
 			const currentPath = [...path, index]
 
@@ -344,7 +335,7 @@ export function addVoicePass(
 					return [node]
 				}
 
-				const segments: TDescendant[] = []
+				const segments: Descendant[] = []
 				const text = node.text as string
 
 				matchingValues.forEach((matchingValue) => {
@@ -407,7 +398,7 @@ export function replaceOnce({
 	search: string
 }) {
 	const updatedChildren = structuredClone(children)
-	const node = updatedChildren[path[0]].children[path[1]] as TElement
+	const node = updatedChildren[path[0]].children[path[1]] as Element
 	const text = replaceNthInsensitive(
 		node.text as string,
 		search,
@@ -439,7 +430,7 @@ export function replaceAll({
 	wholeWord: boolean | undefined
 }) {
 	const updatedChildren = structuredClone(children)
-	function processNode(node: TElement | TText): void {
+	function processNode(node: Element | Text): void {
 		if ('text' in node) {
 			if (!replaceEnabled || !search) {
 				return
@@ -476,7 +467,7 @@ export function getRecordsUtil({
 		return records
 	}
 	children.forEach((node, index) => {
-		const getCount = (node: TElement | TText, path: number[]): void => {
+		const getCount = (node: Element | Text, path: number[]): void => {
 			if ('text' in node) {
 				const regex = getFindReplaceRegex({
 					caseSensitive,
@@ -515,7 +506,7 @@ export function getRecordsTextUtil({
 		}
 		const block = children[record[0]]
 
-		const leaf = block?.children?.[record[1]] as TText | undefined
+		const leaf = block?.children?.[record[1]] as Text | undefined
 		if (!leaf?.text) {
 			return
 		}
@@ -650,7 +641,7 @@ export function getOccurrencesUtil({
 		return 0
 	}
 	return children.reduce((acc, node) => {
-		const getCount = (node: TElement | TText): number => {
+		const getCount = (node: Element | Text): number => {
 			if ('text' in node) {
 				const regex = getFindReplaceRegex({
 					search,

@@ -7,7 +7,7 @@ import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 
 import { BASE_STATUS, EEpisodeType, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
-import { TNote } from '@/types/plate-types'
+import { TCommentGeneric, TNote } from '@/types/plate-types'
 
 export type EpisodeStoreState = {
 	alertInfo: {
@@ -56,7 +56,7 @@ export type TEpisode = {
 	parent: number | null
 	project: number
 	props?: Record<string, unknown> & {
-		comments?: TDiscussion[]
+		comments?: TCommentGeneric[]
 		creation_timestamp?: number
 		llm_memories?: TEpisodeProps
 		merged_chapter_ids?: number[]

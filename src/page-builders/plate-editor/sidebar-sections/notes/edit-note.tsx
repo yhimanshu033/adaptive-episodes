@@ -10,7 +10,7 @@ import useNotes from '@/hooks/use-notes'
 import useEditorNoteStore from '@/store/edit-note-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useEpisodeStore } from '@/store/episode-store'
-import { nanoid } from '@udecode/plate'
+import { nanoid } from 'platejs'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'

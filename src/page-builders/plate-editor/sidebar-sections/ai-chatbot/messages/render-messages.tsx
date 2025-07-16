@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import useAiChatbotMessages from '@/hooks/use-ai-chatbot-messages'
+import useAcceptChanges from '@/hooks/use-accept-changes'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import usePlateStore from '@/store/plate-store'
 
@@ -16,7 +16,7 @@ export default function RenderMessage({
 	index: number
 	message: TMessage
 }) {
-	const { handleAccept } = useAiChatbotMessages()
+	const { handleAccept } = useAcceptChanges()
 	const { taskEnded, responses } = useSocketStreaming()
 	const { store, setActiveDiffId } = usePlateStore()
 	const { diffIdList, activeDiffId } = store()

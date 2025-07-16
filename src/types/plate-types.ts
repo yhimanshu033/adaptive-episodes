@@ -1,8 +1,8 @@
-import { CommentUser } from '@udecode/plate-comments'
-import { TDescendant, Value } from '@udecode/plate-common'
-import { SuggestionUser } from '@udecode/plate-suggestion'
+import { SuggestionUser } from '@platejs/suggestion'
+import { Descendant, Value } from 'platejs'
 
-import { ERole, UserData } from '@/types/admin-types'
+import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
+
 import { ExplorerType, Laser } from '@/types/ai-types'
 
 export type Selection = {
@@ -33,7 +33,7 @@ export type Node = {
 export type TLaserLeafChildren = {
 	props: {
 		parent: {
-			children: TDescendant[]
+			children: Descendant[]
 		}
 	}
 }
@@ -81,8 +81,16 @@ export type TNote = {
 	updateTime: string
 }
 
-export type PlateUser = SuggestionUser &
-	CommentUser &
-	UserData & { role: ERole }
+export type PlateUser = SuggestionUser
 
 export type PromptPosition = Pick<Laser, 'clientX' | 'clientY' | 'width'>
+
+export type TOldComment = {
+	createdAt: number
+	id: string
+	parentId?: string
+	userId: string
+	value: Value
+}
+
+export type TCommentGeneric = TDiscussion | TOldComment

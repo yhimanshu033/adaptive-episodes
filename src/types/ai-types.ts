@@ -6,7 +6,7 @@ import {
 	PlotAction,
 	WorldAction,
 } from '@/constants/story-explorer-constants'
-import { Value } from '@udecode/plate-common'
+import { Value } from 'platejs'
 
 import { ELanguage, LSMappingOutput, MinifiedValue } from '@/types/common'
 

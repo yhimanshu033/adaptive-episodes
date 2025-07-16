@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
+import { useMemo } from 'react'
 import { TrailingBlockPlugin, Value } from 'platejs'
 import { usePlateEditor } from 'platejs/react'
 
@@ -8,33 +10,30 @@ import { AlignKit } from '@/components/editor/plugins/align-kit'
 import { AutoformatKit } from '@/components/editor/plugins/autoformat-kit'
 import { BasicNodesKit } from '@/components/editor/plugins/basic-nodes-kit'
 import { CommentKit } from '@/components/editor/plugins/comment-kit'
-import {
-	discussionPlugin,
-	TDiscussion,
-} from '@/components/editor/plugins/discussion-kit'
+import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
 import { ExitBreakKit } from '@/components/editor/plugins/exit-break-kit'
-import { FixedToolbarKit } from '@/components/editor/plugins/fixed-toolbar-kit'
 import { FloatingToolbarKit } from '@/components/editor/plugins/floating-toolbar-kit'
 import { FontKit } from '@/components/editor/plugins/font-kit'
 import { LineHeightKit } from '@/components/editor/plugins/line-height-kit'
-import {
-	SuggestionKit,
-	suggestionPlugin,
-} from '@/components/editor/plugins/suggestion-kit'
+import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
 import { BlockDiscussion } from '@/components/plate-ui-v2/block-discussion'
 import {
 	SuggestionLeaf,
 	SuggestionLineBreak,
 } from '@/components/plate-ui-v2/suggestion-node'
 import useProjectId from '@/providers/project-id-provider'
+import { migrateOldComments } from '@/lib/plate/migrateOldComments'
+import { migrateOldSuggestions } from '@/lib/plate/migrateOldSuggestions'
+
+import { TCommentGeneric } from '@/types/plate-types'
 
 const useMyEditor = ({
 	content,
 	id = 'plate-editor',
-	discussions = [],
+	comments = [],
 }: {
+	comments?: TCommentGeneric[]
 	content: string
-	discussions?: TDiscussion[]
 	id?: string
 	simplified?: boolean
 }) => {
@@ -43,11 +42,12 @@ const useMyEditor = ({
 		me: { user: userData },
 	} = useProjectId()
 
-	if (content) {
-		console.log(JSON.parse(content))
-	}
+	const value = useMemo(
+		() => (content ? migrateOldSuggestions(JSON.parse(content) as Value) : ''),
+		[content]
+	)
+	const discussions = migrateOldComments(comments, value)
 
-	const value = content ? (JSON.parse(content) as Value) : ''
 	const editor = usePlateEditor(
 		{
 			plugins: [

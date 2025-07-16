@@ -75,7 +75,6 @@ const useStoryUploadHook = () => {
 	})
 
 	async function storyUpdate(body: Partial<TStory>) {
-		console.log({ body: body })
 		const resp = await fetchAPI<TNoParams, TIdParams, Partial<TStory>>({
 			method: 'PATCH',
 			url: API_URLS.PROJECT_UPDATE,
@@ -86,7 +85,6 @@ const useStoryUploadHook = () => {
 		if (resp.status !== 200) {
 			throw new Error('Invalid format')
 		}
-		console.log({ data: resp.data })
 		return resp.data
 	}
 
