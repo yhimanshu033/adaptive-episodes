@@ -1,12 +1,14 @@
 import React from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
+import { ImportLeftArrowFolderIcon } from '@/icons/import-left-folder-icon'
 import { MaintenanceIcon } from '@/icons/maintenance-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { useEpisodeStore } from '@/store/episode-store'
 
 import { Button } from '@/components/aural-ui/button'
 import { useDialogCleanup } from '@/components/aural-ui/dialog'
+import { Divider } from '@/components/aural-ui/divider'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -31,7 +33,7 @@ const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
 					Add
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="mr-8">
+			<DropdownMenuContent align="end">
 				<DropdownMenuItem
 					onClick={() => {
 						setIsInventOpen(true)
@@ -41,6 +43,9 @@ const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
 					<PlusIcon />
 					<span>Add new episode</span>
 				</DropdownMenuItem>
+				<div className="px-3">
+					<Divider variant="dashed" />
+				</div>
 				<DropdownMenuItem
 					onClick={() =>
 						handleEpisodeInfo({
@@ -57,7 +62,7 @@ const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
 						})
 					}
 				>
-					<PlusIcon />
+					<ImportLeftArrowFolderIcon />
 					<span>Import new episode</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>

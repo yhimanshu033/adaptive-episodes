@@ -14,6 +14,7 @@ import DiffEditor from './diff-editor'
 const EditorModes = ({ className }: { className?: string }) => {
 	const { store } = usePlateStore()
 	const { store: AiStore } = useAIStore()
+
 	const sidebar = store((state) => state.sidebar)
 	const { responseValue, prevValue } = AiStore(
 		useShallow((state) => ({
@@ -21,6 +22,7 @@ const EditorModes = ({ className }: { className?: string }) => {
 			prevValue: state.prevValue,
 		}))
 	)
+
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 	const isDiff = sidebar === ESidebar.CHATBOT && responseValue && prevValue
@@ -37,6 +39,7 @@ const EditorModes = ({ className }: { className?: string }) => {
 			autoFocus
 			variant="aural"
 			readOnly={!!simplifiedEditor}
+			className={className}
 		/>
 	)
 }

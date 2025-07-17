@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import useLaserStore from '@/store/laser-store'
-import { PlateLeaf, PlateLeafProps } from '@udecode/plate-common/react'
+import { PlateLeaf, PlateLeafProps } from 'platejs/react'
 
 import { cn } from '@/lib/utils/helpers'
 import { getParentWidth } from '@/lib/utils/plate'

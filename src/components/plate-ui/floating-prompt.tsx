@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react'
 import useLaserStore from '@/store/laser-store'
-import { TDescendant } from '@udecode/plate-common'
-import { useEditorRef } from '@udecode/plate-common/react'
 import { Send } from 'lucide-react'
 import { nanoid } from 'nanoid'
+import { Descendant } from 'platejs'
+import { useEditorRef } from 'platejs/react'
 
 import { Button } from '@/components/aural-ui/button'
 import Textarea from '@/components/aural-ui/textarea'
@@ -20,7 +20,7 @@ export default function FloatingPrompt() {
 	const [val, setVal] = React.useState<string>('')
 
 	const traverse = useCallback(
-		(node: TDescendant, intoLaser: boolean) => {
+		(node: Descendant, intoLaser: boolean) => {
 			if (!promptActive) {
 				return
 			}
@@ -40,7 +40,7 @@ export default function FloatingPrompt() {
 					setActiveLaser(key)
 				}
 			} else if ('children' in node) {
-				;(node.children as TDescendant[]).forEach((child) =>
+				;(node.children as Descendant[]).forEach((child) =>
 					traverse(child, intoLaser)
 				)
 			}
