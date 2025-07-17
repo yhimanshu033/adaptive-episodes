@@ -183,7 +183,7 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 											<FileUpload
 												defaultUrl={field.value}
 												onFileSelect={({ file }) => {
-													form.setValue('newImage', file)
+													form.setValue('newImage', file, { shouldDirty: true })
 												}}
 												classes={{
 													isDragging:
