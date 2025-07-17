@@ -210,7 +210,7 @@ const BlockCommentContent = ({
 				)}
 
 				<PopoverContent
-					className="max-h-[min(50dvh,calc(-24px+var(--radix-popper-available-height)))] w-[380px] max-w-[calc(100vw-24px)] min-w-[130px] overflow-y-auto p-0 data-[state=closed]:opacity-0"
+					className="bg-fm-neutral-200 max-h-[min(50dvh,calc(-24px+var(--radix-popper-available-height)))] w-[380px] max-w-[calc(100vw-24px)] min-w-[130px] overflow-y-auto p-0 data-[state=closed]:opacity-0"
 					onCloseAutoFocus={(e) => e.preventDefault()}
 					onOpenAutoFocus={(e) => e.preventDefault()}
 					align={anchorElement ? 'start' : 'end'}
@@ -262,7 +262,7 @@ const BlockCommentContent = ({
 						<PopoverTrigger asChild>
 							<Button
 								variant="ghost"
-								className="hover:bg-fm-button-stroke text-fm-icon-active disabled:text-fm-icon-inactive data-[active=true]:bg-fm-button-stroke mt-1 ml-1 flex h-6 gap-1 bg-transparent p-0 !px-1.5 py-0 opacity-100 disabled:bg-transparent"
+								className="hover:bg-fm-button-fill-secondary text-fm-icon-active disabled:text-fm-icon-inactive data-[active=true]:bg-fm-button-fill-secondary mt-1 ml-1 flex h-6 gap-1 bg-transparent p-0 !px-1.5 py-0 opacity-100 disabled:bg-transparent"
 								data-active={open}
 								contentEditable={false}
 							>
@@ -317,7 +317,7 @@ function BlockComment({
 				<CommentCreateForm discussionId={discussion.id} />
 			</div>
 
-			{!isLast && <div className="bg-muted h-px w-full" />}
+			{!isLast && <div className="bg-fm-surface-secondary h-px w-full" />}
 		</React.Fragment>
 	)
 }

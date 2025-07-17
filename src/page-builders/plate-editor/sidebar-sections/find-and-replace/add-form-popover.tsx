@@ -142,7 +142,7 @@ const AddFormPopover = ({
 				align="start"
 				side="left"
 				sideOffset={24}
-				className="w-auto min-w-80 px-5 pb-7 backdrop-blur-xs"
+				className="w-auto max-w-80 px-5 pb-7 backdrop-blur-xs"
 			>
 				<div className="border-fm-divider-primary mb-6 flex items-center justify-between gap-2 border-b border-dashed py-2">
 					<Typography

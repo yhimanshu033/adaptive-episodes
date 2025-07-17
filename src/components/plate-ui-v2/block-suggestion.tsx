@@ -292,7 +292,7 @@ export function BlockSuggestionCard({
 				<CommentCreateForm discussionId={suggestion.suggestionId} />
 			</div>
 
-			{!isLast && <div className="bg-muted h-px w-full" />}
+			{!isLast && <div className="bg-fm-surface-secondary h-px w-full" />}
 		</div>
 	)
 }

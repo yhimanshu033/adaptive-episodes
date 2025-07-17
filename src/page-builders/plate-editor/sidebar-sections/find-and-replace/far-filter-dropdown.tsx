@@ -46,7 +46,7 @@ const FarFilterDropdown = ({
 					shape="square"
 				/>
 			</PopoverTrigger>
-			<PopoverContent align="end" className="w-auto min-w-60 backdrop-blur-xs">
+			<PopoverContent align="end" className="w-auto max-w-60 backdrop-blur-xs">
 				<List className="bg-transparent">
 					{FAR_FILTER_OPTIONS.map(({ label, type, key }) => (
 						<ListItem key={key} className="py-0">
