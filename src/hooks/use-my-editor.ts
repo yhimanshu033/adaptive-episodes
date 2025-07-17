@@ -13,6 +13,7 @@ import { AutoformatKit } from '@/components/editor/plugins/autoformat-kit'
 import { BasicNodesKit } from '@/components/editor/plugins/basic-nodes-kit'
 import { BlockMenuKit } from '@/components/editor/plugins/block-menu-kit'
 import { CommentKit } from '@/components/editor/plugins/comment-kit'
+import { CursorOverlayKit } from '@/components/editor/plugins/cursor-overlay-kit'
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
 import { DndKit } from '@/components/editor/plugins/dnd-kit'
 import { DocxKit } from '@/components/editor/plugins/docx-kit'
@@ -33,6 +34,7 @@ import {
 import useProjectId from '@/providers/project-id-provider'
 import { migrateOldComments } from '@/lib/plate/migrateOldComments'
 import { migrateOldSuggestions } from '@/lib/plate/migrateOldSuggestions'
+import { breakDownValue } from '@/lib/utils/plate'
 
 import { TCommentGeneric } from '@/types/plate-types'
 
@@ -58,7 +60,7 @@ const useMyEditor = ({
 		try {
 			return migrateOldSuggestions(JSON.parse(content) as Value)
 		} catch {
-			return content
+			return breakDownValue(content)
 		}
 	}, [content])
 
@@ -98,9 +100,12 @@ const useMyEditor = ({
 				}),
 
 				// Editing
+				...DndKit,
+				...CursorOverlayKit,
 				...AutoformatKit,
 				...ExitBreakKit,
 				TrailingBlockPlugin,
+				...FindAndReplaceKit,
 
 				// UI
 				...FloatingToolbarKit,
@@ -116,9 +121,6 @@ const useMyEditor = ({
 				...AIKit,
 				...BlockMenuKit,
 				AIChatPlugin,
-
-				...DndKit,
-				...FindAndReplaceKit,
 			],
 			value,
 			id,

@@ -1,4 +1,5 @@
 import React from 'react'
+import { LOCAL_DIFF_EDITOR_ID } from '@/constants/editor-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useMyEditor from '@/hooks/use-my-editor'
 import useEpisodeIdStore from '@/store/episode-id-store'
@@ -28,7 +29,7 @@ export default function LocalDiffSection() {
 	)
 	const editor = useMyEditor({
 		content: content?.text || '',
-		id: 'local-diff',
+		id: LOCAL_DIFF_EDITOR_ID,
 		simplified: true,
 	})
 

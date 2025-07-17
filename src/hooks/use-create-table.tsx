@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { statuses, titleToStatusText } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
-import useParentLanguage from '@/hooks/use-parent-language'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import ChevronUpIcon from '@/icons/chevron-up-icon'
 import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
@@ -50,7 +49,7 @@ import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
 import { formatDate } from '@/lib/format-date'
 
-import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
+import { BASE_STATUS, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
 import useRenameTitleMutation from './mutation/use-rename-title'
@@ -81,8 +80,9 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 	const { mutate: renameTitle, isPending } = useRenameTitleMutation()
 
 	const { isWriter } = useProjectId()
-	const { parentLanguage } = useParentLanguage()
 	const { isGerman, isOriginal } = useAccessChecks()
+
+	console.log({ isGerman, isOriginal })
 
 	const handleRowSelection = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -166,7 +166,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				// @ts-expect-error type any
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const tagProps = statusTagProps[latestStatus]
-
+				console.log('checking', !(isGerman || isOriginal))
 				if (!(isGerman || isOriginal)) {
 					return null
 				}
@@ -388,9 +388,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				</div>
 			),
 		},
-		...(parentLanguage === ELanguage.GERMAN_ORIGINAL
-			? languageDependentColumns
-			: []),
+		...(isGerman || isOriginal ? languageDependentColumns : []),
 		{
 			accessorKey: EEpisodeHeaderKeys.UPDATE_TIME,
 			header: 'Last Updated',

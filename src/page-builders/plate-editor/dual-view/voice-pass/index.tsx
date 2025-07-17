@@ -88,7 +88,7 @@ export default function VoicePass({
 	}
 
 	return (
-		<div className="bg-fm-surface-primary relative">
+		<div className="bg-fm-surface-primary relative min-h-[calc(100vh-168px)]">
 			<CopyAll id={data} streamedData={finalData} />
 			<div className="grid *:[grid-area:1/-1]">
 				<div className="text-fm-tertiary flex flex-col px-18 py-14">

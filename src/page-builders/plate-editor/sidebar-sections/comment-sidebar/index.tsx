@@ -6,8 +6,14 @@ import { TickIcon } from '@/icons/tick-icon'
 import ResolvedCommentItem from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/resolved-comment'
 import SuggestionBlock from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
 import usePlateStore from '@/store/plate-store'
-import { BaseCommentsPlugin } from '@udecode/plate-comments'
-import { useEditorState } from '@udecode/plate-common/react'
+import { CommentPlugin } from '@platejs/comment/react'
+import { SuggestionPlugin } from '@platejs/suggestion/react'
+import {
+	useEditorPlugin,
+	useEditorRef,
+	useEditorState,
+	usePluginOption,
+} from 'platejs/react'
 
 import {
 	DropdownMenu,
@@ -18,6 +24,8 @@ import {
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/aural-ui/if-else'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import { commentPlugin } from '@/components/editor/plugins/comment-kit'
+import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
 import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
 import { cn } from '@/lib/aural-ui/utils'
 import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
@@ -29,17 +37,25 @@ import CommentCard from './comment-card'
 import EmptyState from './empty-state'
 
 export default function CommentSidebar() {
-	const editor = useEditorState()
-	const { get, sortedComments, activeCommentId, commentExists } = useComments()
-	const myUserId = get('myUserId')
-	const { getAllSuggestionDescriptions } = useSuggestions()
-	const descriptions = getAllSuggestionDescriptions(editor)
+	const editor = useEditorRef()
+	// const { get, sortedComments, activeCommentId, commentExists } = useComments()
+	const { setOption: setDiscussionOption, getOption: getDiscussionOption } =
+		useEditorPlugin(discussionPlugin)
+	const myUserId = getDiscussionOption('currentUserId')
+
+	const commentsApi = editor.getApi(CommentPlugin).comment
+	const suggestionApi = editor.getApi(SuggestionPlugin).suggestion
+
+	const commentNodes = [...commentsApi.nodes({ at: [] })]
+	const suggestionNodes = [...suggestionApi.nodes({ at: [] })]
+
+	const comments = 
 
 	const { resolvedComments } = useResolvedComments()
 
 	const setActiveComment = useCallback(
 		(comment: TCustomComment) => {
-			editor.setOption(BaseCommentsPlugin, 'activeCommentId', comment.id)
+			editor.setOption(CommentPlugin, 'activeCommentId', comment.id)
 		},
 		[editor]
 	)

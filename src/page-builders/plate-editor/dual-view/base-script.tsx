@@ -30,7 +30,7 @@ const BaseScript: React.FC = () => {
 			<Editor
 				readOnly
 				variant="aural"
-				className="bg-fm-surface-primary text-fm-tertiary px-0 py-14"
+				className="bg-fm-surface-primary text-fm-tertiary"
 			/>
 		</Plate>
 	)

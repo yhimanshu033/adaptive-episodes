@@ -43,7 +43,7 @@ export default function FloatingLaserBtns() {
 				{rephraseMethods.map((method, idx) => (
 					<div key={method.id}>
 						<DropdownMenuItem
-							className="[font-size:var(--text-fm-md)]"
+							className="cursor-pointer [font-size:var(--text-fm-md)]"
 							onClick={() => {
 								const children = structuredClone(editor.children)
 								let newChildren: Value = children

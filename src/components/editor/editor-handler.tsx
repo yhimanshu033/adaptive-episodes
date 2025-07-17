@@ -11,7 +11,7 @@ import { ESidebar } from '@/types/plate-types'
 
 import DiffEditor from './diff-editor'
 
-const EditorModes = ({ className }: { className?: string }) => {
+const EditorHandler = ({ className }: { className?: string }) => {
 	const { store } = usePlateStore()
 	const { store: AiStore } = useAIStore()
 
@@ -44,4 +44,4 @@ const EditorModes = ({ className }: { className?: string }) => {
 	)
 }
 
-export default EditorModes
+export default EditorHandler

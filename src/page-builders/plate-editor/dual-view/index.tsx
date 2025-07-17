@@ -45,7 +45,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			[EDualVIewMode.BASE_SCRIPT]: <BaseScript />,
 			[EDualVIewMode.PREV_EP]: <PreviousEpisode />,
 			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
-			// [EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
+			[EDualVIewMode.LOCAL_DIFF]: <LocalDiffSection />,
 			[EDualVIewMode.VOICE_PASS]: (
 				<VoicePass voiceMode={EChatMode.VOICE2_XML} />
 			),
