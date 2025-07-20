@@ -25,7 +25,7 @@ import LanguageSelector, {
 	LLMModelSelector,
 } from '@/components/plate-ui/language-selector'
 import useAdaptation from '@/providers/adaptation-provider'
-import { cn, getSourceLanguage } from '@/lib/utils/helpers'
+import { cn } from '@/lib/utils/helpers'
 
 import { ELanguage } from '@/types/common'
 
@@ -261,7 +261,7 @@ export default function AdaptationDialog({
 										{
 											inputls,
 											projectId: Number(id),
-											sourceLang: getSourceLanguage(currentLanguage),
+											sourceLang: currentLanguage || ELanguage.ENGLISH,
 											language:
 												(isEpisodeAdaptation
 													? selectedAdaptingLanguage

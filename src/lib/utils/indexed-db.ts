@@ -156,6 +156,16 @@ export const getValue = async (
 	return getData<SaveEpisodeParams>(STORE_NAME, key)
 }
 
+export const setRecentStore = async (key: string, value: unknown) => {
+	await setData(RECENT_STORE_NAME, key, value)
+}
+
+export const getRecentStore = async <T = unknown>(
+	key: string
+): Promise<T | undefined> => {
+	return getData<T>(RECENT_STORE_NAME, key)
+}
+
 export const getOpenedStories = async (): Promise<
 	TOpenedStories | undefined
 > => {

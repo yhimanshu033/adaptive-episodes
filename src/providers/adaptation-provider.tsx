@@ -4,6 +4,7 @@ import {
 	SOURCE_TO_TARGET_LANGUAGE_MAP,
 } from '@/constants/ai-constants'
 import { ELLMModel } from '@/constants/episodes-constants'
+import { INDEXED_DB_KEYS } from '@/constants/global-constants'
 import useAdaptationMutation from '@/hooks/mutation/use-adaptation-mutation'
 import AdaptationDialog from '@/page-builders/episodes/dialogs/adaptation-dialog'
 import ExitAdaptationDialog from '@/page-builders/episodes/dialogs/exit-adaptation-dialog'
@@ -12,6 +13,7 @@ import {
 	getSelectableLanguages,
 	parseInputLSMapping,
 } from '@/lib/utils/helpers'
+import { getRecentStore } from '@/lib/utils/indexed-db'
 
 import { ELanguage, LSMappingOutput, TSourceLanguage } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
@@ -28,7 +30,7 @@ function useAdaptationUtil() {
 	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
 	const [isFetchingLSSheet, setFetchingLSSheet] = useState<boolean>(false)
 	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
-	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.GEMINI)
+	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.HYBRID)
 	const [abort, setAbort] = useState(false)
 	const abortControllerRef = useRef<AbortController | null>(null)
 
@@ -145,6 +147,21 @@ function useAdaptationUtil() {
 			setAbort(false)
 		}
 	}, [abort])
+
+	useEffect(() => {
+		if (step !== 3) {
+			return
+		}
+		const fetchLlmModel = async () => {
+			const model =
+				(await getRecentStore<ELLMModel>(INDEXED_DB_KEYS.LLM_MODEL)) ||
+				ELLMModel.HYBRID
+			if (model) {
+				setLLMModel(model)
+			}
+		}
+		void fetchLlmModel()
+	}, [step])
 
 	return {
 		selectedRowData,

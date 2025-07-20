@@ -61,6 +61,5 @@ export const getStoryData = async (
 	if (!response.success) {
 		throw response.error
 	}
-
 	return response.data
 }

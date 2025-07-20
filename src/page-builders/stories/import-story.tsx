@@ -12,7 +12,7 @@ import {
 	storySteps,
 	switchableStepsInfo,
 } from '@/constants/episodes-constants'
-import { SAMPLE_DOC_LINK } from '@/constants/global-constants'
+import { INDEXED_DB_KEYS, SAMPLE_DOC_LINK } from '@/constants/global-constants'
 import { ACCEPTED_IMAGE_TYPES } from '@/constants/story-constants'
 import {
 	StoryImportFormSchema,
@@ -61,6 +61,7 @@ import SwitchCase, { Case } from '@/components/switch-case'
 import { cn } from '@/lib/aural-ui/utils'
 import { FetchResponseResult } from '@/lib/fetch-api'
 import { formatFileSize } from '@/lib/utils/helpers'
+import { setRecentStore } from '@/lib/utils/indexed-db'
 
 import { ELanguage } from '@/types/common'
 
@@ -237,12 +238,6 @@ export function ImportStory() {
 	}
 
 	const onSubmit = (data: StoryImportFormSchema) => {
-		if (
-			data.input_language === (ELanguage.ENGLISH as string) &&
-			data.run_adaptation
-		) {
-			data.input_language = ELanguage.ENGLISH_US
-		}
 		const proceed = nextStep()
 		if (proceed) {
 			storyUploadMutation.mutate(data, {
@@ -449,7 +444,13 @@ export function ImportStory() {
 															<FormControl>
 																<LLMModelSelector
 																	value={field.value as ELLMModel}
-																	onValueChange={field.onChange}
+																	onValueChange={(e) => {
+																		field.onChange(e)
+																		void setRecentStore(
+																			INDEXED_DB_KEYS.LLM_MODEL,
+																			e
+																		)
+																	}}
 																/>
 															</FormControl>
 															<FormMessage />

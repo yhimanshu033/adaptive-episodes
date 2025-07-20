@@ -206,6 +206,19 @@ export function extract(str: string) {
 	)
 }
 
+export function patchBrokenJson(jsonStr: string): string {
+	return jsonStr.replace(
+		/"match_string"\s*:\s*"(.*?)"}/g,
+		(match, p1: string) => {
+			if (p1.includes('"')) {
+				const safeValue = p1.replace(/"/g, '\\"')
+				return `"match_string": "${safeValue}"}`
+			}
+			return match
+		}
+	)
+}
+
 export function parseOptimistically<T>(input: string) {
 	if (!input || input.trim() === '') {
 		return null
@@ -218,6 +231,13 @@ export function parseOptimistically<T>(input: string) {
 		return parse(repaired) as T
 	} catch (e) {
 		console.log('Jsonrepair failed:', e)
+	}
+	try {
+		const patchedString = patchBrokenJson(cleanedInput)
+		const repaired = jsonrepair(patchedString)
+		return parse(repaired) as T
+	} catch (e) {
+		console.log('Patch broken JSON failed:', e)
 	}
 
 	// Needs to debug why this is not working
@@ -746,15 +766,6 @@ export function toSnakeCase(str: string): string {
 
 export function isUpperCase(str: string): boolean {
 	return str === str.toUpperCase()
-}
-
-export function getSourceLanguage(language?: ELanguage) {
-	const sourceLang = language || ELanguage.ENGLISH_US
-
-	if (sourceLang === ELanguage.ENGLISH) {
-		return ELanguage.ENGLISH_US
-	}
-	return sourceLang
 }
 
 export function extractWords(

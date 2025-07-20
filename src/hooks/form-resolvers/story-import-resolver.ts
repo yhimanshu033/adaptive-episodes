@@ -66,6 +66,6 @@ export const useStoryImportFormResolver = () =>
 			input_language: ELanguage.ENGLISH,
 			run_adaptation: false,
 			target_language: undefined,
-			llm_model: ELLMModel.GEMINI,
+			llm_model: ELLMModel.HYBRID,
 		},
 	})
