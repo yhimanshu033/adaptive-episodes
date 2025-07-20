@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react'
+import Image from 'next/image'
 import type {
 	SlateElementProps,
 	TCaptionProps,
@@ -21,12 +24,12 @@ export function ImageElementStatic(
 					className="relative max-w-full min-w-[92px]"
 					style={{ textAlign: align }}
 				>
-					<img
+					<Image
 						className={cn(
 							'w-full max-w-full cursor-default object-cover px-0',
 							'rounded-sm'
 						)}
-						alt={(props.attributes as any).alt}
+						alt={(props.attributes as any).alt as string}
 						src={url}
 					/>
 					{caption && (

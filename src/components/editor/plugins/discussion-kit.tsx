@@ -3,7 +3,6 @@
 import { nanoid, Value } from 'platejs'
 import { createPlatePlugin } from 'platejs/react'
 
-import { BlockDiscussion } from '@/components/plate-ui-v2/block-discussion'
 import { TComment } from '@/components/plate-ui-v2/comment'
 
 import { PlateUser } from '@/types/plate-types'

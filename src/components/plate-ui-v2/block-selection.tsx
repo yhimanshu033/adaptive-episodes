@@ -22,7 +22,7 @@ export const blockSelectionVariants = cva(
 )
 
 export function BlockSelection(props: PlateElementProps) {
-	const isBlockSelected = useBlockSelected()
+	const isBlockSelected = useBlockSelected() as boolean
 	const isDragging = usePluginOption(DndPlugin, 'isDragging')
 
 	if (

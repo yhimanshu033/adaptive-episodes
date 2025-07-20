@@ -91,7 +91,9 @@ function CodeBlockCombobox() {
 		[searchValue]
 	)
 
-	if (readOnly) return null
+	if (readOnly) {
+		return null
+	}
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>

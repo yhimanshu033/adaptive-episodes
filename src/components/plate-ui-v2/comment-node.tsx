@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
 import * as React from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
-import { getCommentCount } from '@platejs/comment'
 import type { TCommentText } from 'platejs'
 import type { PlateLeafProps } from 'platejs/react'
 import { PlateLeaf, useEditorPlugin, usePluginOption } from 'platejs/react'
@@ -16,14 +16,11 @@ export function CommentLeaf(props: PlateLeafProps<TCommentText>) {
 	const { children, leaf } = props
 
 	const { api, setOption } = useEditorPlugin(commentPlugin)
-	const hoverId = usePluginOption(commentPlugin, 'hoverId')
 	const activeId = usePluginOption(commentPlugin, 'activeId')
 	const discussions = useEditorPlugin(discussionPlugin).getOption('discussions')
 
-	const isOverlapping = getCommentCount(leaf) > 1
 	const currentId = api.comment.nodeId(leaf)
 	const isActive = activeId === currentId
-	const isHover = hoverId === currentId
 
 	const userId =
 		discussions.find((item) => item.id === currentId)?.userId ?? null

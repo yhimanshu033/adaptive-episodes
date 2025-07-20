@@ -19,8 +19,12 @@ import {
 	useSelected,
 } from 'platejs/react'
 
+import {
+	Popover,
+	PopoverAnchor,
+	PopoverContent,
+} from '@/components/aural-ui/popover'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 
 import { CaptionButton } from './caption'
@@ -59,7 +63,9 @@ export function MediaToolbar({
 	const element = useElement()
 	const { props: buttonProps } = useRemoveNodeButton({ element })
 
-	if (readOnly) return <>{children}</>
+	if (readOnly) {
+		return <>{children}</>
+	}
 
 	return (
 		<Popover open={isOpen} modal={false}>

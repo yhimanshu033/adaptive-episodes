@@ -47,7 +47,9 @@ export function ResizeHandle({
 	const state = useResizeHandleState(options ?? {})
 	const resizeHandle = useResizeHandle(state)
 
-	if (state.readOnly) return null
+	if (state.readOnly) {
+		return null
+	}
 
 	return (
 		<div

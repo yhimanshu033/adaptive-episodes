@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { createOpenAI } from '@ai-sdk/openai'

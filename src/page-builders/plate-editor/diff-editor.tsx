@@ -7,10 +7,10 @@ import { useDiffEditor } from '@/hooks/use-diff-editor'
 import usePlateStore from '@/store/plate-store'
 import { Plate, PlateEditor, useEditorState } from 'platejs/react'
 
-import { DiffViewProps } from '@/types/plate-types'
+import { DiffPlugin } from '@/components/editor/plugins/diff-kit'
+import { Editor } from '@/components/plate-ui-v2/editor'
 
-import { Editor } from '../plate-ui-v2/editor'
-import { DiffPlugin } from './plugins/diff-kit'
+import { DiffViewProps } from '@/types/plate-types'
 
 const DiffContent = ({ className }: { className?: string }) => {
 	const editor = useEditorState(DIFF_EDITOR_ID)

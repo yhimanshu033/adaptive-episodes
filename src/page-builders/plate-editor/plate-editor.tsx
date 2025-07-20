@@ -22,9 +22,12 @@ import { cn } from '@/lib/aural-ui/utils'
 import { EStatus } from '@/types/common'
 import { TGetEpisodeResponse } from '@/types/episode-type'
 
-import FloatingLaserResponse from '../plate-ui/floating-laser-response'
-import FloatingPrompt from '../plate-ui/floating-prompt'
-import { ResizablePanel, ResizablePanelGroup } from '../ui/resizable'
+import FloatingLaserResponse from '../../components/plate-ui/floating-laser-response'
+import FloatingPrompt from '../../components/plate-ui/floating-prompt'
+import {
+	ResizablePanel,
+	ResizablePanelGroup,
+} from '../../components/ui/resizable'
 import EditorHandler from './editor-handler'
 
 function MyEditor({

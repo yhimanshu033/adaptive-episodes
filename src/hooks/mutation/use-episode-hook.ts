@@ -23,7 +23,6 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
-import { TComment } from '@/components/plate-ui-v2/comment'
 import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'

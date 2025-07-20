@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useMounted } from '@/hooks/use-mounted'
 import { getMentionOnSelectItem } from '@platejs/mention'
 import type { TComboboxInputElement, TMentionElement } from 'platejs'
 import { IS_APPLE, KEYS } from 'platejs'
@@ -12,7 +13,6 @@ import {
 	useSelected,
 } from 'platejs/react'
 
-import { useMounted } from '@/components/use-mounted'
 import { cn } from '@/lib/utils/helpers'
 
 import {

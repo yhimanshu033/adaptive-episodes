@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
 import * as React from 'react'
@@ -192,7 +194,7 @@ export function AIMenu() {
 
 					{!isLoading && (
 						<CommandList className="rounded-none">
-							<AIMenuItems setValue={setValue} />
+							<AIMenuItems setValueAction={setValue} />
 						</CommandList>
 					)}
 				</Command>
@@ -450,9 +452,9 @@ const menuStateItems: Record<
 }
 
 export const AIMenuItems = ({
-	setValue,
+	setValueAction,
 }: {
-	setValue: (value: string) => void
+	setValueAction: (value: string) => void
 }) => {
 	const editor = useEditorRef()
 	const { messages } = usePluginOption(AIChatPlugin, 'chat')
@@ -475,9 +477,9 @@ export const AIMenuItems = ({
 
 	React.useEffect(() => {
 		if (menuGroups.length > 0 && menuGroups[0].items.length > 0) {
-			setValue(menuGroups[0].items[0].value)
+			setValueAction(menuGroups[0].items[0].value)
 		}
-	}, [menuGroups, setValue])
+	}, [menuGroups, setValueAction])
 
 	return (
 		<>

@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 'use client'
 
 import React from 'react'
@@ -30,7 +31,9 @@ const config: Record<
 }
 
 export const BlockList: RenderNodeWrapper = (props) => {
-	if (!props.element.listStyleType) return
+	if (!props.element.listStyleType) {
+		return
+	}
 
 	return (props) => <List {...props} />
 }

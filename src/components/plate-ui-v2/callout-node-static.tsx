@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import * as React from 'react'
 import type { SlateElementProps } from 'platejs'
 import { SlateElement } from 'platejs'

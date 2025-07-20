@@ -50,8 +50,6 @@ const useSuggestions = () => {
 		[suggestionsMap]
 	)
 
-	console.log(suggestions.length)
-
 	const debouncedSuggestions = useDebounce(suggestions, 300)
 
 	return {

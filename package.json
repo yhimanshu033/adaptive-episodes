@@ -12,8 +12,7 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --check src",
     "format:fix": "prettier --write src",
-    "commit": "git-cz",
-    "plate:sync": "npx tsx ./scripts/plate-sync.mts"
+    "commit": "git-cz"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.23",

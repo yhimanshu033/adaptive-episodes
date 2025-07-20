@@ -17,13 +17,10 @@ export function SuggestionLeaf(props: PlateLeafProps<TSuggestionText>) {
 	const leaf = props.leaf
 
 	const leafId: string = api.suggestion.nodeId(leaf) ?? ''
-	const activeSuggestionId = usePluginOption(suggestionPlugin, 'activeId')
-	const hoverSuggestionId = usePluginOption(suggestionPlugin, 'hoverId')
+
 	const dataList = api.suggestion.dataList(leaf)
 
 	const hasRemove = dataList.some((data) => data.type === 'remove')
-	const hasActive = dataList.some((data) => data.id === activeSuggestionId)
-	const hasHover = dataList.some((data) => data.id === hoverSuggestionId)
 
 	const diffOperation = { type: hasRemove ? 'delete' : 'insert' } as const
 

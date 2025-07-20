@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 'use client'
 
 import * as React from 'react'
@@ -171,7 +172,9 @@ function MediaUrlDialogContent({
 	const [url, setUrl] = React.useState('')
 
 	const embedMedia = React.useCallback(() => {
-		if (!isUrl(url)) return toast.error('Invalid URL')
+		if (!isUrl(url)) {
+			return toast.error('Invalid URL')
+		}
 
 		setOpen(false)
 		editor.tf.insertNodes({
@@ -201,7 +204,9 @@ function MediaUrlDialogContent({
 					value={url}
 					onChange={(e) => setUrl(e.target.value)}
 					onKeyDown={(e) => {
-						if (e.key === 'Enter') embedMedia()
+						if (e.key === 'Enter') {
+							embedMedia()
+						}
 					}}
 					placeholder=""
 					type="url"

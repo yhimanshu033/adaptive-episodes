@@ -14,11 +14,15 @@ import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers } from '@/lib/utils/plate'
 
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
-import { SaveEpisodeParams, TGetEpisodeResponse } from '@/types/episode-type'
+import {
+	SaveEpisodeParams,
+	TGetEpisodeResponse,
+	TSaveEpisodeParams,
+} from '@/types/episode-type'
 
 const SavingContext = React.createContext<
 	| {
-			handleSave: () => Promise<void>
+			handleSave: (params?: TSaveEpisodeParams) => Promise<void>
 			isPending: boolean
 			isSaved: boolean
 			lastSaved?: Date
@@ -43,8 +47,11 @@ export function SavingContextProvider({
 
 	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()
 
-	const { store: useEpisodeIdStoreContext, setCurrentTitle } =
-		useEpisodeIdStore()
+	const {
+		store: useEpisodeIdStoreContext,
+		setCurrentTitle,
+		setStartOverlayLoading,
+	} = useEpisodeIdStore()
 
 	const currentTitle = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
@@ -72,78 +79,93 @@ export function SavingContextProvider({
 		setIsSaved(newIsSaved)
 	}, [children, allComments, currentTitle, data?.chapter, forceSave])
 
-	const handleSave = useCallback(async () => {
-		if (!data?.chapter || (!forceSave && isSaved)) {
-			return
-		}
-
-		try {
-			const words = editorText.split(/\s+/)
-			const word_count = words.length
-			savedRef.current = JSON.stringify(children)
-			savedCommentsRef.current = JSON.stringify(allComments)
-			savedTitleRef.current = currentTitle
-			const clearedLaser = clearLasers(children)
-			const text = JSON.stringify(clearedLaser)
-			let status = data?.chapter.status || BASE_STATUS
-			const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
-			const chapterId = data?.chapter.id
-
-			const dataToSave: SaveEpisodeParams = {
-				projectId: Number(id),
-				status,
-				episodeId: Number(data?.chapter.parent || chapterId),
-				id: Number(chapterId),
-				text,
-				word_count,
-				language,
-				props: {
-					...data?.chapter.props,
-					comments: allComments,
-				},
-				chapter_title: currentTitle || data?.chapter.chapter_title,
+	const handleSave = useCallback(
+		async ({
+			forced = false,
+			startOverlayLoading = false,
+			stopOverlayLoading = false,
+		}: TSaveEpisodeParams = {}) => {
+			if (!data?.chapter || (!forced && isSaved)) {
+				return
 			}
 
-			void setValue(`${String(id)}_${String(chapterId)}`, dataToSave)
+			if (startOverlayLoading) {
+				setStartOverlayLoading(true)
+			}
 
-			if (language === ELanguage.GERMAN_ORIGINAL && status === BASE_STATUS) {
-				await statusUpdateMutation.mutateAsync({
-					parent_id: chapterId,
+			try {
+				const words = editorText.split(/\s+/)
+				const word_count = words.length
+				savedRef.current = JSON.stringify(children)
+				savedCommentsRef.current = JSON.stringify(allComments)
+				savedTitleRef.current = currentTitle
+				const clearedLaser = clearLasers(children)
+				const text = JSON.stringify(clearedLaser)
+				let status = data?.chapter.status || BASE_STATUS
+				const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
+				const chapterId = data?.chapter.id
+
+				const dataToSave: SaveEpisodeParams = {
+					projectId: Number(id),
 					status,
-					language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
+					episodeId: Number(data?.chapter.parent || chapterId),
+					id: Number(chapterId),
+					text,
+					word_count,
+					language,
+					props: {
+						...data?.chapter.props,
+						comments: allComments,
+					},
+					chapter_title: currentTitle || data?.chapter.chapter_title,
+				}
+
+				void setValue(`${String(id)}_${String(chapterId)}`, dataToSave)
+
+				if (language === ELanguage.GERMAN_ORIGINAL && status === BASE_STATUS) {
+					await statusUpdateMutation.mutateAsync({
+						parent_id: chapterId,
+						status,
+						language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
+					})
+					status = EStatus.FIRST_DRAFT
+				}
+
+				await saveEpisodeMutation.mutateAsync({
+					status,
+					chapterId,
+					text,
+					word_count,
+					comments: allComments,
+					prevProps: data?.chapter.props,
+					language,
+					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
-				status = EStatus.FIRST_DRAFT
+
+				setLastSaved(new Date())
+				setForceSave(false)
+				setIsSaved(true)
+			} catch (error) {
+				console.error(error)
+			} finally {
+				if (stopOverlayLoading) {
+					setStartOverlayLoading(false)
+				}
 			}
-
-			await saveEpisodeMutation.mutateAsync({
-				status,
-				chapterId,
-				text,
-				word_count,
-				comments: allComments,
-				prevProps: data?.chapter.props,
-				language,
-				chapter_title: currentTitle || data?.chapter.chapter_title,
-			})
-
-			setLastSaved(new Date())
-			setForceSave(false)
-			setIsSaved(true)
-		} catch (error) {
-			console.error(error)
-		}
-	}, [
-		data?.chapter,
-		forceSave,
-		isSaved,
-		editorText,
-		children,
-		allComments,
-		currentTitle,
-		id,
-		saveEpisodeMutation,
-		statusUpdateMutation,
-	])
+		},
+		[
+			data?.chapter,
+			isSaved,
+			setStartOverlayLoading,
+			editorText,
+			children,
+			allComments,
+			currentTitle,
+			id,
+			saveEpisodeMutation,
+			statusUpdateMutation,
+		]
+	)
 
 	const handleSaveGlobalStore = useCallback(() => {
 		if (!data?.chapter) {

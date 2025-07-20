@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import * as React from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
-import { useComments } from '@/hooks/plate/use-discussions'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CircleTickIcon } from '@/icons/circle-tick-icon'
 import { CopyIcon } from '@/icons/copy-icon'
@@ -21,14 +21,7 @@ import {
 	format,
 	formatDistance,
 } from 'date-fns'
-import {
-	ArrowUpIcon,
-	CheckIcon,
-	MoreHorizontalIcon,
-	PencilIcon,
-	TrashIcon,
-	XIcon,
-} from 'lucide-react'
+import { PencilIcon, TrashIcon } from 'lucide-react'
 import { KEYS, nanoid, NodeApi, type Value } from 'platejs'
 import type { CreatePlateEditorOptions } from 'platejs/react'
 import {
@@ -63,7 +56,6 @@ import { cn } from '@/lib/utils/helpers'
 import { resolveEditorComment } from '@/lib/utils/plate'
 
 import Badge from '../aural-ui/badge'
-import { buttonVariants } from '../aural-ui/button'
 import { Divider } from '../aural-ui/divider'
 import { IconButton } from '../aural-ui/icon-button'
 import { Else, If, IfElse } from '../aural-ui/if-else'
@@ -97,11 +89,9 @@ export function Comment(props: {
 	const {
 		comment,
 		discussionLength,
-		documentContent,
 		editingId,
 		index,
 		setEditingId,
-		showDocumentContent = false,
 		onEditorClick,
 		isResolved = false,
 	} = props
@@ -115,7 +105,7 @@ export function Comment(props: {
 	const { mutateAsync, data } = useCommentExampleHook(comment)
 	const { addActiveCommentExampleMap } = useAIStore()
 
-	const resolveDiscussion = async (id: string) => {
+	const resolveDiscussion = (id: string) => {
 		const updatedDiscussions = editor
 			.getOption(discussionPlugin, 'discussions')
 			.map((discussion) => {
@@ -127,14 +117,14 @@ export function Comment(props: {
 		editor.setOption(discussionPlugin, 'discussions', updatedDiscussions)
 	}
 
-	const removeDiscussion = async (id: string) => {
+	const removeDiscussion = (id: string) => {
 		const updatedDiscussions = editor
 			.getOption(discussionPlugin, 'discussions')
 			.filter((discussion) => discussion.id !== id)
 		editor.setOption(discussionPlugin, 'discussions', updatedDiscussions)
 	}
 
-	const updateComment = async (input: {
+	const updateComment = (input: {
 		contentRich: Value
 		discussionId: string
 		id: string
@@ -222,7 +212,6 @@ export function Comment(props: {
 	)
 
 	const isFirst = index === 0
-	const isLast = index === discussionLength - 1
 	const isReplyComment = index > 0
 	const replyCount = discussionLength - 1
 	const isEditing = editingId && editingId === comment.id
@@ -549,7 +538,7 @@ export function CommentCreateForm({
 		}
 	}, [commentEditor, focusOnMount])
 
-	const onAddComment = React.useCallback(async () => {
+	const onAddComment = React.useCallback(() => {
 		if (!commentValue) {
 			return
 		}

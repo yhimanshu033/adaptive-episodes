@@ -59,7 +59,9 @@ const headingDepth: Record<string, number> = {
 }
 
 const getHeadingList = (editor?: SlateEditor) => {
-	if (!editor) return []
+	if (!editor) {
+		return []
+	}
 
 	const options = editor.getOptions(BaseTocPlugin)
 
@@ -74,7 +76,9 @@ const getHeadingList = (editor?: SlateEditor) => {
 		match: (n) => isHeading(n),
 	})
 
-	if (!values) return []
+	if (!values) {
+		return []
+	}
 
 	Array.from(values, ([node, path]) => {
 		const { type } = node

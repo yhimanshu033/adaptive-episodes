@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
 import * as React from 'react'
@@ -70,11 +73,9 @@ import {
 import { Popover, PopoverContent } from '@/components/ui/popover'
 import { cn } from '@/lib/utils/helpers'
 
+import { DEFAULT_COLORS } from '../plate-ui/color-constants'
 import { blockSelectionVariants } from './block-selection'
-import {
-	ColorDropdownMenuItems,
-	DEFAULT_COLORS,
-} from './font-color-toolbar-button'
+import { ColorDropdownMenuItems } from './font-color-toolbar-button'
 import { ResizeHandle } from './resize-handle'
 import {
 	BorderAllIcon,
@@ -399,7 +400,7 @@ function ColorDropdownMenu({
 					<ColorDropdownMenuItems
 						className="px-2"
 						colors={DEFAULT_COLORS}
-						updateColor={onUpdateColor}
+						updateColorAction={onUpdateColor}
 					/>
 				</ToolbarMenuGroup>
 				<DropdownMenuGroup>
@@ -489,7 +490,9 @@ function RowDragHandle({ dragRef }: { dragRef: React.Ref<any> }) {
 function RowDropLine() {
 	const { dropLine } = useDropLine()
 
-	if (!dropLine) return null
+	if (!dropLine) {
+		return null
+	}
 
 	return (
 		<div

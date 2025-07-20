@@ -1,47 +1,37 @@
 'use client'
 
 import React from 'react'
-import { useSearchParams } from 'next/navigation'
-import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
+import dynamic from 'next/dynamic'
+import { useParams } from 'next/navigation'
+import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelton-loader'
 import EpisodeNavigation from '@/page-builders/plate-editor/episode-navigation'
-import GlobalLocalize from '@/page-builders/plate-editor/sidebar-sections/global-localize'
-import EditorChild from '@/page-builders/plate-editor/split-editor/editor-child'
-import useEditorExtendedStore from '@/store/extended-store'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { useShallow } from 'zustand/react/shallow'
+import { PlateController } from 'platejs/react'
 
-import { If } from '@/components/if-else'
 import { EpisodeIdProvider } from '@/providers/episode-id-provider'
 
-const EpisodePlateEditor = () => {
-	const { store: extendStore } = useEditorExtendedStore()
-	const extended = extendStore(useShallow((state) => state.extended))
-	const searchParams = useSearchParams()
-	const globalLocalize = searchParams.get(GLOBAL_LOCALIZE)
+const PlateEditor = dynamic(() => import('./plate-editor'), {
+	ssr: false,
+	loading: () => <EditorSkeletonLoader />,
+})
+
+export function Editor() {
+	const { episodeId } = useParams()
 
 	return (
 		<main className="flex flex-1 flex-col">
-			<DndProvider backend={HTML5Backend}>
-				<div className="max-auto container flex px-6">
-					<If condition={!globalLocalize}>
-						<EpisodeIdProvider key={extended[0]} episodeId={extended[0]}>
-							<EpisodeNavigation />
-						</EpisodeIdProvider>
-					</If>
-
-					<div className="relative w-full">
-						{extended.map((episodeId) => (
-							<EditorChild key={episodeId} episodeId={episodeId} />
-						))}
-					</div>
-					<If condition={!!globalLocalize}>
-						<GlobalLocalize />
-					</If>
+			<div className="container mx-auto flex px-6">
+				<EpisodeNavigation />
+				<div className="relative w-full">
+					<EpisodeIdProvider
+						key={String(episodeId)}
+						episodeId={Number(episodeId)}
+					>
+						<PlateController>
+							<PlateEditor />
+						</PlateController>
+					</EpisodeIdProvider>
 				</div>
-			</DndProvider>
+			</div>
 		</main>
 	)
 }
-
-export default EpisodePlateEditor

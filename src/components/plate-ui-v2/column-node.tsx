@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 'use client'
 
 import * as React from 'react'
@@ -21,8 +22,12 @@ import {
 	withHOC,
 } from 'platejs/react'
 
+import {
+	Popover,
+	PopoverAnchor,
+	PopoverContent,
+} from '@/components/aural-ui/popover'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import {
 	Tooltip,
@@ -115,7 +120,9 @@ const ColumnDragHandle = React.memo(function ColumnDragHandle() {
 function DropLine() {
 	const { dropLine } = useDropLine({ orientation: 'horizontal' })
 
-	if (!dropLine) return null
+	if (!dropLine) {
+		return null
+	}
 
 	return (
 		<div
@@ -157,7 +164,9 @@ function ColumnFloatingToolbar({ children }: React.PropsWithChildren) {
 		})
 	}
 
-	if (readOnly) return <>{children}</>
+	if (readOnly) {
+		return <>{children}</>
+	}
 
 	return (
 		<Popover open={isOpen} modal={false}>

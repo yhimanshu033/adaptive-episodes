@@ -26,7 +26,6 @@ import { LaserPromptKit } from '@/components/editor/plugins/laser-prompt-kit'
 import { LineHeightKit } from '@/components/editor/plugins/line-height-kit'
 import { MarkdownKit } from '@/components/editor/plugins/markdown-kit'
 import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
-import { BlockDiscussion } from '@/components/plate-ui-v2/block-discussion'
 import {
 	SuggestionLeaf,
 	SuggestionLineBreak,

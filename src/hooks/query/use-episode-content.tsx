@@ -8,22 +8,17 @@ import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
 import { useQuery } from '@tanstack/react-query'
-import { X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
-import { Button } from '@/components/ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
 import {
 	getAvailableLanguages,
 	getDisabledAvailableLanguages,
 	getEpisodeQueryResponseFromStoredData,
-	getSavedParamsFromEpisodeData,
 	getSelectedEpisode,
 	getSelectedEpisodeFromLanguage,
 } from '@/lib/utils/helpers'
-import { getValue, removeValue } from '@/lib/utils/indexed-db'
+import { getValue } from '@/lib/utils/indexed-db'
 
 // import {
 // 	breakDownValue,
@@ -83,7 +78,7 @@ export const useEpisodeContentUtil = () => {
 		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
 	}, [data, selectedLanguage, selectedStatus, isOriginal])
 
-	const dict = useTranslations('placeholders')
+	// const dict = useTranslations('placeholders')
 	const languages = useMemo(() => getAvailableLanguages(data), [data])
 	const disabledLanguages = useMemo(
 		() => getDisabledAvailableLanguages(data),
@@ -91,7 +86,7 @@ export const useEpisodeContentUtil = () => {
 	)
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
-	const { setDualViewMode } = useEpisodeIdStore()
+	// const { setDualViewMode } = useEpisodeIdStore()
 
 	const usedEpisodeId = useMemo(
 		() => (episode ? episode.id : episodeId),

@@ -1,12 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client'
 
 import * as React from 'react'
+import { useDebounce } from '@/hooks/use-debounce'
 import { EmojiInlineIndexSearch, insertEmoji } from '@platejs/emoji'
 import { EmojiPlugin } from '@platejs/emoji/react'
 import type { PlateElementProps } from 'platejs/react'
 import { PlateElement, usePluginOption } from 'platejs/react'
-
-import { useDebounce } from '@/components/use-debounce'
 
 import {
 	InlineCombobox,
@@ -25,7 +25,9 @@ export function EmojiInputElement(props: PlateElementProps) {
 	const isPending = value !== debouncedValue
 
 	const filteredEmojis = React.useMemo(() => {
-		if (debouncedValue.trim().length === 0) return []
+		if (debouncedValue.trim().length === 0) {
+			return []
+		}
 
 		return EmojiInlineIndexSearch.getInstance(data)
 			.search(debouncedValue.replace(/:$/, ''))

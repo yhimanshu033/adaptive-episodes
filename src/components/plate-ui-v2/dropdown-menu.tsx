@@ -238,6 +238,22 @@ function DropdownMenuSubContent({
 	)
 }
 
+const useOpenState = () => {
+	const [open, setOpen] = React.useState(false)
+
+	const onOpenChange = React.useCallback(
+		(_value = !open) => {
+			setOpen(_value)
+		},
+		[open]
+	)
+
+	return {
+		open,
+		onOpenChange,
+	}
+}
+
 export {
 	DropdownMenu,
 	DropdownMenuPortal,
@@ -254,4 +270,5 @@ export {
 	DropdownMenuSub,
 	DropdownMenuSubTrigger,
 	DropdownMenuSubContent,
+	useOpenState,
 }

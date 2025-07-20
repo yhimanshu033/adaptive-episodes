@@ -33,7 +33,7 @@ export default function FloatingPrompt() {
 				})
 				if (intoLaser) {
 					const key = `laser-id-${nanoid()}`
-					node[LaserPlugin.key] = true
+					node[LaserPlugin.key as string] = true
 					node[key] = true
 					node['laser-method-custom'] = true
 					node['laser-inserted-prompt'] = val.trim()

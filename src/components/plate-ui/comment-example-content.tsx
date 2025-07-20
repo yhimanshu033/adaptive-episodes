@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { AI_AVATAR } from '@/constants/editor-constants'
-import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { StopIcon } from '@/icons/stop-icon'
 import useAIStore from '@/store/ai-store'

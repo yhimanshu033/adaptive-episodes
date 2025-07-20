@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import * as React from 'react'
@@ -69,7 +71,9 @@ export const BlockDraggable: RenderNodeWrapper = (props) => {
 		return
 	}
 
-	return (props) => <Draggable {...props} />
+	const DraggableWrapper = (props: any) => <Draggable {...props} />
+	DraggableWrapper.displayName = 'DraggableWrapper'
+	return DraggableWrapper
 }
 
 function Draggable(props: PlateElementProps) {
@@ -160,13 +164,16 @@ function Draggable(props: PlateElementProps) {
 			)}
 
 			<div
-				ref={previewRef}
+				ref={previewRef as React.LegacyRef<HTMLDivElement>}
 				className={cn('absolute -left-0 hidden w-full')}
 				style={{ top: `${-previewTop}px` }}
 				contentEditable={false}
 			/>
 
-			<div ref={nodeRef} className="slate-blockWrapper flow-root">
+			<div
+				ref={nodeRef as React.LegacyRef<HTMLDivElement>}
+				className="slate-blockWrapper flow-root"
+			>
 				<MemoizedChildren>{children}</MemoizedChildren>
 				<DropLine />
 			</div>

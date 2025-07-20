@@ -196,7 +196,9 @@ const EquationPopoverContent = ({
 		}
 	}, [isInline, open, setOpen])
 
-	if (readOnly) return null
+	if (readOnly) {
+		return null
+	}
 
 	const onClose = () => {
 		setOpen(false)

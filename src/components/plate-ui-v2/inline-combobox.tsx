@@ -27,7 +27,7 @@ import { useComposedRef, useEditorRef } from 'platejs/react'
 import { cn } from '@/lib/utils/helpers'
 
 type FilterFn = (
-	item: { value: string; group?: string; keywords?: string[]; label?: string },
+	item: { group?: string; keywords?: string[]; label?: string; value: string },
 	search: string
 ) => boolean
 
@@ -36,9 +36,9 @@ interface InlineComboboxContextValue {
 	inputProps: UseComboboxInputResult['props']
 	inputRef: React.RefObject<HTMLInputElement | null>
 	removeInput: UseComboboxInputResult['removeInput']
+	setHasEmpty: (hasEmpty: boolean) => void
 	showTrigger: boolean
 	trigger: string
-	setHasEmpty: (hasEmpty: boolean) => void
 }
 
 const InlineComboboxContext = React.createContext<InlineComboboxContextValue>(
@@ -61,12 +61,12 @@ const defaultFilter: FilterFn = (
 interface InlineComboboxProps {
 	children: React.ReactNode
 	element: TElement
-	trigger: string
 	filter?: FilterFn | false
 	hideWhenNoValue?: boolean
-	showTrigger?: boolean
-	value?: string
 	setValue?: (value: string) => void
+	showTrigger?: boolean
+	trigger: string
+	value?: string
 }
 
 const InlineCombobox = ({
@@ -107,11 +107,15 @@ const InlineCombobox = ({
 	React.useEffect(() => {
 		const path = editor.api.findPath(element)
 
-		if (!path) return
+		if (!path) {
+			return
+		}
 
 		const point = editor.api.before(path)
 
-		if (!point) return
+		if (!point) {
+			return
+		}
 
 		const pointRef = editor.api.pointRef(point)
 		insertPoint.current = pointRef.current
@@ -313,7 +317,9 @@ const InlineComboboxItem = ({
 		[filter, group, keywords, label, value, search]
 	)
 
-	if (!visible) return null
+	if (!visible) {
+		return null
+	}
 
 	return (
 		<ComboboxItem
@@ -343,7 +349,9 @@ const InlineComboboxEmpty = ({
 		}
 	}, [setHasEmpty])
 
-	if (items.length > 0) return null
+	if (items.length > 0) {
+		return null
+	}
 
 	return (
 		<div

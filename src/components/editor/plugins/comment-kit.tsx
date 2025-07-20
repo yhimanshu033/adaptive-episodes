@@ -74,7 +74,6 @@ export const commentPlugin = toTPlatePlugin<CommentConfig>(BaseCommentPlugin, {
 	.extendTransforms(
 		({
 			editor,
-			api,
 			setOption,
 			tf: {
 				comment: { setDraft },

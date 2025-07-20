@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import * as React from 'react'
@@ -88,7 +90,6 @@ export function EmojiPopover({
 		</Popover.Root>
 	)
 }
-
 export function EmojiPicker({
 	clearSearch,
 	emoji,
@@ -269,7 +270,7 @@ function EmojiPickerContent({
 				return (
 					<div
 						key={categoryId}
-						ref={section.root}
+						ref={section.root as React.LegacyRef<HTMLDivElement>}
 						style={{ width: getRowWidth }}
 						data-id={categoryId}
 					>
@@ -336,7 +337,7 @@ function EmojiPickerContent({
 
 	return (
 		<div
-			ref={refs.current.contentRoot}
+			ref={refs.current.contentRoot as React.LegacyRef<HTMLDivElement>}
 			className={cn(
 				'h-full min-h-[50%] overflow-x-hidden overflow-y-auto px-2',
 				'[&::-webkit-scrollbar]:w-4',
@@ -346,7 +347,10 @@ function EmojiPickerContent({
 			)}
 			data-id="scroll"
 		>
-			<div ref={refs.current.content} className="h-full">
+			<div
+				ref={refs.current.content as React.LegacyRef<HTMLDivElement>}
+				className="h-full"
+			>
 				{isSearching ? SearchList() : EmojiList()}
 			</div>
 		</div>

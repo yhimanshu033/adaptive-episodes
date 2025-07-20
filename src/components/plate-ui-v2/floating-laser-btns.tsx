@@ -13,7 +13,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from '@/components/plate-ui/dropdown-menu'
+} from '@/components/aural-ui/dropdown'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { mergeBlocks } from '@/lib/utils/plate'
 

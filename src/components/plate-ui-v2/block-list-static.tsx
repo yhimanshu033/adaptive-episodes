@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import * as React from 'react'
 import { isOrderedList } from '@platejs/list'
 import { CheckIcon } from 'lucide-react'
@@ -23,7 +24,9 @@ const config: Record<
 }
 
 export const BlockListStatic: RenderStaticNodeWrapper = (props) => {
-	if (!props.element.listStyleType) return
+	if (!props.element.listStyleType) {
+		return
+	}
 
 	return (props) => <List {...props} />
 }
