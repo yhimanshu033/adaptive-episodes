@@ -4,11 +4,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
 import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/editor-constants'
-import { TSuggestionDescription } from '@platejs/suggestion'
-import { Descendant, Element, Text, Value } from 'platejs'
+import { getCommentKey } from '@platejs/comment'
+// Create a new file: src/lib/comment-helpers.ts
+import {
+	Descendant,
+	Element,
+	KEYS,
+	TCommentText,
+	Text,
+	TSuggestionText,
+	Value,
+} from 'platejs'
+import { PlateEditor } from 'platejs/react'
 import { type BaseRange, type Range } from 'slate'
 
-import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
+import { commentPlugin } from '@/components/editor/plugins/comment-kit'
+import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
+import { ResolvedSuggestion } from '@/components/plate-ui-v2/block-suggestion'
+
+import { TCustomComment } from '@/types/editor-types'
 import { Selection } from '@/types/plate-types'
 
 export function isSameBlock(selection: Selection): boolean {
@@ -520,54 +534,65 @@ export function getWordCountFromString(ogText: string) {
 	return getWordCount(val)
 }
 
-export function sortCommentsAndDescriptions(
-	nodes: Value,
-	comments: TCustomComment[],
-	descriptions: TSuggestionDescription[]
+export function sortCommentsAndSuggestions(
+	editor: PlateEditor,
+	unresolvedComments: TDiscussion[],
+	suggestions: ResolvedSuggestion[]
 ) {
-	const sortedRecords: Array<TReview> = []
-	const visitedIds = new Set<string>()
+	const orderedNodes = Array.from(
+		editor.api.nodes({
+			at: [],
+			match: (n: TSuggestionText | TCommentText) =>
+				n.text && ('comment' in n || 'suggestion' in n),
+			mode: 'all',
+		})
+	)
 
-	const commentMap = new Map(comments.map((c) => [c.id, c]))
-	const descriptionMap = new Map(descriptions.map((d) => [d.suggestionId, d]))
+	const commentMap = new Map(unresolvedComments.map((c) => [c.id, c]))
+	const suggestionMap = new Map(suggestions.map((s) => [s.suggestionId, s]))
 
-	function traverse(node: Descendant) {
+	const orderedItems: (TDiscussion | ResolvedSuggestion)[] = []
+	const seenIds = new Set<string>()
+
+	for (const [node] of orderedNodes) {
 		if ('comment' in node) {
-			const commentKey = Object.keys(node)
-				.find((key) => key.startsWith('comment_'))
-				?.replace('comment_', '')
+			const commentKeys = Object.keys(node).filter((key) =>
+				key.startsWith('comment_')
+			)
 
-			if (commentKey && !visitedIds.has(commentKey)) {
-				const comment = commentMap.get(commentKey)
-				if (comment) {
-					sortedRecords.push({ data: comment, type: EReviewType.COMMENT })
-					visitedIds.add(commentKey)
+			for (const key of commentKeys) {
+				const commentId = key.replace('comment_', '')
+
+				if (!seenIds.has(commentId)) {
+					const comment = commentMap.get(commentId)
+					if (comment) {
+						orderedItems.push(comment)
+						seenIds.add(commentId)
+					}
 				}
 			}
 		}
 
-		if ('suggestionId' in node) {
-			const suggestionKey = node.suggestionId as string
-			if (!visitedIds.has(suggestionKey)) {
-				const suggestion = descriptionMap.get(suggestionKey)
-				if (suggestion) {
-					sortedRecords.push({
-						data: suggestion,
-						type: EReviewType.DESCRIPTION,
-					})
-					visitedIds.add(suggestionKey)
+		if ('suggestion' in node) {
+			const suggestionKeys = Object.keys(node).filter((key) =>
+				key.startsWith('suggestion_')
+			)
+
+			for (const key of suggestionKeys) {
+				const suggestionId = key.replace('suggestion_', '')
+
+				if (!seenIds.has(suggestionId)) {
+					const suggestion = suggestionMap.get(suggestionId)
+					if (suggestion) {
+						orderedItems.push(suggestion)
+						seenIds.add(suggestionId)
+					}
 				}
 			}
-		}
-
-		if ('children' in node) {
-			;(node.children as Descendant[]).forEach(traverse)
 		}
 	}
 
-	nodes.forEach(traverse)
-
-	return sortedRecords
+	return orderedItems
 }
 
 export function getCommentNodeKey(node: Descendant) {
@@ -785,4 +810,73 @@ export const getParentWidth = (ref: React.RefObject<HTMLDivElement>) => {
 		blockAncestorRect,
 		blockAncestorClientX,
 	}
+}
+
+export const updateCommentMark = (
+	editor: PlateEditor,
+	options: {
+		add?: Record<string, any>
+		id: string
+		isResolved?: boolean
+		remove?: string[] // Flag to indicate if we're working with resolved comments
+	}
+) => {
+	const { id, add = {}, remove = [], isResolved = false } = options
+
+	let nodes: any[] = []
+
+	if (isResolved) {
+		nodes = [
+			...editor.api.nodes({
+				at: [],
+				match: (n) => {
+					return (
+						n.resolvedComment === true && n[`resolvedComment_${id}`] === true
+					)
+				},
+			}),
+		]
+	} else {
+		nodes = editor.getApi(commentPlugin).comment?.nodes({ id, at: [] }) || []
+	}
+
+	if (!nodes || nodes.length === 0) {
+		console.warn(`No nodes found for comment ID: ${id}`)
+		return
+	}
+
+	editor.tf.withoutNormalizing(() => {
+		nodes.forEach(([, path]) => {
+			if (Object.keys(add).length > 0) {
+				editor.tf.setNodes(add, { at: path })
+			}
+			if (remove.length > 0) {
+				editor.tf.unsetNodes(remove, { at: path })
+			}
+		})
+	})
+}
+
+export const resolveEditorComment = (editor: PlateEditor, id: string) => {
+	updateCommentMark(editor, {
+		id,
+		add: {
+			resolvedComment: true,
+			[`resolvedComment_${id}`]: true,
+		},
+		remove: [KEYS.comment, getCommentKey(id)],
+		isResolved: false,
+	})
+}
+
+export const unresolveEditorComment = (editor: PlateEditor, id: string) => {
+	updateCommentMark(editor, {
+		id,
+		add: {
+			[KEYS.comment]: true,
+			[getCommentKey(id)]: true,
+		},
+		remove: ['resolvedComment', `resolvedComment_${id}`],
+		isResolved: true,
+	})
 }

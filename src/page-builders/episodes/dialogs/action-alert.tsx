@@ -63,6 +63,7 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 					{alertInfo?.action && (
 						<Button
 							variant="secondary"
+							noise="low"
 							className="w-full"
 							onClick={() => {
 								void handleConfirm()

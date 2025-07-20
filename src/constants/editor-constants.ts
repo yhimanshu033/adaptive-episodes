@@ -7,6 +7,7 @@ import { HeadIcon } from '@/icons/head-icon'
 import { MusicalNoteIcon } from '@/icons/musical-note-icon'
 import { SuggestionIcon } from '@/icons/suggestion-icon'
 import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
+import { TResolvedSuggestion } from '@platejs/suggestion'
 import { LucideIcon } from 'lucide-react'
 
 import { EChatMode, TStoryChatSuggestion } from '@/types/ai-types'
@@ -53,15 +54,16 @@ export enum SuggestionActions {
 }
 
 export enum SuggestionTypes {
-	DELETION = 'deletion',
-	INSERTION = 'insertion',
-	REPLACEMENT = 'replacement',
+	DELETION = 'remove',
+	INSERTION = 'insert',
+	REPLACEMENT = 'replace',
 }
 
-export const SuggestionTypesMap: Record<SuggestionTypes, string> = {
-	deletion: 'Delete',
-	insertion: 'Add',
-	replacement: 'Replace',
+export const SuggestionTypesMap: Record<TResolvedSuggestion['type'], string> = {
+	remove: 'Delete',
+	insert: 'Add',
+	replace: 'Replace',
+	update: 'Update',
 }
 
 export enum EditorModes {

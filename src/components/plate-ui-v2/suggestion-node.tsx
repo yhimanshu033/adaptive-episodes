@@ -33,15 +33,15 @@ export function SuggestionLeaf(props: PlateLeafProps<TSuggestionText>) {
 
 	return (
 		<PlateLeaf
+			className={cn(
+				'text-fm-tag-emerald relative bg-transparent hover:bg-transparent',
+				leaf.suggestionDeletion &&
+					'text-fm-primary decoration-fm-emerald-300 border-fm-emerald-200 border-2 border-x-0 border-y line-through'
+			)}
 			{...props}
 			as={Component}
-			className={cn(
-				'bg-emerald-100 text-emerald-700 no-underline transition-colors duration-200',
-				(hasActive || hasHover) && 'bg-emerald-200/80',
-				hasRemove && 'bg-red-100 text-red-700',
-				(hasActive || hasHover) && hasRemove && 'bg-red-200/80 no-underline'
-			)}
 			attributes={{
+				id: `suggestion-leaf-${leafId}`,
 				...props.attributes,
 				onMouseEnter: () => setOption('hoverId', leafId),
 				onMouseLeave: () => setOption('hoverId', null),

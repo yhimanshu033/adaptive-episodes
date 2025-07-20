@@ -11,6 +11,8 @@ import { toTPlatePlugin } from 'platejs/react'
 
 import { CommentLeaf } from '@/components/plate-ui-v2/comment-node'
 
+import { discussionPlugin } from './discussion-kit'
+
 type CommentConfig = ExtendConfig<
 	BaseCommentConfig,
 	{
@@ -72,6 +74,7 @@ export const commentPlugin = toTPlatePlugin<CommentConfig>(BaseCommentPlugin, {
 	.extendTransforms(
 		({
 			editor,
+			api,
 			setOption,
 			tf: {
 				comment: { setDraft },
@@ -90,6 +93,12 @@ export const commentPlugin = toTPlatePlugin<CommentConfig>(BaseCommentPlugin, {
 			},
 		})
 	)
+	.extendSelectors(({ editor }) => ({
+		discussionById: (id: string) => {
+			const disucssions = editor.getOption(discussionPlugin, 'discussions')
+			return disucssions.find((discussion) => discussion.id === id)
+		},
+	}))
 	.configure({
 		node: { component: CommentLeaf },
 		shortcuts: {

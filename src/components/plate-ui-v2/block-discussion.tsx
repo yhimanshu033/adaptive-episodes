@@ -322,7 +322,7 @@ function BlockComment({
 	)
 }
 
-const useResolvedDiscussion = (
+export const useResolvedDiscussion = (
 	commentNodes: NodeEntry<TCommentText>[],
 	blockPath: Path
 ) => {

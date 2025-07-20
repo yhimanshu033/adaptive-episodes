@@ -1,89 +1,93 @@
 import React from 'react'
 import { roleToData } from '@/constants/global-constants'
-import useComments from '@/hooks/plate/use-comments'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CircleCrossIcon } from '@/icons/circle-cross-icon'
 import { CircleTickIcon } from '@/icons/circle-tick-icon'
 import { formatDistance } from 'date-fns'
+import { KEYS, NodeApi } from 'platejs'
+import { useEditorPlugin, usePluginOption } from 'platejs/react'
 import { toast } from 'sonner'
 
+import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from '@/components/aural-ui/avatar'
 import Badge from '@/components/aural-ui/badge'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
-import { CommentAvatar } from '@/components/plate-ui/comment-avatar'
+import {
+	discussionPlugin,
+	TDiscussion,
+} from '@/components/editor/plugins/discussion-kit'
 import { cn } from '@/lib/aural-ui/utils'
-import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
-import { getText } from '@/lib/utils/plate'
-
-import { TCustomComment } from '@/types/editor-types'
-import { PlateUser } from '@/types/plate-types'
+import { unresolveEditorComment } from '@/lib/utils/plate'
 
 export default function ResolvedCommentItem({
 	resolvedComment,
 }: {
-	resolvedComment: TCustomComment
+	resolvedComment: TDiscussion
 }) {
 	const {
-		activeResolvedCommentId,
-		getUser,
-		makeResolvedCommentActive,
-		removeResolvedComment,
-		deleteResolvedComment,
-	} = useResolvedComments()
+		editor,
+		getOption: getDiscussionOption,
+		setOption: setDiscussionOption,
+	} = useEditorPlugin(discussionPlugin)
+	const discussions = usePluginOption(discussionPlugin, 'discussions')
 
-	const { addComment } = useComments()
+	const userInfo = getDiscussionOption('user', resolvedComment.userId)
 
-	const user = getUser(resolvedComment?.userId) as PlateUser | undefined
+	const userTitle = userInfo.role ? roleToData[userInfo.role]?.title : ''
 
-	const userTitle = user ? roleToData[user.role]?.title : ''
+	const resolvedCommentText = NodeApi.string({
+		children: resolvedComment?.comments[0].contentRich ?? [],
+		type: KEYS.p,
+	})
 
 	function handleRestore() {
 		toast.success('Comment unresolved successfully.', {
 			icon: <BubbleCheckIcon />,
 		})
-		addComment(resolvedComment)
-		removeResolvedComment(resolvedComment)
+		setDiscussionOption(
+			'discussions',
+			discussions.map((discussion) =>
+				discussion.id === resolvedComment.id
+					? { ...discussion, isResolved: false }
+					: discussion
+			)
+		)
+		unresolveEditorComment(editor, resolvedComment.id)
 	}
 
 	function handleResolve() {
 		toast.success('Resolved comment accepted successfully.', {
 			icon: <BubbleCheckIcon />,
 		})
-		deleteResolvedComment(resolvedComment)
-	}
-
-	const handleResolvedCommentCardClick = () => {
-		makeResolvedCommentActive(resolvedComment.id)
-		const elem = document.getElementById(
-			'resolved-comment-leaf-' + resolvedComment.id
+		setDiscussionOption(
+			'discussions',
+			discussions.filter((discussion) => discussion.id !== resolvedComment.id)
 		)
-		if (!elem) {
-			return
-		}
-		elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
 	}
 
 	return (
 		<div
 			role="button"
-			onMouseDown={handleResolvedCommentCardClick}
 			className={cn(
-				'border-fm-divider-tertiary rounded-xs border bg-transparent p-4',
-				{
-					'border-fm-divider-secondary bg-fm-divider-secondary/15':
-						activeResolvedCommentId === resolvedComment.id,
-				}
+				'border-fm-divider-tertiary rounded-xs border bg-transparent p-4'
 			)}
 		>
 			<div className="space-y-3">
 				<div className="flex items-center justify-between gap-2">
 					<div className="flex items-center gap-2">
-						<CommentAvatar userId={resolvedComment?.userId} />
+						<Avatar className="size-8">
+							<AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
+							<AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
+						</Avatar>
 						<div className="flex flex-col">
 							<div className="flex gap-2">
 								<Typography color="primary" variant="body-small">
-									{user?.name}
+									{userInfo?.name}
 								</Typography>
 								<If condition={!!userTitle}>
 									<Badge size="xs">{userTitle}</Badge>
@@ -133,7 +137,7 @@ export default function ResolvedCommentItem({
 					color="tertiary"
 					variant="body-small"
 				>
-					{getText(resolvedComment.value)}
+					{resolvedCommentText}
 				</Typography>
 			</div>
 		</div>

@@ -1,35 +1,33 @@
-import React, { useEffect } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import useShowExampleVisibility from '@/store/comment-store'
-import {
-	CommentProvider,
-	SCOPE_ACTIVE_COMMENT,
-} from '@udecode/plate-comments/react'
+import { useEditorPlugin } from 'platejs/react'
 
 import { If } from '@/components/aural-ui/if-else'
-import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
-import { CommentItem } from '@/components/plate-ui/comment-item'
-import { CommentReplyItems } from '@/components/plate-ui/comment-reply-items'
+import { commentPlugin } from '@/components/editor/plugins/comment-kit'
+import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
+import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
+import { Comment, CommentCreateForm } from '@/components/plate-ui-v2/comment'
 import { cn } from '@/lib/utils/helpers'
 
-import { TCustomComment } from '@/types/editor-types'
-
 export default function CommentCard({
-	comment,
-	activeCommentId,
+	discussion,
+	activeId,
 	myUserId,
-	setActiveComment,
 }: {
-	activeCommentId: string | null
-	comment: TCustomComment
+	activeId: string | null
+	discussion: TDiscussion
 	myUserId: string | null
-	setActiveComment: (comment: TCustomComment) => void
 }) {
+	const [editingId, setEditingId] = useState<string | null>(null)
 	const ref = React.useRef<HTMLDivElement>(null)
-	const isVisible = useShowExampleVisibility((s) => s.isVisible(comment.id))
+	const isVisible = useShowExampleVisibility((s) => s.isVisible(discussion.id))
+	const { setOption } = useEditorPlugin(commentPlugin)
+	const { setOption: setSuggestionOption } = useEditorPlugin(suggestionPlugin)
 
 	const handleCommentCardClick = () => {
-		setActiveComment(comment)
-		const elem = document.getElementById('comment-leaf-' + comment.id)
+		setOption('activeId', discussion.id)
+		setSuggestionOption('activeId', null)
+		const elem = document.getElementById('comment-leaf-' + discussion.id)
 		if (!elem) {
 			return
 		}
@@ -37,18 +35,18 @@ export default function CommentCard({
 	}
 
 	useEffect(() => {
-		if (ref.current && activeCommentId === comment.id) {
+		if (ref.current && activeId === discussion.id) {
 			ref.current.scrollIntoView({
 				behavior: 'smooth',
 				block: 'nearest',
 			})
 		}
-	}, [ref, activeCommentId, comment.id])
+	}, [ref, activeId, discussion.id])
 
 	useEffect(() => {
 		if (isVisible) {
 			const placeholder = document.getElementById(
-				`example-placeholder-${comment.id}`
+				`example-placeholder-${discussion.id}`
 			)
 			if (placeholder) {
 				placeholder.scrollIntoView({
@@ -57,35 +55,46 @@ export default function CommentCard({
 				})
 			}
 		}
-	}, [isVisible, comment.id])
+	}, [isVisible, discussion.id])
 
 	return (
-		<CommentProvider
-			id={comment.id}
-			key={comment.id}
-			scope={SCOPE_ACTIVE_COMMENT}
+		<div
+			ref={ref}
+			role="button"
+			onMouseDown={handleCommentCardClick}
+			className={cn(
+				'border-fm-divider-tertiary hover:bg-fm-divider-secondary/10 cursor-pointer rounded-xs border bg-transparent p-4 transition-all duration-200',
+				{
+					'border-fm-divider-secondary bg-fm-divider-secondary/15 shadow-sm':
+						activeId === discussion.id,
+				}
+			)}
 		>
-			<div
-				ref={ref}
-				role="button"
-				onMouseDown={handleCommentCardClick}
-				className={cn(
-					'border-fm-divider-tertiary rounded-xs border bg-transparent p-4',
-					{
-						'border-fm-divider-secondary bg-fm-divider-secondary/15':
-							activeCommentId === comment.id,
+			<div className="space-y-3">
+				{discussion.comments.map((comment, index) => {
+					if (activeId !== discussion.id && index > 0) {
+						return null
 					}
-				)}
-			>
-				<CommentItem commentId={comment.id} />
-				<If condition={!!myUserId && activeCommentId === comment.id}>
-					<CommentReplyItems />
-					<If condition={!isVisible}>
-						<CommentCreateForm />
-					</If>
+					return (
+						<Comment
+							key={comment.id ?? index}
+							comment={comment}
+							setEditingId={setEditingId}
+							editingId={editingId}
+							index={index}
+							discussionLength={discussion.comments.length}
+							isResolved={discussion.isResolved}
+						/>
+					)
+				})}
+				<If condition={!!myUserId && activeId === discussion.id && !isVisible}>
+					<CommentCreateForm discussionId={discussion.id} />
 				</If>
-				<div id={`example-placeholder-${comment.id}`} className="mt-2" />
 			</div>
-		</CommentProvider>
+
+			<div id={`example-placeholder-${discussion.id}`} className="mt-2" />
+		</div>
 	)
 }
+
+export const MemoizedCommentCard = memo(CommentCard)

@@ -124,7 +124,8 @@ export function ChatbotProvider({
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
-	const { setOptions } = useEditorPlugin(discussionPlugin)
+	const { setOptions: setDiscussionOptions, getOption: getDiscussionOption } =
+		useEditorPlugin(discussionPlugin)
 
 	const changesPending = prevValue && value
 
@@ -139,6 +140,7 @@ export function ChatbotProvider({
 
 	const { data: aiResponse, isPending, reset } = aiChatbotMutation
 
+	const staleReviewIDRef = useRef<string[] | null>(null)
 	const commentsCount = useRef<number>(0)
 
 	const handleSendMessage = (e: React.FormEvent) => {
@@ -170,7 +172,7 @@ export function ChatbotProvider({
 			return
 		}
 
-		setOptions((draft) => {
+		setDiscussionOptions((draft) => {
 			draft.discussions ??= []
 			draft.discussions.push(value)
 		})
@@ -290,11 +292,26 @@ export function ChatbotProvider({
 				],
 			})
 		})
+		staleReviewIDRef.current = resp.comments.map((comment) => comment.id)
 		commentsCount.current = resp.comments.length
 		editor.tf.setValue(breakDownValue(resp.value))
 	}
 
+	function removeStaleReviews(staleReviewIDs: string[]) {
+		if (!staleReviewIDs || staleReviewIDs.length === 0) {
+			return
+		}
+		const currentDiscussions = getDiscussionOption('discussions')
+		const updatedDiscussions = currentDiscussions.filter(
+			(discussion) => !staleReviewIDs.includes(discussion.id)
+		)
+		setDiscussionOptions((draft) => {
+			draft.discussions = updatedDiscussions
+		})
+	}
+
 	function removeReview() {
+		staleReviewIDRef.current = null
 		if (!reviewStreaming || !responses[reviewStreaming]) {
 			return
 		}
@@ -417,6 +434,7 @@ export function ChatbotProvider({
 				messages.length - 1
 			)
 			setOriginalChildren(undefined)
+			staleReviewIDRef.current = null
 			return
 		}
 		if (!responses[reviewStreaming]) {
@@ -433,6 +451,9 @@ export function ChatbotProvider({
 
 			if (!parsedResponse || !parsedResponse.length) {
 				return
+			}
+			if (staleReviewIDRef.current && staleReviewIDRef.current.length > 0) {
+				removeStaleReviews(staleReviewIDRef.current)
 			}
 			addReview(parsedResponse)
 		} catch (error) {

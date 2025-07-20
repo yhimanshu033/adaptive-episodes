@@ -284,9 +284,15 @@ export function ToolbarGroup({
 	return (
 		<div className={cn('group/toolbar-group', 'relative flex', className)}>
 			{!noSeparator && (
-				<Divider orientation="vertical" variant="primary" {...seperatorProps} />
+				<Divider
+					orientation="vertical"
+					variant="secondary"
+					{...seperatorProps}
+				/>
 			)}
-			<div className="mx-1 flex items-center gap-1">{children}</div>
+			<div className="toolbar-group-content mx-1 flex items-center gap-1">
+				{children}
+			</div>
 		</div>
 	)
 }

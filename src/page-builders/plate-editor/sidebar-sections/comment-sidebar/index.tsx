@@ -1,19 +1,10 @@
-import React, { useCallback, useMemo } from 'react'
-import useComments from '@/hooks/plate/use-comments'
-import useSuggestions from '@/hooks/plate/use-suggestions'
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react'
+import { useComments, useSuggestions } from '@/hooks/plate/use-discussions'
 import { FilterBarRowIcon } from '@/icons/filter-bar-row-icon'
 import { TickIcon } from '@/icons/tick-icon'
-import ResolvedCommentItem from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/resolved-comment'
-import SuggestionBlock from '@/page-builders/plate-editor/sidebar-sections/comment-sidebar/suggestions'
 import usePlateStore from '@/store/plate-store'
-import { CommentPlugin } from '@platejs/comment/react'
-import { SuggestionPlugin } from '@platejs/suggestion/react'
-import {
-	useEditorPlugin,
-	useEditorRef,
-	useEditorState,
-	usePluginOption,
-} from 'platejs/react'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { useEditorRef } from 'platejs/react'
 
 import {
 	DropdownMenu,
@@ -24,102 +15,181 @@ import {
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/aural-ui/if-else'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
-import { commentPlugin } from '@/components/editor/plugins/comment-kit'
-import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
-import { CommentCreateForm } from '@/components/plate-ui/comment-create-form'
+import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
+import {
+	BlockSuggestionCard,
+	isResolvedSuggestion,
+	ResolvedSuggestion,
+} from '@/components/plate-ui-v2/block-suggestion'
+import { CommentCreateForm } from '@/components/plate-ui-v2/comment'
 import { cn } from '@/lib/aural-ui/utils'
-import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
-import { sortCommentsAndDescriptions } from '@/lib/utils/plate'
-
-import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
+import { sortCommentsAndSuggestions } from '@/lib/utils/plate'
 
 import CommentCard from './comment-card'
 import EmptyState from './empty-state'
+import ResolvedCommentItem from './resolved-comment'
+
+// Memoized components for better performance
+const MemoizedCommentCard = memo(CommentCard)
+const MemoizedBlockSuggestionCard = memo(BlockSuggestionCard)
 
 export default function CommentSidebar() {
 	const editor = useEditorRef()
-	// const { get, sortedComments, activeCommentId, commentExists } = useComments()
-	const { setOption: setDiscussionOption, getOption: getDiscussionOption } =
-		useEditorPlugin(discussionPlugin)
-	const myUserId = getDiscussionOption('currentUserId')
-
-	const commentsApi = editor.getApi(CommentPlugin).comment
-	const suggestionApi = editor.getApi(SuggestionPlugin).suggestion
-
-	const commentNodes = [...commentsApi.nodes({ at: [] })]
-	const suggestionNodes = [...suggestionApi.nodes({ at: [] })]
-
-	const comments = 
-
-	const { resolvedComments } = useResolvedComments()
-
-	const setActiveComment = useCallback(
-		(comment: TCustomComment) => {
-			editor.setOption(CommentPlugin, 'activeCommentId', comment.id)
-		},
-		[editor]
-	)
-
-	const unresolvedComments = [...sortedComments].filter(
-		(comment) => !comment.isResolved
-	)
+	const scrollAreaRef = useRef<HTMLDivElement>(null)
 
 	const { store, setResolved } = usePlateStore()
 	const showResolved = store((state) => state.resolved)
 
-	const commentsAndDescriptions: TReview[] = useMemo(
-		() =>
-			sortCommentsAndDescriptions(
-				editor.children,
-				unresolvedComments,
-				descriptions
-			),
-		[editor.children, unresolvedComments, descriptions]
+	const {
+		resolvedComments,
+		unresolvedComments,
+		activeCommentId,
+		isCommenting,
+		getDiscussionOption,
+	} = useComments()
+
+	const { suggestions, activeSuggestionId } = useSuggestions()
+
+	const myUserId = getDiscussionOption('currentUserId')
+	const currentActiveId = activeCommentId || activeSuggestionId
+
+	const commentsAndSuggestions = useMemo(
+		() => sortCommentsAndSuggestions(editor, unresolvedComments, suggestions),
+		[editor, unresolvedComments, suggestions]
 	)
 
-	const RenderReviews = useCallback(() => {
-		if (showResolved) {
-			if (resolvedComments.length === 0) {
+	const itemIndexMap = useMemo(() => {
+		const map = new Map<string, number>()
+
+		commentsAndSuggestions.forEach((item, index) => {
+			if (isResolvedSuggestion(item)) {
+				map.set(item.suggestionId, index)
+			} else {
+				map.set(item.id, index)
+			}
+		})
+
+		return map
+	}, [commentsAndSuggestions])
+
+	const items = showResolved ? resolvedComments : commentsAndSuggestions
+
+	const getScrollElement = useCallback(() => {
+		return scrollAreaRef.current?.querySelector(
+			'[data-radix-scroll-area-viewport]'
+		) as HTMLElement
+	}, [])
+
+	const virtualizer = useVirtualizer({
+		count: items.length,
+		getScrollElement,
+		estimateSize: () => 130,
+		measureElement: useCallback((element: Element) => {
+			return element.getBoundingClientRect().height
+		}, []),
+		overscan: items.length > 50 ? 5 : 2,
+	})
+
+	const renderItem = useCallback(
+		(item: TDiscussion | ResolvedSuggestion, index: number) => {
+			if (showResolved && !isResolvedSuggestion(item)) {
+				return <ResolvedCommentItem resolvedComment={item} />
+			}
+
+			if (!isResolvedSuggestion(item)) {
 				return (
-					<EmptyState description="No resolved comments yet. Once you resolve a comment, it will appear here" />
+					<MemoizedCommentCard
+						discussion={item}
+						activeId={activeCommentId}
+						myUserId={myUserId}
+					/>
 				)
 			}
-			return resolvedComments.map((item, idx) => (
-				<ResolvedCommentItem key={idx} resolvedComment={item} />
-			))
-		}
 
-		if (commentsAndDescriptions.length === 0) {
+			return (
+				<MemoizedBlockSuggestionCard
+					idx={index}
+					suggestion={item}
+					isLast={index === commentsAndSuggestions.length - 1}
+				/>
+			)
+		},
+		[activeCommentId, myUserId, commentsAndSuggestions.length, showResolved]
+	)
+
+	const VirtualizedList = useCallback(() => {
+		if (items.length === 0) {
+			const description = showResolved
+				? 'No resolved comments yet. Once you resolve a comment, it will appear here'
+				: 'No comments yet. Share your thoughts and start the conversation.'
+
 			return (
 				<EmptyState
-					description="No comments yet. Share your thoughts and start the conversation."
+					description={description}
 					classes={{ description: 'px-4' }}
 				/>
 			)
 		}
 
-		return commentsAndDescriptions.map((item, index) => {
-			if (item.type === EReviewType.COMMENT) {
-				return (
-					<CommentCard
-						key={index}
-						setActiveComment={setActiveComment}
-						comment={item.data}
-						activeCommentId={activeCommentId}
-						myUserId={myUserId}
-					/>
-				)
-			}
-			return <SuggestionBlock key={index} description={item.data} />
+		return (
+			<ScrollArea
+				ref={scrollAreaRef}
+				className="h-[calc(100vh-169px)]"
+				classes={{
+					viewport: 'max-h-full',
+				}}
+			>
+				<div className="p-4">
+					<div
+						style={{
+							height: `${virtualizer.getTotalSize()}px`,
+							width: '100%',
+							position: 'relative',
+						}}
+					>
+						{virtualizer.getVirtualItems().map((virtualItem) => {
+							const item = items[virtualItem.index]
+							if (!item) {
+								return null
+							}
+
+							return (
+								<div
+									key={virtualItem.key}
+									data-index={virtualItem.index}
+									ref={virtualizer.measureElement}
+									style={{
+										position: 'absolute',
+										top: 0,
+										left: 0,
+										width: '100%',
+										transform: `translateY(${virtualItem.start}px)`,
+									}}
+								>
+									<div className="pb-3">
+										{renderItem(item, virtualItem.index)}
+									</div>
+								</div>
+							)
+						})}
+					</div>
+				</div>
+			</ScrollArea>
+		)
+	}, [virtualizer, items, renderItem, showResolved])
+
+	useEffect(() => {
+		if (!currentActiveId || showResolved) {
+			return
+		}
+		const activeIndex = itemIndexMap.get(currentActiveId) ?? -1
+		if (activeIndex === -1) {
+			return
+		}
+		virtualizer.scrollToIndex(activeIndex, {
+			align: 'auto',
 		})
-	}, [
-		showResolved,
-		resolvedComments,
-		commentsAndDescriptions,
-		activeCommentId,
-		setActiveComment,
-		myUserId,
-	])
+	}, [currentActiveId, itemIndexMap, virtualizer, showResolved])
 
 	return (
 		<div className="bg-fm-surface-primary flex h-full flex-col">
@@ -152,19 +222,14 @@ export default function CommentSidebar() {
 				</DropdownMenuContent>
 			</DropdownMenu>
 
-			<ScrollArea
-				className="h-full"
-				classes={{
-					viewport: '[&>div]:min-h-full [&>div]:h-full',
-				}}
-			>
-				<div className="flex h-full flex-col gap-3 p-4">
-					<RenderReviews />
-					{!!myUserId && activeCommentId && !commentExists && (
-						<CommentCreateForm autoFocus />
-					)}
-				</div>
-			</ScrollArea>
+			<div className="relative flex h-full flex-col">
+				<VirtualizedList />
+				{!!myUserId && activeCommentId && isCommenting && (
+					<div className="bg-fm-surface-primary border-fm-divider-tertiary absolute inset-x-0 bottom-0 border-t p-4">
+						<CommentCreateForm focusOnMount />
+					</div>
+				)}
+			</div>
 		</div>
 	)
 }

@@ -82,8 +82,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 	const { isWriter } = useProjectId()
 	const { isGerman, isOriginal } = useAccessChecks()
 
-	console.log({ isGerman, isOriginal })
-
 	const handleRowSelection = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 		row: Row<TEpisode>
@@ -166,7 +164,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				// @ts-expect-error type any
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const tagProps = statusTagProps[latestStatus]
-				console.log('checking', !(isGerman || isOriginal))
 				if (!(isGerman || isOriginal)) {
 					return null
 				}

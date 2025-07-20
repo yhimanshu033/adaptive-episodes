@@ -1,45 +1,42 @@
-import React, { useEffect, useRef } from 'react'
+import React, { use, useEffect, useRef } from 'react'
 import {
 	SuggestionActions,
 	SuggestionTypes,
 	SuggestionTypesMap,
 } from '@/constants/editor-constants'
 import { roleToData } from '@/constants/global-constants'
-import useComments from '@/hooks/plate/use-comments'
+import { useComments } from '@/hooks/plate/use-discussions'
 import useSuggestions from '@/hooks/plate/use-suggestions'
 import { CrossIcon } from '@/icons/cross-icon'
 import { TickIcon } from '@/icons/tick-icon'
-import { useEditorPlugin } from '@udecode/plate-common/react'
-import { TSuggestionDescription } from '@udecode/plate-suggestion'
-import { SuggestionPlugin } from '@udecode/plate-suggestion/react'
+import { TSuggestionDescription } from '@platejs/suggestion'
+import { useEditorPlugin, useEditorRef, usePluginOption } from 'platejs/react'
 
 import Badge from '@/components/aural-ui/badge'
 import { Button } from '@/components/aural-ui/button'
 import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
+import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
+import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
+import { ResolvedSuggestion } from '@/components/plate-ui-v2/block-suggestion'
 import { SuggestionAvatar } from '@/components/plate-ui/suggestion-avatar'
 import { cn } from '@/lib/utils/helpers'
 
 import { PlateUser } from '@/types/plate-types'
 
 const SuggestionBlock = ({
-	description,
+	suggestion,
 }: {
-	description: TSuggestionDescription
+	suggestion: ResolvedSuggestion
 }) => {
-	const { useOption } = useEditorPlugin(SuggestionPlugin)
-	const { activeCommentId, set: setCommentOption } = useComments()
-	const user = useOption('suggestionUserById', description?.userId) as
-		| PlateUser
-		| undefined
+	const editor = useEditorRef()
+	const { activeCommentId, setDiscussionOption } = useComments()
+	const activeSuggestionId = usePluginOption(suggestionPlugin, 'activeId')
+	const user = editor.getOption(discussionPlugin, 'user', suggestion.userId)
 
-	const { suggestionAction, activeSuggestionId, set } = useSuggestions()
 	const ref = useRef<HTMLDivElement>(null)
 
-	const isActive = !activeCommentId
-		? description.suggestionId === activeSuggestionId
-		: null
-
+	const isActive = suggestion.suggestionId === activeSuggestionId
 	let suggestedText: string = ''
 
 	if (description?.type === SuggestionTypes.INSERTION) {

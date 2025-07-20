@@ -4,6 +4,10 @@
 'use client'
 
 import * as React from 'react'
+import { SuggestionTypesMap } from '@/constants/editor-constants'
+import { roleToData } from '@/constants/global-constants'
+import { CrossIcon } from '@/icons/cross-icon'
+import { TickIcon } from '@/icons/tick-icon'
 import type { TResolvedSuggestion } from '@platejs/suggestion'
 import {
 	acceptSuggestion,
@@ -11,8 +15,6 @@ import {
 	keyId2SuggestionId,
 	rejectSuggestion,
 } from '@platejs/suggestion'
-import { SuggestionPlugin } from '@platejs/suggestion/react'
-import { CheckIcon, XIcon } from 'lucide-react'
 import {
 	ElementApi,
 	KEYS,
@@ -31,20 +33,19 @@ import {
 	AvatarFallback,
 	AvatarImage,
 } from '@/components/aural-ui/avatar'
+import { Button } from '@/components/aural-ui/button'
 import {
 	discussionPlugin,
 	type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils/helpers'
+import { cn } from '@/lib/aural-ui/utils'
 
+import Badge from '../aural-ui/badge'
+import { If } from '../aural-ui/if-else'
+import { Typography } from '../aural-ui/typography'
+import { commentPlugin } from '../editor/plugins/comment-kit'
 import { suggestionPlugin } from '../editor/plugins/suggestion-kit'
-import {
-	Comment,
-	CommentCreateForm,
-	formatCommentDate,
-	type TComment,
-} from './comment'
+import { type TComment } from './comment'
 
 export interface ResolvedSuggestion extends TResolvedSuggestion {
 	comments: TComment[]
@@ -52,7 +53,7 @@ export interface ResolvedSuggestion extends TResolvedSuggestion {
 
 const BLOCK_SUGGESTION = '__block__'
 
-const TYPE_TEXT_MAP: Record<string, (node?: TElement) => string> = {
+export const TYPE_TEXT_MAP: Record<string, (node?: TElement) => string> = {
 	[KEYS.audio]: () => 'Audio',
 	[KEYS.blockquote]: () => 'Blockquote',
 	[KEYS.callout]: () => 'Callout',
@@ -99,7 +100,6 @@ export function BlockSuggestion({ element }: { element: TSuggestionElement }) {
 
 	return (
 		<div
-			id="himanshu"
 			className={cn(
 				'border-brand/[0.8] pointer-events-none absolute inset-0 z-1 border-2 transition-opacity',
 				isRemove && 'border-gray-300'
@@ -111,16 +111,23 @@ export function BlockSuggestion({ element }: { element: TSuggestionElement }) {
 
 export function BlockSuggestionCard({
 	idx,
-	isLast,
 	suggestion,
+	isPopover = false,
 }: {
 	idx: number
 	isLast: boolean
+	isPopover?: boolean
 	suggestion: ResolvedSuggestion
 }) {
-	const { api, editor } = useEditorPlugin(SuggestionPlugin)
+	const { api, editor, setOption } = useEditorPlugin(suggestionPlugin)
+	const { setOption: setCommentOption } = useEditorPlugin(commentPlugin)
 
 	const userInfo = usePluginOption(discussionPlugin, 'user', suggestion.userId)
+	const userTitle = userInfo?.role ? roleToData[userInfo.role]?.title : ''
+
+	const activeSuggestionId = usePluginOption(suggestionPlugin, 'activeId')
+
+	const isActive = suggestion.suggestionId === activeSuggestionId
 
 	const accept = (suggestion: ResolvedSuggestion) => {
 		api.suggestion.withoutSuggestions(() => {
@@ -134,8 +141,6 @@ export function BlockSuggestionCard({
 		})
 	}
 
-	const [hovering, setHovering] = React.useState(false)
-
 	const suggestionText2Array = (text: string) => {
 		if (text === BLOCK_SUGGESTION) {
 			return ['line breaks']
@@ -144,158 +149,127 @@ export function BlockSuggestionCard({
 		return text.split(BLOCK_SUGGESTION).filter(Boolean)
 	}
 
-	const [editingId, setEditingId] = React.useState<string | null>(null)
+	const suggestedText = React.useMemo(() => {
+		if (suggestion.type === 'remove') {
+			return (
+				suggestionText2Array(suggestion.text!)
+					.map((text) => `"${text}"`)
+					.join(', ') || ''
+			)
+		} else if (suggestion.type === 'insert') {
+			return (
+				suggestionText2Array(suggestion.newText!)
+					.map((text) => `"${text || 'line breaks'}"`)
+					.join(', ') || ''
+			)
+		} else if (suggestion.type === 'replace') {
+			const oldTexts = suggestionText2Array(suggestion.text!)
+				.map((text) => `"${text || 'line breaks'}"`)
+				.join(', ')
+			const newTexts = suggestionText2Array(suggestion.newText!)
+				.map((text) => `"${text || 'line breaks'}"`)
+				.join(', ')
+			return `${oldTexts} with ${newTexts}` || ''
+		} else if (suggestion.type === 'update') {
+			const oldProps = Object.keys(suggestion.properties)
+				.map((key) => `Un${key}`)
+				.join(', ')
+			const newProps = Object.keys(suggestion.newProperties)
+				.map((key) => key.charAt(0).toUpperCase() + key.slice(1))
+				.join(', ')
+			return `${oldProps} ${newProps} "${suggestion.newText}"` || ''
+		}
+		return ''
+	}, [suggestion])
 
 	return (
 		<div
 			key={`${suggestion.suggestionId}-${idx}`}
-			className="relative"
-			onMouseEnter={() => setHovering(true)}
-			onMouseLeave={() => setHovering(false)}
+			className={cn(
+				'border-fm-divider-tertiary relative rounded-xs border bg-transparent p-4',
+				{ 'border-fm-divider-secondary bg-fm-divider-secondary/15': isActive }
+			)}
+			onClick={() => {
+				setOption('activeId', suggestion.suggestionId)
+				setCommentOption('activeId', null)
+				const elem = document.getElementById(
+					'suggestion-leaf-' + suggestion.suggestionId
+				)
+				if (!elem) {
+					return
+				}
+				elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+			}}
 		>
-			<div className="flex flex-col p-4">
+			<div className="space-y-3">
 				<div className="relative flex items-center">
-					{/* Replace to your own backend or refer to potion */}
-					<Avatar className="size-5">
-						<AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
-						<AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
-					</Avatar>
-					<h4 className="mx-2 text-sm leading-none font-semibold">
-						{userInfo?.name}
-					</h4>
-					<div className="text-muted-foreground/80 text-xs leading-none">
-						<span className="mr-1">
-							{formatCommentDate(new Date(suggestion.createdAt))}
-						</span>
+					<div className="flex items-center gap-2">
+						<Avatar className="size-8">
+							<AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
+							<AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
+						</Avatar>
+						<div className="flex flex-col">
+							<div className="flex gap-2">
+								<Typography color="primary" variant="body-small">
+									{userInfo?.name}
+								</Typography>
+								<If condition={!!userTitle}>
+									<Badge size="xs">{userTitle}</Badge>
+								</If>
+							</div>
+						</div>
 					</div>
 				</div>
 
-				<div className="relative mt-1 mb-4 pl-[32px]">
-					<div className="flex flex-col gap-2">
-						{suggestion.type === 'remove' && (
-							<React.Fragment>
-								{suggestionText2Array(suggestion.text!).map((text, index) => (
-									<div key={index} className="flex items-center gap-2">
-										<span className="text-muted-foreground text-sm">
-											Delete:
-										</span>
-
-										<span key={index} className="text-sm">
-											{text}
-										</span>
-									</div>
-								))}
-							</React.Fragment>
-						)}
-
-						{suggestion.type === 'insert' && (
-							<React.Fragment>
-								{suggestionText2Array(suggestion.newText!).map(
-									(text, index) => (
-										<div key={index} className="flex items-center gap-2">
-											<span className="text-muted-foreground text-sm">
-												Add:
-											</span>
-
-											<span key={index} className="text-sm">
-												{text || 'line breaks'}
-											</span>
-										</div>
-									)
-								)}
-							</React.Fragment>
-						)}
-
-						{suggestion.type === 'replace' && (
-							<div className="flex flex-col gap-2">
-								{suggestionText2Array(suggestion.text!).map((text, index) => (
-									<React.Fragment key={index}>
-										<div key={index} className="flex items-start gap-2">
-											<span className="text-muted-foreground text-sm">
-												{index === 0 ? 'Replace:' : 'Delete:'}
-											</span>
-											<span className="text-fm-negative text-sm">
-												{text || 'line breaks'}
-											</span>
-										</div>
-									</React.Fragment>
-								))}
-
-								{suggestionText2Array(suggestion.newText!).map(
-									(text, index) => (
-										<React.Fragment key={index}>
-											<div key={index} className="flex items-start gap-2">
-												<span className="text-muted-foreground text-sm">
-													With:
-												</span>
-												<span className="text-fm-positive text-sm">
-													{text || 'line breaks'}
-												</span>
-											</div>
-										</React.Fragment>
-									)
-								)}
-							</div>
-						)}
-
-						{suggestion.type === 'update' && (
-							<div className="flex items-center gap-2">
-								<span className="text-muted-foreground text-sm">
-									{Object.keys(suggestion.properties).map((key) => (
-										<span key={key}>Un{key}</span>
-									))}
-
-									{Object.keys(suggestion.newProperties).map((key) => (
-										<span key={key}>
-											{key.charAt(0).toUpperCase() + key.slice(1)}
-										</span>
-									))}
-								</span>
-								<span className="text-sm">{suggestion.newText}</span>
-							</div>
-						)}
-					</div>
+				<div>
+					<Typography
+						as="span"
+						color="primary"
+						variant="body-small"
+						transform="uppercase"
+					>
+						{SuggestionTypesMap[suggestion.type]} :{' '}
+					</Typography>
+					<Typography
+						as="span"
+						className="break-words whitespace-pre-wrap"
+						color="tertiary"
+						variant="body-small"
+					>
+						{suggestedText}
+					</Typography>
 				</div>
 
-				{suggestion.comments.map((comment, index) => (
-					<Comment
-						key={comment.id ?? index}
-						comment={comment}
-						discussionLength={suggestion.comments.length}
-						documentContent="__suggestion__"
-						editingId={editingId}
-						index={index}
-						setEditingId={setEditingId}
-					/>
-				))}
-
-				{hovering && (
-					<div className="absolute top-4 right-4 flex gap-2">
-						<Button
-							variant="ghost"
-							className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent p-0 opacity-100 disabled:bg-transparent"
-							onClick={() => accept(suggestion)}
-						>
-							<CheckIcon className="size-4" />
-						</Button>
-
-						<Button
-							variant="ghost"
-							className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent p-0 opacity-100 disabled:bg-transparent"
-							onClick={() => reject(suggestion)}
-						>
-							<XIcon className="size-4" />
-						</Button>
-					</div>
-				)}
-
-				<CommentCreateForm discussionId={suggestion.suggestionId} />
+				<div className="item-center flex gap-2">
+					<Button
+						variant="outline"
+						onClick={() => reject(suggestion)}
+						className="w-full"
+						innerClassName={cn('h-9 border-fm-divider-secondary text-fm-sm', {
+							'border-fm-divider-primary': isPopover,
+						})}
+						leftIcon={<CrossIcon className="size-3 stroke-2" />}
+					>
+						Reject
+					</Button>
+					<Button
+						variant="outline"
+						onClick={() => accept(suggestion)}
+						leftIcon={<TickIcon className="size-4" />}
+						className="w-full"
+						innerClassName={cn('h-9 border-fm-divider-secondary text-fm-sm', {
+							'border-fm-divider-primary': isPopover,
+						})}
+					>
+						Accept
+					</Button>
+				</div>
 			</div>
-
-			{!isLast && <div className="bg-fm-surface-secondary h-px w-full" />}
 		</div>
 	)
 }
+
+export const MemoizedBlockSuggestionCard = React.memo(BlockSuggestionCard)
 
 export const useResolveSuggestion = (
 	suggestionNodes: NodeEntry<TElement | TSuggestionText>[],
@@ -305,6 +279,8 @@ export const useResolveSuggestion = (
 
 	const { api, editor, getOption, setOption } =
 		useEditorPlugin(suggestionPlugin)
+
+	const suggestionsMap = getOption('suggestionsMap')
 
 	suggestionNodes.forEach(([node]) => {
 		const id = api.suggestion.nodeId(node)
@@ -318,7 +294,11 @@ export const useResolveSuggestion = (
 
 		// If there are no suggestion nodes in the corresponding path in the map, then update it.
 		if (PathApi.isPath(previousPath)) {
-			const nodes = api.suggestion.node({ id, at: previousPath, isText: true })
+			const nodes = api.suggestion.node({
+				id,
+				at: previousPath,
+				isText: true,
+			})
 			const parentNode = api.node(previousPath)
 			let lineBreakId: string | null = null
 
@@ -536,6 +516,25 @@ export const useResolveSuggestion = (
 		getOption,
 		suggestionNodes,
 	])
+
+	const pathKey = blockPath.join('-')
+	const currentSuggestions = suggestionsMap.get(pathKey)
+
+	if (resolvedSuggestion.length === 0) {
+		if (currentSuggestions) {
+			const newSuggestionsMap = new Map(suggestionsMap)
+			newSuggestionsMap.delete(pathKey)
+			setOption('suggestionsMap', newSuggestionsMap)
+		}
+	} else if (
+		!currentSuggestions ||
+		JSON.stringify(currentSuggestions) !== JSON.stringify(resolvedSuggestion)
+	) {
+		setOption(
+			'suggestionsMap',
+			new Map(suggestionsMap).set(pathKey, resolvedSuggestion)
+		)
+	}
 
 	return resolvedSuggestion
 }

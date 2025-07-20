@@ -14,19 +14,21 @@ import {
 } from 'platejs'
 import { toTPlatePlugin } from 'platejs/react'
 
-import { BlockSuggestion } from '@/components/plate-ui-v2/block-suggestion'
+import {
+	BlockSuggestion,
+	ResolvedSuggestion,
+} from '@/components/plate-ui-v2/block-suggestion'
 import {
 	SuggestionLeaf,
 	SuggestionLineBreak,
 } from '@/components/plate-ui-v2/suggestion-node'
-
-import { discussionPlugin } from './discussion-kit'
 
 export type SuggestionConfig = ExtendConfig<
 	BaseSuggestionConfig,
 	{
 		activeId: string | null
 		hoverId: string | null
+		suggestionsMap: Map<string, ResolvedSuggestion[]>
 		uniquePathMap: Map<string, Path>
 	}
 >
@@ -84,6 +86,7 @@ export const suggestionPlugin = toTPlatePlugin<SuggestionConfig>(
 			currentUserId: '1',
 			hoverId: null,
 			uniquePathMap: new Map(),
+			suggestionsMap: new Map(),
 		},
 	}
 ).configure({

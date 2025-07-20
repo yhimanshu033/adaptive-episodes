@@ -6,16 +6,19 @@ import {
 } from '@/constants/ai-constants'
 import { CrossIcon } from '@/icons/cross-icon'
 import usePlateStore from '@/store/plate-store'
+import { useEditorPlugin } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { Tabs, TabsList, TabsTrigger } from '@/components/aural-ui/tabs'
+import { commentPlugin } from '@/components/editor/plugins/comment-kit'
 import ForEach from '@/components/ui/for-each'
 
 export default function SidebarTopBar() {
 	const { store: plateStore, setSidebar } = usePlateStore()
 	const sidebar = plateStore(useShallow((state) => state.sidebar))
+	const { setOption } = useEditorPlugin(commentPlugin)
 
 	if (!sidebar || HIDE_SIDEBAR_HEADER.includes(sidebar)) {
 		return null
@@ -48,7 +51,10 @@ export default function SidebarTopBar() {
 						<IconButton
 							label="Close Sidebar"
 							variant="ghost"
-							onClick={() => setSidebar(null)}
+							onClick={() => {
+								setSidebar(null)
+								setOption('activeId', null)
+							}}
 							shape="square"
 							size="small"
 							icon={<CrossIcon className="size-4" />}

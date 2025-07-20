@@ -56,9 +56,6 @@ export function SavingContextProvider({
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 	const [isSaved, setIsSaved] = React.useState(true)
-
-	console.log({ isSaved })
-
 	const pathname = usePathname()
 
 	useEffect(() => {

@@ -73,7 +73,7 @@ export const FloatingToolbar = React.forwardRef<
 				{...rootProps}
 				ref={ref}
 				className={cn(
-					'bg-fm-surface-secondary border-fm-divider-secondary rounded-fm-l absolute z-50 border whitespace-nowrap shadow-md backdrop-blur-md print:hidden',
+					'bg-fm-surface-secondary border-fm-divider-secondary rounded-fm-l absolute z-50 overflow-hidden border whitespace-nowrap shadow-md backdrop-blur-md print:hidden',
 					'max-w-[80vw]',
 					className
 				)}

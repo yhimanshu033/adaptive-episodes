@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { SuggestionUser } from '@udecode/plate-suggestion'
 
 import {
 	Avatar,
@@ -9,7 +8,9 @@ import {
 	AvatarImage,
 } from '@/components/aural-ui/avatar'
 
-export function SuggestionAvatar({ user }: { user: SuggestionUser | null }) {
+import { PlateUser } from '@/types/plate-types'
+
+export function SuggestionAvatar({ user }: { user: PlateUser | null }) {
 	if (!user) {
 		return null
 	}

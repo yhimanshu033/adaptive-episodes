@@ -8,6 +8,8 @@ import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 
 import { ExplorerType, Laser } from '@/types/ai-types'
 
+import { ERole } from './admin-types'
+
 export type Selection = {
 	anchor: {
 		offset: number
@@ -84,7 +86,25 @@ export type TNote = {
 	updateTime: string
 }
 
-export type PlateUser = SuggestionUser
+export type AuthenticatedUser = {
+	create_time: string
+	email: string
+	firebase_registration_token: string | null
+	firstname: string | null
+	fullname: string
+	google_drive_token: string | null
+	is_verified: boolean
+	lastname: string | null
+	login_type: string | null
+	phone_number: string | null
+	role: ERole
+	team: string
+	uid: string
+	update_time: string
+	username: string | null
+}
+
+export type PlateUser = SuggestionUser & Partial<AuthenticatedUser>
 
 export type PromptPosition = Pick<Laser, 'clientX' | 'clientY' | 'width'>
 

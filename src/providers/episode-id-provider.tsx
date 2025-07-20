@@ -14,7 +14,7 @@ import { EDualVIewMode, EpisodeIdStoreType } from '@/types/episode-type'
 import { ESidebar, LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
-	sidebar: ESidebar.CHATBOT,
+	sidebar: ESidebar.COMMENTS,
 	resolved: false,
 	scale: 1,
 	activeDiffId: null,

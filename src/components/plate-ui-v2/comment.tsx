@@ -2,6 +2,16 @@
 
 import * as React from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { roleToData } from '@/constants/global-constants'
+import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
+import { useComments } from '@/hooks/plate/use-discussions'
+import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
+import { CircleTickIcon } from '@/icons/circle-tick-icon'
+import { CopyIcon } from '@/icons/copy-icon'
+import { PageSearchIcon } from '@/icons/page-search-icon'
+import { PaperPlaneIcon } from '@/icons/paper-plane-icon'
+import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
+import useAIStore from '@/store/ai-store'
 import { getCommentKey, getDraftCommentKey } from '@platejs/comment'
 import { CommentPlugin, useCommentId } from '@platejs/comment/react'
 import {
@@ -9,6 +19,7 @@ import {
 	differenceInHours,
 	differenceInMinutes,
 	format,
+	formatDistance,
 } from 'date-fns'
 import {
 	ArrowUpIcon,
@@ -23,16 +34,19 @@ import type { CreatePlateEditorOptions } from 'platejs/react'
 import {
 	Plate,
 	useEditorPlugin,
+	useEditorReadOnly,
 	useEditorRef,
 	usePlateEditor,
 	usePluginOption,
 } from 'platejs/react'
+import { toast } from 'sonner'
 
 import {
 	Avatar,
 	AvatarFallback,
 	AvatarImage,
 } from '@/components/aural-ui/avatar'
+import { Button } from '@/components/aural-ui/button'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -45,9 +59,19 @@ import {
 	discussionPlugin,
 	type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/helpers'
+import { resolveEditorComment } from '@/lib/utils/plate'
 
+import Badge from '../aural-ui/badge'
+import { buttonVariants } from '../aural-ui/button'
+import { Divider } from '../aural-ui/divider'
+import { IconButton } from '../aural-ui/icon-button'
+import { Else, If, IfElse } from '../aural-ui/if-else'
+import Label from '../aural-ui/label'
+import { Typography } from '../aural-ui/typography'
+import { commentPlugin } from '../editor/plugins/comment-kit'
+import CommentExampleContent from '../plate-ui/comment-example-content'
+import CommentValue from './comment-value'
 import { Editor } from './editor'
 
 export interface TComment {
@@ -65,6 +89,7 @@ export function Comment(props: {
 	documentContent?: string
 	editingId: string | null
 	index: number
+	isResolved?: boolean
 	onEditorClick?: () => void
 	setEditingId: React.Dispatch<React.SetStateAction<string | null>>
 	showDocumentContent?: boolean
@@ -78,11 +103,17 @@ export function Comment(props: {
 		setEditingId,
 		showDocumentContent = false,
 		onEditorClick,
+		isResolved = false,
 	} = props
 
 	const editor = useEditorRef()
 	const userInfo = usePluginOption(discussionPlugin, 'user', comment.userId)
+	const userTitle = userInfo?.role ? roleToData[userInfo.role]?.title : ''
 	const currentUserId = usePluginOption(discussionPlugin, 'currentUserId')
+	const readOnly = useEditorReadOnly()
+	const activeCommentId = editor.getOption(commentPlugin, 'activeId')
+	const { mutateAsync, data } = useCommentExampleHook(comment)
+	const { addActiveCommentExampleMap } = useAIStore()
 
 	const resolveDiscussion = async (id: string) => {
 		const updatedDiscussions = editor
@@ -131,7 +162,7 @@ export function Comment(props: {
 		editor.setOption(discussionPlugin, 'discussions', updatedDiscussions)
 	}
 
-	const { tf } = useEditorPlugin(CommentPlugin)
+	const { tf } = useEditorPlugin(commentPlugin)
 
 	// Replace to your own backend or refer to potion
 	const isMyComment =
@@ -167,138 +198,180 @@ export function Comment(props: {
 
 	const onResolveComment = () => {
 		void resolveDiscussion(comment.discussionId)
-		tf.comment.unsetMark({ id: comment.discussionId })
+		resolveEditorComment(editor, comment.discussionId)
 	}
+
+	async function onExample() {
+		const taskId = await mutateAsync()
+		addActiveCommentExampleMap({ key: comment.id, value: taskId })
+	}
+
+	const handleCopy = (data: string | null) => {
+		if (!data) {
+			return
+		}
+		toast.success('Comment copied successfully.', {
+			icon: <BubbleCheckIcon />,
+		})
+		void navigator.clipboard.writeText(data)
+	}
+
+	const commentText = React.useMemo(
+		() => NodeApi.string({ children: comment.contentRich, type: KEYS.p }),
+		[comment.contentRich]
+	)
 
 	const isFirst = index === 0
 	const isLast = index === discussionLength - 1
+	const isReplyComment = index > 0
+	const replyCount = discussionLength - 1
 	const isEditing = editingId && editingId === comment.id
 
 	const [hovering, setHovering] = React.useState(false)
 	const [dropdownOpen, setDropdownOpen] = React.useState(false)
 
 	return (
-		<div
-			onMouseEnter={() => setHovering(true)}
-			onMouseLeave={() => setHovering(false)}
-		>
-			<div className="relative flex items-center">
-				<Avatar className="size-5">
-					<AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
-					<AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
-				</Avatar>
-				<h4 className="mx-2 text-sm leading-none font-semibold">
-					{/* Replace to your own backend or refer to potion */}
-					{userInfo?.name}
-				</h4>
-
-				<div className="text-muted-foreground/80 text-xs leading-none">
-					<span className="mr-1">
-						{formatCommentDate(new Date(comment.createdAt))}
-					</span>
-					{comment.isEdited && <span>(edited)</span>}
-				</div>
-
-				{isMyComment && (hovering || dropdownOpen) && (
-					<div className="absolute top-0 right-0 flex space-x-1">
-						{index === 0 && (
-							<Button
-								variant="ghost"
-								className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent p-0 opacity-100 disabled:bg-transparent"
-								onClick={onResolveComment}
-								type="button"
-							>
-								<CheckIcon className="size-4" />
-							</Button>
-						)}
-
-						<CommentMoreDropdown
-							onCloseAutoFocus={() => {
-								setTimeout(() => {
-									commentEditor.tf.focus({ edge: 'endEditor' })
-								}, 0)
-							}}
-							onRemoveComment={() => {
-								if (discussionLength === 1) {
-									tf.comment.unsetMark({ id: comment.discussionId })
-									void removeDiscussion(comment.discussionId)
-								}
-							}}
-							comment={comment}
-							dropdownOpen={dropdownOpen}
-							setDropdownOpen={setDropdownOpen}
-							setEditingId={setEditingId}
-						/>
-					</div>
-				)}
-			</div>
-
-			{isFirst && showDocumentContent && (
-				<div className="text-subtle-foreground relative mt-1 flex pl-[32px] text-sm">
-					{discussionLength > 1 && (
-						<div className="bg-muted absolute top-[5px] left-[9px] h-full w-0.5 shrink-0" />
-					)}
-					<div className="bg-highlight my-px w-0.5 shrink-0" />
-					{documentContent && <div className="ml-2">{documentContent}</div>}
-				</div>
-			)}
-
-			<div className="relative my-1 pl-[26px]">
-				{!isLast && (
-					<div className="bg-muted absolute top-0 left-[9px] h-full w-0.5 shrink-0" />
-				)}
-				<Plate readOnly={!isEditing} editor={commentEditor}>
-					<div className="relative w-full">
-						<Editor
-							variant="comment"
-							className={cn(
-								'placeholder:text-fm-placeholder font-fm-text text-fm-primary rounded-fm-s leading-fm-md block min-h-[25px] w-full grow border border-solid border-transparent py-2 pr-14 pl-2 [font-size:var(--text-fm-md)] tracking-wide ring-offset-transparent transition-all duration-200 focus:outline-none',
-								{
-									'focus:border-fm-divider-contrast border-fm-divider-primary':
-										isEditing,
-								}
-							)}
-							onClick={() => onEditorClick?.()}
-						/>
-
-						{isEditing && (
-							<div className="absolute top-1/2 right-1 ml-auto flex shrink-0 -translate-y-1/2 gap-1">
-								<Button
-									size="icon"
-									variant="ghost"
-									className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent opacity-100 disabled:bg-transparent"
-									onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-										e.stopPropagation()
-										void onCancel()
-									}}
-								>
-									<XIcon size={16} />
-								</Button>
-
-								<Button
-									size="icon"
-									variant="ghost"
-									className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent opacity-100 disabled:bg-transparent"
-									onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-										e.stopPropagation()
-										void onSave()
-									}}
-								>
-									<CheckIcon size={16} />
-								</Button>
+		<>
+			<If condition={isReplyComment}>
+				<Divider variant="secondary" className="mb-4" />
+			</If>
+			<div
+				onMouseEnter={() => setHovering(true)}
+				onMouseLeave={() => setHovering(false)}
+				className="space-y-3"
+				onClick={() => {
+					const elem = document.getElementById('comment-leaf-' + comment.id)
+					if (!elem) {
+						return
+					}
+					elem?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+				}}
+			>
+				<div className="group relative flex items-center justify-between gap-2">
+					<div className="flex items-center gap-2">
+						<Avatar className="size-8">
+							<AvatarImage alt={userInfo.name} src={userInfo.avatarUrl} />
+							<AvatarFallback>{userInfo.name?.[0]}</AvatarFallback>
+						</Avatar>
+						<div className="flex flex-col">
+							<div className="flex gap-2">
+								<Typography color="primary" variant="body-small">
+									{userInfo?.name}
+								</Typography>
+								<If condition={!!userTitle}>
+									<Badge size="xs">{userTitle}</Badge>
+								</If>
 							</div>
-						)}
+							<Typography variant="caption-medium" color="tertiary">
+								{formatDistance(comment.createdAt, Date.now())} ago
+							</Typography>
+						</div>
 					</div>
-				</Plate>
+
+					<If condition={!readOnly && isMyComment}>
+						<div className="flex items-center">
+							<If condition={isReplyComment && userInfo?.id === AI_USER_ID}>
+								<IconButton
+									label="copy button"
+									variant="ghost"
+									size="small"
+									onClick={() => handleCopy(commentText)}
+									className="hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity group-hover:opacity-100"
+									icon={<CopyIcon className="size-4 text-inherit" />}
+									shape="square"
+								/>
+							</If>
+							<If
+								condition={
+									!isResolved &&
+									((activeCommentId === comment.discussionId && isFirst) ||
+										hovering ||
+										dropdownOpen)
+								}
+							>
+								<CommentMoreDropdown
+									onCloseAutoFocus={() => {
+										setTimeout(() => {
+											commentEditor.tf.focus({ edge: 'endEditor' })
+										}, 0)
+									}}
+									onRemoveComment={() => {
+										if (discussionLength === 1) {
+											tf.comment.unsetMark({ id: comment.discussionId })
+											void removeDiscussion(comment.discussionId)
+										}
+									}}
+									comment={comment}
+									dropdownOpen={dropdownOpen}
+									setDropdownOpen={setDropdownOpen}
+									setEditingId={setEditingId}
+									onExample={() => void onExample()}
+									isReplyComment={isReplyComment}
+								/>
+							</If>
+
+							<If condition={!isReplyComment}>
+								<IconButton
+									label="Resolve"
+									variant="ghost"
+									onClick={onResolveComment}
+									className="hover:!text-fm-primary text-fm-icon-inactive p-2"
+									size="small"
+									icon={<CircleTickIcon className="size-4.5 text-inherit" />}
+									tooltip="Mark as Resolved"
+									tooltipContentProps={{
+										align: 'end',
+										side: 'bottom',
+									}}
+								/>
+							</If>
+						</div>
+					</If>
+				</div>
+
+				<div className="mb-4 pt-0.5">
+					<IfElse condition={!!isEditing}>
+						<If>
+							<Plate editor={commentEditor}>
+								<CommentValue
+									commentText={commentText}
+									isEditing={!!isEditing}
+									onCancel={onCancel}
+									onSave={onSave}
+									onEditorClick={onEditorClick}
+								/>
+							</Plate>
+						</If>
+						<Else>
+							<Typography
+								className="break-words whitespace-pre-wrap"
+								color="tertiary"
+								variant="body-small"
+							>
+								{commentText}
+							</Typography>
+						</Else>
+					</IfElse>
+				</div>
+				<CommentExampleContent comment={comment} data={data} />
+				<If
+					condition={replyCount > 0 && activeCommentId !== comment.discussionId}
+				>
+					<Label className="text-fm-secondary-800">
+						{replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}
+					</Label>
+				</If>
 			</div>
-		</div>
+		</>
 	)
 }
 
-function CommentMoreDropdown(props: {
+export function CommentMoreDropdown(props: {
 	comment: TComment
 	dropdownOpen: boolean
+	isReplyComment?: boolean
 	onCloseAutoFocus?: () => void
+	onExample?: () => void
 	onRemoveComment?: () => void
 	setDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
 	setEditingId: React.Dispatch<React.SetStateAction<string | null>>
@@ -310,6 +383,8 @@ function CommentMoreDropdown(props: {
 		setEditingId,
 		onCloseAutoFocus,
 		onRemoveComment,
+		isReplyComment = false,
+		onExample = () => {},
 	} = props
 
 	const editor = useEditorRef()
@@ -367,17 +442,17 @@ function CommentMoreDropdown(props: {
 			modal={false}
 		>
 			<DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-				<Button
+				<IconButton
+					label="Trigger dropdown"
 					variant="ghost"
+					icon={<VerticalMenuIcon className="size-4 text-inherit" />}
+					shape="square"
+					size="small"
 					className={cn(
-						'hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive size-6 bg-transparent p-0 opacity-80 hover:opacity-100 disabled:bg-transparent',
-						{
-							'bg-fm-button-shadow-secondary opacity-100': dropdownOpen,
-						}
+						'hover:!text-fm-primary text-fm-icon-inactive transition-opacity disabled:bg-transparent',
+						{ 'opacity-100': dropdownOpen }
 					)}
-				>
-					<MoreHorizontalIcon className="size-4" />
-				</Button>
+				/>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent
 				className="w-48"
@@ -406,6 +481,15 @@ function CommentMoreDropdown(props: {
 						<TrashIcon className="size-4" />
 						Delete comment
 					</DropdownMenuItem>
+					<If condition={!isReplyComment && comment.userId === AI_USER_ID}>
+						<DropdownMenuItem
+							onClick={onExample}
+							className="py-2 [font-size:var(--text-fm-md)]"
+						>
+							<PageSearchIcon className="size-4" />
+							Show Example
+						</DropdownMenuItem>
+					</If>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
@@ -448,11 +532,13 @@ export function CommentCreateForm({
 
 	const userInfo = usePluginOption(discussionPlugin, 'currentUser')
 	const [commentValue, setCommentValue] = React.useState<Value | undefined>()
-	const commentContent = React.useMemo(
+	const [focused, setFocused] = React.useState<boolean>(false)
+	const hasContent = React.useMemo(
 		() =>
 			commentValue
-				? NodeApi.string({ children: commentValue, type: KEYS.p })
-				: '',
+				? NodeApi.string({ children: commentValue, type: KEYS.p }).trim()
+						.length > 0
+				: false,
 		[commentValue]
 	)
 	const commentEditor = useCommentEditor()
@@ -575,51 +661,112 @@ export function CommentCreateForm({
 		})
 	}, [commentValue, commentEditor.tf, discussionId, editor, discussions])
 
-	return (
-		<div className={cn('flex w-full', className)}>
-			<div className="mt-2 mr-1 shrink-0">
-				{/* Replace to your own backend or refer to potion */}
-				<Avatar className="size-5">
-					<AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
-					<AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
-				</Avatar>
-			</div>
+	const resetActiveCommentId = () => {
+		editor.setOption(commentPlugin, 'activeId', null)
+	}
 
-			<div className="relative flex grow gap-2">
+	const handleCommentAdd = () => {
+		void onAddComment()
+		resetActiveCommentId()
+	}
+
+	const handleCancel = (forceCancel?: boolean) => {
+		if (!hasContent || forceCancel) {
+			editor.tf.unsetNodes(getDraftCommentKey(), {
+				at: [],
+				mode: 'lowest',
+				match: (n) => n[getDraftCommentKey()],
+			})
+			resetActiveCommentId()
+		}
+	}
+
+	const handleBlur = () => {
+		setFocused(false)
+		handleCancel()
+	}
+
+	return (
+		<div className={cn('flex w-full items-center gap-2', className)}>
+			<If condition={!discussionIdProp}>
+				<div className="shrink-0">
+					{/* Replace to your own backend or refer to potion */}
+					<Avatar className="size-8">
+						<AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
+						<AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
+					</Avatar>
+				</div>
+			</If>
+
+			<div
+				className={cn(
+					'border-fm-divider-primary bg-fm-surface-frosted/20 rounded-fm-s relative flex grow flex-col overflow-hidden border py-2 transition-all duration-300 ease-in-out',
+					{
+						'border-fm-divider-contrast': focused,
+						'gap-2 pb-1': hasContent,
+					}
+				)}
+			>
 				<Plate
 					onChange={({ value }) => {
 						setCommentValue(value)
 					}}
 					editor={commentEditor}
 				>
-					<div className="relative w-full">
-						<Editor
-							variant="comment"
-							className="placeholder:text-fm-placeholder font-fm-text text-fm-primary border-fm-divider-primary focus:border-fm-divider-contrast rounded-fm-s leading-fm-md block min-h-[25px] w-full grow border border-solid py-2 pr-8 pl-2 [font-size:var(--text-fm-md)] tracking-wide ring-offset-transparent transition-all duration-200 focus:outline-none"
-							onKeyDown={(e) => {
-								if (e.key === 'Enter' && !e.shiftKey) {
-									e.preventDefault()
-									onAddComment()
-								}
-							}}
-							placeholder="Reply..."
-							autoComplete="off"
-							autoFocus={autoFocus}
-						/>
-
-						<Button
-							size="icon"
-							variant="ghost"
-							className="hover:bg-fm-button-shadow-secondary text-fm-icon-active disabled:text-fm-icon-inactive absolute top-1/2 right-1 ml-auto size-6 shrink-0 -translate-y-1/2 bg-transparent opacity-100 disabled:bg-transparent"
-							disabled={commentContent.trim().length === 0}
-							onClick={(e) => {
-								e.stopPropagation()
-								onAddComment()
-							}}
-						>
-							<ArrowUpIcon size={16} />
-						</Button>
+					<Editor
+						variant="comment"
+						className="placeholder:text-fm-tertiary w-full resize-none border-none px-3 text-sm outline-none placeholder:text-sm"
+						onKeyDown={(e) => {
+							if (e.key === 'Enter' && !e.shiftKey) {
+								e.preventDefault()
+								handleCommentAdd()
+							}
+						}}
+						onFocus={() => setFocused(true)}
+						placeholder="Reply..."
+						autoComplete="off"
+						autoFocus={autoFocus}
+						onBlur={handleBlur}
+					/>
+					<div
+						className={cn(
+							'max-h-0 overflow-hidden px-3 opacity-0 transition-all duration-300 ease-in-out',
+							{ 'max-h-10 opacity-100': hasContent }
+						)}
+					>
+						<div className="flex flex-col gap-1">
+							<Divider />
+							<div className="flex items-center justify-end">
+								<Button
+									onClick={() => handleCancel(true)}
+									variant="text"
+									className="text-fm-primary"
+									innerClassName="translate-none"
+									size="sm"
+								>
+									Cancel
+								</Button>
+								<Button
+									disabled={!hasContent}
+									variant="text"
+									innerClassName="translate-none"
+									size="sm"
+									onClick={(e) => {
+										e.stopPropagation()
+										handleCommentAdd()
+									}}
+								>
+									Comment
+								</Button>
+							</div>
+						</div>
 					</div>
+					<PaperPlaneIcon
+						className={cn(
+							'text-fm-icon-inactive absolute top-2 right-3 size-4.5 opacity-100 transition-opacity duration-300',
+							{ 'opacity-0': hasContent }
+						)}
+					/>
 				</Plate>
 			</div>
 		</div>

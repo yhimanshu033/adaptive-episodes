@@ -31,6 +31,7 @@ import {
 	SuggestionLeaf,
 	SuggestionLineBreak,
 } from '@/components/plate-ui-v2/suggestion-node'
+import { SuggestionRenderer } from '@/components/plate-ui-v2/suggestion-renderer'
 import useProjectId from '@/providers/project-id-provider'
 import { migrateOldComments } from '@/lib/plate/migrateOldComments'
 import { migrateOldSuggestions } from '@/lib/plate/migrateOldSuggestions'
@@ -85,7 +86,7 @@ const useMyEditor = ({
 						users,
 					},
 					render: {
-						aboveNodes: BlockDiscussion,
+						aboveNodes: SuggestionRenderer,
 					},
 				}),
 				...CommentKit,

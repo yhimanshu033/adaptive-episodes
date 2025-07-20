@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { PaintRollIcon } from '@/icons/paint-roll-icon'
-import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import { TextColorIcon } from '@/icons/text-color-icon'
 import { BoldIcon, ItalicIcon, UnderlineIcon } from 'lucide-react'
 import { KEYS } from 'platejs'
@@ -15,7 +14,6 @@ import { MarkToolbarButton } from '@/components/plate-ui-v2/mark-toolbar-button'
 import { ToolbarGroup } from '@/components/plate-ui-v2/toolbar'
 import { TurnIntoToolbarButton } from '@/components/plate-ui-v2/turn-into-toolbar-button'
 
-import { AIToolbarButton } from './ai-toolbar-button'
 import FloatingLaserBtns from './floating-laser-btns'
 import { SuggestionToolbarButton } from './suggestion-toolbar-button'
 
@@ -36,7 +34,11 @@ export function FloatingToolbarButtons() {
 				/>
 			</ToolbarGroup>
 
-			<ToolbarGroup>
+			<ToolbarGroup
+				seperatorProps={{
+					variant: 'primary',
+				}}
+			>
 				<MarkToolbarButton
 					nodeType={KEYS.bold}
 					tooltip="Bold (⌘+B)"
@@ -81,16 +83,6 @@ export function FloatingToolbarButtons() {
 					<PaintRollIcon className={iconVariants({ variant: 'toolbar' })} />
 				</FontColorToolbarButton>
 			</ToolbarGroup>
-
-			{/* <ToolbarGroup
-				seperatorProps={{
-					variant: 'primary',
-				}}
-			>
-				<AIToolbarButton tooltip="Laser (⌘+B)" size="floating">
-					<SparklesSoftIcon className="text-fm-secondary-800" />
-				</AIToolbarButton>
-			</ToolbarGroup> */}
 
 			<ToolbarGroup
 				seperatorProps={{

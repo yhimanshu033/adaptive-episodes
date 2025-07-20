@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { AI_USER_ID } from '@/constants/ai-constants'
 import { getCommentCount } from '@platejs/comment'
 import type { TCommentText } from 'platejs'
 import type { PlateLeafProps } from 'platejs/react'
@@ -9,31 +10,43 @@ import { PlateLeaf, useEditorPlugin, usePluginOption } from 'platejs/react'
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
 import { cn } from '@/lib/utils/helpers'
 
+import { discussionPlugin } from '../editor/plugins/discussion-kit'
+
 export function CommentLeaf(props: PlateLeafProps<TCommentText>) {
 	const { children, leaf } = props
 
 	const { api, setOption } = useEditorPlugin(commentPlugin)
 	const hoverId = usePluginOption(commentPlugin, 'hoverId')
 	const activeId = usePluginOption(commentPlugin, 'activeId')
+	const discussions = useEditorPlugin(discussionPlugin).getOption('discussions')
 
 	const isOverlapping = getCommentCount(leaf) > 1
 	const currentId = api.comment.nodeId(leaf)
 	const isActive = activeId === currentId
 	const isHover = hoverId === currentId
 
+	const userId =
+		discussions.find((item) => item.id === currentId)?.userId ?? null
+
+	const isAi = userId === AI_USER_ID
+
 	return (
 		<PlateLeaf
-			{...props}
 			className={cn(
-				'border-b-highlight/[.36] bg-highlight/[.13] border-b-2 transition-colors duration-200',
-				(isHover || isActive) && 'border-b-highlight bg-highlight/25',
-				isOverlapping && 'border-b-highlight/[.7] bg-highlight/25 border-b-2',
-				(isHover || isActive) &&
-					isOverlapping &&
-					'border-b-highlight bg-highlight/45'
+				'border-fm-emerald-400/50 bg-fm-emerald-200/50 hover:border-fm-emerald-400 hover:bg-fm-emerald-200 border-b-1',
+				{
+					'border-fm-hotpink-400/50 bg-fm-hotpink-200/50 hover:border-fm-hotpink-400 hover:bg-fm-hotpink-200':
+						isAi,
+					'border-fm-hotpink-400 bg-fm-hotpink-400 hover:border-fm-hotpink-400 hover:bg-fm-hotpink-400 text-fm-hotpink-50':
+						isActive && isAi,
+					'border-fm-emerald-400 bg-fm-emerald-400 hover:border-fm-emerald-400 hover:bg-fm-emerald-400 text-fm-emerald-50':
+						isActive && !isAi,
+				}
 			)}
+			{...props}
 			attributes={{
 				...props.attributes,
+				id: `comment-leaf-${currentId}`,
 				onClick: () => setOption('activeId', currentId ?? null),
 				onMouseEnter: () => setOption('hoverId', currentId ?? null),
 				onMouseLeave: () => setOption('hoverId', null),
