@@ -40,13 +40,6 @@ export const titleToStatus: Partial<Record<EStatus, string>> = {
 	[EStatus.PUBLISHED]: '🟢 CMS READY',
 }
 
-export const titleToStatusText: Partial<Record<EStatus, string>> = {
-	[EStatus.FIRST_DRAFT]: '1ST DRAFT',
-	[EStatus.SECOND_DRAFT]: 'REVIEW',
-	[EStatus.POLISH]: '2ND DRAFT',
-	[EStatus.PUBLISHED]: 'CMS READY',
-}
-
 export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.ENGLISH]: 'English',
 	[ELanguage.FRENCH]: 'French',
@@ -64,9 +57,8 @@ export const languageToTitle: Record<ELanguage, string> = {
 
 export enum EpisodeActions {
 	DELETE = 'delete',
-	INFO = 'close',
 	INVENT = 'invent',
-	MERGE = 'combine',
+	MERGE = 'merge',
 	METATDATA = 'metadata',
 	STATUS = 'status',
 	UNMERGE = 'unmerge',
@@ -101,10 +93,10 @@ export const PROPS_KEYS_TO_COMPARE: (keyof SaveEpisodeParams)[] = [
 export const UNASSIGNED_LABEL = 'Nicht zugewiesen'
 
 export const notesMessages = {
-	[ENotesAction.CREATE]: 'Your note has been created successfully.',
-	[ENotesAction.DELETE]: 'Your note has been deleted successfully.',
-	[ENotesAction.UPDATE]: 'Your note has been updated successfully.',
-	[ENotesAction.DELETE_ALL]: 'All notes deleted successfully!',
+	[ENotesAction.CREATE]: 'Erfolgreich zur Notiz hinzugefügt!',
+	[ENotesAction.DELETE]: 'Notiz erfolgreich gelöscht!',
+	[ENotesAction.UPDATE]: 'Hinweis erfolgreich aktualisiert!',
+	[ENotesAction.DELETE_ALL]: 'Alle Notizen erfolgreich gelöscht!',
 }
 
 export const prioritizedStatuses = [
@@ -122,32 +114,6 @@ export const allPrioritizedStatuses = [
 	BASE_STATUS,
 ]
 
-export const DEFAULT_PAGE = 1
-
-export const PAGE_PADDING = 3
-
-export const PAGES_TO_SHOW = 5
-
-export enum ImportStoryType {
-	EMPTY = 'empty',
-	IMPORT = 'import',
-}
-
-export enum ImportStoryStep {
-	CHOOSE_TYPE = 'choose-type',
-	CONTENT = 'content',
-	DETAILS = 'details',
-}
-
-export const storySteps = [
-	ImportStoryStep.CHOOSE_TYPE,
-	ImportStoryStep.DETAILS,
-	ImportStoryStep.CONTENT,
-] as const
-export const switchableStepsInfo: { title: string; type: ImportStoryStep }[] = [
-	{ type: ImportStoryStep.DETAILS, title: 'Set up name' },
-	{ type: ImportStoryStep.CONTENT, title: 'Import content' },
-]
 export const EXCLUDED_HEADERS_LS_SHEET = ['created_by']
 
 export enum ELLMModel {

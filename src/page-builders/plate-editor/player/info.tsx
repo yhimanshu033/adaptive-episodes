@@ -1,10 +1,8 @@
 import React, { useCallback } from 'react'
-import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
-import { DownloadIcon } from '@/icons/download-icon'
+import { Download } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { IconButton } from '@/components/aural-ui/icon-button'
-import { Typography } from '@/components/aural-ui/typography'
+import { Button } from '@/components/ui/button'
 import usePlayer from '@/providers/player-provider'
 import { downloadBlobUrl } from '@/lib/utils/client-helpers'
 
@@ -15,9 +13,7 @@ export default function PlayerInfo() {
 
 	const handleDownload = useCallback(() => {
 		if (!audioRef.current) {
-			return toast.error('Audio not found!', {
-				icon: <BubbleCrossedIcon />,
-			})
+			return toast.error('Audio not found!')
 		}
 		const src = audioRef.current?.src
 		downloadBlobUrl(src, `${info?.chapter} - ${info?.episode}.mp3`)
@@ -28,24 +24,21 @@ export default function PlayerInfo() {
 	}
 
 	return (
-		<div className="flex w-full items-center justify-between">
+		<div className="flex w-full justify-between">
 			<div>
-				<Typography variant="caption-medium" as="h4" weight="medium">
-					{info.episode}
-				</Typography>
-				<Typography as="h5" variant="caption-small" color="secondary">
+				<h4 className="text-sm font-medium">{info.episode}</h4>
+				<h5 className="text-muted-foreground text-xs font-light">
 					{info.chapter}
-				</Typography>
+				</h5>
 			</div>
-			<IconButton
-				label="Download Audio"
+			<Button
 				tooltip="Download"
 				variant="ghost"
-				shape="square"
-				size="small"
-				icon={<DownloadIcon />}
+				size="icon"
 				onClick={handleDownload}
-			/>
+			>
+				<Download />
+			</Button>
 		</div>
 	)
 }

@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import React, { ButtonHTMLAttributes, forwardRef } from 'react'
 import { cva } from 'class-variance-authority'
 
 import { FeatureShineIcon } from '../../icons/feature-shine-icon'
 import { cn } from '../../lib/aural-ui/utils'
-import { withTooltip } from './tooltip'
 
 export const buttonVariants = cva(
 	'group relative font-fm-brand focus-visible:ring-fm-primary focus-visible:ring-offset-fm-contrast outline-none focus-visible:ring-2 focus-visible:ring-offset-6',
@@ -80,7 +78,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	variant?: 'primary' | 'secondary' | 'outline' | 'text'
 }
 
-export const RawButton = forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 	(
 		{
 			variant = 'primary',
@@ -159,7 +157,4 @@ export const RawButton = forwardRef<HTMLButtonElement, ButtonProps>(
 		)
 	}
 )
-
-RawButton.displayName = 'RawButton'
-
-export const Button = withTooltip(RawButton)
+Button.displayName = 'Button'

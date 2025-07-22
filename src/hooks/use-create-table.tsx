@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
-import { statuses, titleToStatusText } from '@/constants/episodes-constants'
+import Link from 'next/link'
+import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
-import ChevronDownIcon from '@/icons/chevron-down-icon'
-import ChevronUpIcon from '@/icons/chevron-up-icon'
-import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
-import { TitleCell } from '@/page-builders/episodes/table/title-cell'
-import WriterCombobox from '@/page-builders/episodes/table/writer-combobox'
+import WriterCombobox from '@/page-builders/episodes/writer-combobox'
+import { HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
 import {
 	ColumnDef,
 	ExpandedState,
@@ -17,54 +15,29 @@ import {
 	SortingState,
 	useReactTable,
 } from '@tanstack/react-table'
+import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
 
-import { Checkbox } from '@/components/aural-ui/checkbox'
-import CircularLoader from '@/components/aural-ui/circular-loader'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/aural-ui/dropdown'
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from '@/components/aural-ui/hover-card'
-import { IconButton } from '@/components/aural-ui/icon-button'
-import { If } from '@/components/aural-ui/if-else'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { HoverCard } from '@/components/ui/hover-card'
 import {
 	Select,
 	SelectContent,
 	SelectItem,
-	SelectRoot,
-	SelectSeparator,
 	SelectTrigger,
-	SelectWrapper,
-} from '@/components/aural-ui/select'
-import { Switch } from '@/components/aural-ui/switch'
-import { Tag } from '@/components/aural-ui/tag'
-import { Typography } from '@/components/aural-ui/typography'
+	SelectValue,
+} from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import useProjectId from '@/providers/project-id-provider'
-import { cn } from '@/lib/aural-ui/utils'
 import { formatDate } from '@/lib/format-date'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
-import useRenameTitleMutation from './mutation/use-rename-title'
 import useAccessChecks from './use-access-checks'
-
-const statusTagProps = {
-	[EStatus.PUBLISHED]: { variant: 'system', color: 'positive' },
-	[EStatus.FIRST_DRAFT]: { variant: 'system', color: 'negative' },
-	[EStatus.SECOND_DRAFT]: { variant: 'system', color: 'warning' },
-	[EStatus.POLISH]: { variant: 'promotional', color: 'hotpink' },
-}
 
 export const useCreateTable = (episodes: TEpisode[]) => {
 	const [expanded, setExpanded] = useState<ExpandedState>({})
-	const [editingRowId, setEditingRowId] = useState<number | null>(null)
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 	const [checked, setChecked] = useState<boolean>(false)
@@ -72,12 +45,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		number | null
 	>(null)
 
-	const inputValueMapRef = React.useRef<Record<number, string>>({})
-
-	const { handleStatusChange, handleDeleteEpisode, statusUpdating } =
-		useEpisodeTable()
-
-	const { mutate: renameTitle, isPending } = useRenameTitleMutation()
+	const { handleStatusChange, handleDeleteEpisode } = useEpisodeTable()
 
 	const { isWriter } = useProjectId()
 	const { isGerman, isOriginal } = useAccessChecks()
@@ -114,160 +82,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		}
 	}
 
-	const writerOnlyColumns: ColumnDef<TEpisode>[] = [
-		{
-			accessorKey: EEpisodeHeaderKeys.ACTIONS,
-			header: 'Actions',
-			cell: ({ row }) =>
-				!row.depth && (
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<IconButton
-								variant="ghost"
-								icon={<VerticalMenuIcon />}
-								label="episode menu icon"
-								shape="square"
-							/>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" className="w-34">
-							<DropdownMenuItem
-								disabled={editingRowId === row.original.id}
-								onClick={() => setEditingRowId(row.original.id)}
-							>
-								Rename
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								disabled={!isWriter || !row.original.props?.creation_timestamp}
-								onClick={() =>
-									handleDeleteEpisode(row.original.id, row.original?.seq_number)
-								}
-							>
-								Delete
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-				),
-		},
-	]
-
-	const languageDependentColumns: ColumnDef<TEpisode>[] = [
-		{
-			accessorKey: EEpisodeHeaderKeys.STATUS,
-			header: 'Status',
-			cell: ({ row, table }) => {
-				const isSelected = !!rowSelection[row.id]
-				const latestStatus: EStatus =
-					row.getValue('status') === BASE_STATUS
-						? EStatus.FIRST_DRAFT
-						: row.getValue('status')
-				const latestIndex = statuses.indexOf(latestStatus)
-				// @ts-expect-error type any
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				const tagProps = statusTagProps[latestStatus]
-				if (!(isGerman || isOriginal)) {
-					return null
-				}
-				if (row.depth) {
-					return (
-						<Tag {...tagProps} emphasis="secondary" className="ml-4">
-							{titleToStatusText[latestStatus]}
-						</Tag>
-					)
-				}
-
-				if (!isWriter) {
-					return (
-						<Tag {...tagProps} emphasis="secondary">
-							{titleToStatusText[latestStatus]}
-						</Tag>
-					)
-				}
-
-				const isUpdating = statusUpdating.includes(row.original.id)
-
-				return (
-					<SelectRoot>
-						<SelectWrapper>
-							<Select
-								onValueChange={(value) =>
-									handleStatusChange(row.original, value as EStatus, table)
-								}
-								disabled={
-									(!isSelected && Object.keys(rowSelection).length > 0) ||
-									isUpdating
-								}
-								value={latestStatus}
-							>
-								<SelectTrigger
-									decoration="outline"
-									disabled={!isWriter}
-									classes={{
-										root: 'h-10 text-sm border-fm-divider-tertiary',
-										icon: cn(
-											'text-fm-icon-inactive group-data-[state=open]:text-fm-primary',
-											{
-												hidden: isUpdating,
-											}
-										),
-									}}
-								>
-									<Tag {...tagProps} emphasis="secondary">
-										{titleToStatusText[latestStatus]}
-									</Tag>
-									<If condition={isUpdating}>
-										<CircularLoader className="size-3" />
-									</If>
-								</SelectTrigger>
-								<SelectContent>
-									{statuses.map((status, index) => (
-										<div key={status}>
-											<SelectItem
-												disabled={index != latestIndex + 1}
-												value={status}
-												className={cn('h-10 border-0 !text-sm', {
-													'data-[disabled]:bg-fm-transparent':
-														index != latestIndex + 1,
-													'data-[disabled]:text-fm-primary':
-														index === latestIndex,
-												})}
-												classes={{
-													icon: cn({
-														'group-data-[disabled]:text-fm-icon-active':
-															index === latestIndex,
-													}),
-												}}
-											>
-												{titleToStatusText[status]}
-											</SelectItem>
-											<If condition={index < statuses.length - 1}>
-												<div className="px-2">
-													<SelectSeparator />
-												</div>
-											</If>
-										</div>
-									))}
-								</SelectContent>
-							</Select>
-						</SelectWrapper>
-					</SelectRoot>
-				)
-			},
-		},
-		{
-			accessorKey: EEpisodeHeaderKeys.WRITER,
-			header: 'Writer',
-			cell: ({ row }) =>
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-				!row.depth && (
-					<WriterCombobox
-						chapterId={String(row.original.id)}
-						selectedMemberId={String(row.original.writer || '')}
-					/>
-				),
-		},
-	]
-
-	const writerOnlySelectColumns: ColumnDef<TEpisode>[] = [
+	const columns: ColumnDef<TEpisode>[] = [
 		{
 			id: EEpisodeHeaderKeys.SELECT_COL,
 			header: ({ table, column }) => {
@@ -280,7 +95,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						id={`header-${column.id}`}
 						checked={isSomeSelected || isAllSelected}
 						indeterminate={isSomeSelected}
-						className="border-fm-divider-primary bg-fm-surface-primary size-6 border-1"
 						onClick={() => {
 							if (isSomeSelected) {
 								table.resetRowSelection()
@@ -297,105 +111,132 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						id={`row-${row.id}`}
 						checked={row.getIsSelected()}
 						disabled={!isWriter || !row.getCanSelect()}
-						className="border-fm-divider-primary bg-fm-surface-primary size-6 border-1"
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 						onClick={(e) => handleRowSelection(e, row)}
 					/>
 				),
 		},
-	]
-
-	const columns: ColumnDef<TEpisode>[] = [
-		...(isWriter ? writerOnlySelectColumns : []),
 		{
 			accessorKey: EEpisodeHeaderKeys.SERIAL_NUMBER,
 			header: () => (
 				<HoverCard openDelay={0}>
 					<HoverCardTrigger> {`DE${checked ? '/US' : ''}`} </HoverCardTrigger>
-					<HoverCardContent className="z-100 mt-5 w-38 p-2" align="start">
+					<HoverCardContent className="b</HoverCard>order bg-background z-[100] mt-2 w-38 rounded-md p-2">
 						<div className="flex items-center justify-center gap-2">
-							<Typography
-								variant="caption-medium"
-								color="secondary"
-								transform="uppercase"
-								lineHeight="normal"
-							>
-								US Index:
-							</Typography>
+							<p>US Index:</p>
 							<Switch checked={checked} onCheckedChange={setChecked} />
 						</div>
 					</HoverCardContent>
 				</HoverCard>
 			),
 			cell: ({ row }) =>
-				!row.depth && (
-					<div className="flex items-center justify-start gap-1">
-						<div>
-							{row.original.seq_number}
-							{checked && row.original.original_seq_number
-								? `/${row.original.original_seq_number}`
-								: ''}
-						</div>
-						<div>
-							{row.getCanExpand() && (
-								<IconButton
-									variant="ghost"
-									label="Toggle row expansion"
-									className="text-fm-icon-inactive hover:text-fm-primary"
-									size="small"
-									shape="square"
-									onClick={(e) => {
-										e.stopPropagation()
-										row.getToggleExpandedHandler()()
-									}}
-									tooltip={row.getIsExpanded() ? 'Collapse' : 'Expand'}
-									icon={
-										row.getIsExpanded() ? (
-											<ChevronUpIcon />
-										) : (
-											<ChevronDownIcon />
-										)
-									}
-								/>
-							)}
-						</div>
-					</div>
-				),
+				!row.depth &&
+				`${row.original.seq_number}${checked && row.original.original_seq_number ? `/${row.original.original_seq_number}` : ''}`,
 		},
 		{
 			accessorKey: EEpisodeHeaderKeys.CHAPTER_TITLE,
 			header: 'Title',
 			cell: ({ row }) => (
-				<TitleCell
-					row={row}
-					editingRowId={editingRowId}
-					setEditingRowId={setEditingRowId}
-					inputValueMapRef={inputValueMapRef}
-					isPending={isPending}
-					renameTitle={renameTitle}
-				/>
-			),
-		},
-		{
-			accessorKey: EEpisodeHeaderKeys.WORD_COUNT,
-			header: 'Word Count',
-			cell: ({ row }) => (
-				<div className="font-fm-text flex cursor-pointer items-center gap-2 text-sm">
-					{row.original.word_count}
+				<div className="flex cursor-pointer items-center gap-2 font-medium">
+					{row.getCanExpand() && (
+						<Button
+							tooltip={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
+							variant="ghost"
+							size="icon"
+							onClick={(e) => {
+								e.stopPropagation()
+								row.getToggleExpandedHandler()()
+							}}
+						>
+							{row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
+						</Button>
+					)}
+					<Link
+						href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/editor`}
+						className="flex-1"
+					>
+						{row.getValue('chapter_title')} ({row.original.word_count} words)
+					</Link>
 				</div>
 			),
 		},
-		...(isGerman || isOriginal ? languageDependentColumns : []),
+		{
+			accessorKey: EEpisodeHeaderKeys.STATUS,
+			header: 'Status',
+			cell: ({ row, table }) => {
+				const isSelected = !!rowSelection[row.id]
+				const latestStatus: EStatus =
+					row.getValue('status') === BASE_STATUS
+						? EStatus.FIRST_DRAFT
+						: row.getValue('status')
+				const latestIndex = statuses.indexOf(latestStatus)
+
+				if (!(isGerman || isOriginal)) {
+					return null
+				}
+				if (row.depth) {
+					return latestStatus
+				}
+				return (
+					<Select
+						value={latestStatus}
+						onValueChange={(value) =>
+							handleStatusChange(row.original, value as EStatus, table)
+						}
+						disabled={!isSelected && Object.keys(rowSelection).length > 0}
+					>
+						<SelectTrigger disabled={!isWriter} className="w-36">
+							<SelectValue>{titleToStatus[latestStatus]}</SelectValue>
+						</SelectTrigger>
+						<SelectContent>
+							{statuses.map((status, index) => (
+								<SelectItem
+									disabled={index < latestIndex || index > latestIndex + 1}
+									key={status}
+									value={status}
+								>
+									{titleToStatus[status]}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				)
+			},
+		},
+		{
+			accessorKey: EEpisodeHeaderKeys.WRITER,
+			header: 'Writer',
+			cell: ({ row }) =>
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				!row.depth ? (
+					<WriterCombobox
+						chapterId={String(row.original.id)}
+						selectedMemberId={String(row.original.writer || '')}
+					/>
+				) : (
+					row.getValue('writer') || 'Anonymous'
+				),
+		},
 		{
 			accessorKey: EEpisodeHeaderKeys.UPDATE_TIME,
 			header: 'Last Updated',
-			cell: ({ row }) => (
-				<div className="font-fm-text flex cursor-pointer items-center gap-2 text-sm">
-					{formatDate(row.original.update_time)}
-				</div>
-			),
+			cell: ({ row }) => formatDate(row.original.update_time),
 		},
-		...(isWriter ? writerOnlyColumns : []),
+		{
+			accessorKey: EEpisodeHeaderKeys.DELETE,
+			header: 'Delete',
+			cell: ({ row }) =>
+				row.original.props?.creation_timestamp && (
+					<Button
+						tooltip="Delete Episode"
+						disabled={!isWriter}
+						variant="ghost"
+						size="icon"
+						onClick={() => handleDeleteEpisode(row.original.id)}
+					>
+						<Trash2 size={16} />
+					</Button>
+				),
+		},
 	]
 
 	const table = useReactTable({
@@ -414,6 +255,5 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			expanded,
 		},
 	})
-
-	return { table, columnSize: columns.length, isWriter, editingRowId }
+	return { table, columnSize: columns.length, isWriter }
 }

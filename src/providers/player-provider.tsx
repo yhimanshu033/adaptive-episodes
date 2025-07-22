@@ -8,7 +8,6 @@ import React, {
 	useState,
 } from 'react'
 import { TTS_MUTATION } from '@/constants/query-constants'
-import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -107,18 +106,14 @@ function usePlayerUtil() {
 		mutationFn: ttsMutation,
 		onSuccess: (data) => {
 			if (!data) {
-				toast.error('Error in TTS conversion', {
-					icon: <BubbleCrossedIcon />,
-				})
+				toast.error('Error in TTS conversion')
 				setPlayingEpisode(null)
 				return
 			}
 		},
 		onError: (err) => {
 			console.error(err)
-			toast.error('Error in TTS conversion', {
-				icon: <BubbleCrossedIcon />,
-			})
+			toast.error('Error in TTS conversion')
 			setPlayingEpisode(null)
 		},
 	})

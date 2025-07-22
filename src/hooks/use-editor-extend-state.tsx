@@ -13,7 +13,6 @@ const initialExtendedState: EditorExtendedStore = {
 	extended: [],
 	episodeKeys: {},
 	episodeContentMap: {},
-	episodeNavigationOpen: false,
 }
 
 type EditorExtendedState = {

@@ -2,9 +2,9 @@ import React from 'react'
 import { BASE_SCRIPT_EDITOR_ID } from '@/constants/editor-constants'
 import { useBaseData } from '@/hooks/query/use-base-content'
 import useMyEditor from '@/hooks/use-my-editor'
-import { Plate } from 'platejs/react'
+import { Plate } from '@udecode/plate-common/react'
 
-import { Editor } from '@/components/plate-ui-v2/editor'
+import { Editor } from '@/components/plate-ui/editor'
 
 import DualViewLoader from './dual-view-loader'
 
@@ -28,9 +28,11 @@ const BaseScript: React.FC = () => {
 	return (
 		<Plate editor={editor}>
 			<Editor
+				focusRing={false}
 				readOnly
-				variant="aural"
-				className="bg-fm-surface-primary text-fm-tertiary"
+				variant="ghost"
+				size="md"
+				className="!pt-0"
 			/>
 		</Plate>
 	)

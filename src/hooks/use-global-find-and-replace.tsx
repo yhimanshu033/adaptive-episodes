@@ -9,7 +9,7 @@ import {
 } from '@/constants/editor-constants'
 import useLocalizeHook from '@/hooks/mutation/use-localize-hook'
 import useEditorExtendedStore from '@/store/extended-store'
-import { Value } from 'platejs'
+import { Value } from '@udecode/plate'
 import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -17,7 +17,6 @@ import { FindReplaceConfig } from '@/lib/plate/plugins/find-replace'
 import {
 	getLocalizationData,
 	getOccurrencesUtil,
-	getRecordsTextUtil,
 	getRecordsUtil,
 	getSuggestionValue,
 	replaceAll,
@@ -122,29 +121,6 @@ function useGlobalFindAndReplaceUtil() {
 
 		return records
 	}, [getRecords, contentMap])
-
-	const getRecordTexts = useCallback(
-		(children: Value) =>
-			getRecordsTextUtil({
-				records,
-				caseSensitive,
-				children,
-				genitive,
-				search,
-				wholeWord,
-			}),
-		[wholeWord, genitive, search, caseSensitive, records]
-	)
-
-	const recordTexts = useMemo(() => {
-		const texts: string[][] = []
-		Object.keys(contentMap).forEach((key) => {
-			const val = contentMap[Number(key)]
-			const currRecordTexts = getRecordTexts(val.children)
-			texts.push(...currRecordTexts)
-		})
-		return texts
-	}, [getRecordTexts, contentMap])
 
 	const setOptions = useCallback(
 		(value: Partial<typeof options>) =>
@@ -289,18 +265,15 @@ function useGlobalFindAndReplaceUtil() {
 			...options,
 			search: debouncedOptions.search,
 			replace: debouncedOptions.replace,
-		} as FindReplaceConfig['options'],
+		},
 		replacedContentMap,
 		setReplacedContentMap,
-		recordTexts,
-		setPtr,
 	}
 }
 
-export type UseGlobalFARRet = ReturnType<typeof useGlobalFindAndReplaceUtil>
-const GlobalFindAndReplaceContext = React.createContext<UseGlobalFARRet | null>(
-	null
-)
+const GlobalFindAndReplaceContext = React.createContext<ReturnType<
+	typeof useGlobalFindAndReplaceUtil
+> | null>(null)
 
 export function GlobalFindAndReplaceProvider({
 	children,

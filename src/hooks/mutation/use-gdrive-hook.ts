@@ -1,6 +1,6 @@
 import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
-import { STORY_ID_QUERY_KEY } from '@/constants/query-constants'
+import { STORIES_QUERY_KEY } from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
@@ -32,7 +32,7 @@ export function useGDriveUpdateMutation() {
 		toast.success('Google Drive-Ordner aktualisiert!')
 		if (type === EFolderType.BASE_SCRIPT) {
 			await queryClient.invalidateQueries({
-				queryKey: [STORY_ID_QUERY_KEY],
+				queryKey: [STORIES_QUERY_KEY],
 			})
 		}
 	}

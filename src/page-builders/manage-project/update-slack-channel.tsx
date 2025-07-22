@@ -1,118 +1,110 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useUploadSlackChannelResolver } from '@/hooks/form-resolvers/upload-slack-channel-resolver'
 import {
 	useSlackNotificationMutation,
 	useSlackNotificationQuery,
 } from '@/hooks/query/use-slack-notification'
-import { CopyIcon } from '@/icons/copy-icon'
+import { Copy } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/aural-ui/button'
-import CircularLoader from '@/components/aural-ui/circular-loader'
+import IfElse, { If } from '@/components/if-else'
+import { IconLoader } from '@/components/loader'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
 	Form,
 	FormControl,
 	FormField,
 	FormItem,
+	FormLabel,
 	FormMessage,
-} from '@/components/aural-ui/form'
-import { IconButton } from '@/components/aural-ui/icon-button'
-import { InputBase } from '@/components/aural-ui/input'
-import { Typography } from '@/components/aural-ui/typography'
-import IfElse from '@/components/if-else'
-import { cn } from '@/lib/utils/helpers'
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 import { TUpdateSlackChannelBody } from '@/types/admin-types'
 
 const UpdateSlackChannel = () => {
 	const { data } = useSlackNotificationQuery()
-	const defaultChannelId = data?.slack_channel_id || ''
+
+	const defaultChannelId = useMemo(() => data?.slack_channel_id || '', [data])
+
+	const defaultChannelName = useMemo(
+		() => data?.slack_channel_name || '',
+		[data]
+	)
 
 	const form = useUploadSlackChannelResolver()
-	const updateSlackChannelMutation = useSlackNotificationMutation()
-
-	const slack_channel_id = form.watch('slack_channel_id')
+	const updateSlackChanelMutation = useSlackNotificationMutation()
 
 	const handleSubmit = ({ slack_channel_id }: TUpdateSlackChannelBody) => {
-		updateSlackChannelMutation.mutate({ slack_channel_id })
+		updateSlackChanelMutation.mutate({
+			slack_channel_id,
+		})
 	}
 
-	useEffect(() => {
-		if (defaultChannelId) {
-			form.reset({ slack_channel_id: defaultChannelId })
-		}
-	}, [defaultChannelId, form])
-
-	const isSubmitDisabled =
-		updateSlackChannelMutation.isPending ||
-		!form.formState.isDirty ||
-		slack_channel_id.trim().length < 3
+	const slack_channel_id = form.watch('slack_channel_id')
 
 	const handleCopy = useCallback(() => {
 		void navigator.clipboard.writeText(slack_channel_id)
 		toast.success('Slack channel ID copied to clipboard')
 	}, [slack_channel_id])
 
+	useEffect(() => {
+		if (!defaultChannelId) {
+			return
+		}
+
+		form.setValue('slack_channel_id', defaultChannelId)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [defaultChannelId])
+
 	return (
-		<div className="space-y-3">
-			<Typography
-				transform="uppercase"
-				variant="caption-medium"
-				className="font-fm-brand"
+		<Form {...form}>
+			<form
+				onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
+				className="flex flex-1 items-end gap-2"
 			>
-				Slack Channel ID
-			</Typography>
-			<Form {...form}>
-				<form
-					onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
-					className="flex h-11 w-full items-center gap-3"
+				<FormField
+					control={form.control}
+					name="slack_channel_id"
+					render={({ field }) => (
+						<FormItem className="flex-1">
+							<FormLabel>
+								Slack Channel ID
+								<If
+									condition={
+										!!slack_channel_id && slack_channel_id === defaultChannelId
+									}
+								>
+									<Badge className="ml-4">{defaultChannelName}</Badge>
+								</If>
+							</FormLabel>
+							<FormControl>
+								<Input
+									placeholder="Paste the slack channel ID here"
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<Button
+					tooltip="Copy"
+					size="icon"
+					variant="outline"
+					type="button"
+					onClick={handleCopy}
 				>
-					<div className="border-fm-divider-secondary focus-within:border-fm-divider-contrast flex w-11/12 items-center justify-between rounded-xs border-1 px-4 py-2 transition-all duration-300">
-						<FormField
-							control={form.control}
-							name="slack_channel_id"
-							render={({ field }) => (
-								<FormItem className="w-full">
-									<FormControl>
-										<InputBase
-											unstyled
-											className="placeholder:text-fm-md text-fm-md w-full border-none pr-4 outline-none"
-											placeholder="Paste the slack channel ID here"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<Button
-							type="submit"
-							disabled={isSubmitDisabled}
-							variant="text"
-							innerClassName={cn('text-sm !p-0 translate-y-0 uppercase', {
-								'text-fm-tertiary cursor-disabled': isSubmitDisabled,
-							})}
-						>
-							<IfElse
-								condition={updateSlackChannelMutation.isPending}
-								else={<span>Update</span>}
-								if={<CircularLoader />}
-							/>
-						</Button>
-					</div>
-					<IconButton
-						shape="square"
-						disabled={!slack_channel_id}
-						variant="outlined"
-						className="border-fm-divider-secondary"
-						icon={<CopyIcon />}
-						label="copy icon"
-						type="button"
-						onClick={handleCopy}
-					/>
-				</form>
-			</Form>
-		</div>
+					<Copy size={16} />
+				</Button>
+				<IfElse
+					condition={updateSlackChanelMutation.isPending}
+					if={<IconLoader />}
+					else={<Button>Update</Button>}
+				/>
+			</form>
+		</Form>
 	)
 }
 

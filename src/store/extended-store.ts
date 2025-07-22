@@ -67,24 +67,6 @@ function useEditorExtendedStore() {
 		})
 	}
 
-	const setEpisodeNavigationOpen = (
-		episodeNavigationOpen: EditorExtendedStore['episodeNavigationOpen']
-	) => {
-		useEpisodeExtendedStoreUtil.setState(() => {
-			return {
-				episodeNavigationOpen: episodeNavigationOpen,
-			}
-		})
-	}
-
-	const toggleEpisodeNavigationOpen = () => {
-		useEpisodeExtendedStoreUtil.setState((state) => {
-			return {
-				episodeNavigationOpen: !state.episodeNavigationOpen,
-			}
-		})
-	}
-
 	return {
 		store: useEpisodeExtendedStoreUtil,
 		setEpisodeMap,
@@ -94,8 +76,6 @@ function useEditorExtendedStore() {
 		addEpisodeKey,
 		setExtendedContentMap,
 		addExtendedContentMap,
-		setEpisodeNavigationOpen,
-		toggleEpisodeNavigationOpen,
 	}
 }
 

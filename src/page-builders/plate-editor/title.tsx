@@ -1,30 +1,39 @@
-import React from 'react'
-import { statuses } from '@/constants/episodes-constants'
+import React, { useMemo } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useUserMembersQuery from '@/hooks/query/user-members-data'
+import useEpisodeInfo from '@/hooks/query/use-episode-info'
+import WriterCombobox from '@/page-builders/episodes/writer-combobox'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { useEditorReadOnly } from 'platejs/react'
+import { useEditorReadOnly } from '@udecode/plate-common/react'
 
 import EditableText from '@/components/editable-text'
 import { If } from '@/components/if-else'
-import CircularLoader from '@/components/ui/circular-loader'
+import Spinner from '@/components/ui/spinner'
+import { getSelectedEpisode } from '@/lib/utils/helpers'
 
 const Title = ({
+	chapterId,
 	memberId,
-	latestIndex,
 }: {
-	latestIndex: number
+	chapterId?: string
 	memberId?: string
 }) => {
 	const { data: episodeContent } = useEpisodeContent()
-	const readOnly = useEditorReadOnly('editor')
+	const readOnly = useEditorReadOnly()
 	const { setCurrentTitle } = useEpisodeIdStore()
-	const { data } = useUserMembersQuery()
-	const members = data?.members || []
+	const { data: episodeInfo } = useEpisodeInfo()
 
-	const selectedMember = members?.find(
-		(member) => member.user.id === Number(memberId)
-	)
+	const updatedAt = useMemo(() => {
+		if (!episodeInfo?.results?.data) {
+			return null
+		}
+		const latestEpisode = getSelectedEpisode(episodeInfo)
+		const updateTime = latestEpisode?.episode.update_time
+		if (!updateTime) {
+			return null
+		}
+		const date = new Date(updateTime)
+		return date.toLocaleString()
+	}, [episodeInfo])
 
 	const updateChapterTitle = (chapter_title: string) => {
 		setCurrentTitle(chapter_title)
@@ -34,33 +43,31 @@ const Title = ({
 		<div>
 			<div className="flex items-center justify-center gap-2">
 				<If condition={!episodeContent}>
-					<CircularLoader className="size-6" />
+					<Spinner size={24} />
 				</If>
 
-				<div className="flex flex-1 items-center gap-2">
-					<p className="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]">
-						E{episodeContent?.chapter.seq_number}.
-					</p>
+				<div className="flex items-center gap-2">
+					<p className="text-xl">{episodeContent?.chapter.seq_number}.</p>
 					<EditableText
 						key={episodeContent?.chapter.chapter_title}
 						text={episodeContent?.chapter.chapter_title || ''}
 						rootClass="text-xl"
-						inputClass="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]"
-						textClass="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]"
+						inputClass="text-xl"
 						isEditable={!readOnly}
 						onComplete={(title) => void updateChapterTitle(title)}
 					/>
+					<WriterCombobox
+						chapterId={chapterId}
+						selectedMemberId={memberId}
+						className="ml-2 origin-left scale-75"
+					/>
 				</div>
 			</div>
-			<p className="text-fm-tertiary font-fm-brand flex items-center justify-start gap-2 [font-size:var(--text-fm-sm)] font-medium uppercase">
-				{selectedMember?.user.fullname && (
-					<>
-						<span>{selectedMember?.user.fullname}</span>
-						<span className="size-0.5 rounded-full bg-current" />
-					</>
-				)}
-				<span>{statuses[latestIndex]}</span>
-			</p>
+			{updatedAt && (
+				<p className="text-foreground/50 text-xs italic">
+					(Last updated: {updatedAt})
+				</p>
+			)}
 		</div>
 	)
 }

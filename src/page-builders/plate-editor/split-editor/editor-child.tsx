@@ -1,5 +1,5 @@
 import React from 'react'
-import PlateEditor from '@/page-builders/plate-editor/plate-editor'
+import PlateEditor from '@/page-builders/plate-editor/editor'
 
 import { EpisodeIdProvider } from '@/providers/episode-id-provider'
 

@@ -49,7 +49,6 @@ const useNotes = () => {
 		handleAddNote,
 		handleDeleteNote,
 		isPending: updateNotesMutation.isPending,
-		isSuccess: updateNotesMutation.isSuccess,
 	}
 }
 export default useNotes

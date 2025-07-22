@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils/helpers'
 
-import SkeletonBuilder from '../episodes/table/episode-skeleton'
+import SkeletonBuilder from '../episodes/episode-skeleton'
 import SearchTable from './search-table'
 
 const MembersTable = () => {

@@ -1,5 +1,4 @@
 import React from 'react'
-import { notFound } from 'next/navigation'
 import { STORY_ID_QUERY_KEY } from '@/constants/query-constants'
 import Episodes from '@/page-builders/episodes'
 import { getStoryData } from '@/server-action/story-action'
@@ -18,15 +17,10 @@ const Page = async ({ params }: PageProps) => {
 	const { id } = await params
 	const projectId = Number(id)
 
-	try {
-		await queryClient.fetchQuery({
-			queryKey: [STORY_ID_QUERY_KEY, projectId],
-			queryFn: () => getStoryData(projectId),
-		})
-	} catch (error) {
-		console.error('Story not found:', error)
-		notFound()
-	}
+	await queryClient.prefetchQuery({
+		queryKey: [STORY_ID_QUERY_KEY, projectId],
+		queryFn: () => getStoryData(projectId),
+	})
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>

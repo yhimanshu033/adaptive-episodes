@@ -1,24 +1,21 @@
 'use client'
 
 import React from 'react'
+import { SuggestionUser } from '@udecode/plate-suggestion'
 
-import {
-	Avatar,
-	AvatarFallback,
-	AvatarImage,
-} from '@/components/aural-ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-import { PlateUser } from '@/types/plate-types'
-
-export function SuggestionAvatar({ user }: { user: PlateUser | null }) {
+export function SuggestionAvatar({ user }: { user: SuggestionUser | null }) {
 	if (!user) {
 		return null
 	}
 
 	return (
-		<Avatar className="size-8">
+		<Avatar className="size-5">
 			<AvatarImage alt={user.name} src={user.avatarUrl} />
-			<AvatarFallback>{user.name?.[0]}</AvatarFallback>
+			<AvatarFallback className="text-xs text-white" colorString={user.name}>
+				{user.name?.[0]}
+			</AvatarFallback>
 		</Avatar>
 	)
 }
