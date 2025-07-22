@@ -60,12 +60,13 @@ role-based access control.
 
 ### Frontend
 
-- **Next.js 14** - React framework with App Router
+- **Next.js 15** - React framework with App Router
+- **React 18** - Modern React with concurrent features
+- **Plate.js 49.1.5** - Rich text editor framework
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
 - **Framer Motion** - Smooth animations and transitions
 - **Radix UI** - Accessible component primitives
-- **Plate.js** - Rich text editor framework
 
 ### State Management & Data
 
@@ -116,8 +117,8 @@ src/
 
 ### Prerequisites
 
-- Node.js 18+
-- npm/yarn/pnpm
+- Node.js 22+
+- npm
 
 ### Installation
 
@@ -132,10 +133,6 @@ src/
 
    ```bash
    npm install
-   # or
-   yarn install
-   # or
-   pnpm install
    ```
 
 3. **Set up environment variables**
@@ -149,10 +146,6 @@ src/
 
    ```bash
    npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
    ```
 
 5. **Open your browser** Navigate to
