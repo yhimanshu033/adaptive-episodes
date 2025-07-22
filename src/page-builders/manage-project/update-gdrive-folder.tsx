@@ -1,23 +1,27 @@
 import React, { useEffect, useMemo } from 'react'
+import Link from 'next/link'
 import {
 	UploadGDriveFolderSchema,
 	useUploadGDriveFolderResolver,
 } from '@/hooks/form-resolvers/upload-gdrive-folder-resolver'
 import { useGDriveUpdateMutation } from '@/hooks/mutation/use-gdrive-hook'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 
-import IfElse from '@/components/if-else'
-import { IconLoader } from '@/components/loader'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/aural-ui/button'
+import CircularLoader from '@/components/aural-ui/circular-loader'
 import {
 	Form,
 	FormControl,
 	FormField,
 	FormItem,
 	FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/components/aural-ui/form'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { InputBase } from '@/components/aural-ui/input'
+import { Typography } from '@/components/aural-ui/typography'
+import IfElse from '@/components/if-else'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { cn } from '@/lib/utils/helpers'
 
 import { EFolderType } from '@/types/admin-types'
 
@@ -36,6 +40,7 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 
 	const form = useUploadGDriveFolderResolver()
 	const updateGDriveFolderMutation = useGDriveUpdateMutation()
+	const link = form.watch('link')
 
 	const handleSubmit = ({ link }: UploadGDriveFolderSchema) => {
 		updateGDriveFolderMutation.mutate({
@@ -44,53 +49,83 @@ const UpdateDriveFolder = ({ folderType }: { folderType: EFolderType }) => {
 		})
 	}
 
-	const link = form.watch('link')
-
 	useEffect(() => {
-		if (!defaultLink) {
-			return
+		if (defaultLink) {
+			form.reset({ link: defaultLink })
 		}
+	}, [defaultLink, form])
 
-		form.setValue('link', defaultLink)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [defaultLink])
+	const isSubmitDisabled =
+		updateGDriveFolderMutation.isPending ||
+		!form.formState.isDirty ||
+		link.trim().length < 3
 
 	return (
-		<Form {...form}>
-			<form
-				onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
-				className="flex flex-1 gap-2"
+		<div className="space-y-3">
+			<Typography
+				transform="uppercase"
+				variant="caption-medium"
+				className="font-fm-brand"
 			>
-				<FormField
-					control={form.control}
-					name="link"
-					render={({ field }) => (
-						<FormItem className="flex-1">
-							<FormControl>
-								<Input
-									placeholder="Paste the goolge drive folder link here"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<a
-					href={link}
-					target="_blank"
-					className={buttonVariants({ size: 'icon', variant: 'outline' })}
-					rel="noreferrer"
+				Google Drive Folder
+			</Typography>
+			<Form {...form}>
+				<form
+					onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}
+					className="flex h-11 w-full items-center gap-3"
 				>
-					<ArrowUpRight size={16} />
-				</a>
-				<IfElse
-					condition={updateGDriveFolderMutation.isPending}
-					if={<IconLoader />}
-					else={<Button>Update</Button>}
-				/>
-			</form>
-		</Form>
+					<div className="border-fm-divider-secondary focus-within:border-fm-divider-contrast flex w-11/12 items-center justify-between rounded-xs border-1 px-4 py-2 transition-all duration-300">
+						<FormField
+							control={form.control}
+							name="link"
+							render={({ field }) => (
+								<FormItem className="w-full">
+									<FormControl>
+										<InputBase
+											unstyled
+											className="placeholder:text-fm-md text-fm-md w-full border-none pr-4 outline-none"
+											placeholder="Paste the google drive folder link here"
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<Button
+							type="submit"
+							disabled={isSubmitDisabled}
+							variant="text"
+							innerClassName={cn('text-sm !p-0 translate-y-0 uppercase', {
+								'text-fm-tertiary cursor-disabled': isSubmitDisabled,
+							})}
+						>
+							<IfElse
+								condition={updateGDriveFolderMutation.isPending}
+								else={<span>Update</span>}
+								if={<CircularLoader />}
+							/>
+						</Button>
+					</div>
+					<Link
+						href={link}
+						target="_blank"
+						tabIndex={link ? 0 : -1}
+						aria-disabled={!link}
+						className={cn(!link && 'pointer-events-none opacity-50')}
+					>
+						<IconButton
+							type="button"
+							shape="square"
+							variant="outlined"
+							label="redirect icon"
+							icon={<ArrowRightUpIcon />}
+							className="border-fm-divider-secondary"
+						/>
+					</Link>
+				</form>
+			</Form>
+		</div>
 	)
 }
 

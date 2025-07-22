@@ -26,18 +26,22 @@ const DE_LANG: TLocaleDict = {
 		copiedToClipBoard: 'In die Zwischenablage kopiert!',
 	},
 	placeholders: {
-		initialAiMessage: 'Wie kann ich dir heute beim Überarbeiten helfen',
-		enterMessage: 'Geben Sie Ihre Nachricht ein...',
+		initialAiMessage:
+			'Frag mich alles, oder tippe einfach auf ein Thema, um loszulegen',
+		enterMessage: 'Fragen Sie mich etwas...',
 		localizationLoading: 'Suche nach lokalisierten Namen, bitte warten...',
 		somethingWentWrong: 'Etwas ist schief gelaufen',
 		notesError: 'Ihre Notizen konnten nicht hinzugefügt werden',
 		localChanges: 'Lokal Ansehen',
 		contentChanged: 'Der Inhalt scheint geändert zu sein',
 		thinking: 'Denke nach...',
+		completed: 'Abgeschlossen',
 		example: 'Beispiel',
 		words: 'Worte',
 	},
 	toasts: {
+		slackSuccess: 'Slack Channel ID aktualisiert',
+		slackError: 'Fehler beim Aktualisieren slack channel ID',
 		localizationSuccess: 'URL des Lokalisierungsblatts aktualisiert',
 		localizationSync:
 			'Synchronisierte Aktualisierungen des Lokalisierungsblatts!',

@@ -42,6 +42,7 @@ type TSocketStreamingContext =
 					onResponse?: (data: ResponseDataT) => void
 				}
 			) => Promise<string>
+			stopTask: (taskId: string) => void
 			taskEnded: Record<string, boolean>
 	  }
 	| undefined
@@ -78,6 +79,7 @@ export const SocketStreamingProvider = ({
 	const [responses, setResponses] = useState<Record<string, string[]>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
 	const responsesRef = useRef<Record<string, string[]>>({})
+	const blockedTasksRef = useRef<Record<string, boolean>>({})
 	const [taskEnded, setTaskEnded] = useState<Record<string, boolean>>({})
 	const [fetchedData, setFetchedData] = useState<Record<string, string>>({})
 
@@ -93,6 +95,10 @@ export const SocketStreamingProvider = ({
 					task_id: string
 				}
 			) => {
+				if (blockedTasksRef.current[task_id]) {
+					return
+				}
+
 				const { chunk, status } = payload
 
 				// Handle task start
@@ -187,6 +193,13 @@ export const SocketStreamingProvider = ({
 		[fetchedData, session, socket]
 	)
 
+	const stopTask = useCallback((taskId: string) => {
+		blockedTasksRef.current[taskId] = true
+		setTaskEnded((prev) => ({ ...prev, [taskId]: true }))
+		setResponses((prev) => ({ ...prev, [taskId]: [] }))
+		responsesRef.current[taskId] = []
+	}, [])
+
 	const getStreamedResponse = useCallback(
 		(taskId: string) => {
 			return new Promise<string[]>((resolve) => {
@@ -201,9 +214,12 @@ export const SocketStreamingProvider = ({
 		[responses, taskEnded]
 	)
 
-	const getStreamedResponseChunks = (taskId: string) => {
-		return responses[taskId] || []
-	}
+	const getStreamedResponseChunks = useCallback(
+		(taskId: string) => {
+			return responses[taskId] || []
+		},
+		[responses]
+	)
 
 	return (
 		<SocketStreamingContext.Provider
@@ -211,6 +227,7 @@ export const SocketStreamingProvider = ({
 				startTask,
 				getStreamedResponse,
 				getStreamedResponseChunks,
+				stopTask,
 				responses,
 				taskEnded,
 			}}

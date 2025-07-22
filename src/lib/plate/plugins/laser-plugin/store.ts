@@ -1,41 +1,49 @@
-import { createZustandStore } from '@udecode/plate-common'
+import { createZustandStore } from 'platejs'
 
 export type Laser = {
 	clientX?: number
 	clientY?: number
 	prompt: string
 }
-export const createLaserStore = (
-	{
-		lasers: initialLasers = {},
-		test,
-		active,
-	}: {
-		active?: string
-		lasers?: Record<string, Laser>
-		test: number
-	} = { test: 45 }
-) => {
-	return createZustandStore('laser')({ lasers: initialLasers, test, active })
-		.extendActions((set, get) => ({
-			laser: (id: string, laser: Laser): void => {
-				const lasers = get.lasers()
-				set.lasers({ ...lasers, [id]: laser })
-			},
-			test: (val: number): void => {
-				set.test(val)
-			},
-			setActive: (id: string): void => {
-				set.active(id)
-			},
-		}))
-		.extendSelectors((_, get) => ({
-			laser: (id: string): Laser | undefined => {
-				const lasers = get.lasers()
 
-				return lasers[id]
+export function createLaserStore({
+	lasers = {},
+	test = 45,
+	active = undefined,
+}: {
+	active?: string
+	lasers?: Record<string, Laser>
+	test?: number
+} = {}) {
+	const store = createZustandStore(
+		{ lasers, test, active },
+		{ mutative: true, name: 'laser' }
+	)
+		.extendActions(({ set, get }) => ({
+			laser: (id: string, laser: Laser) => {
+				set('lasers', { ...get('lasers'), [id]: laser })
 			},
-			test: (): number => get.test(),
-			getActive: (): string | undefined => get.active(),
+			test: (val: number) => {
+				set('test', val)
+			},
+			setActive: (id: string) => {
+				set('active', id)
+			},
+			reset: () => {
+				set('lasers', {})
+				set('test', 45)
+				set('active', undefined)
+			},
 		}))
+		.extendSelectors(({ get }) => ({
+			laser: (id: string) => get('lasers')[id],
+			test: () => get('test'),
+			getActive: () => get('active'),
+		}))
+
+	return {
+		...store,
+		useLaserState: store.useState,
+		useLaserValue: store.useValue,
+	}
 }

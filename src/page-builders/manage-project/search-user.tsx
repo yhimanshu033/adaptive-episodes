@@ -1,10 +1,10 @@
 import React from 'react'
 import useAllUsersData from '@/hooks/query/use-all-users-data'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
+import { CrossIcon } from '@/icons/cross-icon'
 import useAdminStore, { setMemberQuery } from '@/store/admin-store'
-import { Check } from 'lucide-react'
+import { useEpisodeStore } from '@/store/episode-store'
 
-import IfElse, { Else, If } from '@/components/if-else'
 import {
 	Command,
 	CommandEmpty,
@@ -12,13 +12,14 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from '@/components/ui/command'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@/components/aural-ui/command'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import { Skeleton } from '@/components/aural-ui/skelton'
+import IfElse, { Else, If } from '@/components/if-else'
+import { cn } from '@/lib/utils/helpers'
 
 import { UserData } from '@/types/admin-types'
-
-import UserInfo from '../episodes/user-info'
 
 const SearchUser = ({
 	selectedValue,
@@ -30,6 +31,7 @@ const SearchUser = ({
 	const { data, isLoading } = useAllUsersData('')
 	const { data: membersData } = useUserMembersQuery()
 	const addMemberQuery = useAdminStore((state) => state.addMemberQuery)
+	const { setShowSharedList } = useEpisodeStore()
 
 	const users = React.useMemo(() => {
 		if (!data || !membersData) {
@@ -44,6 +46,11 @@ const SearchUser = ({
 
 	const handleValueChange = (value: string) => {
 		setMemberQuery(value)
+		if (value.length >= 2) {
+			setShowSharedList(false)
+		} else {
+			setShowSharedList(true)
+		}
 		if (selectedValue) {
 			onUserSelect('')
 		}
@@ -52,54 +59,104 @@ const SearchUser = ({
 	const handleSelect = (user: UserData) => {
 		onUserSelect(user.email)
 		setMemberQuery(user.fullname)
+		setShowSharedList(true)
 	}
 
 	return (
-		<Command className="bg-transparent">
-			<div className="relative flex items-center">
-				<CommandInput
-					placeholder="Search User"
-					value={addMemberQuery}
-					onValueChange={handleValueChange}
-					autoComplete="off"
-					groupClassName="border border-input rounded-md flex-1"
-					className="h-9"
+		<Command
+			classes={{
+				list: 'backdrop-blur-none bg-transparent',
+				root: 'relative overflow-visible',
+			}}
+		>
+			<CommandInput
+				classes={{
+					wrapper:
+						'rounded-full border-[0.5px] bg-fm-surface-frosted/20 transition-all duration-200 focus-within:border-fm-divider-contrast',
+					icon: cn('transition-all duration-200', {
+						'opacity-100': addMemberQuery.length > 0,
+					}),
+				}}
+				className="relative"
+				placeholder="Add people to share access"
+				value={addMemberQuery}
+				onValueChange={handleValueChange}
+				autoComplete="off"
+			/>
+			<If condition={addMemberQuery.length > 0}>
+				<IconButton
+					size="small"
+					variant="ghost"
+					label="Clear search"
+					onClick={() => handleValueChange('')}
+					icon={<CrossIcon className="size-4" />}
+					className="text-fm-icon-active hover:text-fm-icon-hover absolute top-1 right-4 z-50"
 				/>
-				{selectedValue && (
-					<Check color="#B7D6A8" className="absolute right-2" size={16} />
-				)}
-			</div>
+			</If>
 
-			<ScrollArea className="border-input mt-2 max-h-[52vh] rounded-md border">
-				<CommandList className="max-h-none">
-					<IfElse condition={isLoading}>
-						<If>
-							{Array.from({ length: 9 }).map((_, index) => (
-								<CommandItem key={index} disabled>
-									<Skeleton className="h-8 w-full" />
-								</CommandItem>
-							))}
-						</If>
-						<Else>
-							<CommandGroup>
-								{users.map((user, index) => (
-									<CommandItem
-										key={index}
-										onMouseDown={(e) => e.preventDefault()}
-										onSelect={() => handleSelect(user)}
-										className="cursor-pointer py-3"
-									>
-										<UserInfo user={user} showFullName showEmail />
+			<div
+				className={cn(
+					addMemberQuery.length < 2 && 'hidden',
+					'absolute top-13 right-0 left-0 z-50'
+				)}
+			>
+				<ScrollArea
+					classes={{
+						viewport: 'h-51',
+					}}
+				>
+					<CommandList className="bg-fm-surface-frosted/20 max-h-none shadow-lg">
+						<IfElse condition={isLoading}>
+							<If>
+								{Array.from({ length: 2 }).map((_, index) => (
+									<CommandItem key={index} disabled>
+										<Skeleton className="h-8 w-full" />
 									</CommandItem>
 								))}
-							</CommandGroup>
-						</Else>
-					</IfElse>
-				</CommandList>
-				<CommandEmpty className="text-muted-foreground my-5 text-sm">
-					No user found
-				</CommandEmpty>
-			</ScrollArea>
+							</If>
+							<Else>
+								<If condition={!selectedValue}>
+									<CommandGroup className="p-0">
+										{users.map((user, index) => (
+											<div key={`user-${index}`}>
+												<CommandItem
+													onMouseDown={(e) => e.preventDefault()}
+													onSelect={() => handleSelect(user)}
+													className="p-0"
+													classes={{
+														root: 'py-0 px-2',
+													}}
+												>
+													<div
+														className={cn(
+															'flex h-15 w-full flex-col justify-center px-2',
+															{
+																'border-fm-divider-primary border-b border-dashed':
+																	index < users.length - 1,
+															}
+														)}
+													>
+														<h3 className="text-sm">
+															{user?.fullname ?? 'Anonymous'}
+														</h3>
+														<div className="text-fm-secondary text-xs">
+															{user.email}
+														</div>
+													</div>
+												</CommandItem>
+											</div>
+										))}
+									</CommandGroup>
+									<CommandEmpty className="text-fm-primary h-full py-3 text-sm">
+										No user found
+									</CommandEmpty>
+									<div className="absolute top-0 right-0 left-0 block h-0.5 w-full bg-(image:--gradient-fm-stroke-neutral)"></div>
+								</If>
+							</Else>
+						</IfElse>
+					</CommandList>
+				</ScrollArea>
+			</div>
 		</Command>
 	)
 }

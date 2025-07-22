@@ -4,13 +4,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
 import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/editor-constants'
-import { TComment } from '@udecode/plate-comments'
-import { TDescendant, TElement, TText, Value } from '@udecode/plate-common'
-import { computeDiff } from '@udecode/plate-diff'
-import { TSuggestionDescription } from '@udecode/plate-suggestion'
+import { getCommentKey } from '@platejs/comment'
+// Create a new file: src/lib/comment-helpers.ts
+import {
+	Descendant,
+	Element,
+	KEYS,
+	TCommentText,
+	Text,
+	TSuggestionText,
+	Value,
+} from 'platejs'
+import { PlateEditor } from 'platejs/react'
 import { type BaseRange, type Range } from 'slate'
 
-import { EReviewType, TCustomComment, TReview } from '@/types/editor-types'
+import { commentPlugin } from '@/components/editor/plugins/comment-kit'
+import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
+import { ResolvedSuggestion } from '@/components/plate-ui-v2/block-suggestion'
+
+import { TCustomComment } from '@/types/editor-types'
 import { Selection } from '@/types/plate-types'
 
 export function isSameBlock(selection: Selection): boolean {
@@ -77,7 +89,7 @@ export function jsonify(value: string): string | Value {
 
 export function clearLasers(ogVal: Value): Value {
 	const val = structuredClone(ogVal)
-	const traverse = (node: TDescendant) => {
+	const traverse = (node: Descendant) => {
 		const keys = Object.keys(node).filter(
 			(key) =>
 				key.startsWith('laser') ||
@@ -90,7 +102,7 @@ export function clearLasers(ogVal: Value): Value {
 			})
 			delete node.laser
 		} else if ('children' in node) {
-			;(node.children as TDescendant[]).forEach(traverse)
+			void (node.children as Descendant[]).forEach(traverse)
 		}
 	}
 	val.forEach(traverse)
@@ -99,7 +111,7 @@ export function clearLasers(ogVal: Value): Value {
 
 export function clearComments(ogVal: Value): Value {
 	const val = structuredClone(ogVal)
-	const traverse = (node: TDescendant) => {
+	const traverse = (node: Descendant) => {
 		let hasComments = false
 		for (const key in node) {
 			if (key.startsWith('comment')) {
@@ -110,16 +122,16 @@ export function clearComments(ogVal: Value): Value {
 		if (hasComments) {
 			delete node.laser
 		} else if ('children' in node) {
-			void (node.children as TDescendant[]).forEach(traverse)
+			void (node.children as Descendant[]).forEach(traverse)
 		}
 	}
 	val.forEach(traverse)
 	return val
 }
 
-export function mergeElementNodes(ogVal: TElement): TElement {
+export function mergeElementNodes(ogVal: Element): Element {
 	const val = structuredClone(ogVal)
-	const merged: TDescendant[] = []
+	const merged: Descendant[] = []
 	val.children.forEach((node) => {
 		const keys = Object.keys(node)
 		const prevKeys = merged.length ? Object.keys(merged[merged.length - 1]) : []
@@ -129,7 +141,7 @@ export function mergeElementNodes(ogVal: TElement): TElement {
 				'text' in merged[merged.length - 1] &&
 				keys.every((key) => prevKeys.includes(key))
 			) {
-				;(merged[merged.length - 1] as TText).text += String(node.text)
+				;(merged[merged.length - 1] as Text).text += String(node.text)
 			} else {
 				merged.push(node)
 			}
@@ -140,22 +152,22 @@ export function mergeElementNodes(ogVal: TElement): TElement {
 	return { ...val, children: merged }
 }
 
-export function getRecord(comments?: TComment[]) {
+export function getRecord(comments?: TCustomComment[]) {
 	if (!comments) {
 		return {}
 	}
-	const records: Record<string, TComment> = comments.reduce(
+	const records: Record<string, TCustomComment> = comments.reduce(
 		(prev, curr) => {
 			return { ...prev, [curr.id]: curr }
 		},
-		{} as Record<string, TComment>
+		{} as Record<string, TCustomComment>
 	)
 	return records
 }
 
 export function clearLaserNode(ogVal: Value, key: string, pluginKey: string) {
 	const val = structuredClone(ogVal)
-	const traverse = (node: TDescendant) => {
+	const traverse = (node: Descendant) => {
 		const keys = Object.keys(node)
 		if (keys.includes(key) && keys.includes(pluginKey)) {
 			const filteredKeys = keys.filter(
@@ -169,7 +181,7 @@ export function clearLaserNode(ogVal: Value, key: string, pluginKey: string) {
 			}
 		}
 		if ('children' in node) {
-			void (node.children as TDescendant[]).forEach(traverse)
+			void (node.children as Descendant[]).forEach(traverse)
 		}
 	}
 	val.forEach(traverse)
@@ -243,10 +255,10 @@ export function mergeBlocks(
 			throw new Error('Cannot merge non-text TDescendants')
 		}
 
-		const firstChild = childrenToMerge[0] as TText
-		const lastChild = childrenToMerge[childrenToMerge.length - 1] as TText
+		const firstChild = childrenToMerge[0] as Text
+		const lastChild = childrenToMerge[childrenToMerge.length - 1] as Text
 
-		const beforeText: TText = {
+		const beforeText: Text = {
 			...firstChild,
 			text: firstChild.text.slice(0, start.offset),
 		}
@@ -256,7 +268,7 @@ export function mergeBlocks(
 				? String(childrenToMerge[0].text).slice(start.offset, end.offset)
 				: childrenToMerge
 						.map((child, index) => {
-							const text = (child as TText).text
+							const text = (child as Text).text
 							if (index === 0) {
 								return text.slice(start.offset)
 							}
@@ -267,7 +279,7 @@ export function mergeBlocks(
 						})
 						.join('')
 
-		const middleText: TText = {
+		const middleText: Text = {
 			...firstChild,
 			text: mergedText,
 		}
@@ -276,7 +288,7 @@ export function mergeBlocks(
 			middleText[key] = true
 		}
 
-		const afterText: TText = {
+		const afterText: Text = {
 			...lastChild,
 			text: lastChild.text.slice(end.offset),
 		}
@@ -315,10 +327,10 @@ export function mergeBlocks(
 		throw new Error('Cannot merge non-text TDescendants')
 	}
 
-	const firstChild = startChildrenToMerge[0] as TText
-	const lastChild = endChildrenToMerge[endChildrenToMerge.length - 1] as TText
+	const firstChild = startChildrenToMerge[0] as Text
+	const lastChild = endChildrenToMerge[endChildrenToMerge.length - 1] as Text
 
-	const beforeText: TText = {
+	const beforeText: Text = {
 		...firstChild,
 		text: firstChild.text.slice(0, start.offset),
 	}
@@ -326,18 +338,18 @@ export function mergeBlocks(
 	const mergedText = [
 		[
 			String(firstChild.text).slice(start.offset),
-			...startChildrenToMerge.slice(1).map((child) => (child as TText).text),
+			...startChildrenToMerge.slice(1).map((child) => (child as Text).text),
 		].join(''),
 		...middleParents.map((parent) =>
 			parent.children.map((child) => child.text).join('')
 		),
 		[
-			...endChildrenToMerge.slice(0, -1).map((child) => (child as TText).text),
+			...endChildrenToMerge.slice(0, -1).map((child) => (child as Text).text),
 			String(lastChild.text).slice(0, end.offset),
 		].join(''),
 	].join('\n')
 
-	const middleText: TText = {
+	const middleText: Text = {
 		...firstChild,
 		text: mergedText,
 	}
@@ -346,7 +358,7 @@ export function mergeBlocks(
 		middleText[key] = true
 	}
 
-	const afterText: TText = {
+	const afterText: Text = {
 		...lastChild,
 		text: lastChild.text.slice(end.offset),
 	}
@@ -384,7 +396,7 @@ export function getCommentNode(val: Value, id: string) {
 
 export function getText(val: Value, separator?: string) {
 	let text = ''
-	function getTextFromNode(node: TDescendant) {
+	function getTextFromNode(node: Descendant) {
 		if ('text' in node) {
 			text += String(node.text)
 		} else if (node.children) {
@@ -400,6 +412,16 @@ export function getText(val: Value, separator?: string) {
 	return text
 }
 
+/**
+ * Breaks down a string or Plate.js editor Value into clean paragraph blocks.
+ *
+ * - Splits text by newlines into separate paragraph (`<p>`) blocks.
+ * - Preserves formatting and avoids splitting nodes with excluded marks (e.g. comments).
+ * - Useful for normalizing pasted or unstructured input before rendering in the editor.
+ *
+ * @param {Value | string} ogVal - Raw text or editor Value to normalize.
+ * @returns {Value} - A normalized array of paragraph blocks.
+ */
 export function breakDownValue(ogVal: Value | string): Value {
 	const newVal: Value = []
 
@@ -461,7 +483,7 @@ export function breakDownValue(ogVal: Value | string): Value {
 
 export function clearColors(ogVal: Value): Value {
 	const val = structuredClone(ogVal)
-	const traverse = (node: TDescendant) => {
+	const traverse = (node: Descendant) => {
 		const keys = Object.keys(node)
 		if (keys.includes('color')) {
 			if (
@@ -474,33 +496,33 @@ export function clearColors(ogVal: Value): Value {
 			}
 		}
 		if ('children' in node) {
-			void (node.children as TDescendant[]).forEach(traverse)
+			void (node.children as Descendant[]).forEach(traverse)
 		}
 	}
 	val.forEach(traverse)
 	return val
 }
 
-export function isEpisodeContentDifferent(val1: string, val2: string) {
-	const v1 = breakDownValue(jsonify(val1))
-	const v2 = breakDownValue(jsonify(val2))
+// export function isEpisodeContentDifferent(val1: string, val2: string) {
+// 	const v1 = breakDownValue(jsonify(val1))
+// 	const v2 = breakDownValue(jsonify(val2))
 
-	const diffValue = computeDiff(v1, v2) as Value
+// 	const diffValue = computeDiff(v1, v2) as Value
 
-	const diffBlocks = diffValue.filter((item) => item.diff)
-	const diffLeafs = diffValue
-		.map((elem) => elem.children)
-		.flat()
-		.filter((item) => item.diff)
+// 	const diffBlocks = diffValue.filter((item) => item.diff)
+// 	const diffLeafs = diffValue
+// 		.map((elem) => elem.children)
+// 		.flat()
+// 		.filter((item) => item.diff)
 
-	const areAnyDeletionsInBlocks = diffBlocks.some(
-		(item: any) => item?.diffOperation?.type === 'delete'
-	)
-	const areAnyDeletionsInLeafs = diffLeafs.some(
-		(item: any) => item?.diffOperation?.type === 'delete'
-	)
-	return areAnyDeletionsInBlocks || areAnyDeletionsInLeafs
-}
+// 	const areAnyDeletionsInBlocks = diffBlocks.some(
+// 		(item: any) => item?.diffOperation?.type === 'delete'
+// 	)
+// 	const areAnyDeletionsInLeafs = diffLeafs.some(
+// 		(item: any) => item?.diffOperation?.type === 'delete'
+// 	)
+// 	return areAnyDeletionsInBlocks || areAnyDeletionsInLeafs
+// }
 export function getWordCount(val: Value) {
 	const text = getText(val)
 	const words = text.split(/\s+/)
@@ -512,64 +534,75 @@ export function getWordCountFromString(ogText: string) {
 	return getWordCount(val)
 }
 
-export function sortCommentsAndDescriptions(
-	nodes: Value,
-	comments: TCustomComment[],
-	descriptions: TSuggestionDescription[]
+export function sortCommentsAndSuggestions(
+	editor: PlateEditor,
+	unresolvedComments: TDiscussion[],
+	suggestions: ResolvedSuggestion[]
 ) {
-	const sortedRecords: Array<TReview> = []
-	const visitedIds = new Set<string>()
+	const orderedNodes = Array.from(
+		editor.api.nodes({
+			at: [],
+			match: (n: TSuggestionText | TCommentText) =>
+				n.text && ('comment' in n || 'suggestion' in n),
+			mode: 'all',
+		})
+	)
 
-	const commentMap = new Map(comments.map((c) => [c.id, c]))
-	const descriptionMap = new Map(descriptions.map((d) => [d.suggestionId, d]))
+	const commentMap = new Map(unresolvedComments.map((c) => [c.id, c]))
+	const suggestionMap = new Map(suggestions.map((s) => [s.suggestionId, s]))
 
-	function traverse(node: TDescendant) {
+	const orderedItems: (TDiscussion | ResolvedSuggestion)[] = []
+	const seenIds = new Set<string>()
+
+	for (const [node] of orderedNodes) {
 		if ('comment' in node) {
-			const commentKey = Object.keys(node)
-				.find((key) => key.startsWith('comment_'))
-				?.replace('comment_', '')
+			const commentKeys = Object.keys(node).filter((key) =>
+				key.startsWith('comment_')
+			)
 
-			if (commentKey && !visitedIds.has(commentKey)) {
-				const comment = commentMap.get(commentKey)
-				if (comment) {
-					sortedRecords.push({ data: comment, type: EReviewType.COMMENT })
-					visitedIds.add(commentKey)
+			for (const key of commentKeys) {
+				const commentId = key.replace('comment_', '')
+
+				if (!seenIds.has(commentId)) {
+					const comment = commentMap.get(commentId)
+					if (comment) {
+						orderedItems.push(comment)
+						seenIds.add(commentId)
+					}
 				}
 			}
 		}
 
-		if ('suggestionId' in node) {
-			const suggestionKey = node.suggestionId as string
-			if (!visitedIds.has(suggestionKey)) {
-				const suggestion = descriptionMap.get(suggestionKey)
-				if (suggestion) {
-					sortedRecords.push({
-						data: suggestion,
-						type: EReviewType.DESCRIPTION,
-					})
-					visitedIds.add(suggestionKey)
+		if ('suggestion' in node) {
+			const suggestionKeys = Object.keys(node).filter((key) =>
+				key.startsWith('suggestion_')
+			)
+
+			for (const key of suggestionKeys) {
+				const suggestionId = key.replace('suggestion_', '')
+
+				if (!seenIds.has(suggestionId)) {
+					const suggestion = suggestionMap.get(suggestionId)
+					if (suggestion) {
+						orderedItems.push(suggestion)
+						seenIds.add(suggestionId)
+					}
 				}
 			}
-		}
-
-		if ('children' in node) {
-			;(node.children as TDescendant[]).forEach(traverse)
 		}
 	}
 
-	nodes.forEach(traverse)
-
-	return sortedRecords
+	return orderedItems
 }
 
-export function getCommentNodeKey(node: TDescendant) {
+export function getCommentNodeKey(node: Descendant) {
 	const commentKey = Object.keys(node)
 		.find((key) => key.startsWith('comment_'))
 		?.replace('comment_', '')
 	return commentKey
 }
 
-export function getResolvedCommentNodeKey(node: TDescendant) {
+export function getResolvedCommentNodeKey(node: Descendant) {
 	const commentKey = Object.keys(node)
 		.find((key) => key.startsWith('resolved_comments_'))
 		?.replace('resolved_comments_', '')
@@ -582,7 +615,7 @@ export function addResolvedCommentInChildren(
 	pluginKey: string
 ) {
 	const nodes = structuredClone(ogNodes)
-	function traverse(node: TDescendant) {
+	function traverse(node: Descendant) {
 		if ('comment' in node) {
 			const commentKey = getCommentNodeKey(node)
 
@@ -595,7 +628,7 @@ export function addResolvedCommentInChildren(
 		}
 
 		if ('children' in node) {
-			;(node.children as TDescendant[]).forEach(traverse)
+			;(node.children as Descendant[]).forEach(traverse)
 		}
 	}
 
@@ -610,7 +643,7 @@ export function addUnresolvedCommentInChildren(
 	pluginKey?: string
 ) {
 	const nodes = structuredClone(ogNodes)
-	function traverse(node: TDescendant) {
+	function traverse(node: Descendant) {
 		if ('resolved_comments' in node) {
 			const commentKey = getResolvedCommentNodeKey(node)
 			if (commentKey === comment.id) {
@@ -624,7 +657,7 @@ export function addUnresolvedCommentInChildren(
 		}
 
 		if ('children' in node) {
-			;(node.children as TDescendant[]).forEach(traverse)
+			;(node.children as Descendant[]).forEach(traverse)
 		}
 	}
 
@@ -636,7 +669,7 @@ export function addUnresolvedCommentInChildren(
 export function nodeOperation(
 	ogChildren: Value,
 	selection: Range,
-	operation: (node: TDescendant) => void
+	operation: (node: Descendant) => void
 ) {
 	const { endChildIndex, endParentIndex, startChildIndex, startParentIndex } =
 		getStartEndFromRange(selection)
@@ -655,7 +688,7 @@ export function nodeOperation(
 	return children
 }
 
-export function deleteNodesWithStartKeys(str: string, node: TDescendant) {
+export function deleteNodesWithStartKeys(str: string, node: Descendant) {
 	const keys = Object.keys(node).filter((key) => key.startsWith(str))
 	keys.forEach((key) => {
 		delete node[key]
@@ -666,7 +699,7 @@ export function deleteNodesWithStartKeys(str: string, node: TDescendant) {
 export function updateNodesWithStartKeys(
 	str: string,
 	text: string,
-	node: TDescendant
+	node: Descendant
 ) {
 	node.text = text
 	const keys = Object.keys(node).filter((key) => key.startsWith(str))
@@ -679,15 +712,15 @@ export function updateNodesWithStartKeys(
 export function keyNodeOperationOnce(
 	children: Value,
 	key: string,
-	foundNodeOperation: (node: TDescendant) => TDescendant,
-	nodeOperation: (node: TDescendant) => TDescendant = (node) => node
+	foundNodeOperation: (node: Descendant) => Descendant,
+	nodeOperation: (node: Descendant) => Descendant = (node) => node
 ) {
 	if (!key) {
 		return children
 	}
 
 	let found = false
-	const traverse = (node: TDescendant) => {
+	const traverse = (node: Descendant) => {
 		if (key in node) {
 			if (!found) {
 				node = foundNodeOperation(node)
@@ -696,7 +729,7 @@ export function keyNodeOperationOnce(
 				node = nodeOperation(node)
 			}
 		} else if ('children' in node) {
-			;(node.children as TDescendant[]).forEach(traverse)
+			;(node.children as Descendant[]).forEach(traverse)
 		}
 	}
 
@@ -710,37 +743,140 @@ export function keyNodeOperationOnce(
 	return children
 }
 
-export function getUniqueAllComments(children: Value, allComments: TComment[]) {
-	const uniqueChildrenCommentIds: Record<string, boolean> = {}
+/**
+ * Currently this function is not used anywhere in the codebase.
+ */
 
-	function traverse(child: TDescendant) {
-		if (child.comment) {
-			const keys = Object.keys(child)
-			const commentKey = keys.find((key) => key.startsWith('comment_'))
-			const commentId = commentKey?.replace('comment_', '')
-			if (!commentId) {
-				return
-			}
-			uniqueChildrenCommentIds[commentId] = true
-		}
-		if (child.children) {
-			;(child.children as TDescendant[]).forEach((c) => traverse(c))
-		}
+// export function getUniqueAllComments(
+// 	children: Value,
+// 	allComments: TCustomComment[]
+// ) {
+// 	const uniqueChildrenCommentIds: Record<string, boolean> = {}
+
+// 	function traverse(child: Descendant) {
+// 		if (child.comment) {
+// 			const keys = Object.keys(child)
+// 			const commentKey = keys.find((key) => key.startsWith('comment_'))
+// 			const commentId = commentKey?.replace('comment_', '')
+// 			if (!commentId) {
+// 				return
+// 			}
+// 			uniqueChildrenCommentIds[commentId] = true
+// 		}
+// 		if (child.children) {
+// 			;(child.children as Descendant[]).forEach((c) => traverse(c))
+// 		}
+// 	}
+
+// 	structuredClone(children).forEach((node) => {
+// 		traverse(node)
+// 	})
+
+// 	const cleanedComments: TCustomComment[] = allComments.filter(
+// 		(comment) =>
+// 			uniqueChildrenCommentIds[comment.id] ||
+// 			(comment.parentId && uniqueChildrenCommentIds[comment.parentId])
+// 	)
+
+// 	const cleanedCommentsRecord = cleanedComments.reduce<
+// 		Record<string, TCustomComment>
+// 	>((acc, comment) => ({ ...acc, [comment.id]: comment }), {})
+
+// 	return { cleanedCommentsRecord, cleanedComments }
+// }
+
+export const getParentWidth = (ref: React.RefObject<HTMLDivElement>) => {
+	const blockAncestor = ref.current?.closest('[data-block-id]') as HTMLElement
+	const blockAncestorRect = blockAncestor?.getBoundingClientRect()
+
+	let blockAncestorContentWidth = 0,
+		blockAncestorClientX = 0
+
+	if (blockAncestor) {
+		const computedStyle = window.getComputedStyle(blockAncestor)
+		const paddingLeft = parseFloat(computedStyle.paddingLeft)
+		const paddingRight = parseFloat(computedStyle.paddingRight)
+		blockAncestorContentWidth =
+			blockAncestor.clientWidth - paddingLeft - paddingRight
+		blockAncestorClientX = blockAncestorRect
+			? blockAncestorRect.left + paddingLeft
+			: 0
 	}
 
-	structuredClone(children).forEach((node) => {
-		traverse(node)
+	return {
+		blockAncestor,
+		blockAncestorContentWidth:
+			blockAncestorContentWidth || blockAncestor?.clientWidth || 800,
+		blockAncestorRect,
+		blockAncestorClientX,
+	}
+}
+
+export const updateCommentMark = (
+	editor: PlateEditor,
+	options: {
+		add?: Record<string, any>
+		id: string
+		isResolved?: boolean
+		remove?: string[] // Flag to indicate if we're working with resolved comments
+	}
+) => {
+	const { id, add = {}, remove = [], isResolved = false } = options
+
+	let nodes: any[] = []
+
+	if (isResolved) {
+		nodes = [
+			...editor.api.nodes({
+				at: [],
+				match: (n) => {
+					return (
+						n.resolvedComment === true && n[`resolvedComment_${id}`] === true
+					)
+				},
+			}),
+		]
+	} else {
+		nodes = editor.getApi(commentPlugin).comment?.nodes({ id, at: [] }) || []
+	}
+
+	if (!nodes || nodes.length === 0) {
+		console.warn(`No nodes found for comment ID: ${id}`)
+		return
+	}
+
+	editor.tf.withoutNormalizing(() => {
+		nodes.forEach(([, path]) => {
+			if (Object.keys(add).length > 0) {
+				editor.tf.setNodes(add, { at: path })
+			}
+			if (remove.length > 0) {
+				editor.tf.unsetNodes(remove, { at: path })
+			}
+		})
 	})
+}
 
-	const cleanedComments: TComment[] = allComments.filter(
-		(comment) =>
-			uniqueChildrenCommentIds[comment.id] ||
-			(comment.parentId && uniqueChildrenCommentIds[comment.parentId])
-	)
+export const resolveEditorComment = (editor: PlateEditor, id: string) => {
+	updateCommentMark(editor, {
+		id,
+		add: {
+			resolvedComment: true,
+			[`resolvedComment_${id}`]: true,
+		},
+		remove: [KEYS.comment, getCommentKey(id)],
+		isResolved: false,
+	})
+}
 
-	const cleanedCommentsRecord = cleanedComments.reduce<
-		Record<string, TComment>
-	>((acc, comment) => ({ ...acc, [comment.id]: comment }), {})
-
-	return { cleanedCommentsRecord, cleanedComments }
+export const unresolveEditorComment = (editor: PlateEditor, id: string) => {
+	updateCommentMark(editor, {
+		id,
+		add: {
+			[KEYS.comment]: true,
+			[getCommentKey(id)]: true,
+		},
+		remove: ['resolvedComment', `resolvedComment_${id}`],
+		isResolved: true,
+	})
 }

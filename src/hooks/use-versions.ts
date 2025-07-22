@@ -11,7 +11,7 @@ import useSaving from '@/hooks/use-saving'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEditorPlugin } from '@udecode/plate-common/react'
+import { useEditorPlugin } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeId, {
@@ -41,8 +41,8 @@ export default function useVersions({
 		useShallow((s) => s.selectedStatus)
 	)
 	const { statusUpdateMutation } = useEpisodeHook()
-	const { useOption } = useEditorPlugin(FindReplacePlugin)
-	const replaceEnabled = useOption('replaceEnabled')
+	const replaceEnabled =
+		useEditorPlugin(FindReplacePlugin).getOption('replaceEnabled')
 	const { setViewMode } = useCustomPlateStore()
 	const { usePlateStoreContext } = useEpisodeContext()
 	const { sidebar } = usePlateStoreContext()

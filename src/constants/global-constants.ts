@@ -1,10 +1,11 @@
 import { PRIMARY_KEYS_TO_COMPARE } from '@/constants/episodes-constants'
-import { SuggestionUser } from '@udecode/plate-suggestion'
 
 import { ERole } from '@/types/admin-types'
+import { PlateUser } from '@/types/plate-types'
 
 export const COPILOT_LOGO_URL = '/assets/pocket-copilot-logo.webp'
 export const FALLBACK_USER_URL = '/assets/placeholder-user.webp'
+export const AI_AVATAR_ASSET = '/assets/ai_avatar.webp'
 
 export const DB_NAME = 'COPILOT_DB'
 export const STORE_NAME = 'EPISODE_DATA_STORE'
@@ -31,7 +32,7 @@ export const rolesArray = Object.values(ERole).filter(
 	(role) => role !== ERole.READER
 )
 
-export const DEFAULT_USER: Record<string, SuggestionUser> = {
+export const DEFAULT_USER: Record<string, PlateUser> = {
 	'1': {
 		id: '1',
 		name: 'Anonymous',
@@ -120,7 +121,12 @@ export type TIdParams = {
 	id: string
 }
 
-export const pathsWithoutGlobalHeader = ['/editor', '/manage-project']
+export const pathsWithoutGlobalHeader = [
+	'/editor',
+	'/manage-project',
+	'/preview',
+	'/content',
+]
 
 export const GDRIVE_BROADCAST_CHANNEL = 'gdrive-channel'
 export const GDRIVE_SUCCESS_MESSAGE = 'gdrive-success'
