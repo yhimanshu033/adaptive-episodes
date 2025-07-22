@@ -1,19 +1,16 @@
 import React from 'react'
-import useNotesMutation from '@/hooks/mutation/use-notes-mutation'
-import useNotes from '@/hooks/use-notes'
+import { CrossIcon } from '@/icons/cross-icon'
 import useAIStore from '@/store/ai-store'
-import { ArrowLeft, Copy, FilePlus2 } from 'lucide-react'
-import { nanoid } from 'nanoid'
-import { useShallow } from 'zustand/react/shallow'
 
-import { IconLoader, Loader } from '@/components/loader'
-import { StoryAccordion } from '@/components/render-content'
-import { Button } from '@/components/ui/button'
-import { formatExplorerData } from '@/lib/utils/explorer'
-import { toPascalCase } from '@/lib/utils/helpers'
+import DotLoader from '@/components/aural-ui/dot-loader'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import { Typography } from '@/components/aural-ui/typography'
 
 import { PlotExplorerApiResponse } from '@/types/ai-types'
-import { TNote } from '@/types/plate-types'
+
+import { StoryAccordion } from './story-accordion'
 
 const Content = ({
 	header,
@@ -31,74 +28,45 @@ const Content = ({
 	start: number
 }) => {
 	const { store, setActiveExplorerActions } = useAIStore()
-	const { handleAddNote } = useNotes()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
-	const activeExplorerActions = store(
-		useShallow((state) => state.activeExplorerActions)
-	)
-	const updateNotesMutation = useNotesMutation()
-
-	const addToNote = (explorerData?: PlotExplorerApiResponse['data']) => {
-		const id = nanoid()
-		const note: TNote = {
-			id,
-			title: `${toPascalCase(activeExplorerMode)} ${toPascalCase(activeExplorerActions[activeExplorerMode])} (Episode ${start} - ${end})`,
-			content: explorerData || '',
-			updateTime: new Date().toString(),
-		}
-		handleAddNote(note)
-	}
 	return (
-		<>
-			<div className="mb-4 flex items-center justify-between gap-2">
-				<h1 className="flex-1 text-xl font-bold">{header}</h1>
-				{enableNote !== false && (
-					<Button
-						variant="ghost"
-						size="icon"
-						tooltip="Copy"
-						onClick={() =>
-							void navigator.clipboard.writeText(
-								formatExplorerData(explorerData || '')
-							)
-						}
-					>
-						<Copy size={16} />
-					</Button>
-				)}
-				{updateNotesMutation.isPending ? (
-					<IconLoader />
-				) : (
-					<Button
-						variant="ghost"
-						size="icon"
-						tooltip="Add to Note"
-						onClick={() => addToNote(explorerData)}
-						disabled={enableNote === false}
-					>
-						<FilePlus2 size={16} />
-					</Button>
-				)}
-
-				<Button
-					variant="outline"
-					size="icon"
-					tooltip="Back"
+		<div className="bg-fm-surface-primary absolute inset-x-0 -top-15.5 z-21 flex min-h-full flex-col">
+			<div className="border-fm-divider-tertiary bg-fm-surface-primary sticky top-0 z-22 mb-4 flex h-15.5 items-center justify-between gap-2 border-y py-3 pr-4 pl-7">
+				<Typography align="left" color="primary" variant="body-small">
+					{header}
+				</Typography>
+				<IconButton
+					label="Close Sidebar"
+					variant="ghost"
 					onClick={() => {
 						setActiveExplorerActions(activeExplorerMode, null)
 					}}
-				>
-					<ArrowLeft size={16} />
-				</Button>
+					shape="square"
+					size="small"
+					icon={<CrossIcon className="size-4" />}
+				/>
 			</div>
-			{explorerData?.length && !isLoading ? (
-				<StoryAccordion explorerData={explorerData} />
-			) : (
-				<div className="mt-5 flex w-full justify-center">
-					<Loader />
-				</div>
-			)}
-		</>
+			<IfElse condition={!!explorerData?.length && !isLoading}>
+				<If>
+					<ScrollArea className="flex-1 transition-all duration-200">
+						<StoryAccordion
+							explorerData={explorerData || []}
+							enableNote={enableNote}
+							start={start}
+							end={end}
+						/>
+					</ScrollArea>
+				</If>
+				<Else>
+					<div className="flex w-full flex-1 flex-col items-center justify-center gap-4">
+						<DotLoader />
+						<Typography color="tertiary" align="center" className="px-5">
+							Just a moment, we&apos;re generating your content
+						</Typography>
+					</div>
+				</Else>
+			</IfElse>
+		</div>
 	)
 }
 

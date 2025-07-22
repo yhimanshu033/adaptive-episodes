@@ -1,24 +1,28 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import useLaserStore from '@/store/laser-store'
 import { cn } from '@udecode/cn'
-import { TDescendant, TText } from '@udecode/plate-common'
+import { Descendant, Text } from 'platejs'
 import {
 	PlateLeaf,
 	PlateLeafProps,
 	useEditorRef,
 	useEditorState,
-} from '@udecode/plate-common/react'
+} from 'platejs/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
-import { breakDownValue, getCommentNode } from '@/lib/utils/plate'
+import {
+	breakDownValue,
+	getCommentNode,
+	getParentWidth,
+} from '@/lib/utils/plate'
 
 import { TLaserLeafChildren } from '@/types/plate-types'
 
-function getLaserKey(elem: TText) {
+function getLaserKey(elem: Text) {
 	return Object.keys(elem).find((key) => key.startsWith('laser-id-'))
 }
 
-function getMethodId(elem: TText) {
+function getMethodId(elem: Text) {
 	const method = Object.keys(elem).find((key) =>
 		key.startsWith('laser-method-')
 	)
@@ -54,10 +58,16 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		if (!rect) {
 			return
 		}
+
+		const { blockAncestorContentWidth, blockAncestorClientX } =
+			getParentWidth(areaRef)
+
 		setLaser({
 			laser: {
 				...laser,
-				clientY: rect.y,
+				clientY: rect.y + rect.height,
+				clientX: blockAncestorClientX,
+				width: blockAncestorContentWidth,
 			},
 			id: key,
 		})
@@ -73,7 +83,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		let prevtext = ''
 		let nexttext = ''
 
-		const descendants: TDescendant[] = (children as TLaserLeafChildren).props
+		const descendants: Descendant[] = (children as TLaserLeafChildren).props
 			.parent.children
 		const texts = descendants.map((child) => child.text)
 
@@ -108,7 +118,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 	}, [key, leaf, children, allChildren])
 
 	const traverse = useCallback(
-		(node: TDescendant) => {
+		(node: Descendant) => {
 			if (!key) {
 				return
 			}
@@ -118,7 +128,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 					delete node[key]
 				})
 			} else if ('children' in node) {
-				;(node.children as TDescendant[]).forEach(traverse)
+				;(node.children as Descendant[]).forEach(traverse)
 			}
 		},
 		[key]
@@ -144,13 +154,25 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		}
 		let laser = getLaser(key)
 		const rect = areaRef.current?.getBoundingClientRect()
+
+		const { blockAncestorContentWidth, blockAncestorClientX } =
+			getParentWidth(areaRef)
+
 		laser = laser
-			? { ...laser, clientY: rect ? rect.top - rect.height : 0 }
+			? {
+					...laser,
+					clientY: rect ? rect.top + rect.height : 0,
+					clientX: blockAncestorClientX,
+					width: blockAncestorContentWidth,
+				}
 			: {
 					response: '',
 					text: '',
-					clientY: rect ? rect.top - rect.height : 0,
+					clientY: rect ? rect.top + rect.height : 0,
+					clientX: blockAncestorClientX,
+					width: blockAncestorContentWidth,
 				}
+
 		setLaser({
 			laser: {
 				...laser,
@@ -209,7 +231,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		<PlateLeaf
 			ref={areaRef}
 			{...props}
-			onClick={handleClick}
+			attributes={{
+				onClick: handleClick,
+			}}
 			className={cn(
 				'relative border-b-2 border-b-blue-500/70',
 				'bg-blue-500/40',
@@ -236,12 +260,15 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 					e.stopPropagation()
 				}}
 				className={cn(
-					'bg-popover absolute bottom-0 z-[9999] max-w-[75vw] translate-y-full rounded border px-1 whitespace-nowrap shadow-md print:hidden',
+					'absolute bottom-0 z-9999 translate-y-full whitespace-nowrap print:hidden',
 					{
 						'pointer-events-none opacity-0': activeLaser !== key,
 						'opacity-100': activeLaser === key,
 					}
 				)}
+				style={{
+					width: getParentWidth(divRef).blockAncestorContentWidth || 800,
+				}}
 			>
 				<LaserRephrase
 					setResponseMode={setResponseMode}

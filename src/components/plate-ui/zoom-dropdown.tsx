@@ -1,13 +1,11 @@
 import React from 'react'
 import usePlateStore from '@/store/plate-store'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
-import { collapseSelection } from '@udecode/plate-common'
-import { focusEditor, useEditorRef } from '@udecode/plate-common/react'
+import { useEditorRef } from 'platejs/react'
 
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuLabel,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
@@ -38,24 +36,26 @@ export function ZoomDropdownMenu(props: DropdownMenuProps) {
 				</ToolbarButton>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent className="min-w-0" align="start">
-				<DropdownMenuLabel>Zoom</DropdownMenuLabel>
+			<DropdownMenuContent className="min-w-50" align="start">
 				<DropdownMenuRadioGroup
 					className="flex flex-col gap-0.5"
 					value={String(selectedItem)}
 					onValueChange={(type) => {
 						setScale(Number(type))
-						collapseSelection(editor)
-						focusEditor(editor)
+						editor.tf.collapse()
+						editor.tf.focus({ edge: 'end' })
 					}}
 				>
-					<DropdownMenuRadioItem className="min-w-[180px]" value={'1.0'}>
+					<DropdownMenuRadioItem
+						className="min-w-24 py-2 [font-size:var(--text-fm-md)]"
+						value={'1.0'}
+					>
 						Fit
 					</DropdownMenuRadioItem>
 					{items.map((val, idx) => (
 						<DropdownMenuRadioItem
 							key={`scale-item-${idx}`}
-							className="min-w-[180px]"
+							className="min-w-24 py-2 [font-size:var(--text-fm-md)]"
 							value={String(val)}
 						>
 							{`${val * 100}%`}

@@ -1,0 +1,83 @@
+'use client'
+
+import React, { ReactNode, useState } from 'react'
+import { TrashIcon } from '@/icons/trash-icon'
+
+import { Button } from '@/components/aural-ui/button'
+import {
+	Dialog,
+	DialogContent,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/aural-ui/dialog'
+import { Typography } from '@/components/aural-ui/typography'
+
+interface IDeleteModalProps {
+	children: ReactNode
+	onPrimaryClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+	subTitle: string
+	title: string
+}
+
+const DeleteModal = ({
+	onPrimaryClick,
+	children,
+	title,
+	subTitle,
+}: IDeleteModalProps) => {
+	const [isOpen, setIsOpen] = useState(false)
+
+	const onOpenChange = (val: boolean) => {
+		setIsOpen(val)
+	}
+
+	const handlePrimaryClick = (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
+		setIsOpen(false)
+		onPrimaryClick(e)
+	}
+
+	return (
+		<Dialog open={isOpen} onOpenChange={onOpenChange}>
+			<DialogTrigger asChild>{children}</DialogTrigger>
+			<DialogContent
+				variant="negative"
+				classes={{
+					root: 'flex h-88 w-99 flex-col items-center px-6 py-8 text-center',
+					overlay: 'z-60',
+					content: 'z-70',
+				}}
+				noise="none"
+			>
+				<DialogTitle className="sr-only">Delete</DialogTitle>
+				<div className="flex flex-col items-center gap-8">
+					<TrashIcon height={44} width={44} className="text-fm-negative" />
+					<div className="space-y-2">
+						<Typography align="center" as="h2" variant="body-large">
+							{title}
+						</Typography>
+						<Typography align="center" color="tertiary">
+							{subTitle}
+						</Typography>
+					</div>
+					<div className="flex w-full flex-col gap-5">
+						<Button variant="secondary" onClick={handlePrimaryClick}>
+							Delete
+						</Button>
+						<Button
+							variant="outline"
+							onClick={() => {
+								setIsOpen(false)
+							}}
+						>
+							Cancel
+						</Button>
+					</div>
+				</div>
+			</DialogContent>
+		</Dialog>
+	)
+}
+
+export default DeleteModal

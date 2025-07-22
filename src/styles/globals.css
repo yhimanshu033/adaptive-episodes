@@ -1,6 +1,10 @@
 @import 'tailwindcss';
+
+/*
+  ---break---
+*/
+@import 'tailwind-scrollbar-hide/v4';
 @import './aural-theme.css';
-@import './styles/aural-theme.css';
 
 @custom-variant dark (&: is(.dark *));
 @theme {
@@ -53,6 +57,7 @@
 		forwards;
 	--animate-fade-in-up: fade-in-up 1s var(--animation-delay, 0ms) ease forwards;
 	--animate-slow-flash: flash 1s ease;
+	--animate-gradient-slide: gradient-slide 2s linear infinite;
 
 	@keyframes accordion-down {
 		from {
@@ -96,8 +101,17 @@
 			background-color: transparent;
 		}
 		50% {
-			background-color: hsl(var(--primary));
+			background-color: var(--color-fm-secondary-100);
 			opacity: 0.5;
+		}
+	}
+
+	@keyframes gradient-slide {
+		0% {
+			background-position: 200% 0%;
+		}
+		100% {
+			background-position: -200% 0%;
 		}
 	}
 }
@@ -214,10 +228,40 @@
 		/* --font-default: 'Inter', 'Inter Fallback'; CHECK WITH LAYOUT.TSX */
 
 		/* aural-ui tokens :root variables */
+		--gradient-fm-stroke-negative: linear-gradient(
+			270deg,
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-red-500-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
 		--gradient-fm-stroke-neutral: linear-gradient(
 			270deg,
 			var(--color-fm-divider-secondary-alpha-80) -1.27%,
 			var(--color-fm-divider-contrast-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
+		--gradient-fm-stroke-positive: linear-gradient(
+			270deg,
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-green-500-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
+		--gradient-fm-stroke-warning: linear-gradient(
+			270deg,
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-yellow-500-alpha-80) 50.35%,
+			var(--color-fm-divider-secondary-alpha-80) 100%
+		);
+
+		/* aural-ui tokens :root variables */
+		--toast-shadow: 0 6px 20px -9px;
+
+		/* aural-ui tokens :root variables */
+		--bottom-sheet-shadow: 0 -21px 24.8px -27px;
+		--gradient-fm-stroke-info: linear-gradient(
+			var(--stroke-direction, 270deg),
+			var(--color-fm-divider-secondary-alpha-80) -1.27%,
+			var(--color-fm-blue-500-alpha-80) 50.35%,
 			var(--color-fm-divider-secondary-alpha-80) 100%
 		);
 	}
@@ -317,27 +361,41 @@
 	animation-duration: 0ms;
 }
 
-/* Marquee animations */
-@keyframes marquee-left {
-	to {
-		transform: translateX(-50%);
-	}
+.animate-gradient-slide {
+	background-image: linear-gradient(
+		270deg,
+		var(--color-fm-placeholder) 12.22%,
+		var(--color-fm-primary) 31.77%,
+		var(--color-fm-primary) 67.87%,
+		var(--color-fm-placeholder) 96.75%
+	);
+	background-size: 200% 100%;
+	animation: var(--animate-gradient-slide);
 }
 
-@keyframes marquee-right {
-	to {
-		transform: translateX(50%);
-	}
+/*
+  ---break---
+*/
+
+:root {
+	--brand: oklch(0.623 0.214 259.815);
+	--highlight: oklch(0.852 0.199 91.936);
 }
 
-@keyframes marquee-up {
-	to {
-		transform: translateY(-50%);
-	}
+/*
+  ---break---
+*/
+
+.dark {
+	--brand: oklch(0.707 0.165 254.624);
+	--highlight: oklch(0.852 0.199 91.936);
 }
 
-@keyframes marquee-down {
-	to {
-		transform: translateY(50%);
-	}
+/*
+  ---break---
+*/
+
+@theme inline {
+	--color-brand: var(--brand);
+	--color-highlight: var(--highlight);
 }

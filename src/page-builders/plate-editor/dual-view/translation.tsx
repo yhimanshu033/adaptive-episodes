@@ -1,14 +1,10 @@
 import React from 'react'
 import { TRANSLATION_EDITOR_ID } from '@/constants/editor-constants'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import {
-	createPlateEditor,
-	ParagraphPlugin,
-	Plate,
-} from '@udecode/plate-common/react'
+import { createPlateEditor, ParagraphPlugin, Plate } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
-import { Editor } from '@/components/plate-ui/editor'
+import { Editor } from '@/components/plate-ui-v2/editor'
 
 import { EDualVIewMode, TranslationProps } from '@/types/episode-type'
 
@@ -38,11 +34,9 @@ export default function Translation({ translatedContent }: TranslationProps) {
 	return (
 		<Plate editor={editor}>
 			<Editor
-				focusRing={false}
 				readOnly
-				variant="ghost"
-				size="md"
-				className="!pt-0"
+				variant="aural"
+				className="bg-fm-surface-primary text-fm-tertiary"
 			/>
 		</Plate>
 	)

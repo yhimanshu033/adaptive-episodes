@@ -57,18 +57,9 @@ export const getStoryData = async (
 			storyId,
 		},
 	})
-	// IN CASE THE NEW API IS NOT DEPLOYED YET
-	if (!response?.data) {
-		const storiesResponse = await getStories({})
 
-		if (!storiesResponse?.results?.data) {
-			return
-		}
-
-		const story = storiesResponse.results.data.find(
-			(item) => item.id === storyId
-		)
-		return story
+	if (!response.success) {
+		throw response.error
 	}
 	return response.data
 }

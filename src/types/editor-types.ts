@@ -1,8 +1,10 @@
 import { Dispatch, SetStateAction } from 'react'
+import { storyChatSuggestions } from '@/constants/editor-constants'
 import { colorOptions } from '@/constants/global-constants'
-import { Value } from '@udecode/plate'
-import { TComment, TCommentText } from '@udecode/plate-comments'
-import { TSuggestionDescription } from '@udecode/plate-suggestion'
+import { TSuggestionDescription } from '@platejs/suggestion'
+import { TCommentText, Value } from 'platejs'
+
+import { TComment } from '@/components/plate-ui-v2/comment'
 
 import {
 	TLocalizeCharacterArrayItem,
@@ -38,6 +40,8 @@ export interface IndexedCommentsResponse {
 
 export interface ReviewComment {
 	id: string
+	nodeId: string
+	nodeText: string
 	text: string
 }
 
@@ -61,6 +65,7 @@ export type EditorExtendedStore = {
 	episodeContentMap: Record<number, { children: Value }>
 	episodeKeys: Record<number, (string | number | boolean)[]>
 	episodeMap: Record<number, TGetEpisodeResponse>
+	episodeNavigationOpen: boolean
 	extended: number[]
 }
 
@@ -93,3 +98,4 @@ export type TLocalizationObject = [
 		title: 'Objects'
 	},
 ]
+export type TSuggestions = (typeof storyChatSuggestions)[number]
