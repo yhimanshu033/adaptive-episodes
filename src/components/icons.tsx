@@ -499,7 +499,7 @@ export const iconVariants = cva('', {
 		},
 		variant: {
 			menuItem: 'mr-2 size-5',
-			toolbar: 'size-4',
+			toolbar: 'size-5',
 		},
 	},
 })

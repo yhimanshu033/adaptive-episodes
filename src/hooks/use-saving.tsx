@@ -1,35 +1,33 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import useComments from '@/hooks/plate/use-comments'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import {
 	addUnsavedEpisodeParams,
 	removeUnsavedEpisodeParams,
 } from '@/store/global-store'
-import { useEditorState, useEditorString, usePluginOption } from 'platejs/react'
+import { useEditorState } from '@udecode/plate-common/react'
 import { useShallow } from 'zustand/react/shallow'
 
-import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
+import useResolvedComments from '@/lib/plate/plugins/resolved-comments/use-resolved-comments'
 import { setValue } from '@/lib/utils/indexed-db'
-import { clearLasers } from '@/lib/utils/plate'
+import {
+	clearLasers,
+	getUniqueAllComments,
+	getWordCount,
+} from '@/lib/utils/plate'
 
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
+import { TCustomComment } from '@/types/editor-types'
 import {
 	SaveEpisodeParams,
 	TGetEpisodeResponse,
 	TSaveEpisodeParams,
+	TSavingContext,
 } from '@/types/episode-type'
 
-const SavingContext = React.createContext<
-	| {
-			handleSave: (params?: TSaveEpisodeParams) => Promise<void>
-			isPending: boolean
-			isSaved: boolean
-			lastSaved?: Date
-			setForceSave: React.Dispatch<React.SetStateAction<boolean>>
-	  }
-	| undefined
->(undefined)
+const SavingContext = React.createContext<TSavingContext | undefined>(undefined)
 
 export function SavingContextProvider({
 	children: nodeChildren,
@@ -42,42 +40,61 @@ export function SavingContextProvider({
 }) {
 	const { id } = useParams()
 	const { children } = useEditorState()
-	const editorText = useEditorString()
-	const allComments = usePluginOption(discussionPlugin, 'discussions')
-
+	const { allComments, set } = useComments()
 	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()
-
 	const {
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
+		setResolvedComments,
 		setStartOverlayLoading,
 	} = useEpisodeIdStore()
-
 	const currentTitle = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
 	)
 
+	const { resolvedComments } = useResolvedComments()
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
+	const savedResolvedCommentsRef = useRef(
+		JSON.stringify(data?.chapter.props?.resolvedComments || [])
+	)
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
-	const [lastSaved, setLastSaved] = React.useState<Date>()
-	const [isSaved, setIsSaved] = React.useState(true)
+
+	const { cleanedComments, cleanedCommentsRecord } = useMemo(
+		() => getUniqueAllComments(children, allComments),
+		[allComments, children]
+	)
+
 	const pathname = usePathname()
-
-	useEffect(() => {
+	const isSaved = useMemo(() => {
+		if (forceSave) {
+			return false
+		}
 		const currentChildren = JSON.stringify(children)
-		const currentComments = JSON.stringify(allComments)
-		const storedTitle = savedTitleRef.current || data?.chapter?.chapter_title
-
-		const newIsSaved =
-			!forceSave &&
+		const currentComments = JSON.stringify(cleanedComments)
+		const currentResolvedComments = JSON.stringify(resolvedComments)
+		const storedResolvedComments =
+			savedResolvedCommentsRef.current === JSON.stringify([])
+				? savedResolvedCommentsRef.current
+				: JSON.stringify(data?.chapter.props?.resolvedComments || [])
+		const storedTitle = savedTitleRef.current
+			? savedTitleRef.current
+			: data?.chapter?.chapter_title
+		return (
 			savedRef.current === currentChildren &&
 			savedCommentsRef.current === currentComments &&
-			currentTitle === storedTitle
-
-		setIsSaved(newIsSaved)
-	}, [children, allComments, currentTitle, data?.chapter, forceSave])
+			currentTitle === storedTitle &&
+			storedResolvedComments === currentResolvedComments
+		)
+	}, [
+		children,
+		cleanedComments,
+		currentTitle,
+		data?.chapter,
+		forceSave,
+		resolvedComments,
+	])
 
 	const handleSave = useCallback(
 		async ({
@@ -88,23 +105,25 @@ export function SavingContextProvider({
 			if (!data?.chapter || (!forced && isSaved)) {
 				return
 			}
-
 			if (startOverlayLoading) {
 				setStartOverlayLoading(true)
 			}
-
 			try {
-				const words = editorText.split(/\s+/)
-				const word_count = words.length
+				if (cleanedComments.length !== allComments.length) {
+					set({
+						comments: cleanedCommentsRecord,
+					})
+				}
+				const word_count = getWordCount(children)
 				savedRef.current = JSON.stringify(children)
-				savedCommentsRef.current = JSON.stringify(allComments)
+				savedCommentsRef.current = JSON.stringify(cleanedComments)
 				savedTitleRef.current = currentTitle
+				setForceSave(false)
 				const clearedLaser = clearLasers(children)
 				const text = JSON.stringify(clearedLaser)
 				let status = data?.chapter.status || BASE_STATUS
 				const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
 				const chapterId = data?.chapter.id
-
 				const dataToSave: SaveEpisodeParams = {
 					projectId: Number(id),
 					status,
@@ -115,11 +134,11 @@ export function SavingContextProvider({
 					language,
 					props: {
 						...data?.chapter.props,
-						comments: allComments,
+						comments: cleanedComments,
+						resolvedComments,
 					},
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				}
-
 				void setValue(`${String(id)}_${String(chapterId)}`, dataToSave)
 
 				if (language === ELanguage.GERMAN_ORIGINAL && status === BASE_STATUS) {
@@ -136,15 +155,12 @@ export function SavingContextProvider({
 					chapterId,
 					text,
 					word_count,
-					comments: allComments,
+					comments: cleanedComments,
 					prevProps: data?.chapter.props,
 					language,
+					resolvedComments,
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
-
-				setLastSaved(new Date())
-				setForceSave(false)
-				setIsSaved(true)
 			} catch (error) {
 				console.error(error)
 			} finally {
@@ -154,14 +170,17 @@ export function SavingContextProvider({
 			}
 		},
 		[
+			set,
 			data?.chapter,
 			isSaved,
 			setStartOverlayLoading,
-			editorText,
 			children,
+			cleanedComments,
 			allComments,
+			cleanedCommentsRecord,
 			currentTitle,
 			id,
+			resolvedComments,
 			saveEpisodeMutation,
 			statusUpdateMutation,
 		]
@@ -191,7 +210,8 @@ export function SavingContextProvider({
 			language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
 			props: {
 				...data?.chapter.props,
-				comments: allComments,
+				comments: cleanedComments,
+				resolvedComments,
 			},
 			chapter_title: currentTitle || data?.chapter.chapter_title,
 		}
@@ -200,7 +220,15 @@ export function SavingContextProvider({
 			`${String(id)}_${String(chapterId)}_${pathname}`,
 			dataToSave
 		)
-	}, [id, children, allComments, data?.chapter, currentTitle, pathname])
+	}, [
+		id,
+		children,
+		cleanedComments,
+		data?.chapter,
+		currentTitle,
+		pathname,
+		resolvedComments,
+	])
 
 	const handleRemoveGlobalStore = useCallback(() => {
 		if (!data?.chapter) {
@@ -211,10 +239,10 @@ export function SavingContextProvider({
 	}, [data?.chapter, pathname, id])
 
 	useEffect(() => {
-		if (savedCommentsRef.current !== JSON.stringify(allComments)) {
+		if (savedCommentsRef.current !== JSON.stringify(cleanedComments)) {
 			void handleSave()
 		}
-	}, [allComments, handleSave, currentTitle])
+	}, [cleanedComments, handleSave, currentTitle])
 
 	useEffect(() => {
 		const handleBeforeUnload = () => {
@@ -223,6 +251,7 @@ export function SavingContextProvider({
 			}
 		}
 		window.addEventListener('beforeunload', handleBeforeUnload)
+
 		return () => {
 			window.removeEventListener('beforeunload', handleBeforeUnload)
 		}
@@ -236,7 +265,13 @@ export function SavingContextProvider({
 			savedTitleRef.current = data.chapter.chapter_title
 			setCurrentTitle(data.chapter.chapter_title)
 		}
-	}, [data, setCurrentTitle])
+		if (data.chapter.props?.resolvedComments) {
+			setResolvedComments(
+				(data.chapter.props.resolvedComments || []) as TCustomComment[]
+			)
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [data])
 
 	useEffect(() => {
 		if (isSaved) {
@@ -247,7 +282,7 @@ export function SavingContextProvider({
 	}, [
 		isSaved,
 		children,
-		allComments,
+		cleanedComments,
 		currentTitle,
 		handleRemoveGlobalStore,
 		handleSaveGlobalStore,
@@ -258,7 +293,6 @@ export function SavingContextProvider({
 		isSaved,
 		isPending: saveEpisodeMutation.isPending,
 		setForceSave,
-		lastSaved,
 	}
 
 	return (

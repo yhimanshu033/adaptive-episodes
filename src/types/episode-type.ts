@@ -1,22 +1,14 @@
-import { ReactNode } from 'react'
 import { EpisodeActions } from '@/constants/episodes-constants'
-import { VariantProps } from 'class-variance-authority'
-
-import { dialogVariants } from '@/components/aural-ui/dialog'
+import { TComment } from '@udecode/plate-comments'
 
 import { BASE_STATUS, EEpisodeType, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
-import { TCommentGeneric, TNote } from '@/types/plate-types'
+import { TNote } from '@/types/plate-types'
 
 export type EpisodeStoreState = {
 	alertInfo: {
 		action?: EpisodeActions
 		description: string
-		icon?: ReactNode
-		secondAction?: string
-		subDescription?: string
-		type?: string
-		variant?: VariantProps<typeof dialogVariants>['variant']
 	} | null
 	currentInventIndex: number | null
 	currentPage: number
@@ -24,14 +16,11 @@ export type EpisodeStoreState = {
 	episodeSearch: string
 	isDialogOpen: boolean
 	isInventOpen: boolean
-	isSharedAccessDialogOpen: boolean
 	notes: TNote[]
 	selectedEpisodes: {
 		episodes: TEpisode[]
 		status: EStatus | typeof BASE_STATUS
 	} | null
-	showSharedList: boolean
-	statusUpdating: number[]
 }
 
 type TEpisodeProps = {
@@ -55,7 +44,7 @@ export type TEpisode = {
 	parent: number | null
 	project: number
 	props?: Record<string, unknown> & {
-		comments?: TCommentGeneric[]
+		comments?: TComment[]
 		creation_timestamp?: number
 		llm_memories?: TEpisodeProps
 		merged_chapter_ids?: number[]
@@ -195,7 +184,7 @@ export type TGetDocxFromHtmlBody = {
 export type EpisodeIdStoreType = {
 	activeNoteId: string | null
 	currentTitle: string
-	dualViewMode: EDualVIewMode | null
+	dualViewMode: EDualVIewMode
 	episodeId: number
 	importedLocal: boolean
 	resolvedComments: TCustomComment[]
@@ -214,7 +203,6 @@ export type TSavingContext = {
 	handleSave: (params?: TSaveEpisodeParams) => Promise<void>
 	isPending: boolean
 	isSaved: boolean
-	lastSaved: Date | undefined
 	setForceSave: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -224,6 +212,7 @@ export enum EDualVIewMode {
 	BASE_SCRIPT = 'BASE SCRIPT',
 	LOCAL_DIFF = 'LOCAL_DIFF',
 	NEXT_EP = 'NEXT_EP',
+	NOTES = 'NOTES',
 	PREV_EP = 'PREVIOUS_EP',
 	US_TRANSLATION = 'US_TRANSLATION',
 	VOICE_PASS = 'VOICE_PASS',
@@ -235,6 +224,7 @@ export const DUAL_VIEW_MODES: EDualVIewMode[] = [
 	EDualVIewMode.PREV_EP,
 	EDualVIewMode.NEXT_EP,
 	EDualVIewMode.VOICE_PASS,
+	EDualVIewMode.NOTES,
 	EDualVIewMode.LOCAL_DIFF,
 ]
 
@@ -242,6 +232,7 @@ export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
 	[EDualVIewMode.US_TRANSLATION]: 'US Original',
 	[EDualVIewMode.BASE_SCRIPT]: 'Base Script',
 	[EDualVIewMode.NEXT_EP]: 'Next Episode',
+	[EDualVIewMode.NOTES]: 'Notes',
 	[EDualVIewMode.LOCAL_DIFF]: 'Local Changes',
 	[EDualVIewMode.PREV_EP]: 'Previous Episode',
 	[EDualVIewMode.VOICE_PASS]: 'Voice Pass',
@@ -250,25 +241,13 @@ export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
 export type TranslationProps = { translatedContent: string }
 
 export enum EEpisodeHeaderKeys {
-	ACTIONS = 'actions',
 	CHAPTER_TITLE = 'chapter_title',
+	DELETE = 'delete',
 	SELECT_COL = 'select-col',
 	SERIAL_NUMBER = 'serialNumber',
 	STATUS = 'status',
 	UPDATE_TIME = 'update_time',
-	WORD_COUNT = 'word_count',
 	WRITER = 'writer',
-}
-
-export const episodeTableColumnWidths: Record<EEpisodeHeaderKeys, string> = {
-	[EEpisodeHeaderKeys.SELECT_COL]: '5%',
-	[EEpisodeHeaderKeys.SERIAL_NUMBER]: '8%',
-	[EEpisodeHeaderKeys.CHAPTER_TITLE]: '24%',
-	[EEpisodeHeaderKeys.WRITER]: '18%',
-	[EEpisodeHeaderKeys.WORD_COUNT]: '10%',
-	[EEpisodeHeaderKeys.STATUS]: '15%',
-	[EEpisodeHeaderKeys.UPDATE_TIME]: '12%',
-	[EEpisodeHeaderKeys.ACTIONS]: '8%',
 }
 
 export const EPISODE_LIMIT_KEY = 'episodeLimit'

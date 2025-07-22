@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
 
-const Logo = () => {
+const Logo = ({ className }: { className?: string }) => {
 	return (
 		<Link
 			href="/"
@@ -16,6 +16,7 @@ const Logo = () => {
 				alt="Copilot Logo"
 				loading="lazy"
 			/>
+			<span className={className}>Pocket CoPilot</span>
 		</Link>
 	)
 }

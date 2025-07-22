@@ -22,14 +22,6 @@ export function useEpisodeStore() {
 		useEpisodeStoreUtil.setState({ isInventOpen })
 	}
 
-	const setIsShareAccessDialogOpen = (isSharedAccessDialogOpen: boolean) => {
-		useEpisodeStoreUtil.setState({ isSharedAccessDialogOpen })
-	}
-
-	const setShowSharedList = (showSharedList: boolean) => {
-		useEpisodeStoreUtil.setState({ showSharedList })
-	}
-
 	const setAlertInfo = (alertInfo: EpisodeStoreState['alertInfo']) => {
 		useEpisodeStoreUtil.setState({ alertInfo })
 	}
@@ -82,21 +74,11 @@ export function useEpisodeStore() {
 		})
 	}
 
-	const setStatusUpdating = (statusUpdating: number[]) => {
-		useEpisodeStoreUtil.setState(() => {
-			return {
-				statusUpdating,
-			}
-		})
-	}
-
 	return {
 		setCurrentPage,
 		setEpisodeSearch,
 		setIsDialogOpen,
 		setIsInventOpen,
-		setShowSharedList,
-		setIsShareAccessDialogOpen,
 		setAlertInfo,
 		setSelectedEpisodes,
 		setDeleteEpisodeId,
@@ -106,6 +88,5 @@ export function useEpisodeStore() {
 		deleteNote,
 		updateNote,
 		useEpisodeTableStore: useEpisodeStoreUtil,
-		setStatusUpdating,
 	}
 }

@@ -15,9 +15,9 @@ export default function FocusEditorWrapper({
 	return (
 		<div
 			className={cn(
-				'focus-container transition-all transition-discrete *:transition-all',
+				'focus-container transition-all [transition-behavior:allow-discrete] *:transition-all',
 				focusMode
-					? 'bg-background fixed top-0 right-0 z-50 h-svh w-svw items-center justify-center overflow-y-auto *:max-w-(--breakpoint-lg)'
+					? 'bg-background fixed top-0 right-0 z-50 h-svh w-svw items-center justify-center overflow-y-auto *:max-w-screen-lg'
 					: 'unfocused-editor-container'
 			)}
 		>

@@ -1,50 +1,33 @@
-'use client'
-
-import { BubbleSparkleIcon } from '@/icons/bubble-sparkle-icon'
-import { EditBigIcon } from '@/icons/edit-big-icon'
-import { EyeOpenIcon } from '@/icons/eye-open-icon'
-import { HeadIcon } from '@/icons/head-icon'
-import { MusicalNoteIcon } from '@/icons/musical-note-icon'
-import { SuggestionIcon } from '@/icons/suggestion-icon'
-import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
-import { TResolvedSuggestion } from '@platejs/suggestion'
-import { LucideIcon } from 'lucide-react'
-
 import { EChatMode, TStoryChatSuggestion } from '@/types/ai-types'
 
 export const rephraseMethods = [
-	{ id: 'shortenmore', method: 'Shorten', status: 'Shortening...' },
-	{ id: 'expand', method: 'Expand', status: 'Expanding...' },
-	{ id: 'dialog', method: 'Dialog', status: 'Dialogizing...' },
-	{ id: 'stylize', method: 'Stylize', status: 'Rewriting... (Stylize)' },
-	{ id: 'custom', method: 'Prompt', status: 'Running custom prompt...' },
+	{ id: 'shortenmore', method: '🤏 Shorten', status: 'Shortening...' },
+	{ id: 'expand', method: '🤲 Expand', status: 'Expanding...' },
+	{ id: 'stylize', method: '🎨 Stylize', status: 'Rewriting... (Stylize)' },
+	{ id: 'dialog', method: '🗣️ Dialog', status: 'Dialogizing...' },
+	{ id: 'custom', method: '💬 Prompt', status: 'Running custom prompt...' },
 ]
 
-export const storyChatSuggestions: Array<
-	TStoryChatSuggestion & {
-		addSuggestion?: boolean
-		icon: LucideIcon | React.ComponentType<React.SVGProps<SVGSVGElement>>
-	}
-> = [
+export const storyChatSuggestions: Array<TStoryChatSuggestion> = [
 	{
-		value: 'SFX / Music',
+		value: 'Music / SFX 🎶',
 		action: EChatMode.SFX,
-		icon: MusicalNoteIcon,
 	},
 	{
-		value: 'Review Content',
-		action: EChatMode.REVIEW,
-		icon: BubbleSparkleIcon,
-	},
-	{
-		value: 'Voice Pass',
+		value: 'Voice Pass 🎙️',
 		action: EChatMode.VOICE2_XML,
-		icon: HeadIcon,
 	},
 	{
-		value: 'Quick Prompts',
+		value: 'Review ✅',
+		action: EChatMode.REVIEW,
+	},
+	{
+		value: 'Quick Prompts 💬',
 		action: EChatMode.PROMPTS,
-		icon: VerticalMenuIcon,
+	},
+	{
+		value: 'Localise 🌍',
+		action: EChatMode.LOCALIZE,
 	},
 ]
 
@@ -54,44 +37,22 @@ export enum SuggestionActions {
 }
 
 export enum SuggestionTypes {
-	DELETION = 'remove',
-	INSERTION = 'insert',
-	REPLACEMENT = 'replace',
+	DELETION = 'deletion',
+	INSERTION = 'insertion',
+	REPLACEMENT = 'replacement',
 }
 
-export const SuggestionTypesMap: Record<TResolvedSuggestion['type'], string> = {
-	remove: 'Delete',
-	insert: 'Add',
-	replace: 'Replace',
-	update: 'Update',
+export const SuggestionTypesMap: Record<SuggestionTypes, string> = {
+	deletion: 'Delete',
+	insertion: 'Add',
+	replacement: 'Replace',
 }
 
-export enum EditorModes {
-	editing = 'editing',
-	suggesting = 'suggesting',
-	viewing = 'viewing',
+export const EditorModes = {
+	editing: 'editing',
+	suggesting: 'suggesting',
+	viewing: 'viewing',
 }
-
-export const editorModesList = [
-	{
-		mode: EditorModes.editing,
-		label: 'Edit doc',
-		description: 'Make changes directly',
-		icon: EditBigIcon,
-	},
-	{
-		mode: EditorModes.suggesting,
-		label: 'Suggest edits',
-		description: 'Without making direct changes',
-		icon: SuggestionIcon,
-	},
-	{
-		mode: EditorModes.viewing,
-		label: 'Viewing',
-		description: 'Read the episodes',
-		icon: EyeOpenIcon,
-	},
-]
 
 export const MAIN_EDITOR_ID = 'main-editor'
 export const TRANSLATION_EDITOR_ID = 'translation-editor'
@@ -99,9 +60,6 @@ export const NEXT_EP_EDITOR_ID = 'next-ep-editor'
 export const PREV_EP_EDITOR_ID = 'prev-ep-editor'
 export const BASE_SCRIPT_EDITOR_ID = 'base-script-editor'
 export const NOTE_EDITOR_BASE_ID = 'notes-editor'
-export const DIFF_EDITOR_ID = 'diff-editor'
-export const LOCAL_DIFF_EDITOR_ID = 'local-diff-editor'
-
 export const LINES = 30
 
 export const AFTER_PAGE_BREAK_CLASSNAME = 'after-editor-page' // CHECK WITH GLOBALS CSS
@@ -143,25 +101,6 @@ export enum farSearchModes {
 	WHOLE_WORD = 'whole-word',
 }
 
-export const FAR_FILTER_OPTIONS = [
-	{
-		type: farSearchModes.CASE_SENSITIVE,
-		label: 'Match case',
-		key: 'caseSensitive',
-	},
-	{ type: farSearchModes.WHOLE_WORD, label: 'Whole word', key: 'wholeWord' },
-]
-
 export const SAVE_EPISODE_BUTTON_ID = 'save-episode-button'
 
 export const EXCLUDE_BREAKDOWN_KEYS = ['laser']
-
-export const DEFAULT_NAVIGATION_PAGE_LIMIT = 20
-
-export const DEFAULT_INITIAL_PAGE = 1
-
-export const FAR_PADDING_TEXT = 8
-
-export const VIEW_SAVED_NOTES_URL = '/assets/save_notes_banner.webp'
-
-export const AI_AVATAR = '/assets/ai_avatar.webp'

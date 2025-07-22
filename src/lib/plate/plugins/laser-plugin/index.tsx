@@ -1,5 +1,5 @@
-import { PluginConfig } from 'platejs'
-import { createTPlatePlugin } from 'platejs/react'
+import { createTPlatePlugin } from '@udecode/plate-common/react'
+import { PluginConfig } from '@udecode/plate-core'
 
 import { createLaserStore } from '@/lib/plate/plugins/laser-plugin/store'
 
@@ -14,13 +14,16 @@ export type LaserPluginT = PluginConfig<
 >
 
 export function getLaserPlugin() {
-	const LaserPlugin = createTPlatePlugin({
+	const LaserPlugin = createTPlatePlugin<LaserPluginT>({
 		key: 'laser',
 		node: {
 			isLeaf: true,
 		},
 		options: {
-			laserStore: createLaserStore(),
+			laserStore: createLaserStore({
+				lasers: {},
+				test: 45,
+			}),
 			active: null,
 			prompt: false,
 		},
@@ -36,13 +39,14 @@ export type PromptPluginT = PluginConfig<
 	object
 >
 export function getPromptPlugin() {
-	return createTPlatePlugin({
+	const PromptPlugin = createTPlatePlugin<PromptPluginT>({
 		key: 'floating-prompt',
 		node: {
 			isLeaf: true,
 		},
 		options: {},
 	})
+	return PromptPlugin
 }
 
 export const PromptPlugin = getPromptPlugin()

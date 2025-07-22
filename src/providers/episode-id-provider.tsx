@@ -1,9 +1,11 @@
 'use client'
 
 import React, { createContext, ReactNode, useContext } from 'react'
+import { aiInitialMessage } from '@/constants/ai-constants'
 import { DEFAULT_FONT_FAMILY } from '@/constants/editor-constants'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
 import { EpisodeContentProvider } from '@/hooks/query/use-episode-content'
+import { useTranslations } from 'next-intl'
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -11,14 +13,13 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { AIStoreType, EFocusSetting } from '@/types/ai-types'
 import { EDualVIewMode, EpisodeIdStoreType } from '@/types/episode-type'
-import { ESidebar, LaserStoreType, PlateStoreData } from '@/types/plate-types'
+import { LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
 const initialState: PlateStoreData = {
-	sidebar: ESidebar.CHATBOT,
+	sidebar: null,
 	resolved: false,
 	scale: 1,
 	activeDiffId: null,
-	diffIdList: [],
 	currentDiffValue: null,
 	viewMode: false,
 	fontFamily: DEFAULT_FONT_FAMILY,
@@ -27,7 +28,7 @@ const initialState: PlateStoreData = {
 }
 
 const initialAiState: AIStoreType = {
-	messages: [],
+	messages: aiInitialMessage,
 	responseValue: null,
 	prevValue: null,
 	acceptedValue: null,
@@ -88,6 +89,7 @@ export function EpisodeIdProvider({
 	children: ReactNode
 	episodeId: number
 }) {
+	const dict = useTranslations('placeholders')
 	const useEpisodeIdStoreContext = create(
 		devtools(
 			immer(() => ({ ...initialEpisodeIdState, episodeId: defaultEpisodeId }))
@@ -95,6 +97,8 @@ export function EpisodeIdProvider({
 	)
 
 	const usePlateStoreContext = create(devtools(immer(() => initialState)))
+
+	initialAiState.messages[0].content = dict('initialAiMessage')
 
 	const useAiStoreContext = create(devtools(immer(() => initialAiState)))
 

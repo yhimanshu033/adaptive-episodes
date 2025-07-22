@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 /* Font Face Definitions */
 @layer base {
 	@font-face {

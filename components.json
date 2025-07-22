@@ -12,8 +12,8 @@
 	},
 	"aliases": {
 		"components": "@/components",
-		"utils": "@/lib/utils/helpers",
-		"ui": "@/components/plate-ui-v2",
+		"utils": "@/lib/utils",
+		"ui": "@/components/ui",
 		"magicui": "@/components/magicui"
 	}
 }

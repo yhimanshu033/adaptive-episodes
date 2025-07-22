@@ -2,18 +2,11 @@
 
 import React from 'react'
 import { COPILOT_LOGO_URL } from '@/constants/global-constants'
-import { EditBigIcon } from '@/icons/edit-big-icon'
-import EditProjectDialog from '@/page-builders/episodes/dialogs/edit-project-dialog'
+import AuthorTitle from '@/page-builders/episodes/author'
 
-import AuthWrapper from '@/components/auth-wrapper'
 import Image from '@/components/ui/image'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
-
-import { ERole } from '@/types/admin-types'
-
-import CircularLoader from './aural-ui/circular-loader'
-import { Else, If, IfElse } from './aural-ui/if-else'
 
 interface StoryDetailsProps {
 	handleClick?: () => void
@@ -30,10 +23,13 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 	hideAuthor,
 	handleClick = () => {},
 }) => {
-	const { initialStoryData: storyData, storyDataFetching: isFetching } =
-		useEpisodeTableContext()
+	const { initialStoryData: storyData } = useEpisodeTableContext()
+
 	return (
-		<div onClick={handleClick} className="flex items-start gap-4">
+		<div
+			onClick={handleClick}
+			className="flex cursor-pointer items-center gap-2"
+		>
 			<div style={{ width: imageSize, height: imageSize }}>
 				<Image
 					src={storyData?.image || COPILOT_LOGO_URL}
@@ -44,32 +40,10 @@ const StoryDetails: React.FC<StoryDetailsProps> = ({
 				/>
 			</div>
 			<div>
-				<div className="flex items-center gap-4">
-					<h2 className={cn('font-fm-text text-3xl', titleClassname)}>
-						{storyData?.project_title}
-					</h2>
-					<AuthWrapper role={ERole.ADMIN}>
-						<IfElse condition={isFetching}>
-							<If>
-								<CircularLoader />
-							</If>
-							<Else>
-								<EditProjectDialog>
-									<EditBigIcon
-										width={20}
-										height={20}
-										className="text-fm-icon-brand-secondary cursor-pointer"
-									/>
-								</EditProjectDialog>
-							</Else>
-						</IfElse>
-					</AuthWrapper>
-				</div>
-				{!hideAuthor && (
-					<h4 className="font-fm-brand text-fm-tertiary text-xs uppercase">
-						{storyData?.author ?? ''}
-					</h4>
-				)}
+				<h1 className={cn('text-3xl font-bold', titleClassname)}>
+					{storyData?.project_title}
+				</h1>
+				{!hideAuthor && <AuthorTitle />}
 			</div>
 		</div>
 	)

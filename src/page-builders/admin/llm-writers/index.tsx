@@ -166,7 +166,7 @@ export default function WritersRoom() {
 									{/* Writers */}
 									<div className="grid grid-cols-2 gap-8">
 										<div className="flex flex-col items-center gap-6">
-											<MoveRight size={48} className="rotate-135" />
+											<MoveRight size={48} className="rotate-[135deg]" />
 											<div className="flex items-start gap-2">
 												<UserCircle2 className="size-8" />
 												<div>

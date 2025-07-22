@@ -15,7 +15,6 @@ import {
 	LSMappingOutputItem,
 	TSourceLanguage,
 } from '@/types/common'
-import { ESidebar } from '@/types/plate-types'
 
 export const aiInitialMessage: TMessage[] = [
 	{
@@ -38,35 +37,35 @@ export enum DiffStatus {
 }
 
 export enum LocalizationType {
-	Concept = 'concept',
-	Object = 'object',
-	Person = 'character',
-	Place = 'place',
+	CONCEPT = 'concept',
+	OBJECT = 'object',
+	PERSON = 'character',
+	PLACE = 'place',
 }
 
 export const localizationTypes: (keyof typeof LocalizationType)[] = [
-	'Person',
-	'Place',
-	'Concept',
-	'Object',
+	'PERSON',
+	'PLACE',
+	'CONCEPT',
+	'OBJECT',
 ]
 
 export const typeToKey: Record<
 	keyof typeof LocalizationType,
 	keyof TLocalizeResponse['result']
 > = {
-	Concept: 'concepts',
-	Object: 'objects',
-	Person: 'characters',
-	Place: 'places',
+	CONCEPT: 'concepts',
+	OBJECT: 'objects',
+	PERSON: 'characters',
+	PLACE: 'places',
 }
 
 export const typeToLocalizedKey: Record<keyof typeof LocalizationType, string> =
 	{
-		Concept: 'localized_concept',
-		Object: 'localized_object',
-		Person: 'localized_name',
-		Place: 'localized_place',
+		CONCEPT: 'localized_concept',
+		OBJECT: 'localized_object',
+		PERSON: 'localized_name',
+		PLACE: 'localized_place',
 	}
 
 export enum ESocketStatus {
@@ -161,11 +160,11 @@ export const SFX_INFO = {
 export const INITIAL_FAR_OPTIONS: FindReplaceConfig['options'] = {
 	search: '',
 	replace: '',
-	replaceEnabled: true,
+	replaceEnabled: false,
 	currentId: [0, 0, 0],
-	caseSensitive: false,
-	wholeWord: false,
-	genitive: false,
+	caseSensitive: true,
+	wholeWord: true,
+	genitive: true,
 }
 
 export const LSMappingGenders = [ELSMappingGender.MALE, ELSMappingGender.FEMALE]
@@ -175,19 +174,6 @@ export const LSMappingChineseGenders = [
 ]
 
 export const LSMappingTypes = [ELSMappingType.PERSON, ELSMappingType.ENTITY]
-
-export const sidebarToTitle: Record<ESidebar, string> = {
-	[ESidebar.CHATBOT]: 'StoryChat',
-	[ESidebar.COMMENTS]: 'Comments',
-	[ESidebar.DUAL_VIEW]: '',
-	[ESidebar.FAR]: 'Find and Replace',
-	[ESidebar.NOTES]: 'Notes',
-	[ESidebar.OUTLINE]: 'Story Explorer',
-}
-
-export const sidebarButtons: ESidebar[] = [ESidebar.CHATBOT, ESidebar.OUTLINE]
-
-export const HIDE_SIDEBAR_HEADER: ESidebar[] = [ESidebar.FAR]
 
 export const SAMPLE_LS_DATA: LSMappingOutputItem[] = [
 	{

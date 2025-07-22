@@ -18,7 +18,7 @@ export default function ImageModal(
 					<img
 						src="/placeholder.svg"
 						alt="Image"
-						className="aspect-3/2 w-full overflow-hidden rounded-lg object-cover transition-all group-hover:scale-105"
+						className="aspect-[3/2] w-full overflow-hidden rounded-lg object-cover transition-all group-hover:scale-105"
 						{...props}
 					/>
 					<div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
@@ -31,7 +31,7 @@ export default function ImageModal(
 				<img
 					src={props.src}
 					alt="Image"
-					className="aspect-4/3 w-full overflow-hidden rounded-lg object-cover"
+					className="aspect-[4/3] w-full overflow-hidden rounded-lg object-cover"
 				/>
 			</DialogContent>
 		</Dialog>

@@ -1,9 +1,7 @@
 import * as React from 'react'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
 
-import { cn } from '@/lib/aural-ui/utils'
-
-import { ScrollArea } from './scroll-area'
+import { cn } from '../../lib/aural-ui/utils'
 
 function Popover({
 	...props
@@ -36,9 +34,7 @@ function PopoverContent({
 				{...props}
 			>
 				<div className="absolute top-0 right-0 left-0 block h-0.5 w-full bg-(image:--gradient-fm-stroke-neutral)" />
-				<ScrollArea className="h-full max-h-96 w-full overflow-y-auto">
-					{props.children}
-				</ScrollArea>
+				{props.children}
 			</PopoverPrimitive.Content>
 		</PopoverPrimitive.Portal>
 	)

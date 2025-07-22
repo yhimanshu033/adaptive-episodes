@@ -3,10 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { EpisodeActions } from '@/constants/episodes-constants'
-import {
-	EPISODE_LIST_QUERY_KEY,
-	STORY_ID_QUERY_KEY,
-} from '@/constants/query-constants'
+import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 // import useLanguage from '@/hooks/use-language'
 import useSocket from '@/hooks/use-socket'
 import { saveContent } from '@/server-action/content-action'
@@ -16,13 +13,10 @@ import {
 	unmergeEpisodes,
 	updateStatus,
 } from '@/server-action/episode-action'
-import {
-	setFullScreenLoading,
-	setFullScreenLoadingMessage,
-} from '@/store/global-store'
+import { setFullScreenLoading } from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { TComment } from '@udecode/plate-comments'
 
-import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
@@ -60,7 +54,7 @@ const useEpisodeHook = () => {
 		}: {
 			chapterId?: number | null
 			chapter_title?: string
-			comments?: TDiscussion[]
+			comments?: TComment[]
 			language?: ELanguage
 			prevProps?: Record<string, unknown>
 			resolvedComments?: TCustomComment[]
@@ -183,18 +177,7 @@ const useEpisodeHook = () => {
 	const episodeInventMutation = useMutation({
 		mutationKey: [EpisodeActions.INVENT, id],
 		mutationFn: onEpisodeInvent,
-		onSuccess: (_, variable) => {
-			void (async () => {
-				await Promise.all([
-					variable.seq_number === 1
-						? queryClient.invalidateQueries({
-								queryKey: [STORY_ID_QUERY_KEY, Number(id)],
-							})
-						: Promise.resolve(),
-					onSuccess(),
-				])
-			})()
-		},
+		onSuccess,
 	})
 
 	const episodeDeleteMutation = useMutation({
@@ -222,26 +205,6 @@ const useEpisodeHook = () => {
 				episodeInventMutation.isPending ||
 				episodeDeleteMutation.isPending
 		)
-
-		switch (true) {
-			case episodeDeleteMutation.isPending:
-				setFullScreenLoadingMessage('Deleting episode...')
-				break
-			case episodeInventMutation.isPending:
-				setFullScreenLoadingMessage('Inventing episode...')
-				break
-			case episodeUnmergeMutation.isPending:
-				setFullScreenLoadingMessage('Unmerging episodes...')
-				break
-			case episodesMergeMutation.isPending:
-				setFullScreenLoadingMessage('Merging episodes...')
-				break
-			case saveEpisodeMutation.isPending && !episodeId:
-				setFullScreenLoadingMessage('Saving episode...')
-				break
-			default:
-				setFullScreenLoadingMessage('')
-		}
 	}, [
 		episodeDeleteMutation.isPending,
 		episodeId,

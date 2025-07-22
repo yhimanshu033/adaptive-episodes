@@ -6,7 +6,7 @@ import {
 	PlotAction,
 	WorldAction,
 } from '@/constants/story-explorer-constants'
-import { Value } from 'platejs'
+import { Value } from '@udecode/plate-common'
 
 import { ELanguage, LSMappingOutput, MinifiedValue } from '@/types/common'
 
@@ -94,18 +94,17 @@ export type TStoryChatSuggestion = {
 	value: string
 }
 
-export type TUserMessage = {
-	content: string
-	role: EMessenger.USER
-}
-export type TAssistantMessage = {
-	action: EAction
-	component?: React.ReactNode | null
-	content: string
-	role: EMessenger.ASSISTANT
-	taskId: string
-}
-export type TMessage = TUserMessage | TAssistantMessage
+export type TMessage =
+	| {
+			content: string
+			role: EMessenger.USER
+	  }
+	| {
+			action: EAction
+			content: string
+			role: EMessenger.ASSISTANT
+			taskId: string
+	  }
 
 export type StoryExplorerConfiguration = {
 	current_ep: boolean
@@ -243,11 +242,9 @@ export interface TLocalizeUpdateRequest {
 }
 
 export type Laser = {
-	clientX?: number
 	clientY?: number
 	response: string
 	text: string
-	width?: number
 }
 
 export interface CommentExampleParams {
@@ -299,10 +296,3 @@ export type TGetAdaptationLSUrlParams = {
 }
 
 export type TQuickPrompt = { text: string; title: string | null }
-
-export type TGetRegexFAR = {
-	caseSensitive: boolean | undefined
-	genitive: boolean | undefined
-	search: string
-	wholeWord: boolean | undefined
-}

@@ -13,13 +13,14 @@ import useMetadataQuery from '@/hooks/query/use-metadata-query'
 import useLanguage from '@/hooks/use-language'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useQuery } from '@tanstack/react-query'
-import { useEditorString } from 'platejs/react'
+import { useEditorState } from '@udecode/plate-common/react'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import {
 	extractFromMetadata,
 	extractScenesFromBeatsheet,
 } from '@/lib/utils/ai-chatbot'
+import { getText } from '@/lib/utils/plate'
 
 import { PlotExplorerParams, PlotExplorerQueryResponse } from '@/types/ai-types'
 
@@ -39,7 +40,7 @@ const usePlotOutlineQuery = ({
 	const { startTask } = useSocketStreaming()
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
-	const editorText = useEditorString()
+	const { children } = useEditorState()
 
 	const { data: metadata, isLoading: isMetadataLoading } = useMetadataQuery(
 		start,
@@ -90,7 +91,7 @@ const usePlotOutlineQuery = ({
 				ep_number: String(episodeId),
 				beatsheet_array,
 				...extractedData,
-				current_ep: editorText || ' ',
+				current_ep: getText(children) || ' ',
 				search_query: instruction,
 				input_language: languageToTitle[language],
 			}
@@ -107,15 +108,15 @@ const usePlotOutlineQuery = ({
 		}, [
 			action,
 			metadata?.data,
-			id,
 			start,
+			id,
 			end,
 			activeExplorerMode,
 			episodeId,
-			editorText,
+			children,
 			instruction,
-			language,
 			startTask,
+			language,
 		])
 
 	const plotOutlineQuery = useQuery({

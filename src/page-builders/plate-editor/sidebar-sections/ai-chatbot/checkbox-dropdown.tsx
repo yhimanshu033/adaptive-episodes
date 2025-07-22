@@ -1,75 +1,58 @@
 import React from 'react'
 import useAIStore from '@/store/ai-store'
+import { Settings } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
-import { Checkbox } from '@/components/aural-ui/checkbox'
+import { Button } from '@/components/ui/button'
+import CheckboxComponent from '@/components/ui/checkbox-component'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from '@/components/aural-ui/dropdown'
-import { If } from '@/components/aural-ui/if-else'
-import Label from '@/components/aural-ui/label'
-import { List, ListItem, ListSeparator } from '@/components/aural-ui/list'
+} from '@/components/ui/dropdown-menu'
 
-export function CheckboxDropdown({ children }: { children: React.ReactNode }) {
+export function CheckboxDropdown() {
 	const { store: useAIContextStore, setStoryExplorerConfigurationValue } =
 		useAIStore()
 	const storyExplorerConfiguration = useAIContextStore(
 		useShallow((state) => state.storyExplorerConfiguration)
 	)
-	const handleConfigChange = React.useCallback(
-		(key: keyof typeof storyExplorerConfiguration, value: boolean) => {
-			setStoryExplorerConfigurationValue(key, value)
-		},
-		[setStoryExplorerConfigurationValue]
-	)
-
-	const checkboxItems = React.useMemo(
-		() => [
-			{
-				key: 'current_ep' as const,
-				label: 'Current Episode',
-				checked: storyExplorerConfiguration.current_ep,
-			},
-			{
-				key: 'prev_eps' as const,
-				label: 'Previous Episodes',
-				checked: storyExplorerConfiguration.prev_eps,
-			},
-			{
-				key: 'next_eps' as const,
-				label: 'Upcoming Episodes',
-				checked: storyExplorerConfiguration.next_eps,
-			},
-		],
-		[storyExplorerConfiguration]
-	)
-
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-			<DropdownMenuContent align="start" className="w-fit">
-				<List size="sm" className="bg-fm-surface-frosted/20 pt-2">
-					{checkboxItems.map(({ key, label, checked }, index) => (
-						<>
-							<ListItem
-								className="flex items-center gap-2 py-1 hover:bg-inherit"
-								key={key}
-							>
-								<Checkbox
-									id={key}
-									checked={checked}
-									onCheckedChange={(val) => handleConfigChange(key, !!val)}
-								/>
-								<Label htmlFor={key}>{label}</Label>
-							</ListItem>
-							<If condition={index !== checkboxItems.length - 1}>
-								<ListSeparator />
-							</If>
-						</>
-					))}
-				</List>
+			<DropdownMenuTrigger asChild className="absolute top-2 right-14">
+				<Button tooltip="Configurations" variant="outline" size="icon">
+					<Settings />
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="end" className="w-fit">
+				<DropdownMenuLabel>Configure</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				<DropdownMenuGroup className="space-y-4 p-2">
+					<CheckboxComponent
+						checked={storyExplorerConfiguration.current_ep}
+						onCheckedChange={(val) =>
+							setStoryExplorerConfigurationValue('current_ep', !!val)
+						}
+						label="Current episode"
+					/>
+					<CheckboxComponent
+						checked={storyExplorerConfiguration.prev_eps}
+						onCheckedChange={(val) =>
+							setStoryExplorerConfigurationValue('prev_eps', !!val)
+						}
+						label="Focus: Previous Episodes"
+					/>
+					<CheckboxComponent
+						checked={storyExplorerConfiguration.next_eps}
+						onCheckedChange={(val) =>
+							setStoryExplorerConfigurationValue('next_eps', !!val)
+						}
+						label="Focus: Upcoming episodes"
+					/>
+				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)

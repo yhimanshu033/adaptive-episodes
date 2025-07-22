@@ -75,7 +75,6 @@ export const SocketProvider = ({
 			}),
 		[socketUrl, session]
 	)
-
 	const responsesRef = useRef<Record<string, any>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
 	const [fetchedData, setFetchedData] = useState<Record<string, string>>({})

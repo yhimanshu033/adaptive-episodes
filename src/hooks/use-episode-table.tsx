@@ -1,21 +1,13 @@
-import React from 'react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { EpisodeActions, titleToStatus } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
-import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
-import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
-import { GitBranchIcon } from '@/icons/git-branch-icon'
-import { GitForkIcon } from '@/icons/git-fork-icon'
-import { TrashIcon } from '@/icons/trash-icon'
 import { useEpisodeStore } from '@/store/episode-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { Row, Table } from '@tanstack/react-table'
-import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
-import { Button } from '@/components/aural-ui/button'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
 
@@ -46,14 +38,9 @@ const useEpisodeTable = () => {
 		setIsDialogOpen,
 		setIsInventOpen,
 		setSelectedEpisodes,
-		setStatusUpdating,
 	} = useEpisodeStore()
-	const {
-		deleteEpisodeId,
-		selectedEpisodes,
-		currentInventIndex,
-		statusUpdating,
-	} = useEpisodeTableStore()
+	const { deleteEpisodeId, selectedEpisodes, currentInventIndex } =
+		useEpisodeTableStore()
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 
 	const { currentPage, search, limit } = usePageState()
@@ -83,44 +70,17 @@ const useEpisodeTable = () => {
 		})
 		if (selectedRows.length <= 1) {
 			setAlertInfo({
-				icon: (
-					<GitForkIcon
-						className="text-fm-icon-brand-secondary"
-						width={44}
-						height={44}
-					/>
-				),
-				description: 'Status change',
-				subDescription: `Status of selected episode will switch to ${titleToStatus[status]}`,
+				description: `Status of selected episode will switch to ${titleToStatus[status]}`,
 				action: EpisodeActions.UPDATE,
-				secondAction: 'Cancel',
 			})
 		} else if (hasConsistentStatus(selectedRows)) {
 			setAlertInfo({
-				icon: (
-					<GitForkIcon
-						className="text-fm-icon-brand-secondary"
-						width={44}
-						height={44}
-					/>
-				),
-				description: 'Status update',
-				subDescription: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
+				description: `Status of ${selectedRows.length} selected episodes will change to ${status}`,
 				action: EpisodeActions.UPDATE,
-				secondAction: 'Cancel',
 			})
 		} else {
 			setAlertInfo({
-				icon: (
-					<GitForkIcon
-						className="text-fm-icon-brand-secondary"
-						width={44}
-						height={44}
-					/>
-				),
-				description: 'Status update',
-				subDescription: `All selected episodes must have the same current status to update.`,
-				secondAction: 'Got it',
+				description: `All selected episodes must have the same current status to update.`,
 			})
 		}
 		setIsDialogOpen(true)
@@ -148,29 +108,11 @@ const useEpisodeTable = () => {
 
 		if (!isStatusSame) {
 			setAlertInfo({
-				icon: (
-					<GitForkIcon
-						className="text-fm-icon-brand-secondary"
-						width={44}
-						height={44}
-					/>
-				),
-				description: 'Couldn’t combine episodes',
-				subDescription: 'You can only combine episodes with the same status',
-				secondAction: 'Got it',
+				description: `Cannot merge episodes with different statuses`,
 			})
 		} else if (!isContinuous) {
 			setAlertInfo({
-				icon: (
-					<GitForkIcon
-						className="text-fm-icon-brand-secondary"
-						width={44}
-						height={44}
-					/>
-				),
-				description: 'Episode sequential fail',
-				subDescription: 'Selected Episodes are non sequential',
-				secondAction: 'Got it',
+				description: 'Selected Episodes are non sequential',
 			})
 		} else {
 			setSelectedEpisodes({
@@ -178,17 +120,8 @@ const useEpisodeTable = () => {
 				status: selectedRowData[0].status,
 			})
 			setAlertInfo({
-				icon: (
-					<GitForkIcon
-						className="text-fm-icon-brand-secondary"
-						width={44}
-						height={44}
-					/>
-				),
-				description: `Combine <${selectedRowData.length}> episodes`,
-				subDescription: 'You can merge selected episodes into one',
+				description: 'Selected episodes will get merged',
 				action: EpisodeActions.MERGE,
-				secondAction: 'Cancel',
 			})
 		}
 		setIsDialogOpen(true)
@@ -200,16 +133,7 @@ const useEpisodeTable = () => {
 		}
 		if (!selectedRowModel[0].getCanExpand()) {
 			setAlertInfo({
-				icon: (
-					<GitBranchIcon
-						className="text-fm-icon-brand-secondary"
-						width={44}
-						height={44}
-					/>
-				),
-				description: 'Separate episode fail',
-				subDescription: 'Please select a merged episode',
-				secondAction: 'Got it',
+				description: 'Please select a merged episode',
 			})
 		} else {
 			setSelectedEpisodes({
@@ -217,17 +141,8 @@ const useEpisodeTable = () => {
 				status: selectedRowModel[0].original.status,
 			})
 			setAlertInfo({
-				icon: (
-					<GitBranchIcon
-						className="text-fm-icon-brand-secondary"
-						width={44}
-						height={44}
-					/>
-				),
-				description: 'Unmerge Success',
-				subDescription: 'Selected Episode will get unmerged',
+				description: 'Selected Episode will get unmerged',
 				action: EpisodeActions.UNMERGE,
-				secondAction: 'Cancel',
 			})
 		}
 		setIsDialogOpen(true)
@@ -237,92 +152,28 @@ const useEpisodeTable = () => {
 		if (!isWriter) {
 			return
 		}
-		// TODO add episode on last
-		episodeInventMutation.mutate(
-			{
-				chapter_title: data.title,
-				seq_number: (currentInventIndex || 0) + 2 + (currentPage - 1) * limit,
-				language: storyData?.parent_language,
-			},
-			{
-				onSuccess: (data) => {
-					toast.custom(
-						(id) => (
-							<div className="text-fm-contrast item-center flex w-full justify-between">
-								<div className="flex items-center gap-2">
-									<BubbleCheckIcon className="size-6" />
-									<div>New episode created successfully</div>
-								</div>
-								<Button
-									variant="outline"
-									innerClassName="!h-8 text-fm-contrast !text-fm-sm border-fm-divider-tertiary"
-									onClick={() => {
-										toast.dismiss(id)
-										router.push(
-											`/projects/${data?.project_id}/${data?.id}/editor`
-										)
-									}}
-								>
-									View
-								</Button>
-							</div>
-						),
-						{
-							duration: 3000,
-							className: 'w-md max-w-none',
-						}
-					)
-				},
-
-				onError: () => {
-					toast.error('Failed to add episode', {
-						icon: <BubbleCrossedIcon />,
-					})
-				},
-			}
-		)
+		episodeInventMutation.mutate({
+			chapter_title: data.title,
+			seq_number: (currentInventIndex || 0) + 2 + (currentPage - 1) * limit,
+			language: storyData?.parent_language,
+		})
 		setIsInventOpen(false)
 	}
 
-	const handleDeleteEpisode = (episodeId: number, episodeSeq: number) => {
+	const handleDeleteEpisode = (episodeId: number) => {
 		if (!isWriter) {
 			return
 		}
 		setAlertInfo({
+			description: 'Selected episode will get permanently deleted',
 			action: EpisodeActions.DELETE,
-			variant: 'negative',
-			icon: (
-				<TrashIcon className="text-fm-icon-negative" width={44} height={44} />
-			),
-			description: `Delete Episode ${episodeSeq} permanently`,
-			subDescription: 'Once deleted, this can’t be undone',
-			secondAction: 'Cancel',
 		})
 		setDeleteEpisodeId(episodeId)
 		setIsDialogOpen(true)
 	}
 
-	const handleEpisodeInfo = ({
-		icon,
-		title,
-		description,
-	}: {
-		description: string
-		icon: React.ReactNode
-		title: string
-	}) => {
-		setAlertInfo({
-			action: EpisodeActions.INFO,
-			variant: 'info',
-			icon: icon,
-			description: title,
-			subDescription: description,
-		})
-		setIsDialogOpen(true)
-	}
-
 	const handleConfirm = async () => {
-		if (!alertInfo || alertInfo.action === EpisodeActions.INFO || !isWriter) {
+		if (!alertInfo || !isWriter) {
 			return
 		}
 		if (alertInfo.action === EpisodeActions.MERGE && selectedEpisodes) {
@@ -336,10 +187,6 @@ const useEpisodeTable = () => {
 			episodeUnmergeMutation.mutate(selectedEpisodes.episodes[0].id)
 		} else if (alertInfo.action === EpisodeActions.UPDATE && selectedEpisodes) {
 			const { episodes } = selectedEpisodes
-
-			const episodeIds = episodes.map((episode) => episode.id)
-
-			setStatusUpdating([...statusUpdating, ...episodeIds])
 
 			await Promise.all(
 				episodes.map(async (episode) => {
@@ -360,13 +207,10 @@ const useEpisodeTable = () => {
 					})
 				})
 			)
-
 			await queryClient.invalidateQueries({
 				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id), currentPage, search],
 				type: 'all',
 			})
-
-			setStatusUpdating(statusUpdating.filter((id) => !episodeIds.includes(id)))
 		} else if (alertInfo.action === EpisodeActions.DELETE && deleteEpisodeId) {
 			episodeDeleteMutation.mutate(deleteEpisodeId)
 		}
@@ -379,8 +223,6 @@ const useEpisodeTable = () => {
 		handleDeleteEpisode,
 		handleMerge,
 		handleUnmerge,
-		handleEpisodeInfo,
-		statusUpdating,
 	}
 }
 

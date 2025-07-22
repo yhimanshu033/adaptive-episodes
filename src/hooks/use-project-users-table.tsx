@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { rolesArray } from '@/constants/global-constants'
-import UserInfo from '@/page-builders/episodes/info/user-info'
+import UserInfo from '@/page-builders/episodes/user-info'
 import { setDeleteMemberMail } from '@/store/admin-store'
 import {
 	ColumnDef,

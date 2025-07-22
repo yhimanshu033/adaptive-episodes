@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { INITIAL_FAR_OPTIONS } from '@/constants/ai-constants'
 import { farSearchModes } from '@/constants/editor-constants'
 import useLocalizeHook, {
 	useLocalizeDownloadMutation,
@@ -10,8 +9,7 @@ import {
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
-	usePluginOptions,
-} from 'platejs/react'
+} from '@udecode/plate-common/react'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import useProjectId from '@/providers/project-id-provider'
@@ -19,7 +17,6 @@ import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import {
 	getLocalizationData,
 	getOccurrencesUtil,
-	getRecordsTextUtil,
 	getRecordsUtil,
 	getSuggestionValue,
 	replaceAll,
@@ -33,24 +30,15 @@ import { TLocalizeArrayItem, TLocalizeResponse } from '@/types/ai-types'
 import useLOCSheetData from './query/use-loc-sheet-data'
 
 export default function useFindAndReplace() {
-	const { setOptions } = useEditorPlugin(FindReplacePlugin)
+	const { setOptions, useOption } = useEditorPlugin(FindReplacePlugin)
 	const language = useLanguage()
 
-	const {
-		search,
-		replace,
-		replaceEnabled,
-		caseSensitive,
-		wholeWord,
-		genitive,
-	} = usePluginOptions(FindReplacePlugin, (state) => ({
-		search: state.search || '',
-		replace: state.replace || '',
-		replaceEnabled: state.replaceEnabled || false,
-		caseSensitive: state.caseSensitive || false,
-		wholeWord: state.wholeWord || false,
-		genitive: state.genitive || false,
-	}))
+	const search = useOption('search') || ''
+	const replace = useOption('replace') || ''
+	const replaceEnabled = useOption('replaceEnabled')
+	const caseSensitive = useOption('caseSensitive')
+	const wholeWord = useOption('wholeWord')
+	const genitive = useOption('genitive')
 	const [ptr, setPtr] = useState(0)
 
 	const { children } = useEditorState()
@@ -94,19 +82,6 @@ export default function useFindAndReplace() {
 		() =>
 			getRecordsUtil({ caseSensitive, children, genitive, search, wholeWord }),
 		[children, wholeWord, genitive, search, caseSensitive]
-	)
-
-	const recordTexts = useMemo(
-		() =>
-			getRecordsTextUtil({
-				records,
-				caseSensitive,
-				children,
-				genitive,
-				search,
-				wholeWord,
-			}),
-		[records, caseSensitive, children, genitive, search, wholeWord]
 	)
 
 	useEffect(() => {
@@ -168,10 +143,6 @@ export default function useFindAndReplace() {
 
 	function handleNext() {
 		setPtr(ptr < records.length - 1 ? ptr + 1 : ptr)
-	}
-
-	function onReplaceChange(e: React.ChangeEvent<HTMLInputElement>) {
-		setOptions({ replace: e.target.value })
 	}
 
 	function toggleSearchMode(mode: farSearchModes) {
@@ -247,13 +218,5 @@ export default function useFindAndReplace() {
 		sheetURL,
 		handleScanEpisode,
 		updateLOCPending,
-		recordTexts,
-		onReplaceChange,
-		options: INITIAL_FAR_OPTIONS,
-		replacedContentMap: {},
-		setReplacedContentMap: () => {},
-		setPtr,
 	}
 }
-
-export type useFindAndReplaceRet = ReturnType<typeof useFindAndReplace>

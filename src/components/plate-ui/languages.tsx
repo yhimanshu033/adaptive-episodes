@@ -25,21 +25,6 @@ const Languages = () => {
 			value={selectedLanguage}
 			disabledLanguages={disabledLanguages}
 			className="w-28"
-			classes={{
-				trigger: {
-					root: 'border-fm-divider-secondary font-fm-brand h-auto rounded-full [&_>span]:text-left',
-					icon: 'size-4',
-				},
-				content: {
-					scrollButton: {
-						icon: 'size-4',
-					},
-				},
-				item: {
-					root: '[font-size:var(--text-fm-sm)]',
-					icon: 'size-4',
-				},
-			}}
 		/>
 	)
 }

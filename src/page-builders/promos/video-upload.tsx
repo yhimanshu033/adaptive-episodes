@@ -5,7 +5,6 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import { PROMO_PAGE } from '@/constants/german-constants'
 import useVideoTranslation from '@/hooks/mutation/use-video-translation'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
-import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { Copy, FileVideo, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -67,9 +66,7 @@ export default function VideoUpload() {
 			if (droppedFile.type.startsWith('video/')) {
 				setFile(droppedFile)
 			} else {
-				toast.error(PROMO_PAGE.UPLOAD_VIDEO, {
-					icon: <BubbleCrossedIcon />,
-				})
+				toast.error(PROMO_PAGE.UPLOAD_VIDEO)
 			}
 		}
 	}
@@ -81,9 +78,7 @@ export default function VideoUpload() {
 			if (selectedFile.type.startsWith('video/')) {
 				setFile(selectedFile)
 			} else {
-				toast.error(PROMO_PAGE.UPLOAD_VIDEO, {
-					icon: <BubbleCrossedIcon />,
-				})
+				toast.error(PROMO_PAGE.UPLOAD_VIDEO)
 			}
 		}
 	}

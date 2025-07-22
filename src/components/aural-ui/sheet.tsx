@@ -302,9 +302,7 @@ const closeIconVariants = cva(
 interface SheetContentProps
 	extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
 		VariantProps<typeof sheetVariants>,
-		ISheetOverlay {
-	container?: HTMLElement | null
-}
+		ISheetOverlay {}
 
 const SheetContent = React.forwardRef<
 	React.ElementRef<typeof SheetPrimitive.Content>,
@@ -320,12 +318,11 @@ const SheetContent = React.forwardRef<
 			noise,
 			children,
 			classes,
-			container,
 			...props
 		},
 		ref
 	) => (
-		<SheetPortal container={container}>
+		<SheetPortal>
 			<SheetOverlay
 				opacity={opacity}
 				glass={glass}

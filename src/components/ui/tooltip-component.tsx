@@ -5,7 +5,7 @@ import {
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from '@/components/aural-ui/tooltip'
+} from '@/components/ui/tooltip'
 
 export function TooltipComponent({
 	children,

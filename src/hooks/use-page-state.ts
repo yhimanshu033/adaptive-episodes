@@ -2,10 +2,7 @@
 
 import { useMemo } from 'react'
 import { useParams, usePathname } from 'next/navigation'
-import {
-	DEFAULT_EPISODE_LIMIT,
-	DEFAULT_PAGE,
-} from '@/constants/episodes-constants'
+import { DEFAULT_EPISODE_LIMIT } from '@/constants/episodes-constants'
 import {
 	EPISODE_LIST_RECENT_QUERY_KEY,
 	EPISODE_LIST_RECENT_QUERY_KEY_STORE,
@@ -24,7 +21,7 @@ export const usePageState = () => {
 	const path = usePathname()
 	const [currentPage, setCurrentPage] = useQueryState(
 		'page',
-		parseAsInteger.withDefault(DEFAULT_PAGE)
+		parseAsInteger.withDefault(1)
 	)
 
 	const [search, setSearch] = useQueryState('search', { defaultValue: '' })
@@ -41,9 +38,7 @@ export const usePageState = () => {
 		}
 		const map = (await getOpenedEpisodeList()) || {}
 		void setSearch((prev) => map[id]?.search || prev)
-		void setCurrentPage((prev) =>
-			prev === DEFAULT_PAGE ? map[id]?.page || DEFAULT_PAGE : prev
-		)
+		void setCurrentPage((prev) => (prev === 1 ? map[id]?.page || 1 : prev))
 		void setLimit(
 			(prev) =>
 				map[id]?.limit ||

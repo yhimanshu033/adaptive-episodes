@@ -1,35 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
 	createContext,
-	RefObject,
 	useContext,
 	useEffect,
 	useMemo,
-	useRef,
 	useState,
 } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
-import ReviewAdded from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages/review-added'
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
-import { parse } from 'best-effort-json-parser'
-import { jsonrepair } from 'jsonrepair'
-import { nanoid } from 'nanoid'
-import { Value } from 'platejs'
+import { TComment } from '@udecode/plate-comments'
+import { CommentsPlugin } from '@udecode/plate-comments/react'
 import {
 	ParagraphPlugin,
 	useEditorPlugin,
 	useEditorRef,
 	useEditorState,
-} from 'platejs/react'
+} from '@udecode/plate-common/react'
+import { Value } from '@udecode/slate'
+import { WithPartial } from '@udecode/utils'
+import { parse } from 'best-effort-json-parser'
+import { jsonrepair } from 'jsonrepair'
+import { nanoid } from 'nanoid'
 
-import {
-	discussionPlugin,
-	TDiscussion,
-} from '@/components/editor/plugins/discussion-kit'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { addSFX, convertReviewResponse, minify } from '@/lib/utils/ai-chatbot'
 import { parseOptimistically } from '@/lib/utils/helpers'
@@ -57,13 +53,9 @@ type TChatbotContext = {
 	handleSendMessage: (e: React.FormEvent) => void
 	handleSuggestion: (suggestion: TStoryChatSuggestion) => void
 	input: string
-	isFocused: boolean
 	isPending: boolean
 	removeReview: () => void
 	setInput: React.Dispatch<React.SetStateAction<string>>
-	setIsFocused: React.Dispatch<React.SetStateAction<boolean>>
-	textContainerRef: React.RefObject<HTMLDivElement>
-	textareaRef: React.RefObject<HTMLTextAreaElement>
 }
 
 const ChatbotContext = createContext<TChatbotContext>({
@@ -78,10 +70,6 @@ const ChatbotContext = createContext<TChatbotContext>({
 	setInput: () => {},
 	isPending: false,
 	removeReview: () => {},
-	isFocused: false,
-	setIsFocused: () => {},
-	textContainerRef: null as unknown as RefObject<HTMLDivElement>,
-	textareaRef: null as unknown as RefObject<HTMLTextAreaElement>,
 })
 
 export function ChatbotProvider({
@@ -96,9 +84,6 @@ export function ChatbotProvider({
 	const [reviewStreaming, setReviewStreaming] = useState<string>('')
 	const [originalChildren, setOriginalChildren] = useState<Value>()
 	const [blockStreaming, setBlockStreaming] = useState<string>('')
-	const [isFocused, setIsFocused] = useState<boolean>(false)
-	const textContainerRef = useRef<HTMLDivElement>(null)
-	const textareaRef = useRef<HTMLTextAreaElement>(null)
 
 	const {
 		store,
@@ -124,8 +109,7 @@ export function ChatbotProvider({
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
-	const { setOptions: setDiscussionOptions, getOption: getDiscussionOption } =
-		useEditorPlugin(discussionPlugin)
+	const { api, setOptions } = useEditorPlugin(CommentsPlugin)
 
 	const changesPending = prevValue && value
 
@@ -139,9 +123,6 @@ export function ChatbotProvider({
 	})
 
 	const { data: aiResponse, isPending, reset } = aiChatbotMutation
-
-	const staleReviewIDRef = useRef<string[] | null>(null)
-	const commentsCount = useRef<number>(0)
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -165,19 +146,25 @@ export function ChatbotProvider({
 		setRequestedAction(EChatMode.BLOCK)
 	}
 
-	const addComment = (
-		value: TDiscussion | null | undefined
-	): TDiscussion | undefined => {
-		if (!value?.userId) {
+	const addComment = (value: TComment) => {
+		const id = value.id ?? nanoid()
+		if (!value) {
 			return
 		}
+		const newComment: WithPartial<TComment, 'userId'> = {
+			...value,
+		}
 
-		setDiscussionOptions((draft) => {
-			draft.discussions ??= []
-			draft.discussions.push(value)
-		})
+		if (newComment?.userId) {
+			setOptions((draft) => {
+				if (!draft.comments) {
+					draft.comments = {}
+				}
+				draft.comments[id] = newComment as TComment
+			})
+		}
 
-		return value
+		return newComment
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
@@ -188,27 +175,16 @@ export function ChatbotProvider({
 		if (suggestion.action === EChatMode.VOICE2_XML) {
 			setDualViewMode(EDualVIewMode.VOICE_PASS)
 			setSidebar(ESidebar.DUAL_VIEW)
-			addMessages({
-				taskId: nanoid(),
-				content: 'Voice Pass Started',
-				role: EMessenger.ASSISTANT,
-				action: EAction.VOICE2_XML,
-			})
 			return
 		}
 		if (suggestion.action === EChatMode.PROMPTS) {
 			setInput(suggestion.value)
-			setIsFocused(true)
-			setTimeout(() => textareaRef.current?.focus(), 0)
 			return
 		}
 		addMessages({ role: EMessenger.USER, content: suggestion.value })
 		aiChatbotMutation.mutate({
 			aiChatbotData: {
-				messages: messages.map((message) => ({
-					content: message.content || '',
-					role: message.role,
-				})),
+				messages,
 				user_message: suggestion.value,
 				ep_number: episodeContent?.chapter.seq_number?.toString(),
 				ep_text: episodeContent?.text as string,
@@ -246,7 +222,6 @@ export function ChatbotProvider({
 		setReviewStreaming('')
 		setBlockStreaming('')
 	}
-
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
 		const children = originalChildren
 		if (!children) {
@@ -261,57 +236,29 @@ export function ChatbotProvider({
 				return
 			}
 			addComment({
-				id: comment.id,
-				userId: AI_USER_ID,
-				createdAt: new Date(),
-				isResolved: false,
-				documentContent: comment.nodeText,
-				comments: [
+				value: [
 					{
-						id: nanoid(),
-						userId: AI_USER_ID,
-						createdAt: new Date(),
-						isEdited: false,
-						discussionId: comment.id,
-						contentRich: [
+						type: ParagraphPlugin.key,
+						children: [
 							{
-								id: nanoid(),
-								type: ParagraphPlugin.key,
-								children: [
-									{
-										text: comment.text
-											.trim()
-											.replace(/•/g, '-')
-											.replace(/(?<=\s)-/g, '\n-')
-											.replace('</comment_format> <comment_format>', ''),
-									},
-								],
+								text: comment.text
+									.trim()
+									.replaceAll('•', '-')
+									.replace(/(?<=\s)-/g, '\n-')
+									.replace('</comment_format> <comment_format>', ''),
 							},
 						],
 					},
 				],
+				id: comment.id,
+				userId: AI_USER_ID,
+				createdAt: Date.now(),
 			})
 		})
-		staleReviewIDRef.current = resp.comments.map((comment) => comment.id)
-		commentsCount.current = resp.comments.length
 		editor.tf.setValue(breakDownValue(resp.value))
 	}
 
-	function removeStaleReviews(staleReviewIDs: string[]) {
-		if (!staleReviewIDs || staleReviewIDs.length === 0) {
-			return
-		}
-		const currentDiscussions = getDiscussionOption('discussions')
-		const updatedDiscussions = currentDiscussions.filter(
-			(discussion) => !staleReviewIDs.includes(discussion.id)
-		)
-		setDiscussionOptions((draft) => {
-			draft.discussions = updatedDiscussions
-		})
-	}
-
 	function removeReview() {
-		staleReviewIDRef.current = null
 		if (!reviewStreaming || !responses[reviewStreaming]) {
 			return
 		}
@@ -324,10 +271,7 @@ export function ChatbotProvider({
 		}
 		const resp = convertReviewResponse(reviewResponse, children)
 		resp.comments.forEach((comment) => {
-			const updatedDiscussions = editor
-				.getOption(discussionPlugin, 'discussions')
-				.filter((discussion) => discussion.id !== comment.id)
-			editor.setOption(discussionPlugin, 'discussions', updatedDiscussions)
+			api.comment.removeComment(comment.id)
 		})
 		editor.tf.setValue(breakDownValue(children))
 	}
@@ -341,7 +285,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.REVIEW,
-					content: 'Reviewing you content',
+					content: 'Adding review...',
 				})
 			} else if (requestedAction === EChatMode.SFX) {
 				setOriginalChildren(children)
@@ -350,15 +294,15 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.CHANGES,
-					content: 'Inserting SFX to your content',
+					content: 'Adding MUSIC/SFX/AMBIENT Tags...',
 				})
-			} else if (requestedAction === EChatMode.VOICE2_XML) {
+			} else if (requestedAction === EChatMode.VOICE) {
 				setOriginalChildren(children)
 				addMessages({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.VOICE,
-					content: 'Voice Parsing',
+					content: 'Voice Pass ist active...',
 				})
 			} else {
 				handleBlock({ text: '', taskId: aiResponse })
@@ -427,14 +371,12 @@ export function ChatbotProvider({
 				{
 					role: EMessenger.ASSISTANT,
 					action: EAction.REVIEW,
-					content: 'Completed',
+					content: 'StoryChat added review in comments',
 					taskId: reviewStreaming,
-					component: <ReviewAdded count={commentsCount.current} />,
 				},
 				messages.length - 1
 			)
 			setOriginalChildren(undefined)
-			staleReviewIDRef.current = null
 			return
 		}
 		if (!responses[reviewStreaming]) {
@@ -452,9 +394,6 @@ export function ChatbotProvider({
 			if (!parsedResponse || !parsedResponse.length) {
 				return
 			}
-			if (staleReviewIDRef.current && staleReviewIDRef.current.length > 0) {
-				removeStaleReviews(staleReviewIDRef.current)
-			}
 			addReview(parsedResponse)
 		} catch (error) {
 			console.error(error)
@@ -471,37 +410,21 @@ export function ChatbotProvider({
 			return
 		}
 		if (taskEnded[blockStreaming]) {
+			const lastIndex = messages.length - 1
+			if (lastIndex >= 0) {
+				updateMessages(
+					{
+						...messages[lastIndex],
+						content:
+							responses[blockStreaming].join('') ||
+							"Sorry, I don't have an answer to that at the moment.",
+					},
+					lastIndex
+				)
+			}
 			setBlockStreaming('')
 		}
-		const lastIndex = messages.length - 1
-		if (lastIndex >= 0) {
-			updateMessages(
-				{
-					...messages[lastIndex],
-					content:
-						responses[blockStreaming]?.join('') ||
-						"Sorry, I don't have an answer to that at the moment.",
-				},
-				lastIndex
-			)
-		}
-	}, [blockStreaming, taskEnded[blockStreaming], responses[blockStreaming]])
-
-	useEffect(() => {
-		function handleClickOutside(event: MouseEvent) {
-			if (
-				textContainerRef.current &&
-				!textContainerRef.current.contains(event.target as Node)
-			) {
-				setIsFocused(false)
-			}
-		}
-
-		document.addEventListener('mousedown', handleClickOutside)
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside)
-		}
-	}, [setIsFocused])
+	}, [blockStreaming, taskEnded[blockStreaming]])
 
 	const lastMessage = useMemo(() => messages[messages.length - 1], [messages])
 	const disabled = !!(
@@ -526,12 +449,8 @@ export function ChatbotProvider({
 		handleSendMessage,
 		input,
 		setInput,
-		isFocused,
-		setIsFocused,
 		cancelRequest,
 		clearMessages,
-		textContainerRef,
-		textareaRef,
 	}
 
 	return (
