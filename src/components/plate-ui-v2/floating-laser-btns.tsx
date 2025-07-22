@@ -22,13 +22,12 @@ import { MarkToolbarButton } from './mark-toolbar-button'
 export default function FloatingLaserBtns() {
 	const editor = useEditorRef()
 	const { setActiveLaser, setPromptActive } = useLaserStore()
-	const key = `laser-id-${nanoid()}`
 
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
 				<MarkToolbarButton
-					nodeType={(LaserPlugin as { key: string }).key}
+					nodeType={LaserPlugin.key as string}
 					tooltip="Laser (⌘+B)"
 					size="floating"
 					manual
@@ -52,17 +51,18 @@ export default function FloatingLaserBtns() {
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
-										[(PromptPlugin as { key: string }).key, key] as string[]
+										[PromptPlugin.key as string, key] as string[]
 									)
 									document.getElementById('prompt-input')?.focus()
 									setPromptActive(key)
 								} else {
+									const key = `laser-id-${nanoid()}`
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
 										[
 											`laser-method-${String(method.id)}`,
-											String((LaserPlugin as { key: string }).key),
+											LaserPlugin.key as string,
 											key,
 										] as string[]
 									)

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useCallback, useEffect, useRef } from 'react'
 import useLaserStore from '@/store/laser-store'
 import { cn } from '@udecode/cn'
@@ -15,8 +16,6 @@ import {
 	getCommentNode,
 	getParentWidth,
 } from '@/lib/utils/plate'
-
-import { TLaserLeafChildren } from '@/types/plate-types'
 
 function getLaserKey(elem: Text) {
 	return Object.keys(elem).find((key) => key.startsWith('laser-id-'))
@@ -83,8 +82,13 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		let prevtext = ''
 		let nexttext = ''
 
-		const descendants: Descendant[] = (children as TLaserLeafChildren).props
-			.parent.children
+		const leafPath = editor.api.node({
+			at: [],
+			match: (n) => JSON.stringify(n) === JSON.stringify(leaf),
+		})?.[1]
+		const parent = leafPath ? editor.api.parent(leafPath)?.[0] : null
+		const descendants: Descendant[] = parent?.children || []
+
 		const texts = descendants.map((child) => child.text)
 
 		const laserIndex = descendants.findIndex(
@@ -115,7 +119,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		}
 
 		return { text, prevtext, nexttext }
-	}, [key, leaf, children, allChildren])
+	}, [key, leaf, editor.api, allChildren])
 
 	const traverse = useCallback(
 		(node: Descendant) => {
