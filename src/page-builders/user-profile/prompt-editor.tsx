@@ -60,10 +60,11 @@ const PromptEditor = () => {
 				showCloseButton={false}
 				opacity="high"
 				glass="high"
-				className="w-[90vw] gap-5"
+				borderConfig={['left', 'right']}
+				className="max-sm:[100vw] h-[85vh] w-[90vw] max-w-137.5 gap-5 px-0 [box-shadow:none]"
 			>
-				<DialogHeader>
-					<DialogTitle className="flex items-center justify-between gap-4">
+				<DialogHeader className="space-y-0 px-8">
+					<DialogTitle className="flex h-14 items-center justify-between gap-4">
 						Edit prompts across editor
 						<DialogClose
 							className={iconButtonVariants({
@@ -83,7 +84,7 @@ const PromptEditor = () => {
 					<Divider variant="dashed" />
 				</DialogHeader>
 
-				<div className="flex h-full flex-col gap-4 overflow-auto">
+				<div className="flex h-full flex-col gap-4 overflow-auto px-8">
 					<div className="space-y-8">
 						<div className="space-y-3">
 							<Label>Prompts</Label>
@@ -123,7 +124,7 @@ const PromptEditor = () => {
 						</div>
 					</div>
 				</div>
-				<div className="flex grow items-end">
+				<div className="flex grow items-end px-8">
 					<Button isDisabled className="w-full">
 						Save & Continue
 					</Button>

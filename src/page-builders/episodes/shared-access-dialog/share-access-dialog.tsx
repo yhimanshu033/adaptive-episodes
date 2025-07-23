@@ -43,7 +43,8 @@ export default function ShareAccessDialog() {
 				showCloseButton={false}
 				opacity="high"
 				glass="high"
-				className="h-[90vh] w-[90vh] max-w-137.5 gap-5 px-0"
+				borderConfig={['left', 'right']}
+				className="h-[90vh] w-[90vh] max-w-137.5 gap-5 px-0 [box-shadow:none]"
 			>
 				<ScrollArea className="h-full">
 					<DialogHeader className="space-y-0 px-8">
@@ -69,8 +70,8 @@ export default function ShareAccessDialog() {
 					<div>
 						<SearchMembers />
 						<div
-							className={cn('transition-opacity duration-200', {
-								'opacity-0': !showSharedList,
+							className={cn('transition-all duration-200', {
+								'h-44.5 opacity-0': !showSharedList,
 							})}
 						>
 							<div className="px-8">

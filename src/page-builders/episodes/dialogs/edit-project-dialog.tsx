@@ -97,7 +97,8 @@ export default function EditProjectDialog({ children }: PropsWithChildren) {
 				showCloseButton={false}
 				opacity="high"
 				glass="high"
-				className="max-sm:[100vw] h-[85vh] w-[90vw] gap-5 px-0"
+				borderConfig={['left', 'right']}
+				className="max-sm:[100vw] h-[85vh] w-[90vw] gap-5 px-0 [box-shadow:none]"
 			>
 				<DialogHeader className="px-4">
 					<DialogTitle className="mb-0 flex items-center justify-between gap-4 py-2">

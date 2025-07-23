@@ -2,7 +2,7 @@
 
 import React, { ReactNode, useState } from 'react'
 
-import { cn } from '@/lib/utils/helpers'
+import { cn } from '@/lib/aural-ui/utils'
 
 interface MarqueeProps {
 	children: ReactNode
