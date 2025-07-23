@@ -300,6 +300,7 @@ const EpisodesTable = () => {
 					</Table>
 					{data && data.count > 0 && (
 						<PaginationProvider
+							initialPageSize={limit}
 							totalItems={data.count}
 							initialPage={currentPage}
 						>

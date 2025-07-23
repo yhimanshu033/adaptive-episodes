@@ -87,6 +87,7 @@ export default function useStoryExplorer({
 			const arrayStartIndex = jsonStr.indexOf('[')
 			const cleanedJsonStr =
 				arrayStartIndex !== -1 ? jsonStr.substring(arrayStartIndex) : '[]'
+
 			try {
 				const data =
 					parseOptimistically<PlotExplorerApiResponse['data']>(cleanedJsonStr)

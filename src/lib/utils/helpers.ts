@@ -230,6 +230,12 @@ export function parseOptimistically<T>(input: string) {
 		const repaired = jsonrepair(cleanedInput)
 		return parse(repaired) as T
 	} catch (e) {
+		console.log('parse failed:', e)
+	}
+	try {
+		const repaired = jsonrepair(cleanedInput)
+		return parse(repaired) as T
+	} catch (e) {
 		console.log('Jsonrepair failed:', e)
 	}
 	try {
@@ -620,6 +626,7 @@ export function handleToolTags(
 		.replace(/<\/answer>/g, '')
 		.replace(/<text[^>]*>/g, '')
 		.replace(/<\/text>/g, '')
+		.replace(/\{'model_id':[^}]*\}/g, '')
 }
 
 export function handleToolTagsArray(

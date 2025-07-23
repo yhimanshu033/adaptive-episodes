@@ -43,6 +43,7 @@ export type TStory = {
 export type StoryUploadParams = {
 	task_data: {
 		author: string | null
+		book_name?: string
 		end_ep: number
 		image: string | null
 		input_language: string

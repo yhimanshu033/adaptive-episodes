@@ -472,18 +472,18 @@ export function ChatbotProvider({
 		}
 		if (taskEnded[blockStreaming]) {
 			setBlockStreaming('')
-		}
-		const lastIndex = messages.length - 1
-		if (lastIndex >= 0) {
-			updateMessages(
-				{
-					...messages[lastIndex],
-					content:
-						responses[blockStreaming]?.join('') ||
-						"Sorry, I don't have an answer to that at the moment.",
-				},
-				lastIndex
-			)
+			const lastIndex = messages.length - 1
+			if (lastIndex >= 0) {
+				updateMessages(
+					{
+						...messages[lastIndex],
+						content:
+							responses[blockStreaming]?.join('') ||
+							"Sorry, I don't have an answer to that at the moment.",
+					},
+					lastIndex
+				)
+			}
 		}
 	}, [blockStreaming, taskEnded[blockStreaming], responses[blockStreaming]])
 
