@@ -18,13 +18,15 @@ const Header = () => {
 	}
 
 	return (
-		<div className="animate-fade-in-down bg-background border-fm-divider-tertiary sticky top-0 left-0 z-40 border-b">
+		<div className="bg-background sticky top-0 left-0 z-40">
 			<header className="animate-fade-in-down container flex min-h-18 items-center justify-between">
 				<Logo />
 				<div className="flex items-center gap-2">
 					<UserProfile />
 				</div>
 			</header>
+
+			<div className="via-fm-divider-secondary h-[1px] w-full bg-gradient-to-r from-transparent to-transparent" />
 		</div>
 	)
 }
