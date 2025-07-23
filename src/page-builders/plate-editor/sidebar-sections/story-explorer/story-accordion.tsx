@@ -135,11 +135,12 @@ export function RenderContent({
 		return [boldedFirst, ...rest].join('<br/>')
 	}
 
+	const isEmptyString = (str: string | undefined): boolean =>
+		typeof str === 'string' && str.trim() === ''
+
 	if (
-		!content ||
-		(typeof content === 'string' && content.trim() === '') ||
-		!preContent ||
-		(typeof preContent === 'string' && preContent.trim() === '')
+		(!content || isEmptyString(content as string)) &&
+		(!preContent || isEmptyString(preContent))
 	) {
 		return (
 			<Typography color="tertiary" align="left" variant="body-small">

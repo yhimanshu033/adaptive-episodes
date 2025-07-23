@@ -48,6 +48,7 @@ export const storyImportFormSchema = z.object({
 	run_adaptation: z.boolean(),
 	target_language: z.string().optional(),
 	llm_model: z.string(),
+	book_name: z.string().optional(),
 })
 
 export type StoryImportFormSchema = z.infer<typeof storyImportFormSchema>
@@ -67,5 +68,6 @@ export const useStoryImportFormResolver = () =>
 			run_adaptation: false,
 			target_language: undefined,
 			llm_model: ELLMModel.HYBRID,
+			book_name: undefined,
 		},
 	})

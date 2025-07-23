@@ -457,6 +457,26 @@ export function ImportStory() {
 														</FormItem>
 													)}
 												/>
+												<FormField
+													control={form.control}
+													name="book_name"
+													render={({ field }) => (
+														<FormItem className="space-y-2">
+															<FormLabel htmlFor="book_name">
+																Story Book Name (optional)
+															</FormLabel>
+															<FormControl>
+																<Input
+																	id="book_name"
+																	placeholder="Enter book name"
+																	{...field}
+																	decoration="outline"
+																/>
+															</FormControl>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
 											</If>
 											<FormField
 												control={form.control}

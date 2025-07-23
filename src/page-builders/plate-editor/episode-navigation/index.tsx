@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useParams, useSearchParams } from 'next/navigation'
-import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
+import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
+import {
+	EPISODE_SEQUENCE,
+	SIMPLIFIED_VIEWABLE_EDITOR,
+} from '@/constants/global-constants'
 import { useInfiniteEpisodesData } from '@/hooks/query/use-episode-data'
 import useExtendedSaving from '@/hooks/use-extended-saving'
 import { LayoutLeftIcon } from '@/icons/layout-left-icon'
@@ -27,10 +31,16 @@ export default function EpisodeNavigation() {
 	const { episodeId, id } = useParams()
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
-	const page = Number(searchParams.get('page')) || 1
+	const episodeSequence = searchParams.get(EPISODE_SEQUENCE)
 	const isEpisodeNavigationOpen = useEditorStore(
 		useShallow((state) => state.isEpisodeNavigationOpen)
 	)
+
+	const page = useMemo(() => {
+		return episodeSequence
+			? Math.ceil(Number(episodeSequence) / DEFAULT_NAVIGATION_PAGE_LIMIT)
+			: 1
+	}, [episodeSequence])
 
 	const { InfiniteScrollWithDebouncing, data } = useInfiniteEpisodesData(page)
 
@@ -47,7 +57,6 @@ export default function EpisodeNavigation() {
 			(sum, curr) => sum + (curr?.results?.data?.length || 0),
 			0
 		)
-
 		// Create array with known capacity to avoid reallocation
 		const flatEpisodes: TGetEpisodesResponse['results']['data'] = new Array(
 			totalLength
@@ -75,7 +84,7 @@ export default function EpisodeNavigation() {
 		// Use requestAnimationFrame for better performance
 		requestAnimationFrame(() => {
 			const elem = document.getElementById(`ep-btn-${String(episodeId)}`)
-			elem?.scrollIntoView({ behavior: 'smooth' })
+			elem?.scrollIntoView({ block: 'center' })
 		})
 	}, [isEpisodeNavigationOpen, episodeId])
 
@@ -122,7 +131,7 @@ export default function EpisodeNavigation() {
 
 									return (
 										<Link
-											href={`/projects/${String(id)}/${String(episode_id)}/content`}
+											href={`/projects/${String(id)}/${String(episode_id)}/content?${EPISODE_SEQUENCE}=${item.seq_number}`}
 											className={cn(
 												buttonVariants({
 													variant: 'text',

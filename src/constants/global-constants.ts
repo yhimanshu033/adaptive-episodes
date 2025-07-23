@@ -134,6 +134,7 @@ export const GDRIVE_SUCCESS_MESSAGE = 'gdrive-success'
 export const SIMPLIFIED_VIEWABLE_EDITOR = 'sve'
 export const GLOBAL_LOCALIZE = 'global-localize'
 export const HIDE_HEADER = 'hide-header'
+export const EPISODE_SEQUENCE = 'seq'
 
 export const SAMPLE_DOC_LINK =
 	'https://docs.google.com/document/d/1i5s7OX9vmkLPw96htixpPs_xGZlk73NbqvVAVw9zHME/edit?usp=sharing'

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { EPISODE_SEQUENCE } from '@/constants/global-constants'
 import { UseMutateFunction } from '@tanstack/react-query'
 import { Row } from '@tanstack/react-table'
 
@@ -126,7 +127,7 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 				<Else>
 					<Link
 						className="font-fm-text flex cursor-pointer items-center gap-2 text-sm"
-						href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/content`}
+						href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/content/?${EPISODE_SEQUENCE}=${row.original.seq_number}`}
 					>
 						{isPending && inputValueMapRef.current[row.original.id]
 							? inputValueMapRef.current[row.original.id]
