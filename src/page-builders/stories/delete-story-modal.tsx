@@ -65,9 +65,12 @@ const DeleteStoryModal = ({
 					<div className="flex w-full flex-col gap-5">
 						<Button
 							variant="secondary"
+							innerClassName="border border-fm-divider-secondary"
+							className="border-fm-divider-secondary border"
 							onClick={() => {
 								onDialogChange(false)
 							}}
+							noise="low"
 						>
 							Delete
 						</Button>

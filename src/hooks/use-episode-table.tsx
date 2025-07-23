@@ -259,7 +259,7 @@ const useEpisodeTable = () => {
 									onClick={() => {
 										toast.dismiss(id)
 										router.push(
-											`/projects/${data?.project_id}/${data?.id}/editor`
+											`/projects/${data?.project_id}/${data?.id}/content`
 										)
 									}}
 								>

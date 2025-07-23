@@ -175,9 +175,21 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 					)
 				}
 
-				if (!isWriter) {
+				if (
+					!isWriter ||
+					titleToStatusText[latestStatus] ===
+						titleToStatusText[EStatus.PUBLISHED]
+				) {
 					return (
-						<Tag {...tagProps} emphasis="secondary">
+						<Tag
+							{...tagProps}
+							emphasis="secondary"
+							className={cn({
+								'ml-4':
+									titleToStatusText[latestStatus] ===
+									titleToStatusText[EStatus.PUBLISHED],
+							})}
+						>
 							{titleToStatusText[latestStatus]}
 						</Tag>
 					)

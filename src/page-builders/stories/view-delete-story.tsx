@@ -55,8 +55,8 @@ const ViewDeleteStory = ({
 							</Link>
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem onClick={onDelete}>
-							<TrashIcon /> Delete
+						<DropdownMenuItem onClick={onDelete} className="text-fm-negative">
+							<TrashIcon className="text-inherit" /> Delete
 						</DropdownMenuItem>
 					</DropdownMenuGroup>
 				</DropdownMenuContent>

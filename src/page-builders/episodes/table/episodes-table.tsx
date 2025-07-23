@@ -126,7 +126,8 @@ const EpisodesTable = () => {
 							<AuthWrapper role={ERole.ADMIN}>
 								<Button
 									variant="secondary"
-									className="h-11"
+									className="border-fm-divider-secondary h-11 border"
+									noise="low"
 									onClick={() => setIsShareAccessDialogOpen(true)}
 								>
 									<UploadIcon width={20} height={20} />
@@ -228,21 +229,34 @@ const EpisodesTable = () => {
 												<React.Fragment key={row.id}>
 													<TableRow
 														id={`row-${row.id}`}
-														className={cn({
-															selected: row.getIsSelected(),
-															'bg-fm-surface-primary': rowIndex % 2 !== 0,
-															'bg-fm-secondary-50': row.getIsSelected(),
-														})}
+														className={cn(
+															'border-fm-divider-brand-secondary transition-all duration-100',
+															{
+																selected: row.getIsSelected(),
+																'bg-fm-surface-primary': rowIndex % 2 !== 0,
+																'bg-fm-secondary-50': row.getIsSelected(),
+																'border-b': hoverIndex === rowIndex,
+															}
+														)}
+														onMouseMove={(e) => {
+															const rect =
+																e.currentTarget.getBoundingClientRect()
+															const offsetY = e.clientY - rect.top
+															const threshold = 20
+
+															if (
+																rect.height - offsetY <= threshold &&
+																!row.depth
+															) {
+																setHoverIndex(rowIndex)
+															} else {
+																setHoverIndex(null)
+															}
+														}}
+														onMouseLeave={() => setHoverIndex(null)}
 													>
 														{row.getVisibleCells().map((cell) => (
-															<TableCell
-																key={cell.id}
-																onMouseEnter={
-																	cell.column.id === 'select-col' && !row.depth
-																		? () => setHoverIndex(rowIndex)
-																		: () => setHoverIndex(null)
-																}
-															>
+															<TableCell key={cell.id}>
 																{flexRender(
 																	cell.column.columnDef.cell,
 																	cell.getContext()
@@ -251,8 +265,17 @@ const EpisodesTable = () => {
 														))}
 													</TableRow>
 
-													{hoverIndex === rowIndex && isWriter && (
-														<TableRow className="relative border-none">
+													{isWriter && (
+														<TableRow
+															className={cn(
+																'relative border-none opacity-100 transition-all duration-200',
+																{
+																	'opacity-0': hoverIndex !== rowIndex,
+																}
+															)}
+															onMouseEnter={() => setHoverIndex(rowIndex)}
+															onMouseLeave={() => setHoverIndex(null)}
+														>
 															<TableCell className="absolute -top-8 -left-10">
 																<Tooltip>
 																	<TooltipTrigger asChild>
@@ -260,7 +283,9 @@ const EpisodesTable = () => {
 																			variant="secondary"
 																			size="sm"
 																			disabled={!isWriter}
-																			className="rounded-full"
+																			className="border-fm-divider-secondary rounded-full border"
+																			innerClassName="border border-fm-divider-secondary"
+																			noise="low"
 																			onClick={() => {
 																				setIsInventOpen(true)
 																				setInventIndex(rowIndex)
