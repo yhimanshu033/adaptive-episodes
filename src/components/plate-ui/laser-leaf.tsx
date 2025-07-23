@@ -64,7 +64,8 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		setLaser({
 			laser: {
 				...laser,
-				clientY: rect.y + rect.height,
+				clientY: rect.y,
+				height: rect.height,
 				clientX: blockAncestorClientX,
 				width: blockAncestorContentWidth,
 			},
@@ -165,14 +166,16 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		laser = laser
 			? {
 					...laser,
-					clientY: rect ? rect.top + rect.height : 0,
+					clientY: rect ? rect.top : 0,
+					height: rect ? rect.height : 0,
 					clientX: blockAncestorClientX,
 					width: blockAncestorContentWidth,
 				}
 			: {
 					response: '',
 					text: '',
-					clientY: rect ? rect.top + rect.height : 0,
+					clientY: rect ? rect.top : 0,
+					height: rect ? rect.height : 0,
 					clientX: blockAncestorClientX,
 					width: blockAncestorContentWidth,
 				}
@@ -264,7 +267,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 					e.stopPropagation()
 				}}
 				className={cn(
-					'absolute bottom-0 z-9999 translate-y-full whitespace-nowrap print:hidden',
+					'absolute -bottom-1 z-9999 translate-y-full whitespace-nowrap print:hidden',
 					{
 						'pointer-events-none opacity-0': activeLaser !== key,
 						'opacity-100': activeLaser === key,

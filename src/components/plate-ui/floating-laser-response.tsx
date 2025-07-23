@@ -1,4 +1,8 @@
 import React, { useCallback, useMemo } from 'react'
+import {
+	ESTIMATED_FLOATING_HEIGHT,
+	RESPONSE_GAP,
+} from '@/constants/editor-constants'
 import { CrossIcon } from '@/icons/cross-icon'
 import { TickIcon } from '@/icons/tick-icon'
 import useLaserStore from '@/store/laser-store'
@@ -112,6 +116,22 @@ export default function FloatingLaserResponse() {
 		setResponseActive(null)
 	}
 
+	const positionStyle = useMemo(() => {
+		if (!laser) {
+			return {}
+		}
+		const yPosition =
+			(laser.clientY ?? 0) + (laser.height ?? 0) + ESTIMATED_FLOATING_HEIGHT >
+			window.innerHeight
+				? { bottom: window.innerHeight - (laser.clientY ?? 0) + RESPONSE_GAP }
+				: { top: (laser.clientY ?? 0) + (laser.height ?? 0) + RESPONSE_GAP }
+		return {
+			...yPosition,
+			left: laser.clientX || 500,
+			width: laser.width || 800,
+		}
+	}, [laser])
+
 	if (!laser) {
 		return null
 	}
@@ -128,11 +148,7 @@ export default function FloatingLaserResponse() {
 				'fixed z-9999 flex gap-2',
 				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg'
 			)}
-			style={{
-				top: laser.clientY || 300,
-				left: laser.clientX || 500,
-				width: laser.width || 800,
-			}}
+			style={positionStyle}
 		>
 			<div
 				id={`leaf-response-${key}`}
@@ -149,6 +165,7 @@ export default function FloatingLaserResponse() {
 					placeholder="Rephrase your text here..."
 					value={val}
 					onChange={(e) => setVal(e.target.value)}
+					maxHeight={150}
 					unstyled
 				/>
 				<Divider wrapperClassName="w-full" />
