@@ -106,7 +106,10 @@ export type AuthenticatedUser = {
 
 export type PlateUser = SuggestionUser & Partial<AuthenticatedUser>
 
-export type PromptPosition = Pick<Laser, 'clientX' | 'clientY' | 'width'>
+export type PromptPosition = Pick<
+	Laser,
+	'clientX' | 'clientY' | 'width' | 'height'
+>
 
 export type TOldComment = {
 	createdAt: number

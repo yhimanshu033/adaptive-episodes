@@ -1,4 +1,8 @@
 import React, { useCallback, useMemo } from 'react'
+import {
+	ESTIMATED_FLOATING_HEIGHT,
+	RESPONSE_GAP,
+} from '@/constants/editor-constants'
 import useLaserStore from '@/store/laser-store'
 import { Send } from 'lucide-react'
 import { nanoid } from 'nanoid'
@@ -67,6 +71,32 @@ export default function FloatingPrompt() {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const name = useMemo(nanoid, [promptActive])
 
+	const positionStyle = useMemo(() => {
+		if (!promptPosition) {
+			return {}
+		}
+		const yPosition =
+			(promptPosition.clientY ?? 0) +
+				(promptPosition.height ?? 0) +
+				ESTIMATED_FLOATING_HEIGHT >
+			window.innerHeight
+				? {
+						bottom:
+							window.innerHeight - (promptPosition.clientY ?? 0) + RESPONSE_GAP,
+					}
+				: {
+						top:
+							(promptPosition.clientY ?? 0) +
+							(promptPosition.height ?? 0) +
+							RESPONSE_GAP,
+					}
+		return {
+			...yPosition,
+			left: promptPosition.clientX || 500,
+			width: promptPosition.width || 800,
+		}
+	}, [promptPosition])
+
 	if (!promptActive || !promptActive.startsWith('floating')) {
 		return null
 	}
@@ -84,11 +114,7 @@ export default function FloatingPrompt() {
 				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg',
 				'flex w-full flex-col items-start justify-start gap-5'
 			)}
-			style={{
-				top: promptPosition?.clientY || 300,
-				left: promptPosition?.clientX || 500,
-				width: promptPosition?.width || 800,
-			}}
+			style={positionStyle}
 		>
 			<Textarea.Base
 				autoFocus
@@ -101,7 +127,8 @@ export default function FloatingPrompt() {
 				decoration="filled"
 				className="text-fm-primary/80 leading-fm-md w-full min-w-[300px] resize-none [font-size:var(--text-fm-md)] outline-none"
 				rows={4}
-				minHeight={100}
+				minHeight={50}
+				maxHeight={150}
 			/>
 			<Divider wrapperClassName="w-full" />
 			<div className="w-full text-right">
