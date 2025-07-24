@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
@@ -65,7 +66,7 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 		[isWriter, simplifiedEditor, setReadOnly, setOption, editorRef.tf]
 	)
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!isWriter || simplifiedEditor) {
 			setTimeout(() => {
 				setReadOnly(true)
