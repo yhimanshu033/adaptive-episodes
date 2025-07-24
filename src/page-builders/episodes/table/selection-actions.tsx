@@ -66,8 +66,8 @@ export default function SelectionActions({
 	}
 
 	return (
-		<div className="bg-fm-surface-primary mb-4 flex min-h-17 items-center justify-between gap-3 px-6 pr-4 pl-0">
-			<div className="flex items-center gap-1 pl-1.5">
+		<div className="bg-fm-surface-primary mb-4 flex min-h-17 items-center justify-between gap-3 px-6 pr-4 pl-4">
+			<div className="flex items-center gap-1">
 				<IconButton
 					onClick={() => void table.resetRowSelection()}
 					variant="ghost"

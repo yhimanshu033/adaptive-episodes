@@ -31,11 +31,6 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/aural-ui/table'
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from '@/components/aural-ui/tooltip'
 import AuthWrapper from '@/components/auth-wrapper'
 import IfElse, { Else, If } from '@/components/if-else'
 import StoryDetails from '@/components/story-details'
@@ -94,6 +89,12 @@ const EpisodesTable = () => {
 			setSearchedRow(null)
 		}
 	}, [searchedRow, isEpisodesLoading])
+
+	useEffect(() => {
+		if (table.getSelectedRowModel().rows.length > 0) {
+			setHoverIndex(null)
+		}
+	}, [table.getSelectedRowModel().rows.length])
 
 	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
 		return <AdaptationContainer />
@@ -225,88 +226,115 @@ const EpisodesTable = () => {
 								<Else>
 									<IfElse condition={!!table.getRowModel().rows?.length}>
 										<If>
-											{table.getRowModel().rows.map((row, rowIndex) => (
-												<React.Fragment key={row.id}>
-													<TableRow
-														id={`row-${row.id}`}
-														className={cn(
-															'border-fm-divider-brand-secondary transition-all duration-100',
-															{
-																selected: row.getIsSelected(),
-																'bg-fm-surface-primary': rowIndex % 2 !== 0,
-																'bg-fm-secondary-50': row.getIsSelected(),
-																'border-b-[0.5px]': hoverIndex === rowIndex,
-															}
-														)}
-														onMouseMove={(e) => {
-															const rect =
-																e.currentTarget.getBoundingClientRect()
-															const offsetY = e.clientY - rect.top
-															const threshold = 20
+											{table.getRowModel().rows.map((row, rowIndex) => {
+												const anyRowSelected =
+													table.getSelectedRowModel().rows.length > 0
+												const isHoverable = !anyRowSelected && isWriter
+												const isHovered = hoverIndex === rowIndex
+												const shouldShowHoverAction = isHoverable && isHovered
 
-															if (
-																rect.height - offsetY <= threshold &&
-																!row.depth
-															) {
-																setHoverIndex(rowIndex)
-															} else {
-																setHoverIndex(null)
-															}
-														}}
-														onMouseLeave={() => setHoverIndex(null)}
-													>
-														{row.getVisibleCells().map((cell) => (
-															<TableCell key={cell.id}>
-																{flexRender(
-																	cell.column.columnDef.cell,
-																	cell.getContext()
-																)}
-															</TableCell>
-														))}
-													</TableRow>
+												const handleRowMouseMove = (
+													e: React.MouseEvent<HTMLTableRowElement>
+												) => {
+													if (!isHoverable) {
+														return
+													}
 
-													{isWriter && (
+													const rect = e.currentTarget.getBoundingClientRect()
+													const offsetY = e.clientY - rect.top
+													const threshold = 20
+
+													if (
+														rect.height - offsetY <= threshold &&
+														!row.depth
+													) {
+														setHoverIndex(rowIndex)
+													} else {
+														setHoverIndex(null)
+													}
+												}
+
+												const handleRowMouseLeave = () => {
+													if (!isHoverable) {
+														return
+													}
+													setHoverIndex(null)
+												}
+
+												const handleInventMouseEnter = () => {
+													if (!isHoverable) {
+														return
+													}
+													setHoverIndex(rowIndex)
+												}
+
+												return (
+													<React.Fragment key={row.id}>
 														<TableRow
+															id={`row-${row.id}`}
 															className={cn(
-																'relative border-none opacity-100 transition-all duration-200',
+																'border-fm-divider-brand-secondary transition-all duration-200',
 																{
-																	'opacity-0': hoverIndex !== rowIndex,
+																	selected: row.getIsSelected(),
+																	'bg-fm-surface-primary': rowIndex % 2 !== 0,
+																	'bg-fm-secondary-50': row.getIsSelected(),
+																	'bg-fm-surface-frosted/20 border-b-[0.5px]':
+																		shouldShowHoverAction,
 																}
 															)}
-															onMouseEnter={() => setHoverIndex(rowIndex)}
-															onMouseLeave={() => setHoverIndex(null)}
+															onMouseMove={handleRowMouseMove}
+															onMouseLeave={handleRowMouseLeave}
 														>
-															<TableCell className="absolute -top-8 -left-10">
-																<Tooltip>
-																	<TooltipTrigger asChild>
-																		<Button
-																			variant="secondary"
-																			size="sm"
-																			disabled={!isWriter}
-																			className="border-fm-divider-secondary w-10 rounded-full border"
-																			innerClassName="border border-fm-divider-secondary"
-																			noise="low"
-																			onClick={() => {
-																				setIsInventOpen(true)
-																				setInventIndex(rowIndex)
-																			}}
-																		>
-																			<PlusIcon
-																				width={16}
-																				height={16}
-																				className="flex shrink-0"
-																			/>
-																		</Button>
-																	</TooltipTrigger>
-																	<TooltipContent>
-																		Invent Episode
-																	</TooltipContent>
-																</Tooltip>
-															</TableCell>
+															{row.getVisibleCells().map((cell) => (
+																<TableCell key={cell.id}>
+																	{flexRender(
+																		cell.column.columnDef.cell,
+																		cell.getContext()
+																	)}
+																</TableCell>
+															))}
 														</TableRow>
-													)}
-												</React.Fragment>
-											))}
+
+														{isWriter && (
+															<TableRow
+																className={cn(
+																	'relative border-none p-0 transition-all duration-300',
+																	{
+																		'opacity-0': !shouldShowHoverAction,
+																		'opacity-100': shouldShowHoverAction,
+																	}
+																)}
+																onMouseLeave={handleRowMouseLeave}
+															>
+																<TableCell className="absolute -bottom-4 -left-5 p-0">
+																	<Button
+																		variant="secondary"
+																		size="sm"
+																		disabled={!isWriter}
+																		className="border-fm-divider-secondary w-10 rounded-full border"
+																		innerClassName="border border-fm-divider-secondary"
+																		noise="low"
+																		onClick={() => {
+																			setIsInventOpen(true)
+																			setInventIndex(rowIndex)
+																		}}
+																		onMouseEnter={handleInventMouseEnter}
+																		tooltip={
+																			shouldShowHoverAction && 'Invent Episode'
+																		}
+																	>
+																		<PlusIcon
+																			width={16}
+																			height={16}
+																			className="flex shrink-0"
+																		/>
+																	</Button>
+																</TableCell>
+															</TableRow>
+														)}
+													</React.Fragment>
+												)
+											})}
 										</If>
 										<Else>
 											<TableRow className="p-5 text-center">
