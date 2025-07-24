@@ -235,7 +235,7 @@ const EpisodesTable = () => {
 																selected: row.getIsSelected(),
 																'bg-fm-surface-primary': rowIndex % 2 !== 0,
 																'bg-fm-secondary-50': row.getIsSelected(),
-																'border-b': hoverIndex === rowIndex,
+																'border-b-[0.5px]': hoverIndex === rowIndex,
 															}
 														)}
 														onMouseMove={(e) => {
@@ -283,7 +283,7 @@ const EpisodesTable = () => {
 																			variant="secondary"
 																			size="sm"
 																			disabled={!isWriter}
-																			className="border-fm-divider-secondary rounded-full border"
+																			className="border-fm-divider-secondary w-10 rounded-full border"
 																			innerClassName="border border-fm-divider-secondary"
 																			noise="low"
 																			onClick={() => {
@@ -291,7 +291,11 @@ const EpisodesTable = () => {
 																				setInventIndex(rowIndex)
 																			}}
 																		>
-																			<PlusIcon width={16} height={16} />
+																			<PlusIcon
+																				width={16}
+																				height={16}
+																				className="flex shrink-0"
+																			/>
 																		</Button>
 																	</TooltipTrigger>
 																	<TooltipContent>
