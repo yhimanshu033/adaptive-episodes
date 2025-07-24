@@ -10,7 +10,6 @@ import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
 	useEditorPlugin,
 	useEditorRef,
-	useFocusEditorEvents,
 	usePlateState,
 	usePluginOption,
 } from 'platejs/react'
@@ -29,12 +28,11 @@ import { Typography } from '../aural-ui/typography'
 
 export function ModeToolbarButton(props: DropdownMenuProps) {
 	const [readOnly, setReadOnly] = usePlateState('readOnly')
+
 	const editorRef = useEditorRef()
 
 	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
 	const { setOption } = useEditorPlugin(SuggestionPlugin)
-
-	useFocusEditorEvents({ editorRef })
 
 	const { isWriter } = useProjectId()
 	const searchParams = useSearchParams()
@@ -68,16 +66,14 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 	)
 
 	React.useEffect(() => {
-		if (simplifiedEditor) {
-			setReadOnly(true)
-			return
-		}
-		if (!isWriter) {
-			setReadOnly(true)
+		if (!isWriter || simplifiedEditor) {
+			setTimeout(() => {
+				setReadOnly(true)
+			}, 0)
 			return
 		}
 		setReadOnly(viewMode)
-	}, [viewMode, setReadOnly, isWriter, simplifiedEditor])
+	}, [isWriter, setReadOnly, simplifiedEditor, viewMode])
 
 	return (
 		<Select value={value} onValueChange={handleChange} {...props}>
