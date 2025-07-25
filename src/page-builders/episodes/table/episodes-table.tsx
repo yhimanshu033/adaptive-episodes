@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import useIsGerman from '@/hooks/use-is-german'
 import { usePageState } from '@/hooks/use-page-state'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
+import ChevronLeftIcon from '@/icons/chevron-left-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
 import { MaintenanceIcon } from '@/icons/maintenance-icon'
 import { PlusIcon } from '@/icons/plus-icon'
@@ -14,6 +16,8 @@ import InventForm from '@/page-builders/episodes/dialogs/invent-form'
 import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
 import ShareAccessDialog from '@/page-builders/episodes/shared-access-dialog/share-access-dialog'
 import AdaptationContainer from '@/page-builders/episodes/table/adaptation-container'
+import AddEpisode from '@/page-builders/episodes/table/add-episode'
+import EpisodeEmpty from '@/page-builders/episodes/table/episode-empty'
 import Filters from '@/page-builders/episodes/table/filters'
 import SelectionActions from '@/page-builders/episodes/table/selection-actions'
 import { useEpisodeStore } from '@/store/episode-store'
@@ -21,6 +25,7 @@ import { flexRender } from '@tanstack/react-table'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
+import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import { PaginationProvider } from '@/components/aural-ui/pagination'
 import { Skeleton } from '@/components/aural-ui/skelton'
 import {
@@ -42,9 +47,6 @@ import {
 	EEpisodeHeaderKeys,
 	episodeTableColumnWidths,
 } from '@/types/episode-type'
-
-import AddEpisode from './add-episode'
-import EpisodeEmpty from './episode-empty'
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
@@ -117,7 +119,28 @@ const EpisodesTable = () => {
 				</If>
 				<Else>
 					<div className="flex items-center justify-between">
-						<StoryDetails titleClassname="text-xl" imageSize={40} />
+						<div className="flex items-center gap-3">
+							<Link
+								href="/projects"
+								role="button"
+								className={cn(
+									iconButtonVariants({
+										variant: 'outlined',
+										shape: 'square',
+										className: 'size-10 rounded',
+									}),
+									'opacity-80 hover:opacity-100'
+								)}
+							>
+								<ChevronLeftIcon
+									width={20}
+									height={20}
+									className="flex shrink-0"
+								/>
+							</Link>
+
+							<StoryDetails imageSize={40} titleClassname="text-xl" />
+						</div>
 						<div className="flex items-center gap-2">
 							<Filters
 								totalEpisodes={data?.count}

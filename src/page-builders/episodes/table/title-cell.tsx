@@ -7,6 +7,7 @@ import { Row } from '@tanstack/react-table'
 import { Button } from '@/components/aural-ui/button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { InputBase } from '@/components/aural-ui/input'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { cn } from '@/lib/aural-ui/utils'
 
 import { TEpisode, TPatchEpisodeBody } from '@/types/episode-type'
@@ -125,14 +126,19 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 					</div>
 				</If>
 				<Else>
-					<Link
-						className="font-fm-text flex cursor-pointer items-center gap-2 text-sm"
-						href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/content/?${EPISODE_SEQUENCE}=${row.original.seq_number}`}
+					<ScrollArea
+						orientation="horizontal"
+						classes={{ scrollbar: 'hidden' }}
 					>
-						{isPending && inputValueMapRef.current[row.original.id]
-							? inputValueMapRef.current[row.original.id]
-							: row.getValue('chapter_title')}
-					</Link>
+						<Link
+							className="font-fm-text flex cursor-pointer items-center gap-2"
+							href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/content/?${EPISODE_SEQUENCE}=${row.original.seq_number}`}
+						>
+							{isPending && inputValueMapRef.current[row.original.id]
+								? inputValueMapRef.current[row.original.id]
+								: row.getValue('chapter_title')}
+						</Link>
+					</ScrollArea>
 				</Else>
 			</IfElse>
 		</div>

@@ -135,12 +135,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							onMouseMove={(e: React.MouseEvent) => {
 								e.stopPropagation()
 							}}
-							onMouseEnter={(e: React.MouseEvent) => {
-								e.stopPropagation()
-							}}
-							onMouseLeave={(e: React.MouseEvent) => {
-								e.stopPropagation()
-							}}
 						>
 							<DropdownMenuItem
 								disabled={editingRowId === row.original.id}
@@ -148,14 +142,23 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							>
 								Rename
 							</DropdownMenuItem>
-							<DropdownMenuItem
-								disabled={!isWriter || !row.original.props?.creation_timestamp}
-								onClick={() =>
-									handleDeleteEpisode(row.original.id, row.original?.seq_number)
+							<If
+								condition={
+									!(!isWriter || !row.original.props?.creation_timestamp)
 								}
 							>
-								Delete
-							</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() =>
+										handleDeleteEpisode(
+											row.original?.id,
+											row.original?.seq_number
+										)
+									}
+									className="text-fm-negative"
+								>
+									Delete
+								</DropdownMenuItem>
+							</If>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				),
@@ -181,7 +184,11 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				}
 				if (row.depth) {
 					return (
-						<Tag {...tagProps} emphasis="secondary" className="ml-4">
+						<Tag
+							{...tagProps}
+							emphasis="secondary"
+							className={cn({ 'ml-4': isWriter })}
+						>
 							{titleToStatusText[latestStatus]}
 						</Tag>
 					)
@@ -199,7 +206,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							className={cn({
 								'ml-4':
 									titleToStatusText[latestStatus] ===
-									titleToStatusText[EStatus.PUBLISHED],
+										titleToStatusText[EStatus.PUBLISHED] && isWriter,
 							})}
 						>
 							{titleToStatusText[latestStatus]}
@@ -242,7 +249,11 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 										<CircularLoader className="size-3" />
 									</If>
 								</SelectTrigger>
-								<SelectContent>
+								<SelectContent
+									onMouseMove={(e: React.MouseEvent) => {
+										e.stopPropagation()
+									}}
+								>
 									{statuses.map((status, index) => (
 										<div key={status}>
 											<SelectItem
