@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
@@ -50,6 +50,8 @@ import {
 
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+	const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
 	const { setInventIndex, setIsInventOpen, setIsShareAccessDialogOpen } =
 		useEpisodeStore()
 	const isGerman = useIsGerman()
@@ -69,6 +71,37 @@ const EpisodesTable = () => {
 		useCreateTable(tableData)
 
 	const { handleEpisodeInfo } = useEpisodeTable()
+	const selectedRowLength = table.getSelectedRowModel().rows.length
+
+	useEffect(() => {
+		return () => {
+			if (hoverTimeoutRef.current) {
+				clearTimeout(hoverTimeoutRef.current)
+			}
+		}
+	}, [])
+
+	const setHoverIndexWithDelay = (index: number | null) => {
+		if (hoverTimeoutRef.current) {
+			clearTimeout(hoverTimeoutRef.current)
+		}
+
+		if (index !== null) {
+			hoverTimeoutRef.current = setTimeout(() => {
+				setHoverIndex(index)
+			}, 50)
+		} else {
+			setHoverIndex(null)
+		}
+	}
+
+	const setHoverIndexImmediate = (index: number | null) => {
+		if (hoverTimeoutRef.current) {
+			clearTimeout(hoverTimeoutRef.current)
+		}
+
+		setHoverIndex(index)
+	}
 
 	useEffect(() => {
 		if (searchedRow && !isEpisodesLoading) {
@@ -93,10 +126,10 @@ const EpisodesTable = () => {
 	}, [searchedRow, isEpisodesLoading])
 
 	useEffect(() => {
-		if (table.getSelectedRowModel().rows.length > 0) {
-			setHoverIndex(null)
+		if (selectedRowLength > 0) {
+			setHoverIndexImmediate(null)
 		}
-	}, [table.getSelectedRowModel().rows.length])
+	}, [selectedRowLength])
 
 	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
 		return <AdaptationContainer />
@@ -184,7 +217,7 @@ const EpisodesTable = () => {
 						className={cn('bg-fm-transparent table-fixed', {
 							'pointer-events-none': editingRowId,
 						})}
-						onMouseLeave={() => setHoverIndex(null)}
+						onMouseLeave={() => setHoverIndexWithDelay(null)}
 					>
 						<TableHeader className="bg-fm-surface-primary">
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -250,8 +283,7 @@ const EpisodesTable = () => {
 									<IfElse condition={!!table.getRowModel().rows?.length}>
 										<If>
 											{table.getRowModel().rows.map((row, rowIndex) => {
-												const anyRowSelected =
-													table.getSelectedRowModel().rows.length > 0
+												const anyRowSelected = selectedRowLength > 0
 												const isHoverable = !anyRowSelected && isWriter
 												const isHovered = hoverIndex === rowIndex
 												const shouldShowHoverAction = isHoverable && isHovered
@@ -271,9 +303,9 @@ const EpisodesTable = () => {
 														rect.height - offsetY <= threshold &&
 														!row.depth
 													) {
-														setHoverIndex(rowIndex)
+														setHoverIndexWithDelay(rowIndex)
 													} else {
-														setHoverIndex(null)
+														setHoverIndexWithDelay(null)
 													}
 												}
 
@@ -281,14 +313,21 @@ const EpisodesTable = () => {
 													if (!isHoverable) {
 														return
 													}
-													setHoverIndex(null)
+													setHoverIndexWithDelay(null)
 												}
 
 												const handleInventMouseEnter = () => {
 													if (!isHoverable) {
 														return
 													}
-													setHoverIndex(rowIndex)
+													setHoverIndexImmediate(rowIndex)
+												}
+
+												const handleInventMouseLeave = () => {
+													if (!isHoverable) {
+														return
+													}
+													setHoverIndexWithDelay(null)
 												}
 
 												return (
@@ -321,13 +360,12 @@ const EpisodesTable = () => {
 														{isWriter && (
 															<TableRow
 																className={cn(
-																	'relative border-none p-0 transition-all duration-300',
+																	'relative border-none p-0 opacity-0 transition-opacity duration-300',
 																	{
-																		'opacity-0': !shouldShowHoverAction,
 																		'opacity-100': shouldShowHoverAction,
 																	}
 																)}
-																onMouseLeave={handleRowMouseLeave}
+																onMouseLeave={handleInventMouseLeave}
 															>
 																<TableCell className="absolute -bottom-4 -left-5 p-0">
 																	<Button
@@ -342,6 +380,7 @@ const EpisodesTable = () => {
 																			setInventIndex(rowIndex)
 																		}}
 																		onMouseEnter={handleInventMouseEnter}
+																		onMouseLeave={handleInventMouseLeave}
 																		tooltip={
 																			shouldShowHoverAction && 'Invent Episode'
 																		}
