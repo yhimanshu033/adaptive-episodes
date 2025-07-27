@@ -165,3 +165,6 @@ export const FAR_PADDING_TEXT = 8
 export const VIEW_SAVED_NOTES_URL = '/assets/save_notes_banner.webp'
 
 export const AI_AVATAR = '/assets/ai_avatar.webp'
+
+export const ESTIMATED_FLOATING_HEIGHT = 260
+export const RESPONSE_GAP = 5

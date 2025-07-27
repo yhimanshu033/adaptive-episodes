@@ -20,7 +20,8 @@ export default function LaserPromptLeaf({
 			getParentWidth(areaRef)
 
 		setPromptPosition({
-			clientY: rect ? rect?.top + rect?.height : 0,
+			clientY: rect ? rect?.top : 0,
+			height: rect ? rect?.height : 0,
 			clientX: blockAncestorClientX,
 			width: blockAncestorContentWidth,
 		})
