@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import useIsGerman from '@/hooks/use-is-german'
 import { usePageState } from '@/hooks/use-page-state'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
+import ChevronLeftIcon from '@/icons/chevron-left-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
 import { MaintenanceIcon } from '@/icons/maintenance-icon'
 import { PlusIcon } from '@/icons/plus-icon'
@@ -14,6 +16,8 @@ import InventForm from '@/page-builders/episodes/dialogs/invent-form'
 import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
 import ShareAccessDialog from '@/page-builders/episodes/shared-access-dialog/share-access-dialog'
 import AdaptationContainer from '@/page-builders/episodes/table/adaptation-container'
+import AddEpisode from '@/page-builders/episodes/table/add-episode'
+import EpisodeEmpty from '@/page-builders/episodes/table/episode-empty'
 import Filters from '@/page-builders/episodes/table/filters'
 import SelectionActions from '@/page-builders/episodes/table/selection-actions'
 import { useEpisodeStore } from '@/store/episode-store'
@@ -21,6 +25,7 @@ import { flexRender } from '@tanstack/react-table'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
+import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import { PaginationProvider } from '@/components/aural-ui/pagination'
 import { Skeleton } from '@/components/aural-ui/skelton'
 import {
@@ -31,11 +36,6 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/aural-ui/table'
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from '@/components/aural-ui/tooltip'
 import AuthWrapper from '@/components/auth-wrapper'
 import IfElse, { Else, If } from '@/components/if-else'
 import StoryDetails from '@/components/story-details'
@@ -48,11 +48,10 @@ import {
 	episodeTableColumnWidths,
 } from '@/types/episode-type'
 
-import AddEpisode from './add-episode'
-import EpisodeEmpty from './episode-empty'
-
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+	const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
 	const { setInventIndex, setIsInventOpen, setIsShareAccessDialogOpen } =
 		useEpisodeStore()
 	const isGerman = useIsGerman()
@@ -72,6 +71,37 @@ const EpisodesTable = () => {
 		useCreateTable(tableData)
 
 	const { handleEpisodeInfo } = useEpisodeTable()
+	const selectedRowLength = table.getSelectedRowModel().rows.length
+
+	useEffect(() => {
+		return () => {
+			if (hoverTimeoutRef.current) {
+				clearTimeout(hoverTimeoutRef.current)
+			}
+		}
+	}, [])
+
+	const setHoverIndexWithDelay = (index: number | null) => {
+		if (hoverTimeoutRef.current) {
+			clearTimeout(hoverTimeoutRef.current)
+		}
+
+		if (index !== null) {
+			hoverTimeoutRef.current = setTimeout(() => {
+				setHoverIndex(index)
+			}, 50)
+		} else {
+			setHoverIndex(null)
+		}
+	}
+
+	const setHoverIndexImmediate = (index: number | null) => {
+		if (hoverTimeoutRef.current) {
+			clearTimeout(hoverTimeoutRef.current)
+		}
+
+		setHoverIndex(index)
+	}
 
 	useEffect(() => {
 		if (searchedRow && !isEpisodesLoading) {
@@ -95,6 +125,12 @@ const EpisodesTable = () => {
 		}
 	}, [searchedRow, isEpisodesLoading])
 
+	useEffect(() => {
+		if (selectedRowLength > 0) {
+			setHoverIndexImmediate(null)
+		}
+	}, [selectedRowLength])
+
 	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
 		return <AdaptationContainer />
 	}
@@ -116,7 +152,28 @@ const EpisodesTable = () => {
 				</If>
 				<Else>
 					<div className="flex items-center justify-between">
-						<StoryDetails titleClassname="text-xl" imageSize={40} />
+						<div className="flex items-center gap-3">
+							<Link
+								href="/projects"
+								role="button"
+								className={cn(
+									iconButtonVariants({
+										variant: 'outlined',
+										shape: 'square',
+										className: 'size-10 rounded',
+									}),
+									'opacity-80 hover:opacity-100'
+								)}
+							>
+								<ChevronLeftIcon
+									width={20}
+									height={20}
+									className="flex shrink-0"
+								/>
+							</Link>
+
+							<StoryDetails imageSize={40} titleClassname="text-xl" />
+						</div>
 						<div className="flex items-center gap-2">
 							<Filters
 								totalEpisodes={data?.count}
@@ -126,7 +183,8 @@ const EpisodesTable = () => {
 							<AuthWrapper role={ERole.ADMIN}>
 								<Button
 									variant="secondary"
-									className="h-11"
+									className="border-fm-divider-secondary h-11 border"
+									noise="low"
 									onClick={() => setIsShareAccessDialogOpen(true)}
 								>
 									<UploadIcon width={20} height={20} />
@@ -159,7 +217,7 @@ const EpisodesTable = () => {
 						className={cn('bg-fm-transparent table-fixed', {
 							'pointer-events-none': editingRowId,
 						})}
-						onMouseLeave={() => setHoverIndex(null)}
+						onMouseLeave={() => setHoverIndexWithDelay(null)}
 					>
 						<TableHeader className="bg-fm-surface-primary">
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -224,60 +282,121 @@ const EpisodesTable = () => {
 								<Else>
 									<IfElse condition={!!table.getRowModel().rows?.length}>
 										<If>
-											{table.getRowModel().rows.map((row, rowIndex) => (
-												<React.Fragment key={row.id}>
-													<TableRow
-														id={`row-${row.id}`}
-														className={cn({
-															selected: row.getIsSelected(),
-															'bg-fm-surface-primary': rowIndex % 2 !== 0,
-															'bg-fm-secondary-50': row.getIsSelected(),
-														})}
-													>
-														{row.getVisibleCells().map((cell) => (
-															<TableCell
-																key={cell.id}
-																onMouseEnter={
-																	cell.column.id === 'select-col' && !row.depth
-																		? () => setHoverIndex(rowIndex)
-																		: () => setHoverIndex(null)
-																}
-															>
-																{flexRender(
-																	cell.column.columnDef.cell,
-																	cell.getContext()
-																)}
-															</TableCell>
-														))}
-													</TableRow>
+											{table.getRowModel().rows.map((row, rowIndex) => {
+												const anyRowSelected = selectedRowLength > 0
+												const isHoverable = !anyRowSelected && isWriter
+												const isHovered = hoverIndex === rowIndex
+												const shouldShowHoverAction = isHoverable && isHovered
 
-													{hoverIndex === rowIndex && isWriter && (
-														<TableRow className="relative border-none">
-															<TableCell className="absolute -top-8 -left-10">
-																<Tooltip>
-																	<TooltipTrigger asChild>
-																		<Button
-																			variant="secondary"
-																			size="sm"
-																			disabled={!isWriter}
-																			className="rounded-full"
-																			onClick={() => {
-																				setIsInventOpen(true)
-																				setInventIndex(rowIndex)
-																			}}
-																		>
-																			<PlusIcon width={16} height={16} />
-																		</Button>
-																	</TooltipTrigger>
-																	<TooltipContent>
-																		Invent Episode
-																	</TooltipContent>
-																</Tooltip>
-															</TableCell>
+												const handleRowMouseMove = (
+													e: React.MouseEvent<HTMLTableRowElement>
+												) => {
+													if (!isHoverable) {
+														return
+													}
+
+													const rect = e.currentTarget.getBoundingClientRect()
+													const offsetY = e.clientY - rect.top
+													const threshold = 20
+
+													if (
+														rect.height - offsetY <= threshold &&
+														!row.depth
+													) {
+														setHoverIndexWithDelay(rowIndex)
+													} else {
+														setHoverIndexWithDelay(null)
+													}
+												}
+
+												const handleRowMouseLeave = () => {
+													if (!isHoverable) {
+														return
+													}
+													setHoverIndexWithDelay(null)
+												}
+
+												const handleInventMouseEnter = () => {
+													if (!isHoverable) {
+														return
+													}
+													setHoverIndexImmediate(rowIndex)
+												}
+
+												const handleInventMouseLeave = () => {
+													if (!isHoverable) {
+														return
+													}
+													setHoverIndexWithDelay(null)
+												}
+
+												return (
+													<React.Fragment key={row.id}>
+														<TableRow
+															id={`row-${row.id}`}
+															className={cn(
+																'border-fm-divider-brand-secondary transition-all duration-200',
+																{
+																	selected: row.getIsSelected(),
+																	'bg-fm-surface-primary': rowIndex % 2 !== 0,
+																	'bg-fm-secondary-50': row.getIsSelected(),
+																	'bg-fm-surface-frosted/20 border-b-[0.5px]':
+																		shouldShowHoverAction,
+																}
+															)}
+															onMouseMove={handleRowMouseMove}
+															onMouseLeave={handleRowMouseLeave}
+														>
+															{row.getVisibleCells().map((cell) => (
+																<TableCell key={cell.id}>
+																	{flexRender(
+																		cell.column.columnDef.cell,
+																		cell.getContext()
+																	)}
+																</TableCell>
+															))}
 														</TableRow>
-													)}
-												</React.Fragment>
-											))}
+
+														{isWriter && (
+															<TableRow
+																className={cn(
+																	'relative border-none p-0 opacity-0 transition-opacity duration-300',
+																	{
+																		'opacity-100': shouldShowHoverAction,
+																	}
+																)}
+																onMouseLeave={handleInventMouseLeave}
+															>
+																<TableCell className="absolute -bottom-4 -left-5 p-0">
+																	<Button
+																		variant="secondary"
+																		size="sm"
+																		disabled={!isWriter}
+																		className="border-fm-divider-secondary w-10 rounded-full border"
+																		innerClassName="border border-fm-divider-secondary"
+																		noise="low"
+																		onClick={() => {
+																			setIsInventOpen(true)
+																			setInventIndex(rowIndex)
+																		}}
+																		onMouseEnter={handleInventMouseEnter}
+																		onMouseLeave={handleInventMouseLeave}
+																		tooltip={
+																			shouldShowHoverAction && 'Invent Episode'
+																		}
+																	>
+																		<PlusIcon
+																			width={16}
+																			height={16}
+																			className="flex shrink-0"
+																		/>
+																	</Button>
+																</TableCell>
+															</TableRow>
+														)}
+													</React.Fragment>
+												)
+											})}
 										</If>
 										<Else>
 											<TableRow className="p-5 text-center">

@@ -37,11 +37,6 @@ export const SuggestionRenderer: RenderNodeWrapper<AnyPluginConfig> = (
 		...editor.getApi(SuggestionPlugin).suggestion.nodes({ at: blockPath }),
 	]
 
-	// If no suggestions in this block, just return children
-	if (suggestionNodes.length === 0) {
-		return
-	}
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const BlockSuggestionContentWrapper = (props: any) => (
 		<BlockSuggestionContent

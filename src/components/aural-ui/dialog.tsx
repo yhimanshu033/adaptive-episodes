@@ -14,6 +14,9 @@ const DialogPortal = DialogPrimitive.Portal
 
 const DialogClose = DialogPrimitive.Close
 
+type BorderSide = 'top' | 'bottom' | 'left' | 'right'
+type BorderConfig = BorderSide[] | 'all' | 'none'
+
 interface IDialogOverlay {
 	classes?: {
 		border?: string
@@ -40,26 +43,135 @@ const DialogOverlay = React.forwardRef<
 
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
-export const dialogBorderVariants = cva(
-	'absolute w-full left-0 right-0 top-0 h-0.5 block',
-	{
-		variants: {
-			variant: {
-				neutral: 'bg-(image:--gradient-fm-stroke-neutral)',
-				negative: 'bg-(image:--gradient-fm-stroke-negative)',
-				warning: 'bg-(image:--gradient-fm-stroke-warning)',
-				positive: 'bg-(image:--gradient-fm-stroke-positive)',
-				info: 'bg-(image:--gradient-fm-stroke-info)',
-			},
+export const dialogBorderVariants = cva('absolute block', {
+	variants: {
+		variant: {
+			neutral: '',
+			negative: '',
+			warning: '',
+			positive: '',
+			info: '',
 		},
-		defaultVariants: {
+		side: {
+			top: 'w-full left-0 right-0 top-0 h-0.5',
+			bottom: 'w-full left-0 right-0 bottom-0 h-0.5',
+			left: 'h-full top-0 bottom-0 left-0 w-0.5',
+			right: 'h-full top-0 bottom-0 right-0 w-0.5',
+		},
+	},
+	compoundVariants: [
+		// Horizontal borders (top/bottom) - use regular gradients
+		{
 			variant: 'neutral',
+			side: 'top',
+			class: 'bg-(image:--gradient-fm-stroke-neutral)',
 		},
-	}
-)
+		{
+			variant: 'neutral',
+			side: 'bottom',
+			class: 'bg-(image:--gradient-fm-stroke-neutral)',
+		},
+		{
+			variant: 'negative',
+			side: 'top',
+			class: 'bg-(image:--gradient-fm-stroke-negative)',
+		},
+		{
+			variant: 'negative',
+			side: 'bottom',
+			class: 'bg-(image:--gradient-fm-stroke-negative)',
+		},
+		{
+			variant: 'warning',
+			side: 'top',
+			class: 'bg-(image:--gradient-fm-stroke-warning)',
+		},
+		{
+			variant: 'warning',
+			side: 'bottom',
+			class: 'bg-(image:--gradient-fm-stroke-warning)',
+		},
+		{
+			variant: 'positive',
+			side: 'top',
+			class: 'bg-(image:--gradient-fm-stroke-positive)',
+		},
+		{
+			variant: 'positive',
+			side: 'bottom',
+			class: 'bg-(image:--gradient-fm-stroke-positive)',
+		},
+		{
+			variant: 'info',
+			side: 'top',
+			class: 'bg-(image:--gradient-fm-stroke-info)',
+		},
+		{
+			variant: 'info',
+			side: 'bottom',
+			class: 'bg-(image:--gradient-fm-stroke-info)',
+		},
+
+		// Vertical borders (left/right) - use vertical gradients
+		{
+			variant: 'neutral',
+			side: 'left',
+			class: 'bg-(image:--gradient-fm-stroke-neutral-vertical)',
+		},
+		{
+			variant: 'neutral',
+			side: 'right',
+			class: 'bg-(image:--gradient-fm-stroke-neutral-vertical)',
+		},
+		{
+			variant: 'negative',
+			side: 'left',
+			class: 'bg-(image:--gradient-fm-stroke-negative-vertical)',
+		},
+		{
+			variant: 'negative',
+			side: 'right',
+			class: 'bg-(image:--gradient-fm-stroke-negative-vertical)',
+		},
+		{
+			variant: 'warning',
+			side: 'left',
+			class: 'bg-(image:--gradient-fm-stroke-warning-vertical)',
+		},
+		{
+			variant: 'warning',
+			side: 'right',
+			class: 'bg-(image:--gradient-fm-stroke-warning-vertical)',
+		},
+		{
+			variant: 'positive',
+			side: 'left',
+			class: 'bg-(image:--gradient-fm-stroke-positive-vertical)',
+		},
+		{
+			variant: 'positive',
+			side: 'right',
+			class: 'bg-(image:--gradient-fm-stroke-positive-vertical)',
+		},
+		{
+			variant: 'info',
+			side: 'left',
+			class: 'bg-(image:--gradient-fm-stroke-info-vertical)',
+		},
+		{
+			variant: 'info',
+			side: 'right',
+			class: 'bg-(image:--gradient-fm-stroke-info-vertical)',
+		},
+	],
+	defaultVariants: {
+		variant: 'neutral',
+		side: 'top',
+	},
+})
 
 export const dialogVariants = cva(
-	'flex flex-col gap-5 rounded-fm-s bg-fm-surface-frosted/20 border-solid border-fm-divider-secondary p-4 backdrop-blur-sm w-full max-w-lg',
+	'flex flex-col gap-5 rounded-fm-s bg-fm-surface-frosted/20 border-solid border-fm-divider-secondary p-4 backdrop-blur-sm w-full max-w-lg relative',
 	{
 		variants: {
 			variant: {
@@ -83,6 +195,7 @@ export const dialogVariants = cva(
 interface DialogContentProps
 	extends React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof dialogVariants> {
+	borderConfig?: BorderConfig
 	showCloseButton?: boolean
 }
 
@@ -100,50 +213,82 @@ const DialogContent = React.forwardRef<
 			children,
 			classes,
 			showCloseButton = true,
+			borderConfig = 'top',
 			...props
 		},
 		ref
-	) => (
-		<DialogPortal>
-			<DialogOverlay
-				opacity={opacity}
-				glass={glass}
-				noise={noise}
-				className={classes?.overlay}
-			/>
-			<DialogPrimitive.Content
-				ref={ref}
-				className={cn(
-					'data-[state=open]:animate-fm-zoomIn data-[state=closed]:animate-fm-zoomOut fixed top-1/2 left-1/2 z-50 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 duration-200',
-					classes?.content
-				)}
-			>
-				{showCloseButton && (
-					<DialogPrimitive.Close
-						className={cn(
-							'bg-fm-button-fill-secondary text-fm-icon-active hover:bg-fm-button-fill-secondary/80 flex cursor-pointer items-center justify-center gap-2 rounded-full p-3 backdrop-blur-sm',
-							classes?.close
-						)}
-					>
-						<CrossIcon className={cn('h-4 w-4', classes?.closeIcon)} />
-						<span className="sr-only">Close</span>
-					</DialogPrimitive.Close>
-				)}
+	) => {
+		const borderSides = React.useMemo<BorderSide[]>(() => {
+			if (borderConfig === 'none') {
+				return []
+			}
+			if (borderConfig === 'all') {
+				return ['top', 'bottom', 'left', 'right']
+			}
+			if (Array.isArray(borderConfig)) {
+				return borderConfig
+			}
+			// Only include borderConfig if it's a valid BorderSide
+			const validSides: BorderSide[] = ['top', 'bottom', 'left', 'right']
+			return validSides.includes(borderConfig as BorderSide)
+				? [borderConfig as BorderSide]
+				: []
+		}, [borderConfig])
 
-				<div
-					className={cn(dialogVariants({ variant }), className, classes?.root)}
-					{...props}
+		return (
+			<DialogPortal>
+				<DialogOverlay
+					opacity={opacity}
+					glass={glass}
+					noise={noise}
+					className={classes?.overlay}
+				/>
+				<DialogPrimitive.Content
+					ref={ref}
+					className={cn(
+						'data-[state=open]:animate-fm-zoomIn data-[state=closed]:animate-fm-zoomOut fixed top-1/2 left-1/2 z-50 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 duration-200',
+						classes?.content
+					)}
 				>
+					{showCloseButton && (
+						<DialogPrimitive.Close
+							className={cn(
+								'bg-fm-button-fill-secondary text-fm-icon-active hover:bg-fm-button-fill-secondary/80 flex cursor-pointer items-center justify-center gap-2 rounded-full p-3 backdrop-blur-sm',
+								classes?.close
+							)}
+						>
+							<CrossIcon className={cn('h-4 w-4', classes?.closeIcon)} />
+							<span className="sr-only">Close</span>
+						</DialogPrimitive.Close>
+					)}
+
 					<div
-						className={cn(dialogBorderVariants({ variant }), classes?.border)}
-					/>
-					{children}
-				</div>
-			</DialogPrimitive.Content>
-		</DialogPortal>
-	)
+						className={cn(
+							dialogVariants({ variant }),
+							className,
+							classes?.root
+						)}
+						{...props}
+					>
+						{borderSides.map((side) => (
+							<div
+								key={side}
+								className={cn(
+									dialogBorderVariants({ variant, side }),
+									classes?.border
+								)}
+							/>
+						))}
+						{children}
+					</div>
+				</DialogPrimitive.Content>
+			</DialogPortal>
+		)
+	}
 )
 DialogContent.displayName = DialogPrimitive.Content.displayName
+
+// ...existing code...
 
 const DialogHeader = ({
 	className,
@@ -232,7 +377,6 @@ export const useDialogCleanup = ({
 
 		// Cleanup on unmount
 		return cleanup
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	return { handleDialogClose, handleEscape }

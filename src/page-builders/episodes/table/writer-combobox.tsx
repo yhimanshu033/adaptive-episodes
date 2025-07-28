@@ -100,7 +100,11 @@ const WriterCombobox = ({
 							</Else>
 						</IfElse>
 					</SelectTrigger>
-					<SelectContent>
+					<SelectContent
+						onMouseMove={(e: React.MouseEvent) => {
+							e.stopPropagation()
+						}}
+					>
 						<Command
 							classes={{
 								list: 'backdrop-blur-none bg-transparent',

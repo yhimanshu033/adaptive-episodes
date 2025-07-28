@@ -16,6 +16,7 @@ import {
 } from '@/components/aural-ui/dialog'
 import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
+import { cn } from '@/lib/aural-ui/utils'
 
 import { TEpisode } from '@/types/episode-type'
 
@@ -29,12 +30,14 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 		return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 	}
 
+	const isGotItAction = alertInfo?.secondAction === 'Got it'
+
 	return (
 		<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 			<DialogContent
 				variant={alertInfo?.variant ?? 'neutral'}
 				classes={{
-					root: 'flex max-h-88 w-99 flex-col items-center gap-8 px-6 py-8 text-center bg-fm-surface-frosted/20',
+					root: 'flex max-h-88 w-99 flex-col items-center gap-8 px-6 py-8 text-center bg-fm-surface-frosted/20 rounded',
 					overlay: 'z-60',
 					content: 'z-70',
 				}}
@@ -63,6 +66,7 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 					{alertInfo?.action && (
 						<Button
 							variant="secondary"
+							noise="low"
 							className="w-full"
 							onClick={() => {
 								void handleConfirm()
@@ -76,10 +80,14 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 
 					<If condition={!!alertInfo?.secondAction}>
 						<Button
-							variant={
-								alertInfo?.secondAction === 'Got it' ? 'secondary' : 'outline'
-							}
-							className="w-full"
+							variant={isGotItAction ? 'secondary' : 'outline'}
+							className={cn('w-full', {
+								'border-fm-divider-secondary border': isGotItAction,
+							})}
+							innerClassName={cn({
+								'border-fm-divider-secondary border': isGotItAction,
+							})}
+							noise={isGotItAction ? 'low' : 'none'}
 							onClick={() => setIsDialogOpen(false)}
 						>
 							{alertInfo?.secondAction &&

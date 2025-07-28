@@ -129,21 +129,36 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 								shape="square"
 							/>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" className="w-34">
+						<DropdownMenuContent
+							align="end"
+							className="w-34"
+							onMouseMove={(e: React.MouseEvent) => {
+								e.stopPropagation()
+							}}
+						>
 							<DropdownMenuItem
 								disabled={editingRowId === row.original.id}
 								onClick={() => setEditingRowId(row.original.id)}
 							>
 								Rename
 							</DropdownMenuItem>
-							<DropdownMenuItem
-								disabled={!isWriter || !row.original.props?.creation_timestamp}
-								onClick={() =>
-									handleDeleteEpisode(row.original.id, row.original?.seq_number)
+							<If
+								condition={
+									!(!isWriter || !row.original.props?.creation_timestamp)
 								}
 							>
-								Delete
-							</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() =>
+										handleDeleteEpisode(
+											row.original?.id,
+											row.original?.seq_number
+										)
+									}
+									className="text-fm-negative"
+								>
+									Delete
+								</DropdownMenuItem>
+							</If>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				),
@@ -169,15 +184,31 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				}
 				if (row.depth) {
 					return (
-						<Tag {...tagProps} emphasis="secondary" className="ml-4">
+						<Tag
+							{...tagProps}
+							emphasis="secondary"
+							className={cn({ 'ml-4': isWriter })}
+						>
 							{titleToStatusText[latestStatus]}
 						</Tag>
 					)
 				}
 
-				if (!isWriter) {
+				if (
+					!isWriter ||
+					titleToStatusText[latestStatus] ===
+						titleToStatusText[EStatus.PUBLISHED]
+				) {
 					return (
-						<Tag {...tagProps} emphasis="secondary">
+						<Tag
+							{...tagProps}
+							emphasis="secondary"
+							className={cn({
+								'ml-4':
+									titleToStatusText[latestStatus] ===
+										titleToStatusText[EStatus.PUBLISHED] && isWriter,
+							})}
+						>
 							{titleToStatusText[latestStatus]}
 						</Tag>
 					)
@@ -218,7 +249,11 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 										<CircularLoader className="size-3" />
 									</If>
 								</SelectTrigger>
-								<SelectContent>
+								<SelectContent
+									onMouseMove={(e: React.MouseEvent) => {
+										e.stopPropagation()
+									}}
+								>
 									{statuses.map((status, index) => (
 										<div key={status}>
 											<SelectItem
@@ -280,7 +315,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						id={`header-${column.id}`}
 						checked={isSomeSelected || isAllSelected}
 						indeterminate={isSomeSelected}
-						className="border-fm-divider-primary bg-fm-surface-primary size-6 border-1"
+						className="border-fm-divider-primary bg-fm-surface-primary ml-2 size-6 border-1"
 						onClick={() => {
 							if (isSomeSelected) {
 								table.resetRowSelection()
@@ -297,7 +332,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 						id={`row-${row.id}`}
 						checked={row.getIsSelected()}
 						disabled={!isWriter || !row.getCanSelect()}
-						className="border-fm-divider-primary bg-fm-surface-primary size-6 border-1"
+						className="border-fm-divider-primary bg-fm-surface-primary ml-2 size-6 border-1"
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 						onClick={(e) => handleRowSelection(e, row)}
 					/>

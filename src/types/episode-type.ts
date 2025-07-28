@@ -71,10 +71,7 @@ export type TEpisode = {
 	writer?: number
 }
 
-export type TEpisodesData = {
-	data: TEpisode[]
-	message: string
-}
+export type TEpisodesData = { data: TEpisode[]; message: string }
 
 export type TGetEpisodesResponse = {
 	count: number
@@ -98,35 +95,24 @@ export type TGetEpisodeResponse = {
 	translation_text: string
 }
 
-export type TGetEpisodeUrlParams = {
-	chapterId: number
-}
+export type TGetEpisodeUrlParams = { chapterId: number }
 
-export type TPatchEpisodeBody = {
-	text: string
-} & Partial<TEpisode>
+export type TPatchEpisodeBody = { text: string } & Partial<TEpisode>
 
 export type SaveEpisodeParams = {
 	episodeId: number
 	projectId: number
 } & TPatchEpisodeBody
 
-export type TPatchEpisodeUrlParams = {
-	episodeId: number
-	projectId: number
-}
+export type TPatchEpisodeUrlParams = { episodeId: number; projectId: number }
 
 export type TGetEpisodeDetailsQueryParams = {
 	parent: number
 	project_id: number
 }
 
-export type TEpisodeInventForm = {
-	title: string
-}
-export type TEpisodeSearchForm = {
-	input: string
-}
+export type TEpisodeInventForm = { title: string }
+export type TEpisodeSearchForm = { input: string }
 
 export type TEpisodeMergeParams = {
 	chapter_ids: number[]
@@ -134,9 +120,7 @@ export type TEpisodeMergeParams = {
 	status: string
 }
 
-export type TEpisodeUnmergeParams = {
-	merged_chapter_id: number
-}
+export type TEpisodeUnmergeParams = { merged_chapter_id: number }
 
 export type TEpisodeUnmergeResponse = {
 	merged_chapter_id: number
@@ -160,9 +144,7 @@ export type TEpisodeInventResponse = {
 	status: string
 }
 
-export type TEpisodeDeleteURLParams = {
-	chapter_id: number
-}
+export type TEpisodeDeleteURLParams = { chapter_id: number }
 
 export type TEpisodeDeleteResponse = {
 	deleted_chapter_id: number
@@ -170,15 +152,9 @@ export type TEpisodeDeleteResponse = {
 	project_id: number
 }
 
-export type TStatusUpdateURLParams = {
-	parent_id: number
-	project_id: number
-}
+export type TStatusUpdateURLParams = { parent_id: number; project_id: number }
 
-export type TStatusUpdateBody = {
-	language?: ELanguage
-	status: string
-}
+export type TStatusUpdateBody = { language?: ELanguage; status: string }
 
 export type TStatusUpdateResponse = {
 	id: number
@@ -188,9 +164,7 @@ export type TStatusUpdateResponse = {
 	status: string
 }
 
-export type TGetDocxFromHtmlBody = {
-	html_content: string
-}
+export type TGetDocxFromHtmlBody = { html_content: string }
 
 export type EpisodeIdStoreType = {
 	activeNoteId: string | null
@@ -261,9 +235,9 @@ export enum EEpisodeHeaderKeys {
 }
 
 export const episodeTableColumnWidths: Record<EEpisodeHeaderKeys, string> = {
-	[EEpisodeHeaderKeys.SELECT_COL]: '5%',
+	[EEpisodeHeaderKeys.SELECT_COL]: '7%',
 	[EEpisodeHeaderKeys.SERIAL_NUMBER]: '8%',
-	[EEpisodeHeaderKeys.CHAPTER_TITLE]: '24%',
+	[EEpisodeHeaderKeys.CHAPTER_TITLE]: '22%',
 	[EEpisodeHeaderKeys.WRITER]: '18%',
 	[EEpisodeHeaderKeys.WORD_COUNT]: '10%',
 	[EEpisodeHeaderKeys.STATUS]: '15%',
@@ -285,11 +259,7 @@ export type TGetNotesResponse = {
 		create_time: string
 		notes: Record<
 			string,
-			{
-				create_time: string
-				note_text: string
-				update_time: string
-			}
+			{ create_time: string; note_text: string; update_time: string }
 		>
 		project: number
 		update_time: string
@@ -304,9 +274,5 @@ export type TNotesUpdateBody = {
 }
 
 export type TPlayingEpisode = {
-	info: {
-		chapter?: string
-		episode?: string
-		img?: string
-	}
+	info: { chapter?: string; episode?: string; img?: string }
 }

@@ -399,3 +399,28 @@
 	--color-brand: var(--brand);
 	--color-highlight: var(--highlight);
 }
+
+/* Marquee animations */
+@keyframes marquee-left {
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@keyframes marquee-right {
+	to {
+		transform: translateX(50%);
+	}
+}
+
+@keyframes marquee-up {
+	to {
+		transform: translateY(-50%);
+	}
+}
+
+@keyframes marquee-down {
+	to {
+		transform: translateY(50%);
+	}
+}
