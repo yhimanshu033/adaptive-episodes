@@ -4,6 +4,11 @@ import { ELanguage } from '@/types/common'
 
 export type TStoryStoreState = {
 	isFormOpen: boolean
+	setFormOpen: (isOpen: boolean) => void
+	setShowTitle: (show: boolean) => void
+	setTitle: (title: string) => void
+	showTitle: boolean
+	title: string
 }
 
 export type TGetStoriesResponse = {
@@ -38,6 +43,7 @@ export type TStory = {
 export type StoryUploadParams = {
 	task_data: {
 		author: string | null
+		book_name?: string
 		end_ep: number
 		image: string | null
 		input_language: string

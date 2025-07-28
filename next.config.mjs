@@ -19,6 +19,12 @@ const nextConfig = {
 				pathname: '/prod-pocketfm-generative-ai/**',
 				port: '',
 			},
+			{
+				protocol: 'https',
+				hostname: 'lh3.googleusercontent.com',
+				pathname: '/**',
+				port: '',
+			},
 		],
 	},
 	async headers() {

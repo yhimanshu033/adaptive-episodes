@@ -8,8 +8,11 @@ import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS } from '@/types/common'
 
-export const useBaseData = () => {
-	const episodeId = useEpisodeId()
+export const useBaseData = (episodeIdParam?: number) => {
+	const episodeIdFromContext = useEpisodeId()
+
+	const episodeId =
+		episodeIdParam !== undefined ? episodeIdParam : episodeIdFromContext
 
 	const query = useQuery({
 		queryKey: [EPISODE_BASE_CONTENT_QUERY_KEY, episodeId, BASE_STATUS],

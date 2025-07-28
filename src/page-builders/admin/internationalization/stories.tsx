@@ -9,7 +9,7 @@ import {
 	stories,
 	storyID,
 } from '@/mock-data/internationalization'
-import ImportStoryCard from '@/page-builders/stories/import-story-card'
+import CreateAndImportCard from '@/page-builders/stories/create-and-import-card'
 import { BookOpen, Clock, User } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
@@ -34,7 +34,7 @@ const Stories = () => {
 	)
 	return (
 		<section className="my-6 grid flex-1 auto-rows-min grid-cols-1 justify-items-center gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-			<ImportStoryCard />
+			<CreateAndImportCard />
 			{stories?.map(({ versions, id }) => (
 				<Card key={id} className="w-64 overflow-hidden">
 					<div className="relative aspect-square">
@@ -47,7 +47,7 @@ const Stories = () => {
 							loading="lazy"
 							unoptimized
 						/>
-						<div className="absolute right-0 z-10 m-3 outline-none">
+						<div className="absolute right-0 z-10 m-3 outline-hidden">
 							<Select
 								defaultValue={countries.Germany}
 								onValueChange={(value) => {

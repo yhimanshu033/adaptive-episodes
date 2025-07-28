@@ -1,18 +1,17 @@
 import React from 'react'
+import { FilterBarRowIcon } from '@/icons/filter-bar-row-icon'
 import useAIStore from '@/store/ai-store'
-import { Settings } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/aural-ui/dropdown'
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { RadioGroup, RadioGroupItem } from '@/components/aural-ui/radio'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { cn } from '@/lib/aural-ui/utils'
 
 import { EFocusSetting } from '@/types/ai-types'
 
@@ -22,33 +21,47 @@ export function ExplorerSettings() {
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger
-				asChild
-				className="absolute -right-1 translate-x-full"
-			>
-				<Button tooltip="Configurations" variant="outline" size="icon">
-					<Settings />
-				</Button>
+			<DropdownMenuTrigger asChild>
+				<IconButton
+					label="Trigger filter dropdown"
+					variant="outlined"
+					className={cn(
+						'data-[state=open]:bg-fm-hotpink-50 data-[state=open]:border-fm-hotpink-300 shrink-0',
+						{
+							'bg-fm-hotpink-50 border-fm-hotpink-200 hover:border-fm-hotpink-300':
+								explorerFocusConfig === EFocusSetting.CMS ||
+								explorerFocusConfig === EFocusSetting.BASE_SCRIPT,
+						}
+					)}
+					icon={<FilterBarRowIcon className="currentColor size-4.5" />}
+				/>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="start" className="w-fit">
-				<DropdownMenuLabel>Configure</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuGroup className="space-y-4 p-2">
+			<DropdownMenuContent align="end" className="w-fit">
+				<DropdownMenuGroup>
 					<RadioGroup
 						value={explorerFocusConfig}
 						onValueChange={setFocusConfig}
+						className="gap-0 py-1"
 					>
-						<div className="flex items-center space-x-2">
-							<RadioGroupItem id="cms" value={EFocusSetting.CMS} />
-							<Label id="cms">Use CMS episodes</Label>
-						</div>
-						<div className="flex items-center space-x-2">
+						<Label htmlFor="cms" className="flex items-center gap-2 px-4 py-2">
+							<RadioGroupItem
+								id="cms"
+								value={EFocusSetting.CMS}
+								className="size-6"
+							/>{' '}
+							CMS episodes
+						</Label>
+						<Label
+							htmlFor="base_script"
+							className="flex items-center gap-2 px-4 py-2"
+						>
 							<RadioGroupItem
 								value={EFocusSetting.BASE_SCRIPT}
 								id="base_script"
-							/>
-							<Label id="base_script">Use base script episodes</Label>
-						</div>
+								className="size-6"
+							/>{' '}
+							Base script episodes
+						</Label>
 					</RadioGroup>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>

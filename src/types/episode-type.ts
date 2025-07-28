@@ -1,14 +1,22 @@
+import { ReactNode } from 'react'
 import { EpisodeActions } from '@/constants/episodes-constants'
-import { TComment } from '@udecode/plate-comments'
+import { VariantProps } from 'class-variance-authority'
+
+import { dialogVariants } from '@/components/aural-ui/dialog'
 
 import { BASE_STATUS, EEpisodeType, ELanguage, EStatus } from '@/types/common'
 import { TCustomComment } from '@/types/editor-types'
-import { TNote } from '@/types/plate-types'
+import { TCommentGeneric, TNote } from '@/types/plate-types'
 
 export type EpisodeStoreState = {
 	alertInfo: {
 		action?: EpisodeActions
 		description: string
+		icon?: ReactNode
+		secondAction?: string
+		subDescription?: string
+		type?: string
+		variant?: VariantProps<typeof dialogVariants>['variant']
 	} | null
 	currentInventIndex: number | null
 	currentPage: number
@@ -16,11 +24,14 @@ export type EpisodeStoreState = {
 	episodeSearch: string
 	isDialogOpen: boolean
 	isInventOpen: boolean
+	isSharedAccessDialogOpen: boolean
 	notes: TNote[]
 	selectedEpisodes: {
 		episodes: TEpisode[]
 		status: EStatus | typeof BASE_STATUS
 	} | null
+	showSharedList: boolean
+	statusUpdating: number[]
 }
 
 type TEpisodeProps = {
@@ -44,7 +55,7 @@ export type TEpisode = {
 	parent: number | null
 	project: number
 	props?: Record<string, unknown> & {
-		comments?: TComment[]
+		comments?: TCommentGeneric[]
 		creation_timestamp?: number
 		llm_memories?: TEpisodeProps
 		merged_chapter_ids?: number[]
@@ -60,10 +71,7 @@ export type TEpisode = {
 	writer?: number
 }
 
-export type TEpisodesData = {
-	data: TEpisode[]
-	message: string
-}
+export type TEpisodesData = { data: TEpisode[]; message: string }
 
 export type TGetEpisodesResponse = {
 	count: number
@@ -87,35 +95,24 @@ export type TGetEpisodeResponse = {
 	translation_text: string
 }
 
-export type TGetEpisodeUrlParams = {
-	chapterId: number
-}
+export type TGetEpisodeUrlParams = { chapterId: number }
 
-export type TPatchEpisodeBody = {
-	text: string
-} & Partial<TEpisode>
+export type TPatchEpisodeBody = { text: string } & Partial<TEpisode>
 
 export type SaveEpisodeParams = {
 	episodeId: number
 	projectId: number
 } & TPatchEpisodeBody
 
-export type TPatchEpisodeUrlParams = {
-	episodeId: number
-	projectId: number
-}
+export type TPatchEpisodeUrlParams = { episodeId: number; projectId: number }
 
 export type TGetEpisodeDetailsQueryParams = {
 	parent: number
 	project_id: number
 }
 
-export type TEpisodeInventForm = {
-	title: string
-}
-export type TEpisodeSearchForm = {
-	input: string
-}
+export type TEpisodeInventForm = { title: string }
+export type TEpisodeSearchForm = { input: string }
 
 export type TEpisodeMergeParams = {
 	chapter_ids: number[]
@@ -123,9 +120,7 @@ export type TEpisodeMergeParams = {
 	status: string
 }
 
-export type TEpisodeUnmergeParams = {
-	merged_chapter_id: number
-}
+export type TEpisodeUnmergeParams = { merged_chapter_id: number }
 
 export type TEpisodeUnmergeResponse = {
 	merged_chapter_id: number
@@ -149,9 +144,7 @@ export type TEpisodeInventResponse = {
 	status: string
 }
 
-export type TEpisodeDeleteURLParams = {
-	chapter_id: number
-}
+export type TEpisodeDeleteURLParams = { chapter_id: number }
 
 export type TEpisodeDeleteResponse = {
 	deleted_chapter_id: number
@@ -159,15 +152,9 @@ export type TEpisodeDeleteResponse = {
 	project_id: number
 }
 
-export type TStatusUpdateURLParams = {
-	parent_id: number
-	project_id: number
-}
+export type TStatusUpdateURLParams = { parent_id: number; project_id: number }
 
-export type TStatusUpdateBody = {
-	language?: ELanguage
-	status: string
-}
+export type TStatusUpdateBody = { language?: ELanguage; status: string }
 
 export type TStatusUpdateResponse = {
 	id: number
@@ -177,14 +164,12 @@ export type TStatusUpdateResponse = {
 	status: string
 }
 
-export type TGetDocxFromHtmlBody = {
-	html_content: string
-}
+export type TGetDocxFromHtmlBody = { html_content: string }
 
 export type EpisodeIdStoreType = {
 	activeNoteId: string | null
 	currentTitle: string
-	dualViewMode: EDualVIewMode
+	dualViewMode: EDualVIewMode | null
 	episodeId: number
 	importedLocal: boolean
 	resolvedComments: TCustomComment[]
@@ -203,6 +188,7 @@ export type TSavingContext = {
 	handleSave: (params?: TSaveEpisodeParams) => Promise<void>
 	isPending: boolean
 	isSaved: boolean
+	lastSaved: Date | undefined
 	setForceSave: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -212,7 +198,6 @@ export enum EDualVIewMode {
 	BASE_SCRIPT = 'BASE SCRIPT',
 	LOCAL_DIFF = 'LOCAL_DIFF',
 	NEXT_EP = 'NEXT_EP',
-	NOTES = 'NOTES',
 	PREV_EP = 'PREVIOUS_EP',
 	US_TRANSLATION = 'US_TRANSLATION',
 	VOICE_PASS = 'VOICE_PASS',
@@ -224,7 +209,6 @@ export const DUAL_VIEW_MODES: EDualVIewMode[] = [
 	EDualVIewMode.PREV_EP,
 	EDualVIewMode.NEXT_EP,
 	EDualVIewMode.VOICE_PASS,
-	EDualVIewMode.NOTES,
 	EDualVIewMode.LOCAL_DIFF,
 ]
 
@@ -232,7 +216,6 @@ export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
 	[EDualVIewMode.US_TRANSLATION]: 'US Original',
 	[EDualVIewMode.BASE_SCRIPT]: 'Base Script',
 	[EDualVIewMode.NEXT_EP]: 'Next Episode',
-	[EDualVIewMode.NOTES]: 'Notes',
 	[EDualVIewMode.LOCAL_DIFF]: 'Local Changes',
 	[EDualVIewMode.PREV_EP]: 'Previous Episode',
 	[EDualVIewMode.VOICE_PASS]: 'Voice Pass',
@@ -241,13 +224,25 @@ export const MODE_TO_TITLE: Record<EDualVIewMode, string> = {
 export type TranslationProps = { translatedContent: string }
 
 export enum EEpisodeHeaderKeys {
+	ACTIONS = 'actions',
 	CHAPTER_TITLE = 'chapter_title',
-	DELETE = 'delete',
 	SELECT_COL = 'select-col',
 	SERIAL_NUMBER = 'serialNumber',
 	STATUS = 'status',
 	UPDATE_TIME = 'update_time',
+	WORD_COUNT = 'word_count',
 	WRITER = 'writer',
+}
+
+export const episodeTableColumnWidths: Record<EEpisodeHeaderKeys, string> = {
+	[EEpisodeHeaderKeys.SELECT_COL]: '7%',
+	[EEpisodeHeaderKeys.SERIAL_NUMBER]: '8%',
+	[EEpisodeHeaderKeys.CHAPTER_TITLE]: '22%',
+	[EEpisodeHeaderKeys.WRITER]: '18%',
+	[EEpisodeHeaderKeys.WORD_COUNT]: '10%',
+	[EEpisodeHeaderKeys.STATUS]: '15%',
+	[EEpisodeHeaderKeys.UPDATE_TIME]: '12%',
+	[EEpisodeHeaderKeys.ACTIONS]: '8%',
 }
 
 export const EPISODE_LIMIT_KEY = 'episodeLimit'
@@ -264,11 +259,7 @@ export type TGetNotesResponse = {
 		create_time: string
 		notes: Record<
 			string,
-			{
-				create_time: string
-				note_text: string
-				update_time: string
-			}
+			{ create_time: string; note_text: string; update_time: string }
 		>
 		project: number
 		update_time: string
@@ -283,9 +274,5 @@ export type TNotesUpdateBody = {
 }
 
 export type TPlayingEpisode = {
-	info: {
-		chapter?: string
-		episode?: string
-		img?: string
-	}
+	info: { chapter?: string; episode?: string; img?: string }
 }

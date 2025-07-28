@@ -13,8 +13,8 @@ import { ThemeProvider } from 'next-themes'
 import NextTopLoader from 'nextjs-toploader'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
-import { TooltipProvider } from '@/components/plate-ui/tooltip'
-import { Toaster } from '@/components/ui/sonner'
+import { Toaster } from '@/components/aural-ui/toast'
+import { TooltipProvider } from '@/components/plate-ui-v2/tooltip'
 import { AdaptationProvider } from '@/providers/adaptation-provider'
 import { PlayerProvider } from '@/providers/player-provider'
 import { PollingProvider } from '@/providers/polling-provider'
@@ -61,8 +61,7 @@ const AppProvider = ({
 							<QueryClientProvider client={queryClient}>
 								<ThemeProvider
 									attribute="class"
-									defaultTheme="dark"
-									enableSystem
+									forcedTheme="dark"
 									disableTransitionOnChange
 								>
 									<TooltipProvider
@@ -71,7 +70,10 @@ const AppProvider = ({
 										skipDelayDuration={0}
 									>
 										<AdaptationProvider>
-											<NextTopLoader color="hsl(var(--primary))" />
+											<NextTopLoader
+												color="var(--color-fm-secondary-800)"
+												showSpinner={false}
+											/>
 											<PlayerProvider>
 												<Player />
 												{children}

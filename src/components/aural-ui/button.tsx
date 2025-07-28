@@ -3,6 +3,7 @@ import { cva } from 'class-variance-authority'
 
 import { FeatureShineIcon } from '../../icons/feature-shine-icon'
 import { cn } from '../../lib/aural-ui/utils'
+import { withTooltip } from './tooltip'
 
 export const buttonVariants = cva(
 	'group relative font-fm-brand focus-visible:ring-fm-primary focus-visible:ring-offset-fm-contrast outline-none focus-visible:ring-2 focus-visible:ring-offset-6',
@@ -35,12 +36,18 @@ export const innerButtonVariants = cva(
 		variants: {
 			variant: {
 				primary:
-					'shadow-[0_0_1.5rem_var(--color-fm-primary-400)_inset] group-active:translate-y-0 [--gradientSizeX:50%] [--gradientSizeY:150%] [--gradientPositionY:100%] group-hover:[--gradientSizeX:40%] group-hover:[--gradientSizeY:110%] group-hover:[--gradientPositionY:50%] [background-image:var(--button-fm-noise),_radial-gradient(ellipse_var(--gradientSizeX)_var(--gradientSizeY)_at_50%_var(--gradientPositionY),_var(--color-fm-primary-600),_var(--color-fm-secondary-300)),_linear-gradient(_to_top,_color-mix(in_srgb,var(--color-fm-primary-600)_50%,_transparent),_color-mix(in_srgb,var(--color-fm-primary-200)_50%,_transparent))] bg-cover bg-center [background-blend-mode:color-dodge,multiply,darken] duration-300 bg-repeat-x bg-auto bg-center bg-origin-border',
+					'shadow-[0_0_1.5rem_var(--color-fm-primary-400)_inset] group-active:translate-y-0 [--gradientSizeX:50%] [--gradientSizeY:150%] [--gradientPositionY:100%] group-hover:[--gradientSizeX:40%] group-hover:[--gradientSizeY:110%] group-hover:[--gradientPositionY:50%] bg-cover bg-center [background-blend-mode:color-dodge,multiply,darken] duration-300 bg-repeat-x bg-auto bg-center bg-origin-border',
 				secondary:
-					'group-active:translate-y-0 bg-fm-button-fill-secondary [background-image:var(--button-fm-noise)] bg-repeat-x bg-auto bg-center bg-origin-border',
+					'group-active:translate-y-0 bg-fm-button-fill-secondary bg-repeat-x bg-auto bg-center bg-origin-border',
 				outline:
 					'border-[length:var(--stroke-fm-sm)] border-fm-divider-contrast !translate-y-0',
 				text: '',
+			},
+			noise: {
+				none: '',
+				low: '',
+				medium: '',
+				strong: '',
 			},
 			disabled: {
 				default: '',
@@ -58,10 +65,46 @@ export const innerButtonVariants = cva(
 				lg: 'py-fm-2xl px-fm-5xl text-fm-xl -translate-y-1.5',
 			},
 		},
+		compoundVariants: [
+			{
+				variant: 'primary',
+				noise: 'low',
+				className:
+					'[background-image:var(--button-fm-noise-low),_radial-gradient(ellipse_var(--gradientSizeX)_var(--gradientSizeY)_at_50%_var(--gradientPositionY),_var(--color-fm-primary-600),_var(--color-fm-secondary-300)),_linear-gradient(_to_top,_color-mix(in_srgb,var(--color-fm-primary-600)_50%,_transparent),_color-mix(in_srgb,var(--color-fm-primary-200)_50%,_transparent))]',
+			},
+			{
+				variant: 'primary',
+				noise: 'medium',
+				className:
+					'[background-image:var(--button-fm-noise),_radial-gradient(ellipse_var(--gradientSizeX)_var(--gradientSizeY)_at_50%_var(--gradientPositionY),_var(--color-fm-primary-600),_var(--color-fm-secondary-300)),_linear-gradient(_to_top,_color-mix(in_srgb,var(--color-fm-primary-600)_50%,_transparent),_color-mix(in_srgb,var(--color-fm-primary-200)_50%,_transparent))]',
+			},
+			{
+				variant: 'primary',
+				noise: 'strong',
+				className:
+					'[background-image:var(--button-fm-noise-strong),_radial-gradient(ellipse_var(--gradientSizeX)_var(--gradientSizeY)_at_50%_var(--gradientPositionY),_var(--color-fm-primary-600),_var(--color-fm-secondary-300)),_linear-gradient(_to_top,_color-mix(in_srgb,var(--color-fm-primary-600)_50%,_transparent),_color-mix(in_srgb,var(--color-fm-primary-200)_50%,_transparent))]',
+			},
+			{
+				variant: 'secondary',
+				noise: 'low',
+				className: '[background-image:var(--button-fm-noise-low)]',
+			},
+			{
+				variant: 'secondary',
+				noise: 'medium',
+				className: '[background-image:var(--button-fm-noise)]',
+			},
+			{
+				variant: 'secondary',
+				noise: 'strong',
+				className: '[background-image:var(--button-fm-noise-strong)]',
+			},
+		],
 		defaultVariants: {
 			variant: 'primary',
 			disabled: 'default',
 			size: 'md',
+			noise: 'medium',
 		},
 	}
 )
@@ -73,16 +116,18 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	innerClassName?: string
 	isDisabled?: boolean
 	leftIcon?: React.ReactNode
+	noise?: 'none' | 'low' | 'medium' | 'strong'
 	rightIcon?: React.ReactNode
 	size?: 'sm' | 'md' | 'lg'
 	variant?: 'primary' | 'secondary' | 'outline' | 'text'
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+export const RawButton = forwardRef<HTMLButtonElement, ButtonProps>(
 	(
 		{
 			variant = 'primary',
 			size = 'md',
+			noise = 'medium',
 			children,
 			className = '',
 			innerClassName = '',
@@ -145,6 +190,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 							variant: isDisabled ? 'text' : variant,
 							disabled: isDisabled ? variant : 'default',
 							size,
+							noise: isDisabled ? 'none' : noise,
 						}),
 						innerClassName
 					)}
@@ -157,4 +203,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 		)
 	}
 )
-Button.displayName = 'Button'
+
+RawButton.displayName = 'RawButton'
+
+export const Button = withTooltip(RawButton)

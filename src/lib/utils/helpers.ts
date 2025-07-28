@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
+import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
 	prioritizedStatuses,
@@ -13,6 +14,7 @@ import { match } from '@formatjs/intl-localematcher'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
 import { clsx, type ClassValue } from 'clsx'
+import { formatDistanceToNow } from 'date-fns'
 import { jsonrepair } from 'jsonrepair'
 import Negotiator from 'negotiator'
 import { Session } from 'next-auth'
@@ -228,6 +230,12 @@ export function parseOptimistically<T>(input: string) {
 		const repaired = jsonrepair(cleanedInput)
 		return parse(repaired) as T
 	} catch (e) {
+		console.log('parse failed:', e)
+	}
+	try {
+		const repaired = jsonrepair(cleanedInput)
+		return parse(repaired) as T
+	} catch (e) {
 		console.log('Jsonrepair failed:', e)
 	}
 	try {
@@ -285,7 +293,7 @@ export function getWords(str: string) {
 }
 
 export const buttonVariants = cva(
-	'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+	'font-display uppercase *:font-display *:uppercase inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
 	{
 		variants: {
 			variant: {
@@ -614,6 +622,23 @@ export function handleToolTags(
 		.join('')
 		.replace(/<tool [^>]*>/g, '')
 		.replace(/<\/tool>/g, '')
+		.replace(/<answer[^>]*>/g, '')
+		.replace(/<\/answer>/g, '')
+		.replace(/<text[^>]*>/g, '')
+		.replace(/<\/text>/g, '')
+		.replace(/\{'model_id':[^}]*\}/g, '')
+}
+
+export function handleToolTagsArray(
+	responseChunks: string[],
+	isRunning: boolean = false
+) {
+	const concatenated = handleToolTags(responseChunks, isRunning)
+	const newChunks = [...responseChunks]
+	newChunks.pop()
+	const concatenatedPrev = handleToolTags(newChunks, isRunning)
+	const concatenatedNext = concatenated.slice(concatenatedPrev.length)
+	return [concatenatedPrev, concatenatedNext]
 }
 
 export function hasToolResult(responseChunks: string[]) {
@@ -717,8 +742,23 @@ export function isInternalUser(session: Session | null) {
 	return !!session && session.user.email.includes('@pocketfm')
 }
 
+export function getPageFromEpisode(
+	episode: TEpisode | null | undefined,
+	limit = DEFAULT_NAVIGATION_PAGE_LIMIT
+) {
+	if (!episode) {
+		return null
+	}
+	return Math.ceil(episode?.seq_number / limit) + 1
+}
+
 export function getQueryKeysFromObject(obj: Record<string, unknown>) {
 	return Object.values(obj).map(String)
+}
+
+export function formatRelativeTime(date: Date): string {
+	const distance = formatDistanceToNow(date, { addSuffix: true })
+	return distance === 'less than a minute ago' ? 'now' : distance
 }
 
 export function toSnakeCase(str: string): string {
@@ -735,6 +775,50 @@ export function isUpperCase(str: string): boolean {
 	return str === str.toUpperCase()
 }
 
+export function extractWords(
+	input: string,
+	charCount: number,
+	fromEnd: boolean = false
+): string {
+	const words = input.trim().split(/\s+/)
+
+	if (fromEnd) {
+		let result = ''
+		for (let i = words.length - 1; i >= 0; i--) {
+			const temp = words[i] + (result ? ' ' + result : '')
+			result = temp
+			if (result.length > charCount) {
+				break
+			}
+		}
+		return result
+	} else {
+		let result = ''
+		for (let i = 0; i < words.length; i++) {
+			const temp = result + (result ? ' ' : '') + words[i]
+			result = temp
+			if (result.length > charCount) {
+				break
+			}
+		}
+		return result
+	}
+}
+
+export function isArrayEqual(arr1: number[], arr2: number[]) {
+	return arr1.every((v, i) => v === arr2[i])
+}
+
+export const formatFileSize = (bytes: number): string => {
+	if (bytes < 1024) {
+		return `${bytes} B`
+	} else if (bytes < 1024 * 1024) {
+		return `${(bytes / 1024).toFixed(2)} KB`
+	} else {
+		return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+	}
+}
+
 export function getSelectableLanguages(
 	currentLanguage: ELanguage
 ): ELanguage[] {
@@ -742,4 +826,15 @@ export function getSelectableLanguages(
 		return [ELanguage.ENGLISH]
 	}
 	return AVAILABLE_TARGET_LANGUAGES.filter((lang) => lang !== currentLanguage)
+}
+
+export function getFirstName(name: string | null | undefined): string {
+	if (!name) {
+		return ''
+	}
+	const parts = name.split(' ')
+	if (parts.length === 0) {
+		return ''
+	}
+	return parts[0]
 }

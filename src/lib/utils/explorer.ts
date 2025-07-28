@@ -1,4 +1,4 @@
-import { ExplorerType, PlotExplorerApiResponse } from '@/types/ai-types'
+import { ExplorerType } from '@/types/ai-types'
 
 export const preProcessData = (data: ExplorerType): ExplorerType[] => {
 	const splittingRegex = /^\s*(?=(?:Name:|Episode).*)/m
@@ -17,17 +17,32 @@ export const preProcessData = (data: ExplorerType): ExplorerType[] => {
 }
 
 export const formatExplorerData = (
-	explorerData: PlotExplorerApiResponse['data'] | string
+	explorerData: string | ExplorerType | Partial<ExplorerType>
 ): string => {
 	if (typeof explorerData === 'string') {
 		return explorerData
 	}
 
-	return explorerData.reduce((formattedData, data) => {
-		const processedData = preProcessData(data)
-		processedData.forEach(({ title, content, preContent }) => {
-			formattedData += `${title}\n${preContent ? ` ${preContent} \n` : ''}${typeof content === 'string' ? content : formatExplorerData(content)}\n\n`
-		})
-		return formattedData
-	}, '')
+	const formatNode = (node: ExplorerType | Partial<ExplorerType>): string => {
+		let result = ''
+
+		if ('title' in node && node.title) {
+			result += `${node.title}\n`
+		}
+
+		if (node.preContent) {
+			result += `${node.preContent}\n`
+		}
+
+		if (typeof node.content === 'string') {
+			result += `${node.content}\n`
+		} else if (Array.isArray(node.content)) {
+			node.content.forEach((child) => {
+				result += formatNode(child)
+			})
+		}
+		return result
+	}
+
+	return formatNode(explorerData)
 }

@@ -3,11 +3,10 @@
 import React, { createContext, useCallback, useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { AI_USER_ID } from '@/constants/ai-constants'
-import { COPILOT_LOGO_URL, DEFAULT_USER } from '@/constants/global-constants'
+import { AI_AVATAR_ASSET, DEFAULT_USER } from '@/constants/global-constants'
 import userMembersQuery from '@/hooks/query/user-members-data'
 import useParentLanguage from '@/hooks/use-parent-language'
 import { useGlobalStore } from '@/store/global-store'
-import { SuggestionUser } from '@udecode/plate-suggestion'
 import { useShallow } from 'zustand/react/shallow'
 
 import { isAuthorized } from '@/lib/utils/helpers'
@@ -15,6 +14,7 @@ import { getOpenedStories, setOpenedStories } from '@/lib/utils/indexed-db'
 
 import { ERole } from '@/types/admin-types'
 import { ELanguage } from '@/types/common'
+import { PlateUser } from '@/types/plate-types'
 
 const useProjectIdUtil = () => {
 	const { id } = useParams()
@@ -47,9 +47,9 @@ const useProjectIdUtil = () => {
 					[AI_USER_ID]: {
 						id: AI_USER_ID,
 						name: 'Copilot AI',
-						avatarUrl: COPILOT_LOGO_URL,
+						avatarUrl: AI_AVATAR_ASSET,
 					},
-				} as Record<string, SuggestionUser>
+				} as Record<string, PlateUser>
 			),
 		[data]
 	)
