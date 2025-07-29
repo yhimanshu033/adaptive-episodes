@@ -5,9 +5,11 @@ import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelton-loader'
 import EpisodeNavigation from '@/page-builders/plate-editor/episode-navigation'
+import { useEditorStore } from '@/store/editor-store'
 import { PlateController } from 'platejs/react'
 
 import { EpisodeIdProvider } from '@/providers/episode-id-provider'
+import { cn } from '@/lib/aural-ui/utils'
 
 const PlateEditor = dynamic(() => import('./plate-editor'), {
 	ssr: false,
@@ -16,10 +18,17 @@ const PlateEditor = dynamic(() => import('./plate-editor'), {
 
 export function Editor() {
 	const { episodeId } = useParams()
+	const isEpisodeNavigationOpen = useEditorStore(
+		(state) => state.isEpisodeNavigationOpen
+	)
 
 	return (
 		<main className="flex flex-1 flex-col">
-			<div className="container mx-auto flex px-6">
+			<div
+				className={cn('flex transition-all', {
+					'pl-6': !isEpisodeNavigationOpen,
+				})}
+			>
 				<EpisodeNavigation />
 				<div className="relative w-full">
 					<EpisodeIdProvider

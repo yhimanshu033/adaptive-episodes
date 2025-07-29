@@ -20,9 +20,9 @@ import {
 	innerButtonVariants,
 } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import CircularLoader from '@/components/ui/circular-loader'
 import ForEach from '@/components/ui/for-each'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils/helpers'
 
 import { TGetEpisodesResponse } from '@/types/episode-type'
@@ -104,9 +104,12 @@ export default function EpisodeNavigation() {
 				variant="outlined"
 				size="small"
 				onClick={toggleOpenNavigation}
-				className={cn('absolute top-7 -right-4 z-10 bg-black', {
-					'bg-fm-secondary-50 text-fm-secondary-800': isEpisodeNavigationOpen,
-				})}
+				className={cn(
+					'border-fm-divider-tertiary absolute top-7 -right-4 z-10 bg-black',
+					{
+						'bg-fm-secondary-50 text-fm-secondary-800': isEpisodeNavigationOpen,
+					}
+				)}
 			/>
 			<div
 				className={cn(
@@ -123,7 +126,7 @@ export default function EpisodeNavigation() {
 							</div>
 						}
 					>
-						<div className="flex flex-col">
+						<div className="flex flex-col gap-2">
 							<ForEach data={sortedEpisodes}>
 								{(item, idx) => {
 									const episode_id = item.parent || item.id

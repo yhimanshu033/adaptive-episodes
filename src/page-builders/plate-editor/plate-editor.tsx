@@ -16,6 +16,7 @@ import { Plate } from 'platejs/react'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { FixedToolbar } from '@/components/plate-ui-v2/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui-v2/fixed-toolbar-buttons'
+import WordCountTag from '@/components/plate-ui-v2/word-count-tag'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
 
@@ -53,9 +54,7 @@ function MyEditor({
 						<EditorOverlayLoader />
 						<EpisodeHeader {...{ content, latestStatus }} />
 
-						<div
-							className={cn('animate-fade-in-up relative min-h-0 flex-1 pb-4')}
-						>
+						<div className={cn('relative min-h-0 flex-1')}>
 							<ResizablePanelGroup
 								direction="horizontal"
 								className="flex h-full overflow-visible!"
@@ -78,7 +77,7 @@ function MyEditor({
 												<FixedToolbarButtons />
 											</FixedToolbar>
 											<ScrollArea className="overflow-y-auto">
-												<EditorHandler />
+												<EditorHandler className="lg:px-40" />
 											</ScrollArea>
 										</ResizablePanel>
 										<DualView translatedContent={content.translation_text} />
@@ -87,6 +86,7 @@ function MyEditor({
 								<Sidebar />
 							</ResizablePanelGroup>
 						</div>
+						<WordCountTag />
 						<FloatingPrompt />
 						<FloatingLaserResponse />
 					</div>
