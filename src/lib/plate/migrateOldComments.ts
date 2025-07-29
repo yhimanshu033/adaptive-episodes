@@ -56,9 +56,10 @@ export const migrateOldComments = (
 	allComments: TCommentGeneric[],
 	editorState: Value | string | null
 ): TDiscussion[] => {
-	if (!editorState || typeof editorState === 'string') {
+	if (!editorState || typeof editorState === 'string' || !allComments) {
 		return []
 	}
+
 	const oldComments = allComments.filter(isOldComment)
 	const newDiscussions = allComments.filter(
 		(c): c is TDiscussion => !isOldComment(c)

@@ -1,5 +1,5 @@
 import React from 'react'
-import { statuses } from '@/constants/episodes-constants'
+import { statuses, titleToStatusText } from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useEpisodeIdStore from '@/store/episode-id-store'
@@ -59,7 +59,7 @@ const Title = ({
 						<span className="size-0.5 rounded-full bg-current" />
 					</>
 				)}
-				<span>{statuses[latestIndex]}</span>
+				<span>{titleToStatusText[statuses[latestIndex]]}</span>
 			</p>
 		</div>
 	)
