@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEditorSelector } from '@platejs/core/react'
+import { useEditorSelector, useEditorState } from '@platejs/core/react'
 
 const useEditorDataUtil = () => {
 	const editorText = useEditorSelector((editor) => {
@@ -11,8 +11,11 @@ const useEditorDataUtil = () => {
 		return text.join('\n')
 	}, [])
 
+	const { children } = useEditorState()
+
 	return {
 		editorText,
+		children,
 	}
 }
 

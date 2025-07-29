@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo } from 'react'
 import { useAIChatbotQueryHook } from '@/hooks/mutation/use-aichatbot-hook'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import DualViewLoader from '@/page-builders/plate-editor/dual-view/dual-view-loader'
 import Block from '@/page-builders/plate-editor/dual-view/voice-pass/block'
 import CopyAll from '@/page-builders/plate-editor/dual-view/voice-pass/copy-all'
-import { useEditorState } from 'platejs/react'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { minify } from '@/lib/utils/ai-chatbot'
@@ -29,7 +29,7 @@ export default function VoicePass({
 		return initialStoryData?.episode_count || 0
 	}, [initialStoryData])
 
-	const { children } = useEditorState()
+	const { children } = useEditorData()
 
 	const { data } = useAIChatbotQueryHook({
 		episodeNumber: episodeContent?.chapter.seq_number || 0,

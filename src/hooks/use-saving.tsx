@@ -8,7 +8,7 @@ import {
 	addUnsavedEpisodeParams,
 	removeUnsavedEpisodeParams,
 } from '@/store/global-store'
-import { useEditorState, usePluginOption } from 'platejs/react'
+import { usePluginOption } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
@@ -43,7 +43,7 @@ export function SavingContextProvider({
 	initialForceSave?: boolean
 }) {
 	const { id } = useParams()
-	const { children } = useEditorState()
+	const { children } = useEditorData()
 	const { editorText } = useEditorData()
 	const allComments = usePluginOption(discussionPlugin, 'discussions')
 
