@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useRef } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
@@ -236,7 +237,7 @@ export function SavingContextProvider({
 			savedTitleRef.current = data.chapter.chapter_title
 			setCurrentTitle(data.chapter.chapter_title)
 		}
-	}, [data, setCurrentTitle])
+	}, [data])
 
 	useEffect(() => {
 		if (isSaved) {

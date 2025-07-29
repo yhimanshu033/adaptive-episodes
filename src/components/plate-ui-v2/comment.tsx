@@ -239,8 +239,8 @@ export function Comment(props: {
 				<div className="group relative flex items-center justify-between gap-2">
 					<div className="flex items-center gap-2">
 						<Avatar className="size-8">
-							<AvatarImage alt={userInfo.name} src={userInfo.avatarUrl} />
-							<AvatarFallback>{userInfo.name?.[0]}</AvatarFallback>
+							<AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
+							<AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
 						</Avatar>
 						<div className="flex flex-col">
 							<div className="flex gap-2">

@@ -2,13 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import { useCreateTable } from '@/hooks/use-create-table'
-import useEpisodeTable from '@/hooks/use-episode-table'
+// import useEpisodeTable from '@/hooks/use-episode-table'
 import useIsGerman from '@/hooks/use-is-german'
 import { usePageState } from '@/hooks/use-page-state'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import ChevronLeftIcon from '@/icons/chevron-left-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
-import { MaintenanceIcon } from '@/icons/maintenance-icon'
+// import { MaintenanceIcon } from '@/icons/maintenance-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { UploadIcon } from '@/icons/upload-icon'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
@@ -39,6 +39,7 @@ import {
 import AuthWrapper from '@/components/auth-wrapper'
 import IfElse, { Else, If } from '@/components/if-else'
 import StoryDetails from '@/components/story-details'
+import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
 
@@ -52,7 +53,7 @@ const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-	const { setInventIndex, setIsInventOpen, setIsShareAccessDialogOpen } =
+	const { setInventSeq, setIsInventOpen, setIsShareAccessDialogOpen } =
 		useEpisodeStore()
 	const isGerman = useIsGerman()
 	const { initialStoryData } = useEpisodeTableContext()
@@ -70,7 +71,15 @@ const EpisodesTable = () => {
 	const { table, columnSize, isWriter, editingRowId } =
 		useCreateTable(tableData)
 
-	const { handleEpisodeInfo } = useEpisodeTable()
+	const {
+		setSelectedRowData,
+		setOpen,
+		setStory,
+		setEpisodeAdaptation,
+		selectedRowData: adaptationData,
+	} = useAdaptation()
+
+	// const { handleEpisodeInfo } = useEpisodeTable()
 	const selectedRowLength = table.getSelectedRowModel().rows.length
 
 	useEffect(() => {
@@ -145,7 +154,7 @@ const EpisodesTable = () => {
 					</If>
 					<EpisodeEmpty
 						initialStoryData={initialStoryData}
-						setInventIndex={setInventIndex}
+						setInventSeq={setInventSeq}
 						setIsInventOpen={setIsInventOpen}
 						isLoading={isEpisodesLoading}
 					/>
@@ -194,12 +203,26 @@ const EpisodesTable = () => {
 								<Button
 									variant="secondary"
 									className="font-fm-brand h-11 text-sm"
+									disabled={table.getSelectedRowModel().rows.length === 0}
 									onClick={() =>
-										handleEpisodeInfo({
-											icon: <MaintenanceIcon width={20} height={20} />,
-											description: 'Global adaptation feature coming soon!',
-											title: 'Coming Soon',
-										})
+										/** Global adaptation has been temporarily replaced with local adaptation */
+										// handleEpisodeInfo({
+										// 	icon: <MaintenanceIcon width={20} height={20} />,
+										// 	description: 'Global adaptation feature coming soon!',
+										// 	title: 'Coming Soon',
+										// })
+										{
+											const selectedRowModel = table.getSelectedRowModel().rows
+											const selectedRowData = selectedRowModel.map(
+												(row) => row.original
+											)
+											if (adaptationData.length === 0) {
+												setSelectedRowData(selectedRowData)
+												setStory(initialStoryData)
+												setEpisodeAdaptation(true)
+											}
+											setOpen(true)
+										}
 									}
 								>
 									<MagicBookIcon width={20} height={20} />
@@ -377,7 +400,10 @@ const EpisodesTable = () => {
 																		noise="low"
 																		onClick={() => {
 																			setIsInventOpen(true)
-																			setInventIndex(rowIndex)
+																			setInventSeq(
+																				table.getRowModel().rows[rowIndex]
+																					.original.seq_number + 1
+																			)
 																		}}
 																		onMouseEnter={handleInventMouseEnter}
 																		onMouseLeave={handleInventMouseLeave}

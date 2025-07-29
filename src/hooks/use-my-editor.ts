@@ -3,15 +3,12 @@
 'use client'
 
 import { useMemo } from 'react'
-import { AIChatPlugin } from '@platejs/ai/react'
 import { TrailingBlockPlugin, Value } from 'platejs'
 import { usePlateEditor } from 'platejs/react'
 
-import { AIKit } from '@/components/editor/plugins/ai-kit'
 import { AlignKit } from '@/components/editor/plugins/align-kit'
 import { AutoformatKit } from '@/components/editor/plugins/autoformat-kit'
 import { BasicNodesKit } from '@/components/editor/plugins/basic-nodes-kit'
-import { BlockMenuKit } from '@/components/editor/plugins/block-menu-kit'
 import { CommentKit } from '@/components/editor/plugins/comment-kit'
 import { CursorOverlayKit } from '@/components/editor/plugins/cursor-overlay-kit'
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
@@ -117,10 +114,6 @@ const useMyEditor = ({
 				//laser
 				...LaserKit,
 				...LaserPromptKit,
-				// AI
-				...AIKit,
-				...BlockMenuKit,
-				AIChatPlugin,
 			],
 			value,
 			id,

@@ -42,7 +42,7 @@ const InventForm = () => {
 	})
 
 	const { useEpisodeTableStore, setIsInventOpen } = useEpisodeStore()
-	const { isInventOpen, currentInventIndex } = useEpisodeTableStore()
+	const { isInventOpen, currentInventSeq } = useEpisodeTableStore()
 	const { handleAddEpisode } = useEpisodeTable()
 
 	const form = useForm<InvertFormSchema>({
@@ -77,7 +77,7 @@ const InventForm = () => {
 			>
 				<DialogHeader className="px-4">
 					<DialogTitle className="mb-0 flex items-center justify-between gap-4 py-2">
-						{!currentInventIndex ? 'Add' : 'Invent'} new episode
+						{!currentInventSeq ? 'Add' : 'Invent'} new episode
 						<DialogClose
 							className={iconButtonVariants({
 								variant: 'ghost',

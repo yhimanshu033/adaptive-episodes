@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useMemo } from 'react'
+import { usePathname } from 'next/navigation'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
@@ -8,28 +9,31 @@ import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
 import { useQuery } from '@tanstack/react-query'
+import { X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
+import { Button } from '@/components/aural-ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
 import {
 	getAvailableLanguages,
 	getDisabledAvailableLanguages,
 	getEpisodeQueryResponseFromStoredData,
+	getSavedParamsFromEpisodeData,
 	getSelectedEpisode,
 	getSelectedEpisodeFromLanguage,
 } from '@/lib/utils/helpers'
-import { getValue } from '@/lib/utils/indexed-db'
-
-// import {
-// 	breakDownValue,
-// 	isEpisodeContentDifferent,
-// 	jsonify,
-// } from '@/lib/utils/plate'
+import { getValue, removeValue } from '@/lib/utils/indexed-db'
+import {
+	breakDownValue,
+	isEpisodeContentDifferent,
+	jsonify,
+} from '@/lib/utils/plate'
 
 import { BASE_STATUS, ELanguage } from '@/types/common'
-
-// import { EDualVIewMode } from '@/types/episode-type'
-// import { ESidebar } from '@/types/plate-types'
+import { EDualVIewMode } from '@/types/episode-type'
+import { ESidebar } from '@/types/plate-types'
 
 import useAccessChecks from '../use-access-checks'
 
@@ -44,6 +48,7 @@ import useAccessChecks from '../use-access-checks'
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 	const { isOriginal } = useAccessChecks()
+	const pathName = usePathname()
 
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
@@ -78,7 +83,7 @@ export const useEpisodeContentUtil = () => {
 		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
 	}, [data, selectedLanguage, selectedStatus, isOriginal])
 
-	// const dict = useTranslations('placeholders')
+	const dict = useTranslations('placeholders')
 	const languages = useMemo(() => getAvailableLanguages(data), [data])
 	const disabledLanguages = useMemo(
 		() => getDisabledAvailableLanguages(data),
@@ -86,7 +91,7 @@ export const useEpisodeContentUtil = () => {
 	)
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
-	// const { setDualViewMode } = useEpisodeIdStore()
+	const { setDualViewMode } = useEpisodeIdStore()
 
 	const usedEpisodeId = useMemo(
 		() => (episode ? episode.id : episodeId),
@@ -99,10 +104,10 @@ export const useEpisodeContentUtil = () => {
 			usedEpisodeId,
 			latestStatus || BASE_STATUS,
 			importedLocal,
+			pathName,
 		],
-		[importedLocal, latestStatus, usedEpisodeId]
+		[importedLocal, latestStatus, pathName, usedEpisodeId]
 	)
-
 	async function fetchEpisodeContent() {
 		const resp = await getEpisodeContent(usedEpisodeId)
 		if (!resp) {
@@ -124,50 +129,52 @@ export const useEpisodeContentUtil = () => {
 				oldData,
 			})
 		}
-		// const newData = getSavedParamsFromEpisodeData(resp)
-		// const isContentDifferent = isEpisodeContentDifferent(
-		// 	oldData.text,
-		// 	newData.text
-		// )
-		// if (!isContentDifferent) {
-		// 	void removeValue(`${resp.chapter.project}_${usedEpisodeId}`)
-		// 	return resp
-		// }
-		// toast(
-		// 	`Episode ${resp?.chapter?.seq_number || ''}: ${dict('contentChanged')}`,
-		// 	{
-		// 		id: episodeId,
-		// 		action: (
-		// 			<>
-		// 				<Button
-		// 					onClick={() => {
-		// 						setLocalDiffValue(
-		// 							breakDownValue(
-		// 								jsonify(
-		// 									getEpisodeQueryResponseFromStoredData({
-		// 										episodeData: resp,
-		// 										oldData,
-		// 									}).text
-		// 								)
-		// 							)
-		// 						)
-		// 						setSidebar(ESidebar.DUAL_VIEW)
-		// 						setDualViewMode(EDualVIewMode.LOCAL_DIFF)
-		// 						toast.dismiss(episodeId)
-		// 					}}
-		// 				>
-		// 					{dict('localChanges')}
-		// 				</Button>
-		// 				<X
-		// 					className="absolute top-1 right-1 z-10 cursor-pointer"
-		// 					onClick={() => toast.dismiss(episodeId)}
-		// 					size={12}
-		// 				/>
-		// 			</>
-		// 		),
-		// 		duration: Infinity,
-		// 	}
-		// )
+		const newData = getSavedParamsFromEpisodeData(resp)
+		const isContentDifferent = isEpisodeContentDifferent(
+			oldData.text,
+			newData.text
+		)
+		if (!isContentDifferent) {
+			void removeValue(`${resp.chapter.project}_${usedEpisodeId}`)
+			return resp
+		}
+		toast(
+			`Episode ${resp?.chapter?.seq_number || ''}: ${dict('contentChanged')}`,
+			{
+				id: episodeId,
+				action: (
+					<>
+						<Button
+							innerClassName="w-30!"
+							size="sm"
+							onClick={() => {
+								setLocalDiffValue(
+									breakDownValue(
+										jsonify(
+											getEpisodeQueryResponseFromStoredData({
+												episodeData: resp,
+												oldData,
+											}).text
+										)
+									)
+								)
+								setSidebar(ESidebar.DUAL_VIEW)
+								setDualViewMode(EDualVIewMode.LOCAL_DIFF)
+								toast.dismiss(episodeId)
+							}}
+						>
+							{dict('localChanges')}
+						</Button>
+						<X
+							className="absolute top-1 right-1 z-10 cursor-pointer"
+							onClick={() => toast.dismiss(episodeId)}
+							size={12}
+						/>
+					</>
+				),
+				duration: Infinity,
+			}
+		)
 		return resp
 	}
 
@@ -181,6 +188,7 @@ export const useEpisodeContentUtil = () => {
 		staleTime: 0,
 		gcTime: 0,
 	})
+
 	return {
 		...query,
 		latestStatus,
@@ -191,7 +199,6 @@ export const useEpisodeContentUtil = () => {
 		importedLocal,
 	}
 }
-
 const EpisodeContentContext = createContext<ReturnType<
 	typeof useEpisodeContentUtil
 > | null>(null)
