@@ -9,11 +9,11 @@ import {
 	ExplorerModeId,
 	PlotAction,
 } from '@/constants/story-explorer-constants'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import useMetadataQuery from '@/hooks/query/use-metadata-query'
 import useLanguage from '@/hooks/use-language'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useQuery } from '@tanstack/react-query'
-import { useEditorString } from 'platejs/react'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import {
@@ -39,7 +39,7 @@ const usePlotOutlineQuery = ({
 	const { startTask } = useSocketStreaming()
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
-	const editorText = useEditorString()
+	const { editorText } = useEditorData()
 
 	const { data: metadata, isLoading: isMetadataLoading } = useMetadataQuery(
 		start,

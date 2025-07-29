@@ -2,12 +2,13 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import {
 	addUnsavedEpisodeParams,
 	removeUnsavedEpisodeParams,
 } from '@/store/global-store'
-import { useEditorState, useEditorString, usePluginOption } from 'platejs/react'
+import { useEditorState, usePluginOption } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
@@ -43,7 +44,7 @@ export function SavingContextProvider({
 }) {
 	const { id } = useParams()
 	const { children } = useEditorState()
-	const editorText = useEditorString()
+	const { editorText } = useEditorData()
 	const allComments = usePluginOption(discussionPlugin, 'discussions')
 
 	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()

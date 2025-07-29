@@ -234,6 +234,13 @@ export enum EEpisodeHeaderKeys {
 	WRITER = 'writer',
 }
 
+export const NON_SORTABLE_EPISODE_HEADER_KEYS: Partial<
+	Record<EEpisodeHeaderKeys, true>
+> = {
+	[EEpisodeHeaderKeys.ACTIONS]: true,
+	[EEpisodeHeaderKeys.SERIAL_NUMBER]: true,
+}
+
 export const episodeTableColumnWidths: Record<EEpisodeHeaderKeys, string> = {
 	[EEpisodeHeaderKeys.SELECT_COL]: '7%',
 	[EEpisodeHeaderKeys.SERIAL_NUMBER]: '8%',

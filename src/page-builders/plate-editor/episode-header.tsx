@@ -90,7 +90,7 @@ const EpisodeHeader = ({
 				/>
 
 				<Link
-					href={`/projects/${content?.chapter?.project}/${content?.chapter?.parent}/preview`}
+					href={`/projects/${content?.chapter?.project}/${content?.chapter?.parent || content?.chapter?.id}/preview`}
 				>
 					<IconButton
 						variant="ghost"

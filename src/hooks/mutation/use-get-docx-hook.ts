@@ -1,8 +1,9 @@
+import useEditorData from '@/hooks/plate/use-editor-data'
 import { useEpisodeContentUtil } from '@/hooks/query/use-episode-content'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useMutation } from '@tanstack/react-query'
 import { createSlateEditor, serializeHtml } from 'platejs'
-import { useEditorRef, useEditorString } from 'platejs/react'
+import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { BaseEditorKit } from '@/components/editor/editor-base-kit'
@@ -17,8 +18,8 @@ const siteUrl = 'https://platejs.org'
 
 export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 	const editor = useEditorRef()
-	const editorText = useEditorString()
-	const words = editorText ? editorText.split(/\s+/).filter(Boolean).length : 0
+	const { editorText } = useEditorData()
+	const words = editorText.split(/\s+/).filter(Boolean).length
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 	const title = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
