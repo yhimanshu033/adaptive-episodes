@@ -53,7 +53,7 @@ const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-	const { setInventIndex, setIsInventOpen, setIsShareAccessDialogOpen } =
+	const { setInventSeq, setIsInventOpen, setIsShareAccessDialogOpen } =
 		useEpisodeStore()
 	const isGerman = useIsGerman()
 	const { initialStoryData } = useEpisodeTableContext()
@@ -154,7 +154,7 @@ const EpisodesTable = () => {
 					</If>
 					<EpisodeEmpty
 						initialStoryData={initialStoryData}
-						setInventIndex={setInventIndex}
+						setInventSeq={setInventSeq}
 						setIsInventOpen={setIsInventOpen}
 						isLoading={isEpisodesLoading}
 					/>
@@ -400,7 +400,10 @@ const EpisodesTable = () => {
 																		noise="low"
 																		onClick={() => {
 																			setIsInventOpen(true)
-																			setInventIndex(rowIndex)
+																			setInventSeq(
+																				table.getRowModel().rows[rowIndex]
+																					.original.seq_number + 1
+																			)
 																		}}
 																		onMouseEnter={handleInventMouseEnter}
 																		onMouseLeave={handleInventMouseLeave}

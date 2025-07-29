@@ -18,7 +18,7 @@ export type EpisodeStoreState = {
 		type?: string
 		variant?: VariantProps<typeof dialogVariants>['variant']
 	} | null
-	currentInventIndex: number | null
+	currentInventSeq: number | null
 	currentPage: number
 	deleteEpisodeId: number | null
 	episodeSearch: string

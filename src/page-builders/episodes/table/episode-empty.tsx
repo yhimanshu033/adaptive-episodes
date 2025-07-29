@@ -15,14 +15,14 @@ import EpisodesTableSkeleton from './episode-loading'
 interface IEpisodeEmptyProps {
 	initialStoryData?: TStory
 	isLoading?: boolean
-	setInventIndex: (index: number) => void
+	setInventSeq: (index: number) => void
 	setIsInventOpen: (isOpen: boolean) => void
 }
 
 const EpisodeEmpty = ({
 	initialStoryData,
 	setIsInventOpen,
-	setInventIndex,
+	setInventSeq,
 	isLoading = false,
 }: IEpisodeEmptyProps) => {
 	const { isWriter } = useProjectId()
@@ -62,7 +62,7 @@ const EpisodeEmpty = ({
 								className="my-2"
 								onClick={() => {
 									setIsInventOpen(true)
-									setInventIndex(-1)
+									setInventSeq(-1)
 								}}
 							>
 								Create New Episode

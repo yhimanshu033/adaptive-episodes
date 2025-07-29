@@ -51,12 +51,12 @@ const useEpisodeTable = () => {
 	const {
 		deleteEpisodeId,
 		selectedEpisodes,
-		currentInventIndex,
+		currentInventSeq,
 		statusUpdating,
 	} = useEpisodeTableStore()
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 
-	const { currentPage, search, limit } = usePageState()
+	const { currentPage, search } = usePageState()
 
 	const handleTitleClick = (episodeId: number) => {
 		router.push(`${pathname}/${episodeId}/editor`)
@@ -241,7 +241,7 @@ const useEpisodeTable = () => {
 		episodeInventMutation.mutate(
 			{
 				chapter_title: data.title,
-				seq_number: (currentInventIndex || 0) + 2 + (currentPage - 1) * limit,
+				seq_number: currentInventSeq || 0,
 				language: storyData?.parent_language,
 			},
 			{
