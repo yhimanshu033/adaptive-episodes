@@ -17,7 +17,7 @@ import {
 } from '@/components/aural-ui/dropdown'
 
 const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
-	const { setIsInventOpen, setInventIndex } = useEpisodeStore()
+	const { setIsInventOpen, setInventSeq } = useEpisodeStore()
 	const { handleEpisodeInfo } = useEpisodeTable()
 	const { handleDialogClose } = useDialogCleanup({ threshold: 100 })
 
@@ -37,7 +37,7 @@ const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
 				<DropdownMenuItem
 					onClick={() => {
 						setIsInventOpen(true)
-						setInventIndex((episodeCount ?? 0) - 1)
+						setInventSeq((episodeCount ?? 0) - 1)
 					}}
 				>
 					<PlusIcon />

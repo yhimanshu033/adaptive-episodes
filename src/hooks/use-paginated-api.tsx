@@ -112,7 +112,7 @@ export const usePaginatedAPI = <ResponseT = unknown,>({
 				bottomDebouncedObserver,
 				{
 					root: null,
-					rootMargin: '100px',
+					rootMargin: '20px',
 					threshold: 1.0,
 				}
 			)
@@ -131,7 +131,7 @@ export const usePaginatedAPI = <ResponseT = unknown,>({
 
 			topObserverRef.current = new IntersectionObserver(topDebouncedObserver, {
 				root: null,
-				rootMargin: '100px',
+				rootMargin: '20px',
 				threshold: 1.0,
 			})
 

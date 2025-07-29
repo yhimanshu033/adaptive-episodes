@@ -45,8 +45,8 @@ export function useEpisodeStore() {
 		useEpisodeStoreUtil.setState({ deleteEpisodeId })
 	}
 
-	const setInventIndex = (currentInventIndex: number) => {
-		useEpisodeStoreUtil.setState({ currentInventIndex })
+	const setInventSeq = (currentInventSeq: number) => {
+		useEpisodeStoreUtil.setState({ currentInventSeq })
 	}
 
 	const setNotes = (notes: EpisodeStoreState['notes']) => {
@@ -100,7 +100,7 @@ export function useEpisodeStore() {
 		setAlertInfo,
 		setSelectedEpisodes,
 		setDeleteEpisodeId,
-		setInventIndex,
+		setInventSeq,
 		setNotes,
 		addNote,
 		deleteNote,

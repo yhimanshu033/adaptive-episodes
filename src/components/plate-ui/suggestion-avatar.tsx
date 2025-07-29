@@ -17,8 +17,8 @@ export function SuggestionAvatar({ user }: { user: PlateUser | null }) {
 
 	return (
 		<Avatar className="size-8">
-			<AvatarImage alt={user.name} src={user.avatarUrl} />
-			<AvatarFallback>{user.name?.[0]}</AvatarFallback>
+			<AvatarImage alt={user?.name} src={user?.avatarUrl} />
+			<AvatarFallback>{user?.name?.[0]}</AvatarFallback>
 		</Avatar>
 	)
 }

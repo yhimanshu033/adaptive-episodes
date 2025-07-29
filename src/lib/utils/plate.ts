@@ -5,6 +5,7 @@
 
 import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/editor-constants'
 import { getCommentKey } from '@platejs/comment'
+import { computeDiff } from '@platejs/diff'
 // Create a new file: src/lib/comment-helpers.ts
 import {
 	Descendant,
@@ -503,26 +504,26 @@ export function clearColors(ogVal: Value): Value {
 	return val
 }
 
-// export function isEpisodeContentDifferent(val1: string, val2: string) {
-// 	const v1 = breakDownValue(jsonify(val1))
-// 	const v2 = breakDownValue(jsonify(val2))
+export function isEpisodeContentDifferent(val1: string, val2: string) {
+	const v1 = breakDownValue(jsonify(val1))
+	const v2 = breakDownValue(jsonify(val2))
 
-// 	const diffValue = computeDiff(v1, v2) as Value
+	const diffValue = computeDiff(v1, v2) as Value
 
-// 	const diffBlocks = diffValue.filter((item) => item.diff)
-// 	const diffLeafs = diffValue
-// 		.map((elem) => elem.children)
-// 		.flat()
-// 		.filter((item) => item.diff)
+	const diffBlocks = diffValue.filter((item) => item.diff)
+	const diffLeafs = diffValue
+		.map((elem) => elem.children)
+		.flat()
+		.filter((item) => item.diff)
 
-// 	const areAnyDeletionsInBlocks = diffBlocks.some(
-// 		(item: any) => item?.diffOperation?.type === 'delete'
-// 	)
-// 	const areAnyDeletionsInLeafs = diffLeafs.some(
-// 		(item: any) => item?.diffOperation?.type === 'delete'
-// 	)
-// 	return areAnyDeletionsInBlocks || areAnyDeletionsInLeafs
-// }
+	const areAnyDeletionsInBlocks = diffBlocks.some(
+		(item: any) => item?.diffOperation?.type === 'delete'
+	)
+	const areAnyDeletionsInLeafs = diffLeafs.some(
+		(item: any) => item?.diffOperation?.type === 'delete'
+	)
+	return areAnyDeletionsInBlocks || areAnyDeletionsInLeafs
+}
 export function getWordCount(val: Value) {
 	const text = getText(val)
 	const words = text.split(/\s+/)

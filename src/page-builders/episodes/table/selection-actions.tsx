@@ -10,7 +10,6 @@ import useParentLanguage from '@/hooks/use-parent-language'
 import { CrossIcon } from '@/icons/cross-icon'
 import { GitBranchIcon } from '@/icons/git-branch-icon'
 import { GitForkIcon } from '@/icons/git-fork-icon'
-import { MagicBookIcon } from '@/icons/magic-book-icon'
 import { MaintenanceIcon } from '@/icons/maintenance-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/dialogs/multi-ep-localize-dialog'
@@ -20,8 +19,6 @@ import { Replace } from 'lucide-react'
 import { Button } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/if-else'
-import useAdaptation from '@/providers/adaptation-provider'
-import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
 
@@ -35,7 +32,9 @@ export default function SelectionActions({
 }) {
 	const { isWriter } = useProjectId()
 	const language = useParentLanguage()
-	const { initialStoryData } = useEpisodeTableContext()
+
+	/**Local adaptation is currently moved to global adaptation */
+	// const { initialStoryData } = useEpisodeTableContext()
 
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
@@ -53,13 +52,14 @@ export default function SelectionActions({
 		return `/projects/${String(id)}/${episodeId}/editor?extend=${extended}&${SIMPLIFIED_VIEWABLE_EDITOR}=true&${GLOBAL_LOCALIZE}=true&${HIDE_HEADER}=true`
 	}, [selectedRowData, id])
 
-	const {
-		setSelectedRowData,
-		setOpen,
-		setStory,
-		setEpisodeAdaptation,
-		selectedRowData: adaptationData,
-	} = useAdaptation()
+	/**Local adaptation is currently moved to global adaptation */
+	// const {
+	// 	setSelectedRowData,
+	// 	setOpen,
+	// 	setStory,
+	// 	setEpisodeAdaptation,
+	// 	selectedRowData: adaptationData,
+	// } = useAdaptation()
 
 	if (!isWriter || selectedRowData.length < 1) {
 		return null
@@ -81,7 +81,8 @@ export default function SelectionActions({
 				</h4>
 			</div>
 			<div className="flex gap-3">
-				<If condition={language.parentLanguage !== ELanguage.GERMAN_ORIGINAL}>
+				{/**Local adaptation is currently moved to global adaptation */}
+				{/* <If condition={language.parentLanguage !== ELanguage.GERMAN_ORIGINAL}>
 					<Button
 						disabled={Object.keys(selectedRowData).length < 1}
 						onClick={() => {
@@ -109,7 +110,7 @@ export default function SelectionActions({
 					>
 						AI Adaptation
 					</Button>
-				</If>
+				</If> */}
 				<MultiEpLocalizeDialog
 					url={url}
 					disabled={selectedRowData.length <= 1}

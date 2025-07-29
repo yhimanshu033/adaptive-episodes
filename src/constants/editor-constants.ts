@@ -156,7 +156,7 @@ export const SAVE_EPISODE_BUTTON_ID = 'save-episode-button'
 
 export const EXCLUDE_BREAKDOWN_KEYS = ['laser']
 
-export const DEFAULT_NAVIGATION_PAGE_LIMIT = 20
+export const DEFAULT_NAVIGATION_PAGE_LIMIT = 25
 
 export const DEFAULT_INITIAL_PAGE = 1
 

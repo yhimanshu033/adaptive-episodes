@@ -19,7 +19,7 @@ const initialState: EpisodeStoreState = {
 	alertInfo: null,
 	deleteEpisodeId: null,
 	selectedEpisodes: null,
-	currentInventIndex: null,
+	currentInventSeq: null,
 	notes: [],
 }
 
