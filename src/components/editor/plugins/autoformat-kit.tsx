@@ -2,10 +2,6 @@
 
 import type { AutoformatRule } from '@platejs/autoformat'
 import {
-	autoformatArrow,
-	autoformatLegal,
-	autoformatLegalHtml,
-	autoformatMath,
 	AutoformatPlugin,
 	autoformatPunctuation,
 	autoformatSmartQuotes,
@@ -154,7 +150,7 @@ const autoformatBlocks: AutoformatRule[] = [
 	},
 ]
 
-const autoformatLists: AutoformatRule[] = [
+export const autoformatLists: AutoformatRule[] = [
 	{
 		match: ['* ', '- '],
 		mode: 'block',
@@ -216,11 +212,12 @@ export const AutoformatKit = [
 				...autoformatMarks,
 				...autoformatSmartQuotes,
 				...autoformatPunctuation,
-				...autoformatLegal,
-				...autoformatLegalHtml,
-				...autoformatArrow,
-				...autoformatMath,
-				...autoformatLists,
+				// COMMENTING UNNECESSARY KITS FOR OPTIMIZATION
+				// ...autoformatLegal,
+				// ...autoformatLegalHtml,
+				// ...autoformatArrow,
+				// ...autoformatMath,
+				// ...autoformatLists,
 			].map(
 				(rule): AutoformatRule => ({
 					...rule,

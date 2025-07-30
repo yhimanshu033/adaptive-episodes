@@ -53,7 +53,7 @@ function MyEditor({
 					<ChatbotProvider episodeContent={content}>
 						<div className="flex h-screen flex-col">
 							<EditorOverlayLoader />
-							<EpisodeHeader {...{ content, latestStatus }} />
+							<EpisodeHeader content={content} latestStatus={latestStatus} />
 
 							<div
 								className={cn(

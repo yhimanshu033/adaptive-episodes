@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -21,15 +21,21 @@ const EditorHandler = ({ className }: { className?: string }) => {
 		}))
 	)
 
-	const isDiff = sidebar === ESidebar.CHATBOT && responseValue && prevValue
+	const isDiff = useMemo(
+		() => sidebar === ESidebar.CHATBOT && responseValue && prevValue,
+		[sidebar, responseValue, prevValue]
+	)
 
-	return isDiff ? (
-		<DiffEditor
-			current={responseValue}
-			previous={prevValue}
-			className={className}
-		/>
-	) : (
+	if (isDiff) {
+		return (
+			<DiffEditor
+				current={responseValue}
+				previous={prevValue}
+				className={className}
+			/>
+		)
+	}
+	return (
 		<Editor
 			placeholder="Type..."
 			autoFocus

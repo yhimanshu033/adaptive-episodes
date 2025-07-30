@@ -41,7 +41,10 @@ const EpisodeHeader = ({
 	)
 
 	const isInternalUser = useIsInternal()
-	const isCmsReady = statuses[latestIndex] === EStatus.PUBLISHED
+	const isCmsReady = useMemo(
+		() => statuses[latestIndex] === EStatus.PUBLISHED,
+		[latestIndex]
+	)
 	const { isAccessible } = useProjectId()
 
 	if (simplifiedEditor) {

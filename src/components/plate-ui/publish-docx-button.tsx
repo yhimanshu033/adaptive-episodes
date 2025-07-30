@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
 	RenameFileFormSchema,
 	useRenameFileFormResolver,
@@ -6,9 +6,12 @@ import {
 import useDocxDownloadHook from '@/hooks/mutation/use-docx-download-hook'
 import usePublishDocxHook from '@/hooks/mutation/use-publish-docx-hook'
 import { UploadIcon } from '@/icons/upload-icon'
+import useEpisodeIdStore from '@/store/episode-id-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import Input from '@/components/aural-ui/input'
+import { If } from '@/components/if-else'
 import {
 	Form,
 	FormControl,
@@ -17,6 +20,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 
+import { EStatus } from '@/types/common'
 import { DownloadDocxParams } from '@/types/episode-type'
 
 import { Popover, PopoverContent, PopoverTrigger } from '../aural-ui/popover'
@@ -24,35 +28,22 @@ import { Typography } from '../aural-ui/typography'
 import CircularLoader from '../ui/circular-loader'
 
 export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
-	const { isPending, showButton, mutate } = usePublishDocxHook({
-		latestStatus,
-	})
-	const {
-		isPending: isDownlaodPending,
-		mutate: mutateDownload,
-		title,
-		isCalculatingSize,
-		fileSize,
-	} = useDocxDownloadHook({
-		latestStatus,
-	})
+	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+	const [isOpen, setIsOpen] = useState(false)
 
-	const form = useRenameFileFormResolver()
+	const selectedStatus = useEpisodeIdStoreContext(
+		useShallow((state) => state.selectedStatus)
+	)
 
-	const onSubmit = (data: RenameFileFormSchema) => {
-		mutate({ fileName: data.fileName })
-	}
-
-	useEffect(() => {
-		form.setValue('fileName', title)
-	}, [form, title])
+	const showButton =
+		selectedStatus === EStatus.PUBLISHED || latestStatus === EStatus.PUBLISHED
 
 	if (!showButton) {
 		return null
 	}
 
 	return (
-		<Popover>
+		<Popover open={isOpen} onOpenChange={setIsOpen}>
 			<PopoverTrigger asChild>
 				<Button
 					variant="outline"
@@ -68,104 +59,140 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 					Export
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent
-				className="rounded-fm-s px-4 py-6"
-				align="end"
-				side="bottom"
-			>
-				<div className="border-fm-divider-primary mt-1 mb-5 flex items-center justify-between border-b pb-5">
-					<div>
-						<Typography
-							as="h3"
-							color="primary"
-							variant="caption-medium"
-							weight="medium"
-							className="mb-1"
-						>
-							{title} {'  '} .docx
-						</Typography>
-						<Typography
-							color="tertiary"
-							variant="caption-medium"
-							weight="medium"
-							className="uppercase"
-						>
-							{isCalculatingSize ? 'Calculating size...' : fileSize}
-						</Typography>
-					</div>
-					<Button
-						size="sm"
-						onClick={() => mutateDownload()}
-						isDisabled={isDownlaodPending}
-						disabled={isDownlaodPending}
-						className="flex items-center gap-2"
-					>
-						{isDownlaodPending ? <CircularLoader className="size-4" /> : null}
-						Download
-					</Button>
-				</div>
+			<If condition={isOpen}>
+				<PopoverContent
+					className="rounded-fm-s px-4 py-6"
+					align="end"
+					side="bottom"
+				>
+					<UploadDocxPopoverContent latestStatus={latestStatus} />
+				</PopoverContent>
+			</If>
+		</Popover>
+	)
+}
+
+// ONLY IN DOM WHEN POPOVER OPEN
+function UploadDocxPopoverContent({ latestStatus }: DownloadDocxParams) {
+	const { isPending, mutate } = usePublishDocxHook({
+		latestStatus,
+	})
+	const {
+		isPending: isDownlaodPending,
+		mutate: mutateDownload,
+		title,
+		fileSize,
+		isEnabled,
+	} = useDocxDownloadHook({
+		latestStatus,
+	})
+
+	const form = useRenameFileFormResolver()
+
+	const onSubmit = (data: RenameFileFormSchema) => {
+		mutate({ fileName: data.fileName })
+	}
+
+	useEffect(() => {
+		form.setValue('fileName', title)
+	}, [form, title])
+
+	return (
+		<>
+			<div className="border-fm-divider-primary mt-1 mb-5 flex items-center justify-between border-b pb-5">
 				<div>
 					<Typography
 						as="h3"
 						color="primary"
 						variant="caption-medium"
 						weight="medium"
-						className="mb-1 flex items-center gap-2"
+						className="mb-1"
 					>
-						<UploadIcon className="size-4" /> Upload to Drive
+						{title} {'  '} .docx
 					</Typography>
 					<Typography
 						color="tertiary"
 						variant="caption-medium"
 						weight="medium"
-						className="mb-4"
+						className="uppercase"
 					>
-						Confirm the file name to avoid any errors later
+						{!fileSize ? 'Calculating size...' : fileSize}
 					</Typography>
-					<Form {...form}>
-						<form
-							onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
-							className="flex flex-col items-center gap-5"
-						>
-							<FormField
-								control={form.control}
-								name="fileName"
-								render={({ field }) => (
-									<FormItem className="w-full flex-1">
-										<FormControl>
-											<Input
-												placeholder="Enter file name"
-												{...field}
-												decoration="filled"
-												fullWidth
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<Button
-								variant="outline"
-								size="sm"
-								type="submit"
-								isDisabled={form.formState.isSubmitting || isPending}
-								disabled={form.formState.isSubmitting || isPending}
-								className="group w-full"
-								innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary group-data-[state=open]:border-fm-divider-contrast"
-							>
-								{form.formState.isSubmitting || isPending ? (
-									<>
-										<CircularLoader className="size-4" />
-										Uploading...
-									</>
-								) : (
-									'Upload'
-								)}
-							</Button>
-						</form>
-					</Form>
 				</div>
-			</PopoverContent>
-		</Popover>
+				<Button
+					size="sm"
+					onClick={() => mutateDownload()}
+					isDisabled={isDownlaodPending || !isEnabled}
+					disabled={isDownlaodPending || !isEnabled}
+					className="flex items-center gap-2"
+				>
+					{isDownlaodPending ? <CircularLoader className="size-4" /> : null}
+					Download
+				</Button>
+			</div>
+			<div>
+				<Typography
+					as="h3"
+					color="primary"
+					variant="caption-medium"
+					weight="medium"
+					className="mb-1 flex items-center gap-2"
+				>
+					<UploadIcon className="size-4" /> Upload to Drive
+				</Typography>
+				<Typography
+					color="tertiary"
+					variant="caption-medium"
+					weight="medium"
+					className="mb-4"
+				>
+					Confirm the file name to avoid any errors later
+				</Typography>
+				<Form {...form}>
+					<form
+						onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
+						className="flex flex-col items-center gap-5"
+					>
+						<FormField
+							control={form.control}
+							name="fileName"
+							render={({ field }) => (
+								<FormItem className="w-full flex-1">
+									<FormControl>
+										<Input
+											placeholder="Enter file name"
+											{...field}
+											decoration="filled"
+											fullWidth
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<Button
+							variant="outline"
+							size="sm"
+							type="submit"
+							isDisabled={
+								form.formState.isSubmitting || isPending || !isEnabled
+							}
+							disabled={form.formState.isSubmitting || isPending || !isEnabled}
+							className="group w-full"
+							innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary group-data-[state=open]:border-fm-divider-contrast"
+						>
+							{form.formState.isSubmitting || isPending ? (
+								<>
+									<CircularLoader className="size-4" />
+									Uploading...
+								</>
+							) : (
+								'Upload'
+							)}
+						</Button>
+					</form>
+				</Form>
+			</div>
+		</>
 	)
 }
