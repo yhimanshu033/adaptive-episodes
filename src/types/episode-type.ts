@@ -22,6 +22,7 @@ export type EpisodeStoreState = {
 	currentPage: number
 	deleteEpisodeId: number | null
 	episodeSearch: string
+	isBseDialogOpen: boolean
 	isDialogOpen: boolean
 	isInventOpen: boolean
 	isSharedAccessDialogOpen: boolean

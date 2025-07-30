@@ -1,8 +1,6 @@
 import React from 'react'
-import useEpisodeTable from '@/hooks/use-episode-table'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { ImportLeftArrowFolderIcon } from '@/icons/import-left-folder-icon'
-import { MaintenanceIcon } from '@/icons/maintenance-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { useEpisodeStore } from '@/store/episode-store'
 
@@ -18,8 +16,9 @@ import {
 
 const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
 	const { setIsInventOpen, setInventSeq } = useEpisodeStore()
-	const { handleEpisodeInfo } = useEpisodeTable()
 	const { handleDialogClose } = useDialogCleanup({ threshold: 100 })
+
+	const { setBseDialogOpen } = useEpisodeStore()
 
 	return (
 		<DropdownMenu onOpenChange={handleDialogClose}>
@@ -46,22 +45,7 @@ const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
 				<div className="px-3">
 					<Divider variant="dashed" />
 				</div>
-				<DropdownMenuItem
-					onClick={() =>
-						handleEpisodeInfo({
-							icon: (
-								<MaintenanceIcon
-									className="text-fm-icon-info"
-									width={44}
-									height={44}
-								/>
-							),
-							description:
-								'We are currently working on bringing you the ability to import episodes. This feature will be available soon to enhance your storytelling experience.',
-							title: 'Feature Coming Soon',
-						})
-					}
-				>
+				<DropdownMenuItem onClick={() => setBseDialogOpen(true)}>
 					<ImportLeftArrowFolderIcon />
 					<span>Import new episode</span>
 				</DropdownMenuItem>
