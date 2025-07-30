@@ -64,7 +64,6 @@ export default function useDocxDownloadHook({
 	const { data, showButton, projectTitle, epNumber, title } = useDocxHtml({
 		latestStatus,
 	})
-	console.log('useDocxDownloadHook rendered')
 
 	const { startTask, getResponse } = useSocket()
 	const downloadedContentRef = React.useRef<string | null>(null)

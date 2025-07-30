@@ -87,13 +87,14 @@ export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 		return { base64String, html, title }
 	}
 
+	const showButton =
+		selectedStatus === EStatus.PUBLISHED || latestStatus === EStatus.PUBLISHED
+
 	const mutation = useQuery({
 		queryKey: [GET_DOCX_HTML_QUERY_KEY, editorString],
 		queryFn: downloadDocx,
+		enabled: showButton,
 	})
-
-	const showButton =
-		selectedStatus === EStatus.PUBLISHED || latestStatus === EStatus.PUBLISHED
 
 	return { showButton, ...mutation, epNumber, projectTitle, title }
 }

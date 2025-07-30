@@ -12,6 +12,7 @@ import { AI_USER_ID } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import { useThrottle } from '@/hooks/use-throttle'
 import ReviewAdded from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages/review-added'
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
@@ -138,6 +139,8 @@ export function ChatbotProvider({
 
 	const staleReviewIDRef = useRef<string[] | null>(null)
 	const commentsCount = useRef<number>(0)
+
+	const throttledResponse = useThrottle(responses[sfxStreaming], 1000)
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -364,6 +367,7 @@ export function ChatbotProvider({
 	}, [aiResponse, isPending])
 
 	useEffect(() => {
+		console.info('USEFFECT TRIGGGGRREDDD')
 		if (!sfxStreaming || !originalChildren) {
 			return
 		}
@@ -372,13 +376,13 @@ export function ChatbotProvider({
 			setOriginalChildren(undefined)
 			return
 		}
-		if (!responses[sfxStreaming]) {
+		if (!throttledResponse) {
 			return
 		}
 
 		try {
 			let parsedResponse = parseOptimistically<IndexedSFXResponse>(
-				responses[sfxStreaming].join('')
+				throttledResponse.join('')
 			)
 			if (!parsedResponse) {
 				return
@@ -393,14 +397,17 @@ export function ChatbotProvider({
 						: null
 				})
 				.filter(Boolean)
+
 			if (!parsedResponse.length) {
 				return
 			}
+
 			const responseValue = addSFX(
 				parsedResponse,
 				originalChildren,
 				ParagraphPlugin.key
 			)
+
 			setResponseValue(structuredClone(responseValue))
 			setPrevValue(structuredClone(children))
 		} catch (error) {
@@ -408,7 +415,7 @@ export function ChatbotProvider({
 		}
 	}, [
 		sfxStreaming,
-		responses[sfxStreaming],
+		throttledResponse,
 		taskEnded[sfxStreaming],
 		originalChildren,
 	])

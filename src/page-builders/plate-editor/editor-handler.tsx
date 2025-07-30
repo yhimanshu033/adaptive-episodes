@@ -11,15 +11,11 @@ import DiffEditor from './diff-editor'
 
 const EditorHandler = ({ className }: { className?: string }) => {
 	const { store } = usePlateStore()
-	const { store: AiStore } = useAIStore()
+	const { store: aiStore } = useAIStore()
 
-	const sidebar = store((state) => state.sidebar)
-	const { responseValue, prevValue } = AiStore(
-		useShallow((state) => ({
-			responseValue: state.responseValue,
-			prevValue: state.prevValue,
-		}))
-	)
+	const sidebar = store(useShallow((state) => state.sidebar))
+	const responseValue = aiStore(useShallow((state) => state.responseValue))
+	const prevValue = aiStore(useShallow((state) => state.prevValue))
 
 	const isDiff = useMemo(
 		() => sidebar === ESidebar.CHATBOT && responseValue && prevValue,

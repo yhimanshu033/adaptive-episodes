@@ -57,6 +57,9 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 					innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary group-data-[state=open]:border-fm-divider-contrast"
 				>
 					Export
+					<If condition={isOpen}>
+						<CircularLoader className="size-4" />
+					</If>
 				</Button>
 			</PopoverTrigger>
 			<If condition={isOpen}>

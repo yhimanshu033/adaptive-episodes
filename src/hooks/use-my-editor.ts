@@ -59,7 +59,6 @@ const useMyEditor = ({
 	}, [content])
 
 	const discussions = migrateOldComments(comments, value)
-	console.log({ content })
 
 	// COMMENTING UNNECESSARY KITS FOR OPTIMIZATION
 	const editor = usePlateEditor(
