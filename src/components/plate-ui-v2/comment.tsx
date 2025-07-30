@@ -99,7 +99,6 @@ export function Comment(props: {
 	const editor = useEditorRef()
 	const userInfo = usePluginOption(discussionPlugin, 'user', comment.userId)
 	const userTitle = userInfo?.role ? roleToData[userInfo.role]?.title : ''
-	const currentUserId = usePluginOption(discussionPlugin, 'currentUserId')
 	const readOnly = useEditorReadOnly()
 	const activeCommentId = editor.getOption(commentPlugin, 'activeId')
 	const { mutateAsync, data } = useCommentExampleHook(comment)
@@ -153,10 +152,6 @@ export function Comment(props: {
 	}
 
 	const { tf } = useEditorPlugin(commentPlugin)
-
-	// Replace to your own backend or refer to potion
-	const isMyComment =
-		currentUserId === comment.userId || comment.userId === AI_USER_ID
 
 	const initialValue = comment.contentRich
 
@@ -257,7 +252,7 @@ export function Comment(props: {
 						</div>
 					</div>
 
-					<If condition={!readOnly && isMyComment}>
+					<If condition={!readOnly}>
 						<div className="flex items-center">
 							<If condition={isReplyComment && userInfo?.id === AI_USER_ID}>
 								<IconButton

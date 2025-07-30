@@ -16,6 +16,7 @@ import {
 	FormItem,
 	FormMessage,
 } from '@/components/ui/form'
+import { getFormattedDate } from '@/lib/utils/helpers'
 
 import { DownloadDocxParams } from '@/types/episode-type'
 
@@ -33,6 +34,8 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 		title,
 		isCalculatingSize,
 		fileSize,
+		projectTitle,
+		epNumber,
 	} = useDocxDownloadHook({
 		latestStatus,
 	})
@@ -44,8 +47,11 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 	}
 
 	useEffect(() => {
-		form.setValue('fileName', title)
-	}, [form, title])
+		form.setValue(
+			'fileName',
+			`${projectTitle.toUpperCase()} - EP ${epNumber} - ${title} - ${getFormattedDate()}`
+		)
+	}, [epNumber, form, projectTitle, title])
 
 	if (!showButton) {
 		return null
