@@ -129,7 +129,7 @@ const BaseScriptExtension = () => {
 						<div className="flex flex-col gap-2">
 							<div className="flex items-center gap-2">
 								<Typography as="h4" variant="body-medium">
-									Extendable DE Range:
+									Extendable Episode Range:
 								</Typography>
 								<Badge className="p-2">{data?.ranges?.de_start || 0}</Badge>
 								{' - '}
