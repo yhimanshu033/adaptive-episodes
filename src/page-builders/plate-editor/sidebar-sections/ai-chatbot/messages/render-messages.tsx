@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import useAcceptChanges from '@/hooks/use-accept-changes'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import usePlateStore from '@/store/plate-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import { EAction, EMessenger, TMessage } from '@/types/ai-types'
 
@@ -19,8 +20,16 @@ export default function RenderMessage({
 	const { handleAccept } = useAcceptChanges()
 	const { taskEnded, responses } = useSocketStreaming()
 	const { store, setActiveDiffId } = usePlateStore()
-	const { diffIdList, activeDiffId } = store()
-	const sfxIndex = diffIdList.findIndex((id) => id === activeDiffId)
+	const { diffIdList, activeDiffId } = store(
+		useShallow((state) => ({
+			diffIdList: state.diffIdList,
+			activeDiffId: state.activeDiffId,
+		}))
+	)
+	const sfxIndex = useMemo(
+		() => diffIdList.findIndex((id) => id === activeDiffId),
+		[diffIdList, activeDiffId]
+	)
 
 	useEffect(() => {
 		if (sfxIndex < 0 && diffIdList.length > 0) {

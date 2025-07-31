@@ -44,6 +44,11 @@ export const useStandalonePagination = ({
 		}
 	}, [totalPages, currentPage])
 
+	// Ensure that current page gets updated if the passed initial page state is updated in the parent
+	useEffect(() => {
+		setCurrentPage(initialPage)
+	}, [initialPage])
+
 	const isFirstPage = currentPage === 1
 	const isLastPage = currentPage === totalPages
 
