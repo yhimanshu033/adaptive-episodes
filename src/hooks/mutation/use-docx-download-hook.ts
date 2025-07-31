@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { API_URLS } from '@/constants/global-constants'
-import useDocxHtml from '@/hooks/mutation/use-get-docx-hook'
+import useDocxHtml from '@/hooks/query/use-get-docx-hook'
 import useIsGerman from '@/hooks/use-is-german'
 import useSocket from '@/hooks/use-socket'
 import { useMutation, useQuery } from '@tanstack/react-query'

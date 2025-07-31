@@ -14,8 +14,12 @@ const EditorHandler = ({ className }: { className?: string }) => {
 	const { store: aiStore } = useAIStore()
 
 	const sidebar = store(useShallow((state) => state.sidebar))
-	const responseValue = aiStore(useShallow((state) => state.responseValue))
-	const prevValue = aiStore(useShallow((state) => state.prevValue))
+	const { responseValue, prevValue } = aiStore(
+		useShallow((state) => ({
+			responseValue: state.responseValue,
+			prevValue: state.prevValue,
+		}))
+	)
 
 	const isDiff = useMemo(
 		() => sidebar === ESidebar.CHATBOT && responseValue && prevValue,

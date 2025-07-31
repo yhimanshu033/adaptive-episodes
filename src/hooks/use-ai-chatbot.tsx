@@ -367,7 +367,6 @@ export function ChatbotProvider({
 	}, [aiResponse, isPending])
 
 	useEffect(() => {
-		console.info('USEFFECT TRIGGGGRREDDD')
 		if (!sfxStreaming || !originalChildren) {
 			return
 		}

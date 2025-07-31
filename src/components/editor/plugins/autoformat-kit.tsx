@@ -212,12 +212,6 @@ export const AutoformatKit = [
 				...autoformatMarks,
 				...autoformatSmartQuotes,
 				...autoformatPunctuation,
-				// COMMENTING UNNECESSARY KITS FOR OPTIMIZATION
-				// ...autoformatLegal,
-				// ...autoformatLegalHtml,
-				// ...autoformatArrow,
-				// ...autoformatMath,
-				// ...autoformatLists,
 			].map(
 				(rule): AutoformatRule => ({
 					...rule,

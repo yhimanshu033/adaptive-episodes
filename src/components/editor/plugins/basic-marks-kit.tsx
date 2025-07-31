@@ -12,15 +12,10 @@ import {
 
 import { HighlightLeaf } from '@/components/plate-ui-v2/highlight-node'
 
-// COMMENTING UNNECESSARY PLUGINS FOR OPTIMIZATION
 export const BasicMarksKit = [
 	BoldPlugin,
 	ItalicPlugin,
 	UnderlinePlugin,
-	// CodePlugin.configure({
-	// 	node: { component: CodeLeaf },
-	// 	shortcuts: { toggle: { keys: 'mod+e' } },
-	// }),
 	StrikethroughPlugin.configure({
 		shortcuts: { toggle: { keys: 'mod+shift+x' } },
 	}),
@@ -34,5 +29,4 @@ export const BasicMarksKit = [
 		node: { component: HighlightLeaf },
 		shortcuts: { toggle: { keys: 'mod+shift+h' } },
 	}),
-	// KbdPlugin.withComponent(KbdLeaf),
 ]

@@ -1,6 +1,6 @@
 import { useParams } from 'next/navigation'
 import { useGDrivePushMutation } from '@/hooks/mutation/use-gdrive-hook'
-import useDocxHtml from '@/hooks/mutation/use-get-docx-hook'
+import useDocxHtml from '@/hooks/query/use-get-docx-hook'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 

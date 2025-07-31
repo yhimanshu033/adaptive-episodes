@@ -34,7 +34,7 @@ export default function StreamedResponse({
 			{showCopyButton && (
 				<div className="text-right">
 					<IconButton
-						label=""
+						label="Copy"
 						icon={<Copy />}
 						variant="ghost"
 						className="text-fm-icon-inactive group-hover:text-fm-icon-active hover:text-fm-icon-active"

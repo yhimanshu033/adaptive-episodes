@@ -60,7 +60,6 @@ const useMyEditor = ({
 
 	const discussions = migrateOldComments(comments, value)
 
-	// COMMENTING UNNECESSARY KITS FOR OPTIMIZATION
 	const editor = usePlateEditor(
 		{
 			plugins: [
@@ -95,8 +94,6 @@ const useMyEditor = ({
 				}),
 
 				// Editing
-				// ...DndKit,
-				// ...CursorOverlayKit,
 				...AutoformatKit,
 				...ExitBreakKit,
 				TrailingBlockPlugin,
@@ -107,7 +104,6 @@ const useMyEditor = ({
 
 				//Parsers
 				...DocxKit,
-				// ...MarkdownKit,
 
 				//laser
 				...LaserKit,

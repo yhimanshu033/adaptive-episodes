@@ -11,7 +11,7 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import Input from '@/components/aural-ui/input'
-import { If } from '@/components/if-else'
+import IfElse, { Else, If } from '@/components/if-else'
 import {
 	Form,
 	FormControl,
@@ -111,7 +111,7 @@ function UploadDocxPopoverContent({ latestStatus }: DownloadDocxParams) {
 						weight="medium"
 						className="mb-1"
 					>
-						{title} {'  '} .docx
+						{title}.docx
 					</Typography>
 					<Typography
 						color="tertiary"
@@ -184,14 +184,13 @@ function UploadDocxPopoverContent({ latestStatus }: DownloadDocxParams) {
 							className="group w-full"
 							innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary group-data-[state=open]:border-fm-divider-contrast"
 						>
-							{form.formState.isSubmitting || isPending ? (
-								<>
+							<IfElse condition={form.formState.isSubmitting || isPending}>
+								<If>
 									<CircularLoader className="size-4" />
 									Uploading...
-								</>
-							) : (
-								'Upload'
-							)}
+								</If>
+								<Else>Upload</Else>
+							</IfElse>
 						</Button>
 					</form>
 				</Form>

@@ -12,6 +12,7 @@ import { BaseEditorKit } from '@/components/editor/editor-base-kit'
 import { DEFAULT_COLOR } from '@/components/plate-ui/color-constants'
 import { EditorStatic } from '@/components/plate-ui/editor-static'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { hashString } from '@/lib/utils/helpers'
 
 import { EStatus } from '@/types/common'
 import { DownloadDocxParams } from '@/types/episode-type'
@@ -37,6 +38,10 @@ export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 	const editorString = useMemo(() => {
 		return JSON.stringify(editor.children)
 	}, [editor.children])
+
+	const editorStringHash = useMemo(() => {
+		return hashString(editorString)
+	}, [editorString])
 
 	async function downloadDocx() {
 		const editorStatic = createSlateEditor({
@@ -91,7 +96,7 @@ export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 		selectedStatus === EStatus.PUBLISHED || latestStatus === EStatus.PUBLISHED
 
 	const mutation = useQuery({
-		queryKey: [GET_DOCX_HTML_QUERY_KEY, editorString],
+		queryKey: [GET_DOCX_HTML_QUERY_KEY, editorStringHash],
 		queryFn: downloadDocx,
 		enabled: showButton,
 	})
