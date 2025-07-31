@@ -13,6 +13,7 @@ import { PlateLeaf, PlateLeafProps } from 'platejs/react'
 
 import { cn } from '@/lib/aural-ui/utils'
 import { describeUpdate, diffOperationColors } from '@/lib/plate/diff-helpers'
+import { getDiffLeafID } from '@/lib/utils/plate'
 
 import { Button } from '../aural-ui/button'
 import { IconButton } from '../aural-ui/icon-button'
@@ -73,6 +74,7 @@ function DiffLeaf({
 			// as={Component}
 			attributes={{
 				...props.attributes,
+				id: getDiffLeafID(leaf.diff_id),
 				onClick: () => {
 					if (readonly) {
 						return

@@ -1,45 +1,44 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useEffect, useMemo } from 'react'
-import { DiffStatus } from '@/constants/ai-constants'
 import { DIFF_EDITOR_ID } from '@/constants/editor-constants'
 import { diffPlugins, useDiffEditor } from '@/hooks/use-diff-editor'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
 import { computeDiff } from '@platejs/diff'
 import { Value } from 'platejs'
-import {
-	createPlateEditor,
-	Plate,
-	PlateEditor,
-	useEditorState,
-} from 'platejs/react'
+import { createPlateEditor, Plate, useEditorState } from 'platejs/react'
+import { useShallow } from 'zustand/react/shallow'
 
-import { DiffPlugin } from '@/components/editor/plugins/diff-kit'
 import { Editor } from '@/components/plate-ui-v2/editor'
 import {
 	getDeleteProps,
 	getInsertProps,
 	getUpdateProps,
 } from '@/lib/plate/diff-helpers'
+import { findAllDiffNodes } from '@/lib/utils/client-helpers'
+import { getDiffLeafID } from '@/lib/utils/plate'
 
 import { DiffViewProps } from '@/types/plate-types'
 
 const DiffContent = ({ className }: { className?: string }) => {
 	const editor = useEditorState(DIFF_EDITOR_ID)
 
-	const { setDiffIdList } = usePlateStore()
-	const findAllDiffNodes = <E extends PlateEditor>(
-		editor: E
-	): Array<{ node: any; path: any }> =>
-		Array.from(
-			editor.api.nodes({
-				match: (n: any) =>
-					DiffPlugin.key in n && n.status === DiffStatus.PENDING,
-				at: [],
-			}),
-			([node, path]) => ({ node, path })
-		)
+	const { setDiffIdList, store } = usePlateStore()
+	const activeDiffId = store(useShallow((state) => state.activeDiffId))
+
+	useEffect(() => {
+		if (!activeDiffId) {
+			return
+		}
+		const elem = document.getElementById(getDiffLeafID(activeDiffId))
+		if (!elem) {
+			return
+		}
+		requestAnimationFrame(() => {
+			elem.scrollIntoView({ behavior: 'smooth', block: 'center' })
+		})
+	}, [activeDiffId])
 
 	useEffect(() => {
 		setDiffIdList(findAllDiffNodes(editor).map((n) => n.node.diff_id as string))
