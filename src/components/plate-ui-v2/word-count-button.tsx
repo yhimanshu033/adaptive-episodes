@@ -1,21 +1,19 @@
 import React, { useMemo } from 'react'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import { WholeWordIcon } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
-import { useEditorString } from 'platejs/react'
 
 import { prettifyNumber } from '@/lib/utils/helpers'
 
 import { TooltipComponent } from '../ui/tooltip-component'
 
 export default function WordCountButton() {
-	const editorText = useEditorString()
+	const { editorText } = useEditorData()
 	const locale = useLocale()
 	const dict = useTranslations('placeholders')
 
 	const wordCount = useMemo(() => {
-		const words = editorText
-			.split(/\s+/)
-			.filter((word) => word.length > 0).length
+		const words = editorText.trim().split(/\s+/).length
 		return prettifyNumber(words, locale)
 	}, [editorText, locale])
 

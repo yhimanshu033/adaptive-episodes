@@ -241,7 +241,7 @@ const useEpisodeTable = () => {
 		episodeInventMutation.mutate(
 			{
 				chapter_title: data.title,
-				seq_number: currentInventSeq || 0,
+				seq_number: Math.max(currentInventSeq || 0, 1),
 				language: storyData?.parent_language,
 			},
 			{

@@ -10,9 +10,7 @@ import { AlignKit } from '@/components/editor/plugins/align-kit'
 import { AutoformatKit } from '@/components/editor/plugins/autoformat-kit'
 import { BasicNodesKit } from '@/components/editor/plugins/basic-nodes-kit'
 import { CommentKit } from '@/components/editor/plugins/comment-kit'
-import { CursorOverlayKit } from '@/components/editor/plugins/cursor-overlay-kit'
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
-import { DndKit } from '@/components/editor/plugins/dnd-kit'
 import { DocxKit } from '@/components/editor/plugins/docx-kit'
 import { ExitBreakKit } from '@/components/editor/plugins/exit-break-kit'
 import { FindAndReplaceKit } from '@/components/editor/plugins/find-and-replace-kit'
@@ -21,7 +19,6 @@ import { FontKit } from '@/components/editor/plugins/font-kit'
 import { LaserKit } from '@/components/editor/plugins/laser-kit'
 import { LaserPromptKit } from '@/components/editor/plugins/laser-prompt-kit'
 import { LineHeightKit } from '@/components/editor/plugins/line-height-kit'
-import { MarkdownKit } from '@/components/editor/plugins/markdown-kit'
 import { suggestionPlugin } from '@/components/editor/plugins/suggestion-kit'
 import {
 	SuggestionLeaf,
@@ -97,8 +94,6 @@ const useMyEditor = ({
 				}),
 
 				// Editing
-				...DndKit,
-				...CursorOverlayKit,
 				...AutoformatKit,
 				...ExitBreakKit,
 				TrailingBlockPlugin,
@@ -109,7 +104,6 @@ const useMyEditor = ({
 
 				//Parsers
 				...DocxKit,
-				...MarkdownKit,
 
 				//laser
 				...LaserKit,

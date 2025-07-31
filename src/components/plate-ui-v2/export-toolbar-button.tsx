@@ -1,11 +1,12 @@
 'use client'
 
 import * as React from 'react'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import { MarkdownPlugin } from '@platejs/markdown'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { ArrowDownToLineIcon } from 'lucide-react'
 import { createSlateEditor, serializeHtml } from 'platejs'
-import { useEditorRef, useEditorString } from 'platejs/react'
+import { useEditorRef } from 'platejs/react'
 
 import { BaseEditorKit } from '@/components/editor/editor-base-kit'
 import {
@@ -24,7 +25,7 @@ const siteUrl = 'https://platejs.org'
 export function ExportToolbarButton(props: DropdownMenuProps) {
 	const editor = useEditorRef()
 	const [open, setOpen] = React.useState(false)
-	const editorText = useEditorString()
+	const { editorText } = useEditorData()
 
 	const getCanvas = async () => {
 		const { default: html2canvas } = await import('html2canvas-pro')

@@ -47,8 +47,8 @@ export interface ReviewComment {
 
 export interface IndexedSFXResponseItem {
 	id: string
-	match_string: string
-	sfx: string
+	match_string?: string
+	sfx?: string
 }
 
 export type IndexedSFXResponse = Array<IndexedSFXResponseItem>

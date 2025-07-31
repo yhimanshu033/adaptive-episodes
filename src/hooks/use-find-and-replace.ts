@@ -5,13 +5,9 @@ import useLocalizeHook, {
 	useLocalizeDownloadMutation,
 	useUpdateLOCSheetMutation,
 } from '@/hooks/mutation/use-localize-hook'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import useLanguage from '@/hooks/use-language'
-import {
-	useEditorPlugin,
-	useEditorRef,
-	useEditorState,
-	usePluginOptions,
-} from 'platejs/react'
+import { useEditorPlugin, useEditorRef, usePluginOptions } from 'platejs/react'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import useProjectId from '@/providers/project-id-provider'
@@ -53,7 +49,7 @@ export default function useFindAndReplace() {
 	}))
 	const [ptr, setPtr] = useState(0)
 
-	const { children } = useEditorState()
+	const { children } = useEditorData()
 	const text = useMemo(() => getText(children), [children])
 	const episodeId = useEpisodeId()
 	const {

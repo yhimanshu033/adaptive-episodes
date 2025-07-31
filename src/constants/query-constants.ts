@@ -42,3 +42,5 @@ export const TTS_MUTATION = 'tts-elevenlabs'
 export const GET_SLACK_CHANNEL_QUERY_KEY = 'get-slack-channel'
 export const GET_LS_SHEET_QUERY_KEY = 'get-ls-sheet-public'
 export const UPDATE_SLACK_CHANNEL_MUTATION = 'update-slack-channel'
+
+export const GET_DOCX_HTML_QUERY_KEY = 'get-docx-html'

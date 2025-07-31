@@ -41,7 +41,10 @@ const EpisodeHeader = ({
 	)
 
 	const isInternalUser = useIsInternal()
-	const isCmsReady = statuses[latestIndex] === EStatus.PUBLISHED
+	const isCmsReady = useMemo(
+		() => statuses[latestIndex] === EStatus.PUBLISHED,
+		[latestIndex]
+	)
 	const { isAccessible } = useProjectId()
 
 	if (simplifiedEditor) {
@@ -90,7 +93,7 @@ const EpisodeHeader = ({
 				/>
 
 				<Link
-					href={`/projects/${content?.chapter?.project}/${content?.chapter?.parent}/preview`}
+					href={`/projects/${content?.chapter?.project}/${content?.chapter?.parent || content?.chapter?.id}/preview`}
 				>
 					<IconButton
 						variant="ghost"

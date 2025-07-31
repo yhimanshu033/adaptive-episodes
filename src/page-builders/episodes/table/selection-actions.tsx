@@ -77,7 +77,8 @@ export default function SelectionActions({
 					size="small"
 				/>
 				<h4 className="font-fm-brand text-sm uppercase">
-					{selectedRowData.length} Episodes selected
+					{selectedRowData.length} Episode
+					{selectedRowData.length !== 1 ? 's' : ''} selected
 				</h4>
 			</div>
 			<div className="flex gap-3">

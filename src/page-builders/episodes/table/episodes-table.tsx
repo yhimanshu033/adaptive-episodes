@@ -47,6 +47,7 @@ import { ERole } from '@/types/admin-types'
 import {
 	EEpisodeHeaderKeys,
 	episodeTableColumnWidths,
+	NON_SORTABLE_EPISODE_HEADER_KEYS,
 } from '@/types/episode-type'
 
 const EpisodesTable = () => {
@@ -262,13 +263,16 @@ const EpisodesTable = () => {
 															header.column.getCanSort() &&
 																'font-fm-brand text-fm-tertiary flex cursor-pointer items-center text-xs uppercase'
 														)}
-														{...(header.id !==
-														(EEpisodeHeaderKeys.SERIAL_NUMBER as string)
-															? {
-																	onClick:
-																		header.column.getToggleSortingHandler(),
-																}
-															: {})}
+														onClick={(e) => {
+															if (
+																NON_SORTABLE_EPISODE_HEADER_KEYS[
+																	header.id as EEpisodeHeaderKeys
+																]
+															) {
+																return
+															}
+															header.column.getToggleSortingHandler()?.(e)
+														}}
 													>
 														{flexRender(
 															header.column.columnDef.header,
