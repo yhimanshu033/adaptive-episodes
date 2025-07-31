@@ -19,6 +19,7 @@ import {
 	FormItem,
 	FormMessage,
 } from '@/components/ui/form'
+import { getFormattedDate } from '@/lib/utils/helpers'
 
 import { EStatus } from '@/types/common'
 import { DownloadDocxParams } from '@/types/episode-type'
@@ -28,8 +29,8 @@ import { Typography } from '../aural-ui/typography'
 import CircularLoader from '../ui/circular-loader'
 
 export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
-	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 	const [isOpen, setIsOpen] = useState(false)
+	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
@@ -86,6 +87,8 @@ function UploadDocxPopoverContent({ latestStatus }: DownloadDocxParams) {
 		title,
 		fileSize,
 		isEnabled,
+		projectTitle,
+		epNumber,
 	} = useDocxDownloadHook({
 		latestStatus,
 	})
@@ -97,8 +100,11 @@ function UploadDocxPopoverContent({ latestStatus }: DownloadDocxParams) {
 	}
 
 	useEffect(() => {
-		form.setValue('fileName', title)
-	}, [form, title])
+		form.setValue(
+			'fileName',
+			`${projectTitle.toUpperCase()} - EP ${epNumber} - ${title} - ${getFormattedDate()}`
+		)
+	}, [epNumber, form, projectTitle, title])
 
 	return (
 		<>
