@@ -56,12 +56,12 @@ const Sidebar = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeCommentId])
 
-	if (
-		!!globalLocalize ||
-		(!showSidebar && !debouncedShowSidebarView) ||
-		sidebar === ESidebar.DUAL_VIEW
-	) {
+	if (sidebar === ESidebar.DUAL_VIEW) {
 		return null
+	}
+
+	if (!!globalLocalize || (!showSidebar && !debouncedShowSidebarView)) {
+		return <div className="w-6" />
 	}
 
 	return (

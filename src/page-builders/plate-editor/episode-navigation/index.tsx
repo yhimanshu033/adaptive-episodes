@@ -97,7 +97,7 @@ export default function EpisodeNavigation() {
 	}
 
 	return (
-		<div className="animate-fade-in-up relative z-10">
+		<div className="animate-fade-in-up relative z-10 flex min-w-6">
 			<IconButton
 				icon={<LayoutLeftIcon />}
 				label="Toggle Episode Navigation"
@@ -113,8 +113,8 @@ export default function EpisodeNavigation() {
 			/>
 			<div
 				className={cn(
-					'sticky top-0 text-clip transition-all',
-					isEpisodeNavigationOpen ? 'w-30' : 'w-0'
+					'sticky top-0 overflow-x-hidden text-clip transition-all',
+					isEpisodeNavigationOpen ? 'w-32' : 'w-0'
 				)}
 			>
 				<ScrollArea className="h-svh">
@@ -126,7 +126,7 @@ export default function EpisodeNavigation() {
 							</div>
 						}
 					>
-						<div className="flex flex-col gap-2">
+						<div className="flex flex-col gap-2 px-2">
 							<ForEach data={sortedEpisodes}>
 								{(item, idx) => {
 									const episode_id = item.parent || item.id
