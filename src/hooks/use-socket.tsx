@@ -121,7 +121,7 @@ export const SocketProvider = ({
 				taskCallbacksRef.current[taskId] = onResponse
 			}
 
-			socket.emit('subscribe', { task_id: String(session?.user.id) })
+			socket.emit('subscribe', { task_id: session?.user.id })
 			const resp = await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
@@ -131,7 +131,7 @@ export const SocketProvider = ({
 				...restParams,
 				query: {
 					task_id: taskId,
-					room_id: String(session?.user.id),
+					room_id: 'true',
 					...(params.query as QueryParamsT),
 				},
 			})

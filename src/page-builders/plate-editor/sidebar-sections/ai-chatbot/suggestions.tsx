@@ -3,11 +3,13 @@ import { storyChatSuggestions } from '@/constants/editor-constants'
 import useAIChatbot from '@/hooks/use-ai-chatbot'
 import ChevronUpIcon from '@/icons/chevron-up-icon'
 import useAIStore from '@/store/ai-store'
+import { usePlateState } from 'platejs/react'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { List, ListItem } from '@/components/aural-ui/list'
+import { cn } from '@/lib/aural-ui/utils'
 
 import { EChatMode } from '@/types/ai-types'
 import { TSuggestions } from '@/types/editor-types'
@@ -34,8 +36,10 @@ const SuggestionButton = ({
 			variant="outline"
 			onClick={() => onSuggestionClick(suggestion)}
 			disabled={disabled}
-			className="text-fm-primary min-w-0 gap-2 py-2"
-			innerClassName="font-fm-text border-fm-divider-primary w-fit"
+			className={cn('min-w-0 gap-2 py-2', {
+				'text-fm-tertiary cursor-not-allowed': disabled,
+			})}
+			innerClassName="font-fm-text w-fit border-fm-divider-primary"
 		>
 			<Icon className="h-4 w-4 flex-shrink-0" />
 			{value}
@@ -70,6 +74,8 @@ export default function Suggestions() {
 		TSuggestions[]
 	>([])
 
+	const [readOnly] = usePlateState('readOnly')
+
 	const { disabled, isPending, handleSuggestion, changesPending } =
 		useAIChatbot()
 	const { store } = useAIStore()
@@ -99,6 +105,10 @@ export default function Suggestions() {
 
 	const isDisabled = !!changesPending || disabled || isPending
 
+	const isExclusiveMode = (action: EChatMode) => {
+		return readOnly && [EChatMode.SFX, EChatMode.REVIEW].includes(action)
+	}
+
 	const renderButtonLayout = () => (
 		<div>
 			{LAYOUT_CONFIGS.map((config, layoutIndex) => (
@@ -112,7 +122,7 @@ export default function Suggestions() {
 								suggestion={suggestion}
 								index={index}
 								onSuggestionClick={handleSuggestionClick}
-								disabled={isDisabled}
+								disabled={isDisabled || !!isExclusiveMode(suggestion.action)}
 							/>
 						))}
 
@@ -126,7 +136,7 @@ export default function Suggestions() {
 							}}
 							index={config.maxItems}
 							onSuggestionClick={handleSuggestionClick}
-							disabled={isDisabled}
+							disabled={isDisabled || !!isExclusiveMode(moreSuggestion.action)}
 						/>
 					)}
 				</div>
@@ -141,8 +151,8 @@ export default function Suggestions() {
 					<ListItem
 						size="sm"
 						onClick={() => handleSuggestionClick({ action, value, icon: Icon })}
-						disabled={isDisabled}
-						className="text-fm-tertiary hover:text-fm-primary cursor-pointer py-3 hover:bg-inherit"
+						disabled={isDisabled || !!isExclusiveMode(action)}
+						className="text-fm-tertiary hover:text-fm-primary data-[disabled=true]:text-fm-inactive/50 flex cursor-pointer items-center gap-2 bg-transparent! py-3 hover:bg-inherit"
 					>
 						<Icon className="mr-2 size-4 text-inherit" />
 						<p>{value}</p>
