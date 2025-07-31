@@ -4,9 +4,11 @@ import { useBaseExtensionResolver } from '@/hooks/form-resolvers/base-extension-
 import useBaseExtensionMutation from '@/hooks/mutation/use-base-extension-mutation'
 import { z } from 'zod'
 
+import { Button } from '@/components/aural-ui/button'
+import CircularLoader from '@/components/aural-ui/circular-loader'
+import { InputBase } from '@/components/aural-ui/input'
+import { Typography } from '@/components/aural-ui/typography'
 import IfElse from '@/components/if-else'
-import { IconLoader } from '@/components/loader'
-import { Button } from '@/components/ui/button'
 import {
 	Form,
 	FormControl,
@@ -14,7 +16,6 @@ import {
 	FormItem,
 	FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 
 import { TBaseScriptExtensionResponse } from '@/types/admin-types'
 
@@ -54,30 +55,53 @@ const BaseExtensionForm = ({
 	}
 
 	return (
-		<Form {...form}>
-			<form
-				onSubmit={(e) => void form.handleSubmit(handleBaseExtension)(e)}
-				className="flex gap-2"
+		<div className="space-y-3">
+			<Typography
+				transform="uppercase"
+				variant="caption-medium"
+				className="font-fm-brand"
 			>
-				<FormField
-					control={form.control}
-					name="episodes"
-					render={({ field }) => (
-						<FormItem className="flex-1">
-							<FormControl>
-								<Input type="number" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<IfElse
-					condition={baseExtensionMutation.isPending}
-					if={<IconLoader />}
-					else={<Button>Update</Button>}
-				/>
-			</form>
-		</Form>
+				Episode Count
+			</Typography>
+			<Form {...form}>
+				<form
+					onSubmit={(e) => void form.handleSubmit(handleBaseExtension)(e)}
+					className="flex items-center gap-2"
+				>
+					<FormField
+						control={form.control}
+						name="episodes"
+						render={({ field }) => (
+							<FormItem className="relative flex-1">
+								<FormControl>
+									<InputBase
+										type="number"
+										decoration="outline"
+										className="placeholder:text-fm-md text-fm-md h-9! w-full border-none pr-4 outline-none"
+										placeholder="Paste the google drive folder link here"
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage className="absolute -bottom-2 translate-y-full" />
+							</FormItem>
+						)}
+					/>
+					<IfElse
+						condition={baseExtensionMutation.isPending}
+						if={<CircularLoader />}
+						else={
+							<Button
+								type="submit"
+								variant="text"
+								innerClassName={'text-sm !p-0 translate-y-0 uppercase'}
+							>
+								Update
+							</Button>
+						}
+					/>
+				</form>
+			</Form>
+		</div>
 	)
 }
 

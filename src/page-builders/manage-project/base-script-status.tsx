@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo } from 'react'
 import { BASE_EXTENSION_QUERY_KEY } from '@/constants/query-constants'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { useQueryClient } from '@tanstack/react-query'
-import { CheckCircle, ChevronLeft, Loader2 } from 'lucide-react'
+import { CheckCircle, Loader2 } from 'lucide-react'
 
+import { IconButton } from '@/components/aural-ui/icon-button'
 import IfElse, { Else, If } from '@/components/if-else'
-import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 
 type TBaseStatus = {
@@ -57,7 +58,7 @@ const BaseScriptStatus = ({
 	}, [responses])
 
 	return (
-		<div className="w-full rounded-md border p-4 shadow-xs">
+		<div className="border-fm-divider-primary w-full border p-4 shadow-xs">
 			<ScrollArea className="h-48 pr-2">
 				<div ref={scrollRef} className="h-full overflow-y-auto pr-2">
 					{Object.entries(grouped).map(([header, messages]) => (
@@ -85,15 +86,15 @@ const BaseScriptStatus = ({
 					<div className="text-success relative flex items-center justify-center space-x-2 pt-4 text-sm">
 						<CheckCircle className="size-4" />
 						<span>Task Completed</span>
-						<Button
-							className="absolute right-0"
-							variant="outline"
-							size="icon"
-							// eslint-disable-next-line @typescript-eslint/no-misused-promises
-							onClick={handleBack}
-						>
-							<ChevronLeft size={16} />
-						</Button>
+
+						<IconButton
+							label="Back"
+							shape="square"
+							variant="outlined"
+							size="small"
+							onClick={() => void handleBack()}
+							icon={<ChevronDownIcon className="h-4 w-4 rotate-90" />}
+						/>
 					</div>
 				</If>
 				<Else>

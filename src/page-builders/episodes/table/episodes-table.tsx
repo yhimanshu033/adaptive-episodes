@@ -50,6 +50,8 @@ import {
 	NON_SORTABLE_EPISODE_HEADER_KEYS,
 } from '@/types/episode-type'
 
+import BaseScriptExtensionDialog from '../dialogs/base-script-extension-dialog'
+
 const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -461,6 +463,7 @@ const EpisodesTable = () => {
 			<ActionAlert table={table} />
 			<InventForm />
 			<ShareAccessDialog />
+			<BaseScriptExtensionDialog />
 		</>
 	)
 }
