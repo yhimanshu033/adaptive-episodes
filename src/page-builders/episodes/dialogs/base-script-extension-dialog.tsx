@@ -84,9 +84,13 @@ const BaseScriptExtension = () => {
 	const baseExtensionMutation = useBaseExtensionMutation()
 	const { data: taskId, reset } = baseExtensionMutation
 
-	const extendableRange = !(data && 'message' in data)
-		? (data?.ranges?.de_end ?? 0) - (data?.ranges?.de_start ?? 1) + 1
-		: 0
+	const extendableRange = React.useMemo(() => {
+		if (data && !('message' in data)) {
+			return (data?.ranges?.de_end ?? 0) - (data?.ranges?.de_start ?? 1) + 1
+		} else {
+			return 0
+		}
+	}, [data])
 
 	const baseTaskId =
 		taskId || (data && 'taskId' in data ? data.taskId : undefined)
