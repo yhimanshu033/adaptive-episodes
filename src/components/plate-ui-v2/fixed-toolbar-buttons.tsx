@@ -27,6 +27,7 @@ import { ToolbarGroup } from '@/components/plate-ui-v2/toolbar'
 import TranslationToggleButton from '@/components/plate-ui-v2/translation-toggle-button'
 import TtsToolbarButton from '@/components/plate-ui-v2/tts-toolbar-button'
 import { TurnIntoToolbarButton } from '@/components/plate-ui-v2/turn-into-toolbar-button'
+import WordCountButton from '@/components/plate-ui-v2/word-count-button'
 
 import { ESidebar } from '@/types/plate-types'
 
@@ -121,9 +122,14 @@ const FullToolbarContent = React.memo(() => {
 		<div className="flex w-full">
 			<ScrollArea orientation="horizontal" className="w-full">
 				<div className="flex w-full px-6 py-3">
+					<ToolbarGroup noSeparator>
+						<WordCountButton />
+					</ToolbarGroup>
 					<If condition={!readOnly && sidebar !== ESidebar.DUAL_VIEW}>
-						<UndoToolbarButton />
-						<RedoToolbarButton />
+						<ToolbarGroup>
+							<UndoToolbarButton />
+							<RedoToolbarButton />
+						</ToolbarGroup>
 
 						<ToolbarGroup>
 							<FontDropdownMenu />

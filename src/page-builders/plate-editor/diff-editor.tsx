@@ -1,14 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { DiffStatus } from '@/constants/ai-constants'
 import { DIFF_EDITOR_ID } from '@/constants/editor-constants'
-import { useDiffEditor } from '@/hooks/use-diff-editor'
+import { diffPlugins, useDiffEditor } from '@/hooks/use-diff-editor'
+import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
-import { Plate, PlateEditor, useEditorState } from 'platejs/react'
+import { computeDiff } from '@platejs/diff'
+import { Value } from 'platejs'
+import {
+	createPlateEditor,
+	Plate,
+	PlateEditor,
+	useEditorState,
+} from 'platejs/react'
 
 import { DiffPlugin } from '@/components/editor/plugins/diff-kit'
 import { Editor } from '@/components/plate-ui-v2/editor'
+import {
+	getDeleteProps,
+	getInsertProps,
+	getUpdateProps,
+} from '@/lib/plate/diff-helpers'
 
 import { DiffViewProps } from '@/types/plate-types'
 
@@ -41,7 +54,33 @@ export default function DiffEditor({
 	className,
 	readonly,
 }: DiffViewProps) {
-	const editor = useDiffEditor({ current, previous, readonly })
+	const editor = useDiffEditor({ readonly })
+
+	const diffValue = useMemo(() => {
+		const editor = createPlateEditor({
+			plugins: diffPlugins,
+			id: DIFF_EDITOR_ID,
+		})
+		if (!previous || !current) {
+			return []
+		}
+		return computeDiff(structuredClone(previous), structuredClone(current), {
+			isInline: editor.api.isInline,
+			getInsertProps,
+			getDeleteProps,
+			getUpdateProps,
+		}) as Value
+	}, [previous, current])
+	const { setAcceptedValue } = useAIStore()
+
+	useEffect(() => {
+		if (readonly) {
+			return
+		}
+		setAcceptedValue(diffValue)
+		editor.tf.setValue(diffValue)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [diffValue, readonly])
 
 	if (!previous || !current) {
 		return null

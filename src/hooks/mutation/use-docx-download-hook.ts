@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { API_URLS } from '@/constants/global-constants'
-import useDocxHtml from '@/hooks/mutation/use-get-docx-hook'
+import useDocxHtml from '@/hooks/query/use-get-docx-hook'
 import useIsGerman from '@/hooks/use-is-german'
 import useSocket from '@/hooks/use-socket'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 import { downloadFile } from '@/lib/utils/client-helpers'
 import { getFormattedDate } from '@/lib/utils/helpers'
@@ -60,13 +61,10 @@ async function getFileSizeFromURL(
 export default function useDocxDownloadHook({
 	latestStatus,
 }: DownloadDocxParams) {
-	const {
-		mutateAsync: getDocxHtml,
-		showButton,
-		projectTitle,
-		epNumber,
-		title,
-	} = useDocxHtml({ latestStatus })
+	const { data, showButton, projectTitle, epNumber, title } = useDocxHtml({
+		latestStatus,
+	})
+
 	const { startTask, getResponse } = useSocket()
 	const downloadedContentRef = React.useRef<string | null>(null)
 	const cachedDocxUrlRef = React.useRef<string | null>(null)
@@ -74,44 +72,53 @@ export default function useDocxDownloadHook({
 	const isGerman = useIsGerman()
 
 	// Common function to generate DOCX and return URL
-	const generateDocxUrl = async (
-		useCache: boolean = false
-	): Promise<string> => {
-		const { base64String, html } = await getDocxHtml()
+	const generateDocxUrl = useCallback(
+		async (useCache: boolean = false): Promise<string | undefined> => {
+			if (!data) {
+				toast.error("Couldn't generate Docx")
+				return
+			}
+			const { base64String, html } = data
 
-		const taskId = await startTask<TGetDocxFromHtmlBody>({
-			method: 'POST',
-			url: API_URLS.STREAM_DOCX,
-			body: {
-				html_content: base64String,
-			},
-			noCache: useCache ? downloadedContentRef.current === html : false,
-		})
+			const taskId = await startTask<TGetDocxFromHtmlBody>({
+				method: 'POST',
+				url: API_URLS.STREAM_DOCX,
+				body: {
+					html_content: base64String,
+				},
+				noCache: useCache ? downloadedContentRef.current === html : false,
+			})
 
-		if (useCache) {
-			downloadedContentRef.current = html
-		}
+			if (useCache) {
+				downloadedContentRef.current = html
+			}
 
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-		const responseUrl = (await getResponse(taskId)) as string
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+			const responseUrl = (await getResponse(taskId)) as string
 
-		// Cache the URL for potential reuse
-		if (!useCache) {
-			cachedDocxUrlRef.current = responseUrl
-		}
+			// Cache the URL for potential reuse
+			if (!useCache) {
+				cachedDocxUrlRef.current = responseUrl
+			}
 
-		return responseUrl
-	}
+			return responseUrl
+		},
+		[data, getResponse, startTask]
+	)
 
 	// Query to get actual DOCX file size
-	const { data: fileSize, isLoading: isCalculatingSize } = useQuery({
+	const { data: fileSize } = useQuery({
 		queryKey: ['docx-actual-file-size', latestStatus, title],
 		queryFn: async () => {
-			const { base64String } = await getDocxHtml()
+			const base64String = data?.base64String
 			const responseUrl = await generateDocxUrl()
+			if (!responseUrl || !base64String) {
+				toast.error("Couldn't calculate file size!")
+				return
+			}
 			return await getFileSizeFromURL(responseUrl, base64String)
 		},
-		enabled: showButton,
+		enabled: showButton && !!data?.base64String,
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		retry: 1,
 	})
@@ -120,7 +127,10 @@ export default function useDocxDownloadHook({
 		// Use cached URL if available, otherwise generate new one
 		const responseUrl =
 			cachedDocxUrlRef.current || (await generateDocxUrl(true))
-
+		if (!responseUrl) {
+			toast.error("Couldn't download docx!")
+			return
+		}
 		downloadFile(
 			responseUrl,
 			`${projectTitle} - Ep ${epNumber} - ${title} - ${getFormattedDate()}.docx`
@@ -138,7 +148,7 @@ export default function useDocxDownloadHook({
 		projectTitle,
 		epNumber,
 		fileSize,
-		isCalculatingSize,
+		isEnabled: !!data?.base64String,
 		...mutation,
 	}
 }

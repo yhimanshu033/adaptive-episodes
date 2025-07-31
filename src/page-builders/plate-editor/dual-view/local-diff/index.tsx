@@ -35,9 +35,7 @@ export default function LocalDiffSection() {
 
 	function handleReject() {
 		setLocalDiffValue(null)
-		void removeValue(
-			`${content?.chapter.project}_${content?.chapter?.id || content?.chapter?.parent}`
-		)
+		void removeValue(`${content?.chapter.project}_${content?.chapter?.id}`)
 		setSidebar(null)
 		setDualViewMode(EDualVIewMode.US_TRANSLATION)
 	}

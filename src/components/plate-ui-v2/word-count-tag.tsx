@@ -1,14 +1,14 @@
 import React, { useMemo } from 'react'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import { useEditorStore } from '@/store/editor-store'
 import { useLocale, useTranslations } from 'next-intl'
-import { useEditorString } from 'platejs/react'
 
 import { Tag } from '@/components/aural-ui/tag'
 import { cn } from '@/lib/aural-ui/utils'
 import { prettifyNumber } from '@/lib/utils/helpers'
 
 export default function WordCountTag() {
-	const editorText = useEditorString()
+	const { editorText } = useEditorData()
 	const locale = useLocale()
 	const dict = useTranslations('placeholders')
 	const isEpisodeNavigationOpen = useEditorStore(
@@ -16,9 +16,7 @@ export default function WordCountTag() {
 	)
 
 	const wordCount = useMemo(() => {
-		const words = editorText
-			.split(/\s+/)
-			.filter((word) => word.length > 0).length
+		const words = editorText.trim().split(/\s+/).length
 		return prettifyNumber(words, locale)
 	}, [editorText, locale])
 

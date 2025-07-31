@@ -20,6 +20,7 @@ const initialState: EpisodeStoreState = {
 	deleteEpisodeId: null,
 	selectedEpisodes: null,
 	currentInventSeq: null,
+	isBseDialogOpen: false,
 	notes: [],
 }
 

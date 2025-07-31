@@ -22,6 +22,7 @@ export type EpisodeStoreState = {
 	currentPage: number
 	deleteEpisodeId: number | null
 	episodeSearch: string
+	isBseDialogOpen: boolean
 	isDialogOpen: boolean
 	isInventOpen: boolean
 	isSharedAccessDialogOpen: boolean
@@ -232,6 +233,13 @@ export enum EEpisodeHeaderKeys {
 	UPDATE_TIME = 'update_time',
 	WORD_COUNT = 'word_count',
 	WRITER = 'writer',
+}
+
+export const NON_SORTABLE_EPISODE_HEADER_KEYS: Partial<
+	Record<EEpisodeHeaderKeys, true>
+> = {
+	[EEpisodeHeaderKeys.ACTIONS]: true,
+	[EEpisodeHeaderKeys.SERIAL_NUMBER]: true,
 }
 
 export const episodeTableColumnWidths: Record<EEpisodeHeaderKeys, string> = {

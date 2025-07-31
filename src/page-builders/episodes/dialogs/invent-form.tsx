@@ -29,7 +29,7 @@ import Input from '@/components/aural-ui/input'
 import { DialogDescription } from '@/components/ui/dialog'
 
 export const invertFormSchema = z.object({
-	title: z.string().min(2, {
+	title: z.string().trim().min(2, {
 		message: 'Title must be at least 2 characters.',
 	}),
 })
