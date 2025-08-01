@@ -3,7 +3,10 @@
 import React from 'react'
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
-import { STORY_ID_QUERY_KEY } from '@/constants/query-constants'
+import {
+	STORIES_QUERY_KEY,
+	STORY_ID_QUERY_KEY,
+} from '@/constants/query-constants'
 import { StoryImportFormSchema } from '@/hooks/form-resolvers/story-import-resolver'
 import useSocket from '@/hooks/use-socket'
 import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
@@ -24,7 +27,11 @@ const useStoryUploadHook = () => {
 	const onSuccess = async () => {
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		await queryClient.invalidateQueries({
-			queryKey: [STORY_ID_QUERY_KEY, Number(id)],
+			queryKey: [STORY_ID_QUERY_KEY],
+			type: 'all',
+		})
+		await queryClient.invalidateQueries({
+			queryKey: [STORIES_QUERY_KEY],
 			type: 'all',
 		})
 		toast.success('Story details updated successfully')

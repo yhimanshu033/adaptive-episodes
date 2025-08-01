@@ -36,12 +36,14 @@ export type UserData = {
 	firebase_registration_token: string | null
 	firstname: string | null
 	fullname: string
+	google_drive_token?: string | null
 	id: number
 	image: string | null
 	is_verified: boolean
 	lastname: string | null
 	login_type: string | null
 	phone_number: string | null
+	recent_projects?: number[]
 	uid: string
 	update_time: string
 	username: string
