@@ -881,3 +881,7 @@ export const unresolveEditorComment = (editor: PlateEditor, id: string) => {
 		isResolved: true,
 	})
 }
+
+export function getDiffLeafID(id: string) {
+	return `diff-leaf-${id}`
+}
