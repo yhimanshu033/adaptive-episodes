@@ -10,9 +10,11 @@ import {
 	SidebarTopBar,
 	StoryExplorer,
 } from '@/page-builders/plate-editor/sidebar-sections'
+import { useEditorStore } from '@/store/editor-store'
 import usePlateStore from '@/store/plate-store'
 import { usePluginOption } from 'platejs/react'
 import { useDebounceValue } from 'usehooks-ts'
+import { useShallow } from 'zustand/react/shallow'
 
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
@@ -38,6 +40,9 @@ const Sidebar = () => {
 	const globalLocalize = useSearchParams().get(GLOBAL_LOCALIZE)
 	const activeCommentId = usePluginOption(commentPlugin, 'activeId')
 
+	const isEpisodeNavigationOpen = useEditorStore(
+		useShallow((state) => state.isEpisodeNavigationOpen)
+	)
 	const [debouncedShowSidebarView] = useDebounceValue(
 		showSidebar,
 		TRANSITION_DURATION
@@ -55,6 +60,14 @@ const Sidebar = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeCommentId])
+
+	useEffect(() => {
+		if (!isEpisodeNavigationOpen) {
+			return
+		}
+		setSidebar(null)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isEpisodeNavigationOpen])
 
 	if (sidebar === ESidebar.DUAL_VIEW) {
 		return null

@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
 import useEditorData from '@/hooks/plate/use-editor-data'
-import { useEditorStore } from '@/store/editor-store'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { Tag } from '@/components/aural-ui/tag'
@@ -11,12 +10,11 @@ export default function WordCountTag() {
 	const { editorText } = useEditorData()
 	const locale = useLocale()
 	const dict = useTranslations('placeholders')
-	const isEpisodeNavigationOpen = useEditorStore(
-		(state) => state.isEpisodeNavigationOpen
-	)
-
 	const wordCount = useMemo(() => {
-		const words = editorText.trim().split(/\s+/).length
+		const words = editorText
+			.trim()
+			.split(/\s+/)
+			.filter((w) => !!w.length).length
 		return prettifyNumber(words, locale)
 	}, [editorText, locale])
 
@@ -28,10 +26,7 @@ export default function WordCountTag() {
 		<Tag
 			size="sm"
 			className={cn(
-				'bg-fm-surface-primary fixed bottom-3 left-10 text-xs transition-all duration-300',
-				{
-					'left-35': isEpisodeNavigationOpen,
-				}
+				'bg-fm-surface-primary fixed bottom-6 left-2 z-100 text-xs'
 			)}
 		>
 			<span>{wordCount}</span>

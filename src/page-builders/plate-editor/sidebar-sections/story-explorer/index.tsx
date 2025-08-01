@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { useDebounce } from '@/hooks/use-debounce'
 import Explorer from '@/page-builders/plate-editor/sidebar-sections/story-explorer/explorer'
+import { toast } from 'sonner'
 
 import { Divider } from '@/components/aural-ui/divider'
 import Input from '@/components/aural-ui/input'
@@ -14,21 +16,28 @@ const StoryExplorer = () => {
 		start: episodeData?.chapter.seq_number || 1,
 		end: (episodeData?.chapter.seq_number || 1) + 9,
 	})
+	const debouncedEpisodeRange = useDebounce(episodeRange, 500)
 
 	const handleEpisodeChange = (type: 'start' | 'end', value: string) => {
 		const parsedValue = parseInt(value)
-
-		if (
-			(value !== '' && isNaN(parsedValue)) ||
-			episodeRange[type] === parsedValue
-		) {
+		if (episodeRange[type] === parsedValue) {
+			return
+		}
+		if (isNaN(parsedValue)) {
+			toast.error('Enter a valid value!')
 			return
 		}
 
 		const clampedValue =
 			type === 'start'
 				? Math.max(Math.min(parsedValue, episodeRange.end), 1)
-				: Math.max(Math.min(parsedValue, Infinity), episodeRange.start)
+				: Math.max(parsedValue, episodeRange.start)
+
+		if (clampedValue !== parsedValue) {
+			toast.info(
+				`The ${type} value '${parsedValue}' is invalid, considering '${clampedValue}'`
+			)
+		}
 
 		setEpisodeRange((prevRange) => ({
 			...prevRange,
@@ -44,15 +53,13 @@ const StoryExplorer = () => {
 					<div className="flex items-center justify-center gap-2">
 						<Input
 							type="number"
-							min={1}
 							onBlur={(e) => {
 								if (isNaN(parseInt(e.target.value))) {
 									handleEpisodeChange('start', '1')
 								}
 							}}
 							decoration="outline"
-							max={episodeRange.end}
-							value={String(episodeRange.start)}
+							defaultValue={String(episodeRange.start)}
 							onChange={(e) => handleEpisodeChange('start', e.target.value)}
 							className="w-full"
 							classes={{
@@ -67,8 +74,7 @@ const StoryExplorer = () => {
 									handleEpisodeChange('end', '1')
 								}
 							}}
-							min={episodeRange.start}
-							value={String(episodeRange.end)}
+							defaultValue={String(episodeRange.end)}
 							onChange={(e) => handleEpisodeChange('end', e.target.value)}
 							className="w-full"
 							decoration="outline"
@@ -80,7 +86,7 @@ const StoryExplorer = () => {
 				</div>
 				<Divider variant="secondary" />
 			</div>
-			<Explorer {...episodeRange} />
+			<Explorer {...debouncedEpisodeRange} />
 		</section>
 	)
 }
