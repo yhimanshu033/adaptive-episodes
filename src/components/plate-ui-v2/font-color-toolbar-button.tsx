@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import { CapitalALetterIcon } from '@/icons/capital-a-letter-icon'
 import { TickIcon } from '@/icons/tick-icon'
 import type {
@@ -32,10 +32,7 @@ import { cn } from '@/lib/utils/helpers'
 
 import { Button } from '../aural-ui/button'
 import { Divider } from '../aural-ui/divider'
-import {
-	DEFAULT_COLORS,
-	DEFAULT_CUSTOM_COLORS,
-} from '../plate-ui/color-constants'
+import { COLORS_V2, COLORS_V2_LIGHT } from '../plate-ui/color-constants'
 import { ToolbarButton, ToolbarMenuGroup } from './toolbar'
 
 const itemVariants = cva(
@@ -73,6 +70,13 @@ export function FontColorToolbarButton({
 
 	const [selectedColor, setSelectedColor] = React.useState<string>()
 	const [open, setOpen] = React.useState(false)
+
+	const colors = useMemo(() => {
+		if (nodeType === KEYS.backgroundColor) {
+			return COLORS_V2
+		}
+		return COLORS_V2_LIGHT
+	}, [nodeType])
 
 	const onToggle = React.useCallback(
 		(value = !open) => {
@@ -140,10 +144,8 @@ export function FontColorToolbarButton({
 				<ColorPicker
 					color={selectedColor || color}
 					clearColor={clearColor}
-					colors={DEFAULT_COLORS}
-					customColors={DEFAULT_CUSTOM_COLORS}
+					colors={colors}
 					updateColorAction={updateColorAndClose}
-					updateCustomColor={updateColor}
 					nodeType={nodeType}
 				/>
 			</DropdownMenuContent>
@@ -156,37 +158,21 @@ function PureColorPicker({
 	clearColor,
 	color,
 	colors,
-	customColors,
 	updateColorAction,
-	updateCustomColor,
 	nodeType,
 	...props
 }: React.ComponentProps<'div'> & {
 	clearColor: () => void
 	color?: string
 	colors: TColor[]
-	customColors: TColor[]
+	customColors?: TColor[]
 	nodeType?: string
 	updateColorAction: (color: string) => void
-	updateCustomColor: (color: string) => void
+	updateCustomColor?: (color: string) => void
 }) {
 	return (
 		<div className={cn('flex flex-col items-start p-4', className)} {...props}>
-			<ToolbarMenuGroup label="Custom Colors">
-				<ColorCustom
-					color={color}
-					colors={colors}
-					customColors={customColors}
-					updateColor={updateColorAction}
-					updateCustomColor={updateCustomColor}
-					nodeType={nodeType}
-				/>
-			</ToolbarMenuGroup>
-			<Divider
-				className="bg-fm-divider-primary"
-				wrapperClassName="w-full my-4"
-			/>
-			<ToolbarMenuGroup label="Default Colors">
+			<ToolbarMenuGroup>
 				<ColorDropdownMenuItems
 					color={color}
 					colors={colors}
@@ -220,7 +206,7 @@ const ColorPicker = React.memo(
 		prev.customColors === next.customColors
 )
 
-function ColorCustom({
+export function ColorCustom({
 	className,
 	color,
 	colors,

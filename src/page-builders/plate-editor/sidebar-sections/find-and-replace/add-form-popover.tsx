@@ -178,7 +178,10 @@ const AddFormPopover = ({
 										disabled={isPending}
 									>
 										<FormControl>
-											<SelectTrigger decoration="filled" className="h-11">
+											<SelectTrigger
+												decoration="filled"
+												className="bg-fm-surface-secondary h-11"
+											>
 												<SelectValue placeholder="Select a category" />
 											</SelectTrigger>
 										</FormControl>

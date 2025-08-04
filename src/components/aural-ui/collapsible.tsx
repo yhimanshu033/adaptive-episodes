@@ -16,7 +16,7 @@ const Collapsible = forwardRef<
 		<CollapsiblePrimitive.Collapsible
 			ref={ref}
 			className={cn(
-				'border-fm-divider-secondary pb-fm-2xl w-full border-b border-solid',
+				'border-fm-divider-tertiary pb-fm-2xl w-full border-b border-solid',
 				className
 			)}
 			{...rest}

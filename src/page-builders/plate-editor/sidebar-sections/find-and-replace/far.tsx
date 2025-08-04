@@ -1,6 +1,8 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { UseGlobalFARRet } from '@/hooks/use-global-find-and-replace'
 
+import { If } from '@/components/if-else'
+
 import { TLocalizeResponse } from '@/types/ai-types'
 
 import FindAndReplaceForm from './far-form'
@@ -66,14 +68,16 @@ export default function FindAndReplaceUI({
 				handlePrev={handlePrev}
 				records={records}
 			/>
-			<FindAndReplaceLocalizedList
-				isFetching={isFetching}
-				localized_entities={localized_entities}
-				handleSuggestionClick={handleSuggestionClick}
-				handleScanEpisode={handleScanEpisode}
-				isWriter={isWriter}
-				updateLOCPending={updateLOCPending}
-			/>
+			<If condition={!records.length}>
+				<FindAndReplaceLocalizedList
+					isFetching={isFetching}
+					localized_entities={localized_entities}
+					handleSuggestionClick={handleSuggestionClick}
+					handleScanEpisode={handleScanEpisode}
+					isWriter={isWriter}
+					updateLOCPending={updateLOCPending}
+				/>
+			</If>
 		</>
 	)
 }

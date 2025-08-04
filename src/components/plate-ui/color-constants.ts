@@ -385,4 +385,69 @@ export const DEFAULT_CUSTOM_COLORS = [
 	},
 ]
 
+export const COLORS_V2 = [
+	{
+		isBrightColor: false,
+		name: 'dark red',
+		value: '#750C00',
+	},
+	{
+		isBrightColor: false,
+		name: 'dark yellow',
+		value: '#756900',
+	},
+	{
+		isBrightColor: false,
+		name: 'dark green',
+		value: '#00752A',
+	},
+	{
+		isBrightColor: false,
+		name: 'dark blue',
+		value: '#006275',
+	},
+	{
+		isBrightColor: false,
+		name: 'dark violet',
+		value: '#5200A3',
+	},
+	{
+		isBrightColor: false,
+		name: 'dark grey',
+		value: '#545454',
+	},
+]
+export const COLORS_V2_LIGHT = [
+	{
+		isBrightColor: true,
+		name: 'light red',
+		value: '#D94C3D', // lighter than #750C00
+	},
+	{
+		isBrightColor: true,
+		name: 'light yellow',
+		value: '#D6C23C', // lighter than #756900
+	},
+	{
+		isBrightColor: true,
+		name: 'light green',
+		value: '#3FCB76', // lighter than #00752A
+	},
+	{
+		isBrightColor: true,
+		name: 'light blue',
+		value: '#3FB4C9', // lighter than #006275
+	},
+	{
+		isBrightColor: true,
+		name: 'light violet',
+		value: '#A069E3', // lighter than #5200A3
+	},
+	{
+		isBrightColor: true,
+		name: 'light grey',
+		value: '#B0B0B0', // lighter than #545454
+	},
+]
+
 export const DEFAULT_COLOR = '#D3D3D3' //white grey

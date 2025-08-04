@@ -82,7 +82,7 @@ const editorVariants = cva(
 				none: '',
 				select: 'px-3 py-2 text-base data-readonly:w-fit',
 				aural:
-					'min-h-[calc(100vh-168px)] size-full text-base border-fm-divider-tertiary bg-fm-neutral-100 border-x border-b py-14 px-18 rounded-none',
+					'min-h-[calc(100vh-168px)] size-full text-base border-fm-divider-tertiary bg-fm-neutral-100 border-x border-b py-14 *:w-[668px] *:mx-auto rounded-none selection:bg-fm-surface-tertiary',
 			},
 		},
 	}

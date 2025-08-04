@@ -11,8 +11,11 @@ import useStoryExplorer from '@/hooks/use-story-explorer'
 import ChevronRightIcon from '@/icons/chevron-right-icon'
 import Content from '@/page-builders/plate-editor/sidebar-sections/story-explorer/content'
 import usePlateStore from '@/store/plate-store'
+import { X } from 'lucide-react'
 
 import { Button } from '@/components/aural-ui/button'
+import Chip from '@/components/aural-ui/chip'
+import CircularLoader from '@/components/aural-ui/circular-loader'
 import { Divider } from '@/components/aural-ui/divider'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import Search from '@/components/aural-ui/search'
@@ -85,11 +88,21 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 											<Search
 												placeholder="Focus (optional)"
 												initialValue={inputFocus ?? ''}
-												onSearch={setInputFocus}
 												className="[&_svg]:size-3.5"
+												onEnterPressed={setInputFocus}
 											/>
 											<ExplorerSettings />
 										</div>
+										<If condition={!!inputFocus}>
+											<div>
+												<Chip
+													onClick={() => setInputFocus(null)}
+													rightIcon={<X className="size-4" />}
+												>
+													{inputFocus}
+												</Chip>
+											</div>
+										</If>
 									</If>
 									<div className="flex flex-col gap-3">
 										{action.map((actionId, actionIdx) => (
@@ -103,7 +116,12 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 													className="group flex cursor-pointer justify-between"
 													onClick={() => void handleRequest(actionId)}
 												>
-													{categoryNames[actionId]}
+													<div className="flex items-center gap-2">
+														{categoryNames[actionId]}
+														<If condition={isMetadataLoading}>
+															<CircularLoader className="size-4" />
+														</If>
+													</div>
 													<ChevronRightIcon className="text-fm-icon-inactive group-hover:text-fm-icon-active size-5" />
 												</div>
 												<Divider variant="secondary" />

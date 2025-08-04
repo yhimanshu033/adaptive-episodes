@@ -12,6 +12,7 @@ import { useEditorRef } from 'platejs/react'
 
 import { Button } from '@/components/aural-ui/button'
 import Textarea from '@/components/aural-ui/textarea'
+import Image from '@/components/ui/image'
 import { cn } from '@/lib/utils/helpers'
 import {
 	breakDownValue,
@@ -150,6 +151,11 @@ export default function FloatingLaserResponse() {
 			)}
 			style={positionStyle}
 		>
+			<Image
+				alt="laser gradient"
+				className="pointer-events-none absolute top-0 right-0 z-0 h-full"
+				src="/assets/laser-bg-gradient.png"
+			/>
 			<div
 				id={`leaf-response-${key}`}
 				onClick={(e) => {

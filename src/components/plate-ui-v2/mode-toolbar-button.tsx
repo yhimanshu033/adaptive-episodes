@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
-import useCustomPlateStore from '@/store/plate-store'
+import useCustomPlateStore, { usePlateStore } from '@/store/plate-store'
 import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
@@ -22,12 +22,15 @@ import {
 	SelectTrigger,
 } from '@/components/aural-ui/select'
 import useProjectId from '@/providers/project-id-provider'
-import { toPascalCase } from '@/lib/utils/helpers'
+import { cn, toPascalCase } from '@/lib/utils/helpers'
+
+import { ESidebar } from '@/types/plate-types'
 
 import { Typography } from '../aural-ui/typography'
 
 export function ModeToolbarButton(props: DropdownMenuProps) {
 	const [readOnly, setReadOnly] = usePlateState('readOnly')
+	const { setSidebar } = usePlateStore()
 
 	const editorRef = useEditorRef()
 
@@ -58,11 +61,22 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 			setReadOnly(newValue === String(EditorModes.viewing))
 			setOption('isSuggesting', newValue === String(EditorModes.suggesting))
 
+			if (newValue === String(EditorModes.suggesting)) {
+				setSidebar(ESidebar.COMMENTS)
+			}
+
 			if (newValue === String(EditorModes.editing)) {
 				editorRef.tf.focus({ edge: 'end' })
 			}
 		},
-		[isWriter, simplifiedEditor, setReadOnly, setOption, editorRef.tf]
+		[
+			isWriter,
+			simplifiedEditor,
+			setReadOnly,
+			setOption,
+			editorRef.tf,
+			setSidebar,
+		]
 	)
 
 	useEffect(() => {
@@ -80,8 +94,16 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 			<SelectTrigger
 				decoration="outline"
 				classes={{
-					root: 'border-fm-divider-secondary font-fm-brand h-auto rounded-full',
-					icon: 'size-4',
+					root: cn(
+						'border-fm-divider-secondary font-fm-brand h-auto rounded-full',
+						{
+							'border-fm-hotpink-200 bg-fm-hotpink-50 text-fm-secondary-800 focus:border-fm-hotpink-400 active:border-fm-hotpink-400 data-[state=open]:border-fm-hotpink-400':
+								value !== EditorModes.editing,
+						}
+					),
+					icon: cn('size-4', {
+						'text-fm-secondary-800': value !== EditorModes.editing,
+					}),
 				}}
 			>
 				{toPascalCase(value)}
@@ -107,7 +129,7 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 									icon: 'size-4',
 								}}
 							>
-								<div className="flex items-center gap-3">
+								<div className="flex items-center gap-3 pr-12">
 									<Icon className="h-5 w-5" />
 									<div>
 										<Typography

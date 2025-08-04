@@ -47,7 +47,7 @@ const FindAndReplaceLocalizedList = ({
 	}
 
 	return (
-		<section className="p-6">
+		<section className="px-6 pt-2">
 			<div className="border-fm-divider-secondary mb-6 flex items-center justify-between gap-4 border-b border-dashed pb-2.5">
 				<Typography
 					color="primary"
