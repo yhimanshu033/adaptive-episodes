@@ -17,27 +17,20 @@ import Image from '@/components/ui/image'
 import { cn } from '@/lib/aural-ui/utils'
 import { formatDate } from '@/lib/format-date'
 
-import { TOpenedStories } from '@/types/common'
 import { TStory } from '@/types/story-types'
 
 import { StoryCardGridSkeleton } from './story-card-skelton'
 
 interface IStories {
 	isLoading: boolean
-	openedStories: TOpenedStories | undefined
+	recentSize?: number
 	search: string
-	sortedStories: TStory[] | undefined
 	stories: TStory[] | undefined
 }
 
-const Stories = ({
-	isLoading,
-	openedStories,
-	sortedStories,
-	stories,
-	search,
-}: IStories) => {
+const Stories = ({ isLoading, stories, search, recentSize }: IStories) => {
 	const [openStoryId, setOpenStoryId] = useState<string | null>(null)
+
 	if (isLoading) {
 		return (
 			<div className="flex flex-1">
@@ -68,7 +61,7 @@ const Stories = ({
 	return (
 		<section className="my-6 grid flex-1 grid-cols-1 justify-items-center gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 			<CreateAndImportCard />
-			{(sortedStories || stories || [])?.map((story) => {
+			{stories?.map((story, index) => {
 				const isOpen = openStoryId === story.id.toString()
 				return (
 					<div
@@ -93,9 +86,7 @@ const Stories = ({
 							<Link href={`/projects/${story.id}`}>
 								<div className="relative aspect-square">
 									<div className="absolute inset-x-0 top-2 z-10 flex justify-between px-2">
-										<If
-											condition={openedStories?.slice(0, 5).includes(story.id)}
-										>
+										<If condition={index < (recentSize || 0)}>
 											<Tag size="xs" color="lemon" variant="promotional">
 												Recently Opened
 											</Tag>

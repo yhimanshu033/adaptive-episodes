@@ -18,6 +18,7 @@ export type TGetStoriesResponse = {
 	results: {
 		data: Array<TStory>
 		message: string
+		recent_size?: number
 	}
 }
 
