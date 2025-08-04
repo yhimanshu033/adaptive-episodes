@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { ELlmWriterMode } from '@/constants/ai-constants'
 import { useStoriesData } from '@/hooks/query/use-story-data'
 import { StoryGrid } from '@/page-builders/admin/llm-writers/story-grid'
@@ -33,7 +33,12 @@ import Spinner from '@/components/ui/spinner'
 import { TStory } from '@/types/story-types'
 
 export default function WritersRoom() {
-	const { stories } = useStoriesData()
+	const { data: storyData } = useStoriesData()
+
+	const stories = useMemo(
+		() => storyData?.results?.data || [],
+		[storyData?.results?.data]
+	)
 	const [selectedStory, setSelectedStory] = useState<TStory | null>(
 		stories?.[0] || null
 	)
