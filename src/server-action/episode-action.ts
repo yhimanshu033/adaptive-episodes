@@ -16,6 +16,9 @@ import {
 	TGetEpisodesQueryParams,
 	TGetEpisodesResponse,
 	TGetNotesResponse,
+	TMultiEpisodeDeleteBody,
+	TMultiEpisodeDeleteResponse,
+	TMultiEpisodeDeleteURLParams,
 	TNotesUpdateBody,
 	TStatusUpdateBody,
 	TStatusUpdateResponse,
@@ -141,6 +144,31 @@ export const deleteEpisode = async (chapter_id: number) => {
 			chapter_id,
 		},
 	})
+	return res.data
+}
+
+export const deleteMultipleEpisode = async ({
+	project_id,
+	seq_nos,
+}: {
+	project_id: number
+	seq_nos: number[]
+}) => {
+	const res = await fetchAPI<
+		TMultiEpisodeDeleteResponse,
+		TMultiEpisodeDeleteURLParams,
+		TMultiEpisodeDeleteBody
+	>({
+		method: 'POST',
+		url: API_URLS.DELETE_MULTIPLE_EPISODES,
+		urlParams: {
+			project_id,
+		},
+		body: {
+			seq_nos,
+		},
+	})
+
 	return res.data
 }
 

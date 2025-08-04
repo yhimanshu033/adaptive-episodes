@@ -37,6 +37,7 @@ const useEpisodeTable = () => {
 		episodesMergeMutation,
 		episodeUnmergeMutation,
 		statusUpdateMutation,
+		episodeMultipleDeleteMutation,
 	} = useEpisodeHook()
 
 	const {
@@ -302,6 +303,43 @@ const useEpisodeTable = () => {
 		setIsDialogOpen(true)
 	}
 
+	const handleMultiDeleteEpisode = (selectedRowData: TEpisode[]) => {
+		if (!isWriter) {
+			return
+		}
+		const unInventedSeq = selectedRowData
+			.filter((row) => !row.props?.creation_timestamp)
+			.map((row) => row.seq_number)
+
+		if (unInventedSeq?.length) {
+			setAlertInfo({
+				variant: 'negative',
+				icon: (
+					<TrashIcon className="text-fm-icon-negative" width={44} height={44} />
+				),
+				description: `Only invented episodes can be deleted`,
+				subDescription: `Episodes ${unInventedSeq.join(', ')} cannot be deleted`,
+				secondAction: 'Got it',
+			})
+		} else {
+			setAlertInfo({
+				variant: 'negative',
+				icon: (
+					<TrashIcon className="text-fm-icon-negative" width={44} height={44} />
+				),
+				description: `Delete ${selectedRowData.length} episodes permanently`,
+				subDescription: "Once deleted, this can't be undone",
+				action: EpisodeActions.MULTI_DELETE,
+				secondAction: 'Cancel',
+			})
+			setSelectedEpisodes({
+				episodes: selectedRowData,
+				status: selectedRowData[0].status,
+			})
+			setIsDialogOpen(true)
+		}
+	}
+
 	const handleEpisodeInfo = ({
 		icon,
 		title,
@@ -369,6 +407,14 @@ const useEpisodeTable = () => {
 			setStatusUpdating(statusUpdating.filter((id) => !episodeIds.includes(id)))
 		} else if (alertInfo.action === EpisodeActions.DELETE && deleteEpisodeId) {
 			episodeDeleteMutation.mutate(deleteEpisodeId)
+		} else if (
+			alertInfo.action === EpisodeActions.MULTI_DELETE &&
+			selectedEpisodes
+		) {
+			const seqNumber = selectedEpisodes.episodes.map(
+				(episode) => episode.seq_number
+			)
+			episodeMultipleDeleteMutation.mutate(seqNumber)
 		}
 	}
 	return {
@@ -377,6 +423,7 @@ const useEpisodeTable = () => {
 		handleTitleClick,
 		handleAddEpisode,
 		handleDeleteEpisode,
+		handleMultiDeleteEpisode,
 		handleMerge,
 		handleUnmerge,
 		handleEpisodeInfo,
