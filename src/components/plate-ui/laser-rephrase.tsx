@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
 import { rephraseMethods } from '@/constants/editor-constants'
 import { languageToTitle } from '@/constants/episodes-constants'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useLaserToolsQuery from '@/hooks/query/use-lasertool-data'
 import useLanguage from '@/hooks/use-language'
 import useLaserStore from '@/store/laser-store'
 import { X } from 'lucide-react'
-import { useEditorState } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { getText } from '@/lib/utils/plate'
@@ -26,7 +26,7 @@ export default function LaserRephrase({
 	setResponseMode,
 }: RephraseSelectionProps) {
 	const { data: episodeContent } = useEpisodeContent()
-	const { children } = useEditorState()
+	const { children } = useEditorData()
 
 	const {
 		store: laserStore,

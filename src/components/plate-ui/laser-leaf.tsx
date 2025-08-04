@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useCallback, useEffect, useRef } from 'react'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import useLaserStore from '@/store/laser-store'
 import { cn } from '@udecode/cn'
 import { Descendant, Text } from 'platejs'
-import {
-	PlateLeaf,
-	PlateLeafProps,
-	useEditorRef,
-	useEditorState,
-} from 'platejs/react'
+import { PlateLeaf, PlateLeafProps, useEditorRef } from 'platejs/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
 import {
@@ -45,7 +41,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		setResponseActive,
 		store: laserStore,
 	} = useLaserStore()
-	const { children: allChildren } = useEditorState()
+	const { children: allChildren } = useEditorData()
 
 	useEffect(() => {
 		if (!key || !divRef?.current) {

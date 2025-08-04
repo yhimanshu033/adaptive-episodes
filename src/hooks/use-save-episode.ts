@@ -2,12 +2,13 @@
 'use client'
 
 import { useEffect } from 'react'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import useSaving from '@/hooks/use-saving'
 import usePlateStore from '@/store/plate-store'
-import { useEditorReadOnly, useEditorState } from 'platejs/react'
+import { useEditorReadOnly } from 'platejs/react'
 
 const useSaveEpisode = () => {
-	const { children } = useEditorState()
+	const { children } = useEditorData()
 	const readOnly = useEditorReadOnly()
 	const { setCurrentDiffValue } = usePlateStore()
 

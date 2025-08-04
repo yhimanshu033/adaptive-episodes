@@ -187,7 +187,7 @@ export default function CommentSidebar() {
 			return
 		}
 		virtualizer.scrollToIndex(activeIndex, {
-			align: 'auto',
+			align: 'start',
 		})
 	}, [currentActiveId, itemIndexMap, virtualizer, showResolved])
 

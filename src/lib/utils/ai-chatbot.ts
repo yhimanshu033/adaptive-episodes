@@ -276,12 +276,15 @@ export function addSFX(
 
 				matchingValues.forEach((matchingValue) => {
 					const alphanumericText = text.replace(/[^\w\s]/g, '@')
-					const alphanumericMatchString = matchingValue.match_string.replace(
+					const alphanumericMatchString = matchingValue.match_string?.replace(
 						/[^\w\s]/g,
 						'@'
 					)
 
-					if (!alphanumericText.includes(alphanumericMatchString)) {
+					if (
+						!alphanumericMatchString ||
+						!alphanumericText.includes(alphanumericMatchString)
+					) {
 						return
 					}
 					const matchIndex = alphanumericText.indexOf(

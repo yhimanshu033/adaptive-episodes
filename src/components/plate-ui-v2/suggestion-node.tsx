@@ -79,14 +79,20 @@ function SuggestionLineBreakContent({
 	suggestionData: TSuggestionData
 }) {
 	const { type } = suggestionData
-	const isRemove = type === 'remove'
-	const isInsert = type === 'insert'
+	const isRemove = React.useMemo(() => type === 'remove', [type])
+	const isInsert = React.useMemo(() => type === 'insert', [type])
 
 	const activeSuggestionId = usePluginOption(suggestionPlugin, 'activeId')
 	const hoverSuggestionId = usePluginOption(suggestionPlugin, 'hoverId')
 
-	const isActive = activeSuggestionId === suggestionData.id
-	const isHover = hoverSuggestionId === suggestionData.id
+	const isActive = React.useMemo(
+		() => activeSuggestionId === suggestionData.id,
+		[activeSuggestionId, suggestionData.id]
+	)
+	const isHover = React.useMemo(
+		() => hoverSuggestionId === suggestionData.id,
+		[hoverSuggestionId, suggestionData.id]
+	)
 
 	const spanRef = React.useRef<HTMLSpanElement>(null)
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useEditorString } from 'platejs/react'
+import useEditorData from '@/hooks/plate/use-editor-data'
 
 import { cn } from '@/lib/aural-ui/utils'
 
@@ -19,7 +19,7 @@ const CommentValue = ({
 	onEditorClick?: () => void
 	onSave: () => void
 }) => {
-	const editorString = useEditorString()
+	const { editorText: editorString } = useEditorData()
 	const isUnchanged = commentText === editorString
 
 	const [hasFocus, setHasFocus] = useState(false)

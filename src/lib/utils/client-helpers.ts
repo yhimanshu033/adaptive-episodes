@@ -1,5 +1,11 @@
 'use client'
 
+import { DiffStatus } from '@/constants/ai-constants'
+import { Node, Path } from 'platejs'
+import { PlateEditor } from 'platejs/react'
+
+import { DiffPlugin } from '@/components/editor/plugins/diff-kit'
+
 export function downloadFile(url: string, filename: string) {
 	fetch(url)
 		.then((response) => {
@@ -54,3 +60,16 @@ export function removeVoicePass2XMLTags() {
 		}
 	})
 }
+
+export const findAllDiffNodes = <E extends PlateEditor>(
+	editor: E
+): Array<{ node: Node; path: Path }> =>
+	Array.from(
+		editor.api.nodes({
+			match: (n: Node) => {
+				return DiffPlugin.key in n && n.status === DiffStatus.PENDING
+			},
+			at: [],
+		}),
+		([node, path]) => ({ node, path })
+	)

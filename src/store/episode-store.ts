@@ -90,6 +90,10 @@ export function useEpisodeStore() {
 		})
 	}
 
+	const setBseDialogOpen = (isBseDialogOpen: boolean) => {
+		useEpisodeStoreUtil.setState({ isBseDialogOpen })
+	}
+
 	return {
 		setCurrentPage,
 		setEpisodeSearch,
@@ -107,5 +111,6 @@ export function useEpisodeStore() {
 		updateNote,
 		useEpisodeTableStore: useEpisodeStoreUtil,
 		setStatusUpdating,
+		setBseDialogOpen,
 	}
 }

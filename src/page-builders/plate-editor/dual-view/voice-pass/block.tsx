@@ -8,9 +8,14 @@ import { TooltipComponent } from '@/components/ui/tooltip-component'
 export default function Block({ data }: { data: string[] }) {
 	const divRef = useRef<HTMLDivElement>(null)
 	async function copyToClipboard() {
-		await navigator.clipboard.writeText(
-			divRef.current?.innerText || data.join('')
-		)
+		let content = divRef.current?.innerText.slice(0, -4) || data.join('')
+		content = content.trim()
+
+		if (content.toLowerCase().endsWith('copy')) {
+			content = content.slice(0, -4)
+		}
+
+		await navigator.clipboard.writeText(content)
 
 		toast('Content copied successfully.', {
 			icon: <BubbleCheckIcon />,

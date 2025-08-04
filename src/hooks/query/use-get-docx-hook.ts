@@ -1,14 +1,18 @@
+import { useMemo } from 'react'
+import { GET_DOCX_HTML_QUERY_KEY } from '@/constants/query-constants'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import { useEpisodeContentUtil } from '@/hooks/query/use-episode-content'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { useMutation } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { createSlateEditor, serializeHtml } from 'platejs'
-import { useEditorRef, useEditorString } from 'platejs/react'
+import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { BaseEditorKit } from '@/components/editor/editor-base-kit'
 import { DEFAULT_COLOR } from '@/components/plate-ui/color-constants'
 import { EditorStatic } from '@/components/plate-ui/editor-static'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { hashString } from '@/lib/utils/helpers'
 
 import { EStatus } from '@/types/common'
 import { DownloadDocxParams } from '@/types/episode-type'
@@ -17,8 +21,8 @@ const siteUrl = 'https://platejs.org'
 
 export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 	const editor = useEditorRef()
-	const editorText = useEditorString()
-	const words = editorText ? editorText.split(/\s+/).filter(Boolean).length : 0
+	const { editorText } = useEditorData()
+	const words = editorText.split(/\s+/).filter(Boolean).length
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 	const title = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
@@ -30,6 +34,15 @@ export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
+
+	const editorString = useMemo(() => {
+		return JSON.stringify(editor.children)
+	}, [editor.children])
+
+	const editorStringHash = useMemo(() => {
+		return hashString(editorString)
+	}, [editorString])
+
 	async function downloadDocx() {
 		const editorStatic = createSlateEditor({
 			plugins: BaseEditorKit,
@@ -79,13 +92,14 @@ export default function useDocxHtml({ latestStatus }: DownloadDocxParams) {
 		return { base64String, html, title }
 	}
 
-	const mutation = useMutation({
-		mutationKey: ['get-docx-html'],
-		mutationFn: downloadDocx,
-	})
-
 	const showButton =
 		selectedStatus === EStatus.PUBLISHED || latestStatus === EStatus.PUBLISHED
+
+	const mutation = useQuery({
+		queryKey: [GET_DOCX_HTML_QUERY_KEY, editorStringHash],
+		queryFn: downloadDocx,
+		enabled: showButton,
+	})
 
 	return { showButton, ...mutation, epNumber, projectTitle, title }
 }
