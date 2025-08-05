@@ -153,6 +153,15 @@ export type TEpisodeDeleteResponse = {
 	project_id: number
 }
 
+export type TMultiEpisodeDeleteResponse = {
+	message: string
+	project_id: number
+}
+
+export type TMultiEpisodeDeleteURLParams = { project_id: number }
+
+export type TMultiEpisodeDeleteBody = { seq_nos: number[] }
+
 export type TStatusUpdateURLParams = { parent_id: number; project_id: number }
 
 export type TStatusUpdateBody = { language?: ELanguage; status: string }
