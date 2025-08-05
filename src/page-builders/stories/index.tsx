@@ -64,7 +64,7 @@ const PaginatedStoryDashboard = () => {
 						isLoading={isLoading}
 						stories={stories}
 						search={search}
-						recentSize={currentPage === 1 ? storyData?.results.recent_size : 0}
+						recentSize={currentPage === 1 ? storyData?.results?.recent_size : 0}
 					/>
 					<PaginationComponent
 						isLoading={isLoading}

@@ -46,6 +46,8 @@ const usePlotOutlineQuery = ({
 		end
 	)
 
+	console.log({ metadata })
+
 	const language = useLanguage()
 	const getPlotOutline =
 		useCallback(async (): Promise<PlotExplorerQueryResponse> => {
