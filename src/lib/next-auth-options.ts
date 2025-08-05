@@ -72,7 +72,6 @@ const authOptions = {
 				}
 				token.uid = resp.data?.data.uid
 				token.accessToken = resp?.data?.data.access_token
-				console.log(token.access_token)
 			}
 			return token
 		},
