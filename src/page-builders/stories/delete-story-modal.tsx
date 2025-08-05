@@ -1,4 +1,5 @@
 import React from 'react'
+import useStoryUploadHook from '@/hooks/mutation/use-story-upload-hook'
 import { TrashIcon } from '@/icons/trash-icon'
 
 import { Button } from '@/components/aural-ui/button'
@@ -14,6 +15,7 @@ import { Typography } from '@/components/aural-ui/typography'
 interface DeleteStoryModalProps {
 	onOpenChange: (open: boolean) => void
 	open: boolean
+	storyId?: number
 	storyTitle?: string
 }
 
@@ -21,7 +23,10 @@ const DeleteStoryModal = ({
 	open,
 	onOpenChange,
 	storyTitle = '',
+	storyId,
 }: DeleteStoryModalProps) => {
+	const { storyDeleteMutation } = useStoryUploadHook()
+
 	const { handleDialogClose } = useDialogCleanup({
 		threshold: 1000,
 	})
@@ -69,6 +74,9 @@ const DeleteStoryModal = ({
 							className="border-fm-divider-secondary border"
 							onClick={() => {
 								onDialogChange(false)
+								if (storyId) {
+									storyDeleteMutation.mutate({ id: storyId })
+								}
 							}}
 							noise="low"
 						>

@@ -65,6 +65,7 @@ const ViewDeleteStory = ({
 				onOpenChange={onOpen}
 				open={open}
 				storyTitle={storyTitle}
+				storyId={storyId}
 			/>
 		</>
 	)

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { API_URLS, TIdParams } from '@/constants/global-constants'
 import {
@@ -11,6 +11,10 @@ import { StoryImportFormSchema } from '@/hooks/form-resolvers/story-import-resol
 import useSocket from '@/hooks/use-socket'
 import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { uploadFile } from '@/server-action/file-upload'
+import {
+	setFullScreenLoading,
+	setFullScreenLoadingMessage,
+} from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -95,6 +99,19 @@ const useStoryUploadHook = () => {
 		return resp.data
 	}
 
+	async function storyDelete({ id }: { id: number }) {
+		const resp = await fetchAPI<TNoParams, { id: number }>({
+			method: 'POST',
+			url: API_URLS.PROJECT_DELETE,
+			urlParams: { id },
+		})
+
+		if (!resp.success) {
+			throw new Error('Project not deleted')
+		}
+		return resp.data
+	}
+
 	const storyUpdateMutation = useMutation({
 		mutationKey: ['storyUpdate'],
 		mutationFn: storyUpdate,
@@ -102,6 +119,20 @@ const useStoryUploadHook = () => {
 		onError,
 	})
 
-	return { storyUploadMutation, storyUpdateMutation }
+	const storyDeleteMutation = useMutation({
+		mutationKey: ['storyDelete'],
+		mutationFn: storyDelete,
+		onSuccess,
+		onError,
+	})
+
+	useEffect(() => {
+		setFullScreenLoading(storyDeleteMutation.isPending)
+		setFullScreenLoadingMessage(
+			storyDeleteMutation.isPending ? 'Deleting Story' : ''
+		)
+	}, [storyDeleteMutation.isPending])
+
+	return { storyUploadMutation, storyUpdateMutation, storyDeleteMutation }
 }
 export default useStoryUploadHook
