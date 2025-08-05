@@ -168,6 +168,9 @@ export const deleteMultipleEpisode = async ({
 			seq_nos,
 		},
 	})
+	if (!res.success) {
+		throw Error(res?.message?.['error'] || 'Episodes not deleted')
+	}
 
 	return res.data
 }

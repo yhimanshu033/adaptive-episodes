@@ -321,23 +321,24 @@ const useEpisodeTable = () => {
 				subDescription: `Episodes ${unInventedSeq.join(', ')} cannot be deleted`,
 				secondAction: 'Got it',
 			})
-		} else {
-			setAlertInfo({
-				variant: 'negative',
-				icon: (
-					<TrashIcon className="text-fm-icon-negative" width={44} height={44} />
-				),
-				description: `Delete ${selectedRowData.length} episodes permanently`,
-				subDescription: "Once deleted, this can't be undone",
-				action: EpisodeActions.MULTI_DELETE,
-				secondAction: 'Cancel',
-			})
-			setSelectedEpisodes({
-				episodes: selectedRowData,
-				status: selectedRowData[0].status,
-			})
 			setIsDialogOpen(true)
+			return
 		}
+		setAlertInfo({
+			variant: 'negative',
+			icon: (
+				<TrashIcon className="text-fm-icon-negative" width={44} height={44} />
+			),
+			description: `Delete ${selectedRowData.length} episodes permanently`,
+			subDescription: "Once deleted, this can't be undone",
+			action: EpisodeActions.MULTI_DELETE,
+			secondAction: 'Cancel',
+		})
+		setSelectedEpisodes({
+			episodes: selectedRowData,
+			status: selectedRowData[0].status,
+		})
+		setIsDialogOpen(true)
 	}
 
 	const handleEpisodeInfo = ({
