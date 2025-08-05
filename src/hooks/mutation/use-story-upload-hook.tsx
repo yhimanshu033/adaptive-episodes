@@ -6,6 +6,7 @@ import { API_URLS, TIdParams } from '@/constants/global-constants'
 import {
 	STORIES_QUERY_KEY,
 	STORY_ID_QUERY_KEY,
+	USER_PROJECTS_QUERY_KEY,
 } from '@/constants/query-constants'
 import { StoryImportFormSchema } from '@/hooks/form-resolvers/story-import-resolver'
 import useSocket from '@/hooks/use-socket'
@@ -36,6 +37,10 @@ const useStoryUploadHook = () => {
 		})
 		await queryClient.invalidateQueries({
 			queryKey: [STORIES_QUERY_KEY],
+			type: 'all',
+		})
+		await queryClient.invalidateQueries({
+			queryKey: [USER_PROJECTS_QUERY_KEY],
 			type: 'all',
 		})
 		toast.success('Story details updated successfully')
@@ -79,12 +84,6 @@ const useStoryUploadHook = () => {
 		}
 	}
 
-	const storyUploadMutation = useMutation({
-		mutationKey: ['storyUpload'],
-		mutationFn: storyUpload,
-		onSuccess,
-	})
-
 	async function storyUpdate(body: Partial<TStory>) {
 		const resp = await fetchAPI<TNoParams, TIdParams, Partial<TStory>>({
 			method: 'PATCH',
@@ -111,6 +110,11 @@ const useStoryUploadHook = () => {
 		}
 		return resp.data
 	}
+	const storyUploadMutation = useMutation({
+		mutationKey: ['storyUpload'],
+		mutationFn: storyUpload,
+		onSuccess,
+	})
 
 	const storyUpdateMutation = useMutation({
 		mutationKey: ['storyUpdate'],

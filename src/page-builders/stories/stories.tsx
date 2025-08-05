@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { EImportStatus } from '@/constants/story-constants'
+import useUserProjects from '@/hooks/query/use-user-projects'
 import { ImageIcon } from '@/icons/image-icon'
 import { PageSearchIcon } from '@/icons/page-search-icon'
 import CreateAndImportCard from '@/page-builders/stories/create-and-import-card'
@@ -17,6 +18,7 @@ import Image from '@/components/ui/image'
 import { cn } from '@/lib/aural-ui/utils'
 import { formatDate } from '@/lib/format-date'
 
+import { ERole } from '@/types/admin-types'
 import { TStory } from '@/types/story-types'
 
 import { StoryCardGridSkeleton } from './story-card-skelton'
@@ -30,6 +32,13 @@ interface IStories {
 
 const Stories = ({ isLoading, stories, search, recentSize }: IStories) => {
 	const [openStoryId, setOpenStoryId] = useState<string | null>(null)
+
+	const { data: userProjects } = useUserProjects()
+
+	const userProjectIds =
+		userProjects
+			?.filter((project) => project.role === ERole.ADMIN)
+			.map((data) => data.project.id) || []
 
 	if (isLoading) {
 		return (
@@ -167,6 +176,7 @@ const Stories = ({ isLoading, stories, search, recentSize }: IStories) => {
 								}
 								storyTitle={story.project_title}
 								storyId={story.id}
+								isAdmin={userProjectIds.includes(story.id)}
 							/>
 						</div>
 					</div>

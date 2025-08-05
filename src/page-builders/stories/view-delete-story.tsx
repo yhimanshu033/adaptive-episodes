@@ -14,10 +14,12 @@ import {
 	useOpenState,
 } from '@/components/aural-ui/dropdown'
 import { IconButton } from '@/components/aural-ui/icon-button'
+import { If } from '@/components/aural-ui/if-else'
 
 import DeleteStoryModal from './delete-story-modal'
 
 interface IViewDeleteStoryProps {
+	isAdmin?: boolean
 	onOpenChange: (open: boolean) => void
 	storyId?: number
 	storyTitle?: string
@@ -27,9 +29,9 @@ const ViewDeleteStory = ({
 	onOpenChange,
 	storyTitle,
 	storyId,
+	isAdmin,
 }: IViewDeleteStoryProps) => {
 	const { open, onOpenChange: onOpen } = useOpenState()
-
 	const onDelete = () => {
 		onOpen(true)
 	}
@@ -54,10 +56,12 @@ const ViewDeleteStory = ({
 								<PencilIcon className="size-4" /> View
 							</Link>
 						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem onClick={onDelete} className="text-fm-negative">
-							<TrashIcon className="text-inherit" /> Delete
-						</DropdownMenuItem>
+						<If condition={isAdmin}>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem onClick={onDelete} className="text-fm-negative">
+								<TrashIcon className="text-inherit" /> Delete
+							</DropdownMenuItem>
+						</If>
 					</DropdownMenuGroup>
 				</DropdownMenuContent>
 			</DropdownMenu>
