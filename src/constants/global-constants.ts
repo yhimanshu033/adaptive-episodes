@@ -60,6 +60,7 @@ export const API_URLS = {
 	STREAM_LOCALIZATION: '/aicopilot/localize/',
 	STREAM_PROJECT_UPLOAD: '/project/upload/',
 	PROJECT_UPDATE: '/project/:id/',
+	PROJECT_DELETE: '/project/:id/delete/',
 	MEMBERS_GET: '/project/:id/get-project-members',
 	LOGIN: '/auth/login/',
 	GET_MY_USER: '/user/me',
