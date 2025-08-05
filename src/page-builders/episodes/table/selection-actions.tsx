@@ -10,7 +10,6 @@ import useParentLanguage from '@/hooks/use-parent-language'
 import { CrossIcon } from '@/icons/cross-icon'
 import { GitBranchIcon } from '@/icons/git-branch-icon'
 import { GitForkIcon } from '@/icons/git-fork-icon'
-import { MaintenanceIcon } from '@/icons/maintenance-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/dialogs/multi-ep-localize-dialog'
 import { Table } from '@tanstack/react-table'
@@ -39,7 +38,8 @@ export default function SelectionActions({
 	const selectedRowModel = table.getSelectedRowModel().rows
 	const selectedRowData = selectedRowModel.map((row) => row.original)
 
-	const { handleMerge, handleUnmerge, handleEpisodeInfo } = useEpisodeTable()
+	const { handleMerge, handleUnmerge, handleMultiDeleteEpisode } =
+		useEpisodeTable()
 
 	const { id } = useParams()
 
@@ -175,20 +175,7 @@ export default function SelectionActions({
 				</If>
 				<Button
 					variant="outline"
-					onClick={() =>
-						handleEpisodeInfo({
-							icon: (
-								<MaintenanceIcon
-									className="text-fm-icon-info"
-									width={44}
-									height={44}
-								/>
-							),
-							description:
-								'We’re working on bringing you the ability to delete episodes. This feature will be available soon, giving you more control over your content.',
-							title: 'Feature Coming Soon',
-						})
-					}
+					onClick={() => handleMultiDeleteEpisode(selectedRowData)}
 					className="text-fm-negative"
 					innerClassName="border-fm-divider-secondary h-9"
 					leftIcon={<TrashIcon className="text-inherit" />}

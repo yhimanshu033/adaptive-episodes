@@ -308,6 +308,7 @@ export const SOURCE_TO_TARGET_LANGUAGE_MAP: Partial<
 		ELanguage.MEXICAN_SPANISH,
 		ELanguage.ITALIAN,
 		ELanguage.HINDI,
+		ELanguage.ENGLISH_UK,
 	],
 	[ELanguage.CHINESE]: [ELanguage.ENGLISH],
 	[ELanguage.TRANSLATED_ENGLISH]: [ELanguage.ENGLISH],

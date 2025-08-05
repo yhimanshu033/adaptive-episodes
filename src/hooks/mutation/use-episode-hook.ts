@@ -12,6 +12,7 @@ import useSocket from '@/hooks/use-socket'
 import { saveContent } from '@/server-action/content-action'
 import {
 	deleteEpisode,
+	deleteMultipleEpisode,
 	inventEpisode,
 	unmergeEpisodes,
 	updateStatus,
@@ -21,6 +22,7 @@ import {
 	setFullScreenLoadingMessage,
 } from '@/store/global-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 import useEpisodeId from '@/providers/episode-id-provider'
@@ -44,6 +46,10 @@ const useEpisodeHook = () => {
 			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
 			type: 'all',
 		})
+	}
+
+	const onError = (error: Error) => {
+		toast.error(error.message)
 	}
 
 	const onSaveEpisode = useCallback(
@@ -203,6 +209,14 @@ const useEpisodeHook = () => {
 		onSuccess,
 	})
 
+	const episodeMultipleDeleteMutation = useMutation({
+		mutationKey: [EpisodeActions.DELETE, 'multiple'],
+		mutationFn: (seq_nos: number[]) =>
+			deleteMultipleEpisode({ project_id: Number(id), seq_nos }),
+		onSuccess,
+		onError,
+	})
+
 	const statusUpdateMutation = useMutation({
 		mutationKey: [EpisodeActions.STATUS, id],
 		mutationFn: onStatusUpdate,
@@ -220,12 +234,16 @@ const useEpisodeHook = () => {
 				episodesMergeMutation.isPending ||
 				episodeUnmergeMutation.isPending ||
 				episodeInventMutation.isPending ||
-				episodeDeleteMutation.isPending
+				episodeDeleteMutation.isPending ||
+				episodeMultipleDeleteMutation.isPending
 		)
 
 		switch (true) {
 			case episodeDeleteMutation.isPending:
 				setFullScreenLoadingMessage('Deleting episode...')
+				break
+			case episodeMultipleDeleteMutation.isPending:
+				setFullScreenLoadingMessage('Deleting multiple episodes...')
 				break
 			case episodeInventMutation.isPending:
 				setFullScreenLoadingMessage('Inventing episode...')
@@ -246,6 +264,7 @@ const useEpisodeHook = () => {
 		episodeDeleteMutation.isPending,
 		episodeId,
 		episodeInventMutation.isPending,
+		episodeMultipleDeleteMutation.isPending,
 		episodeUnmergeMutation.isPending,
 		episodesMergeMutation.isPending,
 		saveEpisodeMutation.isPending,
@@ -259,6 +278,7 @@ const useEpisodeHook = () => {
 		episodeDeleteMutation,
 		metadataSyncMutation,
 		statusUpdateMutation,
+		episodeMultipleDeleteMutation,
 	}
 }
 
