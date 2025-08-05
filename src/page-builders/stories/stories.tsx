@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { EImportStatus } from '@/constants/story-constants'
 import useUserProjects from '@/hooks/query/use-user-projects'
@@ -35,10 +35,13 @@ const Stories = ({ isLoading, stories, search, recentSize }: IStories) => {
 
 	const { data: userProjects } = useUserProjects()
 
-	const userProjectIds =
-		userProjects
-			?.filter((project) => project.role === ERole.ADMIN)
-			.map((data) => data.project.id) || []
+	const userAdminProjectIdSet = useMemo(() => {
+		return new Set(
+			userProjects
+				?.filter((project) => project.role === ERole.ADMIN)
+				.map((data) => data.project.id) || []
+		)
+	}, [userProjects])
 
 	if (isLoading) {
 		return (
@@ -176,7 +179,7 @@ const Stories = ({ isLoading, stories, search, recentSize }: IStories) => {
 								}
 								storyTitle={story.project_title}
 								storyId={story.id}
-								isAdmin={userProjectIds.includes(story.id)}
+								isAdmin={userAdminProjectIdSet.has(story.id)}
 							/>
 						</div>
 					</div>
