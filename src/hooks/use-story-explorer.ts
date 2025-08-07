@@ -84,7 +84,6 @@ export default function useStoryExplorer({
 		}
 		if (responses[taskId]) {
 			const jsonStr = responses[taskId].join('')
-			console.log({ jsonStr })
 			const arrayStartIndex = jsonStr.indexOf('[')
 			const cleanedJsonStr =
 				arrayStartIndex !== -1 ? jsonStr.substring(arrayStartIndex) : '[]'
@@ -95,7 +94,6 @@ export default function useStoryExplorer({
 				if (!data) {
 					return
 				}
-				console.log({ finalizedData: data })
 				setContent(data)
 			} catch (error) {
 				console.log(error)
