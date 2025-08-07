@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useMemo } from 'react'
+import React, { createContext, useCallback, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
@@ -47,6 +47,7 @@ import useAccessChecks from '../use-access-checks'
 
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+
 	const { isOriginal } = useAccessChecks()
 	const pathName = usePathname()
 
@@ -58,9 +59,6 @@ export const useEpisodeContentUtil = () => {
 		useShallow((state) => state.selectedLanguage)
 	)
 
-	const importedLocal = useEpisodeIdStoreContext(
-		useShallow((state) => state.importedLocal)
-	)
 	const { addEpisodeMap, addEpisodeKey } = useEditorExtendedStore()
 	const { data } = useEpisodeInfo()
 
@@ -103,12 +101,11 @@ export const useEpisodeContentUtil = () => {
 			EPISODE_CONTENT_QUERY_KEY,
 			usedEpisodeId,
 			latestStatus || BASE_STATUS,
-			importedLocal,
 			pathName,
 		],
-		[importedLocal, latestStatus, pathName, usedEpisodeId]
+		[latestStatus, pathName, usedEpisodeId]
 	)
-	async function fetchEpisodeContent() {
+	const fetchEpisodeContent = useCallback(async () => {
 		const resp = await getEpisodeContent(usedEpisodeId)
 		if (!resp) {
 			return resp
@@ -121,14 +118,7 @@ export const useEpisodeContentUtil = () => {
 		if (!oldData) {
 			return resp
 		}
-		if (importedLocal) {
-			setLocalDiffValue(null)
-			setSidebar(null)
-			return getEpisodeQueryResponseFromStoredData({
-				episodeData: resp,
-				oldData,
-			})
-		}
+
 		const newData = getSavedParamsFromEpisodeData(resp)
 		const isContentDifferent = isEpisodeContentDifferent(
 			oldData.text,
@@ -176,7 +166,17 @@ export const useEpisodeContentUtil = () => {
 			}
 		)
 		return resp
-	}
+	}, [
+		addEpisodeKey,
+		addEpisodeMap,
+		dict,
+		episodeId,
+		queryKey,
+		setDualViewMode,
+		setLocalDiffValue,
+		setSidebar,
+		usedEpisodeId,
+	])
 
 	const query = useQuery({
 		queryKey,
@@ -196,7 +196,6 @@ export const useEpisodeContentUtil = () => {
 		disabledLanguages,
 		language,
 		queryKey,
-		importedLocal,
 	}
 }
 const EpisodeContentContext = createContext<ReturnType<

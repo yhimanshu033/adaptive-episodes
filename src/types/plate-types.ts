@@ -124,6 +124,7 @@ export type TCommentGeneric = TDiscussion | TOldComment
 export interface DiffViewProps {
 	className?: string
 	current?: Value | null
+	isMainEditor?: boolean
 	plugins?: PlatePlugin[]
 	previous?: Value | null
 	readonly?: boolean

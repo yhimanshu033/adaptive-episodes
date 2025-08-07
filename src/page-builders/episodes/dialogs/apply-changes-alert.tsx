@@ -12,7 +12,7 @@ import {
 	DialogTrigger,
 } from '@/components/aural-ui/dialog'
 
-export default function SFXAlert({
+export default function ApplyChangesAlert({
 	children,
 	onConfirm,
 }: {

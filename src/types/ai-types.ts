@@ -113,7 +113,6 @@ export type StoryExplorerConfiguration = {
 	prev_eps: boolean
 }
 export interface AIStoreType {
-	acceptedValue: Value | null
 	activeCommentExampleMap: Record<string, string>
 	activeExplorerActions: {
 		[ExplorerModeId.Plot]: PlotAction | string | null
