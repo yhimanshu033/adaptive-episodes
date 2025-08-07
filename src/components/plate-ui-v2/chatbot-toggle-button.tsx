@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import { LayoutRightIcon } from '@/icons/layout-right-icon'
 import usePlateStore from '@/store/plate-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -15,18 +15,24 @@ export function ChatbotToolbarButton() {
 	const { store, setSidebar } = usePlateStore()
 	const sidebar = store(useShallow((state) => state.sidebar))
 
+	const isSidebarButtonTriggered = useMemo(
+		() => sidebar === ESidebar.CHATBOT || sidebar === ESidebar.OUTLINE,
+		[sidebar]
+	)
+
 	return (
 		<IconButton
 			icon={<LayoutRightIcon />}
-			label="Toggle Episode Navigation"
+			label="Toggle Story Chat"
 			variant="outlined"
 			size="small"
-			onClick={() => setSidebar(sidebar ?? ESidebar.CHATBOT, true)}
+			onClick={() =>
+				setSidebar(isSidebarButtonTriggered ? null : ESidebar.CHATBOT)
+			}
 			className={cn(
 				'absolute top-1/2 -right-4 z-50 -translate-y-1/2 bg-black',
 				{
-					'bg-fm-secondary-50 text-fm-secondary-800':
-						sidebar === ESidebar.CHATBOT || sidebar === ESidebar.OUTLINE,
+					'bg-fm-secondary-50 text-fm-secondary-800': isSidebarButtonTriggered,
 				}
 			)}
 		/>

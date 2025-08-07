@@ -17,6 +17,7 @@ import { Plate } from 'platejs/react'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { FixedToolbar } from '@/components/plate-ui-v2/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui-v2/fixed-toolbar-buttons'
+import WordCountTag from '@/components/plate-ui-v2/word-count-tag'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
 
@@ -81,7 +82,8 @@ function MyEditor({
 												<FixedToolbar className="overflow-visible! px-0 py-0">
 													<FixedToolbarButtons />
 												</FixedToolbar>
-												<ScrollArea className="overflow-y-auto">
+												<ScrollArea className="relative overflow-y-auto">
+													<WordCountTag />
 													<EditorHandler />
 												</ScrollArea>
 											</ResizablePanel>

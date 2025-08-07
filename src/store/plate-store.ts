@@ -1,3 +1,5 @@
+import { updateIsEpisodeNavigationOpen } from '@/store/editor-store'
+
 import { useEpisodeContext } from '@/providers/episode-id-provider'
 
 import { PlateStoreData } from '@/types/plate-types'
@@ -7,7 +9,11 @@ export function usePlateStore() {
 
 	const setSidebar = (sidebar: PlateStoreData['sidebar'], toggle?: boolean) => {
 		usePlateStoreContext.setState((state) => {
-			return { sidebar: toggle && state.sidebar === sidebar ? null : sidebar }
+			const newSidebar = toggle && state.sidebar === sidebar ? null : sidebar
+			if (newSidebar) {
+				updateIsEpisodeNavigationOpen(false)
+			}
+			return { sidebar: newSidebar }
 		})
 	}
 

@@ -19,7 +19,7 @@ export function Editor() {
 
 	return (
 		<main className="flex flex-1 flex-col">
-			<div className="container mx-auto flex px-6">
+			<div className="flex transition-all">
 				<EpisodeNavigation />
 				<div className="relative w-full">
 					<EpisodeIdProvider

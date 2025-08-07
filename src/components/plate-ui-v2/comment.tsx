@@ -280,12 +280,13 @@ export function Comment(props: {
 										}, 0)
 									}}
 									onRemoveComment={() => {
-										if (discussionLength === 1) {
+										if (index === 0) {
 											tf.comment.unsetMark({ id: comment.discussionId })
 											void removeDiscussion(comment.discussionId)
 										}
 									}}
 									comment={comment}
+									index={index}
 									dropdownOpen={dropdownOpen}
 									setDropdownOpen={setDropdownOpen}
 									setEditingId={setEditingId}
@@ -353,6 +354,7 @@ export function Comment(props: {
 export function CommentMoreDropdown(props: {
 	comment: TComment
 	dropdownOpen: boolean
+	index: number
 	isReplyComment?: boolean
 	onCloseAutoFocus?: () => void
 	onExample?: () => void
@@ -362,6 +364,7 @@ export function CommentMoreDropdown(props: {
 }) {
 	const {
 		comment,
+		index,
 		dropdownOpen,
 		setDropdownOpen,
 		setEditingId,
@@ -463,7 +466,7 @@ export function CommentMoreDropdown(props: {
 						className="py-2 [font-size:var(--text-fm-md)]"
 					>
 						<TrashIcon className="size-4" />
-						Delete comment
+						Delete {!index ? 'Thread' : 'Comment'}
 					</DropdownMenuItem>
 					<If condition={!isReplyComment && comment.userId === AI_USER_ID}>
 						<DropdownMenuItem

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 
 import { CrossIcon } from '../../icons/cross-icon'
 import { SearchIcon } from '../../icons/search-icon'
@@ -14,14 +14,17 @@ export interface SearchResult {
 export interface SearchProps {
 	children?: React.ReactNode
 	className?: string
+	disabled?: boolean
 	initialValue?: string
 	onChange?: (value: string) => void
+	// Children can be used to render custom search results
+	onEnterPressed?: (value: string) => void
 	// Add value prop for controlled component
 	onSearch?: (query: string) => void
 	placeholder?: string
 	// Add onChange for controlled component
 	results?: SearchResult[]
-	value?: string // Children can be used to render custom search results
+	value?: string
 }
 
 export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
@@ -35,6 +38,8 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 			results = [],
 			initialValue = '',
 			children, // Children can be used to render custom search results
+			onEnterPressed = () => {},
+			disabled = false,
 		},
 		ref
 	) => {
@@ -95,6 +100,28 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 			}
 		}
 
+		const handleKeyPress = useCallback(
+			(e: React.KeyboardEvent<HTMLInputElement>) => {
+				if (e.key === 'Enter') {
+					onEnterPressed(internalValue)
+					if (!isControlled) {
+						setInternalValue('')
+					}
+
+					// Call onChange if provided (for controlled components)
+					if (onChange) {
+						onChange('')
+					}
+
+					// Call onSearch if provided
+					if (onSearch) {
+						onSearch('')
+					}
+				}
+			},
+			[internalValue, onEnterPressed, isControlled, onSearch, onChange]
+		)
+
 		return (
 			<div
 				ref={ref || searchRef}
@@ -124,12 +151,14 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 							label="Clear search"
 						/>
 					}
+					onKeyDown={handleKeyPress}
 					className="w-full rounded-full"
 					decoration="filled"
 					classes={{
 						input: 'rounded-full h-11',
 						wrapper: 'mt-0',
 					}}
+					disabled={disabled}
 				/>
 
 				{/* Search Results */}

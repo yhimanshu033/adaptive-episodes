@@ -37,7 +37,7 @@ const ChatbotInput = () => {
 					variant: 'default',
 				}),
 				'w-auto rounded-md transition-all duration-200',
-				{ 'border-fm-divider-contrast': isFocused }
+				isFocused ? 'border-fm-divider-contrast' : 'border-transparent'
 			)}
 		>
 			<form onSubmit={handleSendMessage}>

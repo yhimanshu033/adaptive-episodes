@@ -41,6 +41,7 @@ export enum EEpisodeType {
 export enum ELanguage {
 	CHINESE = 'chinese',
 	ENGLISH = 'english',
+	ENGLISH_UK = 'english_uk',
 	ENGLISH_US = 'english_us',
 	FRENCH = 'french',
 	GERMAN = 'german',

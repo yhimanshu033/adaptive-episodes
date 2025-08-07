@@ -29,7 +29,6 @@ export function ExplorerSettings() {
 						'data-[state=open]:bg-fm-hotpink-50 data-[state=open]:border-fm-hotpink-300 shrink-0',
 						{
 							'bg-fm-hotpink-50 border-fm-hotpink-200 hover:border-fm-hotpink-300':
-								explorerFocusConfig === EFocusSetting.CMS ||
 								explorerFocusConfig === EFocusSetting.BASE_SCRIPT,
 						}
 					)}

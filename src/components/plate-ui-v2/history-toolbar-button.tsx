@@ -24,7 +24,7 @@ export function RedoToolbarButton(
 			onMouseDown={(e) => e.preventDefault()}
 			tooltip="Redo (⌘+⇧+Z)"
 		>
-			<ArrowCornerUpRightIcon />
+			<ArrowCornerUpRightIcon className="text-fm-primary" />
 		</ToolbarButton>
 	)
 }
@@ -46,7 +46,7 @@ export function UndoToolbarButton(
 			onMouseDown={(e) => e.preventDefault()}
 			tooltip="Undo (⌘+Z)"
 		>
-			<ArrowCornerUpLeftIcon />
+			<ArrowCornerUpLeftIcon className="text-fm-primary" />
 		</ToolbarButton>
 	)
 }

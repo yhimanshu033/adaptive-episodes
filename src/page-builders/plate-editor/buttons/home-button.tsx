@@ -24,7 +24,7 @@ export default function HomeButton() {
 			label="Go to Home"
 			variant="outlined"
 			size="small"
-			className="bg-black"
+			className="border-fm-divider-tertiary bg-black"
 			onClick={() => void handleClick()}
 		/>
 	)

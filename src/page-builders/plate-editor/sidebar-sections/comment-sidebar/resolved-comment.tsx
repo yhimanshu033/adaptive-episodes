@@ -2,8 +2,8 @@ import React from 'react'
 import { roleToData } from '@/constants/global-constants'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { CircleCrossIcon } from '@/icons/circle-cross-icon'
-import { CircleTickIcon } from '@/icons/circle-tick-icon'
 import { formatDistance } from 'date-fns'
+import { Trash2 } from 'lucide-react'
 import { KEYS, NodeApi } from 'platejs'
 import { useEditorPlugin, usePluginOption } from 'platejs/react'
 import { toast } from 'sonner'
@@ -61,7 +61,7 @@ export default function ResolvedCommentItem({
 	}
 
 	function handleResolve() {
-		toast.success('Resolved comment accepted successfully.', {
+		toast.success('Resolved comment deleted successfully.', {
 			icon: <BubbleCheckIcon />,
 		})
 		setDiscussionOption(
@@ -107,9 +107,9 @@ export default function ResolvedCommentItem({
 							size="small"
 							onClick={handleResolve}
 							className="hover:!text-fm-primary text-fm-icon-inactive"
-							icon={<CircleTickIcon className="size-4 text-inherit" />}
+							icon={<Trash2 className="size-4 text-inherit" />}
 							shape="square"
-							tooltip={'Accept'}
+							tooltip={'Delete'}
 							tooltipContentProps={{
 								align: 'end',
 								side: 'bottom',

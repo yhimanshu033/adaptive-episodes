@@ -36,12 +36,12 @@ const PaginatedStoryDashboard = () => {
 		[limit, currentPage, search]
 	)
 
-	const { stories, isLoading, sortedStories, openedStories } =
-		useStoriesData(params)
+	const { data: storyData, isLoading } = useStoriesData(params)
+	const stories = storyData?.results?.data || []
 
 	const showEmpty = useMemo(
-		() => !isLoading && (stories?.length === 0 || sortedStories?.length === 0),
-		[isLoading, sortedStories?.length, stories?.length]
+		() => !isLoading && stories?.length === 0,
+		[isLoading, stories?.length]
 	)
 
 	return (
@@ -62,10 +62,9 @@ const PaginatedStoryDashboard = () => {
 
 					<Stories
 						isLoading={isLoading}
-						openedStories={openedStories}
-						sortedStories={sortedStories}
 						stories={stories}
 						search={search}
+						recentSize={currentPage === 1 ? storyData?.results?.recent_size : 0}
 					/>
 					<PaginationComponent
 						isLoading={isLoading}

@@ -4,9 +4,9 @@ import { Skeleton } from '@/components/aural-ui/skelton'
 
 function EditorSkeletonLoader() {
 	return (
-		<div className="mb-4 flex h-[calc(100vh-20px)] flex-col border-r border-b border-l border-gray-800 bg-black text-white">
+		<div className="border-fm-divider-secondary mb-4 flex h-[calc(100vh-20px)] flex-col border-r border-b border-l bg-black text-white">
 			{/* Header */}
-			<div className="flex h-22 items-center justify-between border-b border-gray-800 p-4">
+			<div className="border-fm-divider-secondary flex h-22 items-center justify-between border-b p-4">
 				<div className="flex items-center gap-4">
 					<Skeleton className="h-8 w-8" />
 					<Skeleton className="h-8 w-8" />
@@ -23,7 +23,7 @@ function EditorSkeletonLoader() {
 				{/* Main Editor Area */}
 				<div className="flex flex-1 flex-col">
 					{/* Toolbar */}
-					<div className="flex h-16 items-center gap-2 border-b border-gray-800 p-3">
+					<div className="border-fm-divider-secondary flex h-16 items-center gap-2 border-b p-3">
 						<Skeleton className="h-8 w-8" />
 						<Skeleton className="h-8 w-8" />
 						<Skeleton className="h-8 w-8" />
@@ -60,9 +60,9 @@ function EditorSkeletonLoader() {
 				</div>
 
 				{/* Right Sidebar - StoryChat */}
-				<div className="flex w-80 flex-col border-l border-gray-800">
+				<div className="border-fm-divider-secondary flex w-80 flex-col border-l">
 					{/* Chat Header */}
-					<div className="border-b border-gray-800 p-4">
+					<div className="border-fm-divider-secondary border-b p-4">
 						<div className="mb-4 flex items-center justify-between">
 							<Skeleton className="h-6 w-20" />
 							<Skeleton className="h-6 w-24" />
@@ -88,7 +88,7 @@ function EditorSkeletonLoader() {
 					</div>
 
 					{/* Chat Input */}
-					<div className="mt-auto border-t border-gray-800 p-4">
+					<div className="border-fm-divider-secondary mt-auto border-t p-4">
 						<div className="flex items-center gap-2">
 							<Skeleton className="h-10 flex-1 rounded-lg" />
 							<Skeleton className="h-10 w-10" />

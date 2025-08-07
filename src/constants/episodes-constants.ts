@@ -60,6 +60,7 @@ export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.KOREAN]: 'Korean',
 	[ELanguage.NEUTRAL_SPANISH]: 'Neutral Spanish',
 	[ELanguage.TRANSLATED_ENGLISH]: 'Translated English',
+	[ELanguage.ENGLISH_UK]: 'English UK',
 }
 
 export enum EpisodeActions {
@@ -68,6 +69,7 @@ export enum EpisodeActions {
 	INVENT = 'invent',
 	MERGE = 'combine',
 	METATDATA = 'metadata',
+	MULTI_DELETE = 'delete all',
 	STATUS = 'status',
 	UNMERGE = 'unmerge',
 	UPDATE = 'update',
