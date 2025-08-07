@@ -11,7 +11,7 @@ import DiffControls, {
 import { cn } from '@/lib/aural-ui/utils'
 import {
 	describeUpdate,
-	diffOperationColors,
+	diffOperationClassnames,
 	diffOperationComponents,
 } from '@/lib/plate/diff-helpers'
 import { getDiffLeafID } from '@/lib/utils/plate'
@@ -79,7 +79,7 @@ export default function DiffComponent({
 
 	return (
 		<Component
-			className={cn(diffOperationColors[diffOperation?.type], 'relative')}
+			className={cn(diffOperationClassnames[diffOperation?.type], 'relative')}
 			title={
 				diffOperation?.type === AiDiffOperation.UPDATE
 					? describeUpdate(diffOperation)

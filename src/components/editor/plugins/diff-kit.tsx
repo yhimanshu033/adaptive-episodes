@@ -20,7 +20,7 @@ export const DiffPlugin = toPlatePlugin(
 			aboveNodes: () => (props) => {
 				const { element } = props
 				if (!element.diff) {
-					return element.children as React.ReactNode
+					return props.children as React.ReactNode
 				}
 
 				return <DiffBlock key="diff" {...props} />

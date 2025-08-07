@@ -6,12 +6,10 @@ import ApplyChangesAlert from '@/page-builders/episodes/dialogs/apply-changes-al
 import DiffEditor from '@/page-builders/plate-editor/diff-editor'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
-import { Check } from 'lucide-react'
 import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
-import { IconButton } from '@/components/aural-ui/icon-button'
 import { editorVariants } from '@/components/plate-ui-v2/editor-static'
 import { cn } from '@/lib/utils/helpers'
 import { removeValue } from '@/lib/utils/indexed-db'
@@ -65,13 +63,6 @@ export default function LocalDiffSection() {
 				)}
 			/>
 			<div className="bg-background/60 sticky bottom-0 z-50 flex w-full justify-end gap-4 px-6 py-2 backdrop-blur-[1px]">
-				<IconButton
-					variant="ghost"
-					tooltip="Import Local Changes"
-					label="Import Local Changes"
-					onClick={() => handleAccept(true)}
-					icon={<Check />}
-				/>
 				<Button
 					variant="outline"
 					size="sm"
