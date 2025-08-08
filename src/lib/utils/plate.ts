@@ -3,15 +3,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
+import { DiffStatus } from '@/constants/ai-constants'
 import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/editor-constants'
 import { getCommentKey } from '@platejs/comment'
-import { computeDiff } from '@platejs/diff'
+import { computeDiff, DiffOperation, DiffUpdate } from '@platejs/diff'
 // Create a new file: src/lib/comment-helpers.ts
 import {
 	Descendant,
 	Element,
 	KEYS,
 	TCommentText,
+	TElement,
 	Text,
 	TSuggestionText,
 	Value,
@@ -517,7 +519,8 @@ export function isEpisodeContentDifferent(val1: string, val2: string) {
 		.filter((item) => item.diff)
 
 	const areAnyDeletionsInBlocks = diffBlocks.some(
-		(item: any) => item?.diffOperation?.type === 'delete'
+		(item: any) =>
+			item?.diffOperation?.type === 'delete' && item.status === 'pending'
 	)
 	const areAnyDeletionsInLeafs = diffLeafs.some(
 		(item: any) => item?.diffOperation?.type === 'delete'
@@ -884,4 +887,117 @@ export const unresolveEditorComment = (editor: PlateEditor, id: string) => {
 
 export function getDiffLeafID(id: string) {
 	return `diff-leaf-${id}`
+}
+
+export function getDiffClearedLeaves({
+	children,
+	all,
+	isSfx,
+}: {
+	all?: boolean
+	children: Descendant[]
+	isSfx?: boolean
+}) {
+	const diffClearedChildren = children
+		.map((child) => {
+			let add = true
+			if ('diff' in child && 'diffOperation' in child && child.diff_id) {
+				const accepted = all
+					? child.status === DiffStatus.ACCEPTED ||
+						child.status === DiffStatus.PENDING
+					: child.status === DiffStatus.ACCEPTED
+				const type = (child.diffOperation as DiffOperation)?.type
+				if (type === 'update') {
+					Object.keys(
+						(child.diffOperation as DiffUpdate)?.newProperties || []
+					).forEach((key) => {
+						delete child[key]
+					})
+				}
+				delete child.diff
+				delete child.diff_id
+				delete child.status
+				delete child.diffOperation
+
+				if (
+					((accepted && type !== 'delete') ||
+						(!accepted && type === 'delete')) &&
+					child.text
+				) {
+					add = true
+					if (isSfx) {
+						// eslint-disable-next-line @typescript-eslint/no-base-to-string
+						child.text = String(child.text).replace(/\n+/, '') + '\n '
+					}
+				} else {
+					add = false
+				}
+			}
+			if (add) {
+				return { ...child, text: String(child.text) }
+			}
+		})
+		.filter((child) => !!child)
+
+	return diffClearedChildren
+}
+
+export function getDiffClearedBlock({
+	block: originalBlock,
+	all,
+}: {
+	all?: boolean
+	block: TElement
+	isSfx?: boolean
+}) {
+	const block = structuredClone(originalBlock)
+	let add = true
+	if ('diff' in block && 'diffOperation' in block && block.diff_id) {
+		const accepted = all
+			? block.status === DiffStatus.ACCEPTED ||
+				block.status === DiffStatus.PENDING
+			: block.status === DiffStatus.ACCEPTED
+		const type = (block.diffOperation as DiffOperation)?.type
+		if (type === 'update') {
+			Object.keys(
+				(block.diffOperation as DiffUpdate)?.newProperties || []
+			).forEach((key) => {
+				delete block[key]
+			})
+		}
+		delete block.diff
+		delete block.diff_id
+		delete block.status
+		delete block.diffOperation
+
+		add = (accepted && type !== 'delete') || (!accepted && type === 'delete')
+	}
+	if (add) {
+		return block
+	}
+}
+
+export function getAcceptedDiffValue({
+	value,
+	all = true,
+	isSfx,
+}: {
+	all?: boolean
+	isSfx?: boolean
+	value: Value
+}) {
+	const newValue = structuredClone(value)
+	const currVal = newValue
+		.map((node) => {
+			const diffClearedBlock = getDiffClearedBlock({ block: node, all, isSfx })
+			if (!diffClearedBlock) {
+				return
+			}
+			return {
+				...diffClearedBlock,
+				children: getDiffClearedLeaves({ children: node.children, all, isSfx }),
+			}
+		})
+		.filter((node) => !!node)
+	return currVal
 }

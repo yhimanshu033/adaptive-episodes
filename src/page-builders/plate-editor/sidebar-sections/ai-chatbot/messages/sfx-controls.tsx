@@ -2,12 +2,11 @@ import React, { useCallback } from 'react'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import ChevronUpIcon from '@/icons/chevron-up-icon'
 import { TickIcon } from '@/icons/tick-icon'
+import ApplyChangesAlert from '@/page-builders/episodes/dialogs/apply-changes-alert'
 
 import { Button } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Typography } from '@/components/aural-ui/typography'
-
-import SFXAlert from './sfx-alert'
 
 const SFXControls = ({
 	index,
@@ -44,7 +43,7 @@ const SFXControls = ({
 				<TickIcon />
 				Apply all
 			</Button>
-			<SFXAlert onConfirm={() => handleAccept(index, false, true)}>
+			<ApplyChangesAlert onConfirm={() => handleAccept(index, false, true)}>
 				<Button
 					variant="outline"
 					size="sm"
@@ -52,7 +51,7 @@ const SFXControls = ({
 				>
 					Done
 				</Button>
-			</SFXAlert>
+			</ApplyChangesAlert>
 			<div className="flex flex-1 items-center justify-end gap-1">
 				<IconButton
 					size="small"

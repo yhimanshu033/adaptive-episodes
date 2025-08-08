@@ -102,7 +102,6 @@ export function ChatbotProvider({
 		addMessages,
 		clearMessages,
 		popMessage,
-		setAcceptedValue,
 		setPrevValue,
 		setResponseValue,
 		setRequestedAction,
@@ -110,10 +109,14 @@ export function ChatbotProvider({
 	} = useAIStore()
 
 	const { setSidebar } = usePlateStore()
-	const { setDualViewMode } = useEpisodeIdStore()
+	const {
+		setDualViewMode,
+		setAcceptedDiffValue,
+		store: useEpisodeIdContext,
+	} = useEpisodeIdStore()
 	const { messages } = store()
 	const requestedAction = store((state) => state.requestedAction)
-	const value = store((state) => state.acceptedValue)
+	const value = useEpisodeIdContext((state) => state.acceptedDiffValue)
 	const prevValue = store((state) => state.prevValue)
 
 	const { responses, taskEnded } = useSocketStreaming()
@@ -239,7 +242,7 @@ export function ChatbotProvider({
 		popMessage()
 		reset()
 		setResponseValue(null)
-		setAcceptedValue(null)
+		setAcceptedDiffValue(null)
 		removeReview()
 		setSfxStreaming('')
 		setReviewStreaming('')
