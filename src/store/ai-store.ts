@@ -38,10 +38,6 @@ function useAIStore() {
 		useAiStoreContext.setState({ prevValue: value })
 	}
 
-	const setAcceptedValue = (value: AIStoreType['acceptedValue']) => {
-		useAiStoreContext.setState({ acceptedValue: value })
-	}
-
 	const setRequestedAction = (action: AIStoreType['requestedAction']) => {
 		useAiStoreContext.setState({ requestedAction: action })
 	}
@@ -124,7 +120,6 @@ function useAIStore() {
 		clearMessages,
 		setResponseValue,
 		setPrevValue,
-		setAcceptedValue,
 		setRequestedAction,
 		setActiveExplorerMode,
 		setActiveExplorerActions,

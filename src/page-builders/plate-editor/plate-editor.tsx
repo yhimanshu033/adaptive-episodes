@@ -35,10 +35,8 @@ import EditorHandler from './editor-handler'
 function MyEditor({
 	content,
 	latestStatus,
-	importedLocal,
 }: {
 	content: TGetEpisodeResponse
-	importedLocal: boolean
 	latestStatus: EStatus | 'BASE'
 }) {
 	const editor = useMyEditor({
@@ -50,7 +48,7 @@ function MyEditor({
 	return (
 		<Plate editor={editor}>
 			<EditorDataContextProvider>
-				<SavingContextProvider data={content} initialForceSave={importedLocal}>
+				<SavingContextProvider data={content}>
 					<ChatbotProvider episodeContent={content}>
 						<div className="flex h-screen flex-col">
 							<EditorOverlayLoader />
@@ -104,11 +102,7 @@ function MyEditor({
 }
 
 export default function PlateEditor() {
-	const {
-		data: content,
-		latestStatus = 'BASE',
-		importedLocal,
-	} = useEpisodeContent()
+	const { data: content, latestStatus = 'BASE' } = useEpisodeContent()
 
 	const {
 		users,
@@ -119,5 +113,5 @@ export default function PlateEditor() {
 		return <EditorSkeletonLoader />
 	}
 
-	return <MyEditor {...{ content, latestStatus, importedLocal }} />
+	return <MyEditor {...{ content, latestStatus }} />
 }

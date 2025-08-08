@@ -30,7 +30,6 @@ const initialAiState: AIStoreType = {
 	messages: [],
 	responseValue: null,
 	prevValue: null,
-	acceptedValue: null,
 	requestedAction: null,
 	activeExplorerMode: ExplorerModeId.Plot,
 	activeExplorerActions: {
@@ -65,6 +64,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	startOverlayLoading: false,
 	selectedLanguage: undefined,
 	importedLocal: false,
+	acceptedDiffValue: null,
 }
 
 type EpisodeIdContextType = {
