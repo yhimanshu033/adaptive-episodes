@@ -6,8 +6,6 @@ import {
 	autoformatPunctuation,
 	autoformatSmartQuotes,
 } from '@platejs/autoformat'
-import { insertEmptyCodeBlock } from '@platejs/code-block'
-import { toggleList } from '@platejs/list'
 import { KEYS } from 'platejs'
 
 const autoformatMarks: AutoformatRule[] = [
@@ -120,23 +118,6 @@ const autoformatBlocks: AutoformatRule[] = [
 		type: KEYS.blockquote,
 	},
 	{
-		match: '```',
-		mode: 'block',
-		type: KEYS.codeBlock,
-		format: (editor) => {
-			insertEmptyCodeBlock(editor, {
-				defaultType: KEYS.p,
-				insertNodesOptions: { select: true },
-			})
-		},
-	},
-	// {
-	//   match: '+ ',
-	//   mode: 'block',
-	//   preFormat: openNextToggles,
-	//   type: KEYS.toggle,
-	// },
-	{
 		match: ['---', '—-', '___ '],
 		mode: 'block',
 		type: KEYS.hr,
@@ -145,59 +126,6 @@ const autoformatBlocks: AutoformatRule[] = [
 			editor.tf.insertNodes({
 				children: [{ text: '' }],
 				type: KEYS.p,
-			})
-		},
-	},
-]
-
-export const autoformatLists: AutoformatRule[] = [
-	{
-		match: ['* ', '- '],
-		mode: 'block',
-		type: 'list',
-		format: (editor) => {
-			toggleList(editor, {
-				listStyleType: KEYS.ul,
-			})
-		},
-	},
-	{
-		match: [String.raw`^\d+\.$ `, String.raw`^\d+\)$ `],
-		matchByRegex: true,
-		mode: 'block',
-		type: 'list',
-		format: (editor, { matchString }) => {
-			toggleList(editor, {
-				listRestartPolite: Number(matchString) || 1,
-				listStyleType: KEYS.ol,
-			})
-		},
-	},
-	{
-		match: ['[] '],
-		mode: 'block',
-		type: 'list',
-		format: (editor) => {
-			toggleList(editor, {
-				listStyleType: KEYS.listTodo,
-			})
-			editor.tf.setNodes({
-				checked: false,
-				listStyleType: KEYS.listTodo,
-			})
-		},
-	},
-	{
-		match: ['[x] '],
-		mode: 'block',
-		type: 'list',
-		format: (editor) => {
-			toggleList(editor, {
-				listStyleType: KEYS.listTodo,
-			})
-			editor.tf.setNodes({
-				checked: true,
-				listStyleType: KEYS.listTodo,
 			})
 		},
 	},
