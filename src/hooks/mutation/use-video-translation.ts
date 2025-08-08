@@ -29,7 +29,7 @@ export default function useVideoTranslation() {
 			])
 			const audioData = await ffmpeg.readFile(outputFileName)
 
-			const audioBlob = new Blob([audioData], { type: 'audio/mp3' })
+			const audioBlob = new Blob([audioData as BlobPart], { type: 'audio/mp3' })
 
 			const formData = new FormData()
 			formData.append('audio_file', audioBlob)
