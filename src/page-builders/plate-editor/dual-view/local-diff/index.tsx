@@ -52,9 +52,9 @@ export default function LocalDiffSection() {
 	return (
 		<div className="relative h-full">
 			<DiffEditor
-				current={children}
+				current={localDiffValue}
 				// readonly
-				previous={localDiffValue}
+				previous={children}
 				className={cn(
 					editorVariants({
 						focused: false,
