@@ -43,11 +43,10 @@ const BaseScriptDocUpload = ({
 	const fileInputref = useRef<HTMLInputElement | null>(null)
 	const [isDragging, setIsDragging] = useState(false)
 	const { isOriginal } = useAccessChecks()
-	const { setOpen, setFetchingLSSheet } = useAdaptation()
-
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { form, baseScriptUploadFormSchema } = useBaseScriptUploadResolver()
 	const baseExtensionMutation = useBaseExtensionMutation()
+	const { setOpen, setFetchingLSSheet } = useAdaptation()
 
 	const handleDiscardDoc = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
