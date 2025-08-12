@@ -4,6 +4,7 @@ import {
 	BASE_EXTENSION_MUTATION,
 	BASE_EXTENSION_QUERY_KEY,
 } from '@/constants/query-constants'
+import { uploadFile } from '@/server-action/file-upload'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -23,7 +24,17 @@ const useBaseExtensionMutation = () => {
 		})
 	}
 
-	const onBaseExtensionMutation = async (params: TBaseScriptExtensionBody) => {
+	const onBaseExtensionMutation = async (
+		params: TBaseScriptExtensionBody & { file?: File }
+	) => {
+		if (params.file) {
+			const file_url = (await uploadFile(params.file))?.url
+			if (!file_url) {
+				return
+			}
+			params.file_url = file_url
+			delete params.file
+		}
 		const taskId = await startTask<
 			TBaseScriptExtensionBody,
 			{ message: string }
