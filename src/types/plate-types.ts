@@ -133,3 +133,10 @@ export interface DiffProps extends LegacyProps {
 	diff_id: string
 	status: DiffStatus
 }
+
+export type TDocxHTMLArgs = {
+	epNumber: number
+	title: string
+	value: Value
+	words: number
+}

@@ -146,7 +146,7 @@ const LSTableEditor = memo(
 				),
 			]
 
-			const blob = new Blob([csvRows.join('\n')], {
+			const blob = new Blob([csvRows.join('\n') as BlobPart], {
 				type: 'text/csv;charset=utf-8;',
 			})
 			const url = URL.createObjectURL(blob)
