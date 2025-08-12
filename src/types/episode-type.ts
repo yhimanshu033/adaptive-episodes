@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { VariantProps } from 'class-variance-authority'
+import { Value } from 'platejs'
 
 import { dialogVariants } from '@/components/aural-ui/dialog'
 
@@ -177,6 +178,7 @@ export type TStatusUpdateResponse = {
 export type TGetDocxFromHtmlBody = { html_content: string }
 
 export type EpisodeIdStoreType = {
+	acceptedDiffValue: Value | null
 	activeNoteId: string | null
 	currentTitle: string
 	dualViewMode: EDualVIewMode | null

@@ -124,6 +124,7 @@ export type TCommentGeneric = TDiscussion | TOldComment
 export interface DiffViewProps {
 	className?: string
 	current?: Value | null
+	isMainEditor?: boolean
 	plugins?: PlatePlugin[]
 	previous?: Value | null
 	readonly?: boolean
@@ -131,4 +132,11 @@ export interface DiffViewProps {
 export interface DiffProps extends LegacyProps {
 	diff_id: string
 	status: DiffStatus
+}
+
+export type TDocxHTMLArgs = {
+	epNumber: number
+	title: string
+	value: Value
+	words: number
 }

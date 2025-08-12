@@ -12,6 +12,21 @@ export const diffOperationColors: Record<DiffOperation['type'], string> = {
 	[AiDiffOperation.UPDATE]: 'bg-blue-500/40',
 }
 
+export const diffOperationClassnames: Record<DiffOperation['type'], string> = {
+	[AiDiffOperation.DELETE]: 'bg-red-500/40 line-through',
+	[AiDiffOperation.INSERT]: 'bg-green-500/40 underline',
+	[AiDiffOperation.UPDATE]: 'bg-blue-500/40',
+}
+
+export const diffOperationComponents: Record<
+	DiffOperation['type'],
+	keyof JSX.IntrinsicElements
+> = {
+	[AiDiffOperation.DELETE]: 'del',
+	[AiDiffOperation.INSERT]: 'ins',
+	[AiDiffOperation.UPDATE]: 'span',
+}
+
 export const describeUpdate = ({ newProperties, properties }: DiffUpdate) => {
 	const { addedProps, removedProps, updatedProps } = Object.entries(
 		newProperties

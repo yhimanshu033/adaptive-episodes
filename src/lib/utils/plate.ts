@@ -3,15 +3,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
+import { DiffStatus } from '@/constants/ai-constants'
 import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/editor-constants'
 import { getCommentKey } from '@platejs/comment'
-import { computeDiff } from '@platejs/diff'
+import { computeDiff, DiffOperation, DiffUpdate } from '@platejs/diff'
 // Create a new file: src/lib/comment-helpers.ts
 import {
+	createSlateEditor,
 	Descendant,
 	Element,
 	KEYS,
+	serializeHtml,
 	TCommentText,
+	TElement,
 	Text,
 	TSuggestionText,
 	Value,
@@ -19,12 +23,15 @@ import {
 import { PlateEditor } from 'platejs/react'
 import { type BaseRange, type Range } from 'slate'
 
+import { BaseEditorKit } from '@/components/editor/editor-base-kit'
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
 import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 import { ResolvedSuggestion } from '@/components/plate-ui-v2/block-suggestion'
+import { DEFAULT_COLOR } from '@/components/plate-ui/color-constants'
+import { EditorStatic } from '@/components/plate-ui/editor-static'
 
 import { TCustomComment } from '@/types/editor-types'
-import { Selection } from '@/types/plate-types'
+import { Selection, TDocxHTMLArgs } from '@/types/plate-types'
 
 export function isSameBlock(selection: Selection): boolean {
 	return selection.anchor.path[0] === selection.focus.path[0]
@@ -517,7 +524,8 @@ export function isEpisodeContentDifferent(val1: string, val2: string) {
 		.filter((item) => item.diff)
 
 	const areAnyDeletionsInBlocks = diffBlocks.some(
-		(item: any) => item?.diffOperation?.type === 'delete'
+		(item: any) =>
+			item?.diffOperation?.type === 'delete' && item.status === 'pending'
 	)
 	const areAnyDeletionsInLeafs = diffLeafs.some(
 		(item: any) => item?.diffOperation?.type === 'delete'
@@ -884,4 +892,173 @@ export const unresolveEditorComment = (editor: PlateEditor, id: string) => {
 
 export function getDiffLeafID(id: string) {
 	return `diff-leaf-${id}`
+}
+
+export function getDiffClearedLeaves({
+	children,
+	all,
+	isSfx,
+}: {
+	all?: boolean
+	children: Descendant[]
+	isSfx?: boolean
+}) {
+	const diffClearedChildren = children
+		.map((child) => {
+			let add = true
+			if ('diff' in child && 'diffOperation' in child && child.diff_id) {
+				const accepted = all
+					? child.status === DiffStatus.ACCEPTED ||
+						child.status === DiffStatus.PENDING
+					: child.status === DiffStatus.ACCEPTED
+				const type = (child.diffOperation as DiffOperation)?.type
+				if (type === 'update') {
+					Object.keys(
+						(child.diffOperation as DiffUpdate)?.newProperties || []
+					).forEach((key) => {
+						delete child[key]
+					})
+				}
+				delete child.diff
+				delete child.diff_id
+				delete child.status
+				delete child.diffOperation
+
+				if (
+					((accepted && type !== 'delete') ||
+						(!accepted && type === 'delete')) &&
+					child.text
+				) {
+					add = true
+					if (isSfx) {
+						// eslint-disable-next-line @typescript-eslint/no-base-to-string
+						child.text = String(child.text).replace(/\n+/, '') + '\n '
+					}
+				} else {
+					add = false
+				}
+			}
+			if (add) {
+				return { ...child, text: String(child.text) }
+			}
+		})
+		.filter((child) => !!child)
+
+	return diffClearedChildren
+}
+
+export function getDiffClearedBlock({
+	block: originalBlock,
+	all,
+}: {
+	all?: boolean
+	block: TElement
+	isSfx?: boolean
+}) {
+	const block = structuredClone(originalBlock)
+	let add = true
+	if ('diff' in block && 'diffOperation' in block && block.diff_id) {
+		const accepted = all
+			? block.status === DiffStatus.ACCEPTED ||
+				block.status === DiffStatus.PENDING
+			: block.status === DiffStatus.ACCEPTED
+		const type = (block.diffOperation as DiffOperation)?.type
+		if (type === 'update') {
+			Object.keys(
+				(block.diffOperation as DiffUpdate)?.newProperties || []
+			).forEach((key) => {
+				delete block[key]
+			})
+		}
+		delete block.diff
+		delete block.diff_id
+		delete block.status
+		delete block.diffOperation
+
+		add = (accepted && type !== 'delete') || (!accepted && type === 'delete')
+	}
+	if (add) {
+		return block
+	}
+}
+
+export function getAcceptedDiffValue({
+	value,
+	all = true,
+	isSfx,
+}: {
+	all?: boolean
+	isSfx?: boolean
+	value: Value
+}) {
+	const newValue = structuredClone(value)
+	const currVal = newValue
+		.map((node) => {
+			const diffClearedBlock = getDiffClearedBlock({ block: node, all, isSfx })
+			if (!diffClearedBlock) {
+				return
+			}
+			return {
+				...diffClearedBlock,
+				children: getDiffClearedLeaves({ children: node.children, all, isSfx }),
+			}
+		})
+		.filter((node) => !!node)
+	return currVal
+}
+
+const siteUrl = 'https://platejs.org'
+
+export async function valueToHTML({
+	value,
+	epNumber,
+	title,
+	words,
+}: TDocxHTMLArgs) {
+	const editorStatic = createSlateEditor({
+		plugins: BaseEditorKit,
+		value,
+	})
+
+	const editorHtml = await serializeHtml(editorStatic, {
+		editorComponent: EditorStatic,
+		props: { style: { padding: '0 calc(50% - 350px)', paddingBottom: '' } },
+	})
+
+	const prismCss = `<link rel="stylesheet" href="${siteUrl}/prism.css">`
+	const tailwindCss = `<link rel="stylesheet" href="${siteUrl}/tailwind.css">`
+	const katexCss = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.css" integrity="sha512-biVfhYmr5/0ByqorphITx1oOhodn2M/uXpELNVOKY7v9TLYy/4on1yAOw1XCzCPOT4RweRTmAhVBHeJonJM6Tg==sha512-biVfhYmr5/0ByqorphITx1oOhodn2M/uXpELNVOKY7v9TLYy/4on1yAOw1XCzCPOT4RweRTmAhVBHeJonJM6Tg==" crossorigin="anonymous">`
+
+	const html = `<!DOCTYPE html>
+	<html lang="en">
+	  <head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="color-scheme" content="light dark" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+		  href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..700&display=swap"
+		  rel="stylesheet"
+		/>
+		${tailwindCss}
+		${prismCss}
+		${katexCss}
+		<title>${title}</title>
+		<style>
+		  :root {
+			--font-sans: 'Inter', 'Inter Fallback';
+			--font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback';
+		  }
+		</style>
+	  </head>
+	  <body>
+	  <div><strong>EP ${epNumber} - ${title}</strong></div><br><br>
+	  <div> Word Count: ${words} </div><br><br>
+	  ${editorHtml.replace(/<\/div>/g, '</div><br>').replace(/rgba\([\d\s,.]*\)/g, DEFAULT_COLOR)}
+	  </body>
+	</html>`
+
+	const base64String = btoa(unescape(encodeURIComponent(html)))
+	return { base64String, html, title }
 }

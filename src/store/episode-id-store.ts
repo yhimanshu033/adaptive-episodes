@@ -45,6 +45,12 @@ function useEpisodeIdStore() {
 		})
 	}
 
+	const setAcceptedDiffValue = (
+		acceptedDiffValue: EpisodeIdStoreType['acceptedDiffValue']
+	) => {
+		useEpisodeIdStoreContext.setState({ acceptedDiffValue })
+	}
+
 	const addResolvedComment = (
 		resolvedComment: EpisodeIdStoreType['resolvedComments'][number]
 	) => {
@@ -91,6 +97,7 @@ function useEpisodeIdStore() {
 		setActiveNoteId,
 		setSelectedLanguage,
 		setEpisodeImported,
+		setAcceptedDiffValue,
 	}
 }
 
