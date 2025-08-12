@@ -74,22 +74,26 @@ const BaseScriptExtensionDialog = () => {
 					<Divider variant="dashed" />
 				</DialogHeader>
 				<div className="h-full space-y-4 pt-6">
-					<IfElse condition={isGerman}>
-						<If>
-							<UpdateDriveFolder folderType={EFolderType.BASE_SCRIPT} />
-							<BaseScriptExtension />
-						</If>
-						<Else>
-							<BaseScriptDocUpload setDialogOpen={setBseDialogOpen} />
-						</Else>
-					</IfElse>
+					<If condition={isGerman}>
+						<UpdateDriveFolder folderType={EFolderType.BASE_SCRIPT} />
+					</If>
+					<BaseScriptExtension
+						setDialogOpen={setBseDialogOpen}
+						isGerman={isGerman}
+					/>
 				</div>
 			</DialogContent>
 		</Dialog>
 	)
 }
 
-const BaseScriptExtension = () => {
+const BaseScriptExtension = ({
+	setDialogOpen,
+	isGerman,
+}: {
+	isGerman: boolean
+	setDialogOpen: (open: boolean) => void
+}) => {
 	const { data, refetch, isFetching, isLoading } = useBaseExtensionQuery(true)
 
 	const baseExtensionMutation = useBaseExtensionMutation()
@@ -112,6 +116,10 @@ const BaseScriptExtension = () => {
 
 	if (isFetching || isLoading) {
 		return <CircularLoader />
+	}
+
+	if (isGerman) {
+		return <BaseScriptDocUpload setDialogOpen={setDialogOpen} />
 	}
 
 	if (!data || (data && 'message' in data)) {
