@@ -8,7 +8,6 @@ import {
 	H4Plugin,
 	H5Plugin,
 	H6Plugin,
-	HorizontalRulePlugin,
 } from '@platejs/basic-nodes/react'
 import { ParagraphPlugin } from 'platejs/react'
 
@@ -21,7 +20,6 @@ import {
 	H5Element,
 	H6Element,
 } from '@/components/plate-ui-v2/heading-node'
-import { HrElement } from '@/components/plate-ui-v2/hr-node'
 import { ParagraphElement } from '@/components/plate-ui-v2/paragraph-node'
 
 export const BasicBlocksKit = [
@@ -84,5 +82,4 @@ export const BasicBlocksKit = [
 		node: { component: BlockquoteElement },
 		shortcuts: { toggle: { keys: 'mod+shift+period' } },
 	}),
-	HorizontalRulePlugin.withComponent(HrElement),
 ]
