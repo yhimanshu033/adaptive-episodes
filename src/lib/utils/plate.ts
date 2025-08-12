@@ -1027,7 +1027,7 @@ export async function valueToHTML({
 
 	const prismCss = `<link rel="stylesheet" href="${siteUrl}/prism.css">`
 	const tailwindCss = `<link rel="stylesheet" href="${siteUrl}/tailwind.css">`
-	const katexCss = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.18/dist/katex.css" integrity="sha384-9PvLvaiSKCPkFKB1ZsEoTjgnJn+O3KvEwtsz37/XrkYft3DTk2gHdYvd9oWgW3tV" crossorigin="anonymous">`
+	const katexCss = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.css" integrity="sha512-biVfhYmr5/0ByqorphITx1oOhodn2M/uXpELNVOKY7v9TLYy/4on1yAOw1XCzCPOT4RweRTmAhVBHeJonJM6Tg==sha512-biVfhYmr5/0ByqorphITx1oOhodn2M/uXpELNVOKY7v9TLYy/4on1yAOw1XCzCPOT4RweRTmAhVBHeJonJM6Tg==" crossorigin="anonymous">`
 
 	const html = `<!DOCTYPE html>
 	<html lang="en">

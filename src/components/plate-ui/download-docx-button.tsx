@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react'
 import useDocxDownloadHook from '@/hooks/mutation/use-docx-download-hook'
 
+import { If } from '@/components/aural-ui/if-else'
+
 import { DownloadDocxParams } from '@/types/episode-type'
 
 import { Button } from '../aural-ui/button'
@@ -36,7 +38,9 @@ export default function DownloadDocxButton({
 			innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary "
 			onClick={() => mutate()}
 		>
-			{isDisabled ? <CircularLoader className="size-4" /> : null}
+			<If condition={isDisabled}>
+				<CircularLoader className="size-4" />
+			</If>
 			Download
 		</Button>
 	)

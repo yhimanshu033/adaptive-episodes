@@ -19,9 +19,9 @@ export default function useDocxParams(): TUseDocxParamsRet {
 		useShallow((state) => state.currentTitle)
 	)
 	const { data } = useEpisodeContentUtil()
-	const epNumber = data?.chapter.seq_number || 0
+	const epNumber = data?.chapter.seq_number ?? 0
 	const { initialStoryData } = useEpisodeTableContext()
-	const projectTitle = initialStoryData?.project_title || ''
+	const projectTitle = initialStoryData?.project_title ?? ''
 
 	return {
 		epNumber,
