@@ -26,7 +26,7 @@ function usePlayerUtil() {
 		new AbortController()
 	)
 
-	const setAudioUrl = useCallback((chunks: Uint8Array[]) => {
+	const setAudioUrl = useCallback((chunks: BlobPart[]) => {
 		if (!audioRef.current) {
 			return
 		}
@@ -56,7 +56,7 @@ function usePlayerUtil() {
 
 		const parts = splitStringByLength(text, 10000)
 
-		const chunks: Uint8Array[] = []
+		const chunks: BlobPart[] = []
 
 		for (const part of parts) {
 			const controller = new AbortController()

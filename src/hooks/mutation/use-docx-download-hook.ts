@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import { API_URLS } from '@/constants/global-constants'
+import useDocxHtmlMutation from '@/hooks/mutation/use-get-docx-mutation-hook'
 import useDocxHtml from '@/hooks/query/use-get-docx-hook'
 import useIsGerman from '@/hooks/use-is-german'
 import useSocket from '@/hooks/use-socket'
@@ -64,6 +65,7 @@ export default function useDocxDownloadHook({
 	const { data, showButton, projectTitle, epNumber, title } = useDocxHtml({
 		latestStatus,
 	})
+	const { mutateAsync } = useDocxHtmlMutation()
 
 	const { startTask, getResponse } = useSocket()
 	const downloadedContentRef = React.useRef<string | null>(null)
@@ -74,11 +76,21 @@ export default function useDocxDownloadHook({
 	// Common function to generate DOCX and return URL
 	const generateDocxUrl = useCallback(
 		async (useCache: boolean = false): Promise<string | undefined> => {
-			if (!data) {
+			let base64String = data?.base64String || ''
+			let html = data?.html || ''
+			if (!base64String && !html && isGerman) {
 				toast.error("Couldn't generate Docx")
 				return
 			}
-			const { base64String, html } = data
+			if (!base64String && !html) {
+				const mutationData = await mutateAsync()
+				if (!mutationData) {
+					toast.error("Couldn't generate Docx")
+					return
+				}
+				base64String = mutationData.base64String
+				html = mutationData.html
+			}
 
 			const taskId = await startTask<TGetDocxFromHtmlBody>({
 				method: 'POST',
@@ -103,7 +115,7 @@ export default function useDocxDownloadHook({
 
 			return responseUrl
 		},
-		[data, getResponse, startTask]
+		[data, getResponse, startTask, isGerman, mutateAsync]
 	)
 
 	// Query to get actual DOCX file size
@@ -148,7 +160,7 @@ export default function useDocxDownloadHook({
 		projectTitle,
 		epNumber,
 		fileSize,
-		isEnabled: !!data?.base64String,
+		isEnabled: !!data?.base64String || !isGerman,
 		...mutation,
 	}
 }
