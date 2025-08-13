@@ -30,6 +30,8 @@ export const LOC_SHEET_QUERY_KEY = 'loc-sheet-url'
 export const TRANSLATE_VIDEO_MUTATION_KEY = 'translate-video'
 
 export const BASE_EXTENSION_QUERY_KEY = 'base-script-extension'
+export const DOC_EPISODE_COUNT_QUERY_KEY = 'doc-episode-count'
+
 // Mutation keys
 export const RENAME_EPISODE_MUTATION = 'rename-episode'
 
