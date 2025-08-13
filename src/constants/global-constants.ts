@@ -107,6 +107,7 @@ export const API_URLS = {
 	SEND_TASK_TO_ADAPTATION: '/project/send-task-to-adaptation',
 	GET_ADAPTATION_LS: '/project/:projectId/:language/get_ls_sheet',
 	GET_STORY_DETAILS: '/projects/:storyId',
+	GET_DOC_EPISODE_COUNT: '/project/get-episode-count/',
 }
 
 export const INDEXED_DB_KEYS = {

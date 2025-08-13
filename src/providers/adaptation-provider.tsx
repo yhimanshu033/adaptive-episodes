@@ -189,6 +189,7 @@ function useAdaptationUtil() {
 		openExitDialog,
 		setOpenExitDialog,
 		setAbort,
+		isFetchingLSSheet,
 	}
 }
 

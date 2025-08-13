@@ -10,7 +10,9 @@ import { ELanguage, LSMappingInput, TNoParams } from '@/types/common'
 const useAdaptationQuery = ({
 	language,
 	projectId,
+	enabled,
 }: {
+	enabled: boolean
 	language: ELanguage
 	projectId: string
 }) => {
@@ -40,6 +42,7 @@ const useAdaptationQuery = ({
 	const query = useQuery({
 		queryKey: [GET_LS_SHEET_QUERY_KEY, projectId, language],
 		queryFn: pollLSMapping,
+		enabled,
 	})
 	return query
 }

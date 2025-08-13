@@ -1,10 +1,9 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { SAMPLE_DOC_LINK } from '@/constants/global-constants'
 import { useBaseScriptUploadResolver } from '@/hooks/form-resolvers/base-extension-resolver'
 import useBaseExtensionMutation from '@/hooks/mutation/use-base-extension-mutation'
-import useAccessChecks from '@/hooks/use-access-checks'
 import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { FileChartIcon } from '@/icons/file-chart-icon'
@@ -30,7 +29,6 @@ import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
 import DeleteModal from '@/components/delete-modal'
-import useAdaptation from '@/providers/adaptation-provider'
 import { cn } from '@/lib/aural-ui/utils'
 import { formatFileSize } from '@/lib/utils/helpers'
 
@@ -42,11 +40,9 @@ const BaseScriptDocUpload = ({
 	const { id } = useParams()
 	const fileInputref = useRef<HTMLInputElement | null>(null)
 	const [isDragging, setIsDragging] = useState(false)
-	const { isOriginal } = useAccessChecks()
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { form, baseScriptUploadFormSchema } = useBaseScriptUploadResolver()
 	const baseExtensionMutation = useBaseExtensionMutation()
-	const { setOpen, setFetchingLSSheet } = useAdaptation()
 
 	const handleDiscardDoc = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -100,12 +96,17 @@ const BaseScriptDocUpload = ({
 			file: data.file,
 			project_id: Number(id),
 		})
-		if (isOriginal) {
-			setOpen(true)
-			setFetchingLSSheet(true)
-		}
 		setDialogOpen(false)
 	}
+
+	useEffect(() => {
+		return () => {
+			if (fileInputref.current) {
+				// eslint-disable-next-line react-hooks/exhaustive-deps
+				fileInputref.current.value = ''
+			}
+		}
+	}, [])
 
 	return (
 		<Form {...form}>
@@ -295,8 +296,7 @@ const BaseScriptDocUpload = ({
 						<Button
 							className="h-11 w-fit"
 							isDisabled={
-								!form.watch('file')
-								// || storyUploadMutation.isPending
+								!form.watch('file') || baseExtensionMutation.isPending
 							}
 							type="submit"
 						>
