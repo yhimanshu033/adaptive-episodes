@@ -118,7 +118,7 @@ const BaseScriptExtension = ({
 		return <CircularLoader />
 	}
 
-	if (isGerman) {
+	if (!isGerman) {
 		return <BaseScriptDocUpload setDialogOpen={setDialogOpen} />
 	}
 
