@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Descendant, TSuggestionText, Value } from 'platejs'
 
 export function migrateOldSuggestions(
@@ -13,12 +14,14 @@ function transformNode(
 ): Descendant {
 	// Handle elements recursively
 	if ('children' in node && Array.isArray(node.children)) {
+		const transformedChildren = (node.children as Descendant[]).map((child) =>
+			transformNode(child, getTimestamp)
+		)
+		const { suggestion, ...rest } = node as Record<string, unknown>
 		return {
-			...node,
-			children: (node.children as Descendant[]).map((child) =>
-				transformNode(child, getTimestamp)
-			),
-		}
+			...rest,
+			children: transformedChildren,
+		} as Descendant
 	}
 
 	// Handle TText nodes
