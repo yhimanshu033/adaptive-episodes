@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as SwitchPrimitives from '@radix-ui/react-switch'
 
-import { cn } from '@/lib/aural-ui/utils'
+import { cn } from '../../lib/aural-ui/utils'
 
 type SwitchWithIconsProps = React.ComponentPropsWithoutRef<
 	typeof SwitchPrimitives.Root
@@ -33,10 +33,8 @@ const Switch = React.forwardRef<
 	>
 		<span
 			className={cn(
-				'absolute top-1/2 left-2 -translate-y-1/2',
-				!onIcon &&
-					'font-fm-brand text-fm-positive [font-size:var(--text-fm-sm)]',
-				disabled && !onIcon && 'text-fm-positive-tert'
+				'font-fm-brand text-fm-positive absolute top-1/2 left-2 -translate-y-1/2 [font-size:var(--text-fm-sm)]',
+				disabled && 'text-fm-positive-tert'
 			)}
 			data-state={checked ? 'checked' : 'unchecked'}
 			data-disabled={disabled || undefined}
@@ -45,24 +43,14 @@ const Switch = React.forwardRef<
 		</span>
 
 		<span
-			className={cn(
-				'absolute top-1/2 right-1.5 -translate-y-1/2',
-				!offIcon &&
-					'font-fm-brand text-fm-tertiary [font-size:var(--text-fm-sm)]'
-			)}
+			className="font-fm-brand text-fm-tertiary absolute top-1/2 right-1.5 -translate-y-1/2 [font-size:var(--text-fm-sm)]"
 			data-state={checked ? 'checked' : 'unchecked'}
 			data-disabled={disabled || undefined}
 		>
 			{offIcon ?? 'OFF'}
 		</span>
 
-		<SwitchPrimitives.Thumb
-			className={cn(
-				'bg-fm-icon-active data-[disabled]:bg-fm-icon-inactive',
-				'pointer-events-none z-10 block size-6 rounded-full shadow-lg ring-0 transition-transform',
-				'data-[state=checked]:translate-x-7 data-[state=unchecked]:translate-x-1'
-			)}
-		/>
+		<SwitchPrimitives.Thumb className="bg-fm-icon-active data-[disabled]:bg-fm-icon-inactive pointer-events-none z-10 block size-6 rounded-full shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-7 data-[state=unchecked]:translate-x-1" />
 	</SwitchPrimitives.Root>
 ))
 Switch.displayName = SwitchPrimitives.Root.displayName
