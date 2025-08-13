@@ -133,6 +133,7 @@ const BaseScriptDocUpload = ({
 									onDragOver={handleDrag}
 									onDragLeave={handleDrag}
 									onDrop={handleDrop}
+									aria-label="Upload document file"
 									onClick={() =>
 										!field.value ? fileInputref.current?.click() : {}
 									}
