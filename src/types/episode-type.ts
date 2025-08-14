@@ -295,3 +295,8 @@ export type TNotesUpdateBody = {
 export type TPlayingEpisode = {
 	info: { chapter?: string; episode?: string; img?: string }
 }
+
+export type TGetDocEpisodeCountResponse = {
+	episode_count: number
+	message: string
+}

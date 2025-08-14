@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { languageToTitle } from '@/constants/episodes-constants'
+import useAdaptationQuery from '@/hooks/query/use-adaptation-query'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { TickCircleIcon } from '@/icons/tick-circle-icon'
 import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
@@ -25,7 +26,7 @@ import LanguageSelector, {
 	LLMModelSelector,
 } from '@/components/plate-ui/language-selector'
 import useAdaptation from '@/providers/adaptation-provider'
-import { cn } from '@/lib/utils/helpers'
+import { cn, parseInputLSMapping } from '@/lib/utils/helpers'
 
 import { ELanguage } from '@/types/common'
 
@@ -59,6 +60,8 @@ export default function AdaptationDialog({
 		llmModel,
 		setLLMModel,
 		setOpenExitDialog,
+		isFetchingLSSheet,
+		setFetchingLSSheet,
 	} = useAdaptation()
 
 	if (
@@ -76,6 +79,11 @@ export default function AdaptationDialog({
 	const setAdaptDialogOpen = useCustomDialog ? setOpenDialog : setOpen
 
 	const { id } = useParams()
+	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
+		projectId: id as string,
+		language: storyData?.parent_language || ELanguage.ENGLISH,
+		enabled: isFetchingLSSheet,
+	})
 
 	const selectedEpNo = useMemo(
 		() => [
@@ -141,6 +149,13 @@ export default function AdaptationDialog({
 	const handleClose = () => {
 		setOpenExitDialog(true)
 	}
+
+	useEffect(() => {
+		if (!lsSheetLoading && lsSheetData) {
+			setTableData(parseInputLSMapping(lsSheetData))
+			setFetchingLSSheet(false)
+		}
+	}, [lsSheetLoading, lsSheetData, setTableData, setFetchingLSSheet])
 
 	if (!adaptOpen && step > 1) {
 		return (
