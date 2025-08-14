@@ -26,6 +26,7 @@ const AdaptationContainer = () => {
 	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
 		projectId: id as string,
 		language: initialStoryData?.parent_language || ELanguage.ENGLISH,
+		enabled: true,
 	})
 
 	const {
