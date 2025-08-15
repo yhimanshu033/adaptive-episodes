@@ -4,6 +4,7 @@ import React, { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
+import useRecentUser from '@/hooks/use-recent-user'
 import useCustomPlateStore, { usePlateStore } from '@/store/plate-store'
 import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
@@ -47,6 +48,8 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 		({ mode }) => isWriter || mode === EditorModes.viewing
 	)
 
+	const { canCurrentUserBeRecent } = useRecentUser()
+
 	const value = readOnly
 		? EditorModes.viewing
 		: isSuggesting
@@ -55,7 +58,7 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 
 	const handleChange = React.useCallback(
 		(newValue: string) => {
-			if (!isWriter || !!simplifiedEditor) {
+			if (!isWriter || !!simplifiedEditor || !canCurrentUserBeRecent) {
 				return
 			}
 			setReadOnly(newValue === String(EditorModes.viewing))
@@ -76,18 +79,25 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 			setOption,
 			editorRef.tf,
 			setSidebar,
+			canCurrentUserBeRecent,
 		]
 	)
 
 	useEffect(() => {
-		if (!isWriter || simplifiedEditor) {
+		if (!isWriter || simplifiedEditor || canCurrentUserBeRecent) {
 			setTimeout(() => {
 				setReadOnly(true)
 			}, 0)
 			return
 		}
 		setReadOnly(viewMode)
-	}, [isWriter, setReadOnly, simplifiedEditor, viewMode])
+	}, [
+		isWriter,
+		setReadOnly,
+		simplifiedEditor,
+		viewMode,
+		canCurrentUserBeRecent,
+	])
 
 	return (
 		<Select value={value} onValueChange={handleChange} {...props}>

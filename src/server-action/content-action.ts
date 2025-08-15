@@ -54,7 +54,7 @@ export const saveContent = async ({
 			episodeId,
 		},
 	})
-	return responseData.data
+	return responseData
 }
 
 export const updateEpisode = async ({

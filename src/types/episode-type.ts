@@ -91,6 +91,7 @@ export type TGetEpisodesQueryParams = {
 
 export type TGetEpisodeResponse = {
 	chapter: TEpisode
+	email?: string
 	next_parent_id: number | null
 	previous_parent_id: number | null
 	text: string
@@ -184,6 +185,7 @@ export type EpisodeIdStoreType = {
 	dualViewMode: EDualVIewMode | null
 	episodeId: number
 	importedLocal: boolean
+	recentEmail?: string
 	resolvedComments: TCustomComment[]
 	selectedLanguage: ELanguage | undefined
 	selectedStatus: EStatus | undefined
@@ -294,4 +296,9 @@ export type TNotesUpdateBody = {
 
 export type TPlayingEpisode = {
 	info: { chapter?: string; episode?: string; img?: string }
+}
+
+export type TSaveEpisodeFailMessage = {
+	email?: string
+	message?: string
 }

@@ -9,6 +9,7 @@ import {
 	removeUnsavedEpisodeParams,
 } from '@/store/global-store'
 import { usePluginOption } from 'platejs/react'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
@@ -19,6 +20,7 @@ import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import {
 	SaveEpisodeParams,
 	TGetEpisodeResponse,
+	TSaveEpisodeFailMessage,
 	TSaveEpisodeParams,
 } from '@/types/episode-type'
 
@@ -52,6 +54,7 @@ export function SavingContextProvider({
 	const {
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
+		setRecentEmail,
 		setStartOverlayLoading,
 	} = useEpisodeIdStore()
 
@@ -133,7 +136,7 @@ export function SavingContextProvider({
 					status = EStatus.FIRST_DRAFT
 				}
 
-				await saveEpisodeMutation.mutateAsync({
+				const respData = await saveEpisodeMutation.mutateAsync({
 					status,
 					chapterId,
 					text,
@@ -143,6 +146,18 @@ export function SavingContextProvider({
 					language,
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
+
+				console.log({ respData })
+
+				if (!respData.success) {
+					const message = respData.message as TSaveEpisodeFailMessage
+					toast.error('Saving failed!')
+					if (message.email) {
+						toast.error(`${message.email} is currently working on the episode!`)
+						setRecentEmail(message.email)
+					}
+					return
+				}
 
 				setLastSaved(new Date())
 				setForceSave(false)
