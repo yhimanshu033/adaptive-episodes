@@ -147,19 +147,17 @@ export function SavingContextProvider({
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
 
-				console.log({ respData })
-
 				if (!respData.success) {
 					const message = respData.message as TSaveEpisodeFailMessage
 					toast.error('Saving failed!')
 					if (message.email) {
 						toast.error(`${message.email} is currently working on the episode!`)
 						setRecentEmail(message.email)
+					} else {
+						setLastSaved(new Date())
 					}
-					return
 				}
 
-				setLastSaved(new Date())
 				setForceSave(false)
 				setIsSaved(true)
 			} catch (error) {

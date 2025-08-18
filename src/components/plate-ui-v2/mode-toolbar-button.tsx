@@ -84,7 +84,7 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 	)
 
 	useEffect(() => {
-		if (!isWriter || simplifiedEditor || canCurrentUserBeRecent) {
+		if (!isWriter || simplifiedEditor || !canCurrentUserBeRecent) {
 			setTimeout(() => {
 				setReadOnly(true)
 			}, 0)
