@@ -12,6 +12,7 @@ import { GitBranchIcon } from '@/icons/git-branch-icon'
 import { GitForkIcon } from '@/icons/git-fork-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/dialogs/multi-ep-localize-dialog'
+import BulkEpisodeDownload from '@/page-builders/episodes/table/bulk-episode-download'
 import { Table } from '@tanstack/react-table'
 import { Replace } from 'lucide-react'
 
@@ -123,6 +124,7 @@ export default function SelectionActions({
 				>
 					<Replace size={16} />
 				</MultiEpLocalizeDialog>
+				<BulkEpisodeDownload selectedRowData={selectedRowData} />
 				<If
 					condition={
 						!language.parentLanguage ||
