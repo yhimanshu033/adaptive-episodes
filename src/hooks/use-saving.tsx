@@ -271,13 +271,13 @@ export function SavingContextProvider({
 		handleSaveGlobalStore,
 	])
 
-	// FOR CHECKING IF USER IS OWNER EVERY 5MIN 5SEC
+	// FOR CHECKING IF USER IS OWNER EVERY 9.9 MINS
 	useEffect(() => {
 		if (!canCurrentUserBeRecent) {
 			return
 		}
-		const checkInterval = 9.9 * 60 * 1000 // 9.9 minutes
 		if (isSaved) {
+			const checkInterval = 9.9 * 60 * 1000 // 9.9 MINS
 			const scheduleFunc = () => {
 				timeoutRef.current = setTimeout(() => {
 					setIsSaved(false)
