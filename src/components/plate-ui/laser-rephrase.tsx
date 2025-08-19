@@ -54,7 +54,7 @@ export default function LaserRephrase({
 		prompt: promptInput,
 		style_template: '',
 		input_language: languageToTitle[language],
-		additional_context: additionalContext,
+		use_rag_context: additionalContext,
 	}
 
 	if (key && triggerRephrase === key && lasersResponseMap[key]?.response) {

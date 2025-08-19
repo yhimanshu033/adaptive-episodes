@@ -12,7 +12,6 @@ import { ELanguage, LSMappingOutput, MinifiedValue } from '@/types/common'
 
 export interface LaserToolsParams {
 	action: string
-	additional_context?: boolean
 	context?: string
 	ep_number: string
 	ep_text: string
@@ -23,6 +22,7 @@ export interface LaserToolsParams {
 	prompt?: string
 	style_template?: string
 	text: string
+	use_rag_context?: boolean
 }
 
 export interface LaserToolsApiResponse {
