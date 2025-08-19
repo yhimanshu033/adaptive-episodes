@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEditorData from '@/hooks/plate/use-editor-data'
+import useRecentUser from '@/hooks/use-recent-user'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import {
 	addUnsavedEpisodeParams,
@@ -62,12 +63,15 @@ export function SavingContextProvider({
 		useShallow((state) => state.currentTitle)
 	)
 
+	const { canCurrentUserBeRecent } = useRecentUser()
+
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 	const [isSaved, setIsSaved] = React.useState(true)
+	const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 	const pathname = usePathname()
 
 	useEffect(() => {
@@ -146,16 +150,15 @@ export function SavingContextProvider({
 					language,
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
-
 				if (!respData.success) {
 					const message = respData.message as TSaveEpisodeFailMessage
 					toast.error('Saving failed!')
 					if (message.email) {
 						toast.error(`${message.email} is currently working on the episode!`)
 						setRecentEmail(message.email)
-					} else {
-						setLastSaved(new Date())
 					}
+				} else {
+					setLastSaved(new Date())
 				}
 
 				setForceSave(false)
@@ -267,6 +270,31 @@ export function SavingContextProvider({
 		handleRemoveGlobalStore,
 		handleSaveGlobalStore,
 	])
+
+	// FOR CHECKING IF USER IS OWNER EVERY 5MIN 5SEC
+	useEffect(() => {
+		if (!canCurrentUserBeRecent) {
+			return
+		}
+		const checkInterval = 9.9 * 60 * 1000 // 9.9 minutes
+		if (isSaved) {
+			const scheduleFunc = () => {
+				timeoutRef.current = setTimeout(() => {
+					setIsSaved(false)
+				}, checkInterval)
+			}
+
+			scheduleFunc() // initial call
+		}
+
+		// Cleanup if isSaved becomes false or on unmount
+		return () => {
+			if (timeoutRef.current) {
+				clearTimeout(timeoutRef.current)
+				timeoutRef.current = null
+			}
+		}
+	}, [isSaved, canCurrentUserBeRecent])
 
 	const value = {
 		handleSave,
