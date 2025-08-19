@@ -1,5 +1,10 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
-import Link from 'next/link'
+import React, {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+} from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
 import {
@@ -9,32 +14,31 @@ import {
 import { useInfiniteEpisodesData } from '@/hooks/query/use-episode-data'
 import useExtendedSaving from '@/hooks/use-extended-saving'
 import { LayoutLeftIcon } from '@/icons/layout-left-icon'
+import EpisodeNavigationButton from '@/page-builders/plate-editor/episode-navigation/episode-navigation-button'
 import {
 	updateIsEpisodeNavigationOpen,
 	useEditorStore,
 } from '@/store/editor-store'
 import { useShallow } from 'zustand/react/shallow'
 
-import {
-	buttonVariants,
-	innerButtonVariants,
-} from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import CircularLoader from '@/components/ui/circular-loader'
 import ForEach from '@/components/ui/for-each'
+import { adjustScrollIfAtTop } from '@/lib/utils/client-helpers'
 import { cn } from '@/lib/utils/helpers'
 
 import { TGetEpisodesResponse } from '@/types/episode-type'
 
 export default function EpisodeNavigation() {
-	const { episodeId, id } = useParams()
+	const { episodeId } = useParams()
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 	const episodeSequence = searchParams.get(EPISODE_SEQUENCE)
 	const isEpisodeNavigationOpen = useEditorStore(
 		useShallow((state) => state.isEpisodeNavigationOpen)
 	)
+	const scrollRef = useRef<HTMLDivElement | null>(null)
 
 	const page = useMemo(() => {
 		return episodeSequence
@@ -88,6 +92,10 @@ export default function EpisodeNavigation() {
 		})
 	}, [isEpisodeNavigationOpen, episodeId])
 
+	useLayoutEffect(() => {
+		adjustScrollIfAtTop(scrollRef.current)
+	}, [sortedEpisodes])
+
 	const toggleOpenNavigation = useCallback(() => {
 		updateIsEpisodeNavigationOpen(!isEpisodeNavigationOpen)
 	}, [isEpisodeNavigationOpen])
@@ -117,9 +125,8 @@ export default function EpisodeNavigation() {
 					isEpisodeNavigationOpen ? 'w-32' : 'w-0'
 				)}
 			>
-				<ScrollArea className="h-svh">
+				<ScrollArea className="h-svh" viewportRef={scrollRef}>
 					<InfiniteScrollWithDebouncing
-						className=""
 						skeleton={
 							<div className="flex w-full justify-start p-4">
 								<CircularLoader className="size-8" />
@@ -128,42 +135,13 @@ export default function EpisodeNavigation() {
 					>
 						<div className="flex flex-col gap-2 px-2">
 							<ForEach data={sortedEpisodes}>
-								{(item, idx) => {
-									const episode_id = item.parent || item.id
-									const isActive = episode_id === Number(episodeId)
-
-									return (
-										<Link
-											href={`/projects/${String(id)}/${String(episode_id)}/content?${EPISODE_SEQUENCE}=${item.seq_number}`}
-											className={cn(
-												buttonVariants({
-													variant: 'text',
-												}),
-												'group text-fm-placeholder leading-fm-md border-l-2 border-transparent [font-size:var(--text-fm-md)] backdrop-blur-3xl focus-visible:ring-0 focus-visible:ring-offset-0',
-												{
-													'bg-fm-hotpink-50 text-fm-secondary-800 border-fm-hotpink-200':
-														isActive,
-													'hover:bg-fm-hotpink-50 focus-visible:bg-fm-hotpink-50 hover:text-fm-secondary-800 focus-visible:text-fm-secondary-800':
-														!isActive,
-												}
-											)}
-											id={`ep-btn-${episode_id}`}
-											key={`ep-btn-${episode_id}-${idx}`}
-											onClick={void handleClick}
-										>
-											<span
-												className={cn(
-													innerButtonVariants({
-														variant: 'text',
-													}),
-													'!px-fm-2xl translate-y-0 justify-start rounded-none'
-												)}
-											>
-												EP {item.seq_number}
-											</span>
-										</Link>
-									)
-								}}
+								{(item) => (
+									<EpisodeNavigationButton
+										handleClick={() => void handleClick()}
+										item={item}
+										key={item.id}
+									/>
+								)}
 							</ForEach>
 						</div>
 					</InfiniteScrollWithDebouncing>
