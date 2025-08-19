@@ -1,6 +1,7 @@
 import React from 'react'
 import useBaseExtensionMutation from '@/hooks/mutation/use-base-extension-mutation'
 import useBaseExtensionQuery from '@/hooks/query/use-base-extension-data'
+import useAccessChecks from '@/hooks/use-access-checks'
 import { CrossIcon } from '@/icons/cross-icon'
 import BaseExtensionForm from '@/page-builders/manage-project/base-extension-form'
 import BaseScriptStatus from '@/page-builders/manage-project/base-script-status'
@@ -35,10 +36,13 @@ import { formatDate } from '@/lib/format-date'
 
 import { EFolderType } from '@/types/admin-types'
 
+import BaseScriptDocUpload from '../table/base-script-doc-upload'
+
 const BaseScriptExtensionDialog = () => {
 	const { useEpisodeTableStore: episodeStore, setBseDialogOpen } =
 		useEpisodeStore()
 	const isBseDialogOpen = episodeStore((state) => state.isBseDialogOpen)
+	const { isGerman } = useAccessChecks()
 
 	return (
 		<Dialog open={isBseDialogOpen} onOpenChange={setBseDialogOpen}>
@@ -69,16 +73,27 @@ const BaseScriptExtensionDialog = () => {
 					</DialogDescription>
 					<Divider variant="dashed" />
 				</DialogHeader>
-				<div className="space-y-4 pt-6">
-					<UpdateDriveFolder folderType={EFolderType.BASE_SCRIPT} />
-					<BaseScriptExtension />
+				<div className="h-full space-y-4 pt-6">
+					<If condition={isGerman}>
+						<UpdateDriveFolder folderType={EFolderType.BASE_SCRIPT} />
+					</If>
+					<BaseScriptExtension
+						setDialogOpen={setBseDialogOpen}
+						isGerman={isGerman}
+					/>
 				</div>
 			</DialogContent>
 		</Dialog>
 	)
 }
 
-const BaseScriptExtension = () => {
+const BaseScriptExtension = ({
+	setDialogOpen,
+	isGerman,
+}: {
+	isGerman: boolean
+	setDialogOpen: (open: boolean) => void
+}) => {
 	const { data, refetch, isFetching, isLoading } = useBaseExtensionQuery(true)
 
 	const baseExtensionMutation = useBaseExtensionMutation()
@@ -101,6 +116,10 @@ const BaseScriptExtension = () => {
 
 	if (isFetching || isLoading) {
 		return <CircularLoader />
+	}
+
+	if (!isGerman) {
+		return <BaseScriptDocUpload setDialogOpen={setDialogOpen} />
 	}
 
 	if (!data || (data && 'message' in data)) {

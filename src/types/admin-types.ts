@@ -158,9 +158,11 @@ export type TBaseScriptExtensionResponse = {
 }
 
 export type TBaseScriptExtensionBody = {
-	file_id: string
+	file_id?: string
+	file_url?: string
+	llm_model?: string
 	project_id: number
-	ranges: {
+	ranges?: {
 		de_end: number
 		de_start: number
 		file_end: number

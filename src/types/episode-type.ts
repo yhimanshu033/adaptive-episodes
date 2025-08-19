@@ -302,3 +302,8 @@ export type TSaveEpisodeFailMessage = {
 	email?: string
 	message?: string
 }
+
+export type TGetDocEpisodeCountResponse = {
+	episode_count: number
+	message: string
+}
