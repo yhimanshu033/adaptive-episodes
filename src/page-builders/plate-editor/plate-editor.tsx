@@ -11,7 +11,7 @@ import DualView from '@/page-builders/plate-editor/dual-view'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
 import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelton-loader'
 import EpisodeHeader from '@/page-builders/plate-editor/episode-header'
-// import Sidebar from '@/page-builders/plate-editor/sidebar'
+import Sidebar from '@/page-builders/plate-editor/sidebar'
 import { Plate } from 'platejs/react'
 
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
@@ -30,7 +30,6 @@ import {
 	ResizablePanel,
 	ResizablePanelGroup,
 } from '../../components/ui/resizable'
-import BeatSheetEditor from '../beatsheet-editor'
 import EditorHandler from './editor-handler'
 
 function MyEditor({
@@ -89,8 +88,7 @@ function MyEditor({
 											<DualView translatedContent={content.translation_text} />
 										</ResizablePanelGroup>
 									</ResizablePanel>
-									{/* <Sidebar /> */}
-									<BeatSheetEditor />
+									<Sidebar />
 								</ResizablePanelGroup>
 							</div>
 							<FloatingPrompt />
