@@ -306,3 +306,21 @@ export type TGetRegexFAR = {
 	search: string
 	wholeWord: boolean | undefined
 }
+
+export interface TBeat {
+	content: string
+	id: string
+}
+
+export interface TScene {
+	beats: TBeat[]
+	description?: string
+	id: string
+	title: string
+}
+
+export enum EBeatSheetEditorTabs {
+	CHARACTERS = 'characters',
+	SCENES = 'scenes',
+	STYLE = 'style',
+}
