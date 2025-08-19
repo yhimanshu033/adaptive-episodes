@@ -25,6 +25,7 @@ export default function LaserRephrase({
 	onResetLeaf,
 	promptInput,
 	setResponseMode,
+	additionalContext,
 }: RephraseSelectionProps) {
 	const { data: episodeContent } = useEpisodeContent()
 	const { children } = useEditorData()
@@ -53,6 +54,7 @@ export default function LaserRephrase({
 		prompt: promptInput,
 		style_template: '',
 		input_language: languageToTitle[language],
+		additional_context: additionalContext,
 	}
 
 	if (key && triggerRephrase === key && lasersResponseMap[key]?.response) {
