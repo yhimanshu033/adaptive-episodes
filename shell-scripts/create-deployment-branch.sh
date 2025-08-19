@@ -110,13 +110,40 @@ fi
 
 echo -e "${BLUE}Using branch name: ${GREEN}$branch_name${NC}"
 
-# Create new branch from staging
-echo -e "${BLUE}Creating new branch '$branch_name' from staging...${NC}"
-git checkout origin/staging -b "$branch_name"
+# Sync staging with main locally without pushing to remote
+echo -e "${BLUE}Creating temporary local branch 'staging-sync' from origin/staging...${NC}"
+git checkout -B staging-sync origin/staging
 
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Error: Failed to create new branch from staging${NC}"
+    echo -e "${RED}Error: Failed to create 'staging-sync' branch${NC}"
     exit 1
+fi
+
+echo -e "${BLUE}Merging origin/main into staging-sync...${NC}"
+git merge origin/main --no-edit
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Error: Merge conflict while merging main into staging-sync. Resolve manually.${NC}"
+    exit 1
+fi
+
+# Create the release branch from the merged staging-sync
+echo -e "${BLUE}Creating new branch '$branch_name' from merged staging-sync...${NC}"
+git checkout -b "$branch_name"
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Error: Failed to create new branch from staging-sync${NC}"
+    exit 1
+fi
+
+# Delete the temporary staging-sync branch
+echo -e "${BLUE}Cleaning up temporary branch 'staging-sync'...${NC}"
+git branch -D staging-sync
+
+if [ $? -ne 0 ]; then
+    echo -e "${YELLOW}Warning: Failed to delete 'staging-sync' branch. You may need to remove it manually.${NC}"
+else
+    echo -e "${GREEN}Temporary branch 'staging-sync' deleted successfully.${NC}"
 fi
 
 # Update version in package.json if changed
