@@ -183,6 +183,7 @@ export const sidebarToTitle: Record<ESidebar, string> = {
 	[ESidebar.FAR]: 'Find and Replace',
 	[ESidebar.NOTES]: 'Notes',
 	[ESidebar.OUTLINE]: 'Story Explorer',
+	[ESidebar.BEAT_SHEET]: 'Beat Sheet',
 }
 
 export const sidebarButtons: ESidebar[] = [ESidebar.CHATBOT, ESidebar.OUTLINE]
