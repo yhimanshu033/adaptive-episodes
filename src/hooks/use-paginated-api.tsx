@@ -29,6 +29,7 @@ export type UsePaginatedAPIRet<ResponseT = unknown> = {
 	data: ResponseT[]
 	fetchNextPage: () => void
 	isFetchingNextPage: boolean
+	isFetchingPreviousPage: boolean
 	reset: () => void
 }
 
@@ -158,6 +159,7 @@ export const usePaginatedAPI = <ResponseT = unknown,>({
 		fetchNextPage: () => void fetchNextPage(),
 		reset,
 		isFetchingNextPage,
+		isFetchingPreviousPage,
 		InfiniteScrollWithDebouncing,
 	}
 }

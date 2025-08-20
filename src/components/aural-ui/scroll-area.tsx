@@ -8,8 +8,11 @@ function ScrollArea({
 	classes = {},
 	children,
 	orientation = 'vertical',
+	viewportRef,
 	...props
 }: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
+	viewportRef?: React.LegacyRef<HTMLDivElement> | undefined
+} & {
 	classes?: {
 		corner?: string
 		root?: string
@@ -26,6 +29,7 @@ function ScrollArea({
 			{...props}
 		>
 			<ScrollAreaPrimitive.Viewport
+				ref={viewportRef}
 				data-slot="scroll-area-viewport"
 				className={cn(
 					'focus-visible:ring-fm-secondary-1000/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&>div]:w-full [&>div]:table-fixed',

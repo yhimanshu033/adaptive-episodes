@@ -17,6 +17,7 @@ import { TGetEpisodeResponse } from '@/types/episode-type'
 export type TCustomComment = TComment & { node: TCommentText }
 
 export interface RephraseSelectionProps {
+	additionalContext?: boolean
 	elemKey: string | null
 	getSelectedText: () => {
 		nexttext: string

@@ -65,6 +65,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	selectedLanguage: undefined,
 	importedLocal: false,
 	acceptedDiffValue: null,
+	recentEmail: '',
 }
 
 type EpisodeIdContextType = {

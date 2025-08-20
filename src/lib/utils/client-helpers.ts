@@ -73,3 +73,25 @@ export const findAllDiffNodes = <E extends PlateEditor>(
 		}),
 		([node, path]) => ({ node, path })
 	)
+
+export function adjustScrollIfAtTop(
+	container: HTMLDivElement | null,
+	padding = 30,
+	offset = 50
+) {
+	if (!container) {
+		return
+	}
+	const scrollTop = container.scrollTop
+
+	const isAtTop = scrollTop <= padding
+
+	if (isAtTop) {
+		requestAnimationFrame(() => {
+			container.scrollBy({
+				top: scrollTop + offset,
+				behavior: 'smooth',
+			})
+		})
+	}
+}

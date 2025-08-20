@@ -33,7 +33,7 @@ jobs:
           echo "Build with cache: ${{ github.event.inputs.build_with_cache }}"
   build:
     needs: debug
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/PF-')}}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/PF-') || startsWith(github.ref, 'refs/heads/CKB-')}}
     runs-on: self-hosted-arc-arm64
     outputs:
       docker-tag: ${{ steps.set_tag.outputs.dockerTag }}

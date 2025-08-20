@@ -32,6 +32,7 @@ import { ESidebar } from '@/types/plate-types'
 
 import { If } from '../aural-ui/if-else'
 import { ScrollArea } from '../aural-ui/scroll-area'
+import { ThemeSwitch } from '../theme-toggle'
 
 const toolbarIconVariants = iconVariants({ variant: 'toolbar' })
 
@@ -152,6 +153,7 @@ const FullToolbarContent = React.memo(() => {
 					<div className="grow" />
 
 					<RightToolbarSection />
+					<ThemeSwitch />
 				</div>
 			</ScrollArea>
 			<ChatbotToolbarButton />
