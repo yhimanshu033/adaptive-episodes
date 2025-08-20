@@ -85,6 +85,10 @@ function useEpisodeIdStore() {
 		useEpisodeIdStoreContext.setState({ importedLocal })
 	}
 
+	const setRecentEmail = (recentEmail: EpisodeIdStoreType['recentEmail']) => {
+		useEpisodeIdStoreContext.setState({ recentEmail })
+	}
+
 	return {
 		store: useEpisodeIdStoreContext,
 		setSelectedStatus,
@@ -98,6 +102,7 @@ function useEpisodeIdStore() {
 		setSelectedLanguage,
 		setEpisodeImported,
 		setAcceptedDiffValue,
+		setRecentEmail,
 	}
 }
 

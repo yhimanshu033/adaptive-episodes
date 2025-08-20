@@ -89,7 +89,7 @@ export const useEpisodeContentUtil = () => {
 	)
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
-	const { setDualViewMode } = useEpisodeIdStore()
+	const { setDualViewMode, setRecentEmail } = useEpisodeIdStore()
 
 	const usedEpisodeId = useMemo(
 		() => (episode ? episode.id : episodeId),
@@ -113,6 +113,7 @@ export const useEpisodeContentUtil = () => {
 
 		addEpisodeMap(episodeId, resp)
 		addEpisodeKey(episodeId, queryKey)
+		setRecentEmail(resp.email)
 
 		const oldData = await getValue(`${resp.chapter.project}_${usedEpisodeId}`)
 		if (!oldData) {
@@ -176,6 +177,7 @@ export const useEpisodeContentUtil = () => {
 		setLocalDiffValue,
 		setSidebar,
 		usedEpisodeId,
+		setRecentEmail,
 	])
 
 	const query = useQuery({

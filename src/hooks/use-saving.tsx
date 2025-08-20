@@ -3,12 +3,15 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEditorData from '@/hooks/plate/use-editor-data'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useRecentUser from '@/hooks/use-recent-user'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import {
 	addUnsavedEpisodeParams,
 	removeUnsavedEpisodeParams,
 } from '@/store/global-store'
 import { usePluginOption } from 'platejs/react'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
@@ -19,6 +22,7 @@ import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import {
 	SaveEpisodeParams,
 	TGetEpisodeResponse,
+	TSaveEpisodeFailMessage,
 	TSaveEpisodeParams,
 } from '@/types/episode-type'
 
@@ -52,6 +56,7 @@ export function SavingContextProvider({
 	const {
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
+		setRecentEmail,
 		setStartOverlayLoading,
 	} = useEpisodeIdStore()
 
@@ -59,13 +64,18 @@ export function SavingContextProvider({
 		useShallow((state) => state.currentTitle)
 	)
 
+	const { canCurrentUserBeRecent } = useRecentUser()
+
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 	const [isSaved, setIsSaved] = React.useState(true)
+	const intervalRef = useRef<NodeJS.Timeout | null>(null)
 	const pathname = usePathname()
+
+	const { refetch } = useEpisodeContent()
 
 	useEffect(() => {
 		const currentChildren = JSON.stringify(children)
@@ -133,7 +143,7 @@ export function SavingContextProvider({
 					status = EStatus.FIRST_DRAFT
 				}
 
-				await saveEpisodeMutation.mutateAsync({
+				const respData = await saveEpisodeMutation.mutateAsync({
 					status,
 					chapterId,
 					text,
@@ -143,8 +153,20 @@ export function SavingContextProvider({
 					language,
 					chapter_title: currentTitle || data?.chapter.chapter_title,
 				})
+				if (!respData.success) {
+					const message = respData.message as TSaveEpisodeFailMessage
+					if (message.email) {
+						toast.error(
+							`Saving failed, ${message.email} is currently working on the episode!`
+						)
+						setRecentEmail(message.email)
+					} else {
+						toast.error('Saving failed!')
+					}
+				} else {
+					setLastSaved(new Date())
+				}
 
-				setLastSaved(new Date())
 				setForceSave(false)
 				setIsSaved(true)
 			} catch (error) {
@@ -254,6 +276,30 @@ export function SavingContextProvider({
 		handleRemoveGlobalStore,
 		handleSaveGlobalStore,
 	])
+
+	// FOR CHECKING IF USER IS OWNER EVERY 9.9 MINS
+	useEffect(() => {
+		if (!canCurrentUserBeRecent || !isSaved) {
+			return
+		}
+
+		const intervalDuration = 9.9 * 60 * 1000 // 9.9 minutes --> 10 mins lock
+
+		// Set interval every 9.9 minutes
+		const interval = setInterval(() => {
+			void refetch()
+		}, intervalDuration)
+
+		intervalRef.current = interval
+
+		// Cleanup on unmount or when isSaved becomes false
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current)
+				intervalRef.current = null
+			}
+		}
+	}, [isSaved, canCurrentUserBeRecent])
 
 	const value = {
 		handleSave,

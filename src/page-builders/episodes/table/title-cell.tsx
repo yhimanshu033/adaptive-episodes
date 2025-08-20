@@ -9,6 +9,7 @@ import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { InputBase } from '@/components/aural-ui/input'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { cn } from '@/lib/aural-ui/utils'
+import { FetchResponseResult } from '@/lib/fetch-api'
 
 import { TEpisode, TPatchEpisodeBody } from '@/types/episode-type'
 
@@ -17,7 +18,7 @@ interface TitleCellProps {
 	inputValueMapRef: React.MutableRefObject<Record<number, string>>
 	isPending: boolean
 	renameTitle: UseMutateFunction<
-		TPatchEpisodeBody | null,
+		FetchResponseResult<TPatchEpisodeBody>,
 		Error,
 		{
 			episodeId: number
@@ -25,6 +26,7 @@ interface TitleCellProps {
 		},
 		unknown
 	>
+
 	row: Row<TEpisode>
 	setEditingRowId: (rowId: number | null) => void
 }
