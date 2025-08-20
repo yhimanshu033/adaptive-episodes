@@ -300,3 +300,16 @@ export type TGetDocEpisodeCountResponse = {
 	episode_count: number
 	message: string
 }
+
+export type TDownloadBulkEpisodeBodyParams = {
+	seq_nos: number[]
+}
+
+export type TDownloadBulkEpisodeResponse = {
+	file_url: string
+	status: string
+}
+
+export type TDownloadBulkEpisodeUrlParams = {
+	projectId: string
+}
