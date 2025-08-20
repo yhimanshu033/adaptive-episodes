@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEditorData from '@/hooks/plate/use-editor-data'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useRecentUser from '@/hooks/use-recent-user'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import {
@@ -71,8 +72,10 @@ export function SavingContextProvider({
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 	const [isSaved, setIsSaved] = React.useState(true)
-	const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+	const intervalRef = useRef<NodeJS.Timeout | null>(null)
 	const pathname = usePathname()
+
+	const { refetch } = useEpisodeContent()
 
 	useEffect(() => {
 		const currentChildren = JSON.stringify(children)
@@ -152,10 +155,13 @@ export function SavingContextProvider({
 				})
 				if (!respData.success) {
 					const message = respData.message as TSaveEpisodeFailMessage
-					toast.error('Saving failed!')
 					if (message.email) {
-						toast.error(`${message.email} is currently working on the episode!`)
+						toast.error(
+							`Saving failed, ${message.email} is currently working on the episode!`
+						)
 						setRecentEmail(message.email)
+					} else {
+						toast.error('Saving failed!')
 					}
 				} else {
 					setLastSaved(new Date())
@@ -273,25 +279,24 @@ export function SavingContextProvider({
 
 	// FOR CHECKING IF USER IS OWNER EVERY 9.9 MINS
 	useEffect(() => {
-		if (!canCurrentUserBeRecent) {
+		if (!canCurrentUserBeRecent || !isSaved) {
 			return
 		}
-		if (isSaved) {
-			const checkInterval = 9.9 * 60 * 1000 // 9.9 MINS
-			const scheduleFunc = () => {
-				timeoutRef.current = setTimeout(() => {
-					setIsSaved(false)
-				}, checkInterval)
-			}
 
-			scheduleFunc() // initial call
-		}
+		const intervalDuration = 9.9 * 60 * 1000 // 9.9 minutes --> 10 mins lock
 
-		// Cleanup if isSaved becomes false or on unmount
+		// Set interval every 9.9 minutes
+		const interval = setInterval(() => {
+			void refetch()
+		}, intervalDuration)
+
+		intervalRef.current = interval
+
+		// Cleanup on unmount or when isSaved becomes false
 		return () => {
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current)
-				timeoutRef.current = null
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current)
+				intervalRef.current = null
 			}
 		}
 	}, [isSaved, canCurrentUserBeRecent])

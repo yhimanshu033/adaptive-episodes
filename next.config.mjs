@@ -9,7 +9,6 @@ const nextConfig = {
 	experimental: {
 		serverActions: {
 			bodySizeLimit: '1000mb',
-			// allowedOrigins: ['localhost:3000', '1tkn1gl8-3000.inc1.devtunnels.ms'],	// for local tunneling
 		},
 	},
 	images: {

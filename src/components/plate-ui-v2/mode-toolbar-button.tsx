@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
@@ -56,9 +56,13 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 			? EditorModes.suggesting
 			: EditorModes.editing
 
+	const cannotEdit = useMemo(() => {
+		return !isWriter || !!simplifiedEditor || !canCurrentUserBeRecent
+	}, [isWriter, canCurrentUserBeRecent, simplifiedEditor])
+
 	const handleChange = React.useCallback(
 		(newValue: string) => {
-			if (!isWriter || !!simplifiedEditor || !canCurrentUserBeRecent) {
+			if (cannotEdit) {
 				return
 			}
 			setReadOnly(newValue === String(EditorModes.viewing))
@@ -72,32 +76,18 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 				editorRef.tf.focus({ edge: 'end' })
 			}
 		},
-		[
-			isWriter,
-			simplifiedEditor,
-			setReadOnly,
-			setOption,
-			editorRef.tf,
-			setSidebar,
-			canCurrentUserBeRecent,
-		]
+		[cannotEdit, setReadOnly, setOption, editorRef.tf, setSidebar]
 	)
 
 	useEffect(() => {
-		if (!isWriter || simplifiedEditor || !canCurrentUserBeRecent) {
+		if (cannotEdit) {
 			setTimeout(() => {
 				setReadOnly(true)
 			}, 0)
 			return
 		}
 		setReadOnly(viewMode)
-	}, [
-		isWriter,
-		setReadOnly,
-		simplifiedEditor,
-		viewMode,
-		canCurrentUserBeRecent,
-	])
+	}, [cannotEdit, setReadOnly, viewMode])
 
 	return (
 		<Select value={value} onValueChange={handleChange} {...props}>
