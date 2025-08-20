@@ -847,6 +847,6 @@ export function hashString(str: string): number {
 	return hash >>> 0 // ensure positive integer
 }
 
-export function getFilenameForSeqNos(seq_nos: number[]) {
+export function getFilenameForSeqNos(seq_nos: number[]): string {
 	return 'EP ' + seq_nos[0] + ' - ' + seq_nos.pop() + '.docx'
 }
