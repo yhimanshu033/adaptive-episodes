@@ -307,3 +307,12 @@ export type TGetRegexFAR = {
 	search: string
 	wholeWord: boolean | undefined
 }
+
+export type TSendBulkPromptBody = {
+	prompt: string
+	seq_nos: number[]
+}
+
+export type TSendBulkPromptUrlParams = {
+	projectId: string
+}
