@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useCallback, useEffect, useRef } from 'react'
+import { LASER_LEAF_KEYS } from '@/constants/editor-constants'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useLaserStore from '@/store/laser-store'
 import { cn } from '@udecode/cn'
@@ -275,11 +276,14 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			>
 				<LaserRephrase
 					setResponseMode={setResponseMode}
-					promptInput={(leaf['laser-inserted-prompt'] as string) || ''}
+					promptInput={(leaf[LASER_LEAF_KEYS.PROMPT] as string) || ''}
 					onResetLeaf={onResetLeaf}
 					methodId={methodId || ''}
 					elemKey={key || null}
 					getSelectedText={getSelectedText}
+					additionalContext={
+						(leaf[LASER_LEAF_KEYS.ADDITIONAL_CONTEXT] as boolean) || false
+					}
 				/>
 			</div>
 		</PlateLeaf>
