@@ -11,7 +11,6 @@ import { TNoParams } from '@/types/common'
 import { TGetDocEpisodeCountResponse } from '@/types/episode-type'
 
 export const useDocEpisodeCountData = (file_url: string | null) => {
-	console.log({ file_url })
 	const getEpisodeCount = async () => {
 		if (!file_url) {
 			return
@@ -25,7 +24,6 @@ export const useDocEpisodeCountData = (file_url: string | null) => {
 			url: API_URLS.GET_DOC_EPISODE_COUNT,
 			body: { file_url },
 		})
-		console.log({ res })
 		if (!res.success) {
 			toast.error('Failed to get episode count', {
 				icon: <BubbleCrossedIcon />,

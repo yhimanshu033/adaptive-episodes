@@ -168,3 +168,9 @@ export const AI_AVATAR = '/assets/ai_avatar.webp'
 
 export const ESTIMATED_FLOATING_HEIGHT = 260
 export const RESPONSE_GAP = 5
+
+export const LASER_LEAF_KEYS = {
+	CUSTOM_METHOD: 'laser-method-custom',
+	PROMPT: 'laser-inserted-prompt',
+	ADDITIONAL_CONTEXT: 'laser-additional-context',
+} as const

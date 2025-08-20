@@ -1,15 +1,19 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import {
 	ESTIMATED_FLOATING_HEIGHT,
+	LASER_LEAF_KEYS,
 	RESPONSE_GAP,
 } from '@/constants/editor-constants'
 import useLaserStore from '@/store/laser-store'
+import { CheckedState } from '@radix-ui/react-checkbox'
 import { Send } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { Descendant } from 'platejs'
 import { useEditorRef } from 'platejs/react'
 
 import { Button } from '@/components/aural-ui/button'
+import { Checkbox } from '@/components/aural-ui/checkbox'
+import Label from '@/components/aural-ui/label'
 import Textarea from '@/components/aural-ui/textarea'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { cn } from '@/lib/utils/helpers'
@@ -22,6 +26,7 @@ export default function FloatingPrompt() {
 	const editor = useEditorRef()
 
 	const [val, setVal] = React.useState<string>('')
+	const [additionalContext, setAdditionalContext] = useState(false)
 
 	const traverse = useCallback(
 		(node: Descendant, intoLaser: boolean) => {
@@ -39,8 +44,9 @@ export default function FloatingPrompt() {
 					const key = `laser-id-${nanoid()}`
 					node[LaserPlugin.key as string] = true
 					node[key] = true
-					node['laser-method-custom'] = true
-					node['laser-inserted-prompt'] = val.trim()
+					node[LASER_LEAF_KEYS.CUSTOM_METHOD] = true
+					node[LASER_LEAF_KEYS.PROMPT] = val.trim()
+					node[LASER_LEAF_KEYS.ADDITIONAL_CONTEXT] = additionalContext
 					setActiveLaser(key)
 				}
 			} else if ('children' in node) {
@@ -50,7 +56,7 @@ export default function FloatingPrompt() {
 			}
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[promptActive, val]
+		[promptActive, val, additionalContext]
 	)
 
 	const onResetLeaf = useCallback(
@@ -97,6 +103,14 @@ export default function FloatingPrompt() {
 		}
 	}, [promptPosition])
 
+	function handleCheckedChange(checked: CheckedState) {
+		if (checked === 'indeterminate') {
+			setAdditionalContext(false)
+			return
+		}
+		setAdditionalContext(checked)
+	}
+
 	if (!promptActive || !promptActive.startsWith('floating')) {
 		return null
 	}
@@ -104,6 +118,8 @@ export default function FloatingPrompt() {
 	return (
 		<div
 			onBlur={(e) => {
+				console.log(e.currentTarget)
+				console.log(e.relatedTarget)
 				if (e.currentTarget.contains(e.relatedTarget)) {
 					return
 				}
@@ -131,7 +147,18 @@ export default function FloatingPrompt() {
 				maxHeight={150}
 			/>
 			<Divider wrapperClassName="w-full" />
-			<div className="w-full text-right">
+			<div className="flex w-full justify-between">
+				<div className="flex items-center gap-2">
+					<Checkbox
+						checked={additionalContext}
+						onCheckedChange={handleCheckedChange}
+						id="additional-context-checkbox"
+						className="size-6"
+					/>
+					<Label htmlFor="additional-context-checkbox">
+						Use additional context
+					</Label>
+				</div>
 				<Button
 					variant="outline"
 					size="sm"

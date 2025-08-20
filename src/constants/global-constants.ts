@@ -108,6 +108,7 @@ export const API_URLS = {
 	GET_ADAPTATION_LS: '/project/:projectId/:language/get_ls_sheet',
 	GET_STORY_DETAILS: '/projects/:storyId',
 	GET_DOC_EPISODE_COUNT: '/project/get-episode-count/',
+	BULK_EPISODE_DOWNLOAD: '/project/:projectId/download/',
 }
 
 export const INDEXED_DB_KEYS = {
