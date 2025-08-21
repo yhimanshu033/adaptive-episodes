@@ -52,7 +52,7 @@ export function CheckboxDropdown({ children }: { children: React.ReactNode }) {
 			<DropdownMenuContent align="start" className="w-fit">
 				<List size="sm" className="bg-fm-surface-frosted/20 pt-2">
 					{checkboxItems.map(({ key, label, checked }, index) => (
-						<>
+						<React.Fragment key={`ai-checkbox-item-${index}`}>
 							<ListItem
 								className="flex items-center gap-2 py-1 hover:bg-inherit"
 								key={key}
@@ -67,7 +67,7 @@ export function CheckboxDropdown({ children }: { children: React.ReactNode }) {
 							<If condition={index !== checkboxItems.length - 1}>
 								<ListSeparator />
 							</If>
-						</>
+						</React.Fragment>
 					))}
 				</List>
 			</DropdownMenuContent>

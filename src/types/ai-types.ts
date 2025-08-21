@@ -337,3 +337,11 @@ export type TGenerateBeatsheetResponse = Array<{
 	content: string
 	id: string
 }>
+export type TSendBulkPromptBody = {
+	prompt: string
+	seq_nos: number[]
+}
+
+export type TSendBulkPromptUrlParams = {
+	projectId: string
+}

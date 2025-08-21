@@ -848,5 +848,30 @@ export function hashString(str: string): number {
 }
 
 export function getFilenameForSeqNos(seq_nos: number[]): string {
-	return 'EP ' + seq_nos[0] + ' - ' + seq_nos.pop() + '.docx'
+	return 'EP ' + getEpisodeNumbers(seq_nos, 20) + '.docx'
+}
+
+export function getEpisodesShortTitle(episodes: TEpisode[]): string {
+	if (episodes.length < 1) {
+		return '(0 episodes selected)'
+	}
+	if (episodes.length === 1) {
+		return '(EP ' + episodes[0].seq_number + ')'
+	}
+	return '(EP ' + getEpisodeNumbers(getSeqNumbersFromEpisodes(episodes)) + ')'
+}
+
+export function getSeqNumbersFromEpisodes(episodes: TEpisode[]): number[] {
+	return episodes.map((item) => item.seq_number).sort()
+}
+
+export function getEpisodeNumbers(seqNumbers: number[], maxNum = 5): string {
+	if (seqNumbers.length > maxNum) {
+		return (
+			seqNumbers.slice(0, maxNum - 1).join(',') +
+			'...' +
+			seqNumbers[seqNumbers.length - 1]
+		)
+	}
+	return seqNumbers.join(',')
 }

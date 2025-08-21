@@ -51,6 +51,9 @@ export default function TranslationToggleButton({
 
 	const modes = useMemo(() => {
 		const excludedModes: EDualVIewMode[] = []
+		const extraModes = Object.keys(data?.additional_view || {}).map(
+			(k) => k as EDualVIewMode
+		)
 		if (!data?.previous_parent_id) {
 			excludedModes.push(EDualVIewMode.PREV_EP)
 		}
@@ -60,8 +63,15 @@ export default function TranslationToggleButton({
 		if (!localDiffValue) {
 			excludedModes.push(EDualVIewMode.LOCAL_DIFF)
 		}
-		return DUAL_VIEW_MODES.filter((item) => !excludedModes.includes(item))
-	}, [data?.previous_parent_id, data?.next_parent_id, localDiffValue])
+		return [...DUAL_VIEW_MODES, ...extraModes].filter(
+			(item) => !excludedModes.includes(item)
+		)
+	}, [
+		data?.previous_parent_id,
+		data?.next_parent_id,
+		localDiffValue,
+		data?.additional_view,
+	])
 
 	const modeToTitle = useMemo(() => {
 		if (!isGerman) {
@@ -107,7 +117,7 @@ export default function TranslationToggleButton({
 							value={mode}
 							className="[font-size:var(--text-fm-md)]"
 						>
-							{modeToTitle[mode]}
+							{modeToTitle[mode] || mode}
 						</DropdownMenuRadioItem>
 					))}
 				</DropdownMenuRadioGroup>
