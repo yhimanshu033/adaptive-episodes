@@ -313,6 +313,6 @@ export const SOURCE_TO_TARGET_LANGUAGE_MAP: Partial<
 	[ELanguage.CHINESE]: [ELanguage.ENGLISH],
 	[ELanguage.TRANSLATED_ENGLISH]: [ELanguage.ENGLISH],
 	[ELanguage.KOREAN]: [ELanguage.ENGLISH],
-	[ELanguage.GERMAN]: [ELanguage.ENGLISH, ELanguage.FRENCH],
+	[ELanguage.GERMAN]: [ELanguage.ENGLISH, ELanguage.FRENCH, ELanguage.ITALIAN],
 	[ELanguage.HINDI]: [ELanguage.ENGLISH],
 }

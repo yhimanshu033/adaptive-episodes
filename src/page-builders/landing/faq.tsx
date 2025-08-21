@@ -95,7 +95,7 @@ export default function FAQ() {
 								</motion.div>
 								<CollapsibleContent>
 									<motion.p
-										className="text-fm-md md:text-fm-lg"
+										className="text-fm-md md:text-fm-lg tracking-normal"
 										initial={{ opacity: 0, y: -10 }}
 										animate={{ opacity: 1, y: 0 }}
 										transition={{

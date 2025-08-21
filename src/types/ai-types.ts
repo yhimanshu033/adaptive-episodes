@@ -22,6 +22,7 @@ export interface LaserToolsParams {
 	prompt?: string
 	style_template?: string
 	text: string
+	use_rag_context?: boolean
 }
 
 export interface LaserToolsApiResponse {
