@@ -1,7 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
+import useBeatsheetMutation from '@/hooks/mutation/use-beatsheet-mutation'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
+import useLanguage from '@/hooks/use-language'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -16,6 +19,8 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from '@/components/ui/accordion'
+
+import { TScene } from '@/types/ai-types'
 
 import SortableBeat from './sortable-beat'
 import { SortableScene } from './sortable-scene'
@@ -36,7 +41,38 @@ export default function SceneTab() {
 		addNewBeat,
 		addNewScene,
 		fixCursorSnapOffset,
+		getSceneText,
 	} = useBeatSheetEditor()
+
+	const { editorText } = useEditorData()
+	const language = useLanguage()
+
+	const {
+		data: generatedBeatsheetContent,
+		isPending,
+		mutate: generateBeatsheet,
+	} = useBeatsheetMutation()
+
+	const handleGenerateTask = (scenes: TScene[]) => {
+		generateBeatsheet({
+			beats: Object.fromEntries(scenes.map((scene) => [scene.id, scene.beats])),
+			ep_text: editorText,
+			language,
+			scene_texts: Object.fromEntries(
+				scenes.map((scene) => [scene.id, getSceneText(scene.id)])
+			),
+		})
+	}
+
+	useEffect(() => {
+		if (!generatedBeatsheetContent) {
+			return
+		}
+		handleGenerateScenes(
+			generatedBeatsheetContent,
+			generatedBeatsheetContent.map((scene) => scene.id)
+		)
+	}, [generatedBeatsheetContent, handleGenerateScenes])
 
 	return (
 		<>
@@ -96,7 +132,8 @@ export default function SceneTab() {
 													<Plus size={16} className="mr-1" /> Add Beat
 												</Button>
 												<Button
-													onClick={() => handleGenerateScenes([scene])}
+													disabled={isPending}
+													onClick={() => handleGenerateTask([scene])}
 													size={'sm'}
 												>
 													Generate
@@ -131,7 +168,9 @@ export default function SceneTab() {
 				<Button onClick={addNewScene}>
 					<Plus size={18} className="mr-1" /> ADD Scene
 				</Button>
-				<Button onClick={() => handleGenerateScenes()}>Generate All</Button>
+				<Button disabled={isPending} onClick={() => handleGenerateTask(scenes)}>
+					Generate All
+				</Button>
 			</div>
 		</>
 	)

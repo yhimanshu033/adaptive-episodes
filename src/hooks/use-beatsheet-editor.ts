@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { generatedContent, scenesData } from '@/mock-data/beatsheet-editor'
+import { useEffect, useState } from 'react'
+import { scenesData } from '@/mock-data/beatsheet-editor'
 import {
 	CollisionDetection,
 	DragEndEvent,
@@ -13,14 +13,14 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { nanoid } from 'nanoid'
-import { useEditorState } from 'platejs/react'
+import { useEditorRef } from 'platejs/react'
 
-import { TScene } from '@/types/ai-types'
+import { TGenerateBeatsheetResponse, TScene } from '@/types/ai-types'
 
 type DragItem = { id: string; sceneId?: string; type: 'scene' | 'beat' }
 
 const useBeatSheetEditor = () => {
-	const editor = useEditorState()
+	const editor = useEditorRef()
 	const sensors = useSensors(
 		useSensor(PointerSensor),
 		useSensor(KeyboardSensor, {
@@ -90,20 +90,19 @@ const useBeatSheetEditor = () => {
 		deleteScene(sceneId)
 	}
 
-	const handleGenerateScenes = (scenesToGenerate?: TScene[]) => {
+	const handleGenerateScenes = (
+		generatedContent: TGenerateBeatsheetResponse,
+		sceneIds?: string[]
+	) => {
 		const newChildren = structuredClone(editor.children)
+		if (!sceneIds) {
+			return
+		}
 
-		const targetScenes = scenesToGenerate ?? scenes
-
-		for (const scene of targetScenes) {
-			const sceneId = scene.id
-
-			const alreadyExists = newChildren.some(
+		for (const sceneId of sceneIds) {
+			const existingNodeIndex = newChildren.findIndex(
 				(node) => node.scene_id === sceneId
 			)
-			if (alreadyExists) {
-				continue
-			}
 
 			const newNode = {
 				type: 'p',
@@ -111,34 +110,39 @@ const useBeatSheetEditor = () => {
 					{
 						text:
 							generatedContent.find((ele) => ele.id === sceneId)?.content ||
-							`Generated Content for ${scene.title}`,
+							`Generated Content for ${sceneId}`,
 					},
 				],
-				id: nanoid(),
+				id:
+					existingNodeIndex >= 0 ? newChildren[existingNodeIndex].id : nanoid(),
 				scene_id: sceneId,
 			}
 
-			const currentSceneIndex = scenes.findIndex(
-				(scene) => scene.id === sceneId
-			)
-			let insertIndex = newChildren.length
+			if (existingNodeIndex >= 0) {
+				newChildren[existingNodeIndex] = newNode
+			} else {
+				const currentSceneIndex = scenes.findIndex(
+					(scene) => scene.id === sceneId
+				)
+				let insertIndex = newChildren.length
 
-			for (let i = 0; i < newChildren.length; i++) {
-				const node = newChildren[i]
-				const nodeSceneId = node.scene_id as string | undefined
-				if (!nodeSceneId) {
-					continue
+				for (let i = 0; i < newChildren.length; i++) {
+					const node = newChildren[i]
+					const nodeSceneId = node.scene_id as string | undefined
+					if (!nodeSceneId) {
+						continue
+					}
+
+					const nodeSceneIndex = scenes.findIndex((s) => s.id === nodeSceneId)
+
+					if (nodeSceneIndex > currentSceneIndex) {
+						insertIndex = i
+						break
+					}
 				}
 
-				const nodeSceneIndex = scenes.findIndex((s) => s.id === nodeSceneId)
-
-				if (nodeSceneIndex > currentSceneIndex) {
-					insertIndex = i
-					break
-				}
+				newChildren.splice(insertIndex, 0, newNode)
 			}
-
-			newChildren.splice(insertIndex, 0, newNode)
 		}
 
 		editor.tf.setValue(newChildren)
@@ -248,6 +252,41 @@ const useBeatSheetEditor = () => {
 		return rectIntersection(updated)
 	}
 
+	const getSceneText = (sceneId: string) => {
+		const nodeEntry = editor.api.node({
+			at: [],
+			match: (n) => n.scene_id === sceneId,
+		})
+
+		if (!nodeEntry) {
+			return ''
+		}
+
+		const text = editor.api.string(nodeEntry[0])
+		return text
+	}
+
+	useEffect(() => {
+		const nodeEntries = [
+			...editor.api.nodes({
+				at: [],
+				match: (n) => !!n.scene_id,
+			}),
+		]
+
+		for (const [node] of nodeEntries) {
+			const domNode = editor.api.toDOMNode(node)
+			if (domNode) {
+				const shouldHavePrimaryColor =
+					openSceneIds.length === 0 ||
+					openSceneIds.includes(node.scene_id as string)
+				domNode.style.color = shouldHavePrimaryColor
+					? 'var(--color-fm-primary)'
+					: 'var(--color-fm-tertiary)'
+			}
+		}
+	}, [editor.api, openSceneIds])
+
 	return {
 		scenes,
 		activeDragItem,
@@ -264,6 +303,7 @@ const useBeatSheetEditor = () => {
 		handleDragStart,
 		handleDragOver,
 		fixCursorSnapOffset,
+		getSceneText,
 	}
 }
 

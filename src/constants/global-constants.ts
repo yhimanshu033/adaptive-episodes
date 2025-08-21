@@ -109,6 +109,7 @@ export const API_URLS = {
 	GET_STORY_DETAILS: '/projects/:storyId',
 	GET_DOC_EPISODE_COUNT: '/project/get-episode-count/',
 	BULK_EPISODE_DOWNLOAD: '/project/:projectId/download/',
+	BEATSHEET_GENERATE: '/aicopilot/bse',
 }
 
 export const INDEXED_DB_KEYS = {
