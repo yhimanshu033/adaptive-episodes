@@ -50,3 +50,4 @@ export const GET_DOCX_HTML_QUERY_KEY = 'get-docx-html'
 export const GET_DOCX_HTML_MUTATION_KEY = 'get-docx-html-mutation'
 
 export const BULK_EP_DOWNLOAD_MUTATION_KEY = 'bulk-ep-download-mutation'
+export const GENERATE_BEATSHEET_MUTATION_KEY = 'generate-beatsheet-mutation'

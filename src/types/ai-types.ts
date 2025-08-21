@@ -325,3 +325,15 @@ export enum EBeatSheetEditorTabs {
 	SCENES = 'scenes',
 	STYLE = 'style',
 }
+
+export type TGenerateBeatsheetBody = {
+	beats: Record<string, TBeat[]>
+	ep_text: string
+	language: ELanguage
+	scene_texts: Record<string, string>
+}
+
+export type TGenerateBeatsheetResponse = Array<{
+	content: string
+	id: string
+}>
