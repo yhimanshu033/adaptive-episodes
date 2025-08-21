@@ -90,6 +90,7 @@ export type TGetEpisodesQueryParams = {
 }
 
 export type TGetEpisodeResponse = {
+	additional_view?: Record<string, string>
 	chapter: TEpisode
 	email?: string
 	next_parent_id: number | null

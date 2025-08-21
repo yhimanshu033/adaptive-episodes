@@ -11,6 +11,7 @@ import { TNoParams } from '@/types/common'
 export default function useBulkPromptMutation() {
 	const { startTask } = useSocketStreaming()
 	const { id } = useParams()
+
 	async function sendBulkPrompt(body: TSendBulkPromptBody) {
 		const taskId = await startTask<
 			TSendBulkPromptBody,

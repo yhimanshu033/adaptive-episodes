@@ -125,13 +125,15 @@ export default function BulkPromptDialog({
 							)}
 						/>
 						<div className="flex flex-1 flex-col justify-end">
-							<Button
-								isDisabled={!form.formState.isValid}
-								type="submit"
-								className="w-full"
-							>
-								Send
-							</Button>
+							<DialogClose asChild>
+								<Button
+									isDisabled={!form.formState.isValid}
+									type="submit"
+									className="w-full"
+								>
+									Send
+								</Button>
+							</DialogClose>
 						</div>
 					</form>
 				</Form>

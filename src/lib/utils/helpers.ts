@@ -867,7 +867,11 @@ export function getSeqNumbersFromEpisodes(episodes: TEpisode[]): number[] {
 
 export function getEpisodeNumbers(seqNumbers: number[], maxNum = 5): string {
 	if (seqNumbers.length > maxNum) {
-		return seqNumbers.slice(0, maxNum - 1).join(',') + '...' + seqNumbers.pop()
+		return (
+			seqNumbers.slice(0, maxNum - 1).join(',') +
+			'...' +
+			seqNumbers[seqNumbers.length - 1]
+		)
 	}
 	return seqNumbers.join(',')
 }

@@ -198,4 +198,5 @@ export const MOCK_EPISODE: TGetEpisodeResponse = {
 	previous_parent_id: null,
 	text: 'Dies ist der Text der Episode.',
 	translation_text: 'This is the text of the episode.',
+	additional_view: {},
 }
