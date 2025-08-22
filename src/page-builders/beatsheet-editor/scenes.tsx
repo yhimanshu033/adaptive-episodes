@@ -5,7 +5,7 @@ import useBeatsheetMutation from '@/hooks/mutation/use-beatsheet-mutation'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 import useLanguage from '@/hooks/use-language'
-import { TCharacter } from '@/mock-data/beatsheet-editor'
+import { beatsheetContext, TCharacter } from '@/mock-data/beatsheet-editor'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -68,6 +68,7 @@ export default function SceneTab({ characters }: { characters: TCharacter[] }) {
 				scenes.map((scene) => [scene.id, getSceneText(scene.id)])
 			),
 			characters,
+			context: beatsheetContext,
 		})
 	}
 

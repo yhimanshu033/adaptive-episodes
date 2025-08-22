@@ -330,6 +330,7 @@ export enum EBeatSheetEditorTabs {
 export type TGenerateBeatsheetBody = {
 	beats: Record<string, TBeat[]>
 	characters?: TCharacter[]
+	context?: string
 	ep_text: string
 	input_language: ELanguage
 	scene_texts: Record<string, string>

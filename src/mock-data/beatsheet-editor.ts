@@ -279,3 +279,6 @@ export const charactersData = [
 		},
 	},
 ]
+
+export const beatsheetContext =
+	'Quinn ist ein sechzehnjähriger Schüler, der seit Jahren Außenseiter und Zielscheibe von Mobbing ist. In einer Welt, in der übernatürliche Kräfte nach einem verheerenden Krieg mit den Dalki allgegenwärtig geworden sind, gehört er zu den Schwächsten. Während seine Mitschüler mit Fähigkeiten prahlen, bleibt er verletzlich und kämpft täglich gegen Spott und Gewalt.\n\nSein einziger Halt ist ein geheimnisvolles Buch, das ihm nach dem Tod seiner Eltern übergeben wurde – ein Relikt, das sich weder öffnen noch zerstören lässt, egal welche Methoden er ausprobiert. Quinns Einsamkeit und Verzweiflung wachsen, doch auch seine Neugier: Warum haben seine Eltern ausgerechnet dieses Buch hinterlassen?\n\nAm letzten Schultag eskaliert ein Angriff eines Mitschülers erneut. Geschwächt, erniedrigt und allein zurückgezogen in seiner kleinen Wohnung, versucht Quinn wie so oft, das Buch zu entschlüsseln. Doch erst als Blut zufällig auf seine Seiten tropft, geschieht das Unmögliche: Das Buch erwacht, offenbart verborgene Schriftzeichen und verbindet sich auf unerklärliche Weise mit ihm.\n\nDamit beginnt Quinns Eintritt in eine Welt voller Gefahren, Macht und Geheimnisse – und die Entfaltung seines eigenen, bisher verborgenen Schicksals.'
