@@ -34,7 +34,7 @@ export default function BeatSheetEditor() {
 						CHARACTERS
 					</TabsTrigger>
 					<TabsTrigger value={EBeatSheetEditorTabs.STYLE} className="font-bold">
-						Style
+						STYLE
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value={EBeatSheetEditorTabs.SCENES}>

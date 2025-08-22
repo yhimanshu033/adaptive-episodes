@@ -285,7 +285,8 @@ const useBeatSheetEditor = () => {
 					: 'var(--color-fm-tertiary)'
 			}
 		}
-	}, [editor.api, openSceneIds])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [openSceneIds])
 
 	return {
 		scenes,
