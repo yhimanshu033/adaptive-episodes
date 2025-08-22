@@ -10,11 +10,11 @@ RUN echo "NEXTAUTH_SECRET=TwmBgFrFU1DTsnrvm8pLBXt0yMPYFyT/EOCoX6AZo1s=" >> .env
 #RUN echo "NEXT_PUBLIC_BASE_URL=https://copilot.pocketfm.com" >> .env
 RUN echo "NEXT_PUBLIC_LASERTOOLS_API_KEY=JHvCML1yir-6d6JcYVlsEeHd8QzAhZMy98Rc62plmHI" >> .env
 
-# RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-prod.pocketfm.com" >> .env
-# RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket.pocketfm.com" >> .env
+RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-prod.pocketfm.com" >> .env
+RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket.pocketfm.com" >> .env
 
-RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-be-qa.pocketfm.org" >> .env
-RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket-qa.pocketfm.com" >> .env
+# RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-be-qa.pocketfm.org" >> .env
+# RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket-qa.pocketfm.com" >> .env
 
 # RUN echo "NEXT_PUBLIC_BACKEND_URL=https://pocketfm-copilot-api.pocketfm.com" >> .env
 # RUN echo "NEXT_PUBLIC_SOCKET_URL=https://pocketfm-copilot-api.pocketfm.com" >> .env
