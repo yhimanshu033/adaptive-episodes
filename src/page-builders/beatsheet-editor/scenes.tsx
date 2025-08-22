@@ -5,6 +5,7 @@ import useBeatsheetMutation from '@/hooks/mutation/use-beatsheet-mutation'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 import useLanguage from '@/hooks/use-language'
+import { TCharacter } from '@/mock-data/beatsheet-editor'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -27,7 +28,7 @@ import { TScene } from '@/types/ai-types'
 import SortableBeat from './sortable-beat'
 import { SortableScene } from './sortable-scene'
 
-export default function SceneTab() {
+export default function SceneTab({ characters }: { characters: TCharacter[] }) {
 	const {
 		sensors,
 		scenes,
@@ -62,10 +63,11 @@ export default function SceneTab() {
 		generateBeatsheet({
 			beats: Object.fromEntries(scenes.map((scene) => [scene.id, scene.beats])),
 			ep_text: editorText,
-			language,
+			input_language: language,
 			scene_texts: Object.fromEntries(
 				scenes.map((scene) => [scene.id, getSceneText(scene.id)])
 			),
+			characters,
 		})
 	}
 
@@ -177,8 +179,12 @@ export default function SceneTab() {
 														</div>
 													</div>
 												)}
-												{scene.beats.map((beat) => (
-													<SortableBeat key={beat.id} id={beat.id}>
+												{scene.beats.map((beat, index) => (
+													<SortableBeat
+														key={beat.id}
+														id={beat.id}
+														index={index}
+													>
 														<TextArea
 															value={beat.content}
 															onChange={(e) =>

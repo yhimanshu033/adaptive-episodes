@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { charactersData, TCharacter } from '@/mock-data/beatsheet-editor'
 
 import {
 	Tabs,
@@ -14,6 +15,8 @@ import SceneTab from './scenes'
 import StyleTab from './style'
 
 export default function BeatSheetEditor() {
+	const [characters, setCharacters] = useState<TCharacter[]>(charactersData)
+
 	return (
 		<div className="p-4">
 			<h1 className="text-fm-xl mb-4 flex-[0_0_auto] font-bold">
@@ -38,10 +41,10 @@ export default function BeatSheetEditor() {
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value={EBeatSheetEditorTabs.SCENES}>
-					<SceneTab />
+					<SceneTab characters={characters} />
 				</TabsContent>
 				<TabsContent value={EBeatSheetEditorTabs.CHARACTERS}>
-					<Characters />
+					<Characters characters={characters} setCharacters={setCharacters} />
 				</TabsContent>
 				<TabsContent value={EBeatSheetEditorTabs.STYLE}>
 					<StyleTab />

@@ -3,112 +3,114 @@ export const scenesData = [
 		id: 'scene_1',
 		title: 'INT - SCHULKORRIDOR - SZENE 1',
 		description:
-			'Quinn wird gemobbt und löst mit seiner Reaktion einen Konflikt aus.',
+			'Finn wird von einem Mitschüler gemobbt und mit einer übernatürlichen Fähigkeit angegriffen. Er wird durch die Luft geschleudert und verletzt, während andere Schüler zusehen ohne zu helfen. Finn rappelt sich auf und verlässt frustriert die Schule.',
 		beats: [
 			{
 				id: 'scene_1_beat_1',
 				content:
-					'• Quinns Brille mit Klebeband repariert - visuelles Detail sehr wichtig!\n• Mitschüler spotten über ihn: "Try not to die by tripping over yourself, Quinn!"\n• Quinn sollte zunächst ignorieren, dann aber doch reagieren\n• Sozialer Status irgendwie andeuten',
+					'Finn wird als 16-jähriger Waisenjunge und Außenseiter etabliert. Letzter Schultag. Mitschüler beginnen ihn zu mobben und zu verspotten. Finn versucht zunächst zu ignorieren, wird aber zunehmend gereizt.',
 			},
 			{
 				id: 'scene_1_beat_2',
 				content:
-					'• Energieattacke: grüne Lichtkugel in den Händen, dann auf Quinn geschossen\n• Begriff "Level 1" taucht auf - impliziert Klassensystem\n• ?etwas mit Macht/Statusunterschied\n• Quinn ist wehrlos - ausarbeiten wie es sich anfühlt',
+					'Ein Mitschüler greift Finn mit einer übernatürlichen Fähigkeit an. Finn wird durch die Luft geschleudert und verletzt. Die Machtunterschiede zwischen den Schülern werden deutlich - Finn ist völlig hilflos.',
 			},
 			{
 				id: 'scene_1_beat_3',
 				content:
-					'• Mädchen will helfen, erkennt Quinn, zieht sich zurück\n• "I can\'t believe you tried to help him" - exakt so einbauen\n• Zuschauer zeigen absolute Gleichgültigkeit - wichtig!\n• Brille noch kaputter als vorher - Setze für Szene 5 auf',
+					'Andere Schüler schauen gleichgültig zu, niemand hilft Finn. Er rappelt sich verletzt und frustriert auf. Völlig demoralisiert verlässt er die Schule und macht sich auf den Weg nach Hause.',
 			},
 		],
 	},
 	{
 		id: 'scene_2',
-		title: 'INT - SCHULGEBÄUDE/AUSGANG - SZENE 2',
+		title: 'EXT - STRASSE/INT - WOHNHEIM EINGANG - SZENE 2',
 		description:
-			'Übergangsszene: Quinn verlässt die Schule am letzten Schultag früher als alle anderen.',
+			'Finn geht allein und verletzt nach Hause. Übergangsszene die seine Einsamkeit und seinen Status als Außenseiter verstärkt.',
 		beats: [
 			{
 				id: 'scene_2_beat_1',
 				content:
-					'• Letzter Schultag - betonen\n• Quinn will weg, nicht mehr aushalten\n• evtl. innerer Monolog dazu?',
+					'Finn geht allein durch die Straßen, während andere Schüler in Gruppen feiern. Seine Verletzungen schmerzen noch. Die Einsamkeit und Isolation werden greifbar.',
 			},
 			{
 				id: 'scene_2_beat_2',
 				content:
-					'• Gruppen von Schülern beim Abschied nehmen\n• Verschiedene Emotionen zeigen\n• Quinn betrachtet sie von außen',
+					'Rückblick auf sein Leben als Waisenkind. Seine Eltern starben im Dalki-Krieg als er zehn war. Seither lebt er allein im Wohnheim.',
 			},
 			{
 				id: 'scene_2_beat_3',
 				content:
-					'• "Quinn wasn\'t a part of any of that and he didn\'t want to be"\n• "Cliques would not welcome him anyway. He was the weird one"\n• Diese Passage so nah wie möglich am Original\n• Übergang zu seiner Wohnung',
+					'Ankunft am kargen Wohnheim. Finn betritt sein kleines, trostloses Zimmer. Der einzige Besitz von Wert: das mysteriöse Buch seiner Eltern.',
 			},
 		],
 	},
 	{
 		id: 'scene_3',
-		title: 'INT - QUINNS EINZIMMERWOHNUNG - SZENE 3',
-		description: 'Quinn führt das 112. Experiment mit dem Buch durch.',
+		title: 'INT - FINNS WOHNHEIMZIMMER - SZENE 3',
+		description:
+			'Finn kehrt in sein karges Zimmer zurück und versucht erneut, das mysteriöse Buch seiner Eltern zu öffnen. Er träufelt Salzsäure darauf, aber es bleibt verschlossen. Frustriert gibt Finn auf und schaltet den Fernseher ein.',
 		beats: [
 			{
 				id: 'scene_3_beat_1',
 				content:
-					'• Wohnung von Regierung gestellt - klein, minimal eingerichtet\n• Ein Koffer mit allem was er besitzt steht auf dem Bett\n• Zeige dass er allein lebt, und zwar schon länger\n• 16 Jahre alt - jugendliche Perspektive berücksichtigen',
+					'Finn betrachtet das verschlossene, rote Buch - sein einziges Erbe. Er erinnert sich an seine zahlreichen erfolglosen Versuche, es zu öffnen. Heute will er es erneut mit Salzsäure versuchen.',
 			},
 			{
 				id: 'scene_3_beat_2',
 				content:
-					'• Rotes Buch mit Kieferknochen-Symbol\n• Experiment #112 - Salzsäure\n• "Let\'s try again today"\n• Frustration nach erneutem Misserfolg',
+					'Finn träufelt vorsichtig Salzsäure auf das Buch, aber es reagiert nicht. Kein Effekt, wie bei allen anderen Versuchen zuvor. Seine Frustration und Verzweiflung wachsen.',
 			},
 			{
 				id: 'scene_3_beat_3',
 				content:
-					'• Bei der Reflexion über Eltern emotionaler werden\n• Warum haben sie ihm nur dieses Buch hinterlassen?\n• Fernseher als Geräuschkulisse\n• Gefühl der Einsamkeit ausarbeiten',
+					'Enttäuscht gibt Finn auf und schaltet den Fernseher ein. Er lässt sich erschöpft aufs Bett fallen, während die Nachrichten beginnen.',
 			},
 		],
 	},
 	{
 		id: 'scene_4',
-		title: 'INT - QUINNS WOHNUNG/FERNSEHER - SZENE 4',
+		title: 'INT - FINNS WOHNHEIMZIMMER/FERNSEHER - SZENE 4',
 		description:
-			'Nachrichtensendung über den Dalki-Konflikt gibt Hintergrundinformationen.',
+			'Nachrichtensendung über drohenden Dalki-Konflikt. Rückblick auf die Geschichte des Dalki-Krieges und die Entstehung der "Originale" mit ihren übernatürlichen Fähigkeiten. Die ungerechte Verteilung dieser Kräfte wird thematisiert.',
 		beats: [
 			{
 				id: 'scene_4_beat_1',
 				content:
-					'• Nachrichten im genauen Wortlaut:\n"The peace treaty with the Dalki race has lasted for five years now, but officials are saying that tension is rising once again. Now, we must prepare for another war…."\n• Quinns Reaktion darauf zeigen',
+					'Nachrichten berichten über erneute Spannungen mit der außerirdischen Dalki-Rasse. Rückblick auf den verheerenden Krieg und die fast vollständige Versklavung der Menschheit. Finn denkt an seine gefallenen Eltern.',
 			},
 			{
 				id: 'scene_4_beat_2',
 				content:
-					'• Infos zum 30-jährigen Krieg\n• Irgendwas mit Versklavung der Menschheit\n• Eltern im Krieg gestorben als Quinn 10 war\n• Technologie hat gegen die Dalki versagt',
+					'Menschen mit übernatürlichen Fähigkeiten, die "Originale", wendeten das Blatt im Krieg. Diese Kräfte entschieden über Sieg oder Niederlage der Menschheit.',
 			},
 			{
 				id: 'scene_4_beat_3',
 				content:
-					'• Menschen mit besonderen Fähigkeiten haben den Krieg gewendet\n• Diese Kräfte sind jetzt ungerecht verteilt (Reiche haben Zugang)\n• ???Mehr zur Klassengesellschaft\n• "Why is the world so unfair?" - wichtiger emotionaler Moment',
+					'Heute sind diese Fähigkeiten ungerecht verteilt - nur Privilegierte und Reiche haben Zugang. Der Rest der Bevölkerung, wie Finn, geht leer aus. Finn starrt sehnsüchtig auf das Buch, seine einzige Hoffnung.',
 			},
 		],
 	},
 	{
 		id: 'scene_5',
-		title: 'INT - QUINNS WOHNUNG/SCHREIBTISCH - SZENE 5',
-		description: 'Quinns Blut aktiviert das Buch - Wendepunkt der Geschichte.',
+		title: 'INT - FINNS WOHNHEIMZIMMER/SCHREIBTISCH - SZENE 5',
+		description:
+			'Beim Versuch seine Brille zu reparieren, tropft Finns Blut versehentlich auf das Buch. Es beginnt zu leuchten, öffnet sich und zeigt fremdartige Symbole. Das Buch löst sich auf und Finn hört eine Computerstimme in seinem Kopf, bevor er das Bewusstsein verliert.',
 		beats: [
 			{
 				id: 'scene_5_beat_1',
 				content:
-					'• Quinn will kaputte Brille reparieren\n• Linse aus dem Rahmen gerutscht\n• Frustration hier unbedingt spürbar machen\n• "Come on! Just get in!" - exakt diesen Dialog verwenden',
+					'Finn versucht seine vom Angriff beschädigte Brille zu reparieren. Dabei verletzt er sich versehentlich - ein Tropfen Blut fällt direkt auf das rote Buch.',
 			},
 			{
 				id: 'scene_5_beat_2',
 				content:
-					'• Linse zerbricht, schneidet in seinen Daumen\n• SEHR wichtig: physischen Schmerz gut beschreiben\n• Wutausbruch: "Why does the world hate me?"\n• Blutstropfen fällt genau auf das Buch - Zufall, aber folgenreich',
+					'Das Buch beginnt sofort zu leuchten und öffnet sich von selbst. Fremdartige Symbole und Schriftzeichen werden sichtbar. Finn kann die unbekannte Schrift plötzlich intuitiv verstehen.',
 			},
 			{
 				id: 'scene_5_beat_3',
 				content:
-					'• Symbol leuchtet - visuell ausarbeiten!\n• Buch schwebt auf Augenhöhe\n• Seiten blättern von selbst um\n• Quinn versteht plötzlich die fremde Sprache\n• Hört "Congratulations you have been granted the Va...."\n• Buch zu Staub, Quinn verliert Bewusstsein',
+					'Das Buch löst sich in Staub auf. Eine roboterhafte Stimme spricht in Finns Kopf von der "Aktivierung des VS". Überwältigt von dem übernatürlichen Ereignis verliert Finn das Bewusstsein.',
 			},
 		],
 	},
@@ -119,31 +121,31 @@ export const generatedContent = [
 		id: 'scene_1',
 		title: 'INT - SCHULKORRIDOR - SZENE 1',
 		content:
-			'Quinn schlurfte durch den Korridor, die kaputte Brille notdürftig mit Klebeband zusammengehalten – ein sichtbares Zeichen seiner Schwäche. Hinter ihm erklang schallendes Gelächter. "Try not to die by tripping over yourself, Quinn!" höhnte ein Mitschüler. Erst versuchte er, es zu ignorieren, doch das Gelächter wurde lauter. Quinn blieb abrupt stehen, sein Herz schlug schneller. Jeder im Flur wusste, welchen niedrigen Platz er in der sozialen Hierarchie einnahm.\n\nDa formte einer der Jungen eine grün schimmernde Kugel zwischen den Händen. "Level 1", raunte jemand bewundernd. Der Angriff kam ohne Vorwarnung – die Energie traf Quinn mit voller Wucht, ließ ihn zurücktaumeln. Schmerz brannte in seiner Brust, während er die bittere Realität spürte: Er war machtlos.\n\nEin Mädchen machte einen Schritt nach vorn, zögerte. Als sie Quinn erkannte, wich sie zurück. Hinter ihr erklang ein höhnisches: "I can\'t believe you tried to help him." Der Rest der Schüler schaute gleichgültig zu, als wäre nichts passiert. Quinn tastete nach seiner Brille – sie war nun endgültig zerbrochen.',
+			'"Pass auf, dass du nicht über deine eigenen Füße stolperst und stirbst, Quinn!" rief ein Junge den Flur hinunter und brach danach in schallendes Gelächter aus.\n\nQuinn ignorierte die kleinliche Hänseleien und setzte seinen Weg durch den Schulkorridor fort. Die Schikane war für ihn zur täglichen Routine geworden, doch sie verletzte ihn noch immer genauso tief wie an jedem anderen Tag. Deshalb konnte er sein Verlangen nach Vergeltung nicht unterdrücken.\n\nQuinn verlangsamte seinen Schritt und blieb stehen. Er schob seine Brille wieder auf den Nasenrücken, da sie von seinem Gesicht gerutscht war. Schon beim Anblick der Brille war offensichtlich, dass er ein neues Paar benötigte – man konnte deutlich erkennen, wie stark abgenutzt sie war. Die Brille saß schief, wenn er sie trug, und sogar die Bügel waren mit Klebeband geflickt.\n\nDann drehte er sich um und streckte sofort seinen Mittelfinger in die Höhe als Antwort auf die Beleidigung: "Ich wette, du weißt nicht mal, wie viele Finger ich dir zeige!"\n\nAls der Junge die Provokation hörte, ballte er seine Faust und rannte auf Quinn zu.\n\n"Du Level-1-Dreckstück! Wann wirst du endlich begreifen, dass du nicht in diese Welt gehörst?"\n\nDer Junge legte beide Hände zusammen, und zwischen ihnen begann sich eine grüne Lichtkugel zu formen. Als er nur noch wenige Meter von Quinn entfernt war, stieß er seine Hände nach vorn, und ein grüner Strahl schoss aus seinen Handflächen.\n\nQuinn hatte keinen Ausweg, und der Lichtstrahl war zu schnell, um ihm auszuweichen. Daher wusste er, dass er nur die Zähne zusammenbeißen und den Schmerz ertragen konnte. Als das Licht ihn traf, wurde sein Körper in die Luft geschleudert und rückwärts gegen die Wand am anderen Ende des Korridors gepresst.\n\n"Was ist denn hier los?" fragte ein Schüler aus der Menge. "Kämpfen die etwa am letzten Schultag?"\n\nSofort hatte sich eine Menschenmenge gebildet, neugierig auf den Grund des Tumults. Eine der Schülerinnen lief zu der beschädigten Stelle der Wand, um nach dem angegriffenen Schüler zu sehen.\n\nAls sich der Staub zu legen begann, kamen Quinns leicht gewellte schwarze Haare langsam zum Vorschein. Als der Rauch sich schließlich verzog, erkannte die Schülerin endlich, wer es war. Sie wich sofort zurück und wandte sich ihren eigenen Angelegenheiten zu, als wäre nichts geschehen.\n\nIn dem Moment, als die Schülerin zu ihren Freunden zurückgekehrt war, konnte er sehen, wie sie über ihn lachten.\n\n"Ich kann nicht glauben, dass du versucht hast, ihm zu helfen."\n\n"Ich habe nicht gesehen, wer es war", erwiderte das Mädchen mit geröteten Wangen.\n\nDaraufhin stand Quinn auf und hob seine Brille auf, die zu Boden gefallen war. Zu seinem Verdruss war eines der Scharniere wieder einmal abgebrochen. Anstatt das ramponierte Gestell zu tragen, ließ er es an seiner Hand baumeln.\n\n"Verdammt. Nicht schon wieder..."',
 	},
 	{
 		id: 'scene_2',
 		title: 'INT - SCHULGEBÄUDE/AUSGANG - SZENE 2',
 		content:
-			'Es war der letzte Schultag. Quinn drängte hastig hinaus, unfähig, noch länger zwischen den lachenden Stimmen zu stehen. *Ich halte das nicht länger aus*, dachte er und schob sich durch die Tür nach draußen.\n\nVor dem Eingang hatten sich Gruppen gebildet. Freunde umarmten sich, manche weinten, andere lachten und schmiedeten Pläne für die Ferien. Quinn blieb abseits, ein stiller Beobachter. „Quinn wasn’t a part of any of that and he didn’t want to be. Cliques would not welcome him anyway. He was the weird one.“ Mit gesenktem Blick ging er weiter, weg von all dem, hin zu seiner einsamen Wohnung.',
+			'Es war der letzte Schultag für Quinn, also hatte er gehofft, dass niemand Ärger mit ihm anfangen würde. Er hatte ihre Machenschaften satt, aber er war auch nicht der Typ, der sie einfach ignorierte. Er hatte Menschen gesehen, die sich entschieden hatten, den Kopf einzuziehen und die Schikane zu erdulden. Jedoch war deren Behandlung weitaus schlimmer als das, was er erdulden musste.\n\nEr machte sich nicht die Mühe, wie die anderen Schüler in der Schule zu verweilen. Er nahm seine kaputte Brille und verließ das Gebäude. Als er vorbeiging, sah er die Schüler, die sich in ihren Kreisen unterhielten. Einige lachten, während andere Tränen vergossen, da sie dachten, es wäre das letzte Mal, dass sie sich jemals wiedersehen würden. Quinn jedoch war nicht Teil davon und wollte es auch nicht sein. Die Cliquen würden ihn ohnehin nicht willkommen heißen. Er war der Außenseiter. Als er endlich zu Hause ankam, machte er sich sofort an die Arbeit. In einer Ein-Zimmer-Wohnung zu leben, die gerade genug Platz für ein einzelnes Bett und einen Schreibtisch bot, genügte ihm völlig. Ein Fernseher hing an der Wand, doch Quinn nutzte ihn lediglich als Geräuschkulisse und schaute nie wirklich etwas.',
 	},
 	{
 		id: 'scene_3',
 		title: 'INT - QUINNS EINZIMMERWOHNUNG - SZENE 3',
 		content:
-			'Die Wohnung, die ihm die Regierung zugeteilt hatte, war klein und karg. Ein alter Koffer auf dem Bett enthielt all seinen Besitz. Die wenigen Möbel wirkten trostlos, so wie die Stille, die ihn empfing. Mit seinen sechzehn Jahren war Quinn das Alleinsein gewohnt, doch heute lastete es schwerer als sonst.\n\nAuf dem Tisch lag das rote Buch mit dem Kieferknochen-Symbol. Quinn seufzte. "Let’s try again today", murmelte er und bereitete sein 112. Experiment vor – diesmal mit Salzsäure. Wieder nichts. Die Reaktion verpuffte, ein weiterer Fehlschlag. Frustration schüttelte ihn, während er das Buch anstarrte.\n\nSeine Gedanken wanderten zu seinen Eltern. Warum hatten sie ihm nur dieses rätselhafte Buch hinterlassen? War es ein Schlüssel? Eine Bürde? Der Fernseher flackerte im Hintergrund, sein monotoner Ton war die einzige Gesellschaft in dieser Einsamkeit.',
+			'Die Wohnung stellte ihm die Regierung zur Verfügung, da er keine lebenden Verwandten hatte und erst sechzehn Jahre alt war. Auf seinem Bett lag ein einzelner Koffer, der all seine ordentlich verpackten Besitztümer enthielt.\n\nEr ging zu einem Schrank und zog sofort eine Schublade auf, in der ein einzelnes Buch lag. Es war ein großes und dickes gebundenes Buch, das etwa ein halbes Kilo wog. Der Einband hatte eine Farbe, die einem helleren Blutton ähnelte. In der Mitte konnte man die düsteren Konturen eines Ober- und Unterkieferknochens erkennen, beide in einem sumpfigen Braunton gefärbt. Der Oberkiefer hatte vier getrennte Reißzähne. Der untere hingegen hatte zwei scharfe Zähne an den beiden äußeren Enden und fünf gleichmäßig verteilte darunter.\n\n"Lass uns heute wieder versuchen", sagte Quinn, als er das Buch anhob und auf den Schreibtisch legte.\n\nDann ging er schnell zu seiner Tasche und holte ein kleines Reagenzglas heraus, das zur Hälfte mit einer farblosen Flüssigkeit gefüllt war.\n\n"Test 112, Salzsäure. Mal sehen, wie es läuft." Er begann dann langsam, die Flüssigkeit aus dem Reagenzglas auf das Buch zu gießen.\n\n"Bisher keine Reaktion." Er goss weiter den gesamten Inhalt des Reagenzglases auf das Buch, doch am Ende seines Experiments gab es keine Reaktion.\n\nSorgfältig untersuchte er das Buch, während er die Ergebnisse in sein Notizbuch eintrug. Er prüfte, ob irgendein Schaden entstanden war, doch das Buch sah aus wie immer.\n\n"Noch ein Fehlschlag. Warum willst du dich nicht öffnen? Warum hatten Mama und Papa dieses Ding überhaupt?"\n\nEinhundertzwölf Mal – das war die Anzahl der verschiedenen Wege, die Quinn versucht hatte, um das Buch zu öffnen. Nicht nur öffnete sich das Buch nicht, es schien auch völlig unzerstörbar zu sein. Er hatte sogar versucht, das Buch zu verbrennen, zu zerschneiden, zu schmelzen, doch nichts hatte gegen das Buch gewirkt, das völlig widerstandsfähig schien.\n\nAuf seinem Bett liegend schaltete er den Fernseher für seinen einzigen Zweck ein – Hintergrundgeräusche zu erzeugen. Er achtete nie wirklich darauf, was lief. Dadurch fühlte er sich durch die Stimmen anderer weniger einsam.',
 	},
 	{
 		id: 'scene_4',
 		title: 'INT - QUINNS WOHNUNG/FERNSEHER - SZENE 4',
 		content:
-			'Auf dem Bildschirm lief die Abendnachricht. "The peace treaty with the Dalki race has lasted for five years now, but officials are saying that tension is rising once again. Now, we must prepare for another war…" Quinns Finger krampften sich um die Lehne seines Stuhls. Schon wieder drohte ein Krieg.\n\nDer Sprecher erinnerte an die vergangenen dreißig Jahre: die fast vollständige Versklavung der Menschheit, das Versagen der Technologie gegen die Dalki. Quinn schluckte schwer. Seine Eltern waren in diesem Krieg gestorben, da war er gerade zehn gewesen – zurückgelassen nur mit diesem Buch.\n\nDann wechselte der Bericht: Menschen mit besonderen Fähigkeiten hatten einst die Wende gebracht. Doch die Kräfte waren ungleich verteilt. Nur die Reichen hatten Zugang, nur die Mächtigen profitierten. Quinns Brust zog sich zusammen. "Why is the world so unfair?", flüsterte er in die Stille, und das rote Buch schien wie ein stummer Zeuge neben ihm zu liegen.',
+			'Beim Einschalten zeigte der Fernseher eine laufende Nachrichtensendung.\n\n"Der Friedensvertrag mit der Dalki-Rasse hält nun seit fünf Jahren, doch Beamte sagen, dass die Spannungen wieder steigen. Nun müssen wir uns auf einen weiteren Krieg vorbereiten..."\n\nDie Erwähnung von Krieg lief seit einem bestimmten Tag vor dreißig Jahren ununterbrochen im Fernsehen. Die Menschheit erhielt Besuch von den sogenannten Dalki. Sie hatten die Statur von Menschen, außer dass ihre Haut mit Schuppen übersät war und sie Schwänze besaßen, die denen von Drachen ähnelten.\n\nOhne wirklichen Hinweis darauf, warum sie plötzlich erschienen waren, forderten sie sofort, dass die Menschheit ihre Ressourcen herausgeben und sich als Sklaven nutzen lassen sollte. Natürlich entschieden die Menschen, sich zu wehren, doch sie fanden schnell heraus, dass ihre moderne Technologie gegen sie nutzlos war. Kugeln konnten ihre Haut nicht durchdringen, und was Panzer anging – nun, die Dalki besaßen Luftschiffe.\n\nJeder Einzelne, unabhängig vom Geschlecht, wurde aufgefordert, für seinen Planeten zu kämpfen, und das schloss Quinns Eltern mit ein. Der Krieg zog sich über Jahre hin, sodass er aufwuchs, ohne zu wissen, wie seine Eltern aussahen. Als die Menschen kurz vor der Niederlage standen, trat eine auserwählte Gruppe hervor – Menschen, die über außergewöhnliche Fähigkeiten verfügten. Sie begannen ihr Wissen darüber zu teilen, wie sie zu solcher Macht gelangt waren, in der Hoffnung, das Blatt im Krieg zu wenden. Glücklicherweise funktionierte es. Dennoch blieben die Dalki stark, und eine scheinbar endlose Pattsituation führte vor fünf Jahren zur Unterzeichnung des Friedensvertrags.\n\nVerständlicherweise gewann die menschliche Gier die Oberhand, und anstatt diese Kräfte mit allen zu teilen, beschlossen die hochrangigen Regierungsbeamten, sie für sich zu behalten. Nur diejenigen mit Geld konnten die mächtigeren Fähigkeiten erlernen, während alle anderen mit Brosamen abgespeist wurden.\n\nEs war etwas, das getan werden musste. Armut hatte die Welt übernommen, doch nun besaßen Menschen Kräfte und setzten sie unkontrolliert ein – anders als zuvor.\n\nQuinn bekam nichts, als seine Eltern starben. Die Regierung stimmte zu, seine Lebenshaltungskosten zu übernehmen, solange er zur Schule ging, aber das war alles. Als seine Eltern starben und er zehn Jahre alt war, erschien ein Agent vor seiner Haustür und überreichte ihm ein Buch. Man sagte ihm, es sei das Einzige gewesen, was seine Eltern besessen hatten – etwas, das sie hinterlassen hatten, als sie starben.\n\n"Warum ist die Welt nur so ungerecht?", murmelte er und beklagte sein Schicksal.',
 	},
 	{
 		id: 'scene_5',
 		title: 'INT - QUINNS WOHNUNG/SCHREIBTISCH - SZENE 5',
 		content:
-			'Quinn setzte sich an den Schreibtisch, nahm die zerbrochene Brille zur Hand. Vorsichtig versuchte er, die Linse wieder einzusetzen. "Come on! Just get in!" fluchte er. Doch das Glas splitterte endgültig und schnitt tief in seinen Daumen. Schmerz schoss durch seine Hand. "Why does the world hate me?" schrie er verzweifelt.\n\nEin Blutstropfen fiel direkt auf das rote Buch. Sofort begann das Symbol zu leuchten, pulsierend und unnatürlich hell. Das Buch hob sich vom Tisch, schwebte vor Quinns Augen, die Seiten blätterten von selbst um. Worte in einer fremden Sprache erschienen – und er verstand sie plötzlich.\n\nEine Stimme hallte in seinem Kopf: "Congratulations you have been granted the Va...." Bevor er begreifen konnte, verwandelte sich das Buch in Staub. Die Partikel glitten durch seine Finger, während seine Knie nachgaben. Bewusstlos sank Quinn zu Boden, in eine Dunkelheit, die ihn gänzlich verschlang.',
+			'Er stand von seinem Bett auf und schlenderte zu seinem Schreibtisch. Er nahm seine Brille auf, die immer noch leicht beschädigt war, und beschloss, sie zu reparieren. Er bemerkte, dass eine der Linsen verrutscht war, und versuchte, sie zurück in die Fassung zu drücken.\n\n"Komm schon! Geh einfach rein!", schrie er, während er die Brille gewaltsam zu reparieren suchte. Die Frustration, die sich in ihm aufgestaut hatte, stand ihm ins Gesicht geschrieben, als er wütend mit der Linse kämpfte.\n\nUnglücklicherweise zerbrach die Linse plötzlich in Stücke, und einer der Plastiksplitter schnitt eine tiefe Wunde in seinen Daumen.\n\nEr schrie auf und trat gegen den Tisch.\n\n"Warum hasst mich die Welt?"\n\nNach einer Weile beruhigte er sich und begann, die kleinen Glasstücke aufzusammeln. Dabei bemerkte er, dass ein Stück auf seinem Buch gelandet war. Als Quinn das Glasstück entfernte, fiel ein Blutstropfen von seinem Daumen auf das Buch.\n\nDer Gegenstand in der Mitte des Buches begann zu leuchten, und plötzlich fing das Buch an zu schweben, bis es auf Augenhöhe mit Quinn war.\n\nQuinn sprang zurück. Das Leuchten des Buches ließ sein Zimmer noch karger wirken mit dem kleinen Bett in der Ecke und dem einsamen Stuhl daneben.\n\n"Was zum Teufel passiert hier?!"\n\nDas Buch begann eine blendende Helligkeit auszustrahlen, während es unkontrolliert zitterte. Wenige Sekunden später öffnete es sich endlich, Seite um Seite wurde umgeblättert. Quinn konnte seine Augen nicht von dem leuchtenden Buch abwenden – es war, als befände er sich in tiefer Trance. Die Worte auf den Seiten des Buches waren in keiner Sprache geschrieben, die er je zuvor gesehen hatte. Dennoch hatte er aus irgendeinem Grund das Gefühl, sie verstehen zu können.\n\nAls das Buch seine letzte Seite erreichte, begann es zu verschwinden und verwandelte sich allmählich in Staub. Zur gleichen Zeit fühlte sich sein Körper plötzlich schwach an. Quinns Sicht begann zu verschwimmen, und seine Augen fielen zu.\n\nDoch kurz bevor er das Bewusstsein verlor, hörte er eine einzige Nachricht.\n\n<Herzlichen Glückwunsch, dir wurde das Va... gewährt>\n\nUnfähig, das Bewusstsein lange genug aufrechtzuerhalten, um die letzten Worte zu hören, verlor Quinn das Bewusstsein.',
 	},
 ]
 
@@ -156,23 +158,124 @@ export type TCharacter = {
 	voice: string
 }
 
-export const charactersData: TCharacter[] = [
+export const charactersData = [
 	{
 		id: '1',
-		name: 'John Carter',
-		bio: 'A brave adventurer from Mars with a mysterious past.',
+		name: 'Quinn',
+		bio: 'Ein 16-jähriger Waisenjunge, der seit dem Tod seiner Eltern im Dalki-Krieg alleine lebt. Als Level-1 besitzt er keine übernatürlichen Fähigkeiten und wird deshalb in der Schule gemobbt. Sein einziges Erbe ist ein mysteriöses rotes Buch, das er trotz 112 Versuchen nicht öffnen kann.',
 		appearance:
-			'Tall, athletic build with rugged features and piercing green eyes.',
-		recent_arc: '',
-		voice: '',
+			'Leicht gewelltes schwarzes Haar, trägt eine kaputte Brille die notdürftig mit Klebeband geflickt ist. Schmächtige Statur, wirkt verletzlich und ist oft schmutzig von den Angriffen seiner Mitschüler.',
+		recent_arc:
+			'Wird am letzten Schultag von einem Mitschüler mit übernatürlichen Kräften angegriffen. Sein Blut aktiviert versehentlich das mysteriöse Buch seiner Eltern, wodurch eine unbekannte Kraft erwacht.',
+		voice:
+			'Resigniert und frustriert, aber auch trotzig. Oft sarcastisch als Selbstschutz. Wird emotional bei Gedanken an seine verstorbenen Eltern.',
+		narratology: {
+			function:
+				'Protagonist. Verkörpert klassischen Underdog-Archetyp und "Chosen One" Trope. Fungiert als Publikumsidentifikationsfigur durch seine Machtlosigkeit. Trägt das zentrale MacGuffin (das Buch) als Erbstück.',
+			arc: 'Inciting Incident: Mobbing-Angriff katalysiert die zentrale Transformation. Blut als Aktivator folgt klassischem "Blutopfer"-Motiv. Bewusstlosigkeit am Ende von Act 1 als typischer Cliffhanger vor der Heldenreise.',
+			design: {
+				thematic_role:
+					'Macht wird ihm aufgezwungen, nicht erworben. Verkörpert "Power corrupts"-Gegenpol in superkraftdominierten Gesellschaft.',
+				visual_design:
+					'Visueller Shorthand für "Nerd/Opfer": kaputte Brille als ikonisches Detail. Äußere Beschädigung spiegelt innere Verletzlichkeit wider.',
+				dialogue_style:
+					'Sarkastischer Subtext als Defensivmechanismus. Innerer Monolog oszilliert zwischen Selbstmitleid und trotziger Rebellion. Authentische Teenie-Frustration ohne Sentimentalität.',
+			},
+		},
 	},
 	{
 		id: '2',
-		name: 'Evelyn Sharp',
-		bio: 'A skilled detective known for her wit and analytical mind.',
+		name: 'Der Angreifer',
+		bio: 'Ein Mitschüler von Quinn, der übernatürliche Fähigkeiten besitzt und diese nutzt, um schwächere Schüler zu schikanieren. Repräsentiert das ungerechte Machtgefälle in der Gesellschaft.',
 		appearance:
-			'Medium height, always seen in a sharp suit, short blonde hair.',
-		recent_arc: '',
-		voice: '',
+			'Unbekannt, aber körperlich überlegen. Kann grüne Energiekugeln zwischen seinen Handflächen formen.',
+		recent_arc:
+			'Greift Quinn am letzten Schultag mit einem grünen Energiestrahl an, nachdem dieser ihn provoziert hat.',
+		voice:
+			'Aggressiv und überheblich. Verachtet alle "Level-1-Abschaum" und sieht sich als überlegen an.',
+		narratology: {
+			function:
+				'Klassischer Schultyrannen-Archetyp mit Fantasy-Twist. Repräsentiert korruptes Machtsystem. Funktioniert als Katalysator für Quinns Charakterentwicklung.',
+			arc: 'Erfüllt dramaturgische Funktion des "Threshold Guardian". Sein Angriff dient als Plot Device um Quinns Transformation auszulösen. Einmaliger Auftritt mit maximaler narrativer Effizienz.',
+			design: {
+				thematic_role:
+					'Privilegiert durch Geburtsrecht, nicht Verdienst. Embodies "Power corrupts"-Thematik als Gegenpol zu Quinn.',
+				visual_design:
+					'Bewusst vage gehalten - universeller Bully-Archetyp. Grüne Energiekugeln: Farbsymbolik für Neid, Toxizität, pervertierte Naturkraft.',
+				dialogue_style:
+					'Überheblicher Ton mit Klassensprache. Dehumanisierende Rhetorik etabliert Stakes. Intentional flacher Charakter ohne Nuancierung.',
+			},
+		},
+	},
+	{
+		id: '3',
+		name: 'Das hilfsbereite Mädchen',
+		bio: 'Eine Mitschülerin, die zunächst helfen will, aber zurückweicht als sie erkennt, dass es Quinn ist. Zeigt die gesellschaftliche Ächtung von schwachen Personen.',
+		appearance: 'Unbekannt, vermutlich durchschnittliche Schülerin.',
+		recent_arc:
+			'Läuft zu Quinn nachdem er angegriffen wurde, zieht sich aber zurück als sie ihn erkennt. Wird von ihren Freunden dafür verspottet.',
+		voice:
+			'Zunächst mitfühlend, dann beschämt und unsicher. Lässt sich von Gruppendruck beeinflussen.',
+		narratology: {
+			function:
+				'Moralischer Kompass-Charakter, der versagt. Verkörpert gesellschaftliche Heuchelei und Feigheit. Missed Opportunity für Quinns ersten Ally.',
+			arc: 'Brief character arc in Mikrokosmos: Mitgefühl → Erkennung → Rückzug → Scham. Zeigt wie schnell moralische Impulse der sozialen Selbsterhaltung weichen.',
+			design: {
+				thematic_role:
+					'Zeigt wie Klassensystem auch "gute" Menschen korrumpiert. Verkörpert internal conflict zwischen Moral und Survival.',
+				visual_design:
+					'Deliberately generic - Anonymität verstärkt universelle Botschaft über sozialen Konformitätsdruck.',
+				dialogue_style:
+					'Transformation von empathisch zu defensiv. Ihre Freunde als Chorus of Social Judgement.',
+			},
+		},
+	},
+	{
+		id: '4',
+		name: 'Quinns Eltern',
+		bio: 'Gefallene Kriegshelden, die im Dalki-Krieg starben als Quinn 10 Jahre alt war. Hinterließen ihm nur ein mysteriöses rotes Buch als Erbe.',
+		appearance:
+			'Unbekannt - Quinn kennt ihr Aussehen nicht, da sie starben als er noch klein war.',
+		recent_arc:
+			'Werden nur in Erinnerungen und Rückblicken erwähnt. Ihr Buch wird schließlich durch Quinns Blut aktiviert.',
+		voice:
+			'Nur in Quinns Erinnerungen präsent, vermutlich liebevoll und beschützend.',
+		narratology: {
+			function:
+				'Ghost characters mit maximaler emotionaler Gewichtung. Klassisches "Dead Parents"-Trope zur Protagonist-Motivation. Hinterlassenes MacGuffin als narrative Thread.',
+			arc: 'Posthume Charakterentwicklung durch Objekt (Buch). Ihre wahre Bedeutung wird durch delayed revelation aufgebaut. Mystery box storytelling.',
+			design: {
+				thematic_role:
+					'War heroes turned mystery. Narrative Thread zwischen Vergangenheit und Zukunft.',
+				visual_design:
+					'Bewusste Leerstelle - fehlende visuelle Erinnerung verstärkt emotionale Distance und Sehnsucht.',
+				dialogue_style:
+					'Existiert nur in Quinns idealisierten Projektionen. Schweigen als präsente narrative force - absence spricht lauter als Worte.',
+			},
+		},
+	},
+	{
+		id: '5',
+		name: 'Die Dalki',
+		bio: 'Eine außerirdische Rasse, die vor 30 Jahren auf der Erde erschien und die Menschheit versklaven wollte. Haben menschliche Statur, aber schuppige Haut und drachenähnliche Schwänze. Führten zu einem jahrelangen Krieg.',
+		appearance:
+			'Humanoide Gestalt mit schuppiger Haut und drachenähnlichen Schwänzen. Besitzen fortgeschrittene Technologie wie Luftschiffe.',
+		recent_arc:
+			'Werden nur in Nachrichtenberichten erwähnt - Spannungen steigen wieder nach 5 Jahren Friedensvertrag.',
+		voice:
+			'Bedrohlich und überlegen, fordern bedingungslose Unterwerfung der Menschheit.',
+		narratology: {
+			function:
+				'Externe Bedrohung als Worldbuilding Device. Klassischer "Alien Invasion"-Trope mit Twist: bereits geschlagen, aber Trauma bleibt. Off-screen villains mit maximaler kultureller Impact.',
+			arc: 'Background tension als narrative Zeitbombe. Friedensvertrag = fragile status quo vor inevitable conflict. Rising action für zukünftige story arcs.',
+			design: {
+				thematic_role:
+					'Rechtfertigt Superkraft-Gesellschaftsordnung durch externe Bedrohung.',
+				visual_design:
+					'Reptilian humanoids - klassische Sci-Fi-Ikonographie. Drachenähnlichkeit evoziert mythologische Furcht.',
+				dialogue_style:
+					'Autoritäre, unmenschliche Kommunikation. Verkörpern absolute Otherness als existenzielle Bedrohung.',
+			},
+		},
 	},
 ]

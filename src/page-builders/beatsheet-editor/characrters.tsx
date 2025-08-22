@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { charactersData, TCharacter } from '@/mock-data/beatsheet-editor'
+import React from 'react'
+import { TCharacter } from '@/mock-data/beatsheet-editor'
 import { Plus, Trash2 } from 'lucide-react'
 import { nanoid } from 'platejs'
 
@@ -14,9 +14,15 @@ import {
 	AccordionTrigger,
 } from '@/components/ui/accordion'
 
-export default function Characters() {
-	const [characters, setCharacters] = useState<TCharacter[]>(charactersData)
-
+export default function Characters({
+	characters,
+	setCharacters,
+}: {
+	characters: TCharacter[]
+	setCharacters: (
+		characters: TCharacter[] | ((prev: TCharacter[]) => TCharacter[])
+	) => void
+}) {
 	const handleDeleteCharacter = (id: string) => {
 		setCharacters((prev) => prev.filter((character) => character.id !== id))
 	}

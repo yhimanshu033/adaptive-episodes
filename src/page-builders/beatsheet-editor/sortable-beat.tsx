@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils/helpers'
 const SortableBeat = ({
 	id,
 	children,
-}: React.PropsWithChildren<{ id: string }>) => {
+	index,
+}: React.PropsWithChildren<{ id: string; index: number }>) => {
 	const {
 		attributes,
 		listeners,
@@ -38,7 +39,7 @@ const SortableBeat = ({
 				{...attributes}
 				className="mb-2 cursor-grab text-sm font-bold select-none"
 			>
-				BEAT {id}
+				BEAT {index + 1}
 			</div>
 			{children}
 		</div>

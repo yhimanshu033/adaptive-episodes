@@ -6,6 +6,7 @@ import {
 	PlotAction,
 	WorldAction,
 } from '@/constants/story-explorer-constants'
+import { TCharacter } from '@/mock-data/beatsheet-editor'
 import { Value } from 'platejs'
 
 import { ELanguage, LSMappingOutput, MinifiedValue } from '@/types/common'
@@ -328,8 +329,9 @@ export enum EBeatSheetEditorTabs {
 
 export type TGenerateBeatsheetBody = {
 	beats: Record<string, TBeat[]>
+	characters?: TCharacter[]
 	ep_text: string
-	language: ELanguage
+	input_language: ELanguage
 	scene_texts: Record<string, string>
 }
 

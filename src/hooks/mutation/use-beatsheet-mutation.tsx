@@ -48,6 +48,18 @@ const useBeatsheetMutation = () => {
 		const resp = await getResponse(taskId)
 
 		return resp as TGenerateBeatsheetResponse
+
+		// await new Promise((resolve) => setTimeout(resolve, 2000))
+
+		// const resp: TGenerateBeatsheetResponse = []
+		// for (const sceneId of sceneIds) {
+		// 	resp.push({
+		// 		id: sceneId,
+		// 		content:
+		// 			generatedContent.find((scene) => scene.id === sceneId)?.content || '',
+		// 	})
+		// }
+		// return resp
 	}
 
 	const generateBeatsheetMutation = useMutation({
