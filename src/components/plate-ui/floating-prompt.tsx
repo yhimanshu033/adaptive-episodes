@@ -118,8 +118,6 @@ export default function FloatingPrompt() {
 	return (
 		<div
 			onBlur={(e) => {
-				console.log(e.currentTarget)
-				console.log(e.relatedTarget)
 				if (e.currentTarget.contains(e.relatedTarget)) {
 					return
 				}

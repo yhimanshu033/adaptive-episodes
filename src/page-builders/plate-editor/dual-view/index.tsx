@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react'
 import { TRANSITION_DURATION } from '@/constants/editor-constants'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useAccessChecks from '@/hooks/use-access-checks'
 import { CrossIcon } from '@/icons/cross-icon'
+import ContentDisplay from '@/page-builders/plate-editor/dual-view/content-display'
 import LocalDiffSection from '@/page-builders/plate-editor/dual-view/local-diff'
 import NextEpisode from '@/page-builders/plate-editor/dual-view/next-episode'
 import PreviousEpisode from '@/page-builders/plate-editor/dual-view/prev-episode'
@@ -32,9 +34,26 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 	const sidebar = store((state) => state.sidebar)
 	const focusMode = store((state) => state.focusMode)
 	const { isGerman } = useAccessChecks()
+	const { data } = useEpisodeContent()
 
 	const showDualView = sidebar === ESidebar.DUAL_VIEW && !focusMode
 
+	const extraViews = useMemo(() => {
+		if (!data?.additional_view) {
+			return {}
+		}
+		return Object.keys(data.additional_view).reduce(
+			(acc, k) => {
+				return {
+					...acc,
+					[k as EDualVIewMode]: (
+						<ContentDisplay content={data?.additional_view?.[k]} />
+					),
+				}
+			},
+			{} as Record<EDualVIewMode, React.ReactNode>
+		)
+	}, [data])
 	const modeToComponent: Record<EDualVIewMode, React.ReactNode> = useMemo(
 		() => ({
 			[EDualVIewMode.US_TRANSLATION]: (
@@ -49,8 +68,9 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			[EDualVIewMode.VOICE_PASS]: (
 				<VoicePass voiceMode={EChatMode.VOICE2_XML} />
 			),
+			...extraViews,
 		}),
-		[translatedContent]
+		[translatedContent, extraViews]
 	)
 
 	const { store: useEpisodeIdStoreContext, setDualViewMode } =

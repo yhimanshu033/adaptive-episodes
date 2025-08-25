@@ -11,6 +11,7 @@ import { CrossIcon } from '@/icons/cross-icon'
 import { GitBranchIcon } from '@/icons/git-branch-icon'
 import { GitForkIcon } from '@/icons/git-fork-icon'
 import { TrashIcon } from '@/icons/trash-icon'
+import BulkPromptDialog from '@/page-builders/episodes/dialogs/bulk-prompt-dialog'
 import MultiEpLocalizeDialog from '@/page-builders/episodes/dialogs/multi-ep-localize-dialog'
 import BulkEpisodeDownload from '@/page-builders/episodes/table/bulk-episode-download'
 import { Table } from '@tanstack/react-table'
@@ -125,6 +126,7 @@ export default function SelectionActions({
 					<Replace size={16} />
 				</MultiEpLocalizeDialog>
 				<BulkEpisodeDownload selectedRowData={selectedRowData} />
+				<BulkPromptDialog selectedRowData={selectedRowData} />
 				<If
 					condition={
 						!language.parentLanguage ||

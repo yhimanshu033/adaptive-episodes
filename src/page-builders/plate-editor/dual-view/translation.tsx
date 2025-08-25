@@ -1,7 +1,7 @@
 import React from 'react'
-import { TRANSLATION_EDITOR_ID } from '@/constants/editor-constants'
+import useMyEditor from '@/hooks/use-my-editor'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { createPlateEditor, ParagraphPlugin, Plate } from 'platejs/react'
+import { Plate } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Editor } from '@/components/plate-ui-v2/editor'
@@ -14,18 +14,10 @@ export default function Translation({ translatedContent }: TranslationProps) {
 		useShallow((state) => state.dualViewMode)
 	)
 	const showTranslation = dualViewMode === EDualVIewMode.US_TRANSLATION
-	const editor = createPlateEditor({
-		value:
-			typeof translatedContent === 'string'
-				? [
-						{
-							id: `0`,
-							type: ParagraphPlugin.key,
-							children: [{ text: translatedContent }],
-						},
-					]
-				: translatedContent,
-		id: TRANSLATION_EDITOR_ID,
+
+	const editor = useMyEditor({
+		content: translatedContent,
+		simplified: true,
 	})
 
 	if (!showTranslation) {

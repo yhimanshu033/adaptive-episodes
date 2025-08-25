@@ -5,7 +5,6 @@ import { DownloadCloud } from 'lucide-react'
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
 import { IfElse } from '@/components/aural-ui/if-else'
-import { cn } from '@/lib/aural-ui/utils'
 
 import { TEpisode } from '@/types/episode-type'
 
@@ -27,13 +26,10 @@ export default function BulkEpisodeDownload({
 	return (
 		<Button
 			variant="outline"
-			disabled={selectedRowData.length < 1 || isPending}
-			isDisabled={selectedRowData.length < 1 || isPending}
+			disabled={isPending}
+			isDisabled={isPending}
 			tooltip="Bulk Episode Download"
-			innerClassName={cn('border-fm-divider-secondary h-9', {
-				'border-fm-divider-tertiary !text-fm-icon-inactive':
-					selectedRowData.length < 1,
-			})}
+			innerClassName={'border-fm-divider-secondary h-9'}
 			onClick={handleClick}
 		>
 			<IfElse
