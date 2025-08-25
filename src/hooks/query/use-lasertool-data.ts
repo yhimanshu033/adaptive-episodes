@@ -13,7 +13,7 @@ const useLaserToolsQuery = (key: string | null, params: LaserToolsParams) => {
 	const { startTask, getResponse } = useSocket()
 	const { projectId } = useProjectId()
 	async function onRephraseFn() {
-		if (!key) {
+		if (!key || !projectId) {
 			return
 		}
 		const taskId = await startTask<LaserToolsParams>({
