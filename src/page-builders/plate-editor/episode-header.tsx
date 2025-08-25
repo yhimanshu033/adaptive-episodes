@@ -116,10 +116,10 @@ const EpisodeHeader = ({
 					condition={isInternalUser && isCmsReady && isAccessible(ERole.WRITER)}
 				>
 					<If>
-						<UploadDocxButton latestStatus={latestStatus} />
+						<UploadDocxButton />
 					</If>
 					<Else>
-						<DownloadDocxButton latestStatus={latestStatus} />
+						<DownloadDocxButton />
 					</Else>
 				</IfElse>
 			</div>

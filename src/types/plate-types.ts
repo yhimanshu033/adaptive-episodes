@@ -140,3 +140,9 @@ export type TDocxHTMLArgs = {
 	value: Value
 	words: number
 }
+
+export type TDocxDownloadArgs = {
+	epNumber: number
+	projectTitle: string
+	title: string
+}

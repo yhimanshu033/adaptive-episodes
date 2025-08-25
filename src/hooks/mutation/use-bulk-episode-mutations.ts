@@ -1,6 +1,9 @@
 import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
-import { BULK_EP_DOWNLOAD_MUTATION_KEY } from '@/constants/query-constants'
+import {
+	BULK_EP_DOWNLOAD_MUTATION_KEY,
+	BULK_EP_DOWNLOAD_URL_MUTATION_KEY,
+} from '@/constants/query-constants'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -19,7 +22,10 @@ export default function useBulkEpisodeMutations() {
 	const { id } = useParams()
 
 	const { initialStoryData } = useEpisodeTableContext()
-	async function downloadBulkEpisodes(body: TDownloadBulkEpisodeBodyParams) {
+
+	async function getBulkEpisodeDownloadUrl(
+		body: TDownloadBulkEpisodeBodyParams
+	) {
 		if (body.seq_nos.length < 1) {
 			toast.error('Select at least 1 Episode!')
 			return
@@ -36,7 +42,12 @@ export default function useBulkEpisodeMutations() {
 				projectId: String(id),
 			},
 		})
-		if (!resp.data?.file_url) {
+		return resp.data?.file_url
+	}
+
+	async function downloadBulkEpisodes(body: TDownloadBulkEpisodeBodyParams) {
+		const fileUrl = await getBulkEpisodeDownloadUrl(body)
+		if (!fileUrl) {
 			toast.error('Error in downloading episodes!')
 			return
 		}
@@ -46,7 +57,7 @@ export default function useBulkEpisodeMutations() {
 			initialStoryData?.project_title +
 			' - ' +
 			getFilenameForSeqNos(body.seq_nos)
-		downloadFile(resp.data?.file_url, fileName)
+		downloadFile(fileUrl, fileName)
 	}
 
 	const downloadBulkMutation = useMutation({
@@ -54,5 +65,10 @@ export default function useBulkEpisodeMutations() {
 		mutationFn: downloadBulkEpisodes,
 	})
 
-	return { downloadBulkMutation }
+	const getDownloadBulkUrlMutation = useMutation({
+		mutationKey: [BULK_EP_DOWNLOAD_URL_MUTATION_KEY],
+		mutationFn: getBulkEpisodeDownloadUrl,
+	})
+
+	return { downloadBulkMutation, getDownloadBulkUrlMutation }
 }

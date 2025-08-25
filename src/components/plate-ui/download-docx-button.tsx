@@ -3,17 +3,11 @@ import useDocxDownloadHook from '@/hooks/mutation/use-docx-download-hook'
 
 import { If } from '@/components/aural-ui/if-else'
 
-import { DownloadDocxParams } from '@/types/episode-type'
-
 import { Button } from '../aural-ui/button'
 import CircularLoader from '../ui/circular-loader'
 
-export default function DownloadDocxButton({
-	latestStatus,
-}: DownloadDocxParams) {
-	const { isPending, showButton, mutate, isEnabled } = useDocxDownloadHook({
-		latestStatus,
-	})
+export default function DownloadDocxButton() {
+	const { isPending, showButton, mutate, isEnabled } = useDocxDownloadHook()
 
 	const isDisabled = useMemo(() => {
 		return isPending || !isEnabled
