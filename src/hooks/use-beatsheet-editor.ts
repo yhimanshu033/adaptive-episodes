@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { scenesData } from '@/mock-data/beatsheet-editor'
+import { scenesDataEnglish } from '@/mock-data/beatsheet-editor'
 import {
 	CollisionDetection,
 	DragEndEvent,
@@ -27,7 +27,7 @@ const useBeatSheetEditor = () => {
 			coordinateGetter: sortableKeyboardCoordinates,
 		})
 	)
-	const [scenes, setScenes] = useState<TScene[]>(scenesData)
+	const [scenes, setScenes] = useState<TScene[]>(scenesDataEnglish)
 	const [activeDragItem, setActiveDragItem] = useState<DragItem | null>(null)
 	const [openSceneIds, setOpenSceneIds] = useState<string[]>([])
 

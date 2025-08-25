@@ -282,3 +282,177 @@ export const charactersData = [
 
 export const beatsheetContext =
 	'Quinn ist ein sechzehnjähriger Schüler, der seit Jahren Außenseiter und Zielscheibe von Mobbing ist. In einer Welt, in der übernatürliche Kräfte nach einem verheerenden Krieg mit den Dalki allgegenwärtig geworden sind, gehört er zu den Schwächsten. Während seine Mitschüler mit Fähigkeiten prahlen, bleibt er verletzlich und kämpft täglich gegen Spott und Gewalt.\n\nSein einziger Halt ist ein geheimnisvolles Buch, das ihm nach dem Tod seiner Eltern übergeben wurde – ein Relikt, das sich weder öffnen noch zerstören lässt, egal welche Methoden er ausprobiert. Quinns Einsamkeit und Verzweiflung wachsen, doch auch seine Neugier: Warum haben seine Eltern ausgerechnet dieses Buch hinterlassen?\n\nAm letzten Schultag eskaliert ein Angriff eines Mitschülers erneut. Geschwächt, erniedrigt und allein zurückgezogen in seiner kleinen Wohnung, versucht Quinn wie so oft, das Buch zu entschlüsseln. Doch erst als Blut zufällig auf seine Seiten tropft, geschieht das Unmögliche: Das Buch erwacht, offenbart verborgene Schriftzeichen und verbindet sich auf unerklärliche Weise mit ihm.\n\nDamit beginnt Quinns Eintritt in eine Welt voller Gefahren, Macht und Geheimnisse – und die Entfaltung seines eigenen, bisher verborgenen Schicksals.'
+export const scenesDataEnglish = [
+	{
+		id: 'scene_1',
+		title: 'INT - SCHOOL CORRIDOR - SCENE 1',
+		description:
+			'Finn is bullied by a classmate and attacked with a supernatural ability. He is thrown through the air and injured while other students watch without helping. Finn picks himself up and leaves the school frustrated.',
+		beats: [
+			{
+				id: 'scene_1_beat_1',
+				content:
+					'Finn established as 16-year-old orphan and outsider on last day of school.\nClassmates begin bullying and mockery - harassment becomes personal conflict.\nFinn tries to ignore it at first but grows increasingly irritated.\nHis restraint shows he usually avoids confrontation, building to his breaking point.',
+			},
+			{
+				id: 'scene_1_beat_2',
+				content:
+					'Classmate attacks Finn with supernatural power - green energy blast.\nFinn thrown through air and injured, showing how powerless he is.\nThe attack reveals the huge gap between those with abilities and those without.\nPhysical violence marks the point where bullying becomes dangerous.',
+			},
+			{
+				id: 'scene_1_beat_3',
+				content:
+					"Other students watch but don't help - even potential allies abandon him.\nFinn picks himself up alone, injured and demoralized.\nHis isolation is complete - no friends, no help, no hope.\nLeaves school defeated, setting up his lowest emotional point.",
+			},
+		],
+	},
+	{
+		id: 'scene_2',
+		title: 'EXT - STREET/INT - DORMITORY ENTRANCE - SCENE 2',
+		description:
+			'Finn goes home alone and injured. Transition scene that reinforces his loneliness and status as an outsider.',
+		beats: [
+			{
+				id: 'scene_2_beat_1',
+				content:
+					'Finn walks home alone while other students celebrate in groups.\nHis injuries still hurt, emphasizing both physical and emotional pain.\nThe contrast shows how isolated he is from normal teenage life.\nEmpty streets reflect his inner loneliness.',
+			},
+			{
+				id: 'scene_2_beat_2',
+				content:
+					"Flashback reveals his backstory as war orphan.\nParents died fighting the Dalki when he was ten years old.\nGovernment housing keeps him alive but doesn't give him a real home.\nPersonal loss connects to the larger world conflict.",
+			},
+			{
+				id: 'scene_2_beat_3',
+				content:
+					'Arrives at the stark government dormitory building.\nHis tiny room has just a bed, desk, and TV - bare minimum for survival.\nThe mysterious book from his parents is his only real possession.\nThe cramped space mirrors his limited options in life.',
+			},
+		],
+	},
+	{
+		id: 'scene_3',
+		title: "INT - FINN'S DORMITORY ROOM - SCENE 3",
+		description:
+			'Finn returns to his barren room and tries once again to open the mysterious book from his parents. He drips hydrochloric acid on it, but it remains closed. Frustrated, Finn gives up and turns on the television.',
+		beats: [
+			{
+				id: 'scene_3_beat_1',
+				content:
+					'Finn focuses on the sealed red book - his only inheritance from his parents.\nHe remembers all his failed attempts to open it over the years.\nToday he tries hydrochloric acid, showing his desperate scientific approach.\nThe book represents his last connection to family and hope for change.',
+			},
+			{
+				id: 'scene_3_beat_2',
+				content:
+					"The acid has no effect on the book - it remains completely untouched.\nLike all his previous attempts, this one fails completely.\nHis frustration builds as his last hope seems impossible to reach.\nThe book's resistance hints at something beyond normal understanding.",
+			},
+			{
+				id: 'scene_3_beat_3',
+				content:
+					'Defeated and exhausted, Finn gives up for today.\nHe turns on the TV just for background noise to feel less alone.\nCollapses onto his bed, emotionally drained from another failure.\nThe television becomes his only companion in the empty room.',
+			},
+		],
+	},
+	{
+		id: 'scene_4',
+		title: "INT - FINN'S DORMITORY ROOM/TELEVISION - SCENE 4",
+		description:
+			'News broadcast about imminent Dalki conflict. Flashback to the history of the Dalki war and the emergence of the "Originals" with their supernatural abilities. The unfair distribution of these powers is addressed.',
+		beats: [
+			{
+				id: 'scene_4_beat_1',
+				content:
+					"News reports rising tensions between humans and the alien Dalki race.\nFlashback to the devastating war that nearly enslaved all humanity.\nFinn remembers his parents died fighting in this conflict.\nThe threat isn't just history - it could return at any time.",
+			},
+			{
+				id: 'scene_4_beat_2',
+				content:
+					'Humans with supernatural abilities called "Originals" saved the world.\nThese special powers were the only thing that could defeat the Dalki.\nThe abilities turned the tide and prevented total human defeat.\nPower became the difference between survival and extinction.',
+			},
+			{
+				id: 'scene_4_beat_3',
+				content:
+					"Today only the wealthy can afford to learn these life-saving abilities.\nPeople like Finn are left defenseless and powerless.\nHe stares at his parents' book - his only hope for something more.\nThe unfair system keeps him trapped at the bottom.",
+			},
+		],
+	},
+	{
+		id: 'scene_5',
+		title: "INT - FINN'S DORMITORY ROOM/DESK - SCENE 5",
+		description:
+			"While trying to repair his glasses, Finn's blood accidentally drips onto the book. It begins to glow, opens, and shows alien symbols. The book dissolves and Finn hears a computer voice in his head before losing consciousness.",
+		beats: [
+			{
+				id: 'scene_5_beat_1',
+				content:
+					'Finn tries to repair his broken glasses from the earlier attack.\nWhile fixing them, he accidentally cuts his thumb on broken glass.\nA drop of his blood falls directly onto the mysterious red book.\nThe blood contact triggers something the book has been waiting for.',
+			},
+			{
+				id: 'scene_5_beat_2',
+				content:
+					'The book immediately begins glowing and opens by itself.\nStrange alien symbols appear on the pages, unlike any language he knows.\nSomehow Finn can understand the meaning of the mysterious writing.\nThe book floats in the air, radiating supernatural energy.',
+			},
+			{
+				id: 'scene_5_beat_3',
+				content:
+					'The book dissolves into dust as its purpose is fulfilled.\nA robotic voice speaks in Finn\'s head about activating something called "VS."\nOverwhelmed by the supernatural event, Finn\'s vision blurs.\nHe loses consciousness just as his new journey is about to begin.',
+			},
+		],
+	},
+]
+
+export const charactersDataEnglish: TCharacter[] = [
+	{
+		id: '1',
+		name: 'Quinn',
+		bio: 'A 16-year-old orphan boy who has lived alone since his parents died in the Dalki war. As a Level-1, he possesses no supernatural abilities and is therefore bullied at school. His only inheritance is a mysterious red book that he cannot open despite 112 attempts.',
+		appearance:
+			'Slightly wavy black hair, wears broken glasses that are hastily patched with tape. Slight build, appears vulnerable and is often dirty from attacks by his classmates.',
+		recent_arc:
+			'Is attacked by a classmate with supernatural powers on the last day of school. His blood accidentally activates the mysterious book from his parents, awakening an unknown power.',
+		voice:
+			'Resigned and frustrated, but also defiant. Often sarcastic as self-protection. Becomes emotional when thinking about his deceased parents.',
+	},
+	{
+		id: '2',
+		name: 'The Attacker',
+		bio: 'A classmate of Quinn who possesses supernatural abilities and uses them to harass weaker students. Represents the unjust power imbalance in society.',
+		appearance:
+			'Unknown, but physically superior. Can form green energy spheres between his palms.',
+		recent_arc:
+			'Attacks Quinn with a green energy beam on the last day of school after Quinn provokes him.',
+		voice:
+			'Aggressive and arrogant. Despises all "Level-1 scum" and sees himself as superior.',
+	},
+	{
+		id: '3',
+		name: 'The Helpful Girl',
+		bio: "A female classmate who initially wants to help but backs away when she recognizes it's Quinn. Shows the social ostracism of weak individuals.",
+		appearance: 'Unknown, presumably average student.',
+		recent_arc:
+			'Runs to Quinn after he is attacked but retreats when she recognizes him. Is mocked by her friends for this.',
+		voice:
+			'Initially compassionate, then ashamed and uncertain. Is influenced by peer pressure.',
+	},
+	{
+		id: '4',
+		name: "Quinn's Parents",
+		bio: 'Fallen war heroes who died in the Dalki war when Quinn was 10 years old. Left him only a mysterious red book as inheritance.',
+		appearance:
+			"Unknown - Quinn doesn't know what they looked like since they died when he was still small.",
+		recent_arc:
+			"Only mentioned in memories and flashbacks. Their book is finally activated by Quinn's blood.",
+		voice:
+			"Only present in Quinn's memories, presumably loving and protective.",
+	},
+	{
+		id: '5',
+		name: 'The Dalki',
+		bio: 'An alien race that appeared on Earth 30 years ago and wanted to enslave humanity. Have human stature but scaly skin and dragon-like tails. Led to a years-long war.',
+		appearance:
+			'Humanoid form with scaly skin and dragon-like tails. Possess advanced technology like airships.',
+		recent_arc:
+			'Only mentioned in news reports - tensions are rising again after 5 years of peace treaty.',
+		voice:
+			'Threatening and superior, demand unconditional submission of humanity.',
+	},
+]
