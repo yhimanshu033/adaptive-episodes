@@ -4,6 +4,7 @@ import { BULK_EP_DOWNLOAD_MUTATION_KEY } from '@/constants/query-constants'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { fetchAPI } from '@/lib/fetch-api'
 import { downloadFile } from '@/lib/utils/client-helpers'
 import { getFilenameForSeqNos } from '@/lib/utils/helpers'
@@ -17,6 +18,7 @@ import {
 export default function useBulkEpisodeMutations() {
 	const { id } = useParams()
 
+	const { initialStoryData } = useEpisodeTableContext()
 	async function downloadBulkEpisodes(body: TDownloadBulkEpisodeBodyParams) {
 		if (body.seq_nos.length < 1) {
 			toast.error('Select at least 1 Episode!')
@@ -40,7 +42,11 @@ export default function useBulkEpisodeMutations() {
 		}
 
 		toast.info('Download started!')
-		downloadFile(resp.data?.file_url, getFilenameForSeqNos(body.seq_nos))
+		const fileName =
+			initialStoryData?.project_title +
+			' - ' +
+			getFilenameForSeqNos(body.seq_nos)
+		downloadFile(resp.data?.file_url, fileName)
 	}
 
 	const downloadBulkMutation = useMutation({
