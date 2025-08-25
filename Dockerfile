@@ -1,5 +1,5 @@
 # Stage 1: Build the Next.js application
-FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0 AS build-image
+FROM node:22.11.0 AS build-image
 WORKDIR /usr/src/app
 COPY ./ ./
 RUN npm install
@@ -28,7 +28,7 @@ ENV SENTRY_AUTH_TOKEN=sntrys_eyJpYXQiOjE3MzgzMTgwMjUuODc4MjM0LCJ1cmwiOiJodHRwczo
 RUN npm run build
 
 # Stage 2: Final production environment
-FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0-alpine3.19 AS final
+FROM node:22.11.0-alpine3.19 AS final
 WORKDIR /usr/src/app
 
 RUN apk add --no-cache nginx curl nginx-mod-http-headers-more
