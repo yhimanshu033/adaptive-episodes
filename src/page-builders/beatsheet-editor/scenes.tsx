@@ -4,8 +4,11 @@ import React from 'react'
 import useBeatsheetMutation from '@/hooks/mutation/use-beatsheet-mutation'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
-import useLanguage from '@/hooks/use-language'
-import { beatsheetContext, TCharacter } from '@/mock-data/beatsheet-editor'
+// import useLanguage from '@/hooks/use-language'
+import {
+	beatsheetContextEnglish,
+	TCharacter,
+} from '@/mock-data/beatsheet-editor'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -24,11 +27,18 @@ import {
 } from '@/components/ui/accordion'
 
 import { TScene } from '@/types/ai-types'
+import { ELanguage } from '@/types/common'
 
 import SortableBeat from './sortable-beat'
 import { SortableScene } from './sortable-scene'
 
-export default function SceneTab({ characters }: { characters: TCharacter[] }) {
+export default function SceneTab({
+	characters,
+	enhancementPlan,
+}: {
+	characters: TCharacter[]
+	enhancementPlan: boolean
+}) {
 	const {
 		sensors,
 		scenes,
@@ -48,7 +58,7 @@ export default function SceneTab({ characters }: { characters: TCharacter[] }) {
 	} = useBeatSheetEditor()
 
 	const { editorText } = useEditorData()
-	const language = useLanguage()
+	// const language = useLanguage()
 
 	const {
 		isPending,
@@ -57,18 +67,25 @@ export default function SceneTab({ characters }: { characters: TCharacter[] }) {
 		approveContent,
 		rejectContent,
 		getPendingContentForScene,
+		error,
+		clearError,
+		timeoutProgress,
 	} = useBeatsheetMutation()
 
 	const handleGenerateTask = (scenes: TScene[]) => {
+		// Clear any previous errors before starting new generation
+		clearError()
+
 		generateBeatsheet({
 			beats: Object.fromEntries(scenes.map((scene) => [scene.id, scene.beats])),
 			ep_text: editorText,
-			input_language: language,
+			input_language: ELanguage.ENGLISH,
 			scene_texts: Object.fromEntries(
 				scenes.map((scene) => [scene.id, getSceneText(scene.id)])
 			),
 			characters,
-			context: beatsheetContext,
+			context: beatsheetContextEnglish,
+			use_enhancement_plan: enhancementPlan,
 		})
 	}
 
@@ -87,6 +104,22 @@ export default function SceneTab({ characters }: { characters: TCharacter[] }) {
 	const handleRejectContent = (sceneId: string) => {
 		rejectContent(sceneId)
 	}
+
+	// Check if there's a timeout error
+	const hasTimeoutError = error?.message?.includes('timed out')
+
+	// Calculate remaining time in seconds
+	const getRemainingTime = () => {
+		if (timeoutProgress === 0) {
+			return null
+		}
+		const isSingleGeneration = generatingSceneIds.length === 1
+		const totalSeconds = isSingleGeneration ? 60 : 180
+		const remainingSeconds = Math.ceil((timeoutProgress / 100) * totalSeconds)
+		return remainingSeconds
+	}
+
+	const remainingTime = getRemainingTime()
 
 	return (
 		<>
@@ -136,11 +169,16 @@ export default function SceneTab({ characters }: { characters: TCharacter[] }) {
 											<AccordionContent className="relative space-y-2">
 												{isGenerating && (
 													<div className="bg-background/80 absolute inset-0 z-10 flex items-center justify-center rounded-lg backdrop-blur-sm">
-														<div className="text-muted-foreground flex items-center gap-2">
+														<div className="text-muted-foreground flex flex-col items-center gap-2">
 															<CircularLoader
 																className="h-4 w-4"
 																text="Generating..."
 															/>
+															{remainingTime && (
+																<div className="text-muted-foreground text-xs">
+																	Timeout in {remainingTime}s
+																</div>
+															)}
 														</div>
 													</div>
 												)}
@@ -204,23 +242,36 @@ export default function SceneTab({ characters }: { characters: TCharacter[] }) {
 													>
 														<Plus size={16} className="mr-1" /> Add Beat
 													</Button>
-													<Button
-														disabled={isAnyGenerating}
-														onClick={() => handleGenerateTask([scene])}
-														size={'sm'}
-													>
-														{isGenerating ? (
-															<>
-																<Loader2
-																	size={16}
-																	className="mr-1 animate-spin"
-																/>
-																Generating...
-															</>
-														) : (
-															'Generate'
+													<div className="flex items-center gap-2">
+														{hasTimeoutError && isGenerating && (
+															<div className="text-destructive text-xs font-medium">
+																⚠️ Timed out
+															</div>
 														)}
-													</Button>
+														<Button
+															disabled={isAnyGenerating}
+															onClick={() => handleGenerateTask([scene])}
+															size={'sm'}
+														>
+															{isGenerating ? (
+																<>
+																	<Loader2
+																		size={16}
+																		className="mr-1 animate-spin"
+																	/>
+																	Generating...
+																	{remainingTime &&
+																		generatingSceneIds.length === 1 && (
+																			<span className="ml-1 text-xs opacity-75">
+																				({remainingTime}s)
+																			</span>
+																		)}
+																</>
+															) : (
+																'Generate'
+															)}
+														</Button>
+													</div>
 												</div>
 											</AccordionContent>
 										</SortableContext>
@@ -252,16 +303,31 @@ export default function SceneTab({ characters }: { characters: TCharacter[] }) {
 				<Button onClick={addNewScene} disabled={isPending}>
 					<Plus size={18} className="mr-1" /> ADD Scene
 				</Button>
-				<Button disabled={isPending} onClick={() => handleGenerateTask(scenes)}>
-					{isPending ? (
-						<>
-							<Loader2 size={18} className="mr-1 animate-spin" />
-							Generating All...
-						</>
-					) : (
-						'Generate All'
+				<div className="flex items-center gap-2">
+					{hasTimeoutError && (
+						<div className="text-destructive text-sm font-medium">
+							⚠️ Generation timed out - please try again
+						</div>
 					)}
-				</Button>
+					<Button
+						disabled={isPending}
+						onClick={() => handleGenerateTask(scenes)}
+					>
+						{isPending ? (
+							<>
+								<Loader2 size={18} className="mr-1 animate-spin" />
+								Generating All...
+								{remainingTime && generatingSceneIds.length > 1 && (
+									<span className="ml-1 text-xs opacity-75">
+										({remainingTime}s)
+									</span>
+								)}
+							</>
+						) : (
+							'Generate All'
+						)}
+					</Button>
+				</div>
 			</div>
 		</>
 	)

@@ -19,23 +19,48 @@ const useBeatsheetMutation = () => {
 	const [pendingApprovalContent, setPendingApprovalContent] = useState<
 		Record<string, TGenerateBeatsheetResponse>
 	>({})
+	const [timeoutProgress, setTimeoutProgress] = useState<number>(0)
 
 	const onSuccess = () => {
 		toast.success('Beatsheet generated successfully')
 		setGeneratingSceneIds([])
+		setTimeoutProgress(0)
 	}
 
 	const onError = (error: Error) => {
 		toast.error(error.message)
 		setGeneratingSceneIds([])
 		setPendingApprovalContent({})
+		setTimeoutProgress(0)
+	}
+
+	const onTimeout = (isSingleGeneration: boolean) => {
+		const timeoutMessage = isSingleGeneration
+			? 'Scene generation timed out after 1 minute. Please try again.'
+			: 'Generate all operation timed out after 3 minutes. Please try again.'
+		toast.error(timeoutMessage)
+		setGeneratingSceneIds([])
+		setPendingApprovalContent({})
+		setTimeoutProgress(0)
 	}
 
 	const onGenerateBeatsheetMutation = async (
 		params: TGenerateBeatsheetBody
 	) => {
 		const sceneIds = Object.keys(params.scene_texts)
+		const isSingleGeneration = sceneIds.length === 1
+		const timeoutDuration = isSingleGeneration ? 60000 : 180000 // 1 min for single, 3 min for all
+
 		setGeneratingSceneIds(sceneIds)
+		setTimeoutProgress(100) // Start at 100%
+
+		// Create a progress tracker
+		const progressInterval = setInterval(() => {
+			setTimeoutProgress((prev) => {
+				const newProgress = Math.max(0, prev - 100 / (timeoutDuration / 1000))
+				return newProgress
+			})
+		}, 1000)
 
 		const taskId = await startTask<TGenerateBeatsheetBody, { message: string }>(
 			{
@@ -45,21 +70,32 @@ const useBeatsheetMutation = () => {
 			}
 		)
 
-		const resp = await getResponse(taskId)
+		// Create a timeout promise
+		const timeoutPromise = new Promise<never>((_, reject) => {
+			setTimeout(() => {
+				clearInterval(progressInterval)
+				reject(
+					new Error(
+						`Generation timed out after ${timeoutDuration / 1000} seconds`
+					)
+				)
+			}, timeoutDuration)
+		})
 
-		return resp as TGenerateBeatsheetResponse
-
-		// await new Promise((resolve) => setTimeout(resolve, 2000))
-
-		// const resp: TGenerateBeatsheetResponse = []
-		// for (const sceneId of sceneIds) {
-		// 	resp.push({
-		// 		id: sceneId,
-		// 		content:
-		// 			generatedContent.find((scene) => scene.id === sceneId)?.content || '',
-		// 	})
-		// }
-		// return resp
+		// Race between the response and timeout
+		try {
+			const resp = await Promise.race([getResponse(taskId), timeoutPromise])
+			clearInterval(progressInterval)
+			setTimeoutProgress(0)
+			return resp as TGenerateBeatsheetResponse
+		} catch (error) {
+			clearInterval(progressInterval)
+			if (error instanceof Error && error.message.includes('timed out')) {
+				onTimeout(isSingleGeneration)
+				throw new Error(error.message)
+			}
+			throw error
+		}
 	}
 
 	const generateBeatsheetMutation = useMutation({
@@ -104,6 +140,10 @@ const useBeatsheetMutation = () => {
 		return Object.keys(pendingApprovalContent).length > 0
 	}
 
+	const clearError = () => {
+		generateBeatsheetMutation.reset()
+	}
+
 	return {
 		...generateBeatsheetMutation,
 		generatingSceneIds,
@@ -112,6 +152,8 @@ const useBeatsheetMutation = () => {
 		rejectContent,
 		getPendingContentForScene,
 		hasAnyPendingContent,
+		clearError,
+		timeoutProgress,
 	}
 }
 

@@ -334,6 +334,7 @@ export type TGenerateBeatsheetBody = {
 	ep_text: string
 	input_language: ELanguage
 	scene_texts: Record<string, string>
+	use_enhancement_plan?: boolean
 }
 
 export type TGenerateBeatsheetResponse = Array<{
