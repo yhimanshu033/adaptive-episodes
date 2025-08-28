@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { statuses } from '@/constants/episodes-constants'
 import {
@@ -9,22 +9,14 @@ import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import useCustomPlateStore from '@/store/plate-store'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEditorPlugin } from 'platejs/react'
-import { useShallow } from 'zustand/react/shallow'
 
-import useEpisodeId, {
-	useEpisodeContext,
-} from '@/providers/episode-id-provider'
-import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
+import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
-import { ESidebar } from '@/types/plate-types'
 
 export default function useVersions({
 	latestStatus,
-	isChildEpisode,
 }: {
 	isChildEpisode: boolean
 	latestStatus: EStatus | typeof BASE_STATUS
@@ -35,27 +27,14 @@ export default function useVersions({
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const queryClient = useQueryClient()
 
-	const { setSelectedStatus, store: useEpisodeIdStoreContext } =
-		useEpisodeIdStore()
-	const selectedStatus = useEpisodeIdStoreContext(
-		useShallow((s) => s.selectedStatus)
-	)
+	const { setSelectedStatus } = useEpisodeIdStore()
 	const { statusUpdateMutation } = useEpisodeHook()
-	const replaceEnabled =
-		useEditorPlugin(FindReplacePlugin).getOption('replaceEnabled')
-	const { setViewMode } = useCustomPlateStore()
-	const { usePlateStoreContext } = useEpisodeContext()
-	const { sidebar } = usePlateStoreContext()
 	const { data } = useEpisodeContent()
 	const { handleSave, isSaved } = useSaving()
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
 		[latestStatus]
-	)
-	const selectedIndex = useMemo(
-		() => (selectedStatus ? statuses.indexOf(selectedStatus) : latestIndex),
-		[latestIndex, selectedStatus]
 	)
 
 	const handleSelect = (value: EStatus) => {
@@ -90,22 +69,6 @@ export default function useVersions({
 			})
 		}
 	}
-	useEffect(() => {
-		setViewMode(
-			isChildEpisode ||
-				selectedIndex < latestIndex + Number(isChildEpisode) ||
-				(sidebar === ESidebar.FAR && !!replaceEnabled)
-		)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [
-		isChildEpisode,
-		latestIndex,
-		latestStatus,
-		selectedIndex,
-		selectedStatus,
-		sidebar,
-		replaceEnabled,
-	])
 
 	return {
 		handleConfirm,

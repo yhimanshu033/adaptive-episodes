@@ -42,6 +42,7 @@ export default function useLSSheetQuery() {
 	const query = useQuery({
 		queryKey: [GET_LS_SHEET_QUERY_KEY, projectId, language],
 		queryFn: getLSData,
+		retry: 1,
 	})
 
 	return query
