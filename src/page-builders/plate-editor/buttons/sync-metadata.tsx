@@ -1,14 +1,18 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { RefreshCw } from 'lucide-react'
 
 import { Button } from '@/components/aural-ui/button'
-import useEpisodeId from '@/providers/episode-id-provider'
 import { cn } from '@/lib/utils/helpers'
 
 const SyncMetaData = () => {
-	const episodeId = useEpisodeId()
+	const { data } = useEpisodeContent()
 	const { metadataSyncMutation } = useEpisodeHook()
+
+	const episodeId = useMemo(() => {
+		return data?.chapter.id
+	}, [data])
 
 	const handleSync = () => {
 		metadataSyncMutation.mutate(Number(episodeId))
