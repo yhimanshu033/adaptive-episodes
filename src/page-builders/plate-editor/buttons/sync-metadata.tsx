@@ -1,13 +1,13 @@
 import React from 'react'
-import { useParams } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { RefreshCw } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/aural-ui/button'
+import useEpisodeId from '@/providers/episode-id-provider'
 import { cn } from '@/lib/utils/helpers'
 
 const SyncMetaData = () => {
-	const { episodeId } = useParams()
+	const episodeId = useEpisodeId()
 	const { metadataSyncMutation } = useEpisodeHook()
 
 	const handleSync = () => {
@@ -17,9 +17,11 @@ const SyncMetaData = () => {
 	return (
 		<Button
 			tooltip="Click here to update story details with the AI so it can better assist you"
-			variant="outline"
-			className="gap-2"
-			disabled
+			variant="secondary"
+			className="w-full gap-2"
+			innerClassName="rounded-none"
+			disabled={metadataSyncMutation.isPending}
+			isDisabled={metadataSyncMutation.isPending}
 			onClick={handleSync}
 		>
 			AI Sync
