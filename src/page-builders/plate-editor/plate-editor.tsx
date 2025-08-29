@@ -11,6 +11,7 @@ import DualView from '@/page-builders/plate-editor/dual-view'
 import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loader'
 import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelton-loader'
 import EpisodeHeader from '@/page-builders/plate-editor/episode-header'
+import SavingHelper from '@/page-builders/plate-editor/saving-helper'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import { Plate } from 'platejs/react'
 
@@ -47,6 +48,7 @@ function MyEditor({
 			<EditorDataContextProvider>
 				<SavingContextProvider data={content}>
 					<ChatbotProvider episodeContent={content}>
+						<SavingHelper />
 						<div className="flex h-screen flex-col">
 							<EditorOverlayLoader />
 							<EpisodeHeader content={content} latestStatus={latestStatus} />

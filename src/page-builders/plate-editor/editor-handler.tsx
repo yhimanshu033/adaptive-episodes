@@ -29,10 +29,12 @@ const EditorHandler = ({ className }: { className?: string }) => {
 		[sidebar, responseValue, prevValue]
 	)
 
-	const updatedClassname = cn(className, {
-		' bg-fm-surface-contrast text-fm-contrast selection:bg-fm-secondary!':
-			theme === 'light',
-	})
+	const updatedClassname = useMemo(() => {
+		return cn(className, {
+			'bg-fm-surface-contrast text-fm-contrast selection:bg-fm-secondary!':
+				theme === 'light',
+		})
+	}, [theme, className])
 
 	if (isDiff) {
 		return (

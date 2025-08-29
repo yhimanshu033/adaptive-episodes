@@ -35,7 +35,9 @@ import {
 import {
 	TGetMetadataAPIResponse,
 	TGetMetadataResponse,
+	TGetSavingParamsRet,
 	TMetadata,
+	TSaveEpisodeMutationArgs,
 } from '@/types/content-types'
 import {
 	SaveEpisodeParams,
@@ -83,7 +85,8 @@ export const getSelectedEpisode = (
 
 	return {
 		episode: selectedEpisode ?? data.results.data[0],
-		latestStatus,
+		latestStatus:
+			latestStatus === BASE_STATUS ? EStatus.FIRST_DRAFT : latestStatus,
 		language: data?.results?.data?.[0]?.language as ELanguage,
 	}
 }
@@ -874,4 +877,19 @@ export function getEpisodeNumbers(seqNumbers: number[], maxNum = 5): string {
 		)
 	}
 	return seqNumbers.join(',')
+}
+
+export function getSavingData(
+	params: TGetSavingParamsRet
+): TSaveEpisodeMutationArgs {
+	return {
+		status: params.status,
+		chapterId: params.chapterId,
+		text: params.text,
+		word_count: params.word_count,
+		comments: params.allComments,
+		prevProps: params.chapterData?.chapter.props,
+		language: params.language,
+		chapter_title: params.title || params.chapterData?.chapter.chapter_title,
+	}
 }

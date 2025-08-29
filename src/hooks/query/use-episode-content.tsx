@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeInfo from '@/hooks/query/use-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
+import { updateStatus } from '@/server-action/episode-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
@@ -48,7 +49,7 @@ import useAccessChecks from '../use-access-checks'
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 
-	const { isOriginal } = useAccessChecks()
+	const { isOriginal, isGerman } = useAccessChecks()
 	const pathName = usePathname()
 
 	const selectedStatus = useEpisodeIdStoreContext(
@@ -90,22 +91,35 @@ export const useEpisodeContentUtil = () => {
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
 	const { setDualViewMode, setRecentEmail } = useEpisodeIdStore()
-
-	const usedEpisodeId = useMemo(
-		() => (episode ? episode.id : episodeId),
-		[episode, episodeId]
-	)
-
 	const queryKey = useMemo(
 		() => [
 			EPISODE_CONTENT_QUERY_KEY,
-			usedEpisodeId,
+			Number(episode?.id),
 			latestStatus || BASE_STATUS,
 			pathName,
 		],
-		[latestStatus, pathName, usedEpisodeId]
+		[latestStatus, pathName, episode?.id]
 	)
 	const fetchEpisodeContent = useCallback(async () => {
+		// check for undefined episode.id
+		if (!episode?.id) {
+			return null
+		}
+		let usedEpisodeId = episode?.id
+		const hasStatuses = isGerman || isOriginal // only german and originally adapted stories have statuses feature
+		if (episode?.status === BASE_STATUS && hasStatuses) {
+			// if only BASE version exists, first create a 1ST_DRAFT before editing
+			const updatedEpisode = await updateStatus(
+				episode.project,
+				episode.parent ?? episode.id,
+				episode.status,
+				episode.language
+			)
+			if (updatedEpisode?.id) {
+				// now the 1ST_DRAFT content will be fetched to display
+				usedEpisodeId = updatedEpisode.id
+			}
+		}
 		const resp = await getEpisodeContent(usedEpisodeId)
 		if (!resp) {
 			return resp
@@ -176,8 +190,10 @@ export const useEpisodeContentUtil = () => {
 		setDualViewMode,
 		setLocalDiffValue,
 		setSidebar,
-		usedEpisodeId,
 		setRecentEmail,
+		episode,
+		isOriginal,
+		isGerman,
 	])
 
 	const query = useQuery({

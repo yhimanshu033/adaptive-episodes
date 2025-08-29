@@ -104,7 +104,7 @@ const RightToolbarSection = React.memo(() => (
 		<ToolbarGroup>
 			<TranslationToggleButton />
 		</ToolbarGroup>
-		<ToolbarGroup noSeparator>
+		<ToolbarGroup>
 			<ViewLS />
 		</ToolbarGroup>
 	</div>
