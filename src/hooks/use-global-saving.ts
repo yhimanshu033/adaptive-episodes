@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import useSaving from '@/hooks/use-saving'
 import {
@@ -15,45 +15,45 @@ export default function useGlobalSaving() {
 	const { isSaved, getSavingParams, data } = useSaving()
 	const pathname = usePathname()
 
+	const chapterId = useMemo(() => {
+		return data?.chapter.parent || data?.chapter.id
+	}, [data])
+
 	const handleSaveGlobalStore = useCallback(() => {
 		if (!data?.chapter) {
 			return
 		}
-		const { status, text, chapterId, allComments, title } = getSavingParams()
+		const { status, text, allComments, title } = getSavingParams()
 
 		const dataToSave: SaveEpisodeParams = {
 			projectId: Number(id),
 			status:
-				!data?.chapter.language ||
-				data?.chapter.language === ELanguage.GERMAN_ORIGINAL
+				!data.chapter.language ||
+				data.chapter.language === ELanguage.GERMAN_ORIGINAL
 					? status === BASE_STATUS
 						? EStatus.FIRST_DRAFT
 						: status
 					: BASE_STATUS,
-			episodeId: Number(data?.chapter.parent || chapterId),
+			episodeId: Number(chapterId),
 			text,
-			id: Number(chapterId),
-			language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
+			id: data.chapter.id,
+			language: data.chapter.language || ELanguage.GERMAN_ORIGINAL,
 			props: {
-				...data?.chapter.props,
+				...data.chapter.props,
 				comments: allComments,
 			},
-			chapter_title: title || data?.chapter.chapter_title,
+			chapter_title: title || data.chapter.chapter_title,
 		}
 
 		addUnsavedEpisodeParams(
 			`${String(id)}_${String(chapterId)}_${pathname}`,
 			dataToSave
 		)
-	}, [id, data?.chapter, getSavingParams, pathname])
+	}, [id, data?.chapter, getSavingParams, pathname, chapterId])
 
 	const handleRemoveGlobalStore = useCallback(() => {
-		if (!data?.chapter) {
-			return
-		}
-		const chapterId = data?.chapter.parent
 		removeUnsavedEpisodeParams(`${String(id)}_${String(chapterId)}_${pathname}`)
-	}, [data?.chapter, pathname, id])
+	}, [pathname, id, chapterId])
 
 	useEffect(() => {
 		if (isSaved) {
