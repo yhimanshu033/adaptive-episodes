@@ -54,9 +54,11 @@ export default function useSavingCheck() {
 
 	// FOR TRIGGERING SAVING BEFORE REFRESH
 	useEffect(() => {
-		const handleBeforeUnload = () => {
+		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
 			if (!isSaved) {
 				void handleSave()
+				e.preventDefault()
+				e.returnValue = ''
 			}
 		}
 		window.addEventListener('beforeunload', handleBeforeUnload)
