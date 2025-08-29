@@ -155,6 +155,7 @@ const useEpisodeHook = () => {
 				chapterId,
 			},
 		})
+		toast.success('Metadata sync started!')
 		return getResponse(taskId)
 	}
 

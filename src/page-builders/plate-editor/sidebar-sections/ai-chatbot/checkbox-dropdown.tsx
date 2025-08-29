@@ -1,4 +1,5 @@
 import React from 'react'
+import SyncMetaData from '@/page-builders/plate-editor/buttons/sync-metadata'
 import useAIStore from '@/store/ai-store'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -50,6 +51,7 @@ export function CheckboxDropdown({ children }: { children: React.ReactNode }) {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
 			<DropdownMenuContent align="start" className="w-fit">
+				<SyncMetaData />
 				<List size="sm" className="bg-fm-surface-frosted/20 pt-2">
 					{checkboxItems.map(({ key, label, checked }, index) => (
 						<React.Fragment key={`ai-checkbox-item-${index}`}>

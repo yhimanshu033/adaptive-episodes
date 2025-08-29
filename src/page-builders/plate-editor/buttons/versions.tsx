@@ -2,9 +2,11 @@ import React from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useAccessChecks from '@/hooks/use-access-checks'
 import useVersions from '@/hooks/use-versions'
+import CommonApplyChangesAlert from '@/page-builders/episodes/dialogs/common-apply-changes-alert'
 import { Eye } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
+import CircularLoader from '@/components/aural-ui/circular-loader'
 import {
 	Select,
 	SelectContent,
@@ -13,17 +15,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/aural-ui/select'
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import Spinner from '@/components/ui/spinner'
 import { useEpisodeContext } from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
@@ -59,7 +50,7 @@ const Versions = ({
 	}
 
 	if (statusUpdateMutation.isPending) {
-		return <Spinner size={24} />
+		return <CircularLoader className="size-4" />
 	}
 
 	return (
@@ -71,7 +62,7 @@ const Versions = ({
 				<SelectTrigger
 					decoration="outline"
 					classes={{
-						root: 'border-fm-divider-secondary font-fm-brand h-auto rounded-full [&_>span]:text-left',
+						root: 'border-fm-divider-secondary font-fm-brand h-auto rounded-full text-nowrap [&_>span]:text-left',
 						icon: 'size-4',
 					}}
 				>
@@ -90,6 +81,7 @@ const Versions = ({
 							<SelectItem
 								disabled={index > latestIndex + Number(!isChildEpisode)}
 								value={status}
+								className="cursor-pointer"
 								classes={{
 									root: '[font-size:var(--text-fm-sm)]',
 									icon: 'size-4',
@@ -105,24 +97,15 @@ const Versions = ({
 					))}
 				</SelectContent>
 			</Select>
-
-			<AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Confirm Selection</AlertDialogTitle>
-					</AlertDialogHeader>
-					<AlertDialogDescription>
-						Are you sure you want to switch to{' '}
-						{titleToStatus[currentSelection as EStatus] || currentSelection}?
-					</AlertDialogDescription>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={() => void handleConfirm()}>
-							Confirm
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<CommonApplyChangesAlert
+				props={{
+					open: isDialogOpen,
+					onOpenChange: setIsDialogOpen,
+				}}
+				title="Confirm Selection"
+				description={`Are you sure you want to switch to ${titleToStatus[currentSelection as EStatus] || currentSelection}?`}
+				onConfirm={() => void handleConfirm()}
+			/>
 		</>
 	)
 }

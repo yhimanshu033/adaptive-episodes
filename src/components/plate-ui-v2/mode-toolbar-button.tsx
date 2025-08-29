@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import useRecentUser from '@/hooks/use-recent-user'
+import useStatuses from '@/hooks/use-statuses'
 import useCustomPlateStore, { usePlateStore } from '@/store/plate-store'
 import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
@@ -47,7 +48,7 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 	const filteredModesList = editorModesList.filter(
 		({ mode }) => isWriter || mode === EditorModes.viewing
 	)
-
+	const { latestStatus, selectedStatus } = useStatuses()
 	const { canCurrentUserBeRecent } = useRecentUser()
 
 	const value = readOnly
@@ -57,8 +58,19 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 			: EditorModes.editing
 
 	const cannotEdit = useMemo(() => {
-		return !isWriter || !!simplifiedEditor || !canCurrentUserBeRecent
-	}, [isWriter, canCurrentUserBeRecent, simplifiedEditor])
+		return (
+			!isWriter ||
+			!!simplifiedEditor ||
+			!canCurrentUserBeRecent ||
+			selectedStatus !== latestStatus
+		)
+	}, [
+		isWriter,
+		canCurrentUserBeRecent,
+		simplifiedEditor,
+		selectedStatus,
+		latestStatus,
+	])
 
 	const handleChange = React.useCallback(
 		(newValue: string) => {
@@ -122,7 +134,7 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 					({ mode, label, description, icon: Icon }, idx) => (
 						<div key={idx}>
 							<SelectItem
-								disabled={mode !== EditorModes.viewing ? viewMode : false}
+								disabled={mode !== value && cannotEdit}
 								value={mode}
 								classes={{
 									root: 'py-8 cursor-pointer',
