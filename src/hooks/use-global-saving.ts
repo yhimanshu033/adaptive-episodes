@@ -6,7 +6,7 @@ import {
 	removeUnsavedEpisodeParams,
 } from '@/store/global-store'
 
-import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
+import { ELanguage } from '@/types/common'
 import { SaveEpisodeParams } from '@/types/episode-type'
 
 // this hook will ensure that every keystroke's content is saved locally
@@ -27,13 +27,7 @@ export default function useGlobalSaving() {
 
 		const dataToSave: SaveEpisodeParams = {
 			projectId: Number(id),
-			status:
-				!data.chapter.language ||
-				data.chapter.language === ELanguage.GERMAN_ORIGINAL
-					? status === BASE_STATUS
-						? EStatus.FIRST_DRAFT
-						: status
-					: BASE_STATUS,
+			status,
 			episodeId: Number(chapterId),
 			text,
 			id: data.chapter.id,
