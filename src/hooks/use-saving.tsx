@@ -117,7 +117,6 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			startOverlayLoading = false,
 			stopOverlayLoading = false,
 		}: TSaveEpisodeParams = {}) => {
-			console.log('handleSave called')
 			// if current chapter data is unavailable or content is already saved with forceSaving disabled --> do not proceed
 			if (!data?.chapter || (!forced && isSaved)) {
 				return
