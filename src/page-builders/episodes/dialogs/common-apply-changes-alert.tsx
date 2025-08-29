@@ -1,4 +1,5 @@
 import React from 'react'
+import { DialogProps } from '@radix-ui/react-dialog'
 
 import { Button } from '@/components/aural-ui/button'
 import {
@@ -9,11 +10,9 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from '@/components/aural-ui/dialog'
 
-export default function ApplyChangesAlert({
-	children,
+export default function CommonApplyChangesAlert({
 	onConfirm,
 	title = 'Apply Changes',
 	description = `If you confirm, only the changes you've reviewed and handled
@@ -21,17 +20,17 @@ export default function ApplyChangesAlert({
 				be skipped.`,
 	cancelText = 'Cancel',
 	confirmText = 'Confirm',
+	props,
 }: {
 	cancelText?: string
-	children?: React.ReactNode
 	confirmText?: string
 	description?: string
 	onConfirm?: () => void
+	props: DialogProps
 	title?: string
 }) {
 	return (
-		<Dialog>
-			<DialogTrigger asChild>{children}</DialogTrigger>
+		<Dialog {...props}>
 			<DialogContent variant="negative" noise="none" className="w-100">
 				<DialogHeader>
 					<DialogTitle className="pt-4 text-center">{title}</DialogTitle>
