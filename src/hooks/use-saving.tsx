@@ -27,8 +27,7 @@ interface IUseSavingUtilProps {
 }
 function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 	const { id } = useParams()
-	const { children } = useEditorData()
-	const { editorText } = useEditorData()
+	const { editorText, children } = useEditorData()
 	const allComments = usePluginOption(discussionPlugin, 'discussions')
 	const { saveEpisodeMutation } = useEpisodeHook()
 
@@ -118,6 +117,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			startOverlayLoading = false,
 			stopOverlayLoading = false,
 		}: TSaveEpisodeParams = {}) => {
+			console.log('handleSave called')
 			// if current chapter data is unavailable or content is already saved with forceSaving disabled --> do not proceed
 			if (!data?.chapter || (!forced && isSaved)) {
 				return
