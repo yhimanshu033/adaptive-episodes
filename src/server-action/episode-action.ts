@@ -4,8 +4,15 @@ import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
-import { BASE_STATUS, ELanguage, TNoParams } from '@/types/common'
 import {
+	BASE_STATUS,
+	EEpisodeType,
+	ELanguage,
+	EStatus,
+	TNoParams,
+} from '@/types/common'
+import {
+	TEpisode,
 	TEpisodeDeleteResponse,
 	TEpisodeDeleteURLParams,
 	TEpisodeInventParams,
@@ -94,7 +101,8 @@ export const getEpisodeDetails = async (
 
 export const getLatestEpisodeDetails = async (
 	project_id: number,
-	isOriginal?: false,
+	language?: ELanguage,
+	isOriginal: boolean = false,
 	parent: number = 1
 ) => {
 	const episodes = await fetchAPI<
@@ -114,6 +122,7 @@ export const getLatestEpisodeDetails = async (
 	const sentData = episodes.data
 	if (sentData?.results.data) {
 		const languageAvailable = sentData.results.data.find((ep) => !!ep.language)
+
 		if (!languageAvailable) {
 			sentData.results.data.forEach(
 				(ep) => (ep.language = ELanguage.GERMAN_ORIGINAL)
@@ -130,12 +139,39 @@ export const getLatestEpisodeDetails = async (
 		}
 		// FOR ORIGINAL LANGUAGES
 		if (isGerman || isOriginal) {
-			const baseEp = sentData.results.data.find(
-				(ep) => ep.status === BASE_STATUS
+			let selectedLanguage = language
+			if (!selectedLanguage) {
+				const originalChapter = sentData.results.data.find(
+					(ep) =>
+						ep.type === EEpisodeType.ORIGINAL ||
+						ep.type === EEpisodeType.INVENTED
+				) as TEpisode
+				selectedLanguage = originalChapter.language
+			}
+
+			// FILTER LANGUAGE CHAPTERS
+			const languageEps = sentData.results.data.filter(
+				(ep) => ep.language === selectedLanguage
 			)
-			const onlyBaseExists = sentData.results.data.length === 1
+			const baseEp = languageEps.find((ep) => ep.status === BASE_STATUS)
+			const onlyBaseExists = languageEps.length === 1
+
+			// IF ONLY BASE EXISTS --> CREATE A 1ST DRAFT
 			if (baseEp && onlyBaseExists) {
-				const respData = await updateStatus(baseEp.id, parent, BASE_STATUS)
+				const respData = await updateStatus(
+					baseEp.project,
+					parent,
+					BASE_STATUS,
+					selectedLanguage
+				)
+				// PUSH NEWLY CREATED CHAPTER IN THE DATA
+				if (respData) {
+					sentData.results.data.push({
+						...baseEp,
+						id: respData.id,
+						status: respData?.status as EStatus,
+					})
+				}
 			}
 		}
 	}
