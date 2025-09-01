@@ -124,6 +124,10 @@ const useEpisodeHook = () => {
 		language?: ELanguage
 		seq_number: number
 	}) => {
+		if (!id) {
+			toast.error('Project ID not found!')
+			return
+		}
 		return inventEpisode({
 			project_id: Number(id),
 			chapter_title,
