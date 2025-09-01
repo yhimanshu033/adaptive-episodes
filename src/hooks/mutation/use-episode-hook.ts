@@ -126,6 +126,7 @@ const useEpisodeHook = () => {
 	}) => {
 		if (!id) {
 			toast.error('Some error occurred!')
+			return
 		}
 		return inventEpisode({
 			project_id: Number(id),
