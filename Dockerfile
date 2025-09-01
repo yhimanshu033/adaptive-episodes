@@ -23,6 +23,8 @@ RUN echo "NEXT_PUBLIC_PROMOS_BACKEND_URL=https://pocketfm-copilot-promo-api.pock
 RUN echo "NEXT_PUBLIC_BACKEND_API_KEY='2n{WHwe2[V,VG\K0A[!r.g1+[uar*d#w'" >> .env
 RUN echo "NEXT_PUBLIC_SENTRY_DSN_URL=https://5c0b78d4ba827ea668db896758cc968a@o456578.ingest.us.sentry.io/4508737589018624" >> .env
 
+# FOR CONSISTENT SERVER ACTIONS
+RUN echo "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=7f0d1ce52b8b349261d1dbef1642ab8b05ccc4550c" >> .env
 ENV SENTRY_AUTH_TOKEN=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
 
 RUN npm run build
