@@ -24,11 +24,10 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
-import { TCustomComment } from '@/types/editor-types'
+import { TSaveEpisodeMutationArgs } from '@/types/content-types'
 import { TEpisodeMergeParams } from '@/types/episode-type'
 
 import useAccessChecks from '../use-access-checks'
@@ -63,17 +62,7 @@ const useEpisodeHook = () => {
 			word_count,
 			resolvedComments,
 			language,
-		}: {
-			chapterId?: number | null
-			chapter_title?: string
-			comments?: TDiscussion[]
-			language?: ELanguage
-			prevProps?: Record<string, unknown>
-			resolvedComments?: TCustomComment[]
-			status: EStatus | typeof BASE_STATUS
-			text: string
-			word_count?: number
-		}) => {
+		}: TSaveEpisodeMutationArgs) => {
 			if (
 				status === BASE_STATUS &&
 				language === ELanguage.GERMAN_ORIGINAL &&
@@ -135,6 +124,10 @@ const useEpisodeHook = () => {
 		language?: ELanguage
 		seq_number: number
 	}) => {
+		if (!id) {
+			toast.error('Project ID not found!')
+			return
+		}
 		return inventEpisode({
 			project_id: Number(id),
 			chapter_title,

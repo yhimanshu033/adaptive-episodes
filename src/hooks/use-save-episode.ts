@@ -19,11 +19,6 @@ const useSaveEpisode = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [children])
 
-	useEffect(() => {
-		const intervalId = setInterval(handleSave, 2000)
-		return () => clearInterval(intervalId)
-	}, [handleSave])
-
 	return {
 		handleSave,
 		isSaved,

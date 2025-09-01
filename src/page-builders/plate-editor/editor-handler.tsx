@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import useSavingCheck from '@/hooks/use-saving-check'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
 import { useTheme } from 'next-themes'
@@ -16,6 +17,8 @@ const EditorHandler = ({ className }: { className?: string }) => {
 	const { store: aiStore } = useAIStore()
 	const { theme } = useTheme()
 
+	useSavingCheck()
+
 	const sidebar = store(useShallow((state) => state.sidebar))
 	const { responseValue, prevValue } = aiStore(
 		useShallow((state) => ({
@@ -29,10 +32,12 @@ const EditorHandler = ({ className }: { className?: string }) => {
 		[sidebar, responseValue, prevValue]
 	)
 
-	const updatedClassname = cn(className, {
-		' bg-fm-surface-contrast text-fm-contrast selection:bg-fm-secondary!':
-			theme === 'light',
-	})
+	const updatedClassname = useMemo(() => {
+		return cn(className, {
+			'bg-fm-surface-contrast text-fm-contrast selection:bg-fm-secondary!':
+				theme === 'light',
+		})
+	}, [theme, className])
 
 	if (isDiff) {
 		return (
