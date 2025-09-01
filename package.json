@@ -13,7 +13,8 @@
     "format": "prettier --check src",
     "format:fix": "prettier --write src",
     "commit": "git-cz",
-    "release": "sh shell-scripts/create-deployment-branch.sh"
+    "release": "sh shell-scripts/create-deployment-branch.sh",
+    "generate:key": "node shell-scripts/create-server-action-key.js"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.17",
