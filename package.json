@@ -13,7 +13,9 @@
     "format": "prettier --check src",
     "format:fix": "prettier --write src",
     "commit": "git-cz",
-    "release": "sh shell-scripts/create-deployment-branch.sh"
+    "release": "sh shell-scripts/create-deployment-branch.sh",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "changelog:preview": "conventional-changelog -p angular --dry-run"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.17",
@@ -122,8 +124,8 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.6.0",
-    "@commitlint/config-conventional": "^19.6.0",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@tailwindcss/postcss": "^4.1.7",
     "@types/lodash": "^4.17.13",
@@ -135,6 +137,7 @@
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "autoprefixer": "^10.4.20",
+    "conventional-changelog-cli": "^5.0.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.0.3",
     "eslint-config-prettier": "^9.1.0",
@@ -147,6 +150,7 @@
     "postcss-loader": "^8.1.1",
     "prettier": "^3.4.1",
     "prettier-plugin-tailwindcss": "^0.6.11",
+
     "tailwindcss": "^4.1.7",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
