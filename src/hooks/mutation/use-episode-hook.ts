@@ -124,6 +124,9 @@ const useEpisodeHook = () => {
 		language?: ELanguage
 		seq_number: number
 	}) => {
+		if (!id) {
+			toast.error('Some error occurred!')
+		}
 		return inventEpisode({
 			project_id: Number(id),
 			chapter_title,
