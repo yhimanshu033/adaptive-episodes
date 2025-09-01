@@ -1,11 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import {
-	colorOptions,
-	FETCHED_BUILD_VERSION_KEY,
-	USER_SELECTED_COLOR,
-} from '@/constants/global-constants'
+import { colorOptions, USER_SELECTED_COLOR } from '@/constants/global-constants'
 import { SocketProvider } from '@/hooks/use-socket'
 import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
 import Player from '@/page-builders/plate-editor/player'
@@ -16,7 +12,6 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import NextTopLoader from 'nextjs-toploader'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
-import json from 'package.json'
 
 import { Toaster } from '@/components/aural-ui/toast'
 import { TooltipProvider } from '@/components/plate-ui-v2/tooltip'
@@ -38,18 +33,6 @@ const AppProvider = ({
 	useEffect(() => {
 		updateUserData(session)
 	}, [session])
-
-	useEffect(() => {
-		const savedVersion = localStorage.getItem(FETCHED_BUILD_VERSION_KEY) || ''
-
-		if (savedVersion === json.version) {
-			return
-		}
-
-		localStorage.setItem(FETCHED_BUILD_VERSION_KEY, json.version)
-		window.location.reload()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [json.version])
 
 	useEffect(() => {
 		const selectedColor = localStorage.getItem(USER_SELECTED_COLOR) as
