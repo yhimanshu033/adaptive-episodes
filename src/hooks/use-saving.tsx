@@ -1,24 +1,19 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useRef } from 'react'
-import { useParams, usePathname } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEditorData from '@/hooks/plate/use-editor-data'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useRecentUser from '@/hooks/use-recent-user'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import {
-	addUnsavedEpisodeParams,
-	removeUnsavedEpisodeParams,
-} from '@/store/global-store'
 import { usePluginOption } from 'platejs/react'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
+import { getSavingData } from '@/lib/utils/helpers'
 import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers } from '@/lib/utils/plate'
 
-import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
+import { BASE_STATUS, ELanguage } from '@/types/common'
+import { TGetSavingParamsRet } from '@/types/content-types'
 import {
 	SaveEpisodeParams,
 	TGetEpisodeResponse,
@@ -26,32 +21,15 @@ import {
 	TSaveEpisodeParams,
 } from '@/types/episode-type'
 
-const SavingContext = React.createContext<
-	| {
-			handleSave: (params?: TSaveEpisodeParams) => Promise<void>
-			isPending: boolean
-			isSaved: boolean
-			lastSaved?: Date
-			setForceSave: React.Dispatch<React.SetStateAction<boolean>>
-	  }
-	| undefined
->(undefined)
-
-export function SavingContextProvider({
-	children: nodeChildren,
-	data,
-	initialForceSave = false,
-}: {
-	children: React.ReactNode
+interface IUseSavingUtilProps {
 	data: TGetEpisodeResponse
 	initialForceSave?: boolean
-}) {
+}
+function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 	const { id } = useParams()
-	const { children } = useEditorData()
-	const { editorText } = useEditorData()
+	const { editorText, children } = useEditorData()
 	const allComments = usePluginOption(discussionPlugin, 'discussions')
-
-	const { saveEpisodeMutation, statusUpdateMutation } = useEpisodeHook()
+	const { saveEpisodeMutation } = useEpisodeHook()
 
 	const {
 		store: useEpisodeIdStoreContext,
@@ -64,18 +42,12 @@ export function SavingContextProvider({
 		useShallow((state) => state.currentTitle)
 	)
 
-	const { canCurrentUserBeRecent } = useRecentUser()
-
 	const savedRef = useRef(JSON.stringify(children))
 	const savedCommentsRef = useRef(JSON.stringify(allComments))
 	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 	const [isSaved, setIsSaved] = React.useState(true)
-	const intervalRef = useRef<NodeJS.Timeout | null>(null)
-	const pathname = usePathname()
-
-	const { refetch } = useEpisodeContent()
 
 	useEffect(() => {
 		const currentChildren = JSON.stringify(children)
@@ -91,71 +63,90 @@ export function SavingContextProvider({
 		setIsSaved(newIsSaved)
 	}, [children, allComments, currentTitle, data?.chapter, forceSave])
 
+	const getSavingParams = useCallback((): TGetSavingParamsRet => {
+		const words = editorText.split(/\s+/)
+		const word_count = words.length
+		const contentStr = JSON.stringify(children)
+		const commentsStr = JSON.stringify(allComments)
+		const title = currentTitle
+		const clearedLaser = clearLasers(children)
+		const text = JSON.stringify(clearedLaser)
+		const status = data?.chapter.status || BASE_STATUS
+		const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
+		const chapterId = data?.chapter.id
+
+		return {
+			word_count,
+			contentStr,
+			text,
+			status,
+			language,
+			chapterId,
+			title,
+			commentsStr,
+			chapterData: data,
+			allComments,
+		}
+	}, [editorText, children, allComments, data, currentTitle])
+
+	const saveLocal = useCallback(
+		(args: TGetSavingParamsRet) => {
+			const dataToSave: SaveEpisodeParams = {
+				projectId: Number(id),
+				status: args.status,
+				episodeId: Number(args.chapterData?.chapter.parent || args.chapterId),
+				id: Number(args.chapterId),
+				text: args.text,
+				word_count: args.word_count,
+				language: args.language,
+				props: {
+					...args.chapterData?.chapter.props,
+					comments: args.allComments,
+				},
+				chapter_title: args.title || args.chapterData?.chapter.chapter_title,
+			}
+
+			void setValue(`${String(id)}_${String(args.chapterId)}`, dataToSave)
+		},
+		[id]
+	)
+
 	const handleSave = useCallback(
 		async ({
 			forced = false,
 			startOverlayLoading = false,
 			stopOverlayLoading = false,
 		}: TSaveEpisodeParams = {}) => {
+			// if current chapter data is unavailable or content is already saved with forceSaving disabled --> do not proceed
 			if (!data?.chapter || (!forced && isSaved)) {
 				return
 			}
 
+			// show an overlay of loading when the arg is true
 			if (startOverlayLoading) {
 				setStartOverlayLoading(true)
 			}
 
 			try {
-				const words = editorText.split(/\s+/)
-				const word_count = words.length
-				savedRef.current = JSON.stringify(children)
-				savedCommentsRef.current = JSON.stringify(allComments)
-				savedTitleRef.current = currentTitle
-				const clearedLaser = clearLasers(children)
-				const text = JSON.stringify(clearedLaser)
-				let status = data?.chapter.status || BASE_STATUS
-				const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
-				const chapterId = data?.chapter.id
+				const params = getSavingParams() // retrieve saving params
 
-				const dataToSave: SaveEpisodeParams = {
-					projectId: Number(id),
-					status,
-					episodeId: Number(data?.chapter.parent || chapterId),
-					id: Number(chapterId),
-					text,
-					word_count,
-					language,
-					props: {
-						...data?.chapter.props,
-						comments: allComments,
-					},
-					chapter_title: currentTitle || data?.chapter.chapter_title,
-				}
+				// Update last saved contents
+				savedRef.current = params.contentStr
+				savedCommentsRef.current = params.commentsStr
+				savedTitleRef.current = params.title
 
-				void setValue(`${String(id)}_${String(chapterId)}`, dataToSave)
+				saveLocal(params) // save a local backup in case saving fails
 
-				if (language === ELanguage.GERMAN_ORIGINAL && status === BASE_STATUS) {
-					await statusUpdateMutation.mutateAsync({
-						parent_id: chapterId,
-						status,
-						language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
-					})
-					status = EStatus.FIRST_DRAFT
-				}
+				const respData = await saveEpisodeMutation.mutateAsync(
+					getSavingData(params)
+				) // update request
 
-				const respData = await saveEpisodeMutation.mutateAsync({
-					status,
-					chapterId,
-					text,
-					word_count,
-					comments: allComments,
-					prevProps: data?.chapter.props,
-					language,
-					chapter_title: currentTitle || data?.chapter.chapter_title,
-				})
+				// check if saving failed
 				if (!respData.success) {
 					const message = respData.message as TSaveEpisodeFailMessage
+
 					if (message.email) {
+						// check if someone else is editing chapter
 						toast.error(
 							`Saving failed, ${message.email} is currently working on the episode!`
 						)
@@ -164,14 +155,15 @@ export function SavingContextProvider({
 						toast.error('Saving failed!')
 					}
 				} else {
-					setLastSaved(new Date())
+					setLastSaved(new Date()) // change last saved date if saving succeeds
 				}
-
+				// change states accordingly
 				setForceSave(false)
 				setIsSaved(true)
 			} catch (error) {
 				console.error(error)
 			} finally {
+				// stop overlay loading in any case
 				if (stopOverlayLoading) {
 					setStartOverlayLoading(false)
 				}
@@ -181,76 +173,12 @@ export function SavingContextProvider({
 			data?.chapter,
 			isSaved,
 			setStartOverlayLoading,
-			editorText,
-			children,
-			allComments,
-			currentTitle,
-			id,
+			getSavingParams,
 			saveEpisodeMutation,
-			statusUpdateMutation,
+			saveLocal,
+			setRecentEmail,
 		]
 	)
-
-	const handleSaveGlobalStore = useCallback(() => {
-		if (!data?.chapter) {
-			return
-		}
-		const clearedLaser = clearLasers(children)
-		const text = JSON.stringify(clearedLaser)
-		const status = data?.chapter.status || BASE_STATUS
-		const chapterId = data?.chapter.id
-
-		const dataToSave: SaveEpisodeParams = {
-			projectId: Number(id),
-			status:
-				!data?.chapter.language ||
-				data?.chapter.language === ELanguage.GERMAN_ORIGINAL
-					? status === BASE_STATUS
-						? EStatus.FIRST_DRAFT
-						: status
-					: BASE_STATUS,
-			episodeId: Number(data?.chapter.parent || chapterId),
-			text,
-			id: Number(chapterId),
-			language: data?.chapter.language || ELanguage.GERMAN_ORIGINAL,
-			props: {
-				...data?.chapter.props,
-				comments: allComments,
-			},
-			chapter_title: currentTitle || data?.chapter.chapter_title,
-		}
-
-		addUnsavedEpisodeParams(
-			`${String(id)}_${String(chapterId)}_${pathname}`,
-			dataToSave
-		)
-	}, [id, children, allComments, data?.chapter, currentTitle, pathname])
-
-	const handleRemoveGlobalStore = useCallback(() => {
-		if (!data?.chapter) {
-			return
-		}
-		const chapterId = data?.chapter.parent
-		removeUnsavedEpisodeParams(`${String(id)}_${String(chapterId)}_${pathname}`)
-	}, [data?.chapter, pathname, id])
-
-	useEffect(() => {
-		if (savedCommentsRef.current !== JSON.stringify(allComments)) {
-			void handleSave()
-		}
-	}, [allComments, handleSave, currentTitle])
-
-	useEffect(() => {
-		const handleBeforeUnload = () => {
-			if (!isSaved) {
-				void handleSave()
-			}
-		}
-		window.addEventListener('beforeunload', handleBeforeUnload)
-		return () => {
-			window.removeEventListener('beforeunload', handleBeforeUnload)
-		}
-	}, [isSaved, handleSave])
 
 	useEffect(() => {
 		if (!data?.chapter) {
@@ -260,55 +188,30 @@ export function SavingContextProvider({
 			savedTitleRef.current = data.chapter.chapter_title
 			setCurrentTitle(data.chapter.chapter_title)
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data])
 
-	useEffect(() => {
-		if (isSaved) {
-			handleRemoveGlobalStore()
-		} else {
-			handleSaveGlobalStore()
-		}
-	}, [
-		isSaved,
-		children,
-		allComments,
-		currentTitle,
-		handleRemoveGlobalStore,
-		handleSaveGlobalStore,
-	])
-
-	// FOR CHECKING IF USER IS OWNER EVERY 9.9 MINS
-	useEffect(() => {
-		if (!canCurrentUserBeRecent || !isSaved) {
-			return
-		}
-
-		const intervalDuration = 9.9 * 60 * 1000 // 9.9 minutes --> 10 mins lock
-
-		// Set interval every 9.9 minutes
-		const interval = setInterval(() => {
-			void refetch()
-		}, intervalDuration)
-
-		intervalRef.current = interval
-
-		// Cleanup on unmount or when isSaved becomes false
-		return () => {
-			if (intervalRef.current) {
-				clearInterval(intervalRef.current)
-				intervalRef.current = null
-			}
-		}
-	}, [isSaved, canCurrentUserBeRecent])
-
-	const value = {
+	return {
 		handleSave,
 		isSaved,
 		isPending: saveEpisodeMutation.isPending,
 		setForceSave,
 		lastSaved,
+		getSavingParams,
+		data,
 	}
+}
 
+const SavingContext = React.createContext<
+	ReturnType<typeof useSavingUtil> | undefined
+>(undefined)
+
+export function SavingContextProvider({
+	children: nodeChildren,
+	data,
+	initialForceSave = false,
+}: IUseSavingUtilProps & React.PropsWithChildren) {
+	const value = useSavingUtil({ data, initialForceSave })
 	return (
 		<SavingContext.Provider value={value}>
 			{nodeChildren}
