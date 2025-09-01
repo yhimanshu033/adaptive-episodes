@@ -61,6 +61,8 @@ export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.NEUTRAL_SPANISH]: 'Neutral Spanish',
 	[ELanguage.TRANSLATED_ENGLISH]: 'Translated English',
 	[ELanguage.ENGLISH_UK]: 'English UK',
+	[ELanguage.JAPANESE]: 'Japanese',
+	[ELanguage.DEUTSCH]: 'Deútsch',
 }
 
 export enum EpisodeActions {
