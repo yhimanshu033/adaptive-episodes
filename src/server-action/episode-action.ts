@@ -4,7 +4,7 @@ import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
-import { ELanguage, TNoParams } from '@/types/common'
+import { BASE_STATUS, ELanguage, TNoParams } from '@/types/common'
 import {
 	TEpisodeDeleteResponse,
 	TEpisodeDeleteURLParams,
@@ -92,6 +92,56 @@ export const getEpisodeDetails = async (
 	return sentData
 }
 
+export const getLatestEpisodeDetails = async (
+	project_id: number,
+	isOriginal?: false,
+	parent: number = 1
+) => {
+	const episodes = await fetchAPI<
+		TGetEpisodesResponse,
+		TNoParams,
+		TNoParams,
+		TGetEpisodeDetailsQueryParams
+	>({
+		method: 'GET',
+		url: API_URLS.GET_EPISODES,
+		query: {
+			project_id,
+			parent,
+		},
+	})
+
+	const sentData = episodes.data
+	if (sentData?.results.data) {
+		const languageAvailable = sentData.results.data.find((ep) => !!ep.language)
+		if (!languageAvailable) {
+			sentData.results.data.forEach(
+				(ep) => (ep.language = ELanguage.GERMAN_ORIGINAL)
+			)
+		}
+		const isGerman = sentData.results.data.find(
+			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+		)
+
+		if (isGerman) {
+			sentData.results.data = sentData.results.data.filter(
+				(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+			)
+		}
+		// FOR ORIGINAL LANGUAGES
+		if (isGerman || isOriginal) {
+			const baseEp = sentData.results.data.find(
+				(ep) => ep.status === BASE_STATUS
+			)
+			const onlyBaseExists = sentData.results.data.length === 1
+			if (baseEp && onlyBaseExists) {
+				const respData = await updateStatus(baseEp.id, parent, BASE_STATUS)
+			}
+		}
+	}
+
+	return sentData
+}
 export const unmergeEpisodes = async (merged_chapter_id: number) => {
 	const res = await fetchAPI<
 		TEpisodeUnmergeResponse,
