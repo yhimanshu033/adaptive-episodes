@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import useSavingCheck from '@/hooks/use-saving-check'
 import useAIStore from '@/store/ai-store'
 import usePlateStore from '@/store/plate-store'
 import { useTheme } from 'next-themes'
@@ -15,6 +16,8 @@ const EditorHandler = ({ className }: { className?: string }) => {
 	const { store } = usePlateStore()
 	const { store: aiStore } = useAIStore()
 	const { theme } = useTheme()
+
+	useSavingCheck()
 
 	const sidebar = store(useShallow((state) => state.sidebar))
 	const { responseValue, prevValue } = aiStore(
