@@ -3,9 +3,8 @@
 import React, { createContext, useCallback, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
-import useEpisodeInfo from '@/hooks/query/use-episode-info'
+import useLatestEpisodeInfo from '@/hooks/query/use-latest-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
-import { updateStatus } from '@/server-action/episode-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
@@ -49,7 +48,7 @@ import useAccessChecks from '../use-access-checks'
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 
-	const { isOriginal, isGerman } = useAccessChecks()
+	const { isOriginal } = useAccessChecks()
 	const pathName = usePathname()
 
 	const selectedStatus = useEpisodeIdStoreContext(
@@ -61,12 +60,15 @@ export const useEpisodeContentUtil = () => {
 	)
 
 	const { addEpisodeMap, addEpisodeKey } = useEditorExtendedStore()
-	const { data } = useEpisodeInfo()
+	const { data } = useLatestEpisodeInfo({
+		isOriginal,
+		language: selectedLanguage,
+	})
 
 	const episodeId = useEpisodeId()
 
 	const { episode, language, latestStatus } = useMemo(() => {
-		if (!data) {
+		if (!data?.results?.data?.length) {
 			return {
 				episode: undefined,
 				language: ELanguage.GERMAN_ORIGINAL,
@@ -105,21 +107,8 @@ export const useEpisodeContentUtil = () => {
 		if (!episode?.id) {
 			return null
 		}
-		let usedEpisodeId = episode?.id
-		const hasStatuses = isGerman || isOriginal // only german and originally adapted stories have statuses feature
-		if (episode?.status === BASE_STATUS && hasStatuses) {
-			// if only BASE version exists, first create a 1ST_DRAFT before editing
-			const updatedEpisode = await updateStatus(
-				episode.project,
-				episode.parent ?? episode.id,
-				episode.status,
-				episode.language
-			)
-			if (updatedEpisode?.id) {
-				// now the 1ST_DRAFT content will be fetched to display
-				usedEpisodeId = updatedEpisode.id
-			}
-		}
+		const usedEpisodeId = episode?.id
+
 		const resp = await getEpisodeContent(usedEpisodeId)
 		if (!resp) {
 			return resp
@@ -192,8 +181,6 @@ export const useEpisodeContentUtil = () => {
 		setSidebar,
 		setRecentEmail,
 		episode,
-		isOriginal,
-		isGerman,
 	])
 
 	const query = useQuery({

@@ -56,8 +56,7 @@ export default function useVersions({
 			await handleSave({ forced: true })
 			await statusUpdateMutation.mutateAsync({
 				parent_id: chapterId,
-				status:
-					latestStatus === BASE_STATUS ? EStatus.FIRST_DRAFT : latestStatus,
+				status: latestStatus,
 				language: data?.chapter.language,
 			})
 			await queryClient.invalidateQueries({

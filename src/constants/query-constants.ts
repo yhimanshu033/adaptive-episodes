@@ -53,3 +53,4 @@ export const BULK_EP_DOWNLOAD_MUTATION_KEY = 'bulk-ep-download-mutation'
 export const BULK_EP_PROMPT_MUTATION_KEY = 'bulk-ep-prompt-mutation'
 
 export const EPISODE_INFO_MUTATION_KEY = 'info-mutation'
+export const EPISODE_LATEST_INFO_QUERY_KEY = 'latest-info'
