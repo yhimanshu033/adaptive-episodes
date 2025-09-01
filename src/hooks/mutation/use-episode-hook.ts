@@ -125,7 +125,7 @@ const useEpisodeHook = () => {
 		seq_number: number
 	}) => {
 		if (!id) {
-			toast.error('Some error occurred!')
+			toast.error('Project ID not found!')
 			return
 		}
 		return inventEpisode({

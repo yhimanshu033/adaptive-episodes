@@ -248,7 +248,7 @@ const useEpisodeTable = () => {
 			{
 				onSuccess: (data) => {
 					if (!data?.project_id || !data?.id) {
-						toast.error('Some error occurred. Please try again!')
+						toast.error('Episode could not be created!')
 						return
 					}
 					toast.custom(
