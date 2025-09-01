@@ -68,7 +68,7 @@ export const useEpisodeContentUtil = () => {
 	const episodeId = useEpisodeId()
 
 	const { episode, language, latestStatus } = useMemo(() => {
-		if (!data) {
+		if (!data?.results?.data?.length) {
 			return {
 				episode: undefined,
 				language: ELanguage.GERMAN_ORIGINAL,

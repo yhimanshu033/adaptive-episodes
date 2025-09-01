@@ -69,8 +69,8 @@ export const getSelectedEpisode = (
 		const originalChapter = chapters.find(
 			(ep) =>
 				ep.type === EEpisodeType.ORIGINAL || ep.type === EEpisodeType.INVENTED
-		) as TEpisode
-		selectedLanguage = originalChapter.language
+		)
+		selectedLanguage = originalChapter?.language || ELanguage.GERMAN_ORIGINAL
 	}
 
 	// ONLY SELECT CHAPTERS THAT HAVE SELECTED LANGUAGE
@@ -109,7 +109,7 @@ export const getSelectedEpisode = (
 	return {
 		episode: selectedEpisode,
 		latestStatus: latestStatus ?? selectedEpisode?.status, // BASE CASE THAT SELECTED EPISODE'S STATUS IS LATEST
-		language: selectedEpisode.language as ELanguage,
+		language: selectedEpisode?.language as ELanguage,
 	}
 }
 
