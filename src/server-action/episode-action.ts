@@ -12,7 +12,6 @@ import {
 	TNoParams,
 } from '@/types/common'
 import {
-	TEpisode,
 	TEpisodeDeleteResponse,
 	TEpisodeDeleteURLParams,
 	TEpisodeInventParams,
@@ -101,7 +100,6 @@ export const getEpisodeDetails = async (
 
 export const getLatestEpisodeDetails = async (
 	project_id: number,
-	language?: ELanguage,
 	isOriginal: boolean = false,
 	parent: number = 1
 ) => {
@@ -137,32 +135,24 @@ export const getLatestEpisodeDetails = async (
 				(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
 			)
 		}
+
 		// FOR ORIGINAL LANGUAGES
 		if (isGerman || isOriginal) {
-			let selectedLanguage = language
-			if (!selectedLanguage) {
-				const originalChapter = sentData.results.data.find(
-					(ep) =>
-						ep.type === EEpisodeType.ORIGINAL ||
-						ep.type === EEpisodeType.INVENTED
-				) as TEpisode
-				selectedLanguage = originalChapter.language
-			}
-
-			// FILTER LANGUAGE CHAPTERS
-			const languageEps = sentData.results.data.filter(
-				(ep) => ep.language === selectedLanguage
+			// ONLY CHECK FOR ORIGINAL EPISODES (NOT ADAPTED)
+			const originalEps = sentData.results.data.filter(
+				(ep) => ep.type !== EEpisodeType.ADAPTED
 			)
-			const baseEp = languageEps.find((ep) => ep.status === BASE_STATUS)
-			const onlyBaseExists = languageEps.length === 1
 
-			// IF ONLY BASE EXISTS --> CREATE A 1ST DRAFT
+			const baseEp = originalEps.find((ep) => ep.status === BASE_STATUS)
+			const onlyBaseExists = originalEps.length === 1
+
+			// IF ONLY BASE EXISTS --> CREATE A 1ST DRAFT OF THE ORIGINAL EPISODE
 			if (baseEp && onlyBaseExists) {
 				const respData = await updateStatus(
 					baseEp.project,
 					parent,
 					BASE_STATUS,
-					selectedLanguage
+					baseEp.language
 				)
 				// PUSH NEWLY CREATED CHAPTER IN THE DATA
 				if (respData) {
