@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { statuses, titleToStatus } from '@/constants/episodes-constants'
 import useAccessChecks from '@/hooks/use-access-checks'
 import useEditAccess from '@/hooks/use-edit-access'
+import useLanguage from '@/hooks/use-language'
 import useVersions from '@/hooks/use-versions'
 import CommonApplyChangesAlert from '@/page-builders/episodes/dialogs/common-apply-changes-alert'
 import { Eye } from 'lucide-react'
@@ -44,10 +45,19 @@ const Versions = ({
 		latestStatus,
 	})
 
-	const { isGerman, isOriginal } = useAccessChecks()
+	const currentLanguage = useLanguage()
+
+	const { isGerman, isOriginal, isOriginalEp } = useAccessChecks()
 	const { noAccess } = useEditAccess()
 
-	if (!(isGerman || isOriginal)) {
+	const statusesEnabled = useMemo(() => {
+		if (isGerman) {
+			return true
+		}
+		return isOriginalEp(currentLanguage) && isOriginal
+	}, [isGerman, isOriginalEp, currentLanguage, isOriginal])
+
+	if (!statusesEnabled) {
 		return null
 	}
 
