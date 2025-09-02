@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { statuses } from '@/constants/episodes-constants'
 import {
-	EPISODE_INFO_QUERY_KEY,
+	EPISODE_LATEST_INFO_QUERY_KEY,
 	EPISODE_LIST_QUERY_KEY,
 } from '@/constants/query-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
@@ -60,7 +60,8 @@ export default function useVersions({
 				language: data?.chapter.language,
 			})
 			await queryClient.invalidateQueries({
-				queryKey: [EPISODE_INFO_QUERY_KEY, episodeId, id],
+				queryKey: [EPISODE_LATEST_INFO_QUERY_KEY, episodeId, id],
+				exact: false,
 			})
 			await queryClient.invalidateQueries({
 				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],

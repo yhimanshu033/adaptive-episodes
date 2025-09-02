@@ -48,7 +48,7 @@ import useAccessChecks from '../use-access-checks'
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 
-	const { isOriginal } = useAccessChecks()
+	const { isOriginal, isOriginalEp } = useAccessChecks()
 	const pathName = usePathname()
 
 	const selectedStatus = useEpisodeIdStoreContext(
@@ -62,7 +62,6 @@ export const useEpisodeContentUtil = () => {
 	const { addEpisodeMap, addEpisodeKey } = useEditorExtendedStore()
 	const { data } = useLatestEpisodeInfo({
 		isOriginal,
-		language: selectedLanguage,
 	})
 
 	const episodeId = useEpisodeId()
@@ -78,11 +77,16 @@ export const useEpisodeContentUtil = () => {
 		const isGerman = data.results.data.some(
 			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
 		)
-		if (isGerman || isOriginal) {
+		// IS CURRENTLY SELECTED LANGUAGE ADAPTED
+		const isLanguageNotAdapted =
+			!selectedLanguage || isOriginalEp(selectedLanguage)
+		// ONLY GERMAN AND NON-ADAPTED CHAPTERS OF ORIGINAL USE STATUSES
+		const needStatusEp = isGerman || (isOriginal && isLanguageNotAdapted)
+		if (needStatusEp) {
 			return getSelectedEpisode(data, selectedStatus)
 		}
 		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
-	}, [data, selectedLanguage, selectedStatus, isOriginal])
+	}, [data, selectedLanguage, selectedStatus, isOriginal, isOriginalEp])
 
 	const dict = useTranslations('placeholders')
 	const languages = useMemo(() => getAvailableLanguages(data), [data])

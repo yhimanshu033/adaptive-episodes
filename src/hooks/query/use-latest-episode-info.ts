@@ -7,22 +7,17 @@ import { useQuery } from '@tanstack/react-query'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 
-import { ELanguage } from '@/types/common'
-
 export const useLatestEpisodeInfo = ({
 	isOriginal,
-	language,
 }: {
 	isOriginal: boolean
-	language?: ELanguage
 }) => {
 	const episodeId = useEpisodeId()
 	const { id }: { id: string } = useParams()
 
 	const query = useQuery({
-		queryKey: [EPISODE_LATEST_INFO_QUERY_KEY, episodeId, id],
-		queryFn: () =>
-			getLatestEpisodeDetails(parseInt(id), language, isOriginal, episodeId),
+		queryKey: [EPISODE_LATEST_INFO_QUERY_KEY, episodeId, id, isOriginal],
+		queryFn: () => getLatestEpisodeDetails(parseInt(id), isOriginal, episodeId),
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
