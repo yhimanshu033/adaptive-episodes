@@ -284,6 +284,8 @@ export const PREFERABLE_LANGUAGES: Record<TSourceLanguage, ELanguage> = {
 	[ELanguage.GERMAN]: ELanguage.FRENCH,
 	[ELanguage.HINDI]: ELanguage.ENGLISH,
 	[ELanguage.KOREAN]: ELanguage.ENGLISH,
+	[ELanguage.JAPANESE]: ELanguage.ENGLISH,
+	[ELanguage.DEUTSCH]: ELanguage.ENGLISH,
 	[ELanguage.TRANSLATED_ENGLISH]: ELanguage.ENGLISH,
 }
 
@@ -310,10 +312,20 @@ export const SOURCE_TO_TARGET_LANGUAGE_MAP: Partial<
 		ELanguage.ITALIAN,
 		ELanguage.HINDI,
 		ELanguage.ENGLISH_UK,
+		ELanguage.KOREAN,
+		ELanguage.JAPANESE,
+		ELanguage.DEUTSCH,
 	],
-	[ELanguage.CHINESE]: [ELanguage.ENGLISH],
+	[ELanguage.CHINESE]: [
+		ELanguage.ENGLISH,
+		ELanguage.KOREAN,
+		ELanguage.JAPANESE,
+		ELanguage.DEUTSCH,
+	],
 	[ELanguage.TRANSLATED_ENGLISH]: [ELanguage.ENGLISH],
 	[ELanguage.KOREAN]: [ELanguage.ENGLISH],
 	[ELanguage.GERMAN]: [ELanguage.ENGLISH, ELanguage.FRENCH, ELanguage.ITALIAN],
 	[ELanguage.HINDI]: [ELanguage.ENGLISH],
+	[ELanguage.JAPANESE]: [ELanguage.ENGLISH],
+	[ELanguage.DEUTSCH]: [ELanguage.ENGLISH],
 }

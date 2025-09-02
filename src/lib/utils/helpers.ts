@@ -35,7 +35,9 @@ import {
 import {
 	TGetMetadataAPIResponse,
 	TGetMetadataResponse,
+	TGetSavingParamsRet,
 	TMetadata,
+	TSaveEpisodeMutationArgs,
 } from '@/types/content-types'
 import {
 	SaveEpisodeParams,
@@ -51,40 +53,63 @@ export function cn(...inputs: ClassValue[]) {
 
 export const getSelectedEpisode = (
 	data: TGetEpisodesResponse,
-	selectedStatus?: EStatus
+	selectedStatus?: EStatus,
+	language?: ELanguage
 ): {
 	episode: TEpisode
 	language: ELanguage
 	latestStatus: EStatus | typeof BASE_STATUS
 } => {
 	let selectedEpisode: TEpisode | undefined
+	let chapters = data.results.data
+	let selectedLanguage = language
 
+	// IF NO LANGUAGE IS SELECTED --> USE THE ORIGINAL CHAPTER'S LANGUAGE AS SELECTED LANGUAGE
+	if (!selectedLanguage) {
+		const originalChapter = chapters.find(
+			(ep) =>
+				ep.type === EEpisodeType.ORIGINAL || ep.type === EEpisodeType.INVENTED
+		)
+		selectedLanguage = originalChapter?.language || ELanguage.GERMAN_ORIGINAL
+	}
+
+	// ONLY SELECT CHAPTERS THAT HAVE SELECTED LANGUAGE
+	chapters = chapters.filter((ep) => {
+		return ep.language === selectedLanguage
+	})
+
+	// IF A STATUS IS SELECTED --> SELECT EPISODE WITH THAT STATUS
 	if (selectedStatus) {
-		selectedEpisode = data.results.data.find(
+		selectedEpisode = chapters.find(
 			(episode) => episode.status === selectedStatus
 		)
 	}
 
+	// IF EPISODE IS NOT SELECTED
 	if (!selectedEpisode) {
+		// FIND THE EPISODE HAVING THE HIGHEST PRIORITY STATUS AND SELECT IT
 		for (const status of prioritizedStatuses) {
-			selectedEpisode = data.results.data.find(
-				(episode) => episode.status === status
-			)
+			selectedEpisode = chapters.find((episode) => episode.status === status)
 			if (selectedEpisode) {
 				break
 			}
 		}
 	}
 
-	const latestStatus =
-		prioritizedStatuses.find((status) =>
-			data.results.data.some((episode) => episode.status === status)
-		) ?? data.results.data[0]?.status
+	// BASE CASE IF STILL NO EPISODE IS SELECTED, LET THE FIRST EP BE SELECTED
+	if (!selectedEpisode) {
+		selectedEpisode = chapters[0] || data.results.data[0]
+	}
+
+	// FIND THE HIGHEST AVAILABLE STATUS FOR SELECTED LANGUAGE CHAPTERS
+	const latestStatus = prioritizedStatuses.find((status) => {
+		return chapters.some((episode) => episode.status === status)
+	})
 
 	return {
-		episode: selectedEpisode ?? data.results.data[0],
-		latestStatus,
-		language: data?.results?.data?.[0]?.language as ELanguage,
+		episode: selectedEpisode,
+		latestStatus: latestStatus ?? selectedEpisode?.status, // BASE CASE THAT SELECTED EPISODE'S STATUS IS LATEST
+		language: selectedEpisode?.language as ELanguage,
 	}
 }
 
@@ -874,4 +899,19 @@ export function getEpisodeNumbers(seqNumbers: number[], maxNum = 5): string {
 		)
 	}
 	return seqNumbers.join(',')
+}
+
+export function getSavingData(
+	params: TGetSavingParamsRet
+): TSaveEpisodeMutationArgs {
+	return {
+		status: params.status,
+		chapterId: params.chapterId,
+		text: params.text,
+		word_count: params.word_count,
+		comments: params.allComments,
+		prevProps: params.chapterData?.chapter.props,
+		language: params.language,
+		chapter_title: params.title || params.chapterData?.chapter.chapter_title,
+	}
 }

@@ -9,7 +9,6 @@ import ChevronDownIcon from '@/icons/chevron-down-icon'
 import ChevronLeftIcon from '@/icons/chevron-left-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
 // import { MaintenanceIcon } from '@/icons/maintenance-icon'
-import { PlusIcon } from '@/icons/plus-icon'
 import { UploadIcon } from '@/icons/upload-icon'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
 import InventForm from '@/page-builders/episodes/dialogs/invent-form'
@@ -19,9 +18,12 @@ import AdaptationContainer from '@/page-builders/episodes/table/adaptation-conta
 import AddEpisode from '@/page-builders/episodes/table/add-episode'
 import EpisodeEmpty from '@/page-builders/episodes/table/episode-empty'
 import Filters from '@/page-builders/episodes/table/filters'
+import InventEpisodeButton, {
+	InventEpisodeButtonProps,
+} from '@/page-builders/episodes/table/invent-button'
 import SelectionActions from '@/page-builders/episodes/table/selection-actions'
 import { useEpisodeStore } from '@/store/episode-store'
-import { flexRender } from '@tanstack/react-table'
+import { flexRender, Row } from '@tanstack/react-table'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
@@ -48,6 +50,7 @@ import {
 	EEpisodeHeaderKeys,
 	episodeTableColumnWidths,
 	NON_SORTABLE_EPISODE_HEADER_KEYS,
+	TEpisode,
 } from '@/types/episode-type'
 
 import BaseScriptExtensionDialog from '../dialogs/base-script-extension-dialog'
@@ -145,6 +148,49 @@ const EpisodesTable = () => {
 
 	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
 		return <AdaptationContainer />
+	}
+
+	const anyRowSelected = selectedRowLength > 0
+	const isHoverable = !anyRowSelected && isWriter
+
+	const handleRowMouseMove = (
+		e: React.MouseEvent<HTMLTableRowElement>,
+		row: Row<TEpisode>
+	) => {
+		if (!isHoverable) {
+			return
+		}
+
+		const rect = e.currentTarget.getBoundingClientRect()
+		const offsetY = e.clientY - rect.top
+		const threshold = 20
+
+		if (row.index === 0 && offsetY <= threshold) {
+			setHoverIndexWithDelay(-1)
+		} else if (rect.height - offsetY <= threshold && !row.depth) {
+			setHoverIndexWithDelay(row.index)
+		} else {
+			setHoverIndexWithDelay(null)
+		}
+	}
+
+	const handleInventMouseEnter = (rowIndex: number) => {
+		if (!isHoverable) {
+			return
+		}
+		setHoverIndexImmediate(rowIndex)
+	}
+
+	const handleInventMouseLeave = () => {
+		if (!isHoverable) {
+			return
+		}
+		setHoverIndexWithDelay(null)
+	}
+
+	const onInvent = (seqNumber: number) => {
+		setIsInventOpen(true)
+		setInventSeq(seqNumber)
 	}
 
 	return (
@@ -312,55 +358,27 @@ const EpisodesTable = () => {
 									<IfElse condition={!!table.getRowModel().rows?.length}>
 										<If>
 											{table.getRowModel().rows.map((row, rowIndex) => {
-												const anyRowSelected = selectedRowLength > 0
-												const isHoverable = !anyRowSelected && isWriter
 												const isHovered = hoverIndex === rowIndex
 												const shouldShowHoverAction = isHoverable && isHovered
 
-												const handleRowMouseMove = (
-													e: React.MouseEvent<HTMLTableRowElement>
-												) => {
-													if (!isHoverable) {
-														return
-													}
-
-													const rect = e.currentTarget.getBoundingClientRect()
-													const offsetY = e.clientY - rect.top
-													const threshold = 20
-
-													if (
-														rect.height - offsetY <= threshold &&
-														!row.depth
-													) {
-														setHoverIndexWithDelay(rowIndex)
-													} else {
-														setHoverIndexWithDelay(null)
-													}
-												}
-
-												const handleRowMouseLeave = () => {
-													if (!isHoverable) {
-														return
-													}
-													setHoverIndexWithDelay(null)
-												}
-
-												const handleInventMouseEnter = () => {
-													if (!isHoverable) {
-														return
-													}
-													setHoverIndexImmediate(rowIndex)
-												}
-
-												const handleInventMouseLeave = () => {
-													if (!isHoverable) {
-														return
-													}
-													setHoverIndexWithDelay(null)
+												const inventButtonProps: InventEpisodeButtonProps = {
+													handleInventMouseEnter: () =>
+														handleInventMouseEnter(rowIndex),
+													handleInventMouseLeave,
+													onClick: () => onInvent(row.original.seq_number + 1),
+													shouldShowHoverAction,
+													show: isWriter,
 												}
 
 												return (
 													<React.Fragment key={row.id}>
+														<InventEpisodeButton
+															show={
+																isWriter && hoverIndex === -1 && rowIndex === 0
+															}
+															shouldShowHoverAction={hoverIndex === -1}
+															onClick={() => onInvent(row.original.seq_number)}
+														/>
 														<TableRow
 															id={`row-${row.id}`}
 															className={cn(
@@ -373,8 +391,7 @@ const EpisodesTable = () => {
 																		shouldShowHoverAction,
 																}
 															)}
-															onMouseMove={handleRowMouseMove}
-															onMouseLeave={handleRowMouseLeave}
+															onMouseMove={(e) => handleRowMouseMove(e, row)}
 														>
 															{row.getVisibleCells().map((cell) => (
 																<TableCell key={cell.id}>
@@ -385,47 +402,7 @@ const EpisodesTable = () => {
 																</TableCell>
 															))}
 														</TableRow>
-
-														{isWriter && (
-															<TableRow
-																className={cn(
-																	'relative border-none p-0 opacity-0 transition-opacity duration-300',
-																	{
-																		'opacity-100': shouldShowHoverAction,
-																	}
-																)}
-																onMouseLeave={handleInventMouseLeave}
-															>
-																<TableCell className="absolute -bottom-4 -left-5 p-0">
-																	<Button
-																		variant="secondary"
-																		size="sm"
-																		disabled={!isWriter}
-																		className="border-fm-divider-secondary w-10 rounded-full border"
-																		innerClassName="border border-fm-divider-secondary"
-																		noise="low"
-																		onClick={() => {
-																			setIsInventOpen(true)
-																			setInventSeq(
-																				table.getRowModel().rows[rowIndex]
-																					.original.seq_number + 1
-																			)
-																		}}
-																		onMouseEnter={handleInventMouseEnter}
-																		onMouseLeave={handleInventMouseLeave}
-																		tooltip={
-																			shouldShowHoverAction && 'Invent Episode'
-																		}
-																	>
-																		<PlusIcon
-																			width={16}
-																			height={16}
-																			className="flex shrink-0"
-																		/>
-																	</Button>
-																</TableCell>
-															</TableRow>
-														)}
+														<InventEpisodeButton {...inventButtonProps} />
 													</React.Fragment>
 												)
 											})}

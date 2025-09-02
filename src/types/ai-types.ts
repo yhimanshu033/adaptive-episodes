@@ -20,6 +20,7 @@ export interface LaserToolsParams {
 	last_answer?: string
 	nexttext?: string
 	prevtext?: string
+	project_id?: number
 	prompt?: string
 	style_template?: string
 	text: string
