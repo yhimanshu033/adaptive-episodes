@@ -2,7 +2,7 @@ import React from 'react'
 import useLSSheetQuery from '@/hooks/mutation/use-ls-sheet'
 import { CrossIcon } from '@/icons/cross-icon'
 import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
-import { Sheet } from 'lucide-react'
+import { Table2 } from 'lucide-react'
 
 import {
 	Dialog,
@@ -26,8 +26,8 @@ export default function ViewLS() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<ToolbarButton>
-					<Sheet />
+				<ToolbarButton tooltip="View LS Sheet">
+					<Table2 />
 				</ToolbarButton>
 			</DialogTrigger>
 			<DialogContent
