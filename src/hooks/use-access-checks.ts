@@ -1,3 +1,5 @@
+import { useCallback } from 'react'
+
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 
 import { ELanguage } from '@/types/common'
@@ -11,7 +13,14 @@ const useAccessChecks = () => {
 
 	const isOriginal = initialStoryData?.is_original || false
 
-	return { isGerman, isOriginal }
+	const isOriginalEp = useCallback(
+		(lang?: ELanguage) => {
+			return lang === initialStoryData?.parent_language
+		},
+		[initialStoryData]
+	)
+
+	return { isGerman, isOriginal, isOriginalEp }
 }
 
 export default useAccessChecks

@@ -1,11 +1,8 @@
 'use client'
 
-import React, { useEffect, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
+import React, { useEffect } from 'react'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
-import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
-import useRecentUser from '@/hooks/use-recent-user'
-import useStatuses from '@/hooks/use-statuses'
+import useEditAccess from '@/hooks/use-edit-access'
 import useCustomPlateStore, { usePlateStore } from '@/store/plate-store'
 import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
@@ -23,7 +20,6 @@ import {
 	SelectSeparator,
 	SelectTrigger,
 } from '@/components/aural-ui/select'
-import useProjectId from '@/providers/project-id-provider'
 import { cn, toPascalCase } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
@@ -39,38 +35,20 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
 	const { setOption } = useEditorPlugin(SuggestionPlugin)
 
-	const { isWriter } = useProjectId()
-	const searchParams = useSearchParams()
-	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
+	const { cannotEdit } = useEditAccess()
 
 	const { store } = useCustomPlateStore()
 	const viewMode = store((state) => state.viewMode)
+
 	const filteredModesList = editorModesList.filter(
-		({ mode }) => isWriter || mode === EditorModes.viewing
+		({ mode }) => !cannotEdit || mode === EditorModes.viewing
 	)
-	const { latestStatus, selectedStatus } = useStatuses()
-	const { canCurrentUserBeRecent } = useRecentUser()
 
 	const value = readOnly
 		? EditorModes.viewing
 		: isSuggesting
 			? EditorModes.suggesting
 			: EditorModes.editing
-
-	const cannotEdit = useMemo(() => {
-		return (
-			!isWriter ||
-			!!simplifiedEditor ||
-			!canCurrentUserBeRecent ||
-			selectedStatus !== latestStatus
-		)
-	}, [
-		isWriter,
-		canCurrentUserBeRecent,
-		simplifiedEditor,
-		selectedStatus,
-		latestStatus,
-	])
 
 	const handleChange = React.useCallback(
 		(newValue: string) => {
