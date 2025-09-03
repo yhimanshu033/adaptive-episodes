@@ -170,6 +170,7 @@ export type TBaseScriptExtensionBody = {
 		us_end: number
 		us_start: number
 	}
+	run_nwm?: boolean
 }
 
 export type TGetSlackChannelParams = {

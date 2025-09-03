@@ -57,7 +57,7 @@ const useBaseExtensionMutation = () => {
 		>({
 			method: 'POST',
 			url: API_URLS.EXTEND_BASE_SCRIPT,
-			body: params,
+			body: { ...params, run_nwm: true },
 		})
 		return taskId
 	}

@@ -68,6 +68,7 @@ const useStoryUploadHook = () => {
 				image: image?.url || null,
 				author: author || null,
 				create_blank_project: !story_file,
+				run_nwm: true,
 			}
 
 			const taskId = await startTask<StoryUploadParams>({
