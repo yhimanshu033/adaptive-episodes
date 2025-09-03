@@ -53,7 +53,9 @@ export type TGenerateBeatsheetResponse = Array<{
 }>
 
 export type TGetScenesMetadataAPIResponse = {
-	data: TScene[]
+	message: string
+	result: TScene[]
+	status: number
 }
 export type TGetScenesMetadataQueryParams = {
 	chapter_id: number

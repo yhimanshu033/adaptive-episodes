@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import useScenesMetadataQuery from '@/hooks/query/use-scenes-metadata-query'
 import useBeatsheetStore from '@/store/beatsheet-store'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Checkbox } from '@/components/aural-ui/checkbox'
+import DotLoader from '@/components/aural-ui/dot-loader'
 import Label from '@/components/aural-ui/label'
 import {
 	Tabs,
@@ -18,11 +20,28 @@ import SceneTab from './scenes'
 import StyleTab from './style'
 
 export default function BeatSheetEditor() {
-	const { beatsheetStore, setEnhancementPlan } = useBeatsheetStore()
+	const { beatsheetStore, setEnhancementPlan, setScenes } = useBeatsheetStore()
 
 	const enhancementPlan = beatsheetStore(
 		useShallow((state) => state.enhancementPlan)
 	)
+
+	const { data: sceneData, isLoading: isScenesLoading } =
+		useScenesMetadataQuery()
+
+	useEffect(() => {
+		if (sceneData && sceneData.result) {
+			setScenes(sceneData.result)
+		}
+	})
+
+	if (isScenesLoading) {
+		return (
+			<div className="flex h-full flex-col justify-center">
+				<DotLoader />
+			</div>
+		)
+	}
 
 	return (
 		<div className="p-4">
