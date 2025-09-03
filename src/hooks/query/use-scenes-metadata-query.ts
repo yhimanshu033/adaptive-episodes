@@ -1,8 +1,9 @@
+import { useEffect } from 'react'
 import { API_URLS } from '@/constants/global-constants'
 import { SCENES_METADATA_QUERY_KEY } from '@/constants/query-constants'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
-import useEpisodeId from '@/providers/episode-id-provider'
 import { fetchAPI } from '@/lib/fetch-api'
 
 import {
@@ -11,8 +12,10 @@ import {
 } from '@/types/beatsheet-editor-types'
 import { TNoParams } from '@/types/common'
 
+import useEpisodeContent from './use-episode-content'
+
 export default function useScenesMetadataQuery() {
-	const episodeId = useEpisodeId()
+	const { episode } = useEpisodeContent()
 
 	const getScenesMetadata = async () => {
 		const response = await fetchAPI<
@@ -24,17 +27,29 @@ export default function useScenesMetadataQuery() {
 			url: API_URLS.GET_SCENES_METADATA,
 			method: 'GET',
 			query: {
-				chapter_id: Number(episodeId),
+				chapter_id: Number(episode?.id),
 			},
 		})
+
+		if (!response.success) {
+			throw new Error(
+				response.error?.message || 'Failed to fetch scenes metadata'
+			)
+		}
 
 		return response.data
 	}
 
 	const query = useQuery({
-		queryKey: [SCENES_METADATA_QUERY_KEY, Number(episodeId)],
+		queryKey: [SCENES_METADATA_QUERY_KEY, Number(episode?.id)],
 		queryFn: () => getScenesMetadata(),
 	})
+
+	useEffect(() => {
+		if (query.error) {
+			toast.error('Failed to fetch scenes metadata')
+		}
+	}, [query.error])
 
 	return query
 }
