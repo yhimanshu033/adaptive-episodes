@@ -32,6 +32,8 @@ export const TRANSLATE_VIDEO_MUTATION_KEY = 'translate-video'
 export const BASE_EXTENSION_QUERY_KEY = 'base-script-extension'
 export const DOC_EPISODE_COUNT_QUERY_KEY = 'doc-episode-count'
 
+export const SCENES_METADATA_QUERY_KEY = 'scenes-metadata'
+
 // Mutation keys
 export const RENAME_EPISODE_MUTATION = 'rename-episode'
 

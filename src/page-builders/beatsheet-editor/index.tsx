@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import { charactersDataEnglish, TCharacter } from '@/mock-data/beatsheet-editor'
+import React from 'react'
+import useBeatsheetStore from '@/store/beatsheet-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Checkbox } from '@/components/aural-ui/checkbox'
 import Label from '@/components/aural-ui/label'
@@ -10,17 +11,18 @@ import {
 	TabsTrigger,
 } from '@/components/aural-ui/tabs'
 
-import { EBeatSheetEditorTabs } from '@/types/ai-types'
+import { EBeatSheetEditorTabs } from '@/types/beatsheet-editor-types'
 
-import Characters from './characrters'
+import Characters from './characters'
 import SceneTab from './scenes'
 import StyleTab from './style'
 
 export default function BeatSheetEditor() {
-	const [characters, setCharacters] = useState<TCharacter[]>(
-		charactersDataEnglish
+	const { beatsheetStore, setEnhancementPlan } = useBeatsheetStore()
+
+	const enhancementPlan = beatsheetStore(
+		useShallow((state) => state.enhancementPlan)
 	)
-	const [enhancementPlan, setEnhancementPlan] = useState(false)
 
 	return (
 		<div className="p-4">
@@ -62,10 +64,10 @@ export default function BeatSheetEditor() {
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value={EBeatSheetEditorTabs.SCENES}>
-					<SceneTab characters={characters} enhancementPlan={enhancementPlan} />
+					<SceneTab />
 				</TabsContent>
 				<TabsContent value={EBeatSheetEditorTabs.CHARACTERS}>
-					<Characters characters={characters} setCharacters={setCharacters} />
+					<Characters />
 				</TabsContent>
 				<TabsContent value={EBeatSheetEditorTabs.STYLE}>
 					<StyleTab />

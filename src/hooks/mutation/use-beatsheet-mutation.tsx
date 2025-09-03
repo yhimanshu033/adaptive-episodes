@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import {
 	TGenerateBeatsheetBody,
 	TGenerateBeatsheetResponse,
-} from '@/types/ai-types'
+} from '@/types/beatsheet-editor-types'
 
 import useSocket from '../use-socket'
 

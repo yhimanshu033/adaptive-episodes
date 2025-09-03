@@ -1,3 +1,5 @@
+import { TCharacter } from '@/types/beatsheet-editor-types'
+
 export const scenesData = [
 	{
 		id: 'scene_1',
@@ -148,15 +150,6 @@ export const generatedContent = [
 			'Er stand von seinem Bett auf und schlenderte zu seinem Schreibtisch. Er nahm seine Brille auf, die immer noch leicht beschädigt war, und beschloss, sie zu reparieren. Er bemerkte, dass eine der Linsen verrutscht war, und versuchte, sie zurück in die Fassung zu drücken.\n\n"Komm schon! Geh einfach rein!", schrie er, während er die Brille gewaltsam zu reparieren suchte. Die Frustration, die sich in ihm aufgestaut hatte, stand ihm ins Gesicht geschrieben, als er wütend mit der Linse kämpfte.\n\nUnglücklicherweise zerbrach die Linse plötzlich in Stücke, und einer der Plastiksplitter schnitt eine tiefe Wunde in seinen Daumen.\n\nEr schrie auf und trat gegen den Tisch.\n\n"Warum hasst mich die Welt?"\n\nNach einer Weile beruhigte er sich und begann, die kleinen Glasstücke aufzusammeln. Dabei bemerkte er, dass ein Stück auf seinem Buch gelandet war. Als Quinn das Glasstück entfernte, fiel ein Blutstropfen von seinem Daumen auf das Buch.\n\nDer Gegenstand in der Mitte des Buches begann zu leuchten, und plötzlich fing das Buch an zu schweben, bis es auf Augenhöhe mit Quinn war.\n\nQuinn sprang zurück. Das Leuchten des Buches ließ sein Zimmer noch karger wirken mit dem kleinen Bett in der Ecke und dem einsamen Stuhl daneben.\n\n"Was zum Teufel passiert hier?!"\n\nDas Buch begann eine blendende Helligkeit auszustrahlen, während es unkontrolliert zitterte. Wenige Sekunden später öffnete es sich endlich, Seite um Seite wurde umgeblättert. Quinn konnte seine Augen nicht von dem leuchtenden Buch abwenden – es war, als befände er sich in tiefer Trance. Die Worte auf den Seiten des Buches waren in keiner Sprache geschrieben, die er je zuvor gesehen hatte. Dennoch hatte er aus irgendeinem Grund das Gefühl, sie verstehen zu können.\n\nAls das Buch seine letzte Seite erreichte, begann es zu verschwinden und verwandelte sich allmählich in Staub. Zur gleichen Zeit fühlte sich sein Körper plötzlich schwach an. Quinns Sicht begann zu verschwimmen, und seine Augen fielen zu.\n\nDoch kurz bevor er das Bewusstsein verlor, hörte er eine einzige Nachricht.\n\n<Herzlichen Glückwunsch, dir wurde das Va... gewährt>\n\nUnfähig, das Bewusstsein lange genug aufrechtzuerhalten, um die letzten Worte zu hören, verlor Quinn das Bewusstsein.',
 	},
 ]
-
-export type TCharacter = {
-	appearance: string
-	bio: string
-	id: string
-	name: string
-	recent_arc: string
-	voice: string
-}
 
 export const charactersData = [
 	{

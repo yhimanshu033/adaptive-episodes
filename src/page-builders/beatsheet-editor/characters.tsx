@@ -1,7 +1,7 @@
 import React from 'react'
-import { TCharacter } from '@/mock-data/beatsheet-editor'
+import useBeatsheetStore from '@/store/beatsheet-store'
 import { Plus, Trash2 } from 'lucide-react'
-import { nanoid } from 'platejs'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
@@ -14,47 +14,17 @@ import {
 	AccordionTrigger,
 } from '@/components/ui/accordion'
 
-export default function Characters({
-	characters,
-	setCharacters,
-}: {
-	characters: TCharacter[]
-	setCharacters: (
-		characters: TCharacter[] | ((prev: TCharacter[]) => TCharacter[])
-	) => void
-}) {
-	const handleDeleteCharacter = (id: string) => {
-		setCharacters((prev) => prev.filter((character) => character.id !== id))
-	}
-
-	const handleFieldChange = (
-		characterId: string,
-		field: keyof TCharacter,
-		value: string
-	) => {
-		setCharacters((prev) =>
-			prev.map((character) =>
-				character.id === characterId
-					? { ...character, [field]: value }
-					: character
-			)
-		)
-	}
+export default function Characters() {
+	const {
+		beatsheetStore,
+		updateCharacterField,
+		addNewCharacter,
+		deleteCharacter,
+	} = useBeatsheetStore()
+	const characters = beatsheetStore(useShallow((state) => state.characters))
 
 	const handleSaveCharacter = (characterId: string) => {
 		console.log('Saving character with ID:', characterId)
-	}
-
-	const handleAddCharacter = () => {
-		const newCharacter = {
-			id: nanoid(),
-			name: '',
-			bio: '',
-			appearance: '',
-			recent_arc: '',
-			voice: '',
-		}
-		setCharacters((prev) => [...prev, newCharacter])
 	}
 
 	return (
@@ -68,13 +38,13 @@ export default function Characters({
 									isEditable
 									text={character.name || 'Untitled Character'}
 									onComplete={(text) =>
-										handleFieldChange(character.id, 'name', text)
+										updateCharacterField(character.id, 'name', text)
 									}
 								/>
 								<IconButton
 									label="Delete Character"
 									icon={<Trash2 size={18} />}
-									onClick={() => handleDeleteCharacter(character.id)}
+									onClick={() => deleteCharacter(character.id)}
 									variant="ghost"
 									size="small"
 								/>
@@ -89,7 +59,7 @@ export default function Characters({
 										value={character.bio}
 										placeholder="Character Bio"
 										onChange={(e) =>
-											handleFieldChange(character.id, 'bio', e.target.value)
+											updateCharacterField(character.id, 'bio', e.target.value)
 										}
 									/>
 								</div>
@@ -100,7 +70,7 @@ export default function Characters({
 										value={character.appearance}
 										placeholder="Character Appearance"
 										onChange={(e) =>
-											handleFieldChange(
+											updateCharacterField(
 												character.id,
 												'appearance',
 												e.target.value
@@ -114,7 +84,7 @@ export default function Characters({
 										value={character.recent_arc}
 										placeholder="Recent Arc"
 										onChange={(e) =>
-											handleFieldChange(
+											updateCharacterField(
 												character.id,
 												'recent_arc',
 												e.target.value
@@ -128,7 +98,11 @@ export default function Characters({
 										value={character.recent_arc}
 										placeholder="Voice"
 										onChange={(e) =>
-											handleFieldChange(character.id, 'voice', e.target.value)
+											updateCharacterField(
+												character.id,
+												'voice',
+												e.target.value
+											)
 										}
 									/>
 								</div>
@@ -145,7 +119,7 @@ export default function Characters({
 				))}
 			</Accordion>
 
-			<Button onClick={handleAddCharacter} className="mt-4">
+			<Button onClick={addNewCharacter} className="mt-4">
 				<Plus size={18} className="mr-1" /> Add Character
 			</Button>
 		</>

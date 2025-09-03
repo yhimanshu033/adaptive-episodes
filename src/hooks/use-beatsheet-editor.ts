@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { scenesDataEnglish } from '@/mock-data/beatsheet-editor'
+import { useEffect } from 'react'
+import useBeatsheetStore from '@/store/beatsheet-store'
 import {
 	CollisionDetection,
 	DragEndEvent,
@@ -14,10 +14,9 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
+import { useShallow } from 'zustand/react/shallow'
 
-import { TGenerateBeatsheetResponse, TScene } from '@/types/ai-types'
-
-type DragItem = { id: string; sceneId?: string; type: 'scene' | 'beat' }
+import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
 
 const useBeatSheetEditor = () => {
 	const editor = useEditorRef()
@@ -27,55 +26,33 @@ const useBeatSheetEditor = () => {
 			coordinateGetter: sortableKeyboardCoordinates,
 		})
 	)
-	const [scenes, setScenes] = useState<TScene[]>(scenesDataEnglish)
-	const [activeDragItem, setActiveDragItem] = useState<DragItem | null>(null)
-	const [openSceneIds, setOpenSceneIds] = useState<string[]>([])
+	const {
+		beatsheetStore,
+		updateScene,
+		deleteScene,
+		setActiveDragItem,
+		setScenes,
+		setOpenSceneIds,
+	} = useBeatsheetStore()
 
-	const addNewScene = () => {
-		const newId = (scenes.length + 1).toString()
-		setScenes([
-			...scenes,
-			{
-				id: newId,
-				title: `SCENE ${newId}`,
-				beats: [],
-			},
-		])
-	}
-
-	const addNewBeat = (sceneId: string) => {
-		setScenes(
-			scenes.map((scene) => {
-				if (scene.id === sceneId) {
-					const newBeatId = (scene.beats.length + 1).toString()
-					return {
-						...scene,
-						beats: [...scene.beats, { id: newBeatId, content: '' }],
-					}
-				}
-				return scene
-			})
-		)
-	}
-
-	const deleteScene = (sceneId: string) => {
-		setScenes(scenes.filter((scene) => scene.id !== sceneId))
-	}
+	const scenes = beatsheetStore(useShallow((state) => state.scenes))
+	const activeDragItem = beatsheetStore(
+		useShallow((state) => state.activeDragItem)
+	)
+	const openSceneIds = beatsheetStore(useShallow((state) => state.openSceneIds))
 
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
-		setScenes(
-			scenes.map((scene) => {
-				if (scene.id === sceneId) {
-					for (const beat of scene.beats) {
-						if (beat.id === beatId) {
-							beat.content = input
-							break
-						}
-					}
-				}
-				return scene
-			})
+		const scene = scenes.find((s) => s.id === sceneId)
+		if (!scene) {
+			return
+		}
+
+		const updatedBeats = scene.beats.map((beat) =>
+			beat.id === beatId ? { ...beat, content: input } : beat
 		)
+
+		const updatedScene = { ...scene, beats: updatedBeats }
+		updateScene(sceneId, updatedScene)
 	}
 
 	const handleDelete = (sceneId: string) => {
@@ -289,14 +266,7 @@ const useBeatSheetEditor = () => {
 	}, [openSceneIds])
 
 	return {
-		scenes,
-		activeDragItem,
-		openSceneIds,
 		sensors,
-		setOpenSceneIds,
-		addNewScene,
-		addNewBeat,
-		deleteScene,
 		handleInput,
 		handleDelete,
 		handleGenerateScenes,

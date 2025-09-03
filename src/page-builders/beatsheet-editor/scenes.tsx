@@ -5,14 +5,13 @@ import useBeatsheetMutation from '@/hooks/mutation/use-beatsheet-mutation'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 // import useLanguage from '@/hooks/use-language'
-import {
-	beatsheetContextEnglish,
-	TCharacter,
-} from '@/mock-data/beatsheet-editor'
+import { beatsheetContextEnglish } from '@/mock-data/beatsheet-editor'
+import useBeatsheetStore from '@/store/beatsheet-store'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Check, Loader2, Plus, Trash2, X } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
@@ -26,39 +25,40 @@ import {
 	AccordionTrigger,
 } from '@/components/ui/accordion'
 
-import { TScene } from '@/types/ai-types'
+import { TScene } from '@/types/beatsheet-editor-types'
 import { ELanguage } from '@/types/common'
 
 import SortableBeat from './sortable-beat'
 import { SortableScene } from './sortable-scene'
 
-export default function SceneTab({
-	characters,
-	enhancementPlan,
-}: {
-	characters: TCharacter[]
-	enhancementPlan: boolean
-}) {
+export default function SceneTab() {
 	const {
 		sensors,
-		scenes,
-		openSceneIds,
-		activeDragItem,
-		setOpenSceneIds,
 		handleDragEnd,
 		handleDragStart,
 		handleDelete,
 		handleInput,
 		handleGenerateScenes,
 		handleDragOver,
-		addNewBeat,
-		addNewScene,
 		fixCursorSnapOffset,
 		getSceneText,
 	} = useBeatSheetEditor()
 
+	const { beatsheetStore, setOpenSceneIds, addNewBeat, addNewScene } =
+		useBeatsheetStore()
+
+	const { characters, enhancementPlan, scenes, openSceneIds, activeDragItem } =
+		beatsheetStore(
+			useShallow((state) => ({
+				characters: state.characters,
+				enhancementPlan: state.enhancementPlan,
+				scenes: state.scenes,
+				openSceneIds: state.openSceneIds,
+				activeDragItem: state.activeDragItem,
+			}))
+		)
+
 	const { editorText } = useEditorData()
-	// const language = useLanguage()
 
 	const {
 		isPending,

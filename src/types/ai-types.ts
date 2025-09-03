@@ -6,7 +6,6 @@ import {
 	PlotAction,
 	WorldAction,
 } from '@/constants/story-explorer-constants'
-import { TCharacter } from '@/mock-data/beatsheet-editor'
 import { Value } from 'platejs'
 
 import { ELanguage, LSMappingOutput, MinifiedValue } from '@/types/common'
@@ -310,38 +309,6 @@ export type TGetRegexFAR = {
 	wholeWord: boolean | undefined
 }
 
-export interface TBeat {
-	content: string
-	id: string
-}
-
-export interface TScene {
-	beats: TBeat[]
-	description?: string
-	id: string
-	title: string
-}
-
-export enum EBeatSheetEditorTabs {
-	CHARACTERS = 'characters',
-	SCENES = 'scenes',
-	STYLE = 'style',
-}
-
-export type TGenerateBeatsheetBody = {
-	beats: Record<string, TBeat[]>
-	characters?: TCharacter[]
-	context?: string
-	ep_text: string
-	input_language: ELanguage
-	scene_texts: Record<string, string>
-	use_enhancement_plan?: boolean
-}
-
-export type TGenerateBeatsheetResponse = Array<{
-	content: string
-	id: string
-}>
 export type TSendBulkPromptBody = {
 	prompt: string
 	seq_nos: number[]
