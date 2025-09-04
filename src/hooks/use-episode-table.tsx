@@ -311,23 +311,6 @@ const useEpisodeTable = () => {
 		if (!isWriter) {
 			return
 		}
-		const unInventedSeq = selectedRowData
-			.filter((row) => !row.props?.creation_timestamp)
-			.map((row) => row.seq_number)
-
-		if (unInventedSeq?.length) {
-			setAlertInfo({
-				variant: 'negative',
-				icon: (
-					<TrashIcon className="text-fm-icon-negative" width={44} height={44} />
-				),
-				description: `Only invented episodes can be deleted`,
-				subDescription: `Episodes ${unInventedSeq.join(', ')} cannot be deleted`,
-				secondAction: 'Got it',
-			})
-			setIsDialogOpen(true)
-			return
-		}
 		setAlertInfo({
 			variant: 'negative',
 			icon: (

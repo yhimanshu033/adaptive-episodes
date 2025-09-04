@@ -142,11 +142,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							>
 								Rename
 							</DropdownMenuItem>
-							<If
-								condition={
-									!(!isWriter || !row.original.props?.creation_timestamp)
-								}
-							>
+							<If condition={isWriter}>
 								<DropdownMenuItem
 									onClick={() =>
 										handleDeleteEpisode(
