@@ -19,11 +19,18 @@ export default function useBulkEpisodeMutations() {
 	const { id } = useParams()
 
 	const { initialStoryData } = useEpisodeTableContext()
-	async function downloadBulkEpisodes(body: TDownloadBulkEpisodeBodyParams) {
-		if (body.seq_nos.length < 1) {
+	async function downloadBulkEpisodes({
+		selectedEpisodes,
+		separate,
+	}: {
+		selectedEpisodes: { chapter_title: string; seq_number: number }[]
+		separate: boolean
+	}) {
+		if (selectedEpisodes.length < 1) {
 			toast.error('Select at least 1 Episode!')
 			return
 		}
+		const seq_nos = selectedEpisodes.map((item) => item.seq_number)
 		const resp = await fetchAPI<
 			TDownloadBulkEpisodeResponse,
 			TDownloadBulkEpisodeUrlParams,
@@ -31,22 +38,38 @@ export default function useBulkEpisodeMutations() {
 		>({
 			method: 'POST',
 			url: API_URLS.BULK_EPISODE_DOWNLOAD,
-			body,
+			body: {
+				separate,
+				seq_nos,
+			},
 			urlParams: {
 				projectId: String(id),
 			},
 		})
-		if (!resp.data?.file_url) {
+		if (
+			!(
+				resp.data?.file_url &&
+				Array.isArray(resp.data?.file_url) &&
+				resp.data?.file_url.length > 0
+			)
+		) {
 			toast.error('Error in downloading episodes!')
 			return
 		}
 
 		toast.info('Download started!')
-		const fileName =
-			initialStoryData?.project_title +
-			' - ' +
-			getFilenameForSeqNos(body.seq_nos)
-		downloadFile(resp.data?.file_url, fileName)
+
+		if (separate) {
+			resp.data?.file_url.forEach((url, idx) => {
+				const filename = selectedEpisodes[idx].chapter_title + '.docx'
+				downloadFile(url, filename)
+			})
+		} else {
+			const filename =
+				initialStoryData?.project_title + ' - ' + getFilenameForSeqNos(seq_nos)
+			downloadFile(resp.data?.file_url[0], filename)
+		}
+		toast.success('Download completed!')
 	}
 
 	const downloadBulkMutation = useMutation({

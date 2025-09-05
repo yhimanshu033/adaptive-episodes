@@ -310,11 +310,12 @@ export type TGetDocEpisodeCountResponse = {
 }
 
 export type TDownloadBulkEpisodeBodyParams = {
+	separate: boolean
 	seq_nos: number[]
 }
 
 export type TDownloadBulkEpisodeResponse = {
-	file_url: string
+	file_url: string[]
 	status: string
 }
 
