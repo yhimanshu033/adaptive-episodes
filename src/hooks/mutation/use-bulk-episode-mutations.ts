@@ -83,23 +83,13 @@ export default function useBulkEpisodeMutations() {
 				downloadPromises.push(downloadPromise)
 			}
 
-			try {
-				await Promise.allSettled(downloadPromises)
-				toast.success(`Downloaded ${maxDownloads} file(s) successfully!`)
-			} catch (error) {
-				console.error('Error in bulk downloads:', error)
-			}
+			await Promise.allSettled(downloadPromises)
+			toast.success(`Downloaded ${maxDownloads} file(s) successfully!`)
 		} else {
 			const filename =
 				initialStoryData?.project_title + ' - ' + getFilenameForSeqNos(seq_nos)
-
-			try {
-				downloadFile(resp.data.file_url[0], filename)
-				toast.success('Download completed!')
-			} catch (error) {
-				console.error('Error downloading file:', error)
-				toast.error('Failed to download file')
-			}
+			downloadFile(resp.data.file_url[0], filename)
+			toast.success('Download completed!')
 		}
 	}
 
