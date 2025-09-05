@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { fetchAPI } from '@/lib/fetch-api'
-import { downloadFile } from '@/lib/utils/client-helpers'
+import { downloadFile, downloadFileAsync } from '@/lib/utils/client-helpers'
 import { getFilenameForSeqNos } from '@/lib/utils/helpers'
 
 import {
@@ -19,6 +19,7 @@ export default function useBulkEpisodeMutations() {
 	const { id } = useParams()
 
 	const { initialStoryData } = useEpisodeTableContext()
+
 	async function downloadBulkEpisodes({
 		selectedEpisodes,
 		separate,
@@ -60,16 +61,46 @@ export default function useBulkEpisodeMutations() {
 		toast.info('Download started!')
 
 		if (separate) {
-			resp.data?.file_url.forEach((url, idx) => {
-				const filename = selectedEpisodes[idx].chapter_title + '.docx'
-				downloadFile(url, filename)
-			})
+			const maxDownloads = Math.min(
+				resp.data.file_url.length,
+				selectedEpisodes.length
+			)
+
+			// Create download promises for proper completion tracking
+			const downloadPromises: Promise<void>[] = []
+
+			for (let idx = 0; idx < maxDownloads; idx++) {
+				const url = resp.data.file_url[idx]
+				const filename = selectedEpisodes[idx]?.chapter_title ?? '' + '.docx'
+
+				const downloadPromise = downloadFileAsync(url, filename).catch(
+					(error) => {
+						console.error(`Failed to download ${filename}:`, error)
+						toast.error(`Failed to download ${filename}`)
+					}
+				)
+
+				downloadPromises.push(downloadPromise)
+			}
+
+			try {
+				await Promise.allSettled(downloadPromises)
+				toast.success(`Downloaded ${maxDownloads} file(s) successfully!`)
+			} catch (error) {
+				console.error('Error in bulk downloads:', error)
+			}
 		} else {
 			const filename =
 				initialStoryData?.project_title + ' - ' + getFilenameForSeqNos(seq_nos)
-			downloadFile(resp.data?.file_url[0], filename)
+
+			try {
+				downloadFile(resp.data.file_url[0], filename)
+				toast.success('Download completed!')
+			} catch (error) {
+				console.error('Error downloading file:', error)
+				toast.error('Failed to download file')
+			}
 		}
-		toast.success('Download completed!')
 	}
 
 	const downloadBulkMutation = useMutation({
