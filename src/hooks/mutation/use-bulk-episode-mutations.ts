@@ -71,7 +71,7 @@ export default function useBulkEpisodeMutations() {
 
 			for (let idx = 0; idx < maxDownloads; idx++) {
 				const url = resp.data.file_url[idx]
-				const filename = selectedEpisodes[idx]?.chapter_title ?? '' + '.docx'
+				const filename = (selectedEpisodes[idx]?.chapter_title ?? '') + '.docx'
 
 				const downloadPromise = downloadFileAsync(url, filename).catch(
 					(error) => {
