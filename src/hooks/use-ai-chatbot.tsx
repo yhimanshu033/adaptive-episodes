@@ -343,7 +343,7 @@ export function ChatbotProvider({
 					taskId: aiResponse,
 					role: EMessenger.ASSISTANT,
 					action: EAction.REVIEW,
-					content: 'Reviewing you content',
+					content: 'Reviewing your content',
 				})
 			} else if (requestedAction === EChatMode.SFX) {
 				setOriginalChildren(children)
