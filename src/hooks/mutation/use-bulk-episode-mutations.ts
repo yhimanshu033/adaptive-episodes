@@ -66,7 +66,6 @@ export default function useBulkEpisodeMutations() {
 				selectedEpisodes.length
 			)
 
-			// Create download promises for proper completion tracking
 			const downloadPromises: Promise<void>[] = []
 
 			for (let idx = 0; idx < maxDownloads; idx++) {
