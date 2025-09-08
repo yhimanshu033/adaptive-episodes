@@ -115,9 +115,10 @@ export default function BulkPromptDialog({
 											placeholder="Enter prompt here"
 											variant={fieldState.error ? 'error' : 'default'}
 											decoration="outline"
-											{...field}
-											autoGrow={false}
-											rows={5}
+											minHeight={150}
+											maxHeight={150}
+											value={field.value}
+											onChange={field.onChange}
 										/>
 									</FormControl>
 									<FormMessage />
