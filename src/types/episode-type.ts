@@ -315,7 +315,7 @@ export type TDownloadBulkEpisodeBodyParams = {
 }
 
 export type TDownloadBulkEpisodeResponse = {
-	file_url: string[]
+	file_urls: string[]
 	status: string
 }
 

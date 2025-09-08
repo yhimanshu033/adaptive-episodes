@@ -49,9 +49,9 @@ export default function useBulkEpisodeMutations() {
 		})
 		if (
 			!(
-				resp.data?.file_url &&
-				Array.isArray(resp.data?.file_url) &&
-				resp.data?.file_url.length > 0
+				resp.data?.file_urls &&
+				Array.isArray(resp.data?.file_urls) &&
+				resp.data?.file_urls.length > 0
 			)
 		) {
 			toast.error('Error in downloading episodes!')
@@ -62,14 +62,14 @@ export default function useBulkEpisodeMutations() {
 
 		if (separate) {
 			const maxDownloads = Math.min(
-				resp.data.file_url.length,
+				resp.data.file_urls.length,
 				selectedEpisodes.length
 			)
 
 			const downloadPromises: Promise<void>[] = []
 
 			for (let idx = 0; idx < maxDownloads; idx++) {
-				const url = resp.data.file_url[idx]
+				const url = resp.data.file_urls[idx]
 				const filename = (selectedEpisodes[idx]?.chapter_title ?? '') + '.docx'
 
 				const downloadPromise = downloadFileAsync(url, filename).catch(
@@ -87,7 +87,7 @@ export default function useBulkEpisodeMutations() {
 		} else {
 			const filename =
 				initialStoryData?.project_title + ' - ' + getFilenameForSeqNos(seq_nos)
-			downloadFile(resp.data.file_url[0], filename)
+			downloadFile(resp.data.file_urls[0], filename)
 			toast.success('Download completed!')
 		}
 	}
