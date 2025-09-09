@@ -174,3 +174,5 @@ export const LASER_LEAF_KEYS = {
 	PROMPT: 'laser-inserted-prompt',
 	ADDITIONAL_CONTEXT: 'laser-additional-context',
 } as const
+
+export const beatSheetEditorAllowedProjects = [1, 2]

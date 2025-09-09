@@ -77,11 +77,16 @@ export default function SceneTab() {
 		clearError()
 
 		generateBeatsheet({
-			beats: Object.fromEntries(scenes.map((scene) => [scene.id, scene.beats])),
+			beats: Object.fromEntries(
+				scenes.map((scene, index) => [`scene_${index + 1}`, scene.beats])
+			),
 			ep_text: editorText,
 			input_language: ELanguage.ENGLISH,
 			scene_texts: Object.fromEntries(
-				scenes.map((scene) => [scene.id, getSceneText(scene.id)])
+				scenes.map((scene, index) => [
+					`scene_${index + 1}`,
+					getSceneText(scene.id),
+				])
 			),
 			characters,
 			context: beatsheetContextEnglish,
