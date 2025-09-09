@@ -33,7 +33,8 @@ export default function BeatSheetEditor() {
 		if (sceneData && sceneData.result) {
 			setScenes(sceneData.result)
 		}
-	})
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sceneData])
 
 	if (isScenesLoading) {
 		return (

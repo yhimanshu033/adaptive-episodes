@@ -95,7 +95,7 @@ export default function Characters() {
 								<div>
 									<h4 className="mb-2 text-sm font-bold">Voice</h4>
 									<TextArea
-										value={character.recent_arc}
+										value={character.voice}
 										placeholder="Voice"
 										onChange={(e) =>
 											updateCharacterField(

@@ -27,7 +27,7 @@ export default function useScenesMetadataQuery() {
 			url: API_URLS.GET_SCENES_METADATA,
 			method: 'GET',
 			query: {
-				chapter_id: Number(episode?.id),
+				chapter_id: Number(episode?.id || null),
 			},
 		})
 

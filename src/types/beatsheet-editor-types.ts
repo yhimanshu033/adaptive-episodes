@@ -58,5 +58,5 @@ export type TGetScenesMetadataAPIResponse = {
 	status: number
 }
 export type TGetScenesMetadataQueryParams = {
-	chapter_id: number
+	chapter_id: number | null
 }
