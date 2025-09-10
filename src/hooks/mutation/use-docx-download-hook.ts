@@ -8,10 +8,17 @@ import { toast } from 'sonner'
 import { downloadFile } from '@/lib/utils/client-helpers'
 import { getFileSizeFromURL, getFormattedDate } from '@/lib/utils/helpers'
 
+import useLanguage from '../use-language'
+
 export default function useDocxDownloadHook() {
+	const language = useLanguage()
 	const { epNumber, projectTitle, title } = useDocxDownloadParams()
 	const { downloadDocxEnabled, seq_nos } = useEnableDocx()
-	const { data, text } = useBulkEpisodeDownloadQuery({ seq_nos })
+	const { data, text } = useBulkEpisodeDownloadQuery({
+		seq_nos,
+		separate: false,
+		language,
+	})
 
 	const isGerman = useIsGerman()
 
@@ -22,7 +29,7 @@ export default function useDocxDownloadHook() {
 				toast.error("Couldn't calculate file size!")
 				return
 			}
-			return await getFileSizeFromURL(data, text)
+			return await getFileSizeFromURL(data[0], text)
 		},
 		enabled: !!data && downloadDocxEnabled,
 		retry: 1,
@@ -35,7 +42,7 @@ export default function useDocxDownloadHook() {
 			return
 		}
 		downloadFile(
-			data,
+			data[0],
 			`${projectTitle} - Ep ${epNumber} - ${title} - ${getFormattedDate()}.docx`
 		)
 	}

@@ -4,8 +4,17 @@ import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
-import { ELanguage, TNoParams } from '@/types/common'
 import {
+	BASE_STATUS,
+	EEpisodeType,
+	ELanguage,
+	EStatus,
+	TNoParams,
+} from '@/types/common'
+import {
+	TDownloadBulkEpisodeBodyParams,
+	TDownloadBulkEpisodeResponse,
+	TDownloadBulkEpisodeUrlParams,
 	TEpisodeDeleteResponse,
 	TEpisodeDeleteURLParams,
 	TEpisodeInventParams,
@@ -92,6 +101,76 @@ export const getEpisodeDetails = async (
 	return sentData
 }
 
+export const getLatestEpisodeDetails = async (
+	project_id: number,
+	isOriginal: boolean = false,
+	parent: number = 1
+) => {
+	const episodes = await fetchAPI<
+		TGetEpisodesResponse,
+		TNoParams,
+		TNoParams,
+		TGetEpisodeDetailsQueryParams
+	>({
+		method: 'GET',
+		url: API_URLS.GET_EPISODES,
+		query: {
+			project_id,
+			parent,
+		},
+	})
+
+	const sentData = episodes.data
+	if (sentData?.results.data) {
+		const languageAvailable = sentData.results.data.find((ep) => !!ep.language)
+
+		if (!languageAvailable) {
+			sentData.results.data.forEach(
+				(ep) => (ep.language = ELanguage.GERMAN_ORIGINAL)
+			)
+		}
+		const isGerman = sentData.results.data.find(
+			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+		)
+
+		if (isGerman) {
+			sentData.results.data = sentData.results.data.filter(
+				(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
+			)
+		}
+
+		// FOR ORIGINAL LANGUAGES
+		if (isGerman || isOriginal) {
+			// ONLY CHECK FOR ORIGINAL EPISODES (NOT ADAPTED)
+			const originalEps = sentData.results.data.filter(
+				(ep) => ep.type !== EEpisodeType.ADAPTED
+			)
+
+			const baseEp = originalEps.find((ep) => ep.status === BASE_STATUS)
+			const onlyBaseExists = originalEps.length === 1
+
+			// IF ONLY BASE EXISTS --> CREATE A 1ST DRAFT OF THE ORIGINAL EPISODE
+			if (baseEp && onlyBaseExists) {
+				const respData = await updateStatus(
+					baseEp.project,
+					parent,
+					BASE_STATUS,
+					baseEp.language
+				)
+				// PUSH NEWLY CREATED CHAPTER IN THE DATA
+				if (respData) {
+					sentData.results.data.push({
+						...baseEp,
+						id: respData.id,
+						status: respData?.status as EStatus,
+					})
+				}
+			}
+		}
+	}
+
+	return sentData
+}
 export const unmergeEpisodes = async (merged_chapter_id: number) => {
 	const res = await fetchAPI<
 		TEpisodeUnmergeResponse,
@@ -235,4 +314,31 @@ export const updateNotes = async ({
 		throw res.error
 	}
 	return res.data
+}
+
+export const getBulkEpisodeDownloadUrls = async (
+	project_id: string,
+	body: TDownloadBulkEpisodeBodyParams
+) => {
+	if (body.seq_nos.length < 1) {
+		throw Error('Select at least 1 Episode!')
+	}
+	const res = await fetchAPI<
+		TDownloadBulkEpisodeResponse,
+		TDownloadBulkEpisodeUrlParams,
+		TDownloadBulkEpisodeBodyParams
+	>({
+		method: 'POST',
+		url: API_URLS.BULK_EPISODE_DOWNLOAD,
+		body,
+		urlParams: {
+			projectId: project_id,
+		},
+	})
+
+	if (!res.success) {
+		throw Error(res?.message?.['error'] || 'Episodes not downloaded')
+	}
+
+	return res.data?.file_urls || []
 }

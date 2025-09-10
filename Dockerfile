@@ -1,5 +1,5 @@
 # Stage 1: Build the Next.js application
-FROM node:22.11.0 AS build-image
+FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0 AS build-image
 WORKDIR /usr/src/app
 COPY ./ ./
 RUN npm install
@@ -23,12 +23,14 @@ RUN echo "NEXT_PUBLIC_PROMOS_BACKEND_URL=https://pocketfm-copilot-promo-api.pock
 RUN echo "NEXT_PUBLIC_BACKEND_API_KEY='2n{WHwe2[V,VG\K0A[!r.g1+[uar*d#w'" >> .env
 RUN echo "NEXT_PUBLIC_SENTRY_DSN_URL=https://5c0b78d4ba827ea668db896758cc968a@o456578.ingest.us.sentry.io/4508737589018624" >> .env
 
+# FOR CONSISTENT SERVER ACTIONS
+RUN echo "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=hoGdfmov/g6jRwNGMZcGjKcM6LhkomKO0zSrxs9Rrs8=" >> .env
 ENV SENTRY_AUTH_TOKEN=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
 
 RUN npm run build
 
 # Stage 2: Final production environment
-FROM node:22.11.0-alpine3.19 AS final
+FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0-alpine3.19 AS final
 WORKDIR /usr/src/app
 
 RUN apk add --no-cache nginx curl nginx-mod-http-headers-more

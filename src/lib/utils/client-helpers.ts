@@ -29,6 +29,32 @@ export function downloadFile(url: string, filename: string) {
 		})
 }
 
+export async function downloadFileAsync(
+	url: string,
+	filename: string
+): Promise<void> {
+	try {
+		const response = await fetch(url)
+		if (!response.ok) {
+			throw new Error(`Failed to download ${filename}: ${response.statusText}`)
+		}
+
+		const blob = await response.blob()
+		const link = document.createElement('a')
+		const objectURL = URL.createObjectURL(blob)
+
+		link.href = objectURL
+		link.download = filename
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+		URL.revokeObjectURL(objectURL)
+	} catch (error) {
+		console.error(`Error downloading ${filename}:`, error)
+		throw error
+	}
+}
+
 export function downloadBlobUrl(objectURL: string, filename: string) {
 	const link = document.createElement('a')
 	link.href = objectURL

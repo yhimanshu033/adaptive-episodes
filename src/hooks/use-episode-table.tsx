@@ -247,6 +247,10 @@ const useEpisodeTable = () => {
 			},
 			{
 				onSuccess: (data) => {
+					if (!data?.project_id || !data?.id) {
+						toast.error('Episode could not be created!')
+						return
+					}
 					toast.custom(
 						(id) => (
 							<div className="text-fm-contrast item-center flex w-full justify-between">
@@ -305,23 +309,6 @@ const useEpisodeTable = () => {
 
 	const handleMultiDeleteEpisode = (selectedRowData: TEpisode[]) => {
 		if (!isWriter) {
-			return
-		}
-		const unInventedSeq = selectedRowData
-			.filter((row) => !row.props?.creation_timestamp)
-			.map((row) => row.seq_number)
-
-		if (unInventedSeq?.length) {
-			setAlertInfo({
-				variant: 'negative',
-				icon: (
-					<TrashIcon className="text-fm-icon-negative" width={44} height={44} />
-				),
-				description: `Only invented episodes can be deleted`,
-				subDescription: `Episodes ${unInventedSeq.join(', ')} cannot be deleted`,
-				secondAction: 'Got it',
-			})
-			setIsDialogOpen(true)
 			return
 		}
 		setAlertInfo({

@@ -1,4 +1,8 @@
-import { ELanguage, TStatus } from '@/types/common'
+import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
+
+import { BASE_STATUS, ELanguage, EStatus, TStatus } from '@/types/common'
+import { TCustomComment } from '@/types/editor-types'
+import { TGetEpisodeResponse } from '@/types/episode-type'
 
 export type TMetadata = {
 	beatsheet: string
@@ -42,4 +46,29 @@ export type TGDriveAuthUrlParams = {
 }
 export type TGDriveAuthResponse = {
 	auth_url: string
+}
+
+export type TGetSavingParamsRet = {
+	allComments: TDiscussion[]
+	chapterData: TGetEpisodeResponse
+	chapterId: number
+	commentsStr: string
+	contentStr: string
+	language: ELanguage
+	status: EStatus | 'BASE'
+	text: string
+	title: string
+	word_count: number
+}
+
+export type TSaveEpisodeMutationArgs = {
+	chapterId?: number | null
+	chapter_title?: string
+	comments?: TDiscussion[]
+	language?: ELanguage
+	prevProps?: Record<string, unknown>
+	resolvedComments?: TCustomComment[]
+	status: EStatus | typeof BASE_STATUS
+	text: string
+	word_count?: number
 }

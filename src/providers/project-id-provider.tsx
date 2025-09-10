@@ -105,6 +105,7 @@ const useProjectIdUtil = () => {
 		isWriter,
 		isLead,
 		isAdmin,
+		projectId: String(id),
 	}
 }
 

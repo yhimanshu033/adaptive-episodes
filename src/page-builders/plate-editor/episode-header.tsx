@@ -9,6 +9,7 @@ import { FileTextIcon } from '@/icons/file-text-icon'
 import { MessageIcon } from '@/icons/message-icon'
 import HomeButton from '@/page-builders/plate-editor/buttons/home-button'
 import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
+import Versions from '@/page-builders/plate-editor/buttons/versions'
 import Title from '@/page-builders/plate-editor/title'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
@@ -111,6 +112,7 @@ const EpisodeHeader = ({
 				</Link>
 
 				<Languages />
+				<Versions latestStatus={latestStatus} isChildEpisode={false} />
 				<ModeToolbarButton />
 				<IfElse
 					condition={isInternalUser && isCmsReady && isAccessible(ERole.WRITER)}

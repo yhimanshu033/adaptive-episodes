@@ -3,7 +3,7 @@
 import React, { createContext, useCallback, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
-import useEpisodeInfo from '@/hooks/query/use-episode-info'
+import useLatestEpisodeInfo from '@/hooks/query/use-latest-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
@@ -48,7 +48,7 @@ import useAccessChecks from '../use-access-checks'
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 
-	const { isOriginal } = useAccessChecks()
+	const { isOriginal, isOriginalEp } = useAccessChecks()
 	const pathName = usePathname()
 
 	const selectedStatus = useEpisodeIdStoreContext(
@@ -60,12 +60,14 @@ export const useEpisodeContentUtil = () => {
 	)
 
 	const { addEpisodeMap, addEpisodeKey } = useEditorExtendedStore()
-	const { data } = useEpisodeInfo()
+	const { data } = useLatestEpisodeInfo({
+		isOriginal,
+	})
 
 	const episodeId = useEpisodeId()
 
 	const { episode, language, latestStatus } = useMemo(() => {
-		if (!data) {
+		if (!data?.results?.data?.length) {
 			return {
 				episode: undefined,
 				language: ELanguage.GERMAN_ORIGINAL,
@@ -75,11 +77,16 @@ export const useEpisodeContentUtil = () => {
 		const isGerman = data.results.data.some(
 			(ep) => ep.language === ELanguage.GERMAN_ORIGINAL
 		)
-		if (isGerman || isOriginal) {
+		// IS CURRENTLY SELECTED LANGUAGE ADAPTED
+		const isLanguageNotAdapted =
+			!selectedLanguage || isOriginalEp(selectedLanguage)
+		// ONLY GERMAN AND NON-ADAPTED CHAPTERS OF ORIGINAL USE STATUSES
+		const needStatusEp = isGerman || (isOriginal && isLanguageNotAdapted)
+		if (needStatusEp) {
 			return getSelectedEpisode(data, selectedStatus)
 		}
 		return getSelectedEpisodeFromLanguage(data, selectedLanguage)
-	}, [data, selectedLanguage, selectedStatus, isOriginal])
+	}, [data, selectedLanguage, selectedStatus, isOriginal, isOriginalEp])
 
 	const dict = useTranslations('placeholders')
 	const languages = useMemo(() => getAvailableLanguages(data), [data])
@@ -90,22 +97,22 @@ export const useEpisodeContentUtil = () => {
 
 	const { setLocalDiffValue, setSidebar } = usePlateStore()
 	const { setDualViewMode, setRecentEmail } = useEpisodeIdStore()
-
-	const usedEpisodeId = useMemo(
-		() => (episode ? episode.id : episodeId),
-		[episode, episodeId]
-	)
-
 	const queryKey = useMemo(
 		() => [
 			EPISODE_CONTENT_QUERY_KEY,
-			usedEpisodeId,
+			Number(episode?.id),
 			latestStatus || BASE_STATUS,
 			pathName,
 		],
-		[latestStatus, pathName, usedEpisodeId]
+		[latestStatus, pathName, episode?.id]
 	)
 	const fetchEpisodeContent = useCallback(async () => {
+		// check for undefined episode.id
+		if (!episode?.id) {
+			return null
+		}
+		const usedEpisodeId = episode?.id
+
 		const resp = await getEpisodeContent(usedEpisodeId)
 		if (!resp) {
 			return resp
@@ -176,8 +183,8 @@ export const useEpisodeContentUtil = () => {
 		setDualViewMode,
 		setLocalDiffValue,
 		setSidebar,
-		usedEpisodeId,
 		setRecentEmail,
+		episode,
 	])
 
 	const query = useQuery({

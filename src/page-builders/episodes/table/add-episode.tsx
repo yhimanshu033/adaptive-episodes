@@ -36,7 +36,7 @@ const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
 				<DropdownMenuItem
 					onClick={() => {
 						setIsInventOpen(true)
-						setInventSeq((episodeCount ?? 0) - 1)
+						setInventSeq((episodeCount ?? 0) + 1)
 					}}
 				>
 					<PlusIcon />
