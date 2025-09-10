@@ -5,7 +5,7 @@ import useIsGerman from '@/hooks/use-is-german'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import { downloadFile } from '@/lib/utils/client-helpers'
+import { downloadFileAsync } from '@/lib/utils/client-helpers'
 import { getFileSizeFromURL, getFormattedDate } from '@/lib/utils/helpers'
 
 import useLanguage from '../use-language'
@@ -41,7 +41,7 @@ export default function useDocxDownloadHook() {
 			toast.error("Couldn't download docx!")
 			return
 		}
-		downloadFile(
+		await downloadFileAsync(
 			data[0],
 			`${projectTitle} - Ep ${epNumber} - ${title} - ${getFormattedDate()}.docx`
 		)
