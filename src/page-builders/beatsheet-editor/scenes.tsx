@@ -4,6 +4,7 @@ import React from 'react'
 import useBeatsheetMutation from '@/hooks/mutation/use-beatsheet-mutation'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
+import useLanguage from '@/hooks/use-language'
 // import useLanguage from '@/hooks/use-language'
 import { beatsheetContextEnglish } from '@/mock-data/beatsheet-editor'
 import useBeatsheetStore from '@/store/beatsheet-store'
@@ -26,7 +27,6 @@ import {
 } from '@/components/ui/accordion'
 
 import { TScene } from '@/types/beatsheet-editor-types'
-import { ELanguage } from '@/types/common'
 
 import SortableBeat from './sortable-beat'
 import { SortableScene } from './sortable-scene'
@@ -43,6 +43,8 @@ export default function SceneTab() {
 		fixCursorSnapOffset,
 		getSceneText,
 	} = useBeatSheetEditor()
+
+	const language = useLanguage()
 
 	const { beatsheetStore, setOpenSceneIds, addNewBeat, addNewScene } =
 		useBeatsheetStore()
@@ -82,7 +84,7 @@ export default function SceneTab() {
 					scenes.map((scene) => [`scene_${scene.index + 1}`, scene.data.beats])
 				),
 				ep_text: editorText,
-				input_language: ELanguage.ENGLISH,
+				input_language: language,
 				scene_texts: Object.fromEntries(
 					scenes.map((scene) => [
 						`scene_${scene.index + 1}`,
