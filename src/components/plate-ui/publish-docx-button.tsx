@@ -5,9 +5,8 @@ import {
 } from '@/hooks/form-resolvers/rename-file-resolver'
 import useDocxDownloadHook from '@/hooks/mutation/use-docx-download-hook'
 import usePublishDocxHook from '@/hooks/mutation/use-publish-docx-hook'
+import useEnableDocx from '@/hooks/use-enable-docx'
 import { UploadIcon } from '@/icons/upload-icon'
-import useEpisodeIdStore from '@/store/episode-id-store'
-import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import Input from '@/components/aural-ui/input'
@@ -21,25 +20,16 @@ import {
 } from '@/components/ui/form'
 import { getFormattedDate } from '@/lib/utils/helpers'
 
-import { EStatus } from '@/types/common'
-import { DownloadDocxParams } from '@/types/episode-type'
-
 import { Popover, PopoverContent, PopoverTrigger } from '../aural-ui/popover'
 import { Typography } from '../aural-ui/typography'
 import CircularLoader from '../ui/circular-loader'
 
-export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
+export default function UploadDocxButton() {
 	const [isOpen, setIsOpen] = useState(false)
-	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
 
-	const selectedStatus = useEpisodeIdStoreContext(
-		useShallow((state) => state.selectedStatus)
-	)
+	const { downloadDocxEnabled } = useEnableDocx()
 
-	const showButton =
-		selectedStatus === EStatus.PUBLISHED || latestStatus === EStatus.PUBLISHED
-
-	if (!showButton) {
+	if (!downloadDocxEnabled) {
 		return null
 	}
 
@@ -66,7 +56,7 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 					align="end"
 					side="bottom"
 				>
-					<UploadDocxPopoverContent latestStatus={latestStatus} />
+					<UploadDocxPopoverContent />
 				</PopoverContent>
 			</If>
 		</Popover>
@@ -74,10 +64,8 @@ export default function UploadDocxButton({ latestStatus }: DownloadDocxParams) {
 }
 
 // ONLY IN DOM WHEN POPOVER OPEN
-function UploadDocxPopoverContent({ latestStatus }: DownloadDocxParams) {
-	const { isPending, mutate } = usePublishDocxHook({
-		latestStatus,
-	})
+function UploadDocxPopoverContent() {
+	const { isPending, mutate } = usePublishDocxHook()
 	const {
 		isPending: isDownlaodPending,
 		mutate: mutateDownload,
@@ -86,9 +74,7 @@ function UploadDocxPopoverContent({ latestStatus }: DownloadDocxParams) {
 		isEnabled,
 		projectTitle,
 		epNumber,
-	} = useDocxDownloadHook({
-		latestStatus,
-	})
+	} = useDocxDownloadHook()
 
 	const form = useRenameFileFormResolver()
 
