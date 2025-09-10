@@ -44,10 +44,13 @@ const useBeatsheetMutation = () => {
 		setTimeoutProgress(0)
 	}
 
-	const onGenerateBeatsheetMutation = async (
+	const onGenerateBeatsheetMutation = async ({
+		params,
+		sceneIds,
+	}: {
 		params: TGenerateBeatsheetBody
-	) => {
-		const sceneIds = Object.keys(params.scene_texts)
+		sceneIds: string[]
+	}) => {
 		const isSingleGeneration = sceneIds.length === 1
 		const timeoutDuration = isSingleGeneration ? 60000 : 180000 // 1 min for single, 3 min for all
 
@@ -104,8 +107,9 @@ const useBeatsheetMutation = () => {
 		onSuccess: (data) => {
 			if (data && data.length > 0) {
 				const newPendingContent: Record<string, TGenerateBeatsheetResponse> = {}
-				data.forEach((sceneData) => {
-					newPendingContent[sceneData.id] = [sceneData]
+				data.forEach((sceneData, index) => {
+					const sceneId = generatingSceneIds[index]
+					newPendingContent[sceneId] = [{ ...sceneData, id: sceneId }]
 				})
 				setPendingApprovalContent((prev) => ({ ...prev, ...newPendingContent }))
 			}

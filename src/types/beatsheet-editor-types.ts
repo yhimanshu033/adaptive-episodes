@@ -20,7 +20,7 @@ export type TCharacter = {
 }
 
 export interface TBeat {
-	content: string
+	content: string | null
 	id: string
 }
 

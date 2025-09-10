@@ -111,7 +111,7 @@ export const API_URLS = {
 	BULK_EPISODE_DOWNLOAD: '/project/:projectId/download/',
 	BEATSHEET_GENERATE: '/aicopilot/bse',
 	BULK_PROMPT_SEND: '/project/:projectId/prompt/',
-	GET_SCENES_METADATA: '/project/scenes/metadata/',
+	GET_SCENES_METADATA: '/scenes/metadata/',
 }
 
 export const INDEXED_DB_KEYS = {

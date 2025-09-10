@@ -72,25 +72,28 @@ export default function SceneTab() {
 		timeoutProgress,
 	} = useBeatsheetMutation()
 
-	const handleGenerateTask = (scenes: TScene[]) => {
+	const handleGenerateTask = (scenes: { data: TScene; index: number }[]) => {
 		// Clear any previous errors before starting new generation
 		clearError()
 
 		generateBeatsheet({
-			beats: Object.fromEntries(
-				scenes.map((scene, index) => [`scene_${index + 1}`, scene.beats])
-			),
-			ep_text: editorText,
-			input_language: ELanguage.ENGLISH,
-			scene_texts: Object.fromEntries(
-				scenes.map((scene, index) => [
-					`scene_${index + 1}`,
-					getSceneText(scene.id),
-				])
-			),
-			characters,
-			context: beatsheetContextEnglish,
-			use_enhancement_plan: enhancementPlan,
+			params: {
+				beats: Object.fromEntries(
+					scenes.map((scene) => [`scene_${scene.index + 1}`, scene.data.beats])
+				),
+				ep_text: editorText,
+				input_language: ELanguage.ENGLISH,
+				scene_texts: Object.fromEntries(
+					scenes.map((scene) => [
+						`scene_${scene.index + 1}`,
+						getSceneText(scene.data.id),
+					])
+				),
+				characters,
+				context: beatsheetContextEnglish,
+				use_enhancement_plan: enhancementPlan,
+			},
+			sceneIds: scenes.map((scene) => scene.data.id),
 		})
 	}
 
@@ -230,7 +233,7 @@ export default function SceneTab() {
 														index={index}
 													>
 														<TextArea
-															value={beat.content}
+															value={beat.content || 'No content'}
 															onChange={(e) =>
 																handleInput(scene.id, beat.id, e.target.value)
 															}
@@ -255,7 +258,11 @@ export default function SceneTab() {
 														)}
 														<Button
 															disabled={isAnyGenerating}
-															onClick={() => handleGenerateTask([scene])}
+															onClick={() =>
+																handleGenerateTask([
+																	{ data: scene, index: idx },
+																])
+															}
 															size={'sm'}
 														>
 															{isGenerating ? (
@@ -316,7 +323,11 @@ export default function SceneTab() {
 					)}
 					<Button
 						disabled={isPending}
-						onClick={() => handleGenerateTask(scenes)}
+						onClick={() =>
+							handleGenerateTask(
+								scenes.map((scene, index) => ({ data: scene, index }))
+							)
+						}
 					>
 						{isPending ? (
 							<>
