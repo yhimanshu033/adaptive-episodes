@@ -1,19 +1,12 @@
 import { useParams } from 'next/navigation'
-import { API_URLS } from '@/constants/global-constants'
 import { BULK_EP_DOWNLOAD_MUTATION_KEY } from '@/constants/query-constants'
+import { getBulkEpisodeDownloadUrls } from '@/server-action/episode-action'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
-import { fetchAPI } from '@/lib/fetch-api'
 import { downloadFile, downloadFileAsync } from '@/lib/utils/client-helpers'
 import { getFilenameForSeqNos } from '@/lib/utils/helpers'
-
-import {
-	TDownloadBulkEpisodeBodyParams,
-	TDownloadBulkEpisodeResponse,
-	TDownloadBulkEpisodeUrlParams,
-} from '@/types/episode-type'
 
 export default function useBulkEpisodeMutations() {
 	const { id } = useParams()
@@ -27,33 +20,27 @@ export default function useBulkEpisodeMutations() {
 		selectedEpisodes: { chapter_title: string; seq_number: number }[]
 		separate: boolean
 	}) {
-		if (selectedEpisodes.length < 1) {
-			toast.error('Select at least 1 Episode!')
+		let fileUrls
+		try {
+			fileUrls = await getBulkEpisodeDownloadUrls(String(id), {
+				separate,
+				seq_nos: selectedEpisodes.map((item) => item.seq_number),
+			})
+		} catch (error: unknown) {
+			console.error('Error fetching bulk episode download URLs:', error)
+			toast.error(
+				error instanceof Error
+					? error.message
+					: 'Error in downloading episodes!'
+			)
 			return
 		}
-		const seq_nos = selectedEpisodes.map((item) => item.seq_number)
-		const resp = await fetchAPI<
-			TDownloadBulkEpisodeResponse,
-			TDownloadBulkEpisodeUrlParams,
-			TDownloadBulkEpisodeBodyParams
-		>({
-			method: 'POST',
-			url: API_URLS.BULK_EPISODE_DOWNLOAD,
-			body: {
-				separate,
-				seq_nos,
-			},
-			urlParams: {
-				projectId: String(id),
-			},
-		})
-		if (
-			!(
-				resp.data?.file_urls &&
-				Array.isArray(resp.data?.file_urls) &&
-				resp.data?.file_urls.length > 0
-			)
-		) {
+
+		if (!fileUrls || !fileUrls.length) {
+			toast.error('Error in downloading episodes!')
+			return
+		}
+		if (!(fileUrls && Array.isArray(fileUrls) && fileUrls.length > 0)) {
 			toast.error('Error in downloading episodes!')
 			return
 		}
@@ -61,10 +48,7 @@ export default function useBulkEpisodeMutations() {
 		toast.info('Download started!')
 
 		if (separate) {
-			const maxDownloads = Math.min(
-				resp.data.file_urls.length,
-				selectedEpisodes.length
-			)
+			const maxDownloads = Math.min(fileUrls.length, selectedEpisodes.length)
 
 			const downloadPromises: Promise<{
 				filename: string
@@ -72,7 +56,7 @@ export default function useBulkEpisodeMutations() {
 			}>[] = []
 
 			for (let idx = 0; idx < maxDownloads; idx++) {
-				const url = resp.data.file_urls[idx]
+				const url = fileUrls[idx]
 				const filename = (selectedEpisodes[idx]?.chapter_title ?? '') + '.docx'
 
 				const downloadPromise = downloadFileAsync(url, filename)
@@ -101,8 +85,10 @@ export default function useBulkEpisodeMutations() {
 			}
 		} else {
 			const filename =
-				initialStoryData?.project_title + ' - ' + getFilenameForSeqNos(seq_nos)
-			downloadFile(resp.data.file_urls[0], filename)
+				initialStoryData?.project_title +
+				' - ' +
+				getFilenameForSeqNos(selectedEpisodes.map((item) => item.seq_number))
+			downloadFile(fileUrls[0], filename)
 			toast.success('Download completed!')
 		}
 	}
@@ -112,5 +98,7 @@ export default function useBulkEpisodeMutations() {
 		mutationFn: downloadBulkEpisodes,
 	})
 
-	return { downloadBulkMutation }
+	return {
+		downloadBulkMutation,
+	}
 }
