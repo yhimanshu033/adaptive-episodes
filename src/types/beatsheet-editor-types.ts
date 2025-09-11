@@ -42,7 +42,9 @@ export type TGenerateBeatsheetBody = {
 	characters?: TCharacter[]
 	context?: string
 	ep_text: string
+	episode_number: number
 	input_language: ELanguage
+	project_id: number
 	scene_texts: Record<string, string>
 	use_enhancement_plan?: boolean
 }

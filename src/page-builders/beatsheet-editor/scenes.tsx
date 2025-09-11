@@ -1,8 +1,10 @@
 'use client'
 
 import React from 'react'
+import { useParams } from 'next/navigation'
 import useBeatsheetMutation from '@/hooks/mutation/use-beatsheet-mutation'
 import useEditorData from '@/hooks/plate/use-editor-data'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 import useLanguage from '@/hooks/use-language'
 // import useLanguage from '@/hooks/use-language'
@@ -45,6 +47,8 @@ export default function SceneTab() {
 	} = useBeatSheetEditor()
 
 	const language = useLanguage()
+	const { id } = useParams()
+	const { data: episodeData } = useEpisodeContent()
 
 	const { beatsheetStore, setOpenSceneIds, addNewBeat, addNewScene } =
 		useBeatsheetStore()
@@ -94,6 +98,8 @@ export default function SceneTab() {
 				characters,
 				context: beatsheetContextEnglish,
 				use_enhancement_plan: enhancementPlan,
+				project_id: Number(id),
+				episode_number: Number(episodeData?.chapter.seq_number),
 			},
 			sceneIds: scenes.map((scene) => scene.data.id),
 		})
