@@ -55,19 +55,21 @@ const useStoryUploadHook = () => {
 
 	async function storyUpload(params: StoryImportFormSchema) {
 		try {
-			const { story_file, image_file, author, ...rest } = params
+			const { story_files, image_file, author, ...rest } = params
 
-			const [project_url, image] = await Promise.all([
-				story_file ? uploadFile(story_file) : Promise.resolve(null),
+			const [project_urls, image] = await Promise.all([
+				story_files && story_files.length > 0
+					? Promise.all(story_files.map((file) => uploadFile(file)))
+					: Promise.resolve([]),
 				image_file ? uploadFile(image_file) : Promise.resolve(null),
 			])
 
 			const payload = {
 				...rest,
-				project_url: project_url?.url || null,
+				project_urls: project_urls?.map((url) => url?.url as string) || null,
 				image: image?.url || null,
 				author: author || null,
-				create_blank_project: !story_file,
+				create_blank_project: !story_files || story_files.length === 0,
 			}
 
 			const taskId = await startTask<StoryUploadParams>({

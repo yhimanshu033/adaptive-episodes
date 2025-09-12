@@ -159,7 +159,7 @@ export type TBaseScriptExtensionResponse = {
 
 export type TBaseScriptExtensionBody = {
 	file_id?: string
-	file_url?: string
+	file_urls?: string[]
 	llm_model?: string
 	project_id: number
 	ranges?: {
