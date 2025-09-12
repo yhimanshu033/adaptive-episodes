@@ -12,6 +12,9 @@ import {
 	TNoParams,
 } from '@/types/common'
 import {
+	TDownloadBulkEpisodeBodyParams,
+	TDownloadBulkEpisodeResponse,
+	TDownloadBulkEpisodeUrlParams,
 	TEpisodeDeleteResponse,
 	TEpisodeDeleteURLParams,
 	TEpisodeInventParams,
@@ -311,4 +314,31 @@ export const updateNotes = async ({
 		throw res.error
 	}
 	return res.data
+}
+
+export const getBulkEpisodeDownloadUrls = async (
+	project_id: string,
+	body: TDownloadBulkEpisodeBodyParams
+) => {
+	if (body.seq_nos.length < 1) {
+		throw Error('Select at least 1 Episode!')
+	}
+	const res = await fetchAPI<
+		TDownloadBulkEpisodeResponse,
+		TDownloadBulkEpisodeUrlParams,
+		TDownloadBulkEpisodeBodyParams
+	>({
+		method: 'POST',
+		url: API_URLS.BULK_EPISODE_DOWNLOAD,
+		body,
+		urlParams: {
+			projectId: project_id,
+		},
+	})
+
+	if (!res.success) {
+		throw Error(res?.message?.['error'] || 'Episodes not downloaded')
+	}
+
+	return res.data?.file_urls || []
 }

@@ -51,9 +51,12 @@ export const GET_DOCX_HTML_QUERY_KEY = 'get-docx-html'
 
 export const GET_DOCX_HTML_MUTATION_KEY = 'get-docx-html-mutation'
 
-export const BULK_EP_DOWNLOAD_MUTATION_KEY = 'bulk-ep-download-mutation'
-export const GENERATE_BEATSHEET_MUTATION_KEY = 'generate-beatsheet-mutation'
 export const BULK_EP_PROMPT_MUTATION_KEY = 'bulk-ep-prompt-mutation'
+export const BULK_EP_DOWNLOAD_MUTATION_KEY = 'bulk-ep-download-mutation'
+
+export const BULK_EP_DOWNLOAD_URL_MUTATION_KEY = 'bulk-ep-download-url-mutation'
+
+export const BULK_EP_PROMPT_QUERY_KEY = 'bulk-ep-prompt-query'
 
 export const EPISODE_INFO_MUTATION_KEY = 'info-mutation'
 export const EPISODE_LATEST_INFO_QUERY_KEY = 'latest-info'

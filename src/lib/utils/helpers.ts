@@ -901,6 +901,56 @@ export function getEpisodeNumbers(seqNumbers: number[], maxNum = 5): string {
 	return seqNumbers.join(',')
 }
 
+// Common utility function to format file size
+export function formatFileSizeForDocx(sizeInBytes: number): string {
+	if (sizeInBytes < 1024) {
+		return `${sizeInBytes.toFixed(0)} B`
+	} else if (sizeInBytes < 1024 * 1024) {
+		const sizeInKB = sizeInBytes / 1024
+		return `${sizeInKB.toFixed(2)} KB`
+	} else if (sizeInBytes < 1024 * 1024 * 1024) {
+		const sizeInMB = sizeInBytes / (1024 * 1024)
+		return `${sizeInMB.toFixed(2)} MB`
+	} else {
+		const sizeInGB = sizeInBytes / (1024 * 1024 * 1024)
+		return `${sizeInGB.toFixed(2)} GB`
+	}
+}
+
+// Helper function to get actual file size from URL with base64 fallback
+export async function getFileSizeFromURL(
+	url: string,
+	text: string
+): Promise<string> {
+	try {
+		const response = await fetch(url, { method: 'HEAD' })
+		const contentLength = response.headers.get('content-length')
+		if (contentLength) {
+			const sizeInBytes = parseInt(contentLength, 10)
+			return formatFileSizeForDocx(sizeInBytes)
+		}
+	} catch (error) {
+		console.error(
+			'Error getting file size from URL, falling back to base64 calculation:',
+			error
+		)
+		// Fallback to base64 calculation
+		return estimateDocxSizeInBytesFromText(text.length)
+	}
+
+	// Fallback if no content-length header
+	return estimateDocxSizeInBytesFromText(text.length)
+}
+
+function estimateDocxSizeInBytesFromText(charCount: number): string {
+	// Average: 1 KB (1024 bytes) per ~1200 characters
+	const avgCharsPerKB = 120
+	const bytesPerKB = 1024
+
+	const estimatedSizeBytes = (charCount / avgCharsPerKB) * bytesPerKB
+
+	return formatFileSizeForDocx(Math.round(estimatedSizeBytes))
+}
 export function getSavingData(
 	params: TGetSavingParamsRet
 ): TSaveEpisodeMutationArgs {
