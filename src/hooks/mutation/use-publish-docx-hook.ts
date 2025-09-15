@@ -4,13 +4,9 @@ import useDocxHtml from '@/hooks/query/use-get-docx-hook'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import { DownloadDocxParams } from '@/types/episode-type'
-
-export default function usePublishDocxHook({
-	latestStatus,
-}: DownloadDocxParams) {
+export default function usePublishDocxHook() {
 	const { episodeId } = useParams()
-	const { data, showButton } = useDocxHtml({ latestStatus })
+	const { data } = useDocxHtml()
 	const { mutateAsync: pushToGDrive } = useGDrivePushMutation()
 
 	async function uploadDocx({ fileName }: { fileName: string }) {
@@ -31,5 +27,5 @@ export default function usePublishDocxHook({
 		mutationFn: uploadDocx,
 	})
 
-	return { showButton, ...mutation }
+	return mutation
 }

@@ -310,6 +310,7 @@ export type TGetDocEpisodeCountResponse = {
 }
 
 export type TDownloadBulkEpisodeBodyParams = {
+	language?: ELanguage
 	separate: boolean
 	seq_nos: number[]
 }
