@@ -14,6 +14,7 @@ import Title from '@/page-builders/plate-editor/title'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import DownloadAudio from '@/components/download-audio'
 import { ModeToolbarButton } from '@/components/plate-ui-v2/mode-toolbar-button'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import Languages from '@/components/plate-ui/languages'
@@ -110,6 +111,8 @@ const EpisodeHeader = ({
 						className="hover:text-fm-secondary-800 hover:bg-fm-secondary-50 text-fm-icon-active size-7 shrink-0"
 					/>
 				</Link>
+
+				<DownloadAudio />
 
 				<Languages />
 				<Versions latestStatus={latestStatus} isChildEpisode={false} />
