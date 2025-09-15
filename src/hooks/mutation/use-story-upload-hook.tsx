@@ -57,11 +57,18 @@ const useStoryUploadHook = () => {
 		try {
 			const { story_files, image_file, author, ...rest } = params
 
-			const [project_urls, image] = await Promise.all([
-				story_files && story_files.length > 0
+			const imagePromise = image_file
+				? uploadFile(image_file)
+				: Promise.resolve(null)
+
+			const projectUrlsPromise =
+				story_files?.length && story_files.length > 0
 					? Promise.all(story_files.map((file) => uploadFile(file)))
-					: Promise.resolve([]),
-				image_file ? uploadFile(image_file) : Promise.resolve(null),
+					: Promise.resolve([])
+
+			const [image, project_urls] = await Promise.all([
+				imagePromise,
+				projectUrlsPromise,
 			])
 
 			const payload = {
@@ -69,7 +76,7 @@ const useStoryUploadHook = () => {
 				project_urls: project_urls?.map((url) => url?.url as string) || null,
 				image: image?.url || null,
 				author: author || null,
-				create_blank_project: !story_files || story_files.length === 0,
+				create_blank_project: !story_files || !story_files.length,
 			}
 
 			const taskId = await startTask<StoryUploadParams>({
