@@ -1,3 +1,27 @@
+## 0.4.0 (2025-09-09)
+
+* fix: 🐛 bulk upload payload fix ([71de467](https://github.com/Pocket-Fm/co-writing/commit/71de467))
+* fix: 🐛 condition logic fix ([4edd095](https://github.com/Pocket-Fm/co-writing/commit/4edd095))
+* fix: 🐛 fixed toast handling ([58964e9](https://github.com/Pocket-Fm/co-writing/commit/58964e9))
+* feat: 🎸 download-audio ([1f53e8f](https://github.com/Pocket-Fm/co-writing/commit/1f53e8f))
+* feat: 🎸 separate file bulk download ([80a869b](https://github.com/Pocket-Fm/co-writing/commit/80a869b))
+* refactor: 💡 refactor ([78c0b32](https://github.com/Pocket-Fm/co-writing/commit/78c0b32))
+* refactor: 💡 resolved comment ([f1df773](https://github.com/Pocket-Fm/co-writing/commit/f1df773))
+* refactor: 💡 resolved cursor comment ([4b11ecb](https://github.com/Pocket-Fm/co-writing/commit/4b11ecb))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
 ## <small>0.3.4 (2025-09-08)</small>
 
 * fix: 🐛 abort polling, file upload and minor fixes ([3c14ddd](https://github.com/Pocket-Fm/co-writing/commit/3c14ddd))
