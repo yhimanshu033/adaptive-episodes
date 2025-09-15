@@ -1,3 +1,79 @@
+## 1.0.0 (2025-09-15)
+
+* refactor: 💡 added package ([c47b9bd](https://github.com/Pocket-Fm/co-writing/commit/c47b9bd))
+* refactor: 💡 added projectids for bse ([7fb0f00](https://github.com/Pocket-Fm/co-writing/commit/7fb0f00))
+* refactor: 💡 change project filter for bse ([276956e](https://github.com/Pocket-Fm/co-writing/commit/276956e))
+* refactor: 💡 docker update ([b74ccb1](https://github.com/Pocket-Fm/co-writing/commit/b74ccb1))
+* refactor: 💡 package lock update ([fbd6281](https://github.com/Pocket-Fm/co-writing/commit/fbd6281))
+* refactor: 💡 removed consoles ([ee6f3c8](https://github.com/Pocket-Fm/co-writing/commit/ee6f3c8))
+* refactor: 💡 state management in bse ([f9490ab](https://github.com/Pocket-Fm/co-writing/commit/f9490ab))
+* fix: 🐛 bse english version ([1ea933f](https://github.com/Pocket-Fm/co-writing/commit/1ea933f))
+* fix: 🐛 bse english version ([af787fc](https://github.com/Pocket-Fm/co-writing/commit/af787fc))
+* fix: 🐛 build fix ([2b17b9a](https://github.com/Pocket-Fm/co-writing/commit/2b17b9a))
+* fix: 🐛 cursor comments resolved ([b0b757c](https://github.com/Pocket-Fm/co-writing/commit/b0b757c))
+* fix: 🐛 handled download loading ([49319e5](https://github.com/Pocket-Fm/co-writing/commit/49319e5))
+* fix: 🐛 language fix in bse payload ([94245da](https://github.com/Pocket-Fm/co-writing/commit/94245da))
+* fix: 🐛 payload fix ([42ee97b](https://github.com/Pocket-Fm/co-writing/commit/42ee97b))
+* fix: 🐛 payload updated in bse ([1f29ce6](https://github.com/Pocket-Fm/co-writing/commit/1f29ce6))
+* fix: 🐛 resolve lint issue ([bb9dc1e](https://github.com/Pocket-Fm/co-writing/commit/bb9dc1e))
+* fix: 🐛 response schema fix bse ([40cb2d3](https://github.com/Pocket-Fm/co-writing/commit/40cb2d3))
+* fix: 🐛 restricted bse access ([7f336a3](https://github.com/Pocket-Fm/co-writing/commit/7f336a3))
+* fix: 🐛 scene id in payload fix ([571e442](https://github.com/Pocket-Fm/co-writing/commit/571e442))
+* fix: 🐛 scenes metadata error handling ([28b3221](https://github.com/Pocket-Fm/co-writing/commit/28b3221))
+* fix: 🐛 updated endpoint bse ([14fd77c](https://github.com/Pocket-Fm/co-writing/commit/14fd77c))
+* fix: 🐛 updated payload ([4a82261](https://github.com/Pocket-Fm/co-writing/commit/4a82261))
+* fix: 🐛 uploaded download flow on editor's page ([102b993](https://github.com/Pocket-Fm/co-writing/commit/102b993))
+* ci: 🎡 changed docker file ([115cb68](https://github.com/Pocket-Fm/co-writing/commit/115cb68))
+* ci: 🎡 docker updated ([24c32c1](https://github.com/Pocket-Fm/co-writing/commit/24c32c1))
+* ci: 🎡 promo backend setup ([2242ac6](https://github.com/Pocket-Fm/co-writing/commit/2242ac6))
+* ci: 🎡 removed sentry from staging ([9cc3f0d](https://github.com/Pocket-Fm/co-writing/commit/9cc3f0d))
+* ci: 🎡 updated docker ([b7d8768](https://github.com/Pocket-Fm/co-writing/commit/b7d8768))
+* feat: 🎸 added beatsheet style ([23b0f29](https://github.com/Pocket-Fm/co-writing/commit/23b0f29))
+* feat: 🎸 added generate timeout ([4db0c5b](https://github.com/Pocket-Fm/co-writing/commit/4db0c5b))
+* feat: 🎸 added toolbar beatsheet button ([9af7c9d](https://github.com/Pocket-Fm/co-writing/commit/9af7c9d))
+* feat: 🎸 beatsheet editor highlight ([19eb20a](https://github.com/Pocket-Fm/co-writing/commit/19eb20a))
+* feat: 🎸 download flow streamlined ([65c30e2](https://github.com/Pocket-Fm/co-writing/commit/65c30e2))
+* feat: 🎸 scene content modal ([a99802b](https://github.com/Pocket-Fm/co-writing/commit/a99802b))
+* chore: 🤖 merged with staging ([9186cda](https://github.com/Pocket-Fm/co-writing/commit/9186cda))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
 ## 0.4.0 (2025-09-09)
 
 * fix: 🐛 bulk upload payload fix ([71de467](https://github.com/Pocket-Fm/co-writing/commit/71de467))
