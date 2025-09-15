@@ -44,6 +44,7 @@ export type TLaserLeafChildren = {
 }
 
 export enum ESidebar {
+	BEAT_SHEET = 'beat-sheet',
 	CHATBOT = 'chatbot',
 	COMMENTS = 'comments',
 	DUAL_VIEW = 'dual-view',
