@@ -60,3 +60,5 @@ export const BULK_EP_PROMPT_QUERY_KEY = 'bulk-ep-prompt-query'
 
 export const EPISODE_INFO_MUTATION_KEY = 'info-mutation'
 export const EPISODE_LATEST_INFO_QUERY_KEY = 'latest-info'
+
+export const GENERATE_BEATSHEET_MUTATION_KEY = 'generate-beatsheet-mutation'
