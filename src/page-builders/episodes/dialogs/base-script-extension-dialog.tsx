@@ -64,7 +64,9 @@ const BaseScriptExtensionDialog = () => {
 				return
 			}
 			const message =
-				responses[bseTaskId].length > 0 ? responses[bseTaskId][0] : null
+				responses[bseTaskId] && responses[bseTaskId].length > 0
+					? responses[bseTaskId][0]
+					: null
 			if (message) {
 				await queryClient.invalidateQueries({
 					queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
