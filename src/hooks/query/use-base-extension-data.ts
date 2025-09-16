@@ -51,6 +51,7 @@ const useBaseExtensionQuery = (enabled: boolean) => {
 		queryKey: [BASE_EXTENSION_QUERY_KEY, Number(id)],
 		queryFn: getBaseExtensionData,
 		enabled,
+		gcTime: 0,
 	})
 	return baseExtensionQuery
 }
