@@ -23,6 +23,8 @@ import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
 
+import BeatSheetEditor from '../beatsheet-editor'
+
 const renderSidebar: Record<ESidebar, React.ReactNode> = {
 	[ESidebar.COMMENTS]: <CommentSidebar />,
 	[ESidebar.OUTLINE]: <StoryExplorer />,
@@ -30,6 +32,7 @@ const renderSidebar: Record<ESidebar, React.ReactNode> = {
 	[ESidebar.CHATBOT]: <AIChatbot />,
 	[ESidebar.DUAL_VIEW]: null,
 	[ESidebar.NOTES]: <Notes />,
+	[ESidebar.BEAT_SHEET]: <BeatSheetEditor />,
 }
 
 const Sidebar = () => {
