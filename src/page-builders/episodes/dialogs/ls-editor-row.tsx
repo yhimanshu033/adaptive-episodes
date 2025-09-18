@@ -160,7 +160,7 @@ const LSEditorRow = memo(
 										decoration="filled"
 										classes={{
 											input: cn('', {
-												'border-0 pl-0 !text-fm-primary bg-transparent !cursor-text':
+												'border-0 pl-0 !text-fm-primary w-32 bg-transparent !cursor-text':
 													disabled,
 											}),
 										}}
