@@ -1,3 +1,20 @@
+## <small>1.0.1 (2025-09-18)</small>
+
+* fix: 🐛 bse dynamic feedback ([1debe7a](https://github.com/Pocket-Fm/co-writing/commit/1debe7a))
+* fix: 🐛 cursor comments fix ([606fc19](https://github.com/Pocket-Fm/co-writing/commit/606fc19))
+* fix: 🐛 prod dual view breakage fix ([62e1d97](https://github.com/Pocket-Fm/co-writing/commit/62e1d97))
+* fix: 🐛 resolved comment ([4f879a4](https://github.com/Pocket-Fm/co-writing/commit/4f879a4))
+* refactor: 💡 allowed more projects to BSE ([4a515ba](https://github.com/Pocket-Fm/co-writing/commit/4a515ba))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
 ## 1.0.0 (2025-09-15)
 
 * refactor: 💡 added package ([c47b9bd](https://github.com/Pocket-Fm/co-writing/commit/c47b9bd))

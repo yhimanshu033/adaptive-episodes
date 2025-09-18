@@ -5,6 +5,13 @@ import { HeadphonesIcon } from 'lucide-react'
 import CircularLoader from './aural-ui/circular-loader'
 import { IconButton } from './aural-ui/icon-button'
 
+// Move audioURLS outside component to prevent recreation on every render
+const audioURLS = [
+	'https://storage.googleapis.com/prod-pocketfm-generative-ai/uploads/28_adhoc_mastering_mastered_mastered.mp3',
+	'https://storage.googleapis.com/prod-pocketfm-generative-ai/uploads/29_adhoc_mastering_mastered_mastered.mp3',
+	'https://storage.googleapis.com/prod-pocketfm-generative-ai/uploads/30_adhoc_mastering_mastered_mastered.mp3',
+]
+
 const DownloadAudio = () => {
 	const { id } = useParams()
 	const searchParams = useSearchParams()
@@ -12,22 +19,29 @@ const DownloadAudio = () => {
 	const maxAllowedSequence = 3
 	const [isLoading, setIsLoading] = useState(false)
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const audioURLS = [
-		'https://storage.googleapis.com/prod-pocketfm-generative-ai/uploads/28_adhoc_mastering_mastered_mastered.mp328_adhoc_mastering_mastered_mastered.mp3',
-		'https://storage.googleapis.com/prod-pocketfm-generative-ai/uploads/29_adhoc_mastering_mastered_mastered.mp329_adhoc_mastering_mastered_mastered.mp3',
-		'https://storage.googleapis.com/prod-pocketfm-generative-ai/uploads/30_adhoc_mastering_mastered_mastered.mp330_adhoc_mastering_mastered_mastered.mp3',
-	]
-
 	const isAllowed = useMemo(() => {
-		return Number(id) === 4258 && Number(seq) <= maxAllowedSequence
+		const seqNumber = Number(seq)
+		return (
+			Number(id) === 4258 &&
+			!isNaN(seqNumber) &&
+			seqNumber >= 1 &&
+			seqNumber <= maxAllowedSequence &&
+			seqNumber <= audioURLS.length
+		)
 	}, [id, seq])
 
 	const handleDownload = useCallback(() => {
 		const downloadWithLoading = async () => {
 			try {
 				setIsLoading(true)
-				const audioURL = audioURLS[Number(seq) - 1]
+				const seqNumber = Number(seq)
+
+				// Additional validation before array access
+				if (isNaN(seqNumber) || seqNumber < 1 || seqNumber > audioURLS.length) {
+					throw new Error('Invalid sequence number')
+				}
+
+				const audioURL = audioURLS[seqNumber - 1]
 
 				await fetch(audioURL)
 					.then((response) => {
@@ -54,7 +68,7 @@ const DownloadAudio = () => {
 		}
 
 		void downloadWithLoading()
-	}, [audioURLS, seq])
+	}, [seq])
 
 	if (!isAllowed) {
 		return null
