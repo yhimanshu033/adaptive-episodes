@@ -1,3 +1,13 @@
+## <small>1.0.3 (2025-09-18)</small>
+
+* fix: 🐛 view ls sheet width fix ([dcea537](https://github.com/Pocket-Fm/co-writing/commit/dcea537))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+
+
 ## <small>1.0.2 (2025-09-18)</small>
 
 * ci: 🎡 added COP prefix in deploy yaml ([db04d42](https://github.com/Pocket-Fm/co-writing/commit/db04d42))
