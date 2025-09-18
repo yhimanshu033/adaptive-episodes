@@ -33,7 +33,10 @@ jobs:
           echo "Build with cache: ${{ github.event.inputs.build_with_cache }}"
   build:
     needs: debug
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/PF-') || startsWith(github.ref, 'refs/heads/CKB-')}}
+    if:
+      ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+      || startsWith(github.ref, 'refs/heads/PF-') || startsWith(github.ref,
+      'refs/heads/CKB-') || startsWith(github.ref, 'refs/heads/COP-')}}
     runs-on: self-hosted-arc-arm64
     outputs:
       docker-tag: ${{ steps.set_tag.outputs.dockerTag }}
@@ -104,8 +107,15 @@ jobs:
           push: true
           tags: |
             ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
-          cache-from: type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
-          cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
+          cache-from:
+            type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{
+            vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{
+            env.ENVIRONMENT }}:cache
+          cache-to:
+            mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{
+            vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION
+            }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT
+            }}:cache
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
       - name: Build and Push Multi-Architecture Image without Cache
@@ -118,7 +128,11 @@ jobs:
           tags: |
             ${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:${{ env.dockerTag }}
           no-cache: true
-          cache-to: mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT }}:cache
+          cache-to:
+            mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{
+            vars.ECR_REGISTRY }}.dkr.ecr.${{ vars.AWS_REGION
+            }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}/${{ env.ENVIRONMENT
+            }}:cache
           build-args: |
             APP_ENV=${{ env.ENVIRONMENT }}
       - name: Check Docker Tag in ECR Repo
