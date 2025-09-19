@@ -310,6 +310,7 @@ export type TGetRegexFAR = {
 }
 
 export type TSendBulkPromptBody = {
+	language?: ELanguage
 	prompt: string
 	seq_nos: number[]
 }
