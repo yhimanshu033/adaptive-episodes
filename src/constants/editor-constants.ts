@@ -176,5 +176,5 @@ export const LASER_LEAF_KEYS = {
 } as const
 
 export const beatSheetEditorAllowedProjects = [
-	4861, 4863, 4866, 4873, 4881, 4935, 4944,
+	4861, 4863, 4866, 4873, 4881, 4935, 4944, 4952,
 ]
