@@ -75,7 +75,7 @@ import { SortableFileItem } from '@/components/sortable-file-item'
 import SwitchCase, { Case } from '@/components/switch-case'
 import { cn } from '@/lib/aural-ui/utils'
 import { FetchResponseResult } from '@/lib/fetch-api'
-import { formatFileSize } from '@/lib/utils/helpers'
+import { checkForDuplicates, formatFileSize } from '@/lib/utils/helpers'
 import { setRecentStore } from '@/lib/utils/indexed-db'
 
 import { ELanguage } from '@/types/common'
@@ -207,31 +207,48 @@ export function ImportStory() {
 
 	const handleDocValidation = async (files: FileList | File[]) => {
 		const filesArr = Array.from(files)
-		const validFiles: File[] = []
-		let errorShown = false
 
-		for (const file of filesArr) {
-			form.setValue('story_files', [...storyFiles, file])
-			const isValid = await form.trigger('story_files')
-			const error = form.getFieldState('story_files').error?.message
+		const duplicates = checkForDuplicates(storyFiles, filesArr)
+		if (duplicates.length > 0) {
+			const fileNames = duplicates.slice(0, 2).join(', ')
+			const message =
+				duplicates.length === 1
+					? `File "${fileNames}" is already uploaded.`
+					: duplicates.length === 2
+						? `Files "${fileNames}" are already uploaded.`
+						: `Files "${fileNames}" and ${
+								duplicates.length - 2
+							} others are already uploaded.`
 
-			if (!isValid && !errorShown) {
-				toast.error(error || 'Invalid document file.', {
-					icon: <BubbleCrossedIcon />,
-				})
-				errorShown = true
-			} else if (isValid) {
-				validFiles.push(file)
-			}
+			toast.error(message, {
+				icon: <BubbleCrossedIcon />,
+			})
+			return false
 		}
 
-		if (validFiles.length > 0) {
-			const newFiles = [...storyFiles, ...validFiles]
-			setStoryFiles(newFiles)
-			form.setValue('story_files', newFiles)
-			return true
+		const totalFilesAfterUpload = storyFiles.length + filesArr.length
+		if (totalFilesAfterUpload > 10) {
+			toast.error('You can upload a maximum of 10 files.', {
+				icon: <BubbleCrossedIcon />,
+			})
+			return false
 		}
-		return false
+
+		const potentialNewFileList = [...storyFiles, ...filesArr]
+		form.setValue('story_files', potentialNewFileList)
+		const isValid = await form.trigger('story_files')
+		const error = form.getFieldState('story_files').error?.message
+
+		if (!isValid) {
+			toast.error(error || 'Invalid document file.', {
+				icon: <BubbleCrossedIcon />,
+			})
+			form.setValue('story_files', storyFiles)
+			return false
+		}
+
+		setStoryFiles(potentialNewFileList)
+		return true
 	}
 
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -800,7 +817,7 @@ export function ImportStory() {
 																			)}
 																			strategy={verticalListSortingStrategy}
 																		>
-																			<div className="flex w-full flex-col gap-2">
+																			<div className="flex max-h-40 w-full flex-col gap-2 overflow-y-auto pr-1">
 																				{storyFiles.map((file, idx) => (
 																					<SortableFileItem
 																						key={`${file.name}-${file.size}-${idx}`}
@@ -856,7 +873,7 @@ export function ImportStory() {
 																<input
 																	id="story"
 																	type="file"
-																	accept=".docx,.pdf,.txt"
+																	accept=".docx"
 																	ref={storyInputRef}
 																	className="hidden"
 																	multiple
@@ -873,7 +890,7 @@ export function ImportStory() {
 																	transform="uppercase"
 																	className="font-fm-brand"
 																>
-																	FORMATS: TXT, PDF, DOC
+																	FORMATS: DOCX
 																</Typography>
 																<Typography
 																	as="h4"

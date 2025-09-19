@@ -45,6 +45,7 @@ import { Typography } from '@/components/aural-ui/typography'
 import DeleteModal from '@/components/delete-modal'
 import { SortableFileItem } from '@/components/sortable-file-item'
 import { cn } from '@/lib/aural-ui/utils'
+import { checkForDuplicates } from '@/lib/utils/helpers'
 
 const BaseScriptDocUpload = ({
 	setDialogOpen,
@@ -102,31 +103,48 @@ const BaseScriptDocUpload = ({
 
 	const handleDocValidation = async (newFiles: FileList | File[]) => {
 		const filesArr = Array.from(newFiles)
-		const validFiles: File[] = []
-		let errorShown = false
 
-		for (const file of filesArr) {
-			form.setValue('files', [...files, file])
-			const isValid = await form.trigger('files')
-			const error = form.getFieldState('files').error?.message
+		const duplicates = checkForDuplicates(files, filesArr)
+		if (duplicates.length > 0) {
+			const fileNames = duplicates.slice(0, 2).join(', ')
+			const message =
+				duplicates.length === 1
+					? `File "${fileNames}" is already uploaded.`
+					: duplicates.length === 2
+						? `Files "${fileNames}" are already uploaded.`
+						: `Files "${fileNames}" and ${
+								duplicates.length - 2
+							} others are already uploaded.`
 
-			if (!isValid && !errorShown) {
-				toast.error(error || 'Invalid document file.', {
-					icon: <BubbleCrossedIcon />,
-				})
-				errorShown = true
-			} else if (isValid) {
-				validFiles.push(file)
-			}
+			toast.error(message, {
+				icon: <BubbleCrossedIcon />,
+			})
+			return false
 		}
 
-		if (validFiles.length > 0) {
-			const newFileList = [...files, ...validFiles]
-			setFiles(newFileList)
-			form.setValue('files', newFileList)
-			return true
+		const totalFilesAfterUpload = files.length + filesArr.length
+		if (totalFilesAfterUpload > 10) {
+			toast.error('You can upload a maximum of 10 files.', {
+				icon: <BubbleCrossedIcon />,
+			})
+			return false
 		}
-		return false
+
+		const potentialNewFileList = [...files, ...filesArr]
+		form.setValue('files', potentialNewFileList)
+		const isValid = await form.trigger('files')
+		const error = form.getFieldState('files').error?.message
+
+		if (!isValid) {
+			toast.error(error || 'Invalid document file.', {
+				icon: <BubbleCrossedIcon />,
+			})
+			form.setValue('files', files)
+			return false
+		}
+
+		setFiles(potentialNewFileList)
+		return true
 	}
 
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -250,7 +268,7 @@ const BaseScriptDocUpload = ({
 												items={files.map((_, index) => `file-${index}`)}
 												strategy={verticalListSortingStrategy}
 											>
-												<div className="flex w-full flex-col gap-2">
+												<div className="flex max-h-40 w-full flex-col gap-2 overflow-y-auto pr-1">
 													{files.map((file, idx) => (
 														<SortableFileItem
 															key={`${file.name}-${file.size}-${idx}`}
@@ -325,7 +343,7 @@ const BaseScriptDocUpload = ({
 										transform="uppercase"
 										className="font-fm-brand"
 									>
-										FORMATS: DOC
+										FORMATS: DOCX
 									</Typography>
 									<Typography
 										as="h4"
