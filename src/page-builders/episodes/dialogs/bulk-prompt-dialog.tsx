@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { languageToTitle } from '@/constants/episodes-constants'
 import useBulkPromptFormResolver, {
 	TBulkPromptFormSchema,
 } from '@/hooks/form-resolvers/bulk-prompt-resolver'
@@ -37,7 +38,6 @@ import TextArea from '@/components/aural-ui/textarea'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { getEpisodesShortTitle } from '@/lib/utils/helpers'
 
-import { ELanguage } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
 
 interface BulkPromptDialogProps {
@@ -58,7 +58,7 @@ export default function BulkPromptDialog({
 		mutate({
 			prompt: data.prompt,
 			seq_nos: selectedRowData.map((item) => item.seq_number),
-			language: data.language as ELanguage,
+			language: data.language,
 		})
 	}
 
@@ -153,8 +153,7 @@ export default function BulkPromptDialog({
 										<SelectContent>
 											{availableLanguages.map((language) => (
 												<SelectItem key={language} value={language}>
-													{language.charAt(0).toUpperCase() +
-														language.slice(1).replace('_', ' ')}
+													{languageToTitle[language]}
 												</SelectItem>
 											))}
 										</SelectContent>
