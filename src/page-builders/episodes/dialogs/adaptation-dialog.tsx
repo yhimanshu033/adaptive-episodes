@@ -177,7 +177,7 @@ export default function AdaptationDialog({
 			<DialogContent
 				variant="neutral"
 				glass="high"
-				className="h-[90vh] w-[90vw] gap-0 p-0 max-2xl:max-w-[60vw]"
+				className="h-[90vh] min-w-[90vw] gap-0 p-0"
 				noise="none"
 				showCloseButton={false}
 			>
