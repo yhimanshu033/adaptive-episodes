@@ -32,6 +32,7 @@ export type TStory = {
 	id: number
 	image: string
 	is_original: boolean
+	languages: ELanguage[]
 	parent_language?: ELanguage
 	project_title: string
 	props: Record<string, unknown>
