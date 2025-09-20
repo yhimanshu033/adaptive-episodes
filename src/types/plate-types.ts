@@ -56,6 +56,7 @@ export type PlateStoreData = {
 	activeDiffId: string | null
 	currentDiffValue: Value | null
 	diffIdList: string[]
+	disableDiffAcceptReject: boolean
 	focusMode: boolean
 	fontFamily: string
 	localDiffValue: Value | null

@@ -112,7 +112,7 @@ export function ChatbotProvider({
 		updateMessages,
 	} = useAIStore()
 
-	const { setSidebar } = usePlateStore()
+	const { setSidebar, setDisableDiffAcceptReject } = usePlateStore()
 	const {
 		setDualViewMode,
 		setAcceptedDiffValue,
@@ -379,6 +379,7 @@ export function ChatbotProvider({
 		}
 		if (taskEnded[sfxStreaming]) {
 			setSfxStreaming('')
+			setDisableDiffAcceptReject(false)
 			setOriginalChildren(undefined)
 			return
 		}
@@ -416,6 +417,7 @@ export function ChatbotProvider({
 
 			setResponseValue(structuredClone(responseValue))
 			setPrevValue(structuredClone(children))
+			setDisableDiffAcceptReject(true)
 		} catch (error) {
 			console.log(error)
 		}

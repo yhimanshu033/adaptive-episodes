@@ -8,7 +8,6 @@ import usePlateStore from '@/store/plate-store'
 import { computeDiff } from '@platejs/diff'
 import { Value } from 'platejs'
 import { Plate, useEditorState } from 'platejs/react'
-import { useShallow } from 'zustand/react/shallow'
 
 import { Editor } from '@/components/plate-ui-v2/editor'
 import {
@@ -17,28 +16,13 @@ import {
 	getUpdateProps,
 } from '@/lib/plate/diff-helpers'
 import { findAllDiffNodes } from '@/lib/utils/client-helpers'
-import { getDiffLeafID } from '@/lib/utils/plate'
 
 import { DiffViewProps } from '@/types/plate-types'
 
 export const DiffContent = ({ className }: { className?: string }) => {
 	const editor = useEditorState(DIFF_EDITOR_ID)
 
-	const { setDiffIdList, store } = usePlateStore()
-	const activeDiffId = store(useShallow((state) => state.activeDiffId))
-
-	useEffect(() => {
-		if (!activeDiffId) {
-			return
-		}
-		const elem = document.getElementById(getDiffLeafID(activeDiffId))
-		if (!elem) {
-			return
-		}
-		requestAnimationFrame(() => {
-			elem.scrollIntoView({ behavior: 'smooth', block: 'center' })
-		})
-	}, [activeDiffId])
+	const { setDiffIdList } = usePlateStore()
 
 	useEffect(() => {
 		setDiffIdList(findAllDiffNodes(editor).map((n) => n.node.diff_id as string))
