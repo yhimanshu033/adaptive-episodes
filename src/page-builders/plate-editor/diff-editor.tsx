@@ -66,6 +66,7 @@ export default function DiffEditor({
 			getUpdateProps,
 		}) as Value
 	}, [previous, current, editor.api.isInline])
+
 	const { setAcceptedDiffValue } = useEpisodeIdStore()
 
 	useEffect(() => {
