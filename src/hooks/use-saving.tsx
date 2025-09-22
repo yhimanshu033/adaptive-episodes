@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { usePluginOption } from 'platejs/react'
+import { useEditorState, usePluginOption } from 'platejs/react'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -27,7 +27,8 @@ interface IUseSavingUtilProps {
 }
 function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 	const { id } = useParams()
-	const { editorText, children } = useEditorData()
+	const { wordCount } = useEditorData()
+	const { children } = useEditorState()
 	const allComments = usePluginOption(discussionPlugin, 'discussions')
 	const { saveEpisodeMutation } = useEpisodeHook()
 
@@ -42,30 +43,31 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 		useShallow((state) => state.currentTitle)
 	)
 
-	const savedRef = useRef(JSON.stringify(children))
-	const savedCommentsRef = useRef(JSON.stringify(allComments))
-	const savedTitleRef = useRef(data?.chapter.chapter_title || '')
+	const [savedData, setSavedData] = useState({
+		content: JSON.stringify(children),
+		comments: JSON.stringify(allComments),
+		title: data?.chapter.chapter_title || '',
+	})
+
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
-	const [isSaved, setIsSaved] = React.useState(true)
 
-	useEffect(() => {
+	const isSaved = useMemo(() => {
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(allComments)
-		const storedTitle = savedTitleRef.current || data?.chapter?.chapter_title
+		const storedTitle = savedData.title || data?.chapter?.chapter_title
 
 		const newIsSaved =
 			!forceSave &&
-			savedRef.current === currentChildren &&
-			savedCommentsRef.current === currentComments &&
+			savedData.content === currentChildren &&
+			savedData.comments === currentComments &&
 			currentTitle === storedTitle
 
-		setIsSaved(newIsSaved)
-	}, [children, allComments, currentTitle, data?.chapter, forceSave])
+		return newIsSaved
+	}, [children, allComments, currentTitle, data?.chapter, forceSave, savedData])
 
 	const getSavingParams = useCallback((): TGetSavingParamsRet => {
-		const words = editorText.split(/\s+/)
-		const word_count = words.length
+		const word_count = wordCount.value
 		const contentStr = JSON.stringify(children)
 		const commentsStr = JSON.stringify(allComments)
 		const title = currentTitle
@@ -87,7 +89,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			chapterData: data,
 			allComments,
 		}
-	}, [editorText, children, allComments, data, currentTitle])
+	}, [wordCount.value, children, allComments, data, currentTitle])
 
 	const saveLocal = useCallback(
 		(args: TGetSavingParamsRet) => {
@@ -130,11 +132,6 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			try {
 				const params = getSavingParams() // retrieve saving params
 
-				// Update last saved contents
-				savedRef.current = params.contentStr
-				savedCommentsRef.current = params.commentsStr
-				savedTitleRef.current = params.title
-
 				saveLocal(params) // save a local backup in case saving fails
 
 				const respData = await saveEpisodeMutation.mutateAsync(
@@ -159,7 +156,12 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 				}
 				// change states accordingly
 				setForceSave(false)
-				setIsSaved(true)
+				// Update last saved contents
+				setSavedData({
+					content: params.contentStr,
+					comments: params.commentsStr,
+					title: params.title,
+				})
 			} catch (error) {
 				console.error(error)
 			} finally {
@@ -177,6 +179,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			saveEpisodeMutation,
 			saveLocal,
 			setRecentEmail,
+			setSavedData,
 		]
 	)
 
@@ -185,7 +188,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			return
 		}
 		if (data.chapter.chapter_title) {
-			savedTitleRef.current = data.chapter.chapter_title
+			setSavedData((prev) => ({ ...prev, title: data.chapter.chapter_title }))
 			setCurrentTitle(data.chapter.chapter_title)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -199,6 +202,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 		lastSaved,
 		getSavingParams,
 		data,
+		setSavedData,
 	}
 }
 

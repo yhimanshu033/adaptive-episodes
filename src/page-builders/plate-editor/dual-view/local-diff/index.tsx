@@ -1,12 +1,11 @@
 import React from 'react'
-import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { TickIcon } from '@/icons/tick-icon'
 import ApplyChangesAlert from '@/page-builders/episodes/dialogs/apply-changes-alert'
 import DiffEditor from '@/page-builders/plate-editor/diff-editor'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
-import { useEditorRef } from 'platejs/react'
+import { useEditorRef, useEditorState } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
@@ -31,7 +30,7 @@ export default function LocalDiffSection() {
 	const acceptedDiffValue = useEpisodeIdContext(
 		useShallow((state) => state.acceptedDiffValue)
 	)
-	const { children } = useEditorData()
+	const { children } = useEditorState()
 	const editor = useEditorRef()
 
 	function handleAccept(all = false) {

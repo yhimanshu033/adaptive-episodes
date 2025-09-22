@@ -121,3 +121,19 @@ export function adjustScrollIfAtTop(
 		})
 	}
 }
+
+export function scrollToDivWithId(
+	id: string,
+	timeout = 0,
+	opts?: ScrollIntoViewOptions
+) {
+	setTimeout(() => {
+		const elem = document.getElementById(id)
+		if (!elem) {
+			return
+		}
+		requestAnimationFrame(() => {
+			elem.scrollIntoView({ behavior: 'smooth', block: 'center', ...opts })
+		})
+	}, timeout)
+}

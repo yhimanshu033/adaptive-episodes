@@ -7,6 +7,8 @@ import ApplyChangesAlert from '@/page-builders/episodes/dialogs/apply-changes-al
 import { Button } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Typography } from '@/components/aural-ui/typography'
+import { scrollToDivWithId } from '@/lib/utils/client-helpers'
+import { getDiffLeafID } from '@/lib/utils/plate'
 
 const SFXControls = ({
 	index,
@@ -29,6 +31,7 @@ const SFXControls = ({
 				return
 			}
 			setActiveDiffId(diffId)
+			scrollToDivWithId(getDiffLeafID(diffId))
 		},
 		[sfxIndex, diffIdList, setActiveDiffId]
 	)

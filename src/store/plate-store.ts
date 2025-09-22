@@ -60,6 +60,12 @@ export function usePlateStore() {
 		usePlateStoreContext.setState({ diffIdList })
 	}
 
+	const setDisableDiffAcceptReject = (
+		disableDiffAcceptReject: PlateStoreData['disableDiffAcceptReject']
+	) => {
+		usePlateStoreContext.setState({ disableDiffAcceptReject })
+	}
+
 	return {
 		store: usePlateStoreContext,
 		setSidebar,
@@ -72,6 +78,7 @@ export function usePlateStore() {
 		setLocalDiffValue,
 		setFocusMode,
 		setDiffIdList,
+		setDisableDiffAcceptReject,
 	}
 }
 
