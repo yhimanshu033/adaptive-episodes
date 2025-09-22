@@ -7,7 +7,7 @@ import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 import useLanguage from '@/hooks/use-language'
-// import useLanguage from '@/hooks/use-language'
+import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import { beatsheetContextEnglish } from '@/mock-data/beatsheet-editor'
 import useBeatsheetStore from '@/store/beatsheet-store'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
@@ -21,6 +21,7 @@ import CircularLoader from '@/components/aural-ui/circular-loader'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import TextArea from '@/components/aural-ui/textarea'
 import { Typography } from '@/components/aural-ui/typography'
+import ScenePromptInline from '@/components/beatsheet-editor/scene-prompt-inline'
 import {
 	Accordion,
 	AccordionContent,
@@ -51,19 +52,31 @@ export default function SceneTab() {
 	const { id } = useParams()
 	const { data: episodeData } = useEpisodeContent()
 
-	const { beatsheetStore, setOpenSceneIds, addNewBeat, addNewScene } =
-		useBeatsheetStore()
+	const {
+		beatsheetStore,
+		setOpenSceneIds,
+		addNewBeat,
+		addNewScene,
+		setOpenPromptId,
+	} = useBeatsheetStore()
 
-	const { characters, enhancementPlan, scenes, openSceneIds, activeDragItem } =
-		beatsheetStore(
-			useShallow((state) => ({
-				characters: state.characters,
-				enhancementPlan: state.enhancementPlan,
-				scenes: state.scenes,
-				openSceneIds: state.openSceneIds,
-				activeDragItem: state.activeDragItem,
-			}))
-		)
+	const {
+		characters,
+		enhancementPlan,
+		scenes,
+		openSceneIds,
+		activeDragItem,
+		openPromptId,
+	} = beatsheetStore(
+		useShallow((state) => ({
+			characters: state.characters,
+			enhancementPlan: state.enhancementPlan,
+			scenes: state.scenes,
+			openSceneIds: state.openSceneIds,
+			activeDragItem: state.activeDragItem,
+			openPromptId: state.openPromptId,
+		}))
+	)
 
 	const { editorText } = useEditorData()
 
@@ -79,7 +92,10 @@ export default function SceneTab() {
 		timeoutProgress,
 	} = useBeatsheetMutation()
 
-	const handleGenerateTask = (scenes: { data: TScene; index: number }[]) => {
+	const handleGenerateTask = (
+		scenes: { data: TScene; index: number }[],
+		prompt?: string
+	) => {
 		clearError()
 
 		generateBeatsheet({
@@ -100,6 +116,7 @@ export default function SceneTab() {
 				use_enhancement_plan: enhancementPlan,
 				project_id: Number(id),
 				episode_number: Number(episodeData?.chapter.seq_number),
+				...(prompt ? { scene_wide_prompt: prompt } : {}),
 			},
 			sceneIds: scenes.map((scene) => scene.data.id),
 		})
@@ -171,15 +188,36 @@ export default function SceneTab() {
 									<AccordionItem key={idx} value={scene.id}>
 										<AccordionTrigger className="flex items-center">
 											<div className="flex flex-1 items-center justify-between">
-												<h3 className="w-full font-bold">{scene.title}</h3>
-												<IconButton
-													label="Delete Scene"
-													icon={<Trash2 size={18} />}
-													onClick={() => handleDelete(scene.id)}
-													variant="ghost"
-													size="small"
-													disabled={isGenerating}
-												/>
+												<div className="flex items-center gap-2">
+													<h3 className="font-bold">{scene.title}</h3>
+												</div>
+												<div className="flex items-center justify-center gap-2">
+													<IconButton
+														label="Scene Prompt"
+														icon={<SparklesSoftIcon />}
+														onClick={(e) => {
+															e.stopPropagation()
+															if (!openSceneIds.includes(scene.id)) {
+																setOpenSceneIds([...openSceneIds, scene.id])
+															}
+															setOpenPromptId(scene.id)
+														}}
+														variant="ghost"
+														size="small"
+														disabled={isGenerating}
+													/>
+													<IconButton
+														label="Delete Scene"
+														icon={<Trash2 size={18} />}
+														onClick={(e) => {
+															e.stopPropagation()
+															handleDelete(scene.id)
+														}}
+														variant="ghost"
+														size="small"
+														disabled={isGenerating}
+													/>
+												</div>
 											</div>
 										</AccordionTrigger>
 										<SortableContext
@@ -198,7 +236,7 @@ export default function SceneTab() {
 													</div>
 												)}
 												{isPendingApproval && (
-													<div className="bg-background/80 absolute inset-0 z-5 flex flex-col backdrop-blur-sm">
+													<div className="bg-background/80 absolute inset-0 z-15 flex flex-col backdrop-blur-sm">
 														<div className="flex-1 overflow-y-auto p-4">
 															{pendingContent?.map((generatedScene) => (
 																<Typography
@@ -233,6 +271,16 @@ export default function SceneTab() {
 														</div>
 													</div>
 												)}
+												<ScenePromptInline
+													isOpen={openPromptId === scene.id}
+													onClose={() => setOpenPromptId(null)}
+													onSubmit={(prompt) =>
+														void handleGenerateTask(
+															[{ data: scene, index: idx }],
+															prompt
+														)
+													}
+												/>
 												{scene.beats.map((beat, index) => (
 													<SortableBeat
 														key={beat.id}
@@ -249,14 +297,16 @@ export default function SceneTab() {
 													</SortableBeat>
 												))}
 												<div className="flex items-center justify-between">
-													<Button
-														variant="outline"
-														size="sm"
-														onClick={() => addNewBeat(scene.id)}
-														disabled={isGenerating}
-													>
-														<Plus size={16} className="mr-1" /> Add Beat
-													</Button>
+													<div className="flex items-center gap-2">
+														<Button
+															variant="outline"
+															size="sm"
+															onClick={() => addNewBeat(scene.id)}
+															disabled={isGenerating}
+														>
+															<Plus size={16} className="mr-1" /> Add Beat
+														</Button>
+													</div>
 													<Button
 														disabled={isAnyGenerating}
 														onClick={() =>

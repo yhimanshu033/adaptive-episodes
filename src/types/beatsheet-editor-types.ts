@@ -6,6 +6,7 @@ export interface BeatsheetEditorStoreType {
 	activeDragItem: DragItem | null
 	characters: TCharacter[]
 	enhancementPlan: boolean
+	openPromptId: string | null
 	openSceneIds: string[]
 	scenes: TScene[]
 }
