@@ -1,3 +1,25 @@
+## <small>1.0.3 (2025-09-18)</small>
+
+* fix: 🐛 view ls sheet width fix ([dcea537](https://github.com/Pocket-Fm/co-writing/commit/dcea537))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+
+
+## <small>1.0.2 (2025-09-18)</small>
+
+* ci: 🎡 added COP prefix in deploy yaml ([db04d42](https://github.com/Pocket-Fm/co-writing/commit/db04d42))
+* fix: 🐛 view ls sheet ui fix ([53ae5ec](https://github.com/Pocket-Fm/co-writing/commit/53ae5ec))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+
+
 ## <small>1.0.1 (2025-09-18)</small>
 
 * fix: 🐛 bse dynamic feedback ([1debe7a](https://github.com/Pocket-Fm/co-writing/commit/1debe7a))
