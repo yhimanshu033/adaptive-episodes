@@ -112,6 +112,7 @@ export const API_URLS = {
 	BEATSHEET_GENERATE: '/aicopilot/bse',
 	BULK_PROMPT_SEND: '/project/:projectId/prompt/',
 	GET_SCENES_METADATA: '/scenes/metadata/',
+	SCENE_PROMPT_GENERATE: '/aicopilot/bse/scene_wide/',
 }
 
 export const INDEXED_DB_KEYS = {

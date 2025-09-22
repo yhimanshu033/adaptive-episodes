@@ -68,7 +68,9 @@ const useBeatsheetMutation = () => {
 		const taskId = await startTask<TGenerateBeatsheetBody, { message: string }>(
 			{
 				method: 'POST',
-				url: API_URLS.BEATSHEET_GENERATE,
+				url: params.scene_wide_prompt
+					? API_URLS.SCENE_PROMPT_GENERATE
+					: API_URLS.BEATSHEET_GENERATE,
 				body: params,
 			}
 		)
