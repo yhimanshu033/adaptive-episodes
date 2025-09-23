@@ -92,7 +92,7 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 				const searchOverlapStart = overlapStart - matchStart
 				const searchOverlapEnd = overlapEnd - matchStart
 
-				const textNodePath = [...path, textIndex]
+				const textNodePath = [...path, textIndex, matchIndex]
 
 				ranges.push({
 					anchor: {
