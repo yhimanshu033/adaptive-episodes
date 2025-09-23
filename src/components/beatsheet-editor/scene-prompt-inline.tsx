@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import useBeatsheetStore from '@/store/beatsheet-store'
 import { ArrowRightIcon, X } from 'lucide-react'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
@@ -22,7 +21,6 @@ export default function ScenePromptInline({
 }: ScenePromptInlineProps) {
 	const [prompt, setPrompt] = useState('')
 	const [isFocused, setIsFocused] = useState(false)
-	const { setOpenPromptId } = useBeatsheetStore()
 
 	const hasText = prompt.trim().length > 0
 
@@ -31,7 +29,6 @@ export default function ScenePromptInline({
 			onSubmit(prompt.trim())
 			setPrompt('')
 			onClose()
-			setOpenPromptId(null)
 		}
 	}
 

@@ -5,6 +5,8 @@ import { GENERATE_BEATSHEET_MUTATION_KEY } from '@/constants/query-constants'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import { FetchResponseResult } from '@/lib/fetch-api'
+
 import {
 	TGenerateBeatsheetBody,
 	TGenerateBeatsheetResponse,
@@ -87,9 +89,13 @@ const useBeatsheetMutation = () => {
 			}, timeoutDuration)
 		})
 
-		// Race between the response and timeout
 		try {
 			const resp = await Promise.race([getResponse(taskId), timeoutPromise])
+
+			if (!(resp as FetchResponseResult<TGenerateBeatsheetResponse>).success) {
+				throw new Error('Something went wrong')
+			}
+
 			clearInterval(progressInterval)
 			setTimeoutProgress(0)
 			return resp as TGenerateBeatsheetResponse
