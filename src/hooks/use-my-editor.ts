@@ -3,6 +3,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { DEFAULT_EDITOR_CONTENT } from '@/constants/editor-constants'
 import { TrailingBlockPlugin, Value } from 'platejs'
 import { usePlateEditor } from 'platejs/react'
 
@@ -49,7 +50,7 @@ const useMyEditor = ({
 
 	const value = useMemo(() => {
 		if (!content) {
-			return ''
+			return DEFAULT_EDITOR_CONTENT
 		}
 		try {
 			return migrateOldSuggestions(JSON.parse(content) as Value)
