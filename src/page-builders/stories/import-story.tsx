@@ -314,6 +314,7 @@ export function ImportStory() {
 		if (files && files.length > 0) {
 			void handleDocValidation(files)
 		}
+		e.target.value = ''
 	}
 
 	const handleSortDragEnd = (event: DragEndEvent) => {

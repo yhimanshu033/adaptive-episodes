@@ -330,6 +330,7 @@ const BaseScriptDocUpload = ({
 											if (e.target.files && e.target.files.length > 0) {
 												void handleDocValidation(e.target.files)
 											}
+											e.target.value = ''
 										}}
 									/>
 								</div>
