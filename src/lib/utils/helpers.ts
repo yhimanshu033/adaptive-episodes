@@ -942,7 +942,7 @@ export async function getFileSizeFromURL(
 	return estimateDocxSizeInBytesFromText(text.length)
 }
 
-function estimateDocxSizeInBytesFromText(charCount: number): string {
+export function estimateDocxSizeInBytesFromText(charCount: number): string {
 	// Average: 1 KB (1024 bytes) per ~1200 characters
 	const avgCharsPerKB = 120
 	const bytesPerKB = 1024
@@ -950,6 +950,23 @@ function estimateDocxSizeInBytesFromText(charCount: number): string {
 	const estimatedSizeBytes = (charCount / avgCharsPerKB) * bytesPerKB
 
 	return formatFileSizeForDocx(Math.round(estimatedSizeBytes))
+}
+
+export function estimateDocxSizeWithOverhead(text: string): string {
+	// UTF-8 byte length of the text
+	const byteLength = text.length
+
+	// Google Docs / Word baseline file size for any .docx (~35 KB)
+	const baseOverhead = 35_000
+
+	// Extra XML wrapping per character (nearly negligible compared to base)
+	const perCharOverhead = 0.1 // ~0.1 byte per char after compression
+
+	// Estimate
+	const extra = Math.round(byteLength * perCharOverhead)
+	const size = baseOverhead + extra
+
+	return formatFileSizeForDocx(size)
 }
 export function getSavingData(
 	params: TGetSavingParamsRet

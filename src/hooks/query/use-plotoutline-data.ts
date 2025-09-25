@@ -99,6 +99,7 @@ const usePlotOutlineQuery = ({
 				method: 'POST',
 				url: API_URLS.STREAM_EXPLORER,
 				body: params,
+				noCache: true,
 			})
 			return {
 				content: [],

@@ -62,3 +62,5 @@ export const EPISODE_INFO_MUTATION_KEY = 'info-mutation'
 export const EPISODE_LATEST_INFO_QUERY_KEY = 'latest-info'
 
 export const GENERATE_BEATSHEET_MUTATION_KEY = 'generate-beatsheet-mutation'
+
+export const GET_DOCX_ESTIMATE_QUERY_KEY = 'docx-estimate-file-size'

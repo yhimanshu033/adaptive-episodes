@@ -34,7 +34,9 @@ export default function useAcceptChanges() {
 			},
 			i
 		)
-		void handleSave({ forced: true })
+		setTimeout(() => {
+			void handleSave({ forced: true })
+		}, 500)
 	}
 	const handleAcceptResponse = useCallback(
 		(all: boolean = true, isSfx: boolean) => {
