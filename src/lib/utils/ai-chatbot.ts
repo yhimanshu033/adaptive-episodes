@@ -413,7 +413,13 @@ export function replaceOnce({
 	search: string
 }) {
 	const updatedChildren = structuredClone(children)
-	const node = updatedChildren[path[0]].children[path[1]] as Element
+	if (!path) {
+		return children
+	}
+	const node = updatedChildren?.[path[0]]?.children?.[path[1]] as Element
+	if (!node?.text) {
+		return children
+	}
 	const text = replaceNthInsensitive(
 		node.text as string,
 		search,

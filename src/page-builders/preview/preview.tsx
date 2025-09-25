@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useMyEditor from '@/hooks/use-my-editor'
@@ -11,14 +11,21 @@ import { Editor, EditorContainer } from '@/components/plate-ui-v2/editor'
 
 const PreviewContent = () => {
 	const router = useRouter()
-	const { data } = useEpisodeContent()
+	const { data, isLoading, isEnabled } = useEpisodeContent()
 
 	const handleClick = () => {
 		router.back()
 	}
 
+	const content = useMemo(() => {
+		if (isLoading || !isEnabled) {
+			return 'Loading...'
+		}
+		return data?.text || 'No content available!'
+	}, [data, isLoading, isEnabled])
+
 	const editor = useMyEditor({
-		content: data?.text || '',
+		content,
 		id: 'preview-editor',
 		simplified: true,
 	})

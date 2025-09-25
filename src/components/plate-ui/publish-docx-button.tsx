@@ -5,6 +5,7 @@ import {
 } from '@/hooks/form-resolvers/rename-file-resolver'
 import useDocxDownloadHook from '@/hooks/mutation/use-docx-download-hook'
 import usePublishDocxHook from '@/hooks/mutation/use-publish-docx-hook'
+import useDocxSize from '@/hooks/query/use-docx-size'
 import useEnableDocx from '@/hooks/use-enable-docx'
 import { UploadIcon } from '@/icons/upload-icon'
 
@@ -67,14 +68,14 @@ export default function UploadDocxButton() {
 function UploadDocxPopoverContent() {
 	const { isPending, mutate } = usePublishDocxHook()
 	const {
-		isPending: isDownlaodPending,
+		isPending: isDownloadPending,
 		mutate: mutateDownload,
 		title,
-		fileSize,
-		isEnabled,
 		projectTitle,
 		epNumber,
 	} = useDocxDownloadHook()
+
+	const { data: fileSize } = useDocxSize()
 
 	const form = useRenameFileFormResolver()
 
@@ -114,11 +115,13 @@ function UploadDocxPopoverContent() {
 				<Button
 					size="sm"
 					onClick={() => mutateDownload()}
-					isDisabled={isDownlaodPending || !isEnabled}
-					disabled={isDownlaodPending || !isEnabled}
+					isDisabled={isDownloadPending}
+					disabled={isDownloadPending}
 					className="flex items-center gap-2"
 				>
-					{isDownlaodPending ? <CircularLoader className="size-4" /> : null}
+					<If condition={isDownloadPending}>
+						<CircularLoader className="size-4" />
+					</If>
 					Download
 				</Button>
 			</div>
@@ -166,10 +169,8 @@ function UploadDocxPopoverContent() {
 							variant="outline"
 							size="sm"
 							type="submit"
-							isDisabled={
-								form.formState.isSubmitting || isPending || !isEnabled
-							}
-							disabled={form.formState.isSubmitting || isPending || !isEnabled}
+							isDisabled={form.formState.isSubmitting || isPending}
+							disabled={form.formState.isSubmitting || isPending}
 							className="group w-full"
 							innerClassName="font-fm-brand border-fm-divider-secondary group-hover:border-fm-divider-contrast group-disabled:translate-y-0 group-disabled:hover:border-fm-divider-secondary group-data-[state=open]:border-fm-divider-contrast"
 						>
