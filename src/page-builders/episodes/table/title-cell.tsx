@@ -132,7 +132,7 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 						classes={{ scrollbar: 'hidden' }}
 					>
 						<Link
-							className="font-fm-text flex min-h-4 cursor-pointer items-center gap-2"
+							className="font-fm-text flex cursor-pointer items-center gap-2"
 							href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/content/?${EPISODE_SEQUENCE}=${row.original.seq_number}`}
 						>
 							{isPending && inputValueMapRef.current[row.original.id]
