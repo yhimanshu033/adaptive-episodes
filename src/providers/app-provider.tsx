@@ -80,7 +80,7 @@ const AppProvider = ({
 											</PlayerProvider>
 											<Toaster />
 										</AdaptationProvider>
-										<ReactQueryDevtools buttonPosition="top-left" />
+										<ReactQueryDevtools />
 									</TooltipProvider>
 								</ThemeProvider>
 							</QueryClientProvider>
