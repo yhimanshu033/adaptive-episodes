@@ -237,12 +237,8 @@ export function ImportStory() {
 		const potentialNewFileList = [...storyFiles, ...filesArr]
 		form.setValue('story_files', potentialNewFileList)
 		const isValid = await form.trigger('story_files')
-		const error = form.getFieldState('story_files').error?.message
 
 		if (!isValid) {
-			toast.error(error || 'Invalid document file.', {
-				icon: <BubbleCrossedIcon />,
-			})
 			form.setValue('story_files', storyFiles)
 			return false
 		}

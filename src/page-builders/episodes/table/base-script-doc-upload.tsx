@@ -133,12 +133,8 @@ const BaseScriptDocUpload = ({
 		const potentialNewFileList = [...files, ...filesArr]
 		form.setValue('files', potentialNewFileList)
 		const isValid = await form.trigger('files')
-		const error = form.getFieldState('files').error?.message
 
 		if (!isValid) {
-			toast.error(error || 'Invalid document file.', {
-				icon: <BubbleCrossedIcon />,
-			})
 			form.setValue('files', files)
 			return false
 		}
