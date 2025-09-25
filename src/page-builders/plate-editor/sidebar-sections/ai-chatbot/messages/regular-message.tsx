@@ -15,11 +15,12 @@ const RegularMessage = ({
 	taskEnded: Record<string, boolean>
 	tasksTimedOut: Set<string>
 }) => {
-	const { getTimeLeft } = useAIChatbot()
+	const { getTimeLeft, isTaskRunning } = useAIChatbot()
 	if (message.role === EMessenger.ASSISTANT) {
-		const isRunning = !(taskEnded[message.taskId] ?? false)
+		const isRunning = !(taskEnded[message.taskId] ?? true)
 		const isTimedOut = tasksTimedOut.has(message.taskId)
 		const timeLeft = getTimeLeft(message.taskId)
+		const isCountdownActive = isTaskRunning(message.taskId)
 
 		return (
 			<>
@@ -28,6 +29,7 @@ const RegularMessage = ({
 					isTimedOut={isTimedOut}
 					text={message.content}
 					timeLeft={timeLeft}
+					isCountdownActive={isCountdownActive}
 				/>
 				{message.component}
 			</>

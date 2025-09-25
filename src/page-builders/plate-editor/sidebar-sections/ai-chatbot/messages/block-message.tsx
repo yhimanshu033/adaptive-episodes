@@ -61,7 +61,7 @@ const BlockContentMessage = ({
 	taskEnded: Record<string, boolean>
 	tasksTimedOut: Set<string>
 }) => {
-	const { getTimeLeft } = useAIChatbot()
+	const { getTimeLeft, isTaskRunning } = useAIChatbot()
 	const messageResponses = responses[message.taskId] || []
 	if (messageResponses.length > 0) {
 		messageResponses[0] = messageResponses[0].trimStart()
@@ -70,9 +70,16 @@ const BlockContentMessage = ({
 	const isRunning = !taskEnded[message.taskId]
 	const isTimedOut = tasksTimedOut.has(message.taskId)
 	const timeLeft = getTimeLeft(message.taskId)
+	const isCountdownActive = isTaskRunning(message.taskId)
 
 	if (!messageResponses.length) {
-		return <ChatbotStatus isTimedOut={isTimedOut} timeLeft={timeLeft} />
+		return (
+			<ChatbotStatus
+				isTimedOut={isTimedOut}
+				timeLeft={timeLeft}
+				isCountdownActive={isCountdownActive}
+			/>
+		)
 	}
 
 	return (
@@ -81,6 +88,7 @@ const BlockContentMessage = ({
 				isRunning={isRunning}
 				isTimedOut={isTimedOut}
 				timeLeft={timeLeft}
+				isCountdownActive={isCountdownActive}
 			/>
 			{!hasToolResult(messageResponses) ? (
 				<StreamedResponseWithCopy

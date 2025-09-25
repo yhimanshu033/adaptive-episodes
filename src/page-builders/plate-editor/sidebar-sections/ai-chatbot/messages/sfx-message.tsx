@@ -28,12 +28,12 @@ const SFXMessage = ({
 	taskEnded: Record<string, boolean>
 	tasksTimedOut: Set<string>
 }) => {
-	const { getTimeLeft } = useAIChatbot()
+	const { getTimeLeft, isTaskRunning } = useAIChatbot()
 	const isRunning = !taskEnded[message.taskId]
 	const isTimedOut = tasksTimedOut.has(message.taskId)
 	const timeLeft = getTimeLeft(message.taskId)
+	const isCountdownActive = isTaskRunning(message.taskId)
 
-	// If task is still running, show status
 	if (!taskEnded[message.taskId]) {
 		return (
 			<ChatbotStatus
@@ -41,12 +41,20 @@ const SFXMessage = ({
 				isTimedOut={isTimedOut}
 				text={message.content}
 				timeLeft={timeLeft}
+				isCountdownActive={isCountdownActive}
 			/>
 		)
 	}
 
 	if (tasksTimedOut.has(message.taskId)) {
-		return <ChatbotStatus isRunning={false} isTimedOut={true} timeLeft={0} />
+		return (
+			<ChatbotStatus
+				isRunning={false}
+				isTimedOut={true}
+				timeLeft={0}
+				isCountdownActive={false}
+			/>
+		)
 	}
 
 	return (

@@ -13,7 +13,9 @@ const ChatbotStatus = ({
 	isTimedOut = false,
 	text,
 	timeLeft,
+	isCountdownActive = false,
 }: {
+	isCountdownActive?: boolean
 	isRunning?: boolean
 	isTimedOut?: boolean
 	text?: string
@@ -33,12 +35,17 @@ const ChatbotStatus = ({
 	}, [isTimedOut, text, isRunning])
 
 	const timeLeftText = useMemo(() => {
-		if (isRunning && timeLeft !== undefined && timeLeft > 0) {
+		if (
+			isRunning &&
+			isCountdownActive &&
+			timeLeft !== undefined &&
+			timeLeft > 0
+		) {
 			const seconds = Math.ceil(timeLeft / 1000)
 			return `(${seconds}s remaining)`
 		}
 		return ''
-	}, [isRunning, timeLeft])
+	}, [isRunning, isCountdownActive, timeLeft])
 
 	const statusIcon = useMemo(() => {
 		if (isTimedOut) {

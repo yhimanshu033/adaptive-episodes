@@ -12,7 +12,7 @@ import WelcomeMessage from './welcome-message'
 
 const MessagesList = ({ isPending }: { isPending: boolean }) => {
 	const { store } = useAIStore()
-	const { getTimeLeft, getProgress } = useAIChatbot()
+	const { getTimeLeft } = useAIChatbot()
 	const messages = store(useShallow((state) => state.messages))
 
 	const messageEndRef = useRef<HTMLDivElement>(null)
@@ -43,10 +43,7 @@ const MessagesList = ({ isPending }: { isPending: boolean }) => {
 								</div>
 							))}
 							<If condition={isPending}>
-								<ChatbotStatus
-									timeLeft={getTimeLeft()}
-									progress={getProgress()}
-								/>
+								<ChatbotStatus timeLeft={getTimeLeft()} />
 							</If>
 							<div ref={messageEndRef} />
 						</If>
