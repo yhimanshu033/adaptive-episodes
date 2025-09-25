@@ -40,9 +40,8 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 	isPending = false,
 }) => {
 	const editInputRef = useRef<HTMLInputElement>(null)
-	const [inputValue, setInputValue] = useState<string>(
-		row.original?.chapter_title || 'Untitled'
-	)
+	const originalValue = row.original?.chapter_title || 'Untitled'
+	const [inputValue, setInputValue] = useState<string>(originalValue)
 
 	const handleRenameSubmit = (episodeId: number, newTitle: string) => {
 		inputValueMapRef.current[episodeId] = newTitle
@@ -118,7 +117,7 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 							className={cn(
 								'text-fm-tertiary translate-y-1 cursor-pointer text-xs',
 								{
-									'text-fm-primary': row.original?.chapter_title !== inputValue,
+									'text-fm-primary': originalValue !== inputValue,
 								}
 							)}
 							onMouseDown={handleSubmit}
@@ -133,12 +132,12 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 						classes={{ scrollbar: 'hidden' }}
 					>
 						<Link
-							className="font-fm-text flex cursor-pointer items-center gap-2"
+							className="font-fm-text flex min-h-4 cursor-pointer items-center gap-2"
 							href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/content/?${EPISODE_SEQUENCE}=${row.original.seq_number}`}
 						>
 							{isPending && inputValueMapRef.current[row.original.id]
 								? inputValueMapRef.current[row.original.id]
-								: row.getValue('chapter_title')}
+								: originalValue}
 						</Link>
 					</ScrollArea>
 				</Else>
