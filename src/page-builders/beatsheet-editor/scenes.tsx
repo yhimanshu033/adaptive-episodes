@@ -7,7 +7,7 @@ import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 import useLanguage from '@/hooks/use-language'
-// import useLanguage from '@/hooks/use-language'
+import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import { beatsheetContextEnglish } from '@/mock-data/beatsheet-editor'
 import useBeatsheetStore from '@/store/beatsheet-store'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
@@ -21,6 +21,7 @@ import CircularLoader from '@/components/aural-ui/circular-loader'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import TextArea from '@/components/aural-ui/textarea'
 import { Typography } from '@/components/aural-ui/typography'
+import ScenePromptInline from '@/components/beatsheet-editor/scene-prompt-inline'
 import {
 	Accordion,
 	AccordionContent,
@@ -30,6 +31,7 @@ import {
 
 import { TScene } from '@/types/beatsheet-editor-types'
 
+import GenerationStatusBar from './generation-status-bar'
 import SortableBeat from './sortable-beat'
 import { SortableScene } from './sortable-scene'
 
@@ -50,19 +52,31 @@ export default function SceneTab() {
 	const { id } = useParams()
 	const { data: episodeData } = useEpisodeContent()
 
-	const { beatsheetStore, setOpenSceneIds, addNewBeat, addNewScene } =
-		useBeatsheetStore()
+	const {
+		beatsheetStore,
+		setOpenSceneIds,
+		addNewBeat,
+		addNewScene,
+		setOpenPromptId,
+	} = useBeatsheetStore()
 
-	const { characters, enhancementPlan, scenes, openSceneIds, activeDragItem } =
-		beatsheetStore(
-			useShallow((state) => ({
-				characters: state.characters,
-				enhancementPlan: state.enhancementPlan,
-				scenes: state.scenes,
-				openSceneIds: state.openSceneIds,
-				activeDragItem: state.activeDragItem,
-			}))
-		)
+	const {
+		characters,
+		enhancementPlan,
+		scenes,
+		openSceneIds,
+		activeDragItem,
+		openPromptId,
+	} = beatsheetStore(
+		useShallow((state) => ({
+			characters: state.characters,
+			enhancementPlan: state.enhancementPlan,
+			scenes: state.scenes,
+			openSceneIds: state.openSceneIds,
+			activeDragItem: state.activeDragItem,
+			openPromptId: state.openPromptId,
+		}))
+	)
 
 	const { editorText } = useEditorData()
 
@@ -78,8 +92,10 @@ export default function SceneTab() {
 		timeoutProgress,
 	} = useBeatsheetMutation()
 
-	const handleGenerateTask = (scenes: { data: TScene; index: number }[]) => {
-		// Clear any previous errors before starting new generation
+	const handleGenerateTask = (
+		scenes: { data: TScene; index: number }[],
+		prompt?: string
+	) => {
 		clearError()
 
 		generateBeatsheet({
@@ -100,6 +116,7 @@ export default function SceneTab() {
 				use_enhancement_plan: enhancementPlan,
 				project_id: Number(id),
 				episode_number: Number(episodeData?.chapter.seq_number),
+				...(prompt ? { scene_wide_prompt: prompt } : {}),
 			},
 			sceneIds: scenes.map((scene) => scene.data.id),
 		})
@@ -108,7 +125,6 @@ export default function SceneTab() {
 	const handleApproveContent = (sceneId: string) => {
 		const pendingContent = getPendingContentForScene(sceneId)
 		if (pendingContent) {
-			// Apply the content to the editor
 			handleGenerateScenes(
 				pendingContent,
 				pendingContent.map((scene) => scene.id)
@@ -121,10 +137,8 @@ export default function SceneTab() {
 		rejectContent(sceneId)
 	}
 
-	// Check if there's a timeout error
 	const hasTimeoutError = error?.message?.includes('timed out')
 
-	// Calculate remaining time in seconds
 	const getRemainingTime = () => {
 		if (timeoutProgress === 0) {
 			return null
@@ -139,6 +153,13 @@ export default function SceneTab() {
 
 	return (
 		<>
+			<GenerationStatusBar
+				isPending={isPending}
+				hasTimeoutError={!!hasTimeoutError}
+				generatingSceneIds={generatingSceneIds}
+				totalScenes={scenes.length}
+				remainingTime={remainingTime}
+			/>
 			<DndContext
 				sensors={sensors}
 				collisionDetection={fixCursorSnapOffset}
@@ -167,15 +188,36 @@ export default function SceneTab() {
 									<AccordionItem key={idx} value={scene.id}>
 										<AccordionTrigger className="flex items-center">
 											<div className="flex flex-1 items-center justify-between">
-												<h3 className="w-full font-bold">{scene.title}</h3>
-												<IconButton
-													label="Delete Scene"
-													icon={<Trash2 size={18} />}
-													onClick={() => handleDelete(scene.id)}
-													variant="ghost"
-													size="small"
-													disabled={isGenerating}
-												/>
+												<div className="flex items-center gap-2">
+													<h3 className="font-bold">{scene.title}</h3>
+												</div>
+												<div className="flex items-center justify-center gap-2">
+													<IconButton
+														label="Scene Prompt"
+														icon={<SparklesSoftIcon />}
+														onClick={(e) => {
+															e.stopPropagation()
+															if (!openSceneIds.includes(scene.id)) {
+																setOpenSceneIds([...openSceneIds, scene.id])
+															}
+															setOpenPromptId(scene.id)
+														}}
+														variant="ghost"
+														size="small"
+														disabled={isGenerating}
+													/>
+													<IconButton
+														label="Delete Scene"
+														icon={<Trash2 size={18} />}
+														onClick={(e) => {
+															e.stopPropagation()
+															handleDelete(scene.id)
+														}}
+														variant="ghost"
+														size="small"
+														disabled={isGenerating}
+													/>
+												</div>
 											</div>
 										</AccordionTrigger>
 										<SortableContext
@@ -190,16 +232,11 @@ export default function SceneTab() {
 																className="h-4 w-4"
 																text="Generating..."
 															/>
-															{remainingTime && (
-																<div className="text-muted-foreground text-xs">
-																	Timeout in {remainingTime}s
-																</div>
-															)}
 														</div>
 													</div>
 												)}
 												{isPendingApproval && (
-													<div className="bg-background/80 absolute inset-0 z-20 flex flex-col backdrop-blur-sm">
+													<div className="bg-background/80 absolute inset-0 z-15 flex flex-col backdrop-blur-sm">
 														<div className="flex-1 overflow-y-auto p-4">
 															{pendingContent?.map((generatedScene) => (
 																<Typography
@@ -234,6 +271,16 @@ export default function SceneTab() {
 														</div>
 													</div>
 												)}
+												<ScenePromptInline
+													isOpen={openPromptId === scene.id}
+													onClose={() => setOpenPromptId(null)}
+													onSubmit={(prompt) =>
+														void handleGenerateTask(
+															[{ data: scene, index: idx }],
+															prompt
+														)
+													}
+												/>
 												{scene.beats.map((beat, index) => (
 													<SortableBeat
 														key={beat.id}
@@ -250,48 +297,35 @@ export default function SceneTab() {
 													</SortableBeat>
 												))}
 												<div className="flex items-center justify-between">
-													<Button
-														variant="outline"
-														size="sm"
-														onClick={() => addNewBeat(scene.id)}
-														disabled={isGenerating}
-													>
-														<Plus size={16} className="mr-1" /> Add Beat
-													</Button>
 													<div className="flex items-center gap-2">
-														{hasTimeoutError && isGenerating && (
-															<div className="text-destructive text-xs font-medium">
-																⚠️ Timed out
-															</div>
-														)}
 														<Button
-															disabled={isAnyGenerating}
-															onClick={() =>
-																handleGenerateTask([
-																	{ data: scene, index: idx },
-																])
-															}
-															size={'sm'}
+															variant="outline"
+															size="sm"
+															onClick={() => addNewBeat(scene.id)}
+															disabled={isGenerating}
 														>
-															{isGenerating ? (
-																<>
-																	<Loader2
-																		size={16}
-																		className="mr-1 animate-spin"
-																	/>
-																	Generating...
-																	{remainingTime &&
-																		generatingSceneIds.length === 1 && (
-																			<span className="ml-1 text-xs opacity-75">
-																				({remainingTime}s)
-																			</span>
-																		)}
-																</>
-															) : (
-																'Generate'
-															)}
+															<Plus size={16} className="mr-1" /> Add Beat
 														</Button>
 													</div>
+													<Button
+														disabled={isAnyGenerating}
+														onClick={() =>
+															handleGenerateTask([{ data: scene, index: idx }])
+														}
+														size={'sm'}
+													>
+														{isGenerating ? (
+															<>
+																<Loader2
+																	size={16}
+																	className="mr-1 animate-spin"
+																/>
+																Generating...
+															</>
+														) : (
+															'Generate'
+														)}
+													</Button>
 												</div>
 											</AccordionContent>
 										</SortableContext>
@@ -319,39 +353,27 @@ export default function SceneTab() {
 				)}
 			</DndContext>
 
-			<div className="mt-2 flex items-center justify-between">
+			<div className="mt-4 flex items-center justify-between">
 				<Button onClick={addNewScene} disabled={isPending}>
 					<Plus size={18} className="mr-1" /> ADD Scene
 				</Button>
-				<div className="flex items-center gap-2">
-					{hasTimeoutError && (
-						<div className="text-destructive text-sm font-medium">
-							⚠️ Generation timed out - please try again
-						</div>
+				<Button
+					disabled={isPending}
+					onClick={() =>
+						handleGenerateTask(
+							scenes.map((scene, index) => ({ data: scene, index }))
+						)
+					}
+				>
+					{isPending && generatingSceneIds.length === scenes.length ? (
+						<>
+							<Loader2 size={18} className="mr-1 animate-spin" />
+							Generating All...
+						</>
+					) : (
+						'Generate All'
 					)}
-					<Button
-						disabled={isPending}
-						onClick={() =>
-							handleGenerateTask(
-								scenes.map((scene, index) => ({ data: scene, index }))
-							)
-						}
-					>
-						{isPending ? (
-							<>
-								<Loader2 size={18} className="mr-1 animate-spin" />
-								Generating All...
-								{remainingTime && generatingSceneIds.length > 1 && (
-									<span className="ml-1 text-xs opacity-75">
-										({remainingTime}s)
-									</span>
-								)}
-							</>
-						) : (
-							'Generate All'
-						)}
-					</Button>
-				</div>
+				</Button>
 			</div>
 		</>
 	)

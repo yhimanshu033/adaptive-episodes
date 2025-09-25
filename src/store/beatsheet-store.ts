@@ -115,6 +115,10 @@ export default function useBeatsheetStore() {
 		}))
 	}
 
+	const setOpenPromptId = (openPromptId: string | null) => {
+		useBeatsheetStoreContext.setState({ openPromptId })
+	}
+
 	return {
 		beatsheetStore: useBeatsheetStoreContext,
 		addNewScene,
@@ -128,5 +132,6 @@ export default function useBeatsheetStore() {
 		updateCharacterField,
 		setEnhancementPlan,
 		deleteCharacter,
+		setOpenPromptId,
 	}
 }
