@@ -92,7 +92,12 @@ const useBeatsheetMutation = () => {
 		try {
 			const resp = await Promise.race([getResponse(taskId), timeoutPromise])
 
-			if (!(resp as FetchResponseResult<TGenerateBeatsheetResponse>).success) {
+			if (
+				!(
+					(resp as FetchResponseResult<TGenerateBeatsheetResponse>).success ??
+					true
+				)
+			) {
 				throw new Error('Something went wrong')
 			}
 
