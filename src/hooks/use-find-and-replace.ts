@@ -39,6 +39,7 @@ export default function useFindAndReplace() {
 		caseSensitive,
 		wholeWord,
 		genitive,
+		currentId,
 	} = usePluginOptions(FindReplacePlugin, (state) => ({
 		search: state.search || '',
 		replace: state.replace || '',
@@ -46,6 +47,7 @@ export default function useFindAndReplace() {
 		caseSensitive: state.caseSensitive || false,
 		wholeWord: state.wholeWord || false,
 		genitive: state.genitive || false,
+		currentId: state.currentId || [],
 	}))
 	const [ptr, setPtr] = useState(0)
 
@@ -162,10 +164,10 @@ export default function useFindAndReplace() {
 	])
 
 	const onReplace = useCallback(() => {
-		const path = records[ptr]
+		const path = currentId
 		const updatedChildren = replaceOnce({ children, path, search, replace })
 		editor.tf.setValue(breakDownValue(updatedChildren))
-	}, [children, editor.tf, ptr, records, replace, search])
+	}, [children, editor.tf, currentId, replace, search])
 
 	function handlePrev() {
 		setPtr(ptr > 0 ? ptr - 1 : ptr)
