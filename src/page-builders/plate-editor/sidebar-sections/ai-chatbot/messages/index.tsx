@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import useAIChatbot from '@/hooks/use-ai-chatbot'
 import RenderMessage from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages/render-messages'
 import useAIStore from '@/store/ai-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -11,6 +12,7 @@ import WelcomeMessage from './welcome-message'
 
 const MessagesList = ({ isPending }: { isPending: boolean }) => {
 	const { store } = useAIStore()
+	const { getTimeLeft, getProgress } = useAIChatbot()
 	const messages = store(useShallow((state) => state.messages))
 
 	const messageEndRef = useRef<HTMLDivElement>(null)
@@ -41,7 +43,10 @@ const MessagesList = ({ isPending }: { isPending: boolean }) => {
 								</div>
 							))}
 							<If condition={isPending}>
-								<ChatbotStatus isRunning={true} />
+								<ChatbotStatus
+									timeLeft={getTimeLeft()}
+									progress={getProgress()}
+								/>
 							</If>
 							<div ref={messageEndRef} />
 						</If>

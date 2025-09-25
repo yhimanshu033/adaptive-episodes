@@ -1,4 +1,5 @@
 import React from 'react'
+import useAIChatbot from '@/hooks/use-ai-chatbot'
 import { CopyIcon } from '@/icons/copy-icon'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
@@ -53,23 +54,34 @@ const BlockContentMessage = ({
 	message,
 	taskEnded,
 	responses,
+	tasksTimedOut,
 }: {
 	message: TAssistantMessage
 	responses: Record<string, string[]>
 	taskEnded: Record<string, boolean>
+	tasksTimedOut: Set<string>
 }) => {
+	const { getTimeLeft } = useAIChatbot()
 	const messageResponses = responses[message.taskId] || []
 	if (messageResponses.length > 0) {
 		messageResponses[0] = messageResponses[0].trimStart()
 	}
 
+	const isRunning = !taskEnded[message.taskId]
+	const isTimedOut = tasksTimedOut.has(message.taskId)
+	const timeLeft = getTimeLeft(message.taskId)
+
 	if (!messageResponses.length) {
-		return <ChatbotStatus isRunning={true} />
+		return <ChatbotStatus isTimedOut={isTimedOut} timeLeft={timeLeft} />
 	}
 
 	return (
 		<>
-			<ChatbotStatus isRunning={!taskEnded[message.taskId]} />
+			<ChatbotStatus
+				isRunning={isRunning}
+				isTimedOut={isTimedOut}
+				timeLeft={timeLeft}
+			/>
 			{!hasToolResult(messageResponses) ? (
 				<StreamedResponseWithCopy
 					responses={messageResponses}
