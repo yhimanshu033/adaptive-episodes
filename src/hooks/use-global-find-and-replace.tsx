@@ -36,7 +36,8 @@ function useGlobalFindAndReplaceUtil() {
 		1000
 	)
 
-	const { caseSensitive, genitive, replaceEnabled, wholeWord } = options
+	const { caseSensitive, genitive, replaceEnabled, wholeWord, currentId } =
+		options
 	const search = options.search || ''
 	const replace = options.replace || ''
 
@@ -52,18 +53,23 @@ function useGlobalFindAndReplaceUtil() {
 	)
 
 	const extended = useExtendedStore(useShallow((state) => state.extended))
+
+	const contentMapKeys = useMemo(() => {
+		return extended.filter((key) => !!contentMap[key])
+	}, [contentMap, extended])
+
 	const text = useMemo(() => {
-		if (extended.length > Object.keys(contentMap).length) {
+		if (extended.length > contentMapKeys.length) {
 			return ''
 		}
-		return Object.keys(contentMap).reduce((acc, key) => {
+		return contentMapKeys.reduce((acc, key) => {
 			const obj = contentMap[Number(key)]
 			if (obj) {
 				acc += '\n' + getText(obj.children)
 			}
 			return acc
 		}, '')
-	}, [contentMap, extended.length])
+	}, [contentMapKeys, extended.length, contentMap])
 
 	const { data, isFetching } = useLocalizeHook({
 		text,
@@ -98,8 +104,15 @@ function useGlobalFindAndReplaceUtil() {
 	}, [extendedEpisodeIds])
 
 	const getRecords = useCallback(
-		(children: Value) =>
-			getRecordsUtil({ children, caseSensitive, genitive, search, wholeWord }),
+		(children: Value) => {
+			return getRecordsUtil({
+				children,
+				caseSensitive,
+				genitive,
+				search,
+				wholeWord,
+			})
+		},
 		[wholeWord, genitive, search, caseSensitive]
 	)
 
@@ -114,17 +127,17 @@ function useGlobalFindAndReplaceUtil() {
 
 	const records = useMemo(() => {
 		const records: number[][] = []
-		Object.keys(contentMap).forEach((key) => {
+		contentMapKeys.forEach((key) => {
 			const val = contentMap[Number(key)]
 			const currRecords = getRecords(val.children)
 			currRecords.forEach((rec) => records.push([Number(key), ...rec]))
 		})
 
 		return records
-	}, [getRecords, contentMap])
+	}, [getRecords, contentMap, contentMapKeys])
 
 	const getRecordTexts = useCallback(
-		(children: Value) =>
+		({ children, records }: { children: Value; records: number[][] }) =>
 			getRecordsTextUtil({
 				records,
 				caseSensitive,
@@ -133,18 +146,30 @@ function useGlobalFindAndReplaceUtil() {
 				search,
 				wholeWord,
 			}),
-		[wholeWord, genitive, search, caseSensitive, records]
+		[wholeWord, genitive, search, caseSensitive]
+	)
+
+	const getEpisodeRecords = useCallback(
+		(key: number) => {
+			const filteredRecords = records.filter((item) => item[0] === key)
+
+			return filteredRecords.map((item) => item.slice(1))
+		},
+		[records]
 	)
 
 	const recordTexts = useMemo(() => {
 		const texts: string[][] = []
-		Object.keys(contentMap).forEach((key) => {
+		contentMapKeys.forEach((key) => {
 			const val = contentMap[Number(key)]
-			const currRecordTexts = getRecordTexts(val.children)
+			const currRecordTexts = getRecordTexts({
+				children: val.children,
+				records: getEpisodeRecords(Number(key)),
+			})
 			texts.push(...currRecordTexts)
 		})
 		return texts
-	}, [getRecordTexts, contentMap])
+	}, [getRecordTexts, contentMap, contentMapKeys, getEpisodeRecords])
 
 	const setOptions = useCallback(
 		(value: Partial<typeof options>) =>
@@ -160,7 +185,7 @@ function useGlobalFindAndReplaceUtil() {
 		if (!records[ptr]) {
 			return
 		}
-		setOptions({ currentId: records[ptr].slice(1) })
+		setOptions({ currentId: records[ptr] })
 		const elem = document.getElementById(
 			`search-highlight-${records[ptr].join('-')}`
 		)
@@ -180,7 +205,7 @@ function useGlobalFindAndReplaceUtil() {
 		if (!search || !replaceEnabled) {
 			return
 		}
-		const replacedContent = Object.keys(contentMap).reduce(
+		const replacedContent = contentMapKeys.reduce(
 			(acc, key) => {
 				const children = contentMap[Number(key)].children
 				const updatedChildren = replaceAll({
@@ -208,10 +233,12 @@ function useGlobalFindAndReplaceUtil() {
 		caseSensitive,
 		replace,
 		contentMap,
+		contentMapKeys,
 	])
 
 	const onReplace = useCallback(() => {
-		const [episodeId, ...path] = records[ptr]
+		const [episodeId, ...path] = currentId || records[ptr]
+
 		const children = contentMap[episodeId]?.children || []
 		const updatedChildren = replaceOnce({ children, path, search, replace })
 		setReplacedContentMap((prev) => ({
@@ -220,6 +247,7 @@ function useGlobalFindAndReplaceUtil() {
 		}))
 		triggerSave()
 	}, [
+		currentId,
 		ptr,
 		records,
 		replace,
@@ -286,9 +314,8 @@ function useGlobalFindAndReplaceUtil() {
 		genitive: !!genitive,
 		onReplaceChange,
 		options: {
-			...options,
-			search: debouncedOptions.search,
-			replace: debouncedOptions.replace,
+			...debouncedOptions,
+			currentId: options.currentId,
 		} as FindReplaceConfig['options'],
 		replacedContentMap,
 		setReplacedContentMap,
@@ -318,9 +345,34 @@ export function GlobalFindAndReplaceProvider({
 export default function useGlobalFindAndReplace() {
 	const value = React.useContext(GlobalFindAndReplaceContext)
 	if (!value) {
-		throw new Error(
-			'useGlobalFindAndReplace must be used within a GlobalFindAndReplaceProvider'
-		)
+		return {
+			caseSensitive: false,
+			genitive: false,
+			handleNext: () => {},
+			handlePrev: () => {},
+			handleSearchChange: () => {},
+			handleSuggestionClick: () => {},
+			isFetching: false,
+			localized_entities: getLocalizationData({ data: undefined }),
+			occurrences: 0,
+			onReplace: () => {},
+			onReplaceAll: () => {},
+			onReplaceChange: () => {},
+			options: {},
+			ptr: 0,
+			records: [],
+			recordTexts: [],
+			replace: '',
+			replacedContentMap: {},
+			replaceEnabled: true,
+			search: '',
+			setOptions: () => {},
+			setPtr: () => {},
+			setReplacedContentMap: () => {},
+			toggleReplace: () => {},
+			toggleSearchMode: () => {},
+			wholeWord: false,
+		} as ReturnType<typeof useGlobalFindAndReplaceUtil>
 	}
 	return value
 }

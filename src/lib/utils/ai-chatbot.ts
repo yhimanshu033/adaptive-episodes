@@ -506,6 +506,7 @@ export function getRecordsUtil({
 		}
 		getCount(node, [index])
 	})
+	console.log({ records, children, search, caseSensitive, genitive, wholeWord })
 	return records
 }
 
@@ -632,6 +633,7 @@ export function getRecordsTextUtil({
 
 		texts.push(textArray)
 	})
+
 	return texts
 }
 
