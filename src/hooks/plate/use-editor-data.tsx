@@ -1,5 +1,8 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useEditorSelector, useEditorState } from '@platejs/core/react'
+import { useLocale } from 'next-intl'
+
+import { prettifyNumber } from '@/lib/utils/helpers'
 
 const useEditorDataUtil = () => {
 	const editorText = useEditorSelector((editor) => {
@@ -11,11 +14,21 @@ const useEditorDataUtil = () => {
 		return text.join('\n')
 	}, [])
 
+	const locale = useLocale()
+	const wordCount = useMemo(() => {
+		const words = editorText
+			.trim()
+			.split(/\s+/)
+			.filter((w) => !!w.length).length
+		return { display: prettifyNumber(words, locale), value: words }
+	}, [editorText, locale])
+
 	const { children } = useEditorState()
 
 	return {
 		editorText,
 		children,
+		wordCount,
 	}
 }
 

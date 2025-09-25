@@ -25,6 +25,7 @@ const initialState: PlateStoreData = {
 	fontFamily: DEFAULT_FONT_FAMILY,
 	localDiffValue: null,
 	focusMode: false,
+	disableDiffAcceptReject: false,
 }
 
 const initialAiState: AIStoreType = {
