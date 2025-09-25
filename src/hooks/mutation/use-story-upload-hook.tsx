@@ -73,7 +73,11 @@ const useStoryUploadHook = () => {
 
 			const payload = {
 				...rest,
-				project_urls: project_urls?.map((url) => url?.url as string) || null,
+				project_urls: project_urls
+					? project_urls
+							.filter((result): result is { url: string } => !!result?.url)
+							.map((result) => result.url)
+					: null,
 				image: image?.url || null,
 				author: author || null,
 				create_blank_project: !story_files || !story_files.length,
