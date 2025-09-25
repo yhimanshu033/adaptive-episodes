@@ -257,9 +257,7 @@ const useBeatSheetEditor = () => {
 				const shouldHavePrimaryColor =
 					openSceneIds.length === 0 ||
 					openSceneIds.includes(node.scene_id as string)
-				domNode.style.color = shouldHavePrimaryColor
-					? 'var(--color-fm-primary)'
-					: 'var(--color-fm-tertiary)'
+				domNode.style.opacity = shouldHavePrimaryColor ? '1' : '0.3'
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -6,6 +6,7 @@ export interface BeatsheetEditorStoreType {
 	activeDragItem: DragItem | null
 	characters: TCharacter[]
 	enhancementPlan: boolean
+	openPromptId: string | null
 	openSceneIds: string[]
 	scenes: TScene[]
 }
@@ -46,6 +47,7 @@ export type TGenerateBeatsheetBody = {
 	input_language: ELanguage
 	project_id: number
 	scene_texts: Record<string, string>
+	scene_wide_prompt?: string
 	use_enhancement_plan?: boolean
 }
 
