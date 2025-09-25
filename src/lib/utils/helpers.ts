@@ -965,3 +965,19 @@ export function getSavingData(
 		chapter_title: params.title || params.chapterData?.chapter.chapter_title,
 	}
 }
+
+export const checkForDuplicates = (existingFiles: File[], newFiles: File[]) => {
+	const duplicates: string[] = []
+	const existingFileMap = new Map(
+		existingFiles.map((file) => [`${file.name}-${file.size}`, file])
+	)
+
+	newFiles.forEach((newFile) => {
+		const fileKey = `${newFile.name}-${newFile.size}`
+		if (existingFileMap.has(fileKey)) {
+			duplicates.push(newFile.name)
+		}
+	})
+
+	return duplicates
+}
