@@ -42,7 +42,7 @@ export default function useFindAndReplace() {
 	} = usePluginOptions(FindReplacePlugin, (state) => ({
 		search: state.search || '',
 		replace: state.replace || '',
-		replaceEnabled: state.replaceEnabled || false,
+		replaceEnabled: state.replaceEnabled || true,
 		caseSensitive: state.caseSensitive || false,
 		wholeWord: state.wholeWord || false,
 		genitive: state.genitive || false,
@@ -106,7 +106,16 @@ export default function useFindAndReplace() {
 	)
 
 	useEffect(() => {
-		if (!records[ptr]) {
+		if (!records.length || !!records[ptr]) {
+			return
+		}
+		if (ptr >= records.length) {
+			setPtr(records.length - 1)
+		}
+	}, [ptr, records])
+
+	useEffect(() => {
+		if (!records?.[ptr]) {
 			return
 		}
 		setOptions({ currentId: records[ptr] })
@@ -139,7 +148,7 @@ export default function useFindAndReplace() {
 			wholeWord,
 		})
 		editor.tf.setValue(breakDownValue(updatedChildren))
-		setOptions({ search: '', replace: '', replaceEnabled: false })
+		setOptions({ search: '', replace: '' })
 	}, [
 		search,
 		replaceEnabled,

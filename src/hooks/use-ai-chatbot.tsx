@@ -10,7 +10,6 @@ import React, {
 } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
-import useEditorData from '@/hooks/plate/use-editor-data'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useThrottle } from '@/hooks/use-throttle'
 import ReviewAdded from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages/review-added'
@@ -21,7 +20,12 @@ import { parse } from 'best-effort-json-parser'
 import { jsonrepair } from 'jsonrepair'
 import { nanoid } from 'nanoid'
 import { Value } from 'platejs'
-import { ParagraphPlugin, useEditorPlugin, useEditorRef } from 'platejs/react'
+import {
+	ParagraphPlugin,
+	useEditorPlugin,
+	useEditorRef,
+	useEditorState,
+} from 'platejs/react'
 
 import {
 	discussionPlugin,
@@ -108,7 +112,7 @@ export function ChatbotProvider({
 		updateMessages,
 	} = useAIStore()
 
-	const { setSidebar } = usePlateStore()
+	const { setSidebar, setDisableDiffAcceptReject } = usePlateStore()
 	const {
 		setDualViewMode,
 		setAcceptedDiffValue,
@@ -123,7 +127,7 @@ export function ChatbotProvider({
 	const { initialStoryData } = useEpisodeTableContext()
 
 	const editor = useEditorRef()
-	const { children } = useEditorData()
+	const { children } = useEditorState()
 	const { setOptions: setDiscussionOptions, getOption: getDiscussionOption } =
 		useEditorPlugin(discussionPlugin)
 
@@ -375,6 +379,7 @@ export function ChatbotProvider({
 		}
 		if (taskEnded[sfxStreaming]) {
 			setSfxStreaming('')
+			setDisableDiffAcceptReject(false)
 			setOriginalChildren(undefined)
 			return
 		}
@@ -412,6 +417,7 @@ export function ChatbotProvider({
 
 			setResponseValue(structuredClone(responseValue))
 			setPrevValue(structuredClone(children))
+			setDisableDiffAcceptReject(true)
 		} catch (error) {
 			console.log(error)
 		}
