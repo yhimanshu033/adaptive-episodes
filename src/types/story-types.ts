@@ -50,7 +50,7 @@ export type StoryUploadParams = {
 		image: string | null
 		input_language: string
 		llm_model: string
-		project_url: string | null
+		project_urls: string[] | null
 		run_adaptation: boolean
 		start_ep: number
 		target_language?: string

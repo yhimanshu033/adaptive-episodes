@@ -1,3 +1,23 @@
+## 1.2.0 (2025-09-25)
+
+* fix: 🐛 file size refactor ([41b9aae](https://github.com/Pocket-Fm/co-writing/commit/41b9aae))
+* fix: 🐛 qa bug fix ([0b06747](https://github.com/Pocket-Fm/co-writing/commit/0b06747))
+* fix: 🐛 qa bug fixes ([fb24853](https://github.com/Pocket-Fm/co-writing/commit/fb24853))
+* fix: 🐛 toast fix ([cc0aa30](https://github.com/Pocket-Fm/co-writing/commit/cc0aa30))
+* refactor: 💡 resolved comments ([f40f973](https://github.com/Pocket-Fm/co-writing/commit/f40f973))
+* feat: 🎸 multi episode download ([a7ecb1f](https://github.com/Pocket-Fm/co-writing/commit/a7ecb1f))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
 ## 1.1.0 (2025-09-25)
 
 * fix: 🐛 added fallback in use-my-editor ([1e10b7f](https://github.com/Pocket-Fm/co-writing/commit/1e10b7f))
