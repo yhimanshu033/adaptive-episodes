@@ -99,6 +99,7 @@ export type MinifiedValue = Array<IndexedText>
 export type TSocketQueryParams = { room_id?: string; task_id: string }
 
 export enum ELSMappingType {
+	CHARACTER = 'Character',
 	ENTITY = 'entity',
 	PERSON = 'person',
 }
@@ -117,11 +118,15 @@ export type LSMappingCommon = {
 	gender?: ELSMappingGender | ELSMappingChineseGender
 	is_deleted?: string
 	type: ELSMappingType
-} & Partial<{ [key: string]: string }>
+} & Partial<{ [key: string]: string | number }>
 
 export interface LSMappingOutputItem extends LSMappingCommon {
 	localised_name: string
 	original_name: string
+}
+
+export interface LSMappingOutputItemV2 {
+	[key: string]: LSMappingOutputItem[]
 }
 
 export interface LSMappingInputItem {
@@ -130,12 +135,14 @@ export interface LSMappingInputItem {
 	} & LSMappingCommon
 }
 
+export type LSMappingInputItemV2 = Record<string, LSMappingInputItem>
+
 export interface LSMappingInput {
-	ls_mapping: LSMappingInputItem
+	ls_mapping: LSMappingInputItemV2
 }
 
 export interface LSMappingOutput {
-	ls_mapping: LSMappingOutputItem[]
+	ls_mapping: LSMappingOutputItemV2
 }
 
 export type StartPollingParams<

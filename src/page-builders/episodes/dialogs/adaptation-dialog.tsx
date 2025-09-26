@@ -4,7 +4,7 @@ import { languageToTitle } from '@/constants/episodes-constants'
 import useAdaptationQuery from '@/hooks/query/use-adaptation-query'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { TickCircleIcon } from '@/icons/tick-circle-icon'
-import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
+import LsTabs from '@/page-builders/episodes/dialogs/ls-tabs'
 
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
@@ -267,7 +267,7 @@ export default function AdaptationDialog({
 						</Case>
 
 						<Case value={3}>
-							<LSTableEditor
+							<LsTabs
 								tableData={tableData}
 								setTableData={setTableData}
 								handleClose={handleClose}

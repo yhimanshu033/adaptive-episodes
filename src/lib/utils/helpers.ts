@@ -28,8 +28,8 @@ import {
 	ELSMappingType,
 	EStatus,
 	LSMappingInput,
-	LSMappingOutput,
 	LSMappingOutputItem,
+	LSMappingOutputItemV2,
 	STATUS_ORDER,
 } from '@/types/common'
 import {
@@ -729,20 +729,21 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	return result
 }
 
-export function parseInputLSMapping(input: LSMappingInput) {
-	const tableItems: LSMappingOutputItem[] = Object.entries(
-		input.ls_mapping
-	).map(([key, value]) => ({
-		original_name: key,
-		...value,
-	}))
-
-	return tableItems
+export function parseInputLSMapping(
+	input: LSMappingInput
+): LSMappingOutputItemV2 {
+	return Object.fromEntries(
+		Object.entries(input.ls_mapping).map(([section, items]) => [
+			section,
+			Object.entries(items).map(([original_name, item]) => ({
+				original_name,
+				...item,
+			})),
+		])
+	)
 }
 
-export function parseOutputLSMapping(
-	data: Partial<LSMappingOutput['ls_mapping']>
-) {
+export function parseOutputLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	return data.map((item) => {
 		if (item?.type !== ELSMappingType.PERSON) {
 			delete item?.gender
@@ -751,9 +752,7 @@ export function parseOutputLSMapping(
 	})
 }
 
-export function isInvalidLSMapping(
-	data: Partial<LSMappingOutput['ls_mapping']>
-) {
+export function isInvalidLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	return data.some(
 		(item) =>
 			!item?.original_name?.trim() ||
