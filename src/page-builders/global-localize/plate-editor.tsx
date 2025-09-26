@@ -1,7 +1,9 @@
 'use client'
 
 import React from 'react'
+import { useSearchParams } from 'next/navigation'
 import { MAIN_EDITOR_ID } from '@/constants/editor-constants'
+import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
 import { EditorDataContextProvider } from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useMyEditor from '@/hooks/use-my-editor'
@@ -29,10 +31,14 @@ function MyEditor({
 	content: TGetEpisodeResponse
 	latestStatus: EStatus | 'BASE'
 }) {
+	const searchParams = useSearchParams()
+	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
+
 	const editor = useMyEditor({
 		content: content.text || '',
 		id: MAIN_EDITOR_ID,
 		comments: content?.chapter?.props?.comments,
+		simplified: !!simplifiedEditor,
 	})
 
 	return (
