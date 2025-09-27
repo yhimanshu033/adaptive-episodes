@@ -25,6 +25,10 @@ function useAIStore() {
 			const lastIndex = state.messages.length - 1
 			const lastMessage = state.messages[lastIndex]
 
+			if (lastIndex < 0) {
+				return {}
+			}
+
 			const newMessage = {
 				...lastMessage,
 				...message,

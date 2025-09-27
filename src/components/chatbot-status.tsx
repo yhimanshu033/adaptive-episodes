@@ -58,7 +58,7 @@ const ChatbotStatus = ({
 			return <SpinnerSolidIcon className="h-5 w-5 animate-spin" />
 		}
 		if (isError) {
-			;<InfoIcon className="text-fm-secondary-800 h-5 w-5" />
+			return <InfoIcon className="text-fm-secondary-800 h-5 w-5" />
 		}
 		return <TickCircleIcon className="text-fm-secondary-800 h-5 w-5" />
 	}, [isTimedOut, isRunning, isError])
