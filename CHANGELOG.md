@@ -1,3 +1,56 @@
+## 1.2.0 (2025-09-25)
+
+* fix: 🐛 file size refactor ([41b9aae](https://github.com/Pocket-Fm/co-writing/commit/41b9aae))
+* fix: 🐛 qa bug fix ([0b06747](https://github.com/Pocket-Fm/co-writing/commit/0b06747))
+* fix: 🐛 qa bug fixes ([fb24853](https://github.com/Pocket-Fm/co-writing/commit/fb24853))
+* fix: 🐛 toast fix ([cc0aa30](https://github.com/Pocket-Fm/co-writing/commit/cc0aa30))
+* refactor: 💡 resolved comments ([f40f973](https://github.com/Pocket-Fm/co-writing/commit/f40f973))
+* feat: 🎸 multi episode download ([a7ecb1f](https://github.com/Pocket-Fm/co-writing/commit/a7ecb1f))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
+## 1.1.0 (2025-09-25)
+
+* fix: 🐛 added fallback in use-my-editor ([1e10b7f](https://github.com/Pocket-Fm/co-writing/commit/1e10b7f))
+* fix: 🐛 bse text color fix ([e8e6797](https://github.com/Pocket-Fm/co-writing/commit/e8e6797))
+* fix: 🐛 comments resolved ([12eef40](https://github.com/Pocket-Fm/co-writing/commit/12eef40))
+* fix: 🐛 disabled diff accept reject while sfx adding ([72a4b4a](https://github.com/Pocket-Fm/co-writing/commit/72a4b4a))
+* fix: 🐛 find and replace bugs ([9e33c7f](https://github.com/Pocket-Fm/co-writing/commit/9e33c7f))
+* fix: 🐛 minor ui fixes ([d2e6090](https://github.com/Pocket-Fm/co-writing/commit/d2e6090))
+* fix: 🐛 preview mode fix ([d1b3f2c](https://github.com/Pocket-Fm/co-writing/commit/d1b3f2c))
+* fix: 🐛 resolved cursor comments ([3edeb33](https://github.com/Pocket-Fm/co-writing/commit/3edeb33))
+* fix: 🐛 route fix ([716e6ae](https://github.com/Pocket-Fm/co-writing/commit/716e6ae))
+* fix: 🐛 saving state race conditions ([831ca68](https://github.com/Pocket-Fm/co-writing/commit/831ca68))
+* fix: 🐛 scene wide prompt fix ([79f537d](https://github.com/Pocket-Fm/co-writing/commit/79f537d))
+* feat: 🎸 added language dropdown in bulk prompt ([94e2f95](https://github.com/Pocket-Fm/co-writing/commit/94e2f95))
+* feat: 🎸 scene wide prompt ([22d1976](https://github.com/Pocket-Fm/co-writing/commit/22d1976))
+* ci: 🎡 added codeowners files ([ec3b881](https://github.com/Pocket-Fm/co-writing/commit/ec3b881))
+* refactor: 💡 added more projects to bse ([df1937f](https://github.com/Pocket-Fm/co-writing/commit/df1937f))
+
+
+### BREAKING CHANGE
+
+* 🧨 n
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
 ## <small>1.0.3 (2025-09-18)</small>
 
 * fix: 🐛 view ls sheet width fix ([dcea537](https://github.com/Pocket-Fm/co-writing/commit/dcea537))

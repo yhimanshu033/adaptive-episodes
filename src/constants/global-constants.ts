@@ -112,6 +112,7 @@ export const API_URLS = {
 	BEATSHEET_GENERATE: '/aicopilot/bse',
 	BULK_PROMPT_SEND: '/project/:projectId/prompt/',
 	GET_SCENES_METADATA: '/scenes/metadata/',
+	SCENE_PROMPT_GENERATE: '/aicopilot/bse/scene_wide',
 }
 
 export const INDEXED_DB_KEYS = {
@@ -147,3 +148,5 @@ export const SAMPLE_DOC_LINK =
 	'https://docs.google.com/document/d/1i5s7OX9vmkLPw96htixpPs_xGZlk73NbqvVAVw9zHME/edit?usp=sharing'
 
 export const FETCHED_BUILD_VERSION_KEY = 'fetchedBuildVersion'
+
+export const SOCKET_STREAMING_TIMEOUT = 60000 //1 minute

@@ -20,7 +20,7 @@ export default function RenderMessage({
 	message: TMessage
 }) {
 	const { handleAccept } = useAcceptChanges()
-	const { taskEnded, responses } = useSocketStreaming()
+	const { taskEnded, responses, tasksTimedOut } = useSocketStreaming()
 	const { store, setActiveDiffId } = usePlateStore()
 	const { diffIdList, activeDiffId } = store(
 		useShallow((state) => ({
@@ -49,6 +49,7 @@ export default function RenderMessage({
 				message={message}
 				index={index}
 				taskEnded={taskEnded}
+				tasksTimedOut={tasksTimedOut}
 				diffIdList={diffIdList}
 				sfxIndex={sfxIndex}
 				setActiveDiffId={setActiveDiffId}
@@ -67,9 +68,16 @@ export default function RenderMessage({
 				message={message}
 				taskEnded={taskEnded}
 				responses={responses}
+				tasksTimedOut={tasksTimedOut}
 			/>
 		)
 	}
 
-	return <RegularMessage message={message} taskEnded={taskEnded} />
+	return (
+		<RegularMessage
+			message={message}
+			taskEnded={taskEnded}
+			tasksTimedOut={tasksTimedOut}
+		/>
+	)
 }

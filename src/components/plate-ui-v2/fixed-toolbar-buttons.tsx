@@ -102,9 +102,7 @@ const RightToolbarSection = React.memo(() => (
 		<ToolbarGroup>
 			<ToggleFindAndReplace />
 		</ToolbarGroup>
-		<ToolbarGroup>
-			<ToogleBeatSheetEditor />
-		</ToolbarGroup>
+		<ToogleBeatSheetEditor />
 		<ToolbarGroup>
 			<TranslationToggleButton />
 		</ToolbarGroup>

@@ -12,6 +12,8 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import NextTopLoader from 'nextjs-toploader'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import { Toaster } from '@/components/aural-ui/toast'
 import { TooltipProvider } from '@/components/plate-ui-v2/tooltip'
@@ -55,38 +57,40 @@ const AppProvider = ({
 	return (
 		<SessionProvider session={session}>
 			<NuqsAdapter>
-				<SocketProvider>
-					<SocketStreamingProvider>
-						<PollingProvider>
-							<QueryClientProvider client={queryClient}>
-								<ThemeProvider
-									attribute="class"
-									forcedTheme="dark"
-									disableTransitionOnChange
-								>
-									<TooltipProvider
-										disableHoverableContent
-										delayDuration={500}
-										skipDelayDuration={0}
+				<DndProvider backend={HTML5Backend}>
+					<SocketProvider>
+						<SocketStreamingProvider>
+							<PollingProvider>
+								<QueryClientProvider client={queryClient}>
+									<ThemeProvider
+										attribute="class"
+										forcedTheme="dark"
+										disableTransitionOnChange
 									>
-										<AdaptationProvider>
-											<NextTopLoader
-												color="var(--color-fm-secondary-800)"
-												showSpinner={false}
-											/>
-											<PlayerProvider>
-												<Player />
-												{children}
-											</PlayerProvider>
-											<Toaster />
-										</AdaptationProvider>
-										<ReactQueryDevtools />
-									</TooltipProvider>
-								</ThemeProvider>
-							</QueryClientProvider>
-						</PollingProvider>
-					</SocketStreamingProvider>
-				</SocketProvider>
+										<TooltipProvider
+											disableHoverableContent
+											delayDuration={500}
+											skipDelayDuration={0}
+										>
+											<AdaptationProvider>
+												<NextTopLoader
+													color="var(--color-fm-secondary-800)"
+													showSpinner={false}
+												/>
+												<PlayerProvider>
+													<Player />
+													{children}
+												</PlayerProvider>
+												<Toaster />
+											</AdaptationProvider>
+											<ReactQueryDevtools />
+										</TooltipProvider>
+									</ThemeProvider>
+								</QueryClientProvider>
+							</PollingProvider>
+						</SocketStreamingProvider>
+					</SocketProvider>
+				</DndProvider>
 			</NuqsAdapter>
 		</SessionProvider>
 	)
