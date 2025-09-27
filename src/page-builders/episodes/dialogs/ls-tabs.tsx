@@ -31,7 +31,7 @@ import LSTableEditor from './ls-editor'
 interface LsTabsProps {
 	handleClose?: () => void
 	onSubmit?: (data: LSMappingOutput) => void
-	setTableData?: (data: LSMappingOutputItemV2) => void
+	setTableData?: React.Dispatch<React.SetStateAction<LSMappingOutputItemV2>>
 	tableData: LSMappingOutputItemV2
 	viewOnly?: boolean
 }
@@ -206,12 +206,12 @@ const LsTabs = ({
 				return
 			}
 
-			setTableData({
-				...tableData,
+			setTableData((prevTableData) => ({
+				...prevTableData,
 				[tabKey]: newData,
-			} as LSMappingOutputItemV2)
+			}))
 		},
-		[tableData, setTableData]
+		[setTableData]
 	)
 
 	const hasInvalidData = useMemo(() => {
@@ -234,7 +234,7 @@ const LsTabs = ({
 			setActiveTab(tabKeys[0])
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tableData])
+	}, [tabKeys.length])
 
 	if (tabKeys.length === 0) {
 		return (
@@ -244,7 +244,7 @@ const LsTabs = ({
 		)
 	}
 
-	const RenderContent = () => {
+	const renderContent = () => {
 		if (tabKeys.length === 1) {
 			const singleTabKey = tabKeys[0]
 			return (
@@ -314,9 +314,7 @@ const LsTabs = ({
 				'h-[calc(100%-64px)]': viewOnly,
 			})}
 		>
-			<div className="flex-1">
-				<RenderContent />
-			</div>
+			<div className="flex-1">{renderContent()}</div>
 			<ActionButtons
 				viewOnly={viewOnly}
 				handleClose={handleClose}
