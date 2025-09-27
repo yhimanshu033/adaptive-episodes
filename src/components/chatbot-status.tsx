@@ -2,6 +2,7 @@ import React from 'react'
 import { AiAvatarIcon } from '@/icons/ai-avatar-icon'
 import { SpinnerSolidIcon } from '@/icons/spinner-solid-icon'
 import { TickCircleIcon } from '@/icons/tick-circle-icon'
+import { InfoIcon } from 'lucide-react'
 
 import { cn } from '@/lib/aural-ui/utils'
 
@@ -9,8 +10,10 @@ import { Typography } from './aural-ui/typography'
 
 const ChatbotStatus = ({
 	isRunning,
+	isError,
 	text,
 }: {
+	isError?: boolean
 	isRunning?: boolean
 	text?: string
 }) => {
@@ -26,6 +29,8 @@ const ChatbotStatus = ({
 			</Typography>
 			{isRunning ? (
 				<SpinnerSolidIcon className="h-5 w-5 animate-spin" />
+			) : isError ? (
+				<InfoIcon className="text-fm-secondary-800 h-5 w-5" />
 			) : (
 				<TickCircleIcon className="text-fm-secondary-800 h-5 w-5" />
 			)}

@@ -13,8 +13,10 @@ import SFXMessage from './sfx-message'
 export default function RenderMessage({
 	message,
 	index,
+	isLast,
 }: {
 	index: number
+	isLast?: boolean
 	message: TMessage
 }) {
 	const { handleAccept } = useAcceptChanges()
@@ -51,6 +53,7 @@ export default function RenderMessage({
 				sfxIndex={sfxIndex}
 				setActiveDiffId={setActiveDiffId}
 				handleAccept={handleAccept}
+				isLast={isLast}
 			/>
 		)
 	}

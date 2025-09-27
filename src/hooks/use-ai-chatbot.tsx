@@ -32,7 +32,12 @@ import {
 	TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
-import { addSFX, convertReviewResponse, minify } from '@/lib/utils/ai-chatbot'
+import {
+	addSFX,
+	convertReviewResponse,
+	minify,
+	parseSFXResponse,
+} from '@/lib/utils/ai-chatbot'
 import { parseOptimistically } from '@/lib/utils/helpers'
 import { breakDownValue, getText } from '@/lib/utils/plate'
 
@@ -110,6 +115,7 @@ export function ChatbotProvider({
 		setResponseValue,
 		setRequestedAction,
 		updateMessages,
+		updateLastMessage,
 	} = useAIStore()
 
 	const { setSidebar, setDisableDiffAcceptReject } = usePlateStore()
@@ -394,27 +400,23 @@ export function ChatbotProvider({
 			if (!parsedResponse) {
 				return
 			}
-			parsedResponse = parsedResponse
-				.filter((item) => {
-					const keys = Object.keys(item)
-					return keys.includes('match_string') &&
-						keys.includes('sfx') &&
-						keys.includes('id')
-						? item
-						: null
-				})
-				.filter(Boolean)
+			parsedResponse = parseSFXResponse({ throttledResponse })
 
-			if (!parsedResponse.length) {
-				return
-			}
-
-			const responseValue = addSFX(
+			const { newChildren: responseValue, sfxCount } = addSFX(
 				parsedResponse,
 				originalChildren,
 				ParagraphPlugin.key
 			)
 
+			if (!sfxCount) {
+				return
+			}
+
+			updateLastMessage({
+				meta: {
+					sfxCount,
+				},
+			})
 			setResponseValue(structuredClone(responseValue))
 			setPrevValue(structuredClone(children))
 			setDisableDiffAcceptReject(true)

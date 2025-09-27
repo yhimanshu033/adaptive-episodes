@@ -20,6 +20,24 @@ function useAIStore() {
 		})
 	}
 
+	const updateLastMessage = (message: Partial<TMessage>) => {
+		useAiStoreContext.setState((state) => {
+			const lastIndex = state.messages.length - 1
+			const lastMessage = state.messages[lastIndex]
+
+			const newMessage = {
+				...lastMessage,
+				...message,
+			} as TMessage
+
+			return {
+				messages: state.messages.map((msg, i) =>
+					i === lastIndex ? newMessage : msg
+				),
+			}
+		})
+	}
+
 	const popMessage = () => {
 		useAiStoreContext.setState((state) => {
 			return { messages: state.messages.slice(0, -1) }
@@ -130,6 +148,7 @@ function useAIStore() {
 		setStoryExplorerConfigurationValue,
 		setInputFocus,
 		setFocusConfig,
+		updateLastMessage,
 	}
 }
 

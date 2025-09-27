@@ -35,9 +35,13 @@ const MessagesList = ({ isPending }: { isPending: boolean }) => {
 				<div className="flex flex-col">
 					<IfElse condition={!!messages.length}>
 						<If>
-							{messages.map((message, index) => (
+							{messages.map((message, index, msgs) => (
 								<div key={index} className="mb-6">
-									<RenderMessage message={message} index={index} />
+									<RenderMessage
+										message={message}
+										index={index}
+										isLast={index === msgs.length - 1}
+									/>
 								</div>
 							))}
 							<If condition={isPending}>
