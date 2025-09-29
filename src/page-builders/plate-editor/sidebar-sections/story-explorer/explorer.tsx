@@ -39,6 +39,10 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 		isTaskEnded,
 		handleTabChange,
 		activeExplorerMode,
+		isTaskTimedOut,
+		refetchPlotOutline,
+		getTimeLeft,
+		taskId,
 	} = useStoryExplorer({ start, end })
 
 	return (
@@ -74,9 +78,13 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 							}
 							explorerData={content}
 							isLoading={isMetadataLoading}
+							isTimedOut={isTaskTimedOut}
 							enableNote={isTaskEnded}
 							start={start}
 							end={end}
+							refetch={() => void refetchPlotOutline()}
+							getTimeLeft={getTimeLeft}
+							taskId={taskId}
 						/>
 					</If>
 					<Else>

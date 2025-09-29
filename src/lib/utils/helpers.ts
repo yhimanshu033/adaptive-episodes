@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server'
-import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
+import {
+	AVAILABLE_TARGET_LANGUAGES,
+	LSMappingTabs,
+} from '@/constants/ai-constants'
 import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
@@ -28,8 +31,9 @@ import {
 	ELSMappingType,
 	EStatus,
 	LSMappingInput,
-	LSMappingOutput,
+	LSMappingInputItem,
 	LSMappingOutputItem,
+	LSMappingOutputItemV2,
 	STATUS_ORDER,
 } from '@/types/common'
 import {
@@ -729,20 +733,21 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	return result
 }
 
-export function parseInputLSMapping(input: LSMappingInput) {
-	const tableItems: LSMappingOutputItem[] = Object.entries(
-		input.ls_mapping
-	).map(([key, value]) => ({
-		original_name: key,
-		...value,
-	}))
-
-	return tableItems
+export function parseInputLSMapping(
+	input: LSMappingInput
+): LSMappingOutputItemV2 {
+	return Object.fromEntries(
+		Object.entries(input.ls_mapping).map(([section, items]) => [
+			section,
+			Object.entries(items).map(([original_name, item]) => ({
+				original_name,
+				...item,
+			})),
+		])
+	)
 }
 
-export function parseOutputLSMapping(
-	data: Partial<LSMappingOutput['ls_mapping']>
-) {
+export function parseOutputLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	return data.map((item) => {
 		if (item?.type !== ELSMappingType.PERSON) {
 			delete item?.gender
@@ -751,9 +756,7 @@ export function parseOutputLSMapping(
 	})
 }
 
-export function isInvalidLSMapping(
-	data: Partial<LSMappingOutput['ls_mapping']>
-) {
+export function isInvalidLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	return data.some(
 		(item) =>
 			!item?.original_name?.trim() ||
@@ -761,6 +764,28 @@ export function isInvalidLSMapping(
 			!item?.type ||
 			(item?.type === ELSMappingType.PERSON && !item?.gender)
 	)
+}
+
+export const migrateOldLSMapping = (
+	data?:
+		| LSMappingInput
+		| {
+				ls_mapping: LSMappingInputItem
+		  }
+		| null
+): LSMappingInput | null => {
+	if (!data) {
+		return null
+	}
+	const lsKeys = Object.keys(data.ls_mapping)
+	if (LSMappingTabs.some((tab) => lsKeys.includes(tab))) {
+		return data as LSMappingInput
+	}
+	return {
+		ls_mapping: {
+			[LSMappingTabs[0]]: data.ls_mapping as LSMappingInputItem,
+		},
+	}
 }
 
 export function isInternalUser(session: Session | null) {

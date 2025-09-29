@@ -106,7 +106,7 @@ export const API_URLS = {
 	GET_SLACK_CHANNEL: '/project/:projectId/get-slack-channel-info/',
 	SEND_TASK_TO_ADAPTATION: '/project/send-task-to-adaptation',
 	GET_ADAPTATION_LS: '/project/:projectId/:language/get_ls_sheet',
-	GET_STORY_DETAILS: '/projects/:storyId',
+	GET_STORY_DETAILS: '/projects/:storyId/',
 	GET_DOC_EPISODE_COUNT: '/project/get-episode-count/',
 	BULK_EPISODE_DOWNLOAD: '/project/:projectId/download/',
 	BEATSHEET_GENERATE: '/aicopilot/bse',
@@ -148,3 +148,5 @@ export const SAMPLE_DOC_LINK =
 	'https://docs.google.com/document/d/1i5s7OX9vmkLPw96htixpPs_xGZlk73NbqvVAVw9zHME/edit?usp=sharing'
 
 export const FETCHED_BUILD_VERSION_KEY = 'fetchedBuildVersion'
+
+export const SOCKET_STREAMING_TIMEOUT = 60000 //1 minute

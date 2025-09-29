@@ -1,3 +1,33 @@
+## 1.3.0 (2025-09-29)
+
+* fix: 🐛 backward compatibility ([26abb27](https://github.com/Pocket-Fm/co-writing/commit/26abb27))
+* fix: 🐛 bugbot comment ([a25a431](https://github.com/Pocket-Fm/co-writing/commit/a25a431))
+* fix: 🐛 comments ([6019e84](https://github.com/Pocket-Fm/co-writing/commit/6019e84))
+* fix: 🐛 far and ep title fix ([2cb5913](https://github.com/Pocket-Fm/co-writing/commit/2cb5913))
+* fix: 🐛 ls edit fix ([fbbdf9b](https://github.com/Pocket-Fm/co-writing/commit/fbbdf9b))
+* fix: 🐛 ls sheet fix ([7404a9e](https://github.com/Pocket-Fm/co-writing/commit/7404a9e))
+* fix: 🐛 preserved next occurence on replace ([60ef527](https://github.com/Pocket-Fm/co-writing/commit/60ef527))
+* fix: 🐛 removed clas ([084c5dd](https://github.com/Pocket-Fm/co-writing/commit/084c5dd))
+* fix: 🐛 resolved comments ([49df4cb](https://github.com/Pocket-Fm/co-writing/commit/49df4cb))
+* fix: 🐛 sfx flow, visibility and scroll ([2fc01c4](https://github.com/Pocket-Fm/co-writing/commit/2fc01c4))
+* fix: 🐛 timeout status message fix ([621c260](https://github.com/Pocket-Fm/co-writing/commit/621c260))
+* feat: 🎸 added timeout to socket streaming ([52b5111](https://github.com/Pocket-Fm/co-writing/commit/52b5111))
+* feat: 🎸 ls sheet v2 flow ([07159a6](https://github.com/Pocket-Fm/co-writing/commit/07159a6))
+* cursor comment fix ([ad08436](https://github.com/Pocket-Fm/co-writing/commit/ad08436))
+* refactor: 💡 revert devtools changes ([9dc4f82](https://github.com/Pocket-Fm/co-writing/commit/9dc4f82))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
 ## 1.2.0 (2025-09-25)
 
 * fix: 🐛 file size refactor ([41b9aae](https://github.com/Pocket-Fm/co-writing/commit/41b9aae))
