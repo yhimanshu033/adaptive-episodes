@@ -58,7 +58,7 @@ function useAdaptationUtil() {
 		if (sendLSPending) {
 			return 2
 		}
-		if (data?.ls_mapping || tableData.length) {
+		if (data?.ls_mapping || Object.keys(tableData).length) {
 			return 3
 		}
 		if (isPending || isFetchingLSSheet) {

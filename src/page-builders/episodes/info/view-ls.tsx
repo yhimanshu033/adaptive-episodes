@@ -34,7 +34,7 @@ export default function ViewLS() {
 				showCloseButton={false}
 				noise="none"
 				opacity="high"
-				className="bg-fm-divider-secondary-alpha-80/50 h-[80vh] min-w-[90vw] gap-0 p-0 pb-6"
+				className="bg-fm-divider-secondary-alpha-80/50 h-[80vh] min-w-[90vw] gap-0 overflow-y-auto p-0 pb-6"
 			>
 				<DialogHeader>
 					<DialogTitle className="flex items-center justify-between gap-4 px-6 py-4">

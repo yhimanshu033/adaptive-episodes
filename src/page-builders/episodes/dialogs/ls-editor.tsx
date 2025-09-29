@@ -44,7 +44,7 @@ const LSTableEditor = memo(
 		}
 
 		return (
-			<div className="h-full max-w-full overflow-y-auto px-6">
+			<div className="h-full max-w-full overflow-y-auto">
 				<Table className="bg-transparent">
 					<TableHeader className="bg-fm-surface-secondary sticky top-0 z-10">
 						<TableRow className="min-h-12">
