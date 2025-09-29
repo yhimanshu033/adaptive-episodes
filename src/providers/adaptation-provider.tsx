@@ -15,7 +15,11 @@ import {
 } from '@/lib/utils/helpers'
 import { getRecentStore } from '@/lib/utils/indexed-db'
 
-import { ELanguage, LSMappingOutput, TSourceLanguage } from '@/types/common'
+import {
+	ELanguage,
+	LSMappingOutputItemV2,
+	TSourceLanguage,
+} from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
 import { TStory } from '@/types/story-types'
 
@@ -27,7 +31,7 @@ function useAdaptationUtil() {
 		useState<ELanguage>(ELanguage.GERMAN)
 
 	const [storyData, setStory] = useState<TStory | null>()
-	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
+	const [tableData, setTableData] = useState<LSMappingOutputItemV2>({})
 	const [isFetchingLSSheet, setFetchingLSSheet] = useState<boolean>(false)
 	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
 	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.HYBRID)
@@ -54,7 +58,7 @@ function useAdaptationUtil() {
 		if (sendLSPending) {
 			return 2
 		}
-		if (data?.ls_mapping || tableData.length) {
+		if (data?.ls_mapping || Object.keys(tableData).length) {
 			return 3
 		}
 		if (isPending || isFetchingLSSheet) {
@@ -102,7 +106,7 @@ function useAdaptationUtil() {
 	const resetMutations = useCallback(() => {
 		reset()
 		resetSendLS()
-		setTableData([])
+		setTableData({})
 	}, [reset, resetSendLS, setTableData])
 
 	useEffect(() => {
