@@ -24,7 +24,8 @@ export default function DiffControls({ element, editor }: DiffControlsProps) {
 
 	const nextDiffId = useMemo(() => {
 		const list = diffIdList || [String(element.diff_id)]
-		const currDiffIdIdx = list.findIndex((item) => item === element.diff_id)
+		const currDiffIdIdx =
+			list.findIndex((item) => item === element.diff_id) || 0
 
 		return list[(currDiffIdIdx + 1) % list.length]
 	}, [diffIdList, element.diff_id])
