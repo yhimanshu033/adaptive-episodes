@@ -168,7 +168,11 @@ export default function useFindAndReplace() {
 		const path = currentId
 
 		const currentIdx = records.findIndex((item) => isEqual(item, currentId))
-		setPtr(currentIdx % (records.length - 1))
+		if (currentIdx === -1 || records.length === 1) {
+			setPtr(0)
+		} else {
+			setPtr(currentIdx % (records.length - 1))
+		}
 
 		const updatedChildren = replaceOnce({ children, path, search, replace })
 		editor.tf.setValue(breakDownValue(updatedChildren))
