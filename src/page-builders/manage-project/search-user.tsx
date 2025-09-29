@@ -53,7 +53,7 @@ const SearchUser = ({
 		count: users.length,
 		getScrollElement: () => parentRef.current,
 		estimateSize: () => 60,
-		overscan: 5, // Render 5 extra items for smooth scrolling
+		overscan: 5,
 	})
 
 	const handleSelect = (user: UserData) => {
@@ -134,7 +134,7 @@ const SearchUser = ({
 											ref={parentRef}
 											className="h-51 overflow-auto"
 											style={{
-												height: '204px', // h-51 = 204px
+												height: '204px',
 												width: '100%',
 											}}
 										>

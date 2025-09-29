@@ -49,13 +49,12 @@ export default function SharedList() {
 	const { table } = useProjectUsersTable(memberData)
 	const projectAccessMutation = useProjectAccessMutation()
 
-	// Virtual scrolling setup
 	const parentRef = useRef<HTMLDivElement>(null)
 	const virtualizer = useVirtualizer({
 		count: table.getRowModel().rows.length,
 		getScrollElement: () => parentRef.current,
-		estimateSize: () => 72, // Height of each list item (py-4 = 16px top + 16px bottom + content height)
-		overscan: 3, // Render 3 extra items for smooth scrolling
+		estimateSize: () => 72,
+		overscan: 3,
 	})
 
 	const handleUpdateRole = (email: string, role: ERole) => {
@@ -78,7 +77,7 @@ export default function SharedList() {
 								ref={parentRef}
 								className="h-36 overflow-auto"
 								style={{
-									height: '144px', // max-h-36 = 144px
+									height: '144px',
 									width: '100%',
 								}}
 							>
