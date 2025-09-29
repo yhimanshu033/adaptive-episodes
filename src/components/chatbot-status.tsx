@@ -3,6 +3,7 @@ import { AiAvatarIcon } from '@/icons/ai-avatar-icon'
 import { AlertIcon } from '@/icons/alert-icon'
 import { SpinnerSolidIcon } from '@/icons/spinner-solid-icon'
 import { TickCircleIcon } from '@/icons/tick-circle-icon'
+import { InfoIcon } from 'lucide-react'
 
 import { cn } from '@/lib/aural-ui/utils'
 
@@ -11,11 +12,13 @@ import { Typography } from './aural-ui/typography'
 const ChatbotStatus = ({
 	isRunning = true,
 	isTimedOut = false,
+	isError,
 	text,
 	timeLeft,
 	isCountdownActive = false,
 }: {
 	isCountdownActive?: boolean
+	isError?: boolean
 	isRunning?: boolean
 	isTimedOut?: boolean
 	text?: string
@@ -54,8 +57,11 @@ const ChatbotStatus = ({
 		if (isRunning) {
 			return <SpinnerSolidIcon className="h-5 w-5 animate-spin" />
 		}
+		if (isError) {
+			return <InfoIcon className="text-fm-secondary-800 h-5 w-5" />
+		}
 		return <TickCircleIcon className="text-fm-secondary-800 h-5 w-5" />
-	}, [isTimedOut, isRunning])
+	}, [isTimedOut, isRunning, isError])
 
 	return (
 		<div className="flex w-fit flex-col gap-2">
