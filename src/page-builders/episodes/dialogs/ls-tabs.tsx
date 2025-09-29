@@ -70,7 +70,6 @@ const TableCTAs = ({
 		const reader = new FileReader()
 		reader.onload = (event) => {
 			const text = event.target?.result as string
-			console.log(text)
 
 			const rows = parseCSV(text.trim())
 
