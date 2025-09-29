@@ -432,7 +432,7 @@ export function getText(val: Value, separator?: string) {
  */
 export function breakDownValue(ogVal: Value | string): Value {
 	const newVal: Value = []
-	console.log({ ogVal })
+
 	if (typeof ogVal === 'string') {
 		const texts = ogVal.split(/\n+/)
 		for (const text of texts) {
