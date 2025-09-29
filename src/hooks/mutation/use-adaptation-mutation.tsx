@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 
 import { doPoll } from '@/lib/do-poll'
 import { fetchAPI } from '@/lib/fetch-api'
+import { migrateOldLSMapping } from '@/lib/utils/helpers'
 
 import {
 	TGetAdaptationLSUrlParams,
@@ -94,7 +95,9 @@ export default function useAdaptationMutation({
 			signal: abortController?.signal,
 		})
 
-		return pollingResp?.data
+		const migratedData = migrateOldLSMapping(pollingResp?.data)
+
+		return migratedData
 	}
 
 	const createLSMutation = useMutation({

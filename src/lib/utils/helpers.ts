@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server'
-import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
+import {
+	AVAILABLE_TARGET_LANGUAGES,
+	LSMappingTabs,
+} from '@/constants/ai-constants'
 import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
@@ -28,6 +31,7 @@ import {
 	ELSMappingType,
 	EStatus,
 	LSMappingInput,
+	LSMappingInputItem,
 	LSMappingOutputItem,
 	LSMappingOutputItemV2,
 	STATUS_ORDER,
@@ -760,6 +764,28 @@ export function isInvalidLSMapping(data: Partial<LSMappingOutputItem[]>) {
 			!item?.type ||
 			(item?.type === ELSMappingType.PERSON && !item?.gender)
 	)
+}
+
+export const migrateOldLSMapping = (
+	data?:
+		| LSMappingInput
+		| {
+				ls_mapping: LSMappingInputItem
+		  }
+		| null
+): LSMappingInput | null => {
+	if (!data) {
+		return null
+	}
+	const lsKeys = Object.keys(data.ls_mapping)
+	if (LSMappingTabs.some((tab) => lsKeys.includes(tab))) {
+		return data as LSMappingInput
+	}
+	return {
+		ls_mapping: {
+			[LSMappingTabs[0]]: data.ls_mapping as LSMappingInputItem,
+		},
+	}
 }
 
 export function isInternalUser(session: Session | null) {

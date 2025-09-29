@@ -1,7 +1,7 @@
 import React from 'react'
 import useLSSheetQuery from '@/hooks/mutation/use-ls-sheet'
 import { CrossIcon } from '@/icons/cross-icon'
-import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
+import LsTabs from '@/page-builders/episodes/dialogs/ls-tabs'
 import { Table2 } from 'lucide-react'
 
 import {
@@ -52,8 +52,8 @@ export default function ViewLS() {
 				</DialogHeader>
 				<IfElse condition={!!data?.ls_mapping}>
 					<If>
-						<LSTableEditor
-							tableData={data ? parseInputLSMapping(data) : []}
+						<LsTabs
+							tableData={data ? parseInputLSMapping(data) : {}}
 							viewOnly
 						/>
 					</If>

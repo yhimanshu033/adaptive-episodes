@@ -329,3 +329,9 @@ export const SOURCE_TO_TARGET_LANGUAGE_MAP: Partial<
 	[ELanguage.JAPANESE]: [ELanguage.ENGLISH],
 	[ELanguage.DEUTSCH]: [ELanguage.ENGLISH],
 }
+
+export const LSMappingTabs = [
+	'Localization Sheet',
+	'Mention Mappings',
+	'Localization Details',
+]
