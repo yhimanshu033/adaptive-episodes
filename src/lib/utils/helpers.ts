@@ -1023,3 +1023,71 @@ export const checkForDuplicates = (existingFiles: File[], newFiles: File[]) => {
 
 	return duplicates
 }
+
+export function parseCSVRow(row: string): string[] {
+	const result: string[] = []
+	let current = ''
+	let inQuotes = false
+	let i = 0
+
+	while (i < row.length) {
+		const char = row[i]
+
+		if (char === '"') {
+			if (inQuotes && row[i + 1] === '"') {
+				current += '"'
+				i += 2
+			} else {
+				inQuotes = !inQuotes
+				i++
+			}
+		} else if (char === ',' && !inQuotes) {
+			result.push(current.trim())
+			current = ''
+			i++
+		} else {
+			current += char
+			i++
+		}
+	}
+
+	result.push(current.trim())
+	return result
+}
+
+export function parseCSV(text: string): string[][] {
+	const rows: string[] = []
+	let currentRow = ''
+	let inQuotes = false
+	let i = 0
+
+	while (i < text.length) {
+		const char = text[i]
+
+		if (char === '"') {
+			if (inQuotes && text[i + 1] === '"') {
+				currentRow += '"'
+				i += 2
+			} else {
+				inQuotes = !inQuotes
+				currentRow += char
+				i++
+			}
+		} else if (char === '\n' && !inQuotes) {
+			if (currentRow.trim()) {
+				rows.push(currentRow)
+			}
+			currentRow = ''
+			i++
+		} else {
+			currentRow += char
+			i++
+		}
+	}
+
+	if (currentRow.trim()) {
+		rows.push(currentRow)
+	}
+
+	return rows.map((row) => parseCSVRow(row))
+}
