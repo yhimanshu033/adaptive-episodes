@@ -7,6 +7,7 @@ import useLocalizeHook, {
 } from '@/hooks/mutation/use-localize-hook'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useLanguage from '@/hooks/use-language'
+import { isEqual } from 'lodash'
 import { useEditorPlugin, useEditorRef, usePluginOptions } from 'platejs/react'
 
 import useEpisodeId from '@/providers/episode-id-provider'
@@ -165,9 +166,13 @@ export default function useFindAndReplace() {
 
 	const onReplace = useCallback(() => {
 		const path = currentId
+
+		const currentIdx = records.findIndex((item) => isEqual(item, currentId))
+		setPtr(currentIdx % (records.length - 1))
+
 		const updatedChildren = replaceOnce({ children, path, search, replace })
 		editor.tf.setValue(breakDownValue(updatedChildren))
-	}, [children, editor.tf, currentId, replace, search])
+	}, [children, editor.tf, currentId, replace, search, records])
 
 	function handlePrev() {
 		setPtr(ptr > 0 ? ptr - 1 : ptr)
