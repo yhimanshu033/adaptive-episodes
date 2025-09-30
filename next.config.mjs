@@ -11,8 +11,6 @@ const nextConfig = {
       bodySizeLimit: '1000mb',
     },
   },
-  // Enable source maps for better error tracking
-  productionBrowserSourceMaps: true,
   images: {
     remotePatterns: [
       {
@@ -78,7 +76,7 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   // tunnelRoute: "/monitoring",
 
   // Hides source maps from generated client bundles
-  hideSourceMaps: false,
+  hideSourceMaps: true,
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
@@ -89,20 +87,7 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
 
-  // Source map configuration for better error tracking
   sourcemaps: {
-    disable: false,
-    // Upload source maps to Sentry
-    uploadSourceMaps: true,
-    // Include source maps in the build
-    include: ['./src/**/*'],
-    // Ignore node_modules and other unnecessary files
-    ignore: ['node_modules/**', '.next/**'],
-    // Set the URL prefix for source maps
-    urlPrefix: '~/_next/',
-    // Set the release version for better tracking
-    release: process.env.SENTRY_RELEASE || 'cowriter@1.2.0',
-    // Delete from client after upload
     deleteSourcemapsAfterUpload: true,
   },
 })
