@@ -8,7 +8,6 @@ import {
 } from '@/constants/query-constants'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
-import { sampleLSMappingInputItemV2 } from '@/mock-data/testing'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -54,7 +53,6 @@ export default function useAdaptationMutation({
 		selectedRowData: TEpisode[]
 		storyData?: TStory | null
 	}) {
-		return migrateOldLSMapping({ ls_mapping: sampleLSMappingInputItemV2 })
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{
 				method: 'POST',
