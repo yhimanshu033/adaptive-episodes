@@ -56,7 +56,7 @@ export default function useAdaptationMutation({
 		/**
 		 * test
 		 */
-		// return migrateOldLSMapping({ ls_mapping: sampleData2 })
+		// return migrateOldLSMapping({ ls_mapping: sampleLSMappingInputItemV2 })
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{
 				method: 'POST',

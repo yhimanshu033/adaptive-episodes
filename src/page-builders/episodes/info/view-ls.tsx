@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import useLSSheetQuery from '@/hooks/mutation/use-ls-sheet'
 import { CrossIcon } from '@/icons/cross-icon'
 import LsTabs from '@/page-builders/episodes/dialogs/ls-tabs'
@@ -20,9 +20,17 @@ import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { parseInputLSMapping } from '@/lib/utils/helpers'
 
 export default function ViewLS() {
-	const { data } = useLSSheetQuery()
+	const { data, isPending } = useLSSheetQuery()
 	const { initialStoryData } = useEpisodeTableContext()
-	if (!data) {
+
+	const parsedData = useMemo(() => {
+		if (!data) {
+			return
+		}
+		return parseInputLSMapping(data)
+	}, [data])
+
+	if (!isPending) {
 		return null
 	}
 	return (
@@ -52,11 +60,12 @@ export default function ViewLS() {
 						</DialogClose>
 					</DialogTitle>
 				</DialogHeader>
-				<IfElse condition={!!data?.ls_mapping}>
+				<IfElse condition={!!parsedData?.data}>
 					<If>
 						<LsTabs
-							tableData={data ? parseInputLSMapping(data) : {}}
+							tableData={parsedData?.data || {}}
 							viewOnly
+							sequence={parsedData?.sequence || {}}
 							story={initialStoryData}
 						/>
 					</If>

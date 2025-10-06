@@ -18,6 +18,7 @@ import { getRecentStore } from '@/lib/utils/indexed-db'
 import {
 	ELanguage,
 	LSMappingOutputItemV2,
+	LSMappingSequenceData,
 	TSourceLanguage,
 } from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
@@ -36,6 +37,9 @@ function useAdaptationUtil() {
 	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
 	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.HYBRID)
 	const [abort, setAbort] = useState(false)
+	const [sequence, setSequence] = useState<LSMappingSequenceData['sequence']>(
+		{}
+	)
 	const abortControllerRef = useRef<AbortController | null>(null)
 
 	const {
@@ -119,8 +123,10 @@ function useAdaptationUtil() {
 		if (!data) {
 			return
 		}
-		setTableData(parseInputLSMapping(data))
-	}, [data, setTableData])
+		const { data: tableData, sequence } = parseInputLSMapping(data)
+		setTableData(tableData)
+		setSequence(sequence || {})
+	}, [data, setTableData, setSequence])
 
 	useEffect(() => {
 		resetMutations()
@@ -194,6 +200,8 @@ function useAdaptationUtil() {
 		setOpenExitDialog,
 		setAbort,
 		isFetchingLSSheet,
+		setSequence,
+		sequence,
 	}
 }
 

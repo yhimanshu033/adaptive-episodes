@@ -24,6 +24,7 @@ import {
 	LSMappingOutput,
 	LSMappingOutputItem,
 	LSMappingOutputItemV2,
+	LSMappingSequenceData,
 } from '@/types/common'
 import { TStory } from '@/types/story-types'
 
@@ -32,6 +33,7 @@ import LSTableEditor from './ls-editor'
 interface LsTabsProps {
 	handleClose?: () => void
 	onSubmit?: (data: LSMappingOutput) => void
+	sequence: LSMappingSequenceData['sequence']
 	setTableData?: React.Dispatch<React.SetStateAction<LSMappingOutputItemV2>>
 	story?: TStory | null
 	tableData: LSMappingOutputItemV2
@@ -212,6 +214,7 @@ const LsTabs = ({
 	handleClose,
 	viewOnly = false,
 	story,
+	sequence,
 }: LsTabsProps) => {
 	const tabKeys = Object.keys(tableData)
 	const [activeTab, setActiveTab] = useState(tabKeys[0] || '')
@@ -283,6 +286,7 @@ const LsTabs = ({
 						setTableData={(newData) =>
 							handleTabDataChange(singleTabKey, newData)
 						}
+						columnSequence={sequence[singleTabKey] || []}
 						viewOnly={viewOnly}
 					/>
 				</div>
@@ -325,6 +329,7 @@ const LsTabs = ({
 							tableData={tableData[tabKey] || []}
 							setTableData={(newData) => handleTabDataChange(tabKey, newData)}
 							viewOnly={viewOnly}
+							columnSequence={sequence[tabKey] || []}
 						/>
 					</TabsContent>
 				))}

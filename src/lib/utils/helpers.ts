@@ -34,6 +34,8 @@ import {
 	LSMappingInputItem,
 	LSMappingOutputItem,
 	LSMappingOutputItemV2,
+	LSMappingSequenceData,
+	LSMappingSequenceField,
 	STATUS_ORDER,
 } from '@/types/common'
 import {
@@ -769,20 +771,30 @@ export function sortInputLSMapping(
 	return input
 }
 
-export function parseInputLSMapping(
-	input: LSMappingInput
-): LSMappingOutputItemV2 {
+export function parseInputLSMapping(input: LSMappingInput): {
+	data: LSMappingOutputItemV2
+	sequence?: LSMappingSequenceData['sequence']
+} {
 	const parsedInput = Object.fromEntries(
-		Object.entries(input.ls_mapping).map(([section, items]) => [
-			section,
-			Object.entries(items).map(([original_name, item]) => ({
-				original_name,
-				...item,
-			})),
-		])
-	)
+		Object.entries(input.ls_mapping).map(([section, items]) => {
+			if (section === LSMappingSequenceField) {
+				return [section, items]
+			}
+			return [
+				section,
+				Object.entries(items).map(([original_name, item]) => ({
+					original_name,
+					...item,
+				})),
+			]
+		})
+	) as {
+		[LSMappingSequenceField]: LSMappingSequenceData['sequence']
+	} & LSMappingOutputItemV2
 
-	return sortInputLSMapping(parsedInput)
+	const { sequence, ...rest } = parsedInput
+
+	return { data: sortInputLSMapping(rest), sequence }
 }
 
 export function parseOutputLSMapping(data: Partial<LSMappingOutputItem[]>) {

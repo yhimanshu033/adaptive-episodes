@@ -62,6 +62,8 @@ export default function AdaptationDialog({
 		setOpenExitDialog,
 		isFetchingLSSheet,
 		setFetchingLSSheet,
+		setSequence,
+		sequence,
 	} = useAdaptation()
 
 	if (
@@ -152,10 +154,18 @@ export default function AdaptationDialog({
 
 	useEffect(() => {
 		if (!lsSheetLoading && lsSheetData) {
-			setTableData(parseInputLSMapping(lsSheetData))
+			const { data, sequence } = parseInputLSMapping(lsSheetData)
+			setTableData(data)
 			setFetchingLSSheet(false)
+			setSequence(sequence || {})
 		}
-	}, [lsSheetLoading, lsSheetData, setTableData, setFetchingLSSheet])
+	}, [
+		lsSheetLoading,
+		lsSheetData,
+		setTableData,
+		setFetchingLSSheet,
+		setSequence,
+	])
 
 	if (!adaptOpen && step > 1) {
 		return (
@@ -272,6 +282,7 @@ export default function AdaptationDialog({
 								setTableData={setTableData}
 								handleClose={handleClose}
 								story={storyData}
+								sequence={sequence}
 								onSubmit={(inputls) =>
 									sendLS(
 										{

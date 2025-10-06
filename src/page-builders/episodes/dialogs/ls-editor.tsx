@@ -24,12 +24,39 @@ const LSTableEditor = memo(
 		tableData = [],
 		setTableData = () => {},
 		viewOnly = false,
+		columnSequence = [],
 	}: {
+		columnSequence?: string[]
 		setTableData?: (data: LSMappingOutputItem[]) => void
 		tableData?: LSMappingOutputItem[]
 		viewOnly?: boolean
 	}) => {
-		const keys = useMemo(() => Object.keys(tableData[0] || {}), [tableData])
+		const columnSequenceMap = useMemo(() => {
+			return columnSequence.reduce(
+				(acc, curr, currIdx) => {
+					return {
+						...acc,
+						[curr]: currIdx,
+					}
+				},
+				{} as Record<string, number>
+			)
+		}, [columnSequence])
+
+		const keys = useMemo(() => {
+			const cols = Object.keys(tableData[0] || {})
+			return cols.sort((a, b) => {
+				const aIdx =
+					a in columnSequenceMap
+						? columnSequenceMap[a]
+						: Number.MAX_SAFE_INTEGER
+				const bIdx =
+					b in columnSequenceMap
+						? columnSequenceMap[b]
+						: Number.MAX_SAFE_INTEGER
+				return aIdx - bIdx
+			})
+		}, [tableData, columnSequenceMap])
 		const parentRef = useRef<HTMLDivElement>(null)
 
 		const keysToDisplay = useMemo(() => {

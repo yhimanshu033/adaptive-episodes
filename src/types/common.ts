@@ -124,7 +124,11 @@ export interface LSMappingOutputItem extends LSMappingCommon {
 	localised_name: string
 	original_name: string
 }
-
+export interface LSMappingSequenceData {
+	[LSMappingSequenceField]: {
+		[key: string]: string[]
+	}
+}
 export interface LSMappingOutputItemV2 {
 	[key: string]: LSMappingOutputItem[]
 }
@@ -135,6 +139,7 @@ export interface LSMappingInputItem {
 	} & LSMappingCommon
 }
 
+export const LSMappingSequenceField = 'sequence'
 export type LSMappingInputItemV2 = Record<string, LSMappingInputItem>
 
 export interface LSMappingInput {
