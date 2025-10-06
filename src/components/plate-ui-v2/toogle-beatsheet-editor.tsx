@@ -24,15 +24,6 @@ const ToogleBeatSheetEditor = () => {
 		'nwm_running' in content.chapter.props.llm_memories &&
 		!content.chapter.props.llm_memories.nwm_running
 
-	console.log(
-		'isNWMEpisode check:',
-		content?.chapter?.props?.llm_memories,
-		'nwm_running' in (content?.chapter?.props?.llm_memories || {}),
-		!content?.chapter?.props?.llm_memories?.nwm_running
-	)
-
-	console.log('isNWMEpisode', isNWMEpisode)
-
 	if (
 		!(beatSheetEditorAllowedProjects.includes(Number(id)) || isNWMEpisode) ||
 		readOnly
