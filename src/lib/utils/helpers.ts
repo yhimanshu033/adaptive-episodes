@@ -1145,3 +1145,7 @@ export function parseCSV(text: string): string[][] {
 
 	return rows.map((row) => parseCSVRow(row))
 }
+
+export function sanitize<T>(data: T) {
+	return JSON.parse(JSON.stringify(data)) as T
+}
