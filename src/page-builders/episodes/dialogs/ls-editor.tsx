@@ -19,18 +19,21 @@ import { LSMappingOutputItem } from '@/types/common'
 const ROW_HEIGHT = 76
 const COL_WIDTH = 180
 
+interface LSTableEditorProps {
+	columnSequence?: string[]
+	setTableData?: (data: LSMappingOutputItem[]) => void
+	tableData?: LSMappingOutputItem[]
+	viewOnly?: boolean
+	visibleRows?: number
+}
 const LSTableEditor = memo(
 	({
 		tableData = [],
 		setTableData = () => {},
 		viewOnly = false,
 		columnSequence = [],
-	}: {
-		columnSequence?: string[]
-		setTableData?: (data: LSMappingOutputItem[]) => void
-		tableData?: LSMappingOutputItem[]
-		viewOnly?: boolean
-	}) => {
+		visibleRows = 6,
+	}: LSTableEditorProps) => {
 		const columnSequenceMap = useMemo(() => {
 			return columnSequence.reduce(
 				(acc, curr, currIdx) => {
@@ -91,10 +94,10 @@ const LSTableEditor = memo(
 			<ScrollArea className="max-w-full">
 				<ScrollBar orientation="horizontal" />
 				<div
-					className="relative mx-4 max-w-full overflow-y-scroll"
+					className="relative max-w-full overflow-y-scroll"
 					ref={parentRef}
 					style={{
-						height: ROW_HEIGHT * 6,
+						height: ROW_HEIGHT * visibleRows,
 						minWidth: COL_WIDTH * keysToDisplay.length,
 					}}
 				>

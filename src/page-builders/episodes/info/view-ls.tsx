@@ -20,7 +20,7 @@ import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { parseInputLSMapping } from '@/lib/utils/helpers'
 
 export default function ViewLS() {
-	const { data, isPending } = useLSSheetQuery()
+	const { data } = useLSSheetQuery()
 	const { initialStoryData } = useEpisodeTableContext()
 
 	const parsedData = useMemo(() => {
@@ -30,7 +30,7 @@ export default function ViewLS() {
 		return parseInputLSMapping(data)
 	}, [data])
 
-	if (!isPending) {
+	if (!data) {
 		return null
 	}
 	return (
@@ -67,6 +67,7 @@ export default function ViewLS() {
 							viewOnly
 							sequence={parsedData?.sequence || {}}
 							story={initialStoryData}
+							visibleRows={9}
 						/>
 					</If>
 					<Else>

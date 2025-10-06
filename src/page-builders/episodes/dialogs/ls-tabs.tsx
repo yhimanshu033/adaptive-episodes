@@ -38,6 +38,7 @@ interface LsTabsProps {
 	story?: TStory | null
 	tableData: LSMappingOutputItemV2
 	viewOnly?: boolean
+	visibleRows?: number
 }
 
 const TableCTAs = ({
@@ -215,6 +216,7 @@ const LsTabs = ({
 	viewOnly = false,
 	story,
 	sequence,
+	visibleRows = 6,
 }: LsTabsProps) => {
 	const tabKeys = Object.keys(tableData)
 	const [activeTab, setActiveTab] = useState(tabKeys[0] || '')
@@ -288,6 +290,7 @@ const LsTabs = ({
 						}
 						columnSequence={sequence[singleTabKey] || []}
 						viewOnly={viewOnly}
+						visibleRows={visibleRows}
 					/>
 				</div>
 			)
@@ -330,6 +333,7 @@ const LsTabs = ({
 							setTableData={(newData) => handleTabDataChange(tabKey, newData)}
 							viewOnly={viewOnly}
 							columnSequence={sequence[tabKey] || []}
+							visibleRows={visibleRows}
 						/>
 					</TabsContent>
 				))}
