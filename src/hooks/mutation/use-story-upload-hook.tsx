@@ -80,7 +80,6 @@ const useStoryUploadHook = () => {
 					: null,
 				image: image?.url || null,
 				author: author || null,
-				run_nwm: true,
 				create_blank_project: !story_files || !story_files.length,
 			}
 
