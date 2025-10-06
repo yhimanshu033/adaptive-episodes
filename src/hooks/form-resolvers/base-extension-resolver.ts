@@ -31,14 +31,17 @@ export const useBaseExtensionResolver = (totalEpisodes: number) => {
 
 export const useBaseScriptUploadResolver = () => {
 	const baseScriptUploadFormSchema = z.object({
-		file: z
-			.instanceof(File)
+		files: z
+			.array(z.instanceof(File))
+			.min(1, 'Please upload at least one file.')
+			.max(10, 'You can upload a maximum of 10 files.')
 			.refine(
-				(file) => !file || (file && file.size <= MAX_DOCX_FILE_SIZE_100),
+				(files) => files.every((file) => file.size <= MAX_DOCX_FILE_SIZE_100),
 				`File size exceeds the 100MB. Please upload a smaller file.`
 			)
 			.refine(
-				(file) => !file || (file && ACCEPTED_DOCX_TYPES.includes(file.type)),
+				(files) =>
+					files.every((file) => ACCEPTED_DOCX_TYPES.includes(file.type)),
 				'Only .docx format is supported.'
 			),
 	})
@@ -46,7 +49,7 @@ export const useBaseScriptUploadResolver = () => {
 		resolver: zodResolver(baseScriptUploadFormSchema),
 		mode: 'onChange',
 		defaultValues: {
-			file: undefined,
+			files: [],
 		},
 	})
 

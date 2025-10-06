@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useParams } from 'next/navigation'
+import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useBaseExtensionMutation from '@/hooks/mutation/use-base-extension-mutation'
 import useBaseExtensionQuery from '@/hooks/query/use-base-extension-data'
 import useAccessChecks from '@/hooks/use-access-checks'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { CrossIcon } from '@/icons/cross-icon'
 import BaseExtensionForm from '@/page-builders/manage-project/base-extension-form'
 import BaseScriptStatus from '@/page-builders/manage-project/base-script-status'
 import UpdateDriveFolder from '@/page-builders/manage-project/update-gdrive-folder'
 import { useEpisodeStore } from '@/store/episode-store'
+import { useQueryClient } from '@tanstack/react-query'
 import {
 	AlertTriangle,
 	CheckCircle2,
@@ -14,6 +18,7 @@ import {
 	FileWarningIcon,
 	RotateCcw,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import Badge from '@/components/aural-ui/badge'
 import CircularLoader from '@/components/aural-ui/circular-loader'
@@ -39,10 +44,41 @@ import { EFolderType } from '@/types/admin-types'
 import BaseScriptDocUpload from '../table/base-script-doc-upload'
 
 const BaseScriptExtensionDialog = () => {
+	const { id } = useParams()
+	const queryClient = useQueryClient()
+	const { responses } = useSocketStreaming()
 	const { useEpisodeTableStore: episodeStore, setBseDialogOpen } =
 		useEpisodeStore()
 	const isBseDialogOpen = episodeStore((state) => state.isBseDialogOpen)
 	const { isGerman } = useAccessChecks()
+
+	const { data: baseExtensionData } = useBaseExtensionQuery(true)
+	const bseTaskId =
+		!baseExtensionData || !('taskId' in baseExtensionData)
+			? undefined
+			: baseExtensionData.taskId
+
+	useEffect(() => {
+		const handleBaseExtensionResponse = async () => {
+			if (!bseTaskId) {
+				return
+			}
+			const message =
+				responses[bseTaskId] && responses[bseTaskId].length > 0
+					? responses[bseTaskId][0]
+					: null
+			if (message) {
+				await queryClient.invalidateQueries({
+					queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
+					type: 'all',
+				})
+				toast.success(message)
+			}
+		}
+
+		void handleBaseExtensionResponse()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [bseTaskId, responses])
 
 	return (
 		<Dialog open={isBseDialogOpen} onOpenChange={setBseDialogOpen}>

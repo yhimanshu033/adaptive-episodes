@@ -6,10 +6,24 @@ import { useBaseScriptUploadResolver } from '@/hooks/form-resolvers/base-extensi
 import useBaseExtensionMutation from '@/hooks/mutation/use-base-extension-mutation'
 import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
-import { FileChartIcon } from '@/icons/file-chart-icon'
 import { LightBulbSimpleIcon } from '@/icons/light-bulb-simple-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { TrashIcon } from '@/icons/trash-icon'
+import {
+	closestCenter,
+	DndContext,
+	DragEndEvent,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from '@dnd-kit/core'
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { toast } from 'sonner'
 import z from 'zod'
 
@@ -29,8 +43,9 @@ import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
 import DeleteModal from '@/components/delete-modal'
+import { SortableFileItem } from '@/components/sortable-file-item'
 import { cn } from '@/lib/aural-ui/utils'
-import { formatFileSize } from '@/lib/utils/helpers'
+import { checkForDuplicates } from '@/lib/utils/helpers'
 
 const BaseScriptDocUpload = ({
 	setDialogOpen,
@@ -40,18 +55,44 @@ const BaseScriptDocUpload = ({
 	const { id } = useParams()
 	const fileInputref = useRef<HTMLInputElement | null>(null)
 	const [isDragging, setIsDragging] = useState(false)
+	const [files, setFiles] = useState<File[]>([])
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { form, baseScriptUploadFormSchema } = useBaseScriptUploadResolver()
 	const baseExtensionMutation = useBaseExtensionMutation()
 
+	// Drag and drop sensors
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 8,
+			},
+		}),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		})
+	)
+
 	const handleDiscardDoc = (
-		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		index?: number
 	) => {
 		e.preventDefault()
-		if (fileInputref.current) {
-			fileInputref.current.value = ''
+		e.stopPropagation()
+		if (typeof index === 'number') {
+			const newFiles = [...files]
+			newFiles.splice(index, 1)
+			setFiles(newFiles)
+			form.setValue('files', newFiles)
+			if (fileInputref.current) {
+				fileInputref.current.value = ''
+			}
+		} else {
+			setFiles([])
+			form.resetField('files')
+			if (fileInputref.current) {
+				fileInputref.current.value = ''
+			}
 		}
-		form.resetField('file')
 	}
 
 	const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
@@ -60,20 +101,45 @@ const BaseScriptDocUpload = ({
 		setIsDragging(e?.type === 'dragenter' || e?.type === 'dragover')
 	}
 
-	const handleDocValidation = async (file: File) => {
-		form.setValue('file', file)
+	const handleDocValidation = async (newFiles: FileList | File[]) => {
+		const filesArr = Array.from(newFiles)
 
-		const isValid = await form.trigger('file')
-		const error = form.getFieldState('file').error?.message
+		const duplicates = checkForDuplicates(files, filesArr)
+		if (duplicates.length > 0) {
+			const fileNames = duplicates.slice(0, 2).join(', ')
+			const message =
+				duplicates.length === 1
+					? `File "${fileNames}" is already uploaded.`
+					: duplicates.length === 2
+						? `Files "${fileNames}" are already uploaded.`
+						: `Files "${fileNames}" and ${
+								duplicates.length - 2
+							} others are already uploaded.`
 
-		if (!isValid) {
-			toast.error(error || 'Invalid document file.', {
+			toast.error(message, {
 				icon: <BubbleCrossedIcon />,
 			})
-			form.resetField('file')
 			return false
 		}
 
+		const totalFilesAfterUpload = files.length + filesArr.length
+		if (totalFilesAfterUpload > 10) {
+			toast.error('You can upload a maximum of 10 files.', {
+				icon: <BubbleCrossedIcon />,
+			})
+			return false
+		}
+
+		const potentialNewFileList = [...files, ...filesArr]
+		form.setValue('files', potentialNewFileList)
+		const isValid = await form.trigger('files')
+
+		if (!isValid) {
+			form.setValue('files', files)
+			return false
+		}
+
+		setFiles(potentialNewFileList)
 		return true
 	}
 
@@ -82,18 +148,40 @@ const BaseScriptDocUpload = ({
 		e.stopPropagation()
 		setIsDragging(false)
 
-		const file = e.dataTransfer.files[0]
-		if (file) {
-			void handleDocValidation(file)
+		const newFiles = e.dataTransfer.files
+		if (newFiles && newFiles.length > 0) {
+			void handleDocValidation(newFiles)
+		}
+	}
+
+	// Drag and drop handlers for file reordering
+	const handleSortDragEnd = (event: DragEndEvent) => {
+		const { active, over } = event
+
+		if (!over || active.id === over.id) {
+			return
+		}
+
+		const activeIndex = files.findIndex(
+			(_, index) => `file-${index}` === String(active.id)
+		)
+		const overIndex = files.findIndex(
+			(_, index) => `file-${index}` === String(over.id)
+		)
+
+		if (activeIndex !== -1 && overIndex !== -1) {
+			const newFiles = arrayMove(files, activeIndex, overIndex)
+			setFiles(newFiles)
+			form.setValue('files', newFiles)
 		}
 	}
 
 	const onSubmit = (data: z.infer<typeof baseScriptUploadFormSchema>) => {
-		if (!data.file) {
+		if (!data.files || data.files.length === 0) {
 			return
 		}
 		baseExtensionMutation.mutate({
-			file: data.file,
+			files: data.files,
 			project_id: Number(id),
 		})
 		setDialogOpen(false)
@@ -116,74 +204,101 @@ const BaseScriptDocUpload = ({
 			>
 				<FormField
 					control={form.control}
-					name="file"
-					render={({ field }) => (
+					name="files"
+					render={() => (
 						<FormItem className="space-y-2">
 							<FormLabel htmlFor="story">Episodes</FormLabel>
 							<FormControl>
 								<div
 									className={cn(
-										'border-fm-divider-secondary hover:border-fm-divider-primary flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xs border-1 border-dashed p-8 transition-colors duration-200',
+										'border-fm-divider-secondary hover:border-fm-divider-primary flex flex-col justify-center gap-1 rounded-xs border-1 border-dashed p-8 transition-colors duration-200',
 										{
 											'border-fm-divider-primary bg-fm-divider-primary/30':
 												isDragging,
-											'border-solid p-4': !!field.value,
+											'border-solid p-4': files.length > 0,
+											'cursor-pointer': files.length === 0,
 										}
 									)}
 									onDragOver={handleDrag}
 									onDragLeave={handleDrag}
 									onDrop={handleDrop}
 									aria-label="Upload document file"
-									onClick={() =>
-										!field.value ? fileInputref.current?.click() : {}
-									}
 								>
-									<If condition={!field.value}>
-										<IconButton
-											label="Upload file button"
-											size="small"
-											icon={<PlusIcon />}
-										/>
-										<Typography
-											color="tertiary"
-											variant="caption-large"
-											weight="regular"
+									<If condition={files.length === 0}>
+										<div
+											className="flex w-full cursor-pointer flex-col items-center justify-center gap-1"
+											onClick={() => fileInputref.current?.click()}
 										>
-											Drag and drop or{' '}
-											<Typography as="span" className="text-fm-secondary-800">
-												upload story
+											<IconButton
+												label="Upload file button"
+												size="small"
+												icon={<PlusIcon />}
+											/>
+											<Typography
+												color="tertiary"
+												variant="caption-large"
+												weight="regular"
+											>
+												Drag and drop or{' '}
+												<Typography as="span" className="text-fm-secondary-800">
+													upload episodes
+												</Typography>
 											</Typography>
-										</Typography>
+											<Typography
+												as="div"
+												color="tertiary"
+												variant="caption-small"
+												className="mt-2"
+											>
+												You can select multiple files at once.
+											</Typography>
+										</div>
 									</If>
-									<If condition={!!field.value}>
-										<div className="flex w-full items-center justify-between text-sm">
-											<div className="flex gap-4">
-												<IconButton
-													label="Re-Upload file button"
-													icon={
-														<FileChartIcon className="text-fm-secondary-800" />
-													}
-													onClick={() => fileInputref.current?.click()}
-												/>
-												<div className="flex flex-col gap-1">
-													<Typography as="div">Translation Document</Typography>
-													<Typography
-														as="div"
-														color="tertiary"
-														variant="caption-large"
-														transform="uppercase"
-														className="font-fm-brand"
-													>
-														{formatFileSize(field.value?.size || 0)}
-													</Typography>
+									<If condition={files.length > 0}>
+										<DndContext
+											sensors={sensors}
+											collisionDetection={closestCenter}
+											onDragEnd={handleSortDragEnd}
+										>
+											<SortableContext
+												items={files.map((_, index) => `file-${index}`)}
+												strategy={verticalListSortingStrategy}
+											>
+												<div className="flex max-h-40 w-full flex-col gap-2 overflow-y-auto pr-1">
+													{files.map((file, idx) => (
+														<SortableFileItem
+															key={`${file.name}-${file.size}-${idx}`}
+															id={`file-${idx}`}
+															file={file}
+															index={idx}
+															onDelete={handleDiscardDoc}
+														/>
+													))}
 												</div>
-											</div>
+											</SortableContext>
+										</DndContext>
+										<div
+											className="mt-2 flex justify-between"
+											onClick={(e) => e.stopPropagation()}
+										>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												onClick={(e) => {
+													e.preventDefault()
+													e.stopPropagation()
+													fileInputref.current?.click()
+												}}
+												className="flex items-center gap-2"
+											>
+												<PlusIcon className="size-4" />
+												Add more files
+											</Button>
 											<DeleteModal
-												title="Delete uploaded file"
-												subTitle="Once deleted, this can't be
-																					undone. Don't worry! You can
-																					always upload a new file."
-												onPrimaryClick={handleDiscardDoc}
+												title="Remove all files"
+												subTitle="This will remove all uploaded episode files."
+												onPrimaryClick={(e) => handleDiscardDoc(e)}
 											>
 												<Button
 													variant="text"
@@ -195,7 +310,7 @@ const BaseScriptDocUpload = ({
 														width={16}
 														className="text-fm-negative"
 													/>{' '}
-													DELETE
+													Remove all
 												</Button>
 											</DeleteModal>
 										</div>
@@ -206,10 +321,12 @@ const BaseScriptDocUpload = ({
 										accept=".docx"
 										ref={fileInputref}
 										className="hidden"
+										multiple
 										onChange={(e) => {
-											if (e.target.files?.length) {
-												void handleDocValidation(e.target.files[0])
+											if (e.target.files && e.target.files.length > 0) {
+												void handleDocValidation(e.target.files)
 											}
+											e.target.value = ''
 										}}
 									/>
 								</div>
@@ -223,7 +340,7 @@ const BaseScriptDocUpload = ({
 										transform="uppercase"
 										className="font-fm-brand"
 									>
-										FORMATS: DOC
+										FORMATS: DOCX
 									</Typography>
 									<Typography
 										as="h4"
@@ -297,7 +414,7 @@ const BaseScriptDocUpload = ({
 						<Button
 							className="h-11 w-fit"
 							isDisabled={
-								!form.watch('file') || baseExtensionMutation.isPending
+								!form.watch('files')?.length || baseExtensionMutation.isPending
 							}
 							type="submit"
 						>

@@ -104,6 +104,9 @@ export type TAssistantMessage = {
 	action: EAction
 	component?: React.ReactNode | null
 	content: string
+	meta?: {
+		sfxCount?: number
+	}
 	role: EMessenger.ASSISTANT
 	taskId: string
 }
@@ -310,6 +313,7 @@ export type TGetRegexFAR = {
 }
 
 export type TSendBulkPromptBody = {
+	language?: ELanguage
 	prompt: string
 	seq_nos: number[]
 }

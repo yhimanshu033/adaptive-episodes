@@ -13,6 +13,7 @@ import React, {
 	useState,
 } from 'react'
 import { ESocketStatus } from '@/constants/ai-constants'
+import { SOCKET_STREAMING_TIMEOUT } from '@/constants/global-constants'
 import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
@@ -40,10 +41,12 @@ type TSocketStreamingContext =
 				> & {
 					noCache?: boolean
 					onResponse?: (data: ResponseDataT) => void
+					onTimeout?: (taskId: string) => void
 				}
 			) => Promise<string>
 			stopTask: (taskId: string) => void
 			taskEnded: Record<string, boolean>
+			tasksTimedOut: Set<string>
 	  }
 	| undefined
 
@@ -82,6 +85,9 @@ export const SocketStreamingProvider = ({
 	const blockedTasksRef = useRef<Record<string, boolean>>({})
 	const [taskEnded, setTaskEnded] = useState<Record<string, boolean>>({})
 	const [fetchedData, setFetchedData] = useState<Record<string, string>>({})
+	const timeoutCallbacksRef = useRef<Record<string, (data: any) => void>>({})
+	const timeoutsRef = useRef<Record<string, NodeJS.Timeout>>({})
+	const [tasksTimedOut, setTasksTimedOut] = useState<Set<string>>(new Set())
 
 	useEffect(() => {
 		socket.connect()
@@ -104,6 +110,10 @@ export const SocketStreamingProvider = ({
 				// Handle task start
 				if (status === ESocketStatus.STARTED) {
 					setTaskEnded((prev) => ({ ...prev, [task_id]: false }))
+					if (timeoutsRef.current[task_id]) {
+						clearTimeout(timeoutsRef.current[task_id])
+						delete timeoutsRef.current[task_id]
+					}
 				}
 
 				// Handle task completion
@@ -141,6 +151,8 @@ export const SocketStreamingProvider = ({
 		)
 		return () => {
 			socket.disconnect()
+			Object.values(timeoutsRef.current).forEach(clearTimeout)
+			timeoutsRef.current = {}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [socket])
@@ -160,17 +172,22 @@ export const SocketStreamingProvider = ({
 			> & {
 				noCache?: boolean
 				onResponse?: (data: ResponseDataT) => void
+				onTimeout?: (taskId: string) => void
 			}
 		) => {
 			const key = JSON.stringify(params)
-			const { noCache, onResponse, ...rest } = params
+			const { noCache, onResponse, onTimeout, ...rest } = params
 			if (fetchedData[key] && !noCache) {
 				return fetchedData[key]
 			}
+
 			const taskId = nanoid()
 			setFetchedData((prev) => ({ ...prev, [key]: taskId }))
 			if (onResponse) {
 				taskCallbacksRef.current[taskId] = onResponse
+			}
+			if (onTimeout) {
+				timeoutCallbacksRef.current[taskId] = onTimeout
 			}
 
 			socket.emit('subscribe', { task_id: session?.user.id })
@@ -188,6 +205,22 @@ export const SocketStreamingProvider = ({
 				},
 			})
 
+			const timeoutId = setTimeout(() => {
+				const timeoutCallback = timeoutCallbacksRef.current[taskId]
+				if (timeoutCallback) {
+					timeoutCallback(taskId)
+				}
+
+				setTaskEnded((prev) => ({ ...prev, [taskId]: true }))
+				setTasksTimedOut((prev) => new Set([...prev, taskId]))
+				blockedTasksRef.current[taskId] = true
+				delete timeoutsRef.current[taskId]
+				delete taskCallbacksRef.current[taskId]
+				delete timeoutCallbacksRef.current[taskId]
+			}, SOCKET_STREAMING_TIMEOUT)
+
+			timeoutsRef.current[taskId] = timeoutId
+
 			return taskId
 		},
 		[fetchedData, session, socket]
@@ -198,6 +231,13 @@ export const SocketStreamingProvider = ({
 		setTaskEnded((prev) => ({ ...prev, [taskId]: true }))
 		setResponses((prev) => ({ ...prev, [taskId]: [] }))
 		responsesRef.current[taskId] = []
+
+		if (timeoutsRef.current[taskId]) {
+			clearTimeout(timeoutsRef.current[taskId])
+			delete timeoutsRef.current[taskId]
+		}
+		delete taskCallbacksRef.current[taskId]
+		delete timeoutCallbacksRef.current[taskId]
 	}, [])
 
 	const getStreamedResponse = useCallback(
@@ -230,6 +270,7 @@ export const SocketStreamingProvider = ({
 				stopTask,
 				responses,
 				taskEnded,
+				tasksTimedOut,
 			}}
 		>
 			{children}

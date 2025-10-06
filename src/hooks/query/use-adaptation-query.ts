@@ -3,6 +3,7 @@ import { GET_LS_SHEET_QUERY_KEY } from '@/constants/query-constants'
 import { useQuery } from '@tanstack/react-query'
 
 import { doPoll } from '@/lib/do-poll'
+import { migrateOldLSMapping } from '@/lib/utils/helpers'
 
 import { TGetAdaptationLSUrlParams } from '@/types/ai-types'
 import { ELanguage, LSMappingInput, TNoParams } from '@/types/common'
@@ -36,7 +37,9 @@ const useAdaptationQuery = ({
 				return false
 			},
 		})
-		return pollingResp?.data
+		const migratedData = migrateOldLSMapping(pollingResp?.data)
+
+		return migratedData
 	}
 
 	const query = useQuery({

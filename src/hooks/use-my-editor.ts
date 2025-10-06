@@ -3,6 +3,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { DEFAULT_EDITOR_CONTENT } from '@/constants/editor-constants'
 import { TrailingBlockPlugin, Value } from 'platejs'
 import { usePlateEditor } from 'platejs/react'
 
@@ -28,7 +29,7 @@ import { SuggestionRenderer } from '@/components/plate-ui-v2/suggestion-renderer
 import useProjectId from '@/providers/project-id-provider'
 import { migrateOldComments } from '@/lib/plate/migrateOldComments'
 import { migrateOldSuggestions } from '@/lib/plate/migrateOldSuggestions'
-import { breakDownValue } from '@/lib/utils/plate'
+import { breakDownValue, jsonify } from '@/lib/utils/plate'
 
 import { TCommentGeneric } from '@/types/plate-types'
 
@@ -49,12 +50,12 @@ const useMyEditor = ({
 
 	const value = useMemo(() => {
 		if (!content) {
-			return ''
+			return DEFAULT_EDITOR_CONTENT
 		}
 		try {
 			return migrateOldSuggestions(JSON.parse(content) as Value)
 		} catch {
-			return breakDownValue(content)
+			return breakDownValue(jsonify(content))
 		}
 	}, [content])
 

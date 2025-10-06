@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { fetchAPI } from '@/lib/fetch-api'
+import { migrateOldLSMapping } from '@/lib/utils/helpers'
 
 import { TGetAdaptationLSUrlParams } from '@/types/ai-types'
 import { LSMappingInput } from '@/types/common'
@@ -35,8 +36,9 @@ export default function useLSSheetQuery() {
 				icon: <BubbleCrossedIcon />,
 			})
 		}
+		const migratedData = migrateOldLSMapping(resp.data)
 
-		return resp.data
+		return migratedData
 	}
 
 	const query = useQuery({

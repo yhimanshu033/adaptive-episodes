@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { languageToTitle } from '@/constants/episodes-constants'
 import useBulkPromptFormResolver, {
 	TBulkPromptFormSchema,
 } from '@/hooks/form-resolvers/bulk-prompt-resolver'
@@ -26,7 +27,15 @@ import {
 	FormMessage,
 } from '@/components/aural-ui/form'
 import { iconButtonVariants } from '@/components/aural-ui/icon-button'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/aural-ui/select'
 import TextArea from '@/components/aural-ui/textarea'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { getEpisodesShortTitle } from '@/lib/utils/helpers'
 
 import { TEpisode } from '@/types/episode-type'
@@ -39,13 +48,17 @@ export default function BulkPromptDialog({
 	selectedRowData,
 }: BulkPromptDialogProps) {
 	const { form } = useBulkPromptFormResolver()
+	const { initialStoryData } = useEpisodeTableContext()
 
 	const { mutate, isPending } = useBulkPromptMutation()
+
+	const availableLanguages = initialStoryData?.languages || []
 
 	function handleClick(data: TBulkPromptFormSchema) {
 		mutate({
 			prompt: data.prompt,
 			seq_nos: selectedRowData.map((item) => item.seq_number),
+			language: data.language,
 		})
 	}
 
@@ -75,7 +88,7 @@ export default function BulkPromptDialog({
 				opacity="high"
 				glass="high"
 				borderConfig={['left', 'right']}
-				className="max-sm:[100vw] h-[45vh] w-[90vw] gap-5 px-0 [box-shadow:none]"
+				className="max-sm:[100vw] h-[60vh] w-[90vw] gap-5 px-0 [box-shadow:none]"
 			>
 				<DialogHeader className="px-4">
 					<DialogTitle className="mb-0 flex items-center justify-between gap-4 py-2">
@@ -115,11 +128,36 @@ export default function BulkPromptDialog({
 											placeholder="Enter prompt here"
 											variant={fieldState.error ? 'error' : 'default'}
 											decoration="outline"
-											{...field}
-											autoGrow={false}
-											rows={5}
+											minHeight={150}
+											maxHeight={150}
+											value={field.value}
+											onChange={field.onChange}
 										/>
 									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="language"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel className="mb-2">Language</FormLabel>
+									<Select value={field.value} onValueChange={field.onChange}>
+										<FormControl>
+											<SelectTrigger decoration="outline" className="w-full">
+												<SelectValue placeholder="Select language" />
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											{availableLanguages.map((language) => (
+												<SelectItem key={language} value={language}>
+													{languageToTitle[language]}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 									<FormMessage />
 								</FormItem>
 							)}

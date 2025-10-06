@@ -1,5 +1,5 @@
 # Stage 1: Build the Next.js application
-FROM node:22.11.0 AS build-image
+FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0 AS build-image
 WORKDIR /usr/src/app
 COPY ./ ./
 RUN npm install
@@ -12,6 +12,9 @@ RUN echo "NEXT_PUBLIC_LASERTOOLS_API_KEY=JHvCML1yir-6d6JcYVlsEeHd8QzAhZMy98Rc62p
 
 RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-prod.pocketfm.com" >> .env
 RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket.pocketfm.com" >> .env
+
+# RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-be-qa.pocketfm.org" >> .env
+# RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket-qa.pocketfm.com" >> .env
 
 # RUN echo "NEXT_PUBLIC_BACKEND_URL=https://pocketfm-copilot-api.pocketfm.com" >> .env
 # RUN echo "NEXT_PUBLIC_SOCKET_URL=https://pocketfm-copilot-api.pocketfm.com" >> .env
@@ -30,7 +33,7 @@ ENV SENTRY_AUTH_TOKEN=sntrys_eyJpYXQiOjE3MzgzMTgwMjUuODc4MjM0LCJ1cmwiOiJodHRwczo
 RUN npm run build
 
 # Stage 2: Final production environment
-FROM node:22.11.0-alpine3.19 AS final
+FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0-alpine3.19 AS final
 WORKDIR /usr/src/app
 
 RUN apk add --no-cache nginx curl nginx-mod-http-headers-more

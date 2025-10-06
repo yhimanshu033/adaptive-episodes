@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server'
-import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
+import {
+	AVAILABLE_TARGET_LANGUAGES,
+	LSMappingTabs,
+} from '@/constants/ai-constants'
 import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
@@ -28,8 +31,9 @@ import {
 	ELSMappingType,
 	EStatus,
 	LSMappingInput,
-	LSMappingOutput,
+	LSMappingInputItem,
 	LSMappingOutputItem,
+	LSMappingOutputItemV2,
 	STATUS_ORDER,
 } from '@/types/common'
 import {
@@ -729,20 +733,21 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	return result
 }
 
-export function parseInputLSMapping(input: LSMappingInput) {
-	const tableItems: LSMappingOutputItem[] = Object.entries(
-		input.ls_mapping
-	).map(([key, value]) => ({
-		original_name: key,
-		...value,
-	}))
-
-	return tableItems
+export function parseInputLSMapping(
+	input: LSMappingInput
+): LSMappingOutputItemV2 {
+	return Object.fromEntries(
+		Object.entries(input.ls_mapping).map(([section, items]) => [
+			section,
+			Object.entries(items).map(([original_name, item]) => ({
+				original_name,
+				...item,
+			})),
+		])
+	)
 }
 
-export function parseOutputLSMapping(
-	data: Partial<LSMappingOutput['ls_mapping']>
-) {
+export function parseOutputLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	return data.map((item) => {
 		if (item?.type !== ELSMappingType.PERSON) {
 			delete item?.gender
@@ -751,9 +756,7 @@ export function parseOutputLSMapping(
 	})
 }
 
-export function isInvalidLSMapping(
-	data: Partial<LSMappingOutput['ls_mapping']>
-) {
+export function isInvalidLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	return data.some(
 		(item) =>
 			!item?.original_name?.trim() ||
@@ -761,6 +764,28 @@ export function isInvalidLSMapping(
 			!item?.type ||
 			(item?.type === ELSMappingType.PERSON && !item?.gender)
 	)
+}
+
+export const migrateOldLSMapping = (
+	data?:
+		| LSMappingInput
+		| {
+				ls_mapping: LSMappingInputItem
+		  }
+		| null
+): LSMappingInput | null => {
+	if (!data) {
+		return null
+	}
+	const lsKeys = Object.keys(data.ls_mapping)
+	if (LSMappingTabs.some((tab) => lsKeys.includes(tab))) {
+		return data as LSMappingInput
+	}
+	return {
+		ls_mapping: {
+			[LSMappingTabs[0]]: data.ls_mapping as LSMappingInputItem,
+		},
+	}
 }
 
 export function isInternalUser(session: Session | null) {
@@ -901,6 +926,73 @@ export function getEpisodeNumbers(seqNumbers: number[], maxNum = 5): string {
 	return seqNumbers.join(',')
 }
 
+// Common utility function to format file size
+export function formatFileSizeForDocx(sizeInBytes: number): string {
+	if (sizeInBytes < 1024) {
+		return `${sizeInBytes.toFixed(0)} B`
+	} else if (sizeInBytes < 1024 * 1024) {
+		const sizeInKB = sizeInBytes / 1024
+		return `${sizeInKB.toFixed(2)} KB`
+	} else if (sizeInBytes < 1024 * 1024 * 1024) {
+		const sizeInMB = sizeInBytes / (1024 * 1024)
+		return `${sizeInMB.toFixed(2)} MB`
+	} else {
+		const sizeInGB = sizeInBytes / (1024 * 1024 * 1024)
+		return `${sizeInGB.toFixed(2)} GB`
+	}
+}
+
+// Helper function to get actual file size from URL with base64 fallback
+export async function getFileSizeFromURL(
+	url: string,
+	text: string
+): Promise<string> {
+	try {
+		const response = await fetch(url, { method: 'HEAD' })
+		const contentLength = response.headers.get('content-length')
+		if (contentLength) {
+			const sizeInBytes = parseInt(contentLength, 10)
+			return formatFileSizeForDocx(sizeInBytes)
+		}
+	} catch (error) {
+		console.error(
+			'Error getting file size from URL, falling back to base64 calculation:',
+			error
+		)
+		// Fallback to base64 calculation
+		return estimateDocxSizeInBytesFromText(text.length)
+	}
+
+	// Fallback if no content-length header
+	return estimateDocxSizeInBytesFromText(text.length)
+}
+
+export function estimateDocxSizeInBytesFromText(charCount: number): string {
+	// Average: 1 KB (1024 bytes) per ~1200 characters
+	const avgCharsPerKB = 120
+	const bytesPerKB = 1024
+
+	const estimatedSizeBytes = (charCount / avgCharsPerKB) * bytesPerKB
+
+	return formatFileSizeForDocx(Math.round(estimatedSizeBytes))
+}
+
+export function estimateDocxSizeWithOverhead(text: string): string {
+	// UTF-8 byte length of the text
+	const byteLength = text.length
+
+	// Google Docs / Word baseline file size for any .docx (~35 KB)
+	const baseOverhead = 35_000
+
+	// Extra XML wrapping per character (nearly negligible compared to base)
+	const perCharOverhead = 0.1 // ~0.1 byte per char after compression
+
+	// Estimate
+	const extra = Math.round(byteLength * perCharOverhead)
+	const size = baseOverhead + extra
+
+	return formatFileSizeForDocx(size)
+}
 export function getSavingData(
 	params: TGetSavingParamsRet
 ): TSaveEpisodeMutationArgs {
@@ -914,4 +1006,20 @@ export function getSavingData(
 		language: params.language,
 		chapter_title: params.title || params.chapterData?.chapter.chapter_title,
 	}
+}
+
+export const checkForDuplicates = (existingFiles: File[], newFiles: File[]) => {
+	const duplicates: string[] = []
+	const existingFileMap = new Map(
+		existingFiles.map((file) => [`${file.name}-${file.size}`, file])
+	)
+
+	newFiles.forEach((newFile) => {
+		const fileKey = `${newFile.name}-${newFile.size}`
+		if (existingFileMap.has(fileKey)) {
+			duplicates.push(newFile.name)
+		}
+	})
+
+	return duplicates
 }

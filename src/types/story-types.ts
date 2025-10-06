@@ -32,6 +32,7 @@ export type TStory = {
 	id: number
 	image: string
 	is_original: boolean
+	languages: ELanguage[]
 	parent_language?: ELanguage
 	project_title: string
 	props: Record<string, unknown>
@@ -49,7 +50,7 @@ export type StoryUploadParams = {
 		image: string | null
 		input_language: string
 		llm_model: string
-		project_url: string | null
+		project_urls: string[] | null
 		run_adaptation: boolean
 		run_nwm?: boolean
 		start_ep: number

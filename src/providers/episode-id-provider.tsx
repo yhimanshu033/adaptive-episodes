@@ -10,6 +10,7 @@ import { immer } from 'zustand/middleware/immer'
 import { useShallow } from 'zustand/react/shallow'
 
 import { AIStoreType, EFocusSetting } from '@/types/ai-types'
+import { BeatsheetEditorStoreType } from '@/types/beatsheet-editor-types'
 import { EDualVIewMode, EpisodeIdStoreType } from '@/types/episode-type'
 import { ESidebar, LaserStoreType, PlateStoreData } from '@/types/plate-types'
 
@@ -24,6 +25,7 @@ const initialState: PlateStoreData = {
 	fontFamily: DEFAULT_FONT_FAMILY,
 	localDiffValue: null,
 	focusMode: false,
+	disableDiffAcceptReject: false,
 }
 
 const initialAiState: AIStoreType = {
@@ -45,6 +47,15 @@ const initialAiState: AIStoreType = {
 	},
 	inputFocus: null,
 	explorerFocusConfig: EFocusSetting.CMS,
+}
+
+const initialBeatsheetEditorState: BeatsheetEditorStoreType = {
+	scenes: [],
+	characters: [],
+	enhancementPlan: false,
+	activeDragItem: null,
+	openSceneIds: [],
+	openPromptId: null,
 }
 
 const initialLaserState: LaserStoreType = {
@@ -70,6 +81,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 
 type EpisodeIdContextType = {
 	useAiStoreContext: UseBoundStore<StoreApi<AIStoreType>>
+	useBeatsheetStoreContext: UseBoundStore<StoreApi<BeatsheetEditorStoreType>>
 	useEpisodeIdStoreContext: UseBoundStore<StoreApi<EpisodeIdStoreType>>
 	useLaserContext: UseBoundStore<StoreApi<LaserStoreType>>
 	usePlateStoreContext: UseBoundStore<StoreApi<PlateStoreData>>
@@ -80,6 +92,7 @@ const EpisodeIdContext = createContext<EpisodeIdContextType>({
 	usePlateStoreContext: create(() => initialState),
 	useAiStoreContext: create(() => initialAiState),
 	useLaserContext: create(() => initialLaserState),
+	useBeatsheetStoreContext: create(() => initialBeatsheetEditorState),
 })
 
 export function EpisodeIdProvider({
@@ -102,6 +115,9 @@ export function EpisodeIdProvider({
 	const useLaserContext = create(
 		devtools(immer<LaserStoreType>(() => initialLaserState))
 	)
+	const useBeatsheetStoreContext = create(
+		devtools(immer(() => initialBeatsheetEditorState))
+	)
 
 	return (
 		<EpisodeIdContext.Provider
@@ -110,6 +126,7 @@ export function EpisodeIdProvider({
 				usePlateStoreContext,
 				useAiStoreContext,
 				useLaserContext,
+				useBeatsheetStoreContext,
 			}}
 		>
 			<EpisodeContentProvider>{children}</EpisodeContentProvider>

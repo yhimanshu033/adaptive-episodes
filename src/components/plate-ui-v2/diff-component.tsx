@@ -48,13 +48,16 @@ export default function DiffComponent({
 
 	const { store, setActiveDiffId } = usePlateStore()
 	const activeStoreId = store(useShallow((state) => state.activeDiffId))
+	const disableDiffAcceptReject = store(
+		useShallow((state) => state.disableDiffAcceptReject)
+	)
 
 	const activeDiffId = useMemo(() => {
-		if (readonly) {
+		if (readonly || disableDiffAcceptReject) {
 			return null
 		}
 		return activeStoreId
-	}, [activeStoreId, readonly])
+	}, [activeStoreId, readonly, disableDiffAcceptReject])
 
 	const isActive = useMemo(() => {
 		return activeDiffId === element.diff_id
@@ -93,7 +96,7 @@ export default function DiffComponent({
 				setActiveDiffId(String(element.diff_id))
 			}}
 		>
-			<If condition={isActive}>
+			<If condition={!readonly && isActive}>
 				<DiffControls editor={editor} element={element} />
 			</If>
 			{children}

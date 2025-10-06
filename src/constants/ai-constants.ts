@@ -183,6 +183,7 @@ export const sidebarToTitle: Record<ESidebar, string> = {
 	[ESidebar.FAR]: 'Find and Replace',
 	[ESidebar.NOTES]: 'Notes',
 	[ESidebar.OUTLINE]: 'Story Explorer',
+	[ESidebar.BEAT_SHEET]: 'Beat Sheet',
 }
 
 export const sidebarButtons: ESidebar[] = [ESidebar.CHATBOT, ESidebar.OUTLINE]
@@ -328,3 +329,9 @@ export const SOURCE_TO_TARGET_LANGUAGE_MAP: Partial<
 	[ELanguage.JAPANESE]: [ELanguage.ENGLISH],
 	[ELanguage.DEUTSCH]: [ELanguage.ENGLISH],
 }
+
+export const LSMappingTabs = [
+	'Localization Sheet',
+	'Mention Mappings',
+	'Localization Details',
+]

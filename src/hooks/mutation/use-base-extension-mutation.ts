@@ -41,15 +41,21 @@ const useBaseExtensionMutation = () => {
 	}
 
 	const onBaseExtensionMutation = async (
-		params: TBaseScriptExtensionBody & { file?: File }
+		params: TBaseScriptExtensionBody & { files?: File[] }
 	) => {
-		if (params.file) {
-			const file_url = (await uploadFile(params.file))?.url
-			if (!file_url) {
-				throw new Error('Failed to upload file')
+		if (params.files && params.files.length > 0) {
+			const fileUploadPromises = params.files.map((file) => uploadFile(file))
+			const uploadResults = await Promise.all(fileUploadPromises)
+
+			const file_urls = uploadResults
+				.map((result) => result?.url)
+				.filter(Boolean) as string[]
+			if (file_urls.length !== params.files.length) {
+				throw new Error('Failed to upload one or more files')
 			}
-			params.file_url = file_url
-			delete params.file
+
+			params.file_urls = file_urls
+			delete params.files
 		}
 		const taskId = await startTask<
 			TBaseScriptExtensionBody,

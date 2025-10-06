@@ -1,7 +1,11 @@
 import { FAR_PADDING_TEXT } from '@/constants/editor-constants'
 import { Descendant, Element, nanoid, TCommentText, Text, Value } from 'platejs'
 
-import { extractWords, generateGenitives } from '@/lib/utils/helpers'
+import {
+	extractWords,
+	generateGenitives,
+	parseOptimistically,
+} from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
 
 import {
@@ -252,11 +256,8 @@ export const extractScenesFromBeatsheet = (beatsheet: string) => {
 	return scenes
 }
 
-export function addSFX(
-	sfx: IndexedSFXResponse,
-	children: Value,
-	key: string
-): Value {
+export function addSFX(sfx: IndexedSFXResponse, children: Value, key: string) {
+	let sfxCount = 0
 	const applyText = (nodes: Descendant[], path: number[]): Descendant[] => {
 		return nodes.flatMap((node, index) => {
 			const currentPath = [...path, index]
@@ -299,6 +300,7 @@ export function addSFX(
 						})
 					}
 					if (matchingValue.sfx) {
+						sfxCount++
 						segments.push({
 							type: key,
 							text: `\n${matchingValue.sfx.replace(/\[!/g, '[').replace(/\]\s*\[/g, ']\n[')}\n`,
@@ -327,10 +329,12 @@ export function addSFX(
 		})
 	}
 
-	return children.map((child, index) => ({
+	const newChildren = children.map((child, index) => ({
 		...child,
 		children: applyText(child.children, [index]),
 	}))
+
+	return { sfxCount, newChildren }
 }
 
 export function addVoicePass(
@@ -413,7 +417,13 @@ export function replaceOnce({
 	search: string
 }) {
 	const updatedChildren = structuredClone(children)
-	const node = updatedChildren[path[0]].children[path[1]] as Element
+	if (!path) {
+		return children
+	}
+	const node = updatedChildren?.[path[0]]?.children?.[path[1]] as Element
+	if (!node?.text) {
+		return children
+	}
 	const text = replaceNthInsensitive(
 		node.text as string,
 		search,
@@ -745,4 +755,33 @@ export function getSuggestionValue(suggestion: TLocalizeArrayItem) {
 			: 'localized_object' in suggestion
 				? suggestion.localized_object
 				: suggestion.localized_place
+}
+
+export function parseSFXResponse({
+	throttledResponse = [],
+}: {
+	throttledResponse?: string[]
+}) {
+	let parsedResponse = parseOptimistically<IndexedSFXResponse>(
+		throttledResponse.join('')
+	)
+	if (!parsedResponse) {
+		return []
+	}
+	parsedResponse = parsedResponse
+		.filter((item) => {
+			const keys = Object.keys(item)
+			return keys.includes('match_string') &&
+				keys.includes('sfx') &&
+				keys.includes('id')
+				? item
+				: null
+		})
+		.filter(Boolean)
+
+	if (!parsedResponse.length) {
+		return []
+	}
+
+	return parsedResponse
 }

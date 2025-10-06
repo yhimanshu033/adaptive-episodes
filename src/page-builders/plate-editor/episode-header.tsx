@@ -14,6 +14,7 @@ import Title from '@/page-builders/plate-editor/title'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
+import DownloadAudio from '@/components/download-audio'
 import { ModeToolbarButton } from '@/components/plate-ui-v2/mode-toolbar-button'
 import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import Languages from '@/components/plate-ui/languages'
@@ -111,6 +112,8 @@ const EpisodeHeader = ({
 					/>
 				</Link>
 
+				<DownloadAudio />
+
 				<Languages />
 				<Versions latestStatus={latestStatus} isChildEpisode={false} />
 				<ModeToolbarButton />
@@ -118,10 +121,10 @@ const EpisodeHeader = ({
 					condition={isInternalUser && isCmsReady && isAccessible(ERole.WRITER)}
 				>
 					<If>
-						<UploadDocxButton latestStatus={latestStatus} />
+						<UploadDocxButton />
 					</If>
 					<Else>
-						<DownloadDocxButton latestStatus={latestStatus} />
+						<DownloadDocxButton />
 					</Else>
 				</IfElse>
 			</div>

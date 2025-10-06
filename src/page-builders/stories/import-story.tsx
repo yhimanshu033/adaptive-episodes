@@ -24,13 +24,27 @@ import useSocket from '@/hooks/use-socket'
 import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { FeatureShineIcon } from '@/icons/feature-shine-icon'
-import { FileChartIcon } from '@/icons/file-chart-icon'
 import { LightBulbSimpleIcon } from '@/icons/light-bulb-simple-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import ChooseStoryTypes from '@/page-builders/stories/choose-story-types'
 import DeleteModal from '@/page-builders/stories/delete-modal'
 import useStoryStore from '@/store/story-store'
+import {
+	closestCenter,
+	DndContext,
+	DragEndEvent,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from '@dnd-kit/core'
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -57,10 +71,11 @@ import { FullScreenLoader } from '@/components/loader'
 import LanguageSelector, {
 	LLMModelSelector,
 } from '@/components/plate-ui/language-selector'
+import { SortableFileItem } from '@/components/sortable-file-item'
 import SwitchCase, { Case } from '@/components/switch-case'
 import { cn } from '@/lib/aural-ui/utils'
 import { FetchResponseResult } from '@/lib/fetch-api'
-import { formatFileSize } from '@/lib/utils/helpers'
+import { checkForDuplicates, formatFileSize } from '@/lib/utils/helpers'
 import { setRecentStore } from '@/lib/utils/indexed-db'
 
 import { ELanguage } from '@/types/common'
@@ -70,8 +85,21 @@ export function ImportStory() {
 	const [step, setStep] = useState(ImportStoryStep.CHOOSE_TYPE)
 	const [isDragging, setIsDragging] = useState(false)
 	const [imageSrc, setImageSrc] = useState<string | null>(null)
+	const [storyFiles, setStoryFiles] = useState<File[]>([])
 	const imageInputRef = useRef<HTMLInputElement | null>(null)
 	const storyInputRef = useRef<HTMLInputElement | null>(null)
+
+	// Drag and drop sensors
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 8,
+			},
+		}),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		})
+	)
 	const { setFormOpen, setShowTitle, showTitle } = useStoryStore(
 		useShallow((state) => ({
 			setFormOpen: state.setFormOpen,
@@ -140,6 +168,7 @@ export function ImportStory() {
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
 	) => {
 		e.preventDefault()
+		e.stopPropagation()
 		if (imageInputRef.current) {
 			imageInputRef.current.value = ''
 		}
@@ -148,14 +177,26 @@ export function ImportStory() {
 	}
 
 	const handleDiscardDoc = (
-		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		index?: number
 	) => {
 		e.preventDefault()
-		if (storyInputRef.current) {
-			storyInputRef.current.value = ''
+		e.stopPropagation()
+		if (typeof index === 'number') {
+			const newFiles = [...storyFiles]
+			newFiles.splice(index, 1)
+			setStoryFiles(newFiles)
+			form.setValue('story_files', newFiles)
+			if (storyInputRef.current) {
+				storyInputRef.current.value = ''
+			}
+		} else {
+			setStoryFiles([])
+			form.resetField('story_files')
+			if (storyInputRef.current) {
+				storyInputRef.current.value = ''
+			}
 		}
-		form.resetField('story_file')
-		setImageSrc(null)
 	}
 
 	const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
@@ -164,20 +205,45 @@ export function ImportStory() {
 		setIsDragging(e?.type === 'dragenter' || e?.type === 'dragover')
 	}
 
-	const handleDocValidation = async (file: File) => {
-		form.setValue('story_file', file)
+	const handleDocValidation = async (files: FileList | File[]) => {
+		const filesArr = Array.from(files)
 
-		const isValid = await form.trigger('story_file')
-		const error = form.getFieldState('story_file').error?.message
+		const duplicates = checkForDuplicates(storyFiles, filesArr)
+		if (duplicates.length > 0) {
+			const fileNames = duplicates.slice(0, 2).join(', ')
+			const message =
+				duplicates.length === 1
+					? `File "${fileNames}" is already uploaded.`
+					: duplicates.length === 2
+						? `Files "${fileNames}" are already uploaded.`
+						: `Files "${fileNames}" and ${
+								duplicates.length - 2
+							} others are already uploaded.`
 
-		if (!isValid) {
-			toast.error(error || 'Invalid document file.', {
+			toast.error(message, {
 				icon: <BubbleCrossedIcon />,
 			})
-			form.setValue('story_file', undefined)
 			return false
 		}
 
+		const totalFilesAfterUpload = storyFiles.length + filesArr.length
+		if (totalFilesAfterUpload > 10) {
+			toast.error('You can upload a maximum of 10 files.', {
+				icon: <BubbleCrossedIcon />,
+			})
+			return false
+		}
+
+		const potentialNewFileList = [...storyFiles, ...filesArr]
+		form.setValue('story_files', potentialNewFileList)
+		const isValid = await form.trigger('story_files')
+
+		if (!isValid) {
+			form.setValue('story_files', storyFiles)
+			return false
+		}
+
+		setStoryFiles(potentialNewFileList)
 		return true
 	}
 
@@ -186,9 +252,9 @@ export function ImportStory() {
 		e.stopPropagation()
 		setIsDragging(false)
 
-		const file = e.dataTransfer.files[0]
-		if (file) {
-			void handleDocValidation(file)
+		const files = e.dataTransfer.files
+		if (files && files.length > 0) {
+			void handleDocValidation(files)
 		}
 	}
 
@@ -237,13 +303,47 @@ export function ImportStory() {
 		setStep(switchableStepsInfo[stepIndex].type)
 	}
 
+	const handleStoryFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+		e.preventDefault()
+		e.stopPropagation()
+		const files = e.target.files
+		if (files && files.length > 0) {
+			void handleDocValidation(files)
+		}
+		e.target.value = ''
+	}
+
+	const handleSortDragEnd = (event: DragEndEvent) => {
+		const { active, over } = event
+
+		if (!over || active.id === over.id) {
+			return
+		}
+
+		const activeIndex = storyFiles.findIndex(
+			(_, index) => `file-${index}` === String(active.id)
+		)
+		const overIndex = storyFiles.findIndex(
+			(_, index) => `file-${index}` === String(over.id)
+		)
+
+		if (activeIndex !== -1 && overIndex !== -1) {
+			const newFiles = arrayMove(storyFiles, activeIndex, overIndex)
+			setStoryFiles(newFiles)
+			form.setValue('story_files', newFiles)
+		}
+	}
+
 	const onSubmit = (data: StoryImportFormSchema) => {
 		const proceed = nextStep()
 		if (proceed) {
-			storyUploadMutation.mutate(data, {
+			// Attach storyFiles to data
+			const submitData = { ...data, story_files: storyFiles }
+			storyUploadMutation.mutate(submitData, {
 				onSuccess: async (taskId) => {
 					form.reset()
 					setImageSrc(null)
+					setStoryFiles([])
 					setFormOpen(false)
 					toast.info('Story import started')
 					const data: FetchResponseResult = await getResponse(taskId)
@@ -637,8 +737,8 @@ export function ImportStory() {
 										<Case value={ImportStoryStep.CONTENT}>
 											<FormField
 												control={form.control}
-												name="story_file"
-												render={({ field }) => (
+												name="story_files"
+												render={() => (
 													<FormItem className="space-y-2">
 														<FormLabel htmlFor="story">
 															STORY{' '}
@@ -655,77 +755,102 @@ export function ImportStory() {
 														<FormControl>
 															<div
 																className={cn(
-																	'border-fm-divider-secondary hover:border-fm-divider-primary flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xs border-1 border-dashed p-8 transition-colors duration-200',
+																	'border-fm-divider-secondary hover:border-fm-divider-primary flex flex-col justify-center gap-1 rounded-xs border-1 border-dashed p-8 transition-colors duration-200',
 																	{
 																		'border-fm-divider-primary bg-fm-divider-primary/30':
 																			isDragging,
-																		'border-solid p-4': !!field.value,
+																		'border-solid p-4': storyFiles.length > 0,
+																		'cursor-pointer': storyFiles.length === 0,
 																	}
 																)}
 																onDragOver={handleDrag}
 																onDragLeave={handleDrag}
 																onDrop={handleDrop}
-																onClick={() =>
-																	!field.value
-																		? storyInputRef.current?.click()
-																		: {}
-																}
 															>
-																<If condition={!field.value}>
-																	<IconButton
-																		label="Upload file button"
-																		size="small"
-																		icon={<PlusIcon />}
-																	/>
-																	<Typography
-																		color="tertiary"
-																		variant="caption-large"
-																		weight="regular"
+																<If condition={storyFiles.length === 0}>
+																	<div
+																		className="flex w-full cursor-pointer flex-col items-center justify-center gap-1"
+																		onClick={() =>
+																			storyInputRef.current?.click()
+																		}
 																	>
-																		Drag and drop or{' '}
+																		<IconButton
+																			label="Upload file button"
+																			size="small"
+																			icon={<PlusIcon />}
+																		/>
 																		<Typography
-																			as="span"
-																			className="text-fm-secondary-800"
+																			color="tertiary"
+																			variant="caption-large"
+																			weight="regular"
 																		>
-																			upload story
+																			Drag and drop or{' '}
+																			<Typography
+																				as="span"
+																				className="text-fm-secondary-800"
+																			>
+																				upload stories
+																			</Typography>
 																		</Typography>
-																	</Typography>
+																		<Typography
+																			as="div"
+																			color="tertiary"
+																			variant="caption-small"
+																			className="mt-2"
+																		>
+																			You can select multiple files at once.
+																		</Typography>
+																	</div>
 																</If>
-																<If condition={!!field.value}>
-																	<div className="flex w-full items-center justify-between text-sm">
-																		<div className="flex gap-4">
-																			<IconButton
-																				label="Re-Upload file button"
-																				icon={
-																					<FileChartIcon className="text-fm-secondary-800" />
-																				}
-																				onClick={() =>
-																					storyInputRef.current?.click()
-																				}
-																			/>
-																			<div className="flex flex-col gap-1">
-																				<Typography as="div">
-																					Translation Document
-																				</Typography>
-																				<Typography
-																					as="div"
-																					color="tertiary"
-																					variant="caption-large"
-																					transform="uppercase"
-																					className="font-fm-brand"
-																				>
-																					{formatFileSize(
-																						field.value?.size || 0
-																					)}
-																				</Typography>
+																<If condition={storyFiles.length > 0}>
+																	<DndContext
+																		sensors={sensors}
+																		collisionDetection={closestCenter}
+																		onDragEnd={handleSortDragEnd}
+																	>
+																		<SortableContext
+																			items={storyFiles.map(
+																				(_, index) => `file-${index}`
+																			)}
+																			strategy={verticalListSortingStrategy}
+																		>
+																			<div className="flex max-h-40 w-full flex-col gap-2 overflow-y-auto pr-1">
+																				{storyFiles.map((file, idx) => (
+																					<SortableFileItem
+																						key={`${file.name}-${file.size}-${idx}`}
+																						id={`file-${idx}`}
+																						file={file}
+																						index={idx}
+																						onDelete={handleDiscardDoc}
+																					/>
+																				))}
 																			</div>
-																		</div>
+																		</SortableContext>
+																	</DndContext>
+																	<div
+																		className="mt-2 flex justify-between"
+																		onClick={(e) => e.stopPropagation()}
+																	>
+																		<Button
+																			type="button"
+																			variant="outline"
+																			size="sm"
+																			onClick={(e) => {
+																				e.preventDefault()
+																				e.stopPropagation()
+																				storyInputRef.current?.click()
+																			}}
+																			className="flex items-center gap-2"
+																		>
+																			<PlusIcon className="size-4" />
+																			Add more files
+																		</Button>
 																		<DeleteModal
-																			title="Delete uploaded file"
-																			subTitle="Once deleted, this can't be
-																					undone. Don't worry! You can
-																					always upload a new file."
-																			onPrimaryClick={handleDiscardDoc}
+																			title="Remove all files"
+																			subTitle="This will remove all uploaded story files."
+																			onPrimaryClick={(e) =>
+																				handleDiscardDoc(e)
+																			}
 																		>
 																			<Button
 																				variant="text"
@@ -737,7 +862,7 @@ export function ImportStory() {
 																					width={16}
 																					className="text-fm-negative"
 																				/>{' '}
-																				DELETE
+																				Remove all
 																			</Button>
 																		</DeleteModal>
 																	</div>
@@ -748,13 +873,8 @@ export function ImportStory() {
 																	accept=".docx"
 																	ref={storyInputRef}
 																	className="hidden"
-																	onChange={(e) => {
-																		if (e.target.files?.length) {
-																			void handleDocValidation(
-																				e.target.files[0]
-																			)
-																		}
-																	}}
+																	multiple
+																	onChange={handleStoryFileInput}
 																/>
 															</div>
 														</FormControl>
@@ -767,7 +887,7 @@ export function ImportStory() {
 																	transform="uppercase"
 																	className="font-fm-brand"
 																>
-																	FORMATS: TXT, PDF, DOC
+																	FORMATS: DOCX
 																</Typography>
 																<Typography
 																	as="h4"
@@ -776,7 +896,7 @@ export function ImportStory() {
 																	transform="uppercase"
 																	className="font-fm-brand"
 																>
-																	MAX SIZE: 100 MB
+																	MAX SIZE: 100 MB each
 																</Typography>
 															</div>
 															<div className="relative z-0 flex flex-col gap-5 px-3 py-4">
@@ -841,6 +961,7 @@ export function ImportStory() {
 											onClick={() => {
 												setFormOpen(false)
 												form.reset()
+												setStoryFiles([])
 											}}
 										>
 											Exit & Discard
@@ -852,7 +973,8 @@ export function ImportStory() {
 											'h-11 w-fit': storyType === ImportStoryType.IMPORT,
 										})}
 										isDisabled={
-											!form.watch('title') || storyUploadMutation.isPending
+											!form.watch('title')?.trim() ||
+											storyUploadMutation.isPending
 										}
 										type="submit"
 									>

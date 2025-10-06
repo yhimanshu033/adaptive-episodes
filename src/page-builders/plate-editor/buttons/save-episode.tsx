@@ -3,10 +3,10 @@ import React, { useEffect, useMemo } from 'react'
 import { SAVE_EPISODE_BUTTON_ID } from '@/constants/editor-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaveEpisode from '@/hooks/use-save-episode'
-import { CircleCheck, Save } from 'lucide-react'
+import { CircleCheck, CloudAlert } from 'lucide-react'
 import { useEventCallback } from 'usehooks-ts'
 
-import { IconButton } from '@/components/aural-ui/icon-button'
+import { Button } from '@/components/aural-ui/button'
 import IfElse, { Else, If } from '@/components/if-else'
 import useEpisodeId from '@/providers/episode-id-provider'
 import { formatRelativeTime } from '@/lib/utils/helpers'
@@ -49,33 +49,32 @@ const SaveEpisode = () => {
 	}
 
 	return (
-		<div className="text-fm-placeholder text-fm-sm flex items-center gap-2">
+		<Button
+			id={`${SAVE_EPISODE_BUTTON_ID}-${episodeId}`}
+			innerClassName="!px-0 !py-0 !translate-y-0 !text-fm-placeholder !text-fm-sm"
+			variant="text"
+			className="!text-fm-placeholder text-fm-sm flex items-center gap-2"
+			onClick={() => void handleSave()}
+		>
 			<IfElse condition={isPending}>
 				<If>
 					<p className="font-fm-brand uppercase">Saving...</p>
 				</If>
 				<Else>
-					<CircleCheck className="size-4" />
+					<IfElse condition={!isSaved}>
+						<If>
+							<CloudAlert className="size-4" />
+						</If>
+						<Else>
+							<CircleCheck className="size-4" />
+						</Else>
+					</IfElse>
 					<p className="font-fm-brand whitespace-nowrap uppercase">
 						Updated {updatedAt}
 					</p>
-					<IconButton
-						id={`${SAVE_EPISODE_BUTTON_ID}-${episodeId}`}
-						tooltip="Save Episode"
-						disabled={isSaved}
-						className="size-0 overflow-hidden"
-						size="small"
-						label="Save Episode"
-						icon={<Save size={16} />}
-						onClick={() => handleSave()}
-						tooltipContentProps={{
-							side: 'bottom',
-							align: 'center',
-						}}
-					/>
 				</Else>
 			</IfElse>
-		</div>
+		</Button>
 	)
 }
 

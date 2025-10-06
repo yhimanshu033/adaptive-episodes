@@ -7,6 +7,7 @@ import useLocalizeHook, {
 } from '@/hooks/mutation/use-localize-hook'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useLanguage from '@/hooks/use-language'
+import { isEqual } from 'lodash'
 import { useEditorPlugin, useEditorRef, usePluginOptions } from 'platejs/react'
 
 import useEpisodeId from '@/providers/episode-id-provider'
@@ -39,13 +40,15 @@ export default function useFindAndReplace() {
 		caseSensitive,
 		wholeWord,
 		genitive,
+		currentId,
 	} = usePluginOptions(FindReplacePlugin, (state) => ({
 		search: state.search || '',
 		replace: state.replace || '',
-		replaceEnabled: state.replaceEnabled || false,
+		replaceEnabled: state.replaceEnabled || true,
 		caseSensitive: state.caseSensitive || false,
 		wholeWord: state.wholeWord || false,
 		genitive: state.genitive || false,
+		currentId: state.currentId || [],
 	}))
 	const [ptr, setPtr] = useState(0)
 
@@ -106,7 +109,16 @@ export default function useFindAndReplace() {
 	)
 
 	useEffect(() => {
-		if (!records[ptr]) {
+		if (!records.length || !!records[ptr]) {
+			return
+		}
+		if (ptr >= records.length) {
+			setPtr(records.length - 1)
+		}
+	}, [ptr, records])
+
+	useEffect(() => {
+		if (!records?.[ptr]) {
 			return
 		}
 		setOptions({ currentId: records[ptr] })
@@ -139,7 +151,7 @@ export default function useFindAndReplace() {
 			wholeWord,
 		})
 		editor.tf.setValue(breakDownValue(updatedChildren))
-		setOptions({ search: '', replace: '', replaceEnabled: false })
+		setOptions({ search: '', replace: '' })
 	}, [
 		search,
 		replaceEnabled,
@@ -153,10 +165,18 @@ export default function useFindAndReplace() {
 	])
 
 	const onReplace = useCallback(() => {
-		const path = records[ptr]
+		const path = currentId
+
+		const currentIdx = records.findIndex((item) => isEqual(item, currentId))
+		if (currentIdx === -1 || records.length === 1) {
+			setPtr(0)
+		} else {
+			setPtr(currentIdx % (records.length - 1))
+		}
+
 		const updatedChildren = replaceOnce({ children, path, search, replace })
 		editor.tf.setValue(breakDownValue(updatedChildren))
-	}, [children, editor.tf, ptr, records, replace, search])
+	}, [children, editor.tf, currentId, replace, search, records])
 
 	function handlePrev() {
 		setPtr(ptr > 0 ? ptr - 1 : ptr)
