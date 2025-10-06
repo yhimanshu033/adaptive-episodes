@@ -773,7 +773,7 @@ export function sortInputLSMapping(
 
 export function parseInputLSMapping(input: LSMappingInput): {
 	data: LSMappingOutputItemV2
-	sequence?: LSMappingSequenceData['sequence']
+	sequence?: LSMappingSequenceData['sequence_ls']
 } {
 	const parsedInput = Object.fromEntries(
 		Object.entries(input.ls_mapping).map(([section, items]) => {
@@ -789,10 +789,10 @@ export function parseInputLSMapping(input: LSMappingInput): {
 			]
 		})
 	) as {
-		[LSMappingSequenceField]: LSMappingSequenceData['sequence']
+		[LSMappingSequenceField]: LSMappingSequenceData['sequence_ls']
 	} & LSMappingOutputItemV2
 
-	const { sequence, ...rest } = parsedInput
+	const { sequence_ls: sequence, ...rest } = parsedInput
 
 	return { data: sortInputLSMapping(rest), sequence }
 }

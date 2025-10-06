@@ -112,6 +112,8 @@ export enum ELSMappingGender {
 export enum ELSMappingChineseGender {
 	FEMALE = 'female',
 	MALE = 'male',
+	NEUTRAL = 'neutral',
+	UNKNOWN = 'unknown',
 }
 
 export type LSMappingCommon = {
@@ -139,7 +141,7 @@ export interface LSMappingInputItem {
 	} & LSMappingCommon
 }
 
-export const LSMappingSequenceField = 'sequence'
+export const LSMappingSequenceField = 'sequence_ls'
 export type LSMappingInputItemV2 = Record<string, LSMappingInputItem>
 
 export interface LSMappingInput {

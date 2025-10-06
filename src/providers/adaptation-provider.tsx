@@ -37,9 +37,9 @@ function useAdaptationUtil() {
 	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
 	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.HYBRID)
 	const [abort, setAbort] = useState(false)
-	const [sequence, setSequence] = useState<LSMappingSequenceData['sequence']>(
-		{}
-	)
+	const [sequence, setSequence] = useState<
+		LSMappingSequenceData['sequence_ls']
+	>({})
 	const abortControllerRef = useRef<AbortController | null>(null)
 
 	const {

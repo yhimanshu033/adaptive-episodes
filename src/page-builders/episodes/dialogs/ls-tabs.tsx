@@ -33,7 +33,7 @@ import LSTableEditor from './ls-editor'
 interface LsTabsProps {
 	handleClose?: () => void
 	onSubmit?: (data: LSMappingOutput) => void
-	sequence: LSMappingSequenceData['sequence']
+	sequence: LSMappingSequenceData['sequence_ls']
 	setTableData?: React.Dispatch<React.SetStateAction<LSMappingOutputItemV2>>
 	story?: TStory | null
 	tableData: LSMappingOutputItemV2
