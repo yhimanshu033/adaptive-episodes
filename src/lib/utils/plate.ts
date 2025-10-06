@@ -402,7 +402,7 @@ export function getCommentNode(val: Value, id: string) {
 	return { beforeText, text, afterText }
 }
 
-export function getText(val: Value, separator?: string) {
+export function getText(val: Value, separator: string = '\n') {
 	let text = ''
 	function getTextFromNode(node: Descendant) {
 		if ('text' in node) {
@@ -413,7 +413,7 @@ export function getText(val: Value, separator?: string) {
 	}
 	val.forEach((node, i) => {
 		if (i > 0) {
-			text += separator || '\n'
+			text += separator
 		}
 		getTextFromNode(node)
 	})
@@ -1065,4 +1065,33 @@ export async function valueToHTML({
 
 	const base64String = btoa(unescape(encodeURIComponent(html)))
 	return { base64String, html, title }
+}
+
+export function getTextFromTextOrValue(content: string) {
+	const jsonContent = jsonify(content)
+
+	if (typeof jsonContent === 'string') {
+		return content
+	}
+
+	return getText(jsonContent)
+}
+
+export function getPlaceholderContent(content: string) {
+	return [
+		{
+			type: 'p',
+			children: [
+				{
+					text: content,
+				},
+			],
+		},
+	] as Value
+}
+
+export function getPlaceholderContentFromTextOrValue(content: string = '') {
+	const textContent = getTextFromTextOrValue(content)
+
+	return getPlaceholderContent(textContent)
 }

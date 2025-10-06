@@ -82,7 +82,7 @@ function MyEditor({
 													<EditorHandler />
 												</ScrollArea>
 											</ResizablePanel>
-											<DualView translatedContent={content.translation_text} />
+											<DualView />
 										</ResizablePanelGroup>
 									</ResizablePanel>
 									<Sidebar />

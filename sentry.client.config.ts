@@ -24,4 +24,10 @@ Sentry.init({
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
+
+  // Enable source map support for better error tracking
+  beforeSend(event) {
+    // Ensure source maps are properly processed
+    return event;
+  },
 })

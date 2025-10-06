@@ -1,3 +1,26 @@
+## <small>1.3.1 (2025-10-06)</small>
+
+* fix: 🐛 client-only import breaks EXCLUDE_BREAKDOWN_KEYS us ([51e24bc](https://github.com/Pocket-Fm/co-writing/commit/51e24bc))
+* fix: 🐛 csv upload fix ([9d0cc1c](https://github.com/Pocket-Fm/co-writing/commit/9d0cc1c))
+* fix: 🐛 cursor bot comment resolve ([6b88035](https://github.com/Pocket-Fm/co-writing/commit/6b88035))
+* fix: 🐛 Improve Performance of "Share Access" Dialog ([0a9f566](https://github.com/Pocket-Fm/co-writing/commit/0a9f566))
+* fix: 🐛 remoived log ([b2677b4](https://github.com/Pocket-Fm/co-writing/commit/b2677b4))
+* fix: 🐛 removed comments ([878790f](https://github.com/Pocket-Fm/co-writing/commit/878790f))
+* fix: 🐛 removed extra config ([2f0a865](https://github.com/Pocket-Fm/co-writing/commit/2f0a865))
+* feat: 🎸 Add Source Maps to Sentry Integration ([e3740a7](https://github.com/Pocket-Fm/co-writing/commit/e3740a7))
+* feat: 🎸 Diff View in Copilot Dual-View Section ([4863eca](https://github.com/Pocket-Fm/co-writing/commit/4863eca))
+* ci: 🎡 sentry logs for long loading times ([9c066b0](https://github.com/Pocket-Fm/co-writing/commit/9c066b0))
+* style: 💄 changed text from story to image ([e0ade7a](https://github.com/Pocket-Fm/co-writing/commit/e0ade7a))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
 ## 1.3.0 (2025-09-29)
 
 * fix: 🐛 backward compatibility ([26abb27](https://github.com/Pocket-Fm/co-writing/commit/26abb27))

@@ -172,7 +172,7 @@ export default function FileUpload({
 						>
 							Drag and drop or{' '}
 							<Typography as="span" className="text-fm-secondary-800">
-								upload story
+								upload image
 							</Typography>
 						</Typography>
 					</If>

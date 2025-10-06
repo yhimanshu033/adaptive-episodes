@@ -11,25 +11,24 @@ import Translation from '@/page-builders/plate-editor/dual-view/translation'
 import VoicePass from '@/page-builders/plate-editor/dual-view/voice-pass'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
+import { toast } from 'sonner'
 import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
+import { Button } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { cn } from '@/lib/utils/helpers'
+import { getTextFromTextOrValue } from '@/lib/utils/plate'
 
 import { EChatMode } from '@/types/ai-types'
-import {
-	EDualVIewMode,
-	MODE_TO_TITLE,
-	TranslationProps,
-} from '@/types/episode-type'
+import { EDualVIewMode, MODE_TO_TITLE } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
 import BaseScript from './base-script'
 
-const DualView = ({ translatedContent }: TranslationProps) => {
+const DualView = () => {
 	const { store, setSidebar } = usePlateStore()
 	const sidebar = store((state) => state.sidebar)
 	const focusMode = store((state) => state.focusMode)
@@ -47,7 +46,26 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 				return {
 					...acc,
 					[k as EDualVIewMode]: (
-						<ContentDisplay content={data?.additional_view?.[k]} />
+						<ContentDisplay
+							content={data?.additional_view?.[k]}
+							customButton={
+								<Button
+									tooltip="Copy Content"
+									variant="outline"
+									size="sm"
+									onClick={() => {
+										void navigator.clipboard.writeText(
+											getTextFromTextOrValue(data?.additional_view?.[k] || '')
+										)
+										toast.success('Content copied successfully!')
+									}}
+								>
+									Copy
+								</Button>
+							}
+							enableDiff
+							reverseDiff
+						/>
 					),
 				}
 			},
@@ -56,11 +74,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 	}, [data])
 	const modeToComponent: Record<EDualVIewMode, React.ReactNode> = useMemo(
 		() => ({
-			[EDualVIewMode.US_TRANSLATION]: (
-				<Translation
-					translatedContent={translatedContent || 'No Content Found'}
-				/>
-			),
+			[EDualVIewMode.US_TRANSLATION]: <Translation />,
 			[EDualVIewMode.BASE_SCRIPT]: <BaseScript />,
 			[EDualVIewMode.PREV_EP]: <PreviousEpisode />,
 			[EDualVIewMode.NEXT_EP]: <NextEpisode />,
@@ -70,7 +84,7 @@ const DualView = ({ translatedContent }: TranslationProps) => {
 			),
 			...extraViews,
 		}),
-		[translatedContent, extraViews]
+		[extraViews]
 	)
 
 	const { store: useEpisodeIdStoreContext, setDualViewMode } =

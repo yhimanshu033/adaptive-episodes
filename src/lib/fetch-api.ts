@@ -1,7 +1,10 @@
 'use server'
 
 import { headers as nextHeaders } from 'next/headers'
-import { validResponseStatuses } from '@/constants/global-constants'
+import {
+	FETCH_TIMEOUT,
+	validResponseStatuses,
+} from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
 import { getServerSession } from 'next-auth'
 
@@ -117,6 +120,10 @@ export async function fetchAPI<
 		query: JSON.stringify(query),
 		headers: JSON.stringify(headers),
 	}
+
+	const startTime = Date.now()
+	let timeoutId: NodeJS.Timeout | undefined
+
 	try {
 		const isFormData = body instanceof FormData
 		if (!accessToken && !noAuth) {
@@ -131,6 +138,25 @@ export async function fetchAPI<
 				extra: defaultSentryData,
 			})
 		}
+
+		timeoutId = setTimeout(() => {
+			const duration = Date.now() - startTime
+			log({
+				type: 'API LONG REQUEST TIMEOUT',
+				extra: {
+					...defaultSentryData,
+					duration,
+					timeoutThreshol: FETCH_TIMEOUT,
+				},
+			})
+			Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
+				extra: {
+					...defaultSentryData,
+					duration,
+					timeoutThreshol: FETCH_TIMEOUT,
+				},
+			})
+		}, FETCH_TIMEOUT)
 
 		const response = await fetch(resolvedUrl, {
 			method,
@@ -151,7 +177,33 @@ export async function fetchAPI<
 			mode: 'cors',
 		})
 
+		clearTimeout(timeoutId)
+		const requestDuration = Date.now() - startTime
+
+		if (requestDuration >= FETCH_TIMEOUT) {
+			log({
+				type: 'API SLOW REQUEST COMPLETED',
+				extra: {
+					...defaultSentryData,
+					duration: requestDuration,
+					timeoutThreshol: FETCH_TIMEOUT,
+				},
+			})
+			Sentry.captureMessage('API SLOW REQUEST COMPLETED', {
+				level: 'warning',
+				extra: {
+					...defaultSentryData,
+					duration: requestDuration,
+					timeoutThreshol: FETCH_TIMEOUT,
+				},
+			})
+		}
+
 		if (!response.ok || !validResponseStatuses.includes(response.status)) {
+			if (timeoutId) {
+				clearTimeout(timeoutId)
+			}
+
 			log({
 				type: 'API RESPONSE ERROR',
 				extra: {
@@ -200,6 +252,10 @@ export async function fetchAPI<
 			},
 		}
 	} catch (error) {
+		if (timeoutId) {
+			clearTimeout(timeoutId)
+		}
+
 		log({
 			type: 'API CATCH ERROR',
 			extra: {
