@@ -40,6 +40,7 @@ type TEpisodeProps = {
 	beatsheet: string
 	context: string
 	loglines: string
+	nwm_running?: boolean
 	summary: string
 }
 

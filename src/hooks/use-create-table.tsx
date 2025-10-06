@@ -145,7 +145,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							>
 								Rename
 							</DropdownMenuItem>
-							<If condition={isWriter && (isOriginal || isGerman)}>
+							<If condition={isWriter}>
 								<DropdownMenuItem
 									onClick={() =>
 										episodeRegenerate({ episodeId: row.original.id })
