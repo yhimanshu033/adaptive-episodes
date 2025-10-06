@@ -744,8 +744,8 @@ export function sortInputLSMapping(
 		input[sheet] = items.sort((a, b) => {
 			const aIdValue = a['ID'] || a['id'] || a['Id']
 			const bIdValue = b['ID'] || b['id'] || b['Id']
-			const aTypeValue = a['Type'] || a['type'] || a['Type']
-			const bTypeValue = b['Type'] || b['type'] || b['Type']
+			const aTypeValue = a['TYPE'] || a['type'] || a['Type']
+			const bTypeValue = b['TYPE'] || b['type'] || b['Type']
 
 			if (aIdValue && bIdValue) {
 				// sort by first splitting _ and then aSplit[0]<bSplit[0] would be first and after that Number(aSplit[1])<Number(bSplit[1]) would come first

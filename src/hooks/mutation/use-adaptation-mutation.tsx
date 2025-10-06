@@ -53,10 +53,6 @@ export default function useAdaptationMutation({
 		selectedRowData: TEpisode[]
 		storyData?: TStory | null
 	}) {
-		/**
-		 * test
-		 */
-		// return migrateOldLSMapping({ ls_mapping: sampleLSMappingInputItemV2 })
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{
 				method: 'POST',

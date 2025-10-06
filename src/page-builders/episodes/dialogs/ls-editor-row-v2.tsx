@@ -54,7 +54,7 @@ const LSEditorCell = ({
 	useEffect(() => {
 		updateField(index, field, debouncedState)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [debouncedState])
+	}, [debouncedState, field, index])
 
 	return (
 		<TableCell key={idx}>
