@@ -101,6 +101,7 @@ export const BASE_SCRIPT_EDITOR_ID = 'base-script-editor'
 export const NOTE_EDITOR_BASE_ID = 'notes-editor'
 export const DIFF_EDITOR_ID = 'diff-editor'
 export const LOCAL_DIFF_EDITOR_ID = 'local-diff-editor'
+export const DUAL_VIEW_EDITOR_ID = 'dual-view-editor'
 
 export const LINES = 30
 

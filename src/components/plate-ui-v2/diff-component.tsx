@@ -96,7 +96,7 @@ export default function DiffComponent({
 				setActiveDiffId(String(element.diff_id))
 			}}
 		>
-			<If condition={isActive}>
+			<If condition={!readonly && isActive}>
 				<DiffControls editor={editor} element={element} />
 			</If>
 			{children}
