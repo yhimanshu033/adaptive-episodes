@@ -733,10 +733,46 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	return result
 }
 
+export function sortInputLSMapping(
+	input: LSMappingOutputItemV2
+): LSMappingOutputItemV2 {
+	const sheets = Object.keys(input)
+	for (const sheet of sheets) {
+		const items = input[sheet]
+		input[sheet] = items.sort((a, b) => {
+			const aIdValue = a['ID'] || a['id'] || a['Id']
+			const bIdValue = b['ID'] || b['id'] || b['Id']
+			const aTypeValue = a['Type'] || a['type'] || a['Type']
+			const bTypeValue = b['Type'] || b['type'] || b['Type']
+
+			if (aIdValue && bIdValue) {
+				// sort by first splitting _ and then aSplit[0]<bSplit[0] would be first and after that Number(aSplit[1])<Number(bSplit[1]) would come first
+				const [aPrefix = '', aNum = ''] = String(aIdValue).split('_')
+				const [bPrefix = '', bNum = ''] = String(bIdValue).split('_')
+
+				if (aPrefix !== bPrefix) {
+					return aPrefix.localeCompare(bPrefix)
+				}
+
+				return Number(aNum) - Number(bNum)
+			}
+
+			if (aTypeValue && bTypeValue) {
+				// reverse sort by aTypeValue and bTypeValue
+				return String(bTypeValue).localeCompare(String(aTypeValue))
+			}
+
+			// default
+			return 0
+		})
+	}
+	return input
+}
+
 export function parseInputLSMapping(
 	input: LSMappingInput
 ): LSMappingOutputItemV2 {
-	return Object.fromEntries(
+	const parsedInput = Object.fromEntries(
 		Object.entries(input.ls_mapping).map(([section, items]) => [
 			section,
 			Object.entries(items).map(([original_name, item]) => ({
@@ -745,6 +781,8 @@ export function parseInputLSMapping(
 			})),
 		])
 	)
+
+	return sortInputLSMapping(parsedInput)
 }
 
 export function parseOutputLSMapping(data: Partial<LSMappingOutputItem[]>) {
@@ -778,7 +816,11 @@ export const migrateOldLSMapping = (
 		return null
 	}
 	const lsKeys = Object.keys(data.ls_mapping)
-	if (LSMappingTabs.some((tab) => lsKeys.includes(tab))) {
+	if (
+		LSMappingTabs.some((tab) =>
+			lsKeys.some((key) => key.toLowerCase().trim() === tab)
+		)
+	) {
 		return data as LSMappingInput
 	}
 	return {

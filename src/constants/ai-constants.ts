@@ -331,7 +331,7 @@ export const SOURCE_TO_TARGET_LANGUAGE_MAP: Partial<
 }
 
 export const LSMappingTabs = [
-	'Localization Sheet',
-	'Mention Mappings',
-	'Localization Details',
+	'localization sheet',
+	'mention mappings',
+	'localization details',
 ]

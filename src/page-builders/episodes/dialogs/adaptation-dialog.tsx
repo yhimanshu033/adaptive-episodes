@@ -271,6 +271,7 @@ export default function AdaptationDialog({
 								tableData={tableData}
 								setTableData={setTableData}
 								handleClose={handleClose}
+								story={storyData}
 								onSubmit={(inputls) =>
 									sendLS(
 										{

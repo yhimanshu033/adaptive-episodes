@@ -16,10 +16,12 @@ import {
 import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import IfElse, { Else, If } from '@/components/if-else'
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { parseInputLSMapping } from '@/lib/utils/helpers'
 
 export default function ViewLS() {
 	const { data } = useLSSheetQuery()
+	const { initialStoryData } = useEpisodeTableContext()
 	if (!data) {
 		return null
 	}
@@ -55,6 +57,7 @@ export default function ViewLS() {
 						<LsTabs
 							tableData={data ? parseInputLSMapping(data) : {}}
 							viewOnly
+							story={initialStoryData}
 						/>
 					</If>
 					<Else>

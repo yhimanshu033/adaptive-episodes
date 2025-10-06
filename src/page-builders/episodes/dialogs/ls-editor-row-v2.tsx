@@ -1,5 +1,6 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { EXCLUDED_HEADERS_LS_SHEET } from '@/constants/episodes-constants'
+import { useDebounce } from '@/hooks/use-debounce'
 
 import { Checkbox } from '@/components/aural-ui/checkbox'
 import Input from '@/components/aural-ui/input'
@@ -16,11 +17,76 @@ interface LSEditorRowV2Props {
 	item: LSMappingOutputItem
 	removeRow: (index: number) => void
 	rows?: string[]
+	style?: React.CSSProperties
 	updateField: (
 		index: number,
 		field: keyof LSMappingOutputItem,
 		value: string | boolean
 	) => void
+}
+
+const custom_fields = ['is_deleted']
+
+interface LSEditorCellProps {
+	disabled?: boolean
+	field: string
+	idx: number
+	index: number
+	item: LSMappingOutputItem
+	updateField: (
+		index: number,
+		field: keyof LSMappingOutputItem,
+		value: string | boolean
+	) => void
+}
+
+const LSEditorCell = ({
+	idx,
+	item,
+	updateField,
+	disabled,
+	field,
+	index,
+}: LSEditorCellProps) => {
+	const [value, setValue] = useState(String(item[field] || ''))
+	const debouncedState = useDebounce(value, 500)
+
+	useEffect(() => {
+		updateField(index, field, debouncedState)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [debouncedState])
+
+	return (
+		<TableCell key={idx}>
+			<SwitchCase value={field}>
+				<Case value="is_deleted">
+					<Checkbox
+						disabled={disabled}
+						checked={Boolean(item[field])}
+						onCheckedChange={(checked) =>
+							updateField(index, 'is_deleted', checked)
+						}
+					/>
+				</Case>
+				<Case value={custom_fields.includes(field) ? '' : field}>
+					<Input
+						disabled={disabled}
+						value={value}
+						onChange={(e) => setValue(e.target.value)}
+						placeholder={field.replace(/_/g, ' ').toLowerCase()}
+						decoration="filled"
+						classes={{
+							input: cn('', {
+								'border-0 pl-0 !text-fm-primary bg-transparent !cursor-text':
+									disabled,
+							}),
+							wrapper: cn('min-w-32'),
+						}}
+					/>
+				</Case>
+			</SwitchCase>
+		</TableCell>
+	)
 }
 
 const LSEditorRowV2 = memo(
@@ -30,49 +96,29 @@ const LSEditorRowV2 = memo(
 		updateField,
 		disabled = false,
 		rows = ['original_name', 'localised_name'],
+		style = {},
 	}: LSEditorRowV2Props) => {
-		const custom_fields = ['is_deleted']
-
 		return (
 			<TableRow
 				className={cn('', {
 					'bg-fm-surface-secondary': index % 2 !== 0,
 				})}
+				style={style}
 			>
 				<ForEach
 					data={rows}
 					filter={(key) => !EXCLUDED_HEADERS_LS_SHEET.includes(key)}
 				>
 					{(key, idx) => (
-						<TableCell key={idx}>
-							<SwitchCase value={key}>
-								<Case value="is_deleted">
-									<Checkbox
-										disabled={disabled}
-										checked={Boolean(item[key])}
-										onCheckedChange={(checked) =>
-											updateField(index, 'is_deleted', checked)
-										}
-									/>
-								</Case>
-								<Case value={custom_fields.includes(key) ? '' : key}>
-									<Input
-										disabled={disabled}
-										value={String(item[key] || '')}
-										onChange={(e) => updateField(index, key, e.target.value)}
-										placeholder={key.replace(/_/g, ' ').toLowerCase()}
-										decoration="filled"
-										classes={{
-											input: cn('', {
-												'border-0 pl-0 !text-fm-primary bg-transparent !cursor-text':
-													disabled,
-											}),
-											wrapper: cn('min-w-32'),
-										}}
-									/>
-								</Case>
-							</SwitchCase>
-						</TableCell>
+						<LSEditorCell
+							key={`${index}-${idx}-${key}`}
+							idx={idx}
+							index={index}
+							item={item}
+							field={key}
+							updateField={updateField}
+							disabled={disabled}
+						/>
 					)}
 				</ForEach>
 			</TableRow>
