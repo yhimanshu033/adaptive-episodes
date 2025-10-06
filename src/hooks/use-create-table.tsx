@@ -52,6 +52,7 @@ import { formatDate } from '@/lib/format-date'
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
+import { useEpisodeRegenerate } from './mutation/use-episode-regenerate'
 import useRenameTitleMutation from './mutation/use-rename-title'
 import useAccessChecks from './use-access-checks'
 
@@ -78,6 +79,8 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		useEpisodeTable()
 
 	const { mutate: renameTitle, isPending } = useRenameTitleMutation()
+	const { mutate: episodeRegenerate, isPending: isRequestingRegenerate } =
+		useEpisodeRegenerate()
 
 	const { isWriter } = useProjectId()
 	const { isGerman, isOriginal } = useAccessChecks()
@@ -142,6 +145,16 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							>
 								Rename
 							</DropdownMenuItem>
+							<If condition={isWriter && (isOriginal || isGerman)}>
+								<DropdownMenuItem
+									onClick={() =>
+										episodeRegenerate({ episodeId: row.original.id })
+									}
+									disabled={isRequestingRegenerate}
+								>
+									Run NWM
+								</DropdownMenuItem>
+							</If>
 							<If condition={isWriter}>
 								<DropdownMenuItem
 									onClick={() =>

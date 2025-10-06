@@ -113,6 +113,8 @@ export const API_URLS = {
 	BULK_PROMPT_SEND: '/project/:projectId/prompt/',
 	GET_SCENES_METADATA: '/scenes/metadata/',
 	SCENE_PROMPT_GENERATE: '/aicopilot/bse/scene_wide',
+	EPISODE_REGENERATE: '/aicopilot/nwm-extraction-pipeline/',
+	CHAPTER_CHARACTERS: '/chapters/characters/',
 }
 
 export const INDEXED_DB_KEYS = {
