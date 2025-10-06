@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { rolesArray } from '@/constants/global-constants'
 import useProjectAccessMutation from '@/hooks/mutation/use-project-access-mutation'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import { useProjectUsersTable } from '@/hooks/use-project-users-table'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { TickIcon } from '@/icons/tick-icon'
+import { useVirtualizer } from '@tanstack/react-virtual'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
@@ -48,6 +49,14 @@ export default function SharedList() {
 	const { table } = useProjectUsersTable(memberData)
 	const projectAccessMutation = useProjectAccessMutation()
 
+	const parentRef = useRef<HTMLDivElement>(null)
+	const virtualizer = useVirtualizer({
+		count: table.getRowModel().rows.length,
+		getScrollElement: () => parentRef.current,
+		estimateSize: () => 72,
+		overscan: 3,
+	})
+
 	const handleUpdateRole = (email: string, role: ERole) => {
 		projectAccessMutation.mutate({
 			action: EProjectAccessActions.GRANT,
@@ -64,80 +73,116 @@ export default function SharedList() {
 				<Else>
 					<IfElse condition={table.getRowModel().rows?.length > 0}>
 						<If>
-							<ul>
-								{table.getRowModel().rows.map((row, rowIndex) => (
-									<li
-										key={rowIndex}
-										className={cn(
-											'border-fm-divider-secondary font-fm-text flex items-center justify-between border-t-1 border-dashed py-4',
-											{
-												'border-t-0': rowIndex === 0,
-											}
-										)}
-									>
-										<div>
-											<h3 className="text-sm">
-												{row?.original?.user?.fullname ?? 'Anonymous'}
-											</h3>
-											<span className="text-fm-secondary text-xs">
-												{row.original.user.email}
-											</span>
-										</div>
-										<IfElse condition={row.original.role === ERole.ADMIN}>
-											<If>
-												<span className="mr-2 text-xs uppercase">
-													{row.original.role}
-												</span>
-											</If>
-											<Else>
-												<DropdownMenu>
-													<DropdownMenuTrigger asChild>
-														<Button
-															variant="outline"
-															size="sm"
-															className="group gap-2 text-xs"
-														>
-															{row.original.role}
-															<ChevronDownIcon className="h-4 w-4 transition-all duration-300 group-data-[state=open]:!rotate-180" />
-														</Button>
-													</DropdownMenuTrigger>
-													<DropdownMenuContent align="end">
-														<DropdownMenuGroup>
-															{rolesArray.map((role, index) => (
-																<div key={`user-role-${index}`}>
-																	<DropdownMenuItem
-																		className="!text-xs"
-																		onClick={() =>
-																			handleUpdateRole(
-																				row.original.user.email,
-																				role as ERole
-																			)
-																		}
+							<div
+								ref={parentRef}
+								className="h-36 overflow-auto"
+								style={{
+									height: '144px',
+									width: '100%',
+								}}
+							>
+								<div
+									style={{
+										height: `${virtualizer.getTotalSize()}px`,
+										width: '100%',
+										position: 'relative',
+									}}
+								>
+									{virtualizer.getVirtualItems().map((virtualItem) => {
+										const row = table.getRowModel().rows[virtualItem.index]
+										const rowIndex = virtualItem.index
+										return (
+											<div
+												key={virtualItem.key}
+												style={{
+													position: 'absolute',
+													top: 0,
+													left: 0,
+													width: '100%',
+													height: `${virtualItem.size}px`,
+													transform: `translateY(${virtualItem.start}px)`,
+												}}
+											>
+												<li
+													className={cn(
+														'border-fm-divider-secondary font-fm-text flex items-center justify-between border-t-1 border-dashed py-4',
+														{
+															'border-t-0': rowIndex === 0,
+														}
+													)}
+												>
+													<div>
+														<h3 className="text-sm">
+															{row?.original?.user?.fullname ?? 'Anonymous'}
+														</h3>
+														<span className="text-fm-secondary text-xs">
+															{row.original.user.email}
+														</span>
+													</div>
+													<IfElse condition={row.original.role === ERole.ADMIN}>
+														<If>
+															<span className="mr-2 text-xs uppercase">
+																{row.original.role}
+															</span>
+														</If>
+														<Else>
+															<DropdownMenu>
+																<DropdownMenuTrigger asChild>
+																	<Button
+																		variant="outline"
+																		size="sm"
+																		className="group gap-2 text-xs"
 																	>
-																		<div className="flex w-full items-center justify-between">
-																			{role}
-																			<If
-																				condition={role === row.original.role}
-																			>
-																				<TickIcon className="size-4" />
-																			</If>
-																		</div>
-																	</DropdownMenuItem>
-																	<If condition={index < rolesArray.length - 1}>
-																		<div className="px-2">
-																			<Divider variant="dashed" />
-																		</div>
-																	</If>
-																</div>
-															))}
-														</DropdownMenuGroup>
-													</DropdownMenuContent>
-												</DropdownMenu>
-											</Else>
-										</IfElse>
-									</li>
-								))}
-							</ul>
+																		{row.original.role}
+																		<ChevronDownIcon className="h-4 w-4 transition-all duration-300 group-data-[state=open]:!rotate-180" />
+																	</Button>
+																</DropdownMenuTrigger>
+																<DropdownMenuContent align="end">
+																	<DropdownMenuGroup>
+																		{rolesArray.map((role, index) => (
+																			<div key={`user-role-${index}`}>
+																				<DropdownMenuItem
+																					className="!text-xs"
+																					onClick={() =>
+																						handleUpdateRole(
+																							row.original.user.email,
+																							role as ERole
+																						)
+																					}
+																				>
+																					<div className="flex w-full items-center justify-between">
+																						{role}
+																						<If
+																							condition={
+																								role === row.original.role
+																							}
+																						>
+																							<TickIcon className="size-4" />
+																						</If>
+																					</div>
+																				</DropdownMenuItem>
+																				<If
+																					condition={
+																						index < rolesArray.length - 1
+																					}
+																				>
+																					<div className="px-2">
+																						<Divider variant="dashed" />
+																					</div>
+																				</If>
+																			</div>
+																		))}
+																	</DropdownMenuGroup>
+																</DropdownMenuContent>
+															</DropdownMenu>
+														</Else>
+													</IfElse>
+												</li>
+											</div>
+										)
+									})}
+								</div>
+							</div>
 						</If>
 						<Else>
 							<h3 className="text-fm-tertiary w-3/4 pt-4">

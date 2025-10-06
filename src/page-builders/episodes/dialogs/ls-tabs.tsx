@@ -16,7 +16,12 @@ import {
 	TabsTrigger,
 } from '@/components/aural-ui/tabs'
 import { downloadBlobUrl } from '@/lib/utils/client-helpers'
-import { cn, isInvalidLSMapping, toSnakeCase } from '@/lib/utils/helpers'
+import {
+	cn,
+	isInvalidLSMapping,
+	parseCSV,
+	toSnakeCase,
+} from '@/lib/utils/helpers'
 
 import {
 	ELSMappingGender,
@@ -66,14 +71,14 @@ const TableCTAs = ({
 		reader.onload = (event) => {
 			const text = event.target?.result as string
 
-			const rows = text
-				.trim()
-				.split('\n')
-				.map((row) => row.split(',').map((cell) => cell.trim()))
+			const rows = parseCSV(text.trim())
 
 			const headers = rows[0].map((item) => toSnakeCase(item))
 			const data = rows
 				.slice(1)
+				.filter((row) => {
+					return row.some((cell) => cell && cell.trim() !== '')
+				})
 				.map((row) =>
 					Object.fromEntries(row.map((val, i) => [headers[i], val]))
 				) as LSMappingOutputItem[]
