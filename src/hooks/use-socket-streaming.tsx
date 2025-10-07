@@ -113,7 +113,7 @@ export const SocketStreamingProvider = ({
 	useEffect(() => {
 		socket.connect()
 
-		socket.on('connect_error', (err) => {
+		function handleSocketConnectionError(err: Error) {
 			failedCounterRef.current = failedCounterRef.current + 1
 			if (failedCounterRef.current === MAX_SOCKET_RETRIES) {
 				Sentry.captureException(
@@ -150,11 +150,13 @@ export const SocketStreamingProvider = ({
 					duration: Infinity,
 				})
 			}
-		})
+		}
+		socket.on('connect_error', handleSocketConnectionError)
 
-		socket.on('connect', () => {
+		function handleSocketConnection() {
 			failedCounterRef.current = 0
-		})
+		}
+		socket.on('connect', handleSocketConnection)
 
 		socket.onAny(
 			(
@@ -214,6 +216,8 @@ export const SocketStreamingProvider = ({
 			}
 		)
 		return () => {
+			socket.off('connect_error', handleSocketConnectionError)
+			socket.off('connect', handleSocketConnection)
 			socket.disconnect()
 			Object.values(timeoutsRef.current).forEach(clearTimeout)
 			timeoutsRef.current = {}
