@@ -5,6 +5,7 @@ import { DownloadIcon } from '@/icons/download-icon'
 import { PlusIcon } from '@/icons/plus-icon'
 import { UploadIcon } from '@/icons/upload-icon'
 import { toast } from 'sonner'
+import * as XLSX from 'xlsx'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
@@ -15,13 +16,7 @@ import {
 	TabsList,
 	TabsTrigger,
 } from '@/components/aural-ui/tabs'
-import { downloadBlobUrl } from '@/lib/utils/client-helpers'
-import {
-	cn,
-	isInvalidLSMapping,
-	parseCSV,
-	toSnakeCase,
-} from '@/lib/utils/helpers'
+import { cn, getFormattedDate, isInvalidLSMapping } from '@/lib/utils/helpers'
 
 import {
 	ELSMappingGender,
@@ -29,25 +24,38 @@ import {
 	LSMappingOutput,
 	LSMappingOutputItem,
 	LSMappingOutputItemV2,
+	LSMappingSequenceData,
 } from '@/types/common'
+import { TStory } from '@/types/story-types'
 
 import LSTableEditor from './ls-editor'
 
 interface LsTabsProps {
 	handleClose?: () => void
 	onSubmit?: (data: LSMappingOutput) => void
+	sequence: LSMappingSequenceData['sequence_ls']
 	setTableData?: React.Dispatch<React.SetStateAction<LSMappingOutputItemV2>>
+	story?: TStory | null
 	tableData: LSMappingOutputItemV2
 	viewOnly?: boolean
+	visibleRows?: number
 }
 
 const TableCTAs = ({
 	viewOnly,
 	currentTabData,
 	onDataChange,
+	onWorkBookChange,
+	setActiveTab,
+	currentWorkbook,
+	story,
 }: {
 	currentTabData: LSMappingOutputItem[]
+	currentWorkbook?: LSMappingOutputItemV2
 	onDataChange: (data: LSMappingOutputItem[]) => void
+	onWorkBookChange?: (data: LSMappingOutputItemV2) => void
+	setActiveTab?: (tab: string) => void
+	story?: TStory | null
 	viewOnly: boolean
 }) => {
 	const addNewRow = () => {
@@ -62,59 +70,64 @@ const TableCTAs = ({
 		])
 	}
 
-	function handleCSV(files: FileList | null) {
+	function handleXlsxUpload(files: FileList | null) {
 		const file = files?.[0]
 		if (!file) {
 			return
 		}
+
 		const reader = new FileReader()
+
 		reader.onload = (event) => {
-			const text = event.target?.result as string
+			const data = new Uint8Array(event.target?.result as ArrayBuffer)
+			const workbook = XLSX.read(data, { type: 'array' })
 
-			const rows = parseCSV(text.trim())
+			const parsedWorkbook = workbook.SheetNames.reduce((acc, curr) => {
+				return {
+					...acc,
+					[curr]: XLSX.utils.sheet_to_json<LSMappingOutputItem>(
+						workbook.Sheets[curr]
+					),
+				}
+			}, {} as LSMappingOutputItemV2)
 
-			const headers = rows[0].map((item) => toSnakeCase(item))
-			const data = rows
-				.slice(1)
-				.filter((row) => {
-					return row.some((cell) => cell && cell.trim() !== '')
-				})
-				.map((row) =>
-					Object.fromEntries(row.map((val, i) => [headers[i], val]))
-				) as LSMappingOutputItem[]
+			const firstSheetName = Object.keys(parsedWorkbook)[0]
 
-			onDataChange(data)
+			if (Object.keys(parsedWorkbook).length === 1 || !onWorkBookChange) {
+				onDataChange(parsedWorkbook[firstSheetName])
+			} else {
+				onWorkBookChange(parsedWorkbook)
+				setActiveTab?.(firstSheetName)
+			}
+
+			toast.success('XLSX import completed!', {
+				icon: <BubbleCheckIcon />,
+			})
 		}
+
 		reader.onerror = () => {
-			toast.error('Some error occurred while reading CSV', {
+			toast.error('Some error occurred while reading XLSX', {
 				icon: <BubbleCrossedIcon />,
 			})
 		}
-		reader.readAsText(file)
-		toast.success('CSV import completed!', {
-			icon: <BubbleCheckIcon />,
-		})
+
+		reader.readAsArrayBuffer(file)
 	}
 
-	function handleDownloadCSV() {
-		const headers = Object.keys(currentTabData[0] || {})
-		const csvRows = [
-			headers.join(','), // header row
-			...currentTabData.map((row) =>
-				headers
-					.map(
-						(header) =>
-							`"${(row[header] ?? '').toString().replace(/"/g, '""')}"`
-					)
-					.join(',')
-			),
-		]
+	function handleDownloadXlsx() {
+		const workbook = XLSX.utils.book_new()
 
-		const blob = new Blob([csvRows.join('\n') as BlobPart], {
-			type: 'text/csv;charset=utf-8;',
+		Object.entries(currentWorkbook || {}).forEach(([sheetName, rows]) => {
+			const worksheet = XLSX.utils.json_to_sheet(rows)
+			XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
 		})
-		const url = URL.createObjectURL(blob)
-		downloadBlobUrl(url, `${new Date().toUTCString()}.csv`)
+
+		const filePrefix = story ? `${story?.project_title} - ` : ''
+
+		XLSX.writeFile(
+			workbook,
+			`${filePrefix}LS Sheet - ${getFormattedDate()}.xlsx`
+		)
 	}
 
 	if (viewOnly) {
@@ -126,7 +139,7 @@ const TableCTAs = ({
 			<IconButton
 				label="Download Csv"
 				tooltip="Download CSV"
-				onClick={handleDownloadCSV}
+				onClick={handleDownloadXlsx}
 				icon={<DownloadIcon className="size-6" />}
 				shape="square"
 				variant="ghost"
@@ -141,10 +154,10 @@ const TableCTAs = ({
 			/>
 			<input
 				type="file"
-				accept=".csv"
+				accept=".xlsx, .csv"
 				className="hidden"
 				id="csv-input"
-				onChange={(e) => handleCSV(e.target.files)}
+				onChange={(e) => handleXlsxUpload(e.target.files)}
 			/>
 			<Button
 				type="button"
@@ -201,6 +214,9 @@ const LsTabs = ({
 	onSubmit,
 	handleClose,
 	viewOnly = false,
+	story,
+	sequence,
+	visibleRows = 6,
 }: LsTabsProps) => {
 	const tabKeys = Object.keys(tableData)
 	const [activeTab, setActiveTab] = useState(tabKeys[0] || '')
@@ -261,6 +277,10 @@ const LsTabs = ({
 							onDataChange={(newData) =>
 								handleTabDataChange(singleTabKey, newData)
 							}
+							story={story}
+							onWorkBookChange={setTableData}
+							setActiveTab={setActiveTab}
+							currentWorkbook={tableData || {}}
 						/>
 					</div>
 					<LSTableEditor
@@ -268,7 +288,9 @@ const LsTabs = ({
 						setTableData={(newData) =>
 							handleTabDataChange(singleTabKey, newData)
 						}
+						columnSequence={sequence[singleTabKey] || []}
 						viewOnly={viewOnly}
+						visibleRows={visibleRows}
 					/>
 				</div>
 			)
@@ -297,6 +319,10 @@ const LsTabs = ({
 						viewOnly={viewOnly}
 						currentTabData={tableData[activeTab] || []}
 						onDataChange={(newData) => handleTabDataChange(activeTab, newData)}
+						onWorkBookChange={setTableData}
+						setActiveTab={setActiveTab}
+						currentWorkbook={tableData || {}}
+						story={story}
 					/>
 				</div>
 
@@ -306,6 +332,8 @@ const LsTabs = ({
 							tableData={tableData[tabKey] || []}
 							setTableData={(newData) => handleTabDataChange(tabKey, newData)}
 							viewOnly={viewOnly}
+							columnSequence={sequence[tabKey] || []}
+							visibleRows={visibleRows}
 						/>
 					</TabsContent>
 				))}

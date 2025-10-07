@@ -34,6 +34,8 @@ import {
 	LSMappingInputItem,
 	LSMappingOutputItem,
 	LSMappingOutputItemV2,
+	LSMappingSequenceData,
+	LSMappingSequenceField,
 	STATUS_ORDER,
 } from '@/types/common'
 import {
@@ -733,18 +735,66 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	return result
 }
 
-export function parseInputLSMapping(
-	input: LSMappingInput
+export function sortInputLSMapping(
+	input: LSMappingOutputItemV2
 ): LSMappingOutputItemV2 {
-	return Object.fromEntries(
-		Object.entries(input.ls_mapping).map(([section, items]) => [
-			section,
-			Object.entries(items).map(([original_name, item]) => ({
-				original_name,
-				...item,
-			})),
-		])
-	)
+	const sheets = Object.keys(input)
+	for (const sheet of sheets) {
+		const items = input[sheet]
+		input[sheet] = items.sort((a, b) => {
+			const aIdValue = a['ID'] || a['id'] || a['Id']
+			const bIdValue = b['ID'] || b['id'] || b['Id']
+			const aTypeValue = a['TYPE'] || a['type'] || a['Type']
+			const bTypeValue = b['TYPE'] || b['type'] || b['Type']
+
+			if (aIdValue && bIdValue) {
+				// sort by first splitting _ and then aSplit[0]<bSplit[0] would be first and after that Number(aSplit[1])<Number(bSplit[1]) would come first
+				const [aPrefix = '', aNum = ''] = String(aIdValue).split('_')
+				const [bPrefix = '', bNum = ''] = String(bIdValue).split('_')
+
+				if (aPrefix !== bPrefix) {
+					return aPrefix.localeCompare(bPrefix)
+				}
+
+				return Number(aNum) - Number(bNum)
+			}
+
+			if (aTypeValue && bTypeValue) {
+				// reverse sort by aTypeValue and bTypeValue
+				return String(bTypeValue).localeCompare(String(aTypeValue))
+			}
+
+			// default
+			return 0
+		})
+	}
+	return input
+}
+
+export function parseInputLSMapping(input: LSMappingInput): {
+	data: LSMappingOutputItemV2
+	sequence?: LSMappingSequenceData['sequence_ls']
+} {
+	const parsedInput = Object.fromEntries(
+		Object.entries(input.ls_mapping).map(([section, items]) => {
+			if (section === LSMappingSequenceField) {
+				return [section, items]
+			}
+			return [
+				section,
+				Object.entries(items).map(([original_name, item]) => ({
+					original_name,
+					...item,
+				})),
+			]
+		})
+	) as {
+		[LSMappingSequenceField]: LSMappingSequenceData['sequence_ls']
+	} & LSMappingOutputItemV2
+
+	const { sequence_ls: sequence, ...rest } = parsedInput
+
+	return { data: sortInputLSMapping(rest), sequence }
 }
 
 export function parseOutputLSMapping(data: Partial<LSMappingOutputItem[]>) {
@@ -778,7 +828,11 @@ export const migrateOldLSMapping = (
 		return null
 	}
 	const lsKeys = Object.keys(data.ls_mapping)
-	if (LSMappingTabs.some((tab) => lsKeys.includes(tab))) {
+	if (
+		LSMappingTabs.some((tab) =>
+			lsKeys.some((key) => key.toLowerCase().trim() === tab)
+		)
+	) {
 		return data as LSMappingInput
 	}
 	return {
@@ -1090,4 +1144,8 @@ export function parseCSV(text: string): string[][] {
 	}
 
 	return rows.map((row) => parseCSVRow(row))
+}
+
+export function sanitize<T>(data: T) {
+	return JSON.parse(JSON.stringify(data)) as T
 }

@@ -36,13 +36,16 @@ const AdaptationContainer = () => {
 		setOpen,
 		step,
 		setEpisodeAdaptation,
+		setSequence,
 	} = useAdaptation()
 
 	useEffect(() => {
 		setStory(initialStoryData)
 		setFetchingLSSheet(lsSheetLoading)
 		if (lsSheetData) {
-			setTableData(parseInputLSMapping(lsSheetData))
+			const { data, sequence } = parseInputLSMapping(lsSheetData)
+			setTableData(data)
+			setSequence(sequence || {})
 		}
 	}, [
 		initialStoryData,
@@ -51,6 +54,7 @@ const AdaptationContainer = () => {
 		setFetchingLSSheet,
 		setStory,
 		setTableData,
+		setSequence,
 	])
 
 	return (
