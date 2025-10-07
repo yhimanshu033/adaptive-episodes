@@ -152,5 +152,5 @@ export const FETCHED_BUILD_VERSION_KEY = 'fetchedBuildVersion'
 export const SOCKET_STREAMING_TIMEOUT = 60000 //1 minute
 export const FETCH_TIMEOUT = 10000 //10 seconds
 
-export const MAX_SOCKET_RETRIES = 2
+export const MAX_SOCKET_RETRIES = 5
 export const SOCKET_ERROR_TOAST_ID = 'socket-connection-error'
