@@ -160,3 +160,8 @@ export const CORRELATION_ID_HEADER_KEY = 'X-Correlation-ID'
 export const COMMON_SITE_HEADERS = {
 	'X-Source': 'COPILOT_WEB',
 }
+
+export const IGNORE_ERROR_API_URLS = new Set([
+	API_URLS.GET_BASE_SCRIPT_EXTENSION,
+	API_URLS.GET_ADAPTATION_LS,
+])

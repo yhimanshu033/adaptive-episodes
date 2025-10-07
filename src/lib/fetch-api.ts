@@ -5,6 +5,7 @@ import {
 	COMMON_SITE_HEADERS,
 	CORRELATION_ID_HEADER_KEY,
 	FETCH_TIMEOUT,
+	IGNORE_ERROR_API_URLS,
 	validResponseStatuses,
 } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
@@ -27,6 +28,7 @@ export type FetchRequestParams<
 	body?: BodyParamsT
 	defaultData?: ResponseDataT
 	headers?: Record<string, string>
+	ignoreError?: boolean
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 	noAuth?: boolean
 	query?: QueryParamsT
@@ -79,7 +81,10 @@ export async function fetchAPI<
 		baseUrl,
 		noAuth,
 		sendLog,
+		ignoreError,
 	} = params
+
+	const sendError = !ignoreError && !IGNORE_ERROR_API_URLS.has(url)
 
 	const nextHeadersObj = await nextHeaders()
 	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
@@ -139,9 +144,11 @@ export async function fetchAPI<
 					...defaultSentryData,
 				},
 			})
-			Sentry.captureException(new Error('API ACCESS_TOKEN ERROR'), {
-				extra: defaultSentryData,
-			})
+			if (sendError) {
+				Sentry.captureException(new Error('API ACCESS_TOKEN ERROR'), {
+					extra: defaultSentryData,
+				})
+			}
 		}
 
 		timeoutId = setTimeout(() => {
@@ -154,13 +161,15 @@ export async function fetchAPI<
 					timeoutThreshol: FETCH_TIMEOUT,
 				},
 			})
-			Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
-				extra: {
-					...defaultSentryData,
-					duration,
-					timeoutThreshol: FETCH_TIMEOUT,
-				},
-			})
+			if (sendError) {
+				Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
+					extra: {
+						...defaultSentryData,
+						duration,
+						timeoutThreshol: FETCH_TIMEOUT,
+					},
+				})
+			}
 		}, FETCH_TIMEOUT)
 
 		const response = await fetch(resolvedUrl, {
@@ -219,13 +228,15 @@ export async function fetchAPI<
 					responseStatusText: response.statusText,
 				},
 			})
-			Sentry.captureException(new Error('API RESPONSE ERROR'), {
-				extra: {
-					...defaultSentryData,
-					responseStatus: response.status,
-					responseStatusText: response.statusText,
-				},
-			})
+			if (sendError) {
+				Sentry.captureException(new Error('API RESPONSE ERROR'), {
+					extra: {
+						...defaultSentryData,
+						responseStatus: response.status,
+						responseStatusText: response.statusText,
+					},
+				})
+			}
 
 			const message = (await response.json()) as Record<string, string>
 
@@ -270,19 +281,21 @@ export async function fetchAPI<
 				error: JSON.stringify(error),
 			},
 		})
-		Sentry.captureException(new Error('API CATCH ERROR'), {
-			extra: {
-				...defaultSentryData,
-				error: JSON.stringify(error),
-			},
-		})
+		if (sendError) {
+			Sentry.captureException(new Error('API CATCH ERROR'), {
+				extra: {
+					...defaultSentryData,
+					error: JSON.stringify(error),
+				},
+			})
+		}
 		const errorInstance = error as Error
 
 		if (throwOnError) {
 			throw errorInstance
 		}
 
-		console.log({ errorInstance })
+		log({ errorInstance })
 
 		return {
 			success: false,
