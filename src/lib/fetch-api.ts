@@ -2,6 +2,8 @@
 
 import { headers as nextHeaders } from 'next/headers'
 import {
+	COMMON_SITE_HEADERS,
+	CORRELATION_ID_HEADER_KEY,
 	FETCH_TIMEOUT,
 	validResponseStatuses,
 } from '@/constants/global-constants'
@@ -170,7 +172,8 @@ export async function fetchAPI<
 				...headers,
 				'x-forwarded-for': forwardedFor || '',
 				'x-real-ip': realIp || '',
-				'X-Correlation-ID': correlationId,
+				[CORRELATION_ID_HEADER_KEY]: correlationId,
+				...COMMON_SITE_HEADERS,
 			},
 			...(method !== 'GET' && method !== 'DELETE'
 				? { body: isFormData ? body : JSON.stringify(body) }

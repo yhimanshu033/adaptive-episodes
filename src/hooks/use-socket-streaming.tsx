@@ -14,6 +14,8 @@ import React, {
 } from 'react'
 import { ESocketStatus } from '@/constants/ai-constants'
 import {
+	COMMON_SITE_HEADERS,
+	CORRELATION_ID_HEADER_KEY,
 	FETCH_TIMEOUT,
 	MAX_SOCKET_RETRIES,
 	SOCKET_ERROR_TOAST_ID,
@@ -25,6 +27,7 @@ import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
 import { toast } from 'sonner'
+import { v4 as uuid } from 'uuid'
 
 import { Button } from '@/components/aural-ui/button'
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
@@ -74,6 +77,9 @@ export const SocketStreamingProvider = ({
 		process.env.NEXT_PUBLIC_BACKEND_URL ||
 		''
 	const { data: session } = useSession()
+	const correlationId = useMemo(() => {
+		return uuid()
+	}, [])
 	const failedCounterRef = useRef(0)
 	const socket = useMemo(
 		() =>
@@ -81,6 +87,8 @@ export const SocketStreamingProvider = ({
 				autoConnect: false,
 				extraHeaders: {
 					Authorization: `Bearer ${session?.accessToken}`,
+					[CORRELATION_ID_HEADER_KEY]: correlationId,
+					...COMMON_SITE_HEADERS,
 				},
 				retries: MAX_SOCKET_RETRIES,
 				reconnectionAttempts: MAX_SOCKET_RETRIES,
@@ -90,7 +98,7 @@ export const SocketStreamingProvider = ({
 				// 	token: `${session?.accessToken}`,
 				// },
 			}),
-		[socketUrl, session]
+		[socketUrl, session, correlationId]
 	)
 	const [responses, setResponses] = useState<Record<string, string[]>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
