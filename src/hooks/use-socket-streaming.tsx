@@ -13,11 +13,20 @@ import React, {
 	useState,
 } from 'react'
 import { ESocketStatus } from '@/constants/ai-constants'
-import { SOCKET_STREAMING_TIMEOUT } from '@/constants/global-constants'
+import {
+	FETCH_TIMEOUT,
+	MAX_SOCKET_RETRIES,
+	SOCKET_ERROR_TOAST_ID,
+	SOCKET_STREAMING_TIMEOUT,
+} from '@/constants/global-constants'
+import * as Sentry from '@sentry/nextjs'
+import { X } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
+import { toast } from 'sonner'
 
+import { Button } from '@/components/aural-ui/button'
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 
 import { TNoParams, TSocketQueryParams } from '@/types/common'
@@ -65,6 +74,7 @@ export const SocketStreamingProvider = ({
 		process.env.NEXT_PUBLIC_BACKEND_URL ||
 		''
 	const { data: session } = useSession()
+	const failedCounterRef = useRef(0)
 	const socket = useMemo(
 		() =>
 			io(socketUrl, {
@@ -72,6 +82,9 @@ export const SocketStreamingProvider = ({
 				extraHeaders: {
 					Authorization: `Bearer ${session?.accessToken}`,
 				},
+				retries: MAX_SOCKET_RETRIES,
+				reconnectionAttempts: MAX_SOCKET_RETRIES,
+				requestTimeout: FETCH_TIMEOUT,
 				// transports: ['websocket'],
 				// auth: {
 				// 	token: `${session?.accessToken}`,
@@ -91,6 +104,49 @@ export const SocketStreamingProvider = ({
 
 	useEffect(() => {
 		socket.connect()
+
+		socket.on('connect_error', (err) => {
+			failedCounterRef.current = failedCounterRef.current + 1
+			if (failedCounterRef.current == MAX_SOCKET_RETRIES) {
+				Sentry.captureException(
+					new Error(`Socket retry limit(${MAX_SOCKET_RETRIES}) reached`),
+					{
+						extra: {
+							error: err,
+							socketUrl,
+							user: session?.user?.id,
+						},
+					}
+				)
+				toast('Unable to connect to streaming server.', {
+					id: SOCKET_ERROR_TOAST_ID,
+					action: (
+						<>
+							<Button
+								innerClassName="w-30!"
+								size="sm"
+								onClick={() => {
+									window.location.reload()
+									toast.dismiss(SOCKET_ERROR_TOAST_ID)
+								}}
+							>
+								Retry
+							</Button>
+							<X
+								className="absolute top-1 right-1 z-10 cursor-pointer"
+								onClick={() => toast.dismiss(SOCKET_ERROR_TOAST_ID)}
+								size={12}
+							/>
+						</>
+					),
+					duration: Infinity,
+				})
+			}
+		})
+
+		socket.on('connect', () => {
+			failedCounterRef.current = 0
+		})
 
 		socket.onAny(
 			(

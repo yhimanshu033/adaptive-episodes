@@ -12,6 +12,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
+import { FETCH_TIMEOUT, MAX_SOCKET_RETRIES } from '@/constants/global-constants'
 import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
@@ -68,6 +69,9 @@ export const SocketProvider = ({
 				extraHeaders: {
 					Authorization: `Bearer ${session?.accessToken}`,
 				},
+				retries: MAX_SOCKET_RETRIES,
+				reconnectionAttempts: MAX_SOCKET_RETRIES,
+				requestTimeout: FETCH_TIMEOUT,
 				// transports: ['websocket'],
 				// auth: {
 				// 	token: `${session?.accessToken}`,
