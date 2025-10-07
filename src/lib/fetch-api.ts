@@ -170,7 +170,7 @@ export async function fetchAPI<
 				...headers,
 				'x-forwarded-for': forwardedFor || '',
 				'x-real-ip': realIp || '',
-				'correlation-id': correlationId,
+				'X-Correlation-ID': correlationId,
 			},
 			...(method !== 'GET' && method !== 'DELETE'
 				? { body: isFormData ? body : JSON.stringify(body) }
