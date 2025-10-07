@@ -121,7 +121,9 @@ export async function fetchAPI<
 	const correlationId = uuid()
 
 	const defaultSentryData: Record<string, string> = {
-		user: JSON.stringify(session?.user),
+		user_uid: session?.user?.uid,
+		user_id: String(session?.user?.id),
+		user_email: session?.user?.email,
 		url: resolvedUrl,
 		method,
 		accessToken: accessToken ? 'exists' : "doesn't exist",
