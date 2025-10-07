@@ -107,7 +107,7 @@ export const SocketStreamingProvider = ({
 
 		socket.on('connect_error', (err) => {
 			failedCounterRef.current = failedCounterRef.current + 1
-			if (failedCounterRef.current == MAX_SOCKET_RETRIES) {
+			if (failedCounterRef.current === MAX_SOCKET_RETRIES) {
 				Sentry.captureException(
 					new Error(`Socket retry limit(${MAX_SOCKET_RETRIES}) reached`),
 					{
