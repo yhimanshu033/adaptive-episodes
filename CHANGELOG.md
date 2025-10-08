@@ -1,3 +1,35 @@
+## <small>1.3.2 (2025-10-08)</small>
+
+* fix: 🐛 added beatSheetEditorAllowedProjects checks ([2d3c95d](https://github.com/Pocket-Fm/co-writing/commit/2d3c95d))
+* fix: 🐛 added cleanup ([7fc60ec](https://github.com/Pocket-Fm/co-writing/commit/7fc60ec))
+* fix: 🐛 changed correlation id key ([6cb87a1](https://github.com/Pocket-Fm/co-writing/commit/6cb87a1))
+* fix: 🐛 changed retry to 5 ([99f81d4](https://github.com/Pocket-Fm/co-writing/commit/99f81d4))
+* fix: 🐛 destrcutured user ([ab89105](https://github.com/Pocket-Fm/co-writing/commit/ab89105))
+* fix: 🐛 equality ([465b1d6](https://github.com/Pocket-Fm/co-writing/commit/465b1d6))
+* fix: 🐛 removed console log ([4c52cef](https://github.com/Pocket-Fm/co-writing/commit/4c52cef))
+* fix: 🐛 removed mock ([921f18f](https://github.com/Pocket-Fm/co-writing/commit/921f18f))
+* fix: 🐛 removed unnecessary sentry logs ([cac24c2](https://github.com/Pocket-Fm/co-writing/commit/cac24c2))
+* fix: 🐛 resolved comments ([344f929](https://github.com/Pocket-Fm/co-writing/commit/344f929))
+* fix: 🐛 resolved comments ([5221efd](https://github.com/Pocket-Fm/co-writing/commit/5221efd))
+* fix: 🐛 sanitized json ([53e097c](https://github.com/Pocket-Fm/co-writing/commit/53e097c))
+* fix: 🐛 view ls layout ([c0b056a](https://github.com/Pocket-Fm/co-writing/commit/c0b056a))
+* feat: 🎸 added socket retry limit and correlation id in fetch ([e0d22cb](https://github.com/Pocket-Fm/co-writing/commit/e0d22cb))
+* feat: 🎸 bse on demand ([cdf831b](https://github.com/Pocket-Fm/co-writing/commit/cdf831b))
+* feat: 🎸 bse on demand ([db1f258](https://github.com/Pocket-Fm/co-writing/commit/db1f258))
+* feat: 🎸 changed sequence field name ([350b710](https://github.com/Pocket-Fm/co-writing/commit/350b710))
+* feat: 🎸 characters get api integration in bse sidebar ([038c12a](https://github.com/Pocket-Fm/co-writing/commit/038c12a))
+* feat: 🎸 Lock episode when NWM is running and prevent NWM from r ([a0946d2](https://github.com/Pocket-Fm/co-writing/commit/a0946d2))
+* feat: 🎸 sequence ([0db26b3](https://github.com/Pocket-Fm/co-writing/commit/0db26b3))
+* feat: 🎸 table virtualization sorting excel ([83e2f92](https://github.com/Pocket-Fm/co-writing/commit/83e2f92))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
 ## <small>1.3.1 (2025-10-06)</small>
 
 * fix: 🐛 client-only import breaks EXCLUDE_BREAKDOWN_KEYS us ([51e24bc](https://github.com/Pocket-Fm/co-writing/commit/51e24bc))

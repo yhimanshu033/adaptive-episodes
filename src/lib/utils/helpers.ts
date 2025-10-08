@@ -1,16 +1,17 @@
-import { NextRequest } from 'next/server'
 import {
 	AVAILABLE_TARGET_LANGUAGES,
 	LSMappingTabs,
 } from '@/constants/ai-constants'
-import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
+import {
+	beatSheetEditorAllowedProjects,
+	DEFAULT_NAVIGATION_PAGE_LIMIT,
+} from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
 	prioritizedStatuses,
 	PROPS_KEYS_TO_COMPARE,
 } from '@/constants/episodes-constants'
-import { API_URLS, roleToData } from '@/constants/global-constants'
-import { MANAGE_PROJECT } from '@/constants/route-constants'
+import { roleToData } from '@/constants/global-constants'
 import { EImportStatus } from '@/constants/story-constants'
 import { Locale } from '@/i18n/config'
 import { match } from '@formatjs/intl-localematcher'
@@ -23,7 +24,8 @@ import Negotiator from 'negotiator'
 import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
 
-import { ERole, SessionData, UserProject } from '@/types/admin-types'
+import { ERole } from '@/types/admin-types'
+import { TCharacter } from '@/types/beatsheet-editor-types'
 import {
 	BASE_STATUS,
 	EEpisodeType,
@@ -48,6 +50,7 @@ import {
 import {
 	SaveEpisodeParams,
 	TEpisode,
+	TGetChapterCharactersResponse,
 	TGetEpisodeResponse,
 	TGetEpisodesResponse,
 } from '@/types/episode-type'
@@ -524,34 +527,6 @@ export function downloadBlob(blob: Blob, fileName: string) {
 	a.click()
 	document.body.removeChild(a)
 	URL.revokeObjectURL(url)
-}
-
-export async function projectAdminCheck(
-	req: NextRequest,
-	session: SessionData
-) {
-	let data: { projects: UserProject[] } | null = null
-	try {
-		data = (await fetch(
-			`${process.env.NEXT_PUBLIC_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
-			{
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.accessToken}`,
-				},
-			}
-		).then((res) => res.json())) as { projects: UserProject[] }
-	} catch (error) {
-		console.error('Error fetching user projects:', error)
-	}
-	const projectId = req.nextUrl.pathname.match(MANAGE_PROJECT)?.[1] || null
-	return data && projectId
-		? data?.projects?.some(
-				(project) =>
-					project.project.id === Number(projectId) &&
-					project.role === ERole.ADMIN
-			)
-		: false
 }
 
 export function sortOpenedStories(openedIds: number[], projects: TStory[]) {
@@ -1078,6 +1053,16 @@ export const checkForDuplicates = (existingFiles: File[], newFiles: File[]) => {
 	return duplicates
 }
 
+export function hasNWMRan(ep?: TEpisode) {
+	if (!ep?.props) {
+		return false
+	}
+	if (beatSheetEditorAllowedProjects.includes(Number(ep.project))) {
+		return true
+	}
+	return 'nwm_running' in ep.props
+}
+
 export function parseCSVRow(row: string): string[] {
 	const result: string[] = []
 	let current = ''
@@ -1148,4 +1133,19 @@ export function parseCSV(text: string): string[][] {
 
 export function sanitize<T>(data: T) {
 	return JSON.parse(JSON.stringify(data)) as T
+}
+
+export function convertChapterCharactersResponse(
+	data: TGetChapterCharactersResponse
+): TCharacter[] {
+	if (!data?.result) {
+		return []
+	}
+	return data.result.map((item, idx) => {
+		return {
+			...item,
+			id: String(idx),
+			name: item.canonical_name,
+		} as TCharacter
+	})
 }

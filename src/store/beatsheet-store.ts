@@ -71,6 +71,12 @@ export default function useBeatsheetStore() {
 		useBeatsheetStoreContext.setState({ openSceneIds })
 	}
 
+	const setCharacters = (
+		characters: BeatsheetEditorStoreType['characters']
+	) => {
+		useBeatsheetStoreContext.setState({ characters })
+	}
+
 	const addNewCharacter = () => {
 		useBeatsheetStoreContext.setState((state) => {
 			return {
@@ -133,5 +139,6 @@ export default function useBeatsheetStore() {
 		setEnhancementPlan,
 		deleteCharacter,
 		setOpenPromptId,
+		setCharacters,
 	}
 }
