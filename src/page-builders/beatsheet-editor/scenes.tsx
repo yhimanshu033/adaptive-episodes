@@ -9,6 +9,7 @@ import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 import useLanguage from '@/hooks/use-language'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import { beatsheetContextEnglish } from '@/mock-data/beatsheet-editor'
+import UndoRedoButtons from '@/page-builders/beatsheet-editor/undo-redo-buttons'
 import useBeatsheetStore from '@/store/beatsheet-store'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
@@ -153,6 +154,7 @@ export default function SceneTab() {
 
 	return (
 		<>
+			<UndoRedoButtons />
 			<GenerationStatusBar
 				isPending={isPending}
 				hasTimeoutError={!!hasTimeoutError}

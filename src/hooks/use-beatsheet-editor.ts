@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useUndoRedo } from '@/hooks/use-undo-redo'
 import useBeatsheetStore from '@/store/beatsheet-store'
 import {
 	CollisionDetection,
@@ -40,6 +41,9 @@ const useBeatSheetEditor = () => {
 		useShallow((state) => state.activeDragItem)
 	)
 	const openSceneIds = beatsheetStore(useShallow((state) => state.openSceneIds))
+	const { redo, undo, reset, canRedo, canUndo } = useUndoRedo(scenes, {
+		startIndex: 1,
+	})
 
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
 		const scene = scenes.find((s) => s.id === sceneId)
@@ -252,6 +256,21 @@ const useBeatSheetEditor = () => {
 		return text
 	}
 
+	const handleUndo = useCallback(() => {
+		const previousScenes = undo()
+		setScenes(previousScenes)
+	}, [undo, setScenes])
+
+	const handleRedo = useCallback(() => {
+		const nextScenes = redo()
+		setScenes(nextScenes)
+	}, [redo, setScenes])
+
+	const handleReset = useCallback(() => {
+		const resetScenes = reset()
+		setScenes(resetScenes)
+	}, [reset, setScenes])
+
 	useEffect(() => {
 		const nodeEntries = [
 			...editor.api.nodes({
@@ -282,6 +301,11 @@ const useBeatSheetEditor = () => {
 		handleDragOver,
 		fixCursorSnapOffset,
 		getSceneText,
+		handleUndo,
+		handleRedo,
+		handleReset,
+		canRedo,
+		canUndo,
 	}
 }
 
