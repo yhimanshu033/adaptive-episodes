@@ -2,7 +2,10 @@ import {
 	AVAILABLE_TARGET_LANGUAGES,
 	LSMappingTabs,
 } from '@/constants/ai-constants'
-import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
+import {
+	beatSheetEditorAllowedProjects,
+	DEFAULT_NAVIGATION_PAGE_LIMIT,
+} from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
 	prioritizedStatuses,
@@ -22,6 +25,7 @@ import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
 
 import { ERole } from '@/types/admin-types'
+import { TCharacter } from '@/types/beatsheet-editor-types'
 import {
 	BASE_STATUS,
 	EEpisodeType,
@@ -46,6 +50,7 @@ import {
 import {
 	SaveEpisodeParams,
 	TEpisode,
+	TGetChapterCharactersResponse,
 	TGetEpisodeResponse,
 	TGetEpisodesResponse,
 } from '@/types/episode-type'
@@ -1052,6 +1057,9 @@ export function hasNWMRan(ep?: TEpisode) {
 	if (!ep?.props) {
 		return false
 	}
+	if (beatSheetEditorAllowedProjects.includes(Number(ep.project))) {
+		return true
+	}
 	return 'nwm_running' in ep.props
 }
 
@@ -1125,4 +1133,19 @@ export function parseCSV(text: string): string[][] {
 
 export function sanitize<T>(data: T) {
 	return JSON.parse(JSON.stringify(data)) as T
+}
+
+export function convertChapterCharactersResponse(
+	data: TGetChapterCharactersResponse
+): TCharacter[] {
+	if (!data?.result) {
+		return []
+	}
+	return data.result.map((item, idx) => {
+		return {
+			...item,
+			id: String(idx),
+			name: item.canonical_name,
+		} as TCharacter
+	})
 }
