@@ -48,6 +48,7 @@ import { Typography } from '@/components/aural-ui/typography'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
 import { formatDate } from '@/lib/format-date'
+import { hasNWMRan } from '@/lib/utils/helpers'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
@@ -150,7 +151,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 									onClick={() =>
 										episodeRegenerate({ episodeId: row.original.id })
 									}
-									disabled={isRequestingRegenerate}
+									disabled={isRequestingRegenerate || hasNWMRan(row.original)}
 								>
 									Run NWM
 								</DropdownMenuItem>

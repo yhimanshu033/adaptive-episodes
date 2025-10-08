@@ -2,6 +2,7 @@
 
 import React, { createContext, useCallback, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
+import { NWM_EMAIL } from '@/constants/global-constants'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useLatestEpisodeInfo from '@/hooks/query/use-latest-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
@@ -118,9 +119,20 @@ export const useEpisodeContentUtil = () => {
 			return resp
 		}
 
+		const nwmRunning = resp?.chapter?.props?.nwm_running
+
 		addEpisodeMap(episodeId, resp)
 		addEpisodeKey(episodeId, queryKey)
-		setRecentEmail(resp.email)
+
+		if (nwmRunning) {
+			toast.info(
+				'NWM is currently regenerating this chapter. Please check back later!'
+			)
+			setRecentEmail(NWM_EMAIL)
+		} else if (resp.email) {
+			toast.info(`${resp.email} is now editing the chapter!`)
+			setRecentEmail(resp.email)
+		}
 
 		const oldData = await getValue(`${resp.chapter.project}_${usedEpisodeId}`)
 		if (!oldData) {

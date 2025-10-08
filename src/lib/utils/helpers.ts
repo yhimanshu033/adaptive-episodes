@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server'
 import {
 	AVAILABLE_TARGET_LANGUAGES,
 	LSMappingTabs,
@@ -9,8 +8,7 @@ import {
 	prioritizedStatuses,
 	PROPS_KEYS_TO_COMPARE,
 } from '@/constants/episodes-constants'
-import { API_URLS, roleToData } from '@/constants/global-constants'
-import { MANAGE_PROJECT } from '@/constants/route-constants'
+import { roleToData } from '@/constants/global-constants'
 import { EImportStatus } from '@/constants/story-constants'
 import { Locale } from '@/i18n/config'
 import { match } from '@formatjs/intl-localematcher'
@@ -23,7 +21,7 @@ import Negotiator from 'negotiator'
 import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
 
-import { ERole, SessionData, UserProject } from '@/types/admin-types'
+import { ERole } from '@/types/admin-types'
 import {
 	BASE_STATUS,
 	EEpisodeType,
@@ -524,34 +522,6 @@ export function downloadBlob(blob: Blob, fileName: string) {
 	URL.revokeObjectURL(url)
 }
 
-export async function projectAdminCheck(
-	req: NextRequest,
-	session: SessionData
-) {
-	let data: { projects: UserProject[] } | null = null
-	try {
-		data = (await fetch(
-			`${process.env.NEXT_PUBLIC_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
-			{
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.accessToken}`,
-				},
-			}
-		).then((res) => res.json())) as { projects: UserProject[] }
-	} catch (error) {
-		console.error('Error fetching user projects:', error)
-	}
-	const projectId = req.nextUrl.pathname.match(MANAGE_PROJECT)?.[1] || null
-	return data && projectId
-		? data?.projects?.some(
-				(project) =>
-					project.project.id === Number(projectId) &&
-					project.role === ERole.ADMIN
-			)
-		: false
-}
-
 export function sortOpenedStories(openedIds: number[], projects: TStory[]) {
 	const sortedProjects = [...projects].sort((a, b) => {
 		// Check if either story has "Importing" status
@@ -1022,4 +992,11 @@ export const checkForDuplicates = (existingFiles: File[], newFiles: File[]) => {
 	})
 
 	return duplicates
+}
+
+export function hasNWMRan(ep?: TEpisode) {
+	if (!ep?.props) {
+		return false
+	}
+	return 'nwm_running' in ep.props
 }

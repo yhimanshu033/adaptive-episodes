@@ -19,10 +19,7 @@ const ToogleBeatSheetEditor = () => {
 	const isActive = currentSidebar === ESidebar.BEAT_SHEET
 	const { data: content } = useEpisodeContent()
 
-	const isNWMEpisode =
-		content?.chapter?.props?.llm_memories &&
-		'nwm_running' in content.chapter.props.llm_memories &&
-		!content.chapter.props.llm_memories.nwm_running
+	const isNWMEpisode = content?.chapter?.props?.nwm_running === false
 
 	if (
 		!(beatSheetEditorAllowedProjects.includes(Number(id)) || isNWMEpisode) ||
