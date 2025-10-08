@@ -1,9 +1,13 @@
+import { LSMappingTabs } from '@/constants/ai-constants'
+
 import {
 	EEpisodeType,
 	ELanguage,
 	ELSMappingChineseGender,
+	ELSMappingGender,
 	ELSMappingType,
 	LSMappingInput,
+	LSMappingInputItemV2,
 } from '@/types/common'
 import { TGetEpisodeResponse, TGetEpisodesResponse } from '@/types/episode-type'
 
@@ -147,6 +151,46 @@ export const sampleLSMappingInput: LSMappingInput = {
 				'Chapter Numbers': 2,
 				created_by: 'adaptation',
 			},
+		},
+	},
+}
+
+export const sampleLSMappingInputItemV2: LSMappingInputItemV2 = {
+	[LSMappingTabs[0]]: {
+		char_001: {
+			localised_name: 'रमेश',
+			original_name: 'Ramesh',
+			type: ELSMappingType.CHARACTER,
+			gender: ELSMappingGender.MALE,
+			is_deleted: 'false',
+			age: 35,
+			role: 'Protagonist',
+		},
+		char_002: {
+			localised_name: 'सीमा',
+			original_name: 'Seema',
+			type: ELSMappingType.CHARACTER,
+			gender: ELSMappingGender.FEMALE,
+			is_deleted: 'false',
+			description: 'Sister of the protagonist',
+		},
+	},
+	[LSMappingTabs[1]]: {
+		ent_001: {
+			localised_name: 'खुफिया एजेंसी',
+			original_name: 'Intelligence Agency',
+			type: ELSMappingType.ENTITY,
+			is_deleted: 'false',
+			level: 'Top Secret',
+		},
+	},
+	[LSMappingTabs[2]]: {
+		person_001: {
+			localised_name: 'डॉ. सिंह',
+			original_name: 'Dr. Singh',
+			type: ELSMappingType.PERSON,
+			gender: ELSMappingChineseGender.MALE,
+			occupation: 'Scientist',
 		},
 	},
 }

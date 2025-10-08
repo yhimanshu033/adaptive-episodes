@@ -14,7 +14,7 @@ import { toast } from 'sonner'
 
 import { doPoll } from '@/lib/do-poll'
 import { fetchAPI } from '@/lib/fetch-api'
-import { migrateOldLSMapping } from '@/lib/utils/helpers'
+import { migrateOldLSMapping, sanitize } from '@/lib/utils/helpers'
 
 import {
 	TGetAdaptationLSUrlParams,
@@ -131,21 +131,24 @@ export default function useAdaptationMutation({
 		selectedRowData: TEpisode[]
 		sourceLang: ELanguage
 	}) {
+		const body: TSendAdaptationStartBody = {
+			author: session?.user?.fullname || '',
+			inputls,
+			is_external: true,
+			project_id: projectId,
+			seq_no: selectedRowData.map((item) => item.seq_number),
+			source_lang: sourceLang || ELanguage.ENGLISH,
+			target_lang: language,
+			type: 'adaptation',
+			llm_model: llmModel,
+		}
+		const sanitizedBody = sanitize(body)
+
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{
 				method: 'POST',
 				url: API_URLS.SEND_TASK_TO_ADAPTATION,
-				body: {
-					author: session?.user?.fullname || '',
-					inputls,
-					is_external: true,
-					project_id: projectId,
-					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang: sourceLang || ELanguage.ENGLISH,
-					target_lang: language,
-					type: 'adaptation',
-					llm_model: llmModel,
-				},
+				body: sanitizedBody,
 			}
 		)
 		if (resp.error || !resp.data) {

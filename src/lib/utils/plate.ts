@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
 import { DiffStatus } from '@/constants/ai-constants'
-import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/editor-constants'
+import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/server-constants'
 import { getCommentKey } from '@platejs/comment'
 import { computeDiff, DiffOperation, DiffUpdate } from '@platejs/diff'
 // Create a new file: src/lib/comment-helpers.ts
@@ -460,9 +460,13 @@ export function breakDownValue(ogVal: Value | string): Value {
 				const lastBlock = newVal[newVal.length - 1]
 				if ('text' in child) {
 					const keys = Object.keys(child)
-					const shouldExclude = keys.some((k) =>
-						EXCLUDE_BREAKDOWN_KEYS.includes(k)
-					)
+					const shouldExclude = keys.some((k) => {
+						try {
+							return EXCLUDE_BREAKDOWN_KEYS.includes(k)
+						} catch {
+							return false
+						}
+					})
 					if (!String(child.text).includes('\n') || shouldExclude) {
 						if (lastBlock && lastBlock?.type === block.type && !isNewBlock) {
 							lastBlock.children.push(child) // added child to lastBlock
