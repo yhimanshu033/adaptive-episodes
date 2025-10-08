@@ -1,6 +1,8 @@
 import { useCallback, useEffect } from 'react'
 import { useUndoRedo } from '@/hooks/use-undo-redo'
+import { TrashIcon } from '@/icons/trash-icon'
 import useBeatsheetStore from '@/store/beatsheet-store'
+import { popup } from '@/store/popup-store'
 import {
 	CollisionDetection,
 	DragEndEvent,
@@ -13,9 +15,13 @@ import {
 	useSensors,
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import { LucideIcon } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
+
+import { shouldTriggerContentReorder } from '@/lib/utils/helpers'
+import { reorderChildrenBasedOnScenes } from '@/lib/utils/plate'
 
 import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
 
@@ -144,20 +150,9 @@ const useBeatSheetEditor = () => {
 			const newSceneOrder = arrayMove(scenes, oldIndex, newIndex)
 			setScenes(newSceneOrder)
 
-			const sceneIdOrder = newSceneOrder.reduce(
-				(acc, curr, currIdx) => {
-					return {
-						...acc,
-						[curr.id]: currIdx,
-					}
-				},
-				{} as Record<string, number>
-			)
-			const newChildren = structuredClone(editor.children)
-			const sortedEditorChildren = newChildren.sort((a, b) => {
-				const aIdx = sceneIdOrder[a.scene_id as string] ?? -1
-				const bIdx = sceneIdOrder[b.scene_id as string] ?? -1
-				return aIdx - bIdx
+			const sortedEditorChildren = reorderChildrenBasedOnScenes({
+				children: editor.children,
+				scenes: newSceneOrder,
 			})
 			editor.tf.setValue(sortedEditorChildren)
 		}
@@ -256,20 +251,44 @@ const useBeatSheetEditor = () => {
 		return text
 	}
 
+	const handleHistoryScenes = useCallback(
+		(newScenes: typeof scenes) => {
+			const shouldReorder = shouldTriggerContentReorder(scenes, newScenes)
+			if (shouldReorder) {
+				const sortedEditorChildren = reorderChildrenBasedOnScenes({
+					children: editor.children,
+					scenes: newScenes,
+				})
+				editor.tf.setValue(sortedEditorChildren)
+			}
+			setScenes(newScenes)
+		},
+		[scenes, setScenes, editor.children, editor.tf]
+	)
+
 	const handleUndo = useCallback(() => {
 		const previousScenes = undo()
-		setScenes(previousScenes)
-	}, [undo, setScenes])
+		handleHistoryScenes(previousScenes)
+	}, [undo, handleHistoryScenes])
 
 	const handleRedo = useCallback(() => {
 		const nextScenes = redo()
-		setScenes(nextScenes)
-	}, [redo, setScenes])
+		handleHistoryScenes(nextScenes)
+	}, [redo, handleHistoryScenes])
 
 	const handleReset = useCallback(() => {
-		const resetScenes = reset()
-		setScenes(resetScenes)
-	}, [reset, setScenes])
+		popup({
+			title: 'Do you want to undo all your changes in the Beat Sheet Editor?',
+			description:
+				'All the reordering, edits, deletes, and inserts will be lost!',
+			icon: TrashIcon as LucideIcon,
+			type: 'negative',
+			onConfirm: () => {
+				const resetScenes = reset()
+				handleHistoryScenes(resetScenes)
+			},
+		})
+	}, [reset, handleHistoryScenes])
 
 	useEffect(() => {
 		const nodeEntries = [
