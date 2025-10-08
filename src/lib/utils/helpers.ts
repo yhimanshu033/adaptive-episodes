@@ -2,7 +2,10 @@ import {
 	AVAILABLE_TARGET_LANGUAGES,
 	LSMappingTabs,
 } from '@/constants/ai-constants'
-import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
+import {
+	beatSheetEditorAllowedProjects,
+	DEFAULT_NAVIGATION_PAGE_LIMIT,
+} from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
 	prioritizedStatuses,
@@ -1053,6 +1056,9 @@ export const checkForDuplicates = (existingFiles: File[], newFiles: File[]) => {
 export function hasNWMRan(ep?: TEpisode) {
 	if (!ep?.props) {
 		return false
+	}
+	if (beatSheetEditorAllowedProjects.includes(Number(ep.project))) {
+		return true
 	}
 	return 'nwm_running' in ep.props
 }
