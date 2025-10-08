@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
+import { NWM_EMAIL } from '@/constants/global-constants'
 import useEpisodeContentMutation from '@/hooks/mutation/use-episode-content-mutation'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useRecentUser from '@/hooks/use-recent-user'
@@ -20,13 +21,20 @@ export default function useSavingCheck() {
 
 	const handleSavingCheck = useCallback(async () => {
 		const content = await mutateAsync()
-		const isNotBlocked =
-			!content?.email || content.email === session?.user?.email
-		if (isNotBlocked) {
+
+		const isNWMRunning = content?.chapter?.props?.nwm_running
+		if (isNWMRunning) {
+			setRecentEmail(NWM_EMAIL)
+			toast.info(`NWM is regenerating the chapter`)
 			return
 		}
-		setRecentEmail(content.email)
-		toast.info(`${content.email} is now editing the chapter`)
+
+		const isBlockedByUser =
+			!!content?.email && content.email !== session?.user?.email
+		if (isBlockedByUser) {
+			setRecentEmail(content.email)
+			toast.info(`${content.email} is now editing the chapter`)
+		}
 	}, [mutateAsync, session, setRecentEmail])
 
 	// FOR CHECKING IF USER IS OWNER EVERY 9.9 MINS

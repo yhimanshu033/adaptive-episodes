@@ -140,10 +140,19 @@ const useBeatSheetEditor = () => {
 			const newSceneOrder = arrayMove(scenes, oldIndex, newIndex)
 			setScenes(newSceneOrder)
 
-			const sceneIdOrder = newSceneOrder.map((scene) => scene.id)
-			const sortedEditorChildren = [...editor.children].sort((a, b) => {
-				const aIdx = sceneIdOrder.indexOf(a.scene_id as string)
-				const bIdx = sceneIdOrder.indexOf(b.scene_id as string)
+			const sceneIdOrder = newSceneOrder.reduce(
+				(acc, curr, currIdx) => {
+					return {
+						...acc,
+						[curr.id]: currIdx,
+					}
+				},
+				{} as Record<string, number>
+			)
+			const newChildren = structuredClone(editor.children)
+			const sortedEditorChildren = newChildren.sort((a, b) => {
+				const aIdx = sceneIdOrder[a.scene_id as string] ?? -1
+				const bIdx = sceneIdOrder[b.scene_id as string] ?? -1
 				return aIdx - bIdx
 			})
 			editor.tf.setValue(sortedEditorChildren)

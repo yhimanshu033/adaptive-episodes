@@ -62,6 +62,7 @@ export type TEpisode = {
 		llm_memories?: TEpisodeProps
 		merged_chapter_ids?: number[]
 		notes?: TNote[]
+		nwm_running?: boolean
 		original_chapters?: TEpisode[]
 	}
 	seq_number: number

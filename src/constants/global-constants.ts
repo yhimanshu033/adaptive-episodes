@@ -113,6 +113,8 @@ export const API_URLS = {
 	BULK_PROMPT_SEND: '/project/:projectId/prompt/',
 	GET_SCENES_METADATA: '/scenes/metadata/',
 	SCENE_PROMPT_GENERATE: '/aicopilot/bse/scene_wide',
+	EPISODE_REGENERATE: '/aicopilot/nwm-extraction-pipeline/',
+	CHAPTER_CHARACTERS: '/chapters/characters/',
 }
 
 export const INDEXED_DB_KEYS = {
@@ -165,3 +167,5 @@ export const IGNORE_ERROR_API_URLS = new Set([
 	API_URLS.GET_BASE_SCRIPT_EXTENSION,
 	API_URLS.GET_ADAPTATION_LS,
 ])
+
+export const NWM_EMAIL = 'NWM_REGENERATION_WORKER'
