@@ -2,11 +2,14 @@
 
 import { headers as nextHeaders } from 'next/headers'
 import {
+	COMMON_SITE_HEADERS,
+	CORRELATION_ID_HEADER_KEY,
 	FETCH_TIMEOUT,
 	validResponseStatuses,
 } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
 import { getServerSession } from 'next-auth'
+import { v4 as uuid } from 'uuid'
 
 import authOptions from '@/lib/next-auth-options'
 import { log } from '@/lib/utils/helpers'
@@ -110,6 +113,7 @@ export async function fetchAPI<
 		resolvedUrl += `?${queryStr}`
 	}
 	const accessToken = session?.accessToken || ''
+	const correlationId = uuid()
 
 	const defaultSentryData: Record<string, string> = {
 		user: JSON.stringify(session?.user),
@@ -119,6 +123,7 @@ export async function fetchAPI<
 		body: JSON.stringify(body),
 		query: JSON.stringify(query),
 		headers: JSON.stringify(headers),
+		correlationId,
 	}
 
 	const startTime = Date.now()
@@ -167,6 +172,8 @@ export async function fetchAPI<
 				...headers,
 				'x-forwarded-for': forwardedFor || '',
 				'x-real-ip': realIp || '',
+				[CORRELATION_ID_HEADER_KEY]: correlationId,
+				...COMMON_SITE_HEADERS,
 			},
 			...(method !== 'GET' && method !== 'DELETE'
 				? { body: isFormData ? body : JSON.stringify(body) }
