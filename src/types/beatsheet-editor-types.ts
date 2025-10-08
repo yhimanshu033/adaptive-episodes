@@ -64,3 +64,10 @@ export type TGetScenesMetadataAPIResponse = {
 export type TGetScenesMetadataQueryParams = {
 	chapter_id: number | null
 }
+
+export type TEpisodeRegenerateParams = {
+	chapter_id: number
+	ep_text: string
+	input_language: ELanguage
+	project_id: number
+}

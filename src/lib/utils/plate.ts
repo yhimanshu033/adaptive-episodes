@@ -402,7 +402,15 @@ export function getCommentNode(val: Value, id: string) {
 	return { beforeText, text, afterText }
 }
 
-export function getText(val: Value, separator: string = '\n') {
+export function getText(val: Value | string, separator: string = '\n') {
+	let value: Value
+
+	try {
+		value = typeof val === 'string' ? JSON.parse(val) : val
+	} catch {
+		return val as string
+	}
+
 	let text = ''
 	function getTextFromNode(node: Descendant) {
 		if ('text' in node) {
@@ -411,7 +419,7 @@ export function getText(val: Value, separator: string = '\n') {
 			node.children.forEach(getTextFromNode)
 		}
 	}
-	val.forEach((node, i) => {
+	value.forEach((node, i) => {
 		if (i > 0) {
 			text += separator
 		}
