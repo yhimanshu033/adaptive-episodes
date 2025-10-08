@@ -324,3 +324,21 @@ export type TDownloadBulkEpisodeResponse = {
 export type TDownloadBulkEpisodeUrlParams = {
 	projectId: string
 }
+
+export type TGetChapterCharactersResponse = {
+	message: string
+	result: TChapterCharacter[]
+	status: number
+}
+
+export type TChapterCharacter = {
+	appearance: string
+	bio: string
+	canonical_name: string
+	recent_arc: string
+	voice: string
+}
+
+export type TGetChapterCharactersQuery = {
+	chapter_id: number
+}

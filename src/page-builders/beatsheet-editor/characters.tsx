@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import useChapterCharacters from '@/hooks/query/use-chapter-characters'
 import useBeatsheetStore from '@/store/beatsheet-store'
 import { Plus, Trash2 } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
+import DotLoader from '@/components/aural-ui/dot-loader'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import TextArea from '@/components/aural-ui/textarea'
 import EditableText from '@/components/editable-text'
@@ -13,6 +15,7 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from '@/components/ui/accordion'
+import { convertChapterCharactersResponse } from '@/lib/utils/helpers'
 
 export default function Characters() {
 	const {
@@ -20,11 +23,30 @@ export default function Characters() {
 		updateCharacterField,
 		addNewCharacter,
 		deleteCharacter,
+		setCharacters,
 	} = useBeatsheetStore()
 	const characters = beatsheetStore(useShallow((state) => state.characters))
 
+	const { data: charactersData, isLoading: isCharacterDataLoading } =
+		useChapterCharacters()
+
 	const handleSaveCharacter = (characterId: string) => {
 		console.log('Saving character with ID:', characterId)
+	}
+
+	useEffect(() => {
+		if (charactersData?.result) {
+			setCharacters(convertChapterCharactersResponse(charactersData))
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [charactersData])
+
+	if (isCharacterDataLoading) {
+		return (
+			<div className="flex h-full flex-col justify-center">
+				<DotLoader />
+			</div>
+		)
 	}
 
 	return (
