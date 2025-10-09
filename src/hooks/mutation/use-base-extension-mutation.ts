@@ -64,7 +64,9 @@ const useBaseExtensionMutation = () => {
 			screenName: SCREEN_NAME.EPISODE_LIST,
 			metaData: {
 				action: ACTION.BASE_SCRIPT_EXTENSION,
-				size: (params.ranges?.us_end || 0) - (params.ranges?.us_start || 0),
+				size: String(
+					(params?.ranges?.de_end ?? 0) - (params?.ranges?.de_start ?? 1) + 1
+				),
 			},
 		})
 		const taskId = await startTask<

@@ -33,7 +33,7 @@ export default function useBulkPromptMutation() {
 			screenName: SCREEN_NAME.EPISODE_LIST,
 			metaData: {
 				action: ACTION.PROMPT_BULK_EPISODES,
-				size: body.seq_nos.length,
+				size: String(body.seq_nos.length),
 				language: body.language,
 				prompt: body.prompt,
 			},

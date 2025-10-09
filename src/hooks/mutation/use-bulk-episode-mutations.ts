@@ -30,6 +30,7 @@ export default function useBulkEpisodeMutations() {
 			metaData: {
 				action: ACTION.DOWNLOAD_BULK_EPISODES,
 				separate,
+				size: selectedEpisodes.length,
 			},
 		})
 		try {
