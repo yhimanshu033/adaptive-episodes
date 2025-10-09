@@ -272,7 +272,7 @@ function handleEventLogClient({
 		})()
 
 	const referrer = localStorage.getItem(LOCAL_STORAGE_KEYS.REFERRER)
-	const contentLanguage = sessionStorage.getItem(
+	const contentLanguage = localStorage.getItem(
 		LOCAL_STORAGE_KEYS.CONTENT_LANGUAGE
 	)
 	const medium = sessionStorage.getItem(SESSION_STORAGE_KEYS.MEDIUM)
