@@ -7,11 +7,14 @@ import {
 	SCREEN_NAME,
 } from '@/constants/analytics'
 
-export type TEventData = Record<string, string | number | boolean | undefined>
+export type TEventData = Record<
+	string,
+	string | number | boolean | undefined | null
+>
 
-export type TEventName = (typeof EVENT_TYPE)[keyof typeof EVENT_TYPE]
-export type TScreenName = (typeof SCREEN_NAME)[keyof typeof SCREEN_NAME]
-export type TAction = (typeof ACTION)[keyof typeof ACTION]
+export type TEventName = EVENT_TYPE
+export type TScreenName = SCREEN_NAME
+export type TAction = ACTION
 
 export interface TAnalyticsArgs {
 	appVersionCode?: string | number
@@ -34,7 +37,7 @@ export interface TAnalyticsPostData {
 		device_id: string | null
 		uid?: string
 	}
-	events: Array<{ data: TEventData; eventId: string }>
+	events: Array<{ data: TEventMeta; eventId: string }>
 	group: string
 }
 
@@ -49,16 +52,68 @@ export interface TParseDeviceArgs {
 	userAgent?: string
 }
 
-export interface TEventMeta extends TEventData {
-	action?: TAction
-	route?: string
-	time_since_load_start?: string
-}
+export type TConditionalMetadata =
+	| { action: ACTION.LASER_START; flowId: string; method: string }
+	| { action: ACTION.LASER_CANCEL; flowId: string; method: string }
+	| { action: ACTION.LASER_RESPONSE_ACCEPT; flowId: string }
+	| { action: ACTION.LASER_RESPONSE_REJECT; flowId: string }
+	| { action: ACTION.LASER_RESPONSE_RETRY; flowId: string }
+	| { action: ACTION.STORY_CHAT_CANCEL }
+	| {
+			action: ACTION.STORY_CHAT_SUGGESTION
+			suggestionAction: string
+			suggestionValue: string
+	  }
+	| { action: ACTION.STORY_CHAT_PROMPT; prompt: string }
+	| { action: ACTION.SFX_ACCEPT; all: boolean }
+	| { action: ACTION.COMMENT_EXAMPLE; flowId: string }
+	| { action: ACTION.COMMENT_EXAMPLE_CANCEL; flowId: string }
+	| { action: ACTION.SIDEBAR_CHANGED; sidebarType: string }
+	| { action: ACTION.DUAL_VIEW_CHANGED; dualViewType: string }
+	| { action: ACTION.STORY_EXPLORER_TAB_CHANGE; tab: string }
+	| { action: ACTION.STORY_EXPLORER_ACTION; actionType: string; tab: string }
+	| { action: ACTION.STORY_EXPLORER_FOCUS; focusInput: string | null }
+	| { action: ACTION.RUN_NWM; chapterId: string }
+	| {
+			action: ACTION.FIND_REPLACE_SUGGESTION
+			suggestion: string
+			suggestionReason: string
+	  }
+	| { action: ACTION.THEME_TOGGLE; theme: string }
+	| {
+			action: ACTION.ADAPTATION_LS_GEN
+			llmModel: string
+			sourceLang: string
+			targetLang: string
+	  }
+	| {
+			action: ACTION.ADAPTATION_LS_SEND
+			llmModel: string
+			sourceLang: string
+			targetLang: string
+	  }
+	| { action: ACTION.BASE_SCRIPT_EXTENSION; size: string }
+	| { action: ACTION.DOWNLOAD_BULK_EPISODES; separate: string; size: number }
+	| {
+			action: ACTION.PROMPT_BULK_EPISODES
+			language: string
+			prompt: string
+			size: string
+	  }
+	| { action?: TAction }
+
+export type TEventMeta = TEventData &
+	TConditionalMetadata & {
+		content_language?: string
+		route?: string
+		time_since_load_start?: string
+	}
 
 export interface THandleEventLogClientArgs {
 	event: TEventName
 	metaData?: TEventMeta
 	screenName: TScreenName
+	sendContentLanguage?: boolean
 	sendRoute?: boolean
 }
 

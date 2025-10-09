@@ -17,6 +17,7 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
+import { LOCAL_STORAGE_KEYS } from '@/lib/utils/analytics'
 import {
 	getAvailableLanguages,
 	getDisabledAvailableLanguages,
@@ -119,6 +120,10 @@ export const useEpisodeContentUtil = () => {
 			return resp
 		}
 
+		localStorage.setItem(
+			LOCAL_STORAGE_KEYS.CONTENT_LANGUAGE,
+			resp.chapter.language || ELanguage.ENGLISH
+		)
 		const nwmRunning = resp?.chapter?.props?.nwm_running
 
 		addEpisodeMap(episodeId, resp)

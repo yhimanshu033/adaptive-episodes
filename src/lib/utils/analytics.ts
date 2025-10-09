@@ -1,4 +1,5 @@
 import {
+	CONTENT_LANG_ALLOWED,
 	EBrowserPlatformOS,
 	EDeviceBrowser,
 	EDeviceOS,
@@ -11,7 +12,6 @@ import {
 	TAnalyticsArgs,
 	TAnalyticsPostData,
 	TDeviceDetails,
-	TEventData,
 	TEventMeta,
 	THandleClientPageLoadArgs,
 	THandleEventLogClientArgs,
@@ -36,6 +36,7 @@ export const LOCAL_STORAGE_KEYS = {
 	NATIVE_APP_VERSION: 'native_app_version',
 	DEVICE_DETAILS: 'device_details',
 	APP_LOAD_START_TIME: 'app_load_start_time',
+	CONTENT_LANGUAGE: 'content_language',
 } as const
 
 export const SESSION_STORAGE_KEYS = {
@@ -85,11 +86,10 @@ export function buildAnalyticsEvent({
 
 	const source = `${sourceParts.join('_')}_${platformString}`
 
-	const data: TEventData = {
+	const data: TEventMeta = {
 		screen_name: screenName,
 		client_ts: String(currentTimestamp),
 		event,
-		view_type: metaData.route,
 		source,
 		resolution,
 		app_version_code: appVersionCode,
@@ -234,7 +234,8 @@ function handleEventLogClient({
 	event,
 	metaData = {},
 	screenName,
-	sendRoute,
+	sendRoute = true,
+	sendContentLanguage = true,
 }: THandleEventLogClientArgs): void {
 	if (typeof window === 'undefined') {
 		return
@@ -257,21 +258,27 @@ function handleEventLogClient({
 		})()
 
 	const referrer = localStorage.getItem(LOCAL_STORAGE_KEYS.REFERRER)
+	const contentLanguage = sessionStorage.getItem(
+		LOCAL_STORAGE_KEYS.CONTENT_LANGUAGE
+	)
 	const medium = sessionStorage.getItem(SESSION_STORAGE_KEYS.MEDIUM)
 	const campaign = sessionStorage.getItem(SESSION_STORAGE_KEYS.CAMPAIGN)
 	const resolution = `${window.innerWidth}*${window.innerHeight}`
 	const platformString = makePlatformStringFromDeviceInfo()
 	const appVersionCode = currentVersionTag ?? 0
 
-	const metaDataToSend = (() => {
-		if (!sendRoute) {
-			return metaData
-		}
-		return {
-			route: window.location.pathname + window.location.search,
-			...metaData,
-		}
-	})()
+	const metaDataToSend: TEventMeta = {
+		route: sendRoute
+			? window.location.pathname + window.location.search
+			: undefined,
+		content_language:
+			contentLanguage &&
+			sendContentLanguage &&
+			CONTENT_LANG_ALLOWED.has(screenName)
+				? contentLanguage
+				: undefined,
+		...metaData,
+	}
 
 	const payload = buildAnalyticsEvent({
 		screenName,
@@ -293,15 +300,16 @@ function handleEventLogClient({
 			? ANALYTICS_URL
 			: QA_ANALYTICS_URL
 
-	console.log({ baseUrl, ...payload })
+	console.log({ baseUrl, payload })
+
+	// Uncomment when logic verified
+	/*
 	// Skip sending on non-prod
 	if (process.env?.NODE_ENV !== 'production') {
 		console.log('[DEBUG] Analytics payload:', payload)
 		return
 	}
 
-	// Uncomment when logic verified
-	/*
 	fetchAPI({
 	  url: "",
 	  baseUrl,

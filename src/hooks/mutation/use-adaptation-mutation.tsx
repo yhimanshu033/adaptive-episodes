@@ -1,5 +1,6 @@
 import React from 'react'
 import { useParams } from 'next/navigation'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { ELLMModel } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import {
@@ -14,6 +15,7 @@ import { toast } from 'sonner'
 
 import { doPoll } from '@/lib/do-poll'
 import { fetchAPI } from '@/lib/fetch-api'
+import { track } from '@/lib/utils/analytics'
 import { migrateOldLSMapping, sanitize } from '@/lib/utils/helpers'
 
 import {
@@ -70,10 +72,19 @@ export default function useAdaptationMutation({
 				},
 			}
 		)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.ADAPTATION_DIALOG,
+			metaData: {
+				action: ACTION.ADAPTATION_LS_GEN,
+				sourceLang: currentLanguage || ELanguage.ENGLISH,
+				targetLang: language,
+				llmModel,
+			},
+		})
 		if (resp.error || !resp.data) {
 			throw new Error('Error during adaptation!')
 		}
-
 		const pollingResp = await doPoll<
 			TNoParams,
 			LSMappingInput,
@@ -143,6 +154,17 @@ export default function useAdaptationMutation({
 			llm_model: llmModel,
 		}
 		const sanitizedBody = sanitize(body)
+
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.ADAPTATION_DIALOG,
+			metaData: {
+				action: ACTION.ADAPTATION_LS_SEND,
+				sourceLang: sourceLang || ELanguage.ENGLISH,
+				targetLang: language,
+				llmModel,
+			},
+		})
 
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{

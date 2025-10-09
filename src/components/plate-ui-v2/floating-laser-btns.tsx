@@ -48,8 +48,9 @@ export default function FloatingLaserBtns() {
 							onClick={() => {
 								const children = structuredClone(editor.children)
 								let newChildren: Value = children
+								const id = nanoid()
 								if (method.id === 'custom') {
-									const key = `floating-prompt-id-${nanoid()}`
+									const key = `floating-prompt-id-${id}`
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
@@ -58,7 +59,7 @@ export default function FloatingLaserBtns() {
 									document.getElementById('prompt-input')?.focus()
 									setPromptActive(key)
 								} else {
-									const key = `laser-id-${nanoid()}`
+									const key = `laser-id-${id}`
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
@@ -75,8 +76,9 @@ export default function FloatingLaserBtns() {
 									event: EVENT_TYPE.BUTTON_CLICK,
 									screenName: SCREEN_NAME.EPISODE_EDITOR,
 									metaData: {
-										action: ACTION.LASER_BUTTON_CLICK,
+										action: ACTION.LASER_START,
 										method: method.id,
+										flowId: id,
 									},
 								})
 							}}

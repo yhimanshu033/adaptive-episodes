@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
 import usePlotOutlineQuery from '@/hooks/query/use-plotoutline-data'
 import useCountdownTimer from '@/hooks/use-countdown-timer'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useAIStore from '@/store/ai-store'
 
+import { track } from '@/lib/utils/analytics'
 import { parseOptimistically } from '@/lib/utils/helpers'
 
 import { ExplorerActionType, PlotExplorerApiResponse } from '@/types/ai-types'
@@ -20,7 +22,7 @@ export default function useStoryExplorer({
 		store,
 		setActiveExplorerMode,
 		setActiveExplorerActions,
-		setInputFocus,
+		setInputFocus: setStoreInputFocus,
 	} = useAIStore()
 	const activeExplorerMode = store((state) => state.activeExplorerMode)
 	const activeExplorerActions = store((state) => state.activeExplorerActions)
@@ -62,6 +64,14 @@ export default function useStoryExplorer({
 			return
 		}
 		setActiveExplorerMode(mode)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_EXPLORER_TAB_CHANGE,
+				tab: mode,
+			},
+		})
 	}
 
 	const handleRequest = useCallback(
@@ -70,9 +80,30 @@ export default function useStoryExplorer({
 				return
 			}
 			setActiveExplorerActions(activeExplorerMode, action)
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.STORY_EXPLORER_ACTION,
+					tab: activeExplorerMode,
+					actionType: action,
+				},
+			})
 		},
 		[activeExplorerMode, setActiveExplorerActions]
 	)
+
+	const setInputFocus = (input: string | null) => {
+		setStoreInputFocus(input)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_EXPLORER_FOCUS,
+				focusInput: input,
+			},
+		})
+	}
 
 	useEffect(() => {
 		if (isFetching || !data) {

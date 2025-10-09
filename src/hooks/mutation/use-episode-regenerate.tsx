@@ -1,4 +1,5 @@
 import { useParams } from 'next/navigation'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { API_URLS } from '@/constants/global-constants'
 import { EPISODE_REGENERATE_MUTATION_KEY } from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
@@ -7,6 +8,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 
+import { track } from '@/lib/utils/analytics'
 import { hasNWMRan } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
 
@@ -16,7 +18,7 @@ import { ELanguage } from '@/types/common'
 export const useEpisodeRegenerate = () => {
 	const { startTask } = useSocket()
 	const { data: session } = useSession()
-	const { id } = useParams()
+	const { id, episodeId: paramEpisodeId } = useParams()
 
 	const onSuccess = (data: string | undefined) => {
 		if (!data) {
@@ -31,6 +33,17 @@ export const useEpisodeRegenerate = () => {
 		episodeId: number
 	}) => {
 		const episodeContent = await getEpisodeContent(episodeId)
+
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: paramEpisodeId
+				? SCREEN_NAME.EPISODE_EDITOR
+				: SCREEN_NAME.EPISODE_LIST,
+			metaData: {
+				action: ACTION.RUN_NWM,
+				chapterId: String(episodeId),
+			},
+		})
 
 		if (hasNWMRan(episodeContent?.chapter)) {
 			toast.warning('NWM has already ran on this episode!')

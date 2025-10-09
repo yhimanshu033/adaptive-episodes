@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useCallback, useEffect, useRef } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { LASER_LEAF_KEYS } from '@/constants/editor-constants'
 import useLaserStore from '@/store/laser-store'
 import { cn } from '@udecode/cn'
@@ -12,6 +13,7 @@ import {
 } from 'platejs/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
+import { track } from '@/lib/utils/analytics'
 import {
 	breakDownValue,
 	getCommentNode,
@@ -145,10 +147,19 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 			const val = structuredClone(editor.children)
 			val.forEach(traverse)
 			editor.tf.setValue(breakDownValue(val))
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.LASER_CANCEL,
+					method: methodId,
+					flowId: key?.split?.('laser-id-')?.[1],
+				},
+			})
 		} catch (error) {
 			console.error(error)
 		}
-	}, [editor, traverse])
+	}, [editor, traverse, key, methodId])
 
 	const resetActive = useCallback(() => {
 		setActiveLaser(null)
