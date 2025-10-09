@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useUndoRedo } from '@/hooks/use-undo-redo'
 import { TrashIcon } from '@/icons/trash-icon'
 import useBeatsheetStore from '@/store/beatsheet-store'
@@ -20,12 +20,15 @@ import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
-import { shouldTriggerContentReorder } from '@/lib/utils/helpers'
+import {
+	convertScenesArrayToMap,
+	shouldTriggerContentReorder,
+} from '@/lib/utils/helpers'
 import { reorderChildrenBasedOnScenes } from '@/lib/utils/plate'
 
 import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
 
-const useBeatSheetEditor = () => {
+const useBeatSheetEditorUtil = () => {
 	const editor = useEditorRef()
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -50,6 +53,7 @@ const useBeatSheetEditor = () => {
 	const { redo, undo, reset, canRedo, canUndo } = useUndoRedo(scenes, {
 		startIndex: 1,
 	})
+	const [oldScenes, setOldScenes] = useState(convertScenesArrayToMap(scenes))
 
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
 		const scene = scenes.find((s) => s.id === sceneId)
@@ -310,6 +314,13 @@ const useBeatSheetEditor = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [openSceneIds])
 
+	useEffect(() => {
+		if (Object.keys(oldScenes).length) {
+			return
+		}
+		setOldScenes(convertScenesArrayToMap(scenes))
+	}, [scenes, oldScenes])
+
 	return {
 		sensors,
 		handleInput,
@@ -325,7 +336,9 @@ const useBeatSheetEditor = () => {
 		handleReset,
 		canRedo,
 		canUndo,
+		oldScenes,
+		setOldScenes,
 	}
 }
 
-export default useBeatSheetEditor
+export default useBeatSheetEditorUtil

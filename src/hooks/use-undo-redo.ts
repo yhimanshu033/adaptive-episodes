@@ -42,6 +42,10 @@ export function useUndoRedo<T>(state: T, options?: Options) {
 
 	const current = history[index]
 
+	const initialData = useMemo(() => {
+		return history[startIndex]
+	}, [history, startIndex])
+
 	// --- CORE: Push new state (with squash and truncation)
 	const setNewState = useCallback(
 		(newState: T) => {
@@ -131,5 +135,6 @@ export function useUndoRedo<T>(state: T, options?: Options) {
 		canRedo,
 		index,
 		reset,
+		initialData,
 	}
 }

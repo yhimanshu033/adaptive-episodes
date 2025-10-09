@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation'
 import useBeatsheetMutation from '@/hooks/mutation/use-beatsheet-mutation'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 import useLanguage from '@/hooks/use-language'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import { beatsheetContextEnglish } from '@/mock-data/beatsheet-editor'
@@ -29,6 +28,8 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from '@/components/ui/accordion'
+import useBeatSheetEditor from '@/providers/beat-sheet-provider'
+import { isOrderSceneOrderChange } from '@/lib/utils/helpers'
 
 import { TScene } from '@/types/beatsheet-editor-types'
 
@@ -47,6 +48,8 @@ export default function SceneTab() {
 		handleDragOver,
 		fixCursorSnapOffset,
 		getSceneText,
+		oldScenes,
+		setOldScenes,
 	} = useBeatSheetEditor()
 
 	const language = useLanguage()
@@ -104,6 +107,16 @@ export default function SceneTab() {
 				beats: Object.fromEntries(
 					scenes.map((scene) => [`scene_${scene.index + 1}`, scene.data.beats])
 				),
+				beats_old: Object.fromEntries(
+					scenes.map((scene) => [
+						`scene_${scene.index + 1}`,
+						oldScenes[scene.index].beats,
+					])
+				),
+				order_change: isOrderSceneOrderChange(
+					scenes.map((s) => oldScenes[s.index]),
+					scenes.map((s) => s.data)
+				),
 				ep_text: editorText,
 				input_language: language,
 				scene_texts: Object.fromEntries(
@@ -123,7 +136,7 @@ export default function SceneTab() {
 		})
 	}
 
-	const handleApproveContent = (sceneId: string) => {
+	const handleApproveContent = (sceneId: string, sceneIdx: number) => {
 		const pendingContent = getPendingContentForScene(sceneId)
 		if (pendingContent) {
 			handleGenerateScenes(
@@ -131,6 +144,12 @@ export default function SceneTab() {
 				pendingContent.map((scene) => scene.id)
 			)
 			approveContent(sceneId)
+			setOldScenes((prev) => {
+				return {
+					...prev,
+					[sceneIdx]: scenes[sceneIdx],
+				}
+			})
 		}
 	}
 
@@ -263,7 +282,9 @@ export default function SceneTab() {
 															</Button>
 															<Button
 																size="sm"
-																onClick={() => handleApproveContent(scene.id)}
+																onClick={() =>
+																	handleApproveContent(scene.id, idx)
+																}
 																className="flex items-center gap-1"
 																variant="outline"
 															>
