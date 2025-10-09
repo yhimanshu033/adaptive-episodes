@@ -1,4 +1,10 @@
-import { EVENT_TYPE } from '@/constants/analytics'
+import {
+	EBrowserPlatformOS,
+	EDeviceBrowser,
+	EDeviceOS,
+	EDeviceType,
+	EVENT_TYPE,
+} from '@/constants/analytics'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -124,41 +130,41 @@ export function parseDeviceFromUserAgent({
 
 	// OS detection
 	const os = /windows phone/.test(ua)
-		? 'windowsphone'
+		? EDeviceOS.WINDOWS_PHONE
 		: /android/.test(ua)
-			? 'android'
+			? EDeviceOS.ANDROID
 			: /iphone|ipad|ipod/.test(ua)
-				? 'ios'
+				? EDeviceOS.IOS
 				: /mac/.test(ua)
-					? 'macos'
+					? EDeviceOS.MACOS
 					: /win/.test(ua)
-						? 'windows'
+						? EDeviceOS.WINDOWS
 						: /linux/.test(ua)
-							? 'linux'
-							: 'na'
+							? EDeviceOS.LINUX
+							: EDeviceOS.NA
 
 	// Browser detection
 	const browser = /edg|edge/.test(ua)
-		? 'edge'
+		? EDeviceBrowser.EDGE
 		: /chrome|crios/.test(ua)
-			? 'chrome'
+			? EDeviceBrowser.CHROME
 			: /safari/.test(ua)
-				? 'safari'
+				? EDeviceBrowser.SAFARI
 				: /firefox/.test(ua)
-					? 'firefox'
+					? EDeviceBrowser.FIREFOX
 					: /opera|opr/.test(ua)
-						? 'opera'
+						? EDeviceBrowser.OPERA
 						: /samsungbrowser/.test(ua)
-							? 'samsung'
-							: 'na'
+							? EDeviceBrowser.SAMSUNG
+							: EDeviceBrowser.NA
 
 	// Device type
 	const type =
 		/mobile/.test(ua) || /iphone|android(?!.*tablet)/.test(ua)
-			? 'mobile'
+			? EDeviceType.MOBILE
 			: /tablet|ipad/.test(ua)
-				? 'tablet'
-				: 'desktop'
+				? EDeviceType.TABLET
+				: EDeviceType.DESKTOP
 
 	return { type, browser, os }
 }
@@ -166,7 +172,11 @@ export function parseDeviceFromUserAgent({
 export function getDeviceDetailsFromBrowser() {
 	if (typeof navigator === 'undefined') {
 		// SSR-safe fallback
-		return { type: 'na', browser: 'na', os: 'na' }
+		return {
+			type: EDeviceType.DESKTOP,
+			browser: EDeviceBrowser.NA,
+			os: EDeviceOS.NA,
+		}
 	}
 	const ua = navigator.userAgent || ''
 	const platform = navigator.platform || ''
@@ -189,7 +199,7 @@ function makePlatformStringFromDeviceInfo() {
 		return 'na-na-na'
 	} // SSR Guard
 
-	let platformType = ''
+	let platformType: EBrowserPlatformOS = EBrowserPlatformOS.NA
 	let platformOS = ''
 	let platformBrowser = ''
 
@@ -199,23 +209,23 @@ function makePlatformStringFromDeviceInfo() {
 	// SUBJECT TO CHANGE
 	if (origin) {
 		if (origin.toLowerCase().includes('pfm_ios')) {
-			platformOS = 'ios'
+			platformOS = EBrowserPlatformOS.IOS
 			platformBrowser = 'pfm'
 		} else if (origin.toLowerCase().includes('pfm_android')) {
-			platformOS = 'android'
+			platformOS = EBrowserPlatformOS.ANDROID
 			platformBrowser = 'pfm'
 		} else if (origin.toLowerCase().includes('android')) {
-			platformOS = 'android'
+			platformOS = EBrowserPlatformOS.ANDROID
 			platformBrowser = 'pn'
 		} else if (origin.toLowerCase().includes('ios')) {
-			platformOS = 'ios'
+			platformOS = EBrowserPlatformOS.IOS
 			platformBrowser = 'pn'
 		}
 	}
 
-	platformType = platformType || type || 'na'
-	platformOS = platformOS || os || 'na'
-	platformBrowser = platformBrowser || browser || 'na'
+	platformType = platformType || type || EDeviceType.DESKTOP
+	platformOS = platformOS || os || EDeviceOS.NA
+	platformBrowser = platformBrowser || browser || EDeviceBrowser.NA
 
 	return `${platformType}-${platformOS}-${platformBrowser}`
 }
@@ -293,15 +303,15 @@ function handleEventLogClient({
 	// Uncomment when logic verified
 	/*
 	fetchAPI({
-		url: "",
-		baseUrl,
-		method: 'POST',
-		headers: {
-			...COMMON_ANALYTICS_HEADERS
-		},
-		body: payload,
+	  url: "",
+	  baseUrl,
+	  method: 'POST',
+	  headers: {
+		...COMMON_ANALYTICS_HEADERS
+	  },
+	  body: payload,
 	}).catch((err) => {
-		console.error('[Analytics] Error sending log:', err);
+	  console.error('[Analytics] Error sending log:', err);
 	});
 	 */
 }

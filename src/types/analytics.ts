@@ -1,4 +1,11 @@
-import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
+import {
+	ACTION,
+	EDeviceBrowser,
+	EDeviceOS,
+	EDeviceType,
+	EVENT_TYPE,
+	SCREEN_NAME,
+} from '@/constants/analytics'
 
 export type TEventData = Record<string, string | number | boolean | undefined>
 
@@ -32,9 +39,9 @@ export interface TAnalyticsPostData {
 }
 
 export interface TDeviceDetails {
-	browser: string
-	os: string
-	type: string
+	browser: EDeviceBrowser
+	os: EDeviceOS
+	type: EDeviceType
 }
 
 export interface TParseDeviceArgs {

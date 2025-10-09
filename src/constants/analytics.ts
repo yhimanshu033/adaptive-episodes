@@ -1,3 +1,35 @@
+export enum EBrowserPlatformOS {
+	ANDROID = 'android',
+	IOS = 'ios',
+	NA = 'na',
+}
+
+export enum EDeviceOS {
+	ANDROID = 'android',
+	IOS = 'ios',
+	LINUX = 'linux',
+	MACOS = 'macos',
+	NA = 'na',
+	WINDOWS = 'windows',
+	WINDOWS_PHONE = 'windowsphone',
+}
+
+export enum EDeviceBrowser {
+	CHROME = 'chrome',
+	EDGE = 'edge',
+	FIREFOX = 'firefox',
+	NA = 'na',
+	OPERA = 'opera',
+	SAFARI = 'safari',
+	SAMSUNG = 'samsung',
+}
+
+export enum EDeviceType {
+	DESKTOP = 'desktop',
+	MOBILE = 'mobile',
+	TABLET = 'tablet',
+}
+
 export const EVENT_TYPE = {
 	PAGE_LOAD: 'page_load',
 	BUTTON_CLICK: 'button_click',
