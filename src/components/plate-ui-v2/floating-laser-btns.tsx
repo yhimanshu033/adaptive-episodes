@@ -1,4 +1,5 @@
 import React from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { rephraseMethods } from '@/constants/editor-constants'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import useLaserStore from '@/store/laser-store'
@@ -15,6 +16,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
+import { track } from '@/lib/utils/analytics'
 import { mergeBlocks } from '@/lib/utils/plate'
 
 import { MarkToolbarButton } from './mark-toolbar-button'
@@ -69,6 +71,14 @@ export default function FloatingLaserBtns() {
 									setActiveLaser(key)
 								}
 								editor.tf.setValue(newChildren)
+								track({
+									event: EVENT_TYPE.BUTTON_CLICK,
+									screenName: SCREEN_NAME.EPISODE_EDITOR,
+									metaData: {
+										action: ACTION.LASER_BUTTON_CLICK,
+										method: method.id,
+									},
+								})
 							}}
 						>
 							{method.method}

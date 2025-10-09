@@ -1,49 +1,23 @@
+import { EVENT_TYPE } from '@/constants/analytics'
 import { v4 as uuidv4 } from 'uuid'
 
-export type TEventData = Record<string, string | number | boolean | undefined>
+import {
+	TAnalyticsArgs,
+	TAnalyticsPostData,
+	TDeviceDetails,
+	TEventData,
+	TEventMeta,
+	THandleClientPageLoadArgs,
+	THandleEventLogClientArgs,
+	TParseDeviceArgs,
+} from '@/types/analytics'
 
-export interface TAnalyticsArgs {
-	appVersionCode?: string | number
-	campaign?: string | null
-	currentTimestamp?: number
-	deployEnv?: string
-	deviceId?: string | null
-	event: string
-	medium?: string | null
-	metaData?: TEventMeta
-	platformString?: string
-	referrer?: string | null
-	resolution?: string
-	screenName: string
-	uid?: string
-}
-
-export interface TAnalyticsPostData {
-	common_fields: {
-		device_id: string | null
-		uid?: string
-	}
-	events: Array<{ data: TEventData; eventId: string }>
-	group: string
-}
-
-export interface TDeviceDetails {
-	browser: string
-	os: string
-	type: string
-}
-
-export interface TParseDeviceArgs {
-	platform?: string
-	userAgent?: string
-}
-
-interface TEventMeta extends TEventData {
-	route?: string
-	time_since_load_start?: string
-}
-
-// const ANALYTICS_URL = process.env.NEXT_PUBLIC_ANALYTICS_URL || 'https://novel-analytics-api.pocketnovel.com/v2/logging_data/log';
+const ANALYTICS_URL =
+	process.env.NEXT_PUBLIC_ANALYTICS_URL ||
+	'https://novel-analytics-api.pocketnovel.com/v2/logging_data/log'
+const QA_ANALYTICS_URL =
+	process.env.NEXT_PUBLIC_QA_ANALYTICS_URL ||
+	'https://qa-go-analytics.pocketfm.com'
 
 const currentVersionTag = process.env.NEXT_PUBLIC_VERSION_TAG || ''
 
@@ -117,29 +91,15 @@ export function buildAnalyticsEvent({
 	}
 
 	// Merge metadata safely
-	const optionalFields = [
-		'phone_number',
-		'button',
-		'module_name',
-		'time',
-		'entity_type',
-		'entity_id',
-		'time_since_load_start',
-		'show_id',
-		'view_id',
-	]
+	const optionalFieldsKeyMap: Record<string, string> = {
+		phone_number: 'phone',
+		button: 'module_name',
+		time: 'time_spent',
+	}
 
-	for (const key of optionalFields) {
-		if (metaData[key] !== undefined) {
-			const mappedKey =
-				key === 'phone_number'
-					? 'phone'
-					: key === 'button'
-						? 'module_name'
-						: key === 'time'
-							? 'time_spent'
-							: key
-			data[mappedKey] = metaData[key]
+	for (const [key, value] of Object.entries(metaData)) {
+		if (value !== undefined) {
+			data[optionalFieldsKeyMap[key] ?? key] = value
 		}
 	}
 
@@ -260,11 +220,12 @@ function makePlatformStringFromDeviceInfo() {
 	return `${platformType}-${platformOS}-${platformBrowser}`
 }
 
-export function handleEventLogClient(
-	screenName: string,
-	event: string,
-	metaData: TEventMeta = {}
-): void {
+function handleEventLogClient({
+	event,
+	metaData = {},
+	screenName,
+	sendRoute,
+}: THandleEventLogClientArgs): void {
 	if (typeof window === 'undefined') {
 		return
 	} // SSR guard
@@ -292,6 +253,16 @@ export function handleEventLogClient(
 	const platformString = makePlatformStringFromDeviceInfo()
 	const appVersionCode = currentVersionTag ?? 0
 
+	const metaDataToSend = (() => {
+		if (!sendRoute) {
+			return metaData
+		}
+		return {
+			route: window.location.pathname + window.location.search,
+			...metaData,
+		}
+	})()
+
 	const payload = buildAnalyticsEvent({
 		screenName,
 		event,
@@ -303,35 +274,42 @@ export function handleEventLogClient(
 		appVersionCode,
 		resolution,
 		platformString,
-		metaData,
-		deployEnv: process.env.NEXT_PUBLIC_DEPLOY_ENV || '',
+		metaData: metaDataToSend,
+		deployEnv: process.env?.NEXT_PUBLIC_DEPLOY_ENV || '',
 	})
 
+	const baseUrl =
+		process.env?.NEXT_PUBLIC_DEPLOY_ENV === 'production'
+			? ANALYTICS_URL
+			: QA_ANALYTICS_URL
+
+	console.log({ baseUrl, ...payload })
 	// Skip sending on non-prod
-	if (process.env?.NEXT_PUBLIC_DEPLOY_ENV !== 'production') {
+	if (process.env?.NODE_ENV !== 'production') {
 		console.log('[DEBUG] Analytics payload:', payload)
 		return
 	}
 
-	//  Uncomment when logic confirmed
+	// Uncomment when logic verified
 	/*
-	   fetch(ANALYTICS_URL, {
-		   method: 'POST',
-		   headers: {
-			   'Content-Type': 'application/json',
-			   ...COMMON_ANALYTICS_HEADERS
-		   },
-		   body: JSON.stringify(payload),
-	   }).catch((err) => {
-		   console.error('[Analytics] Error sending log:', err);
-	   });
+	fetchAPI({
+		url: "",
+		baseUrl,
+		method: 'POST',
+		headers: {
+			...COMMON_ANALYTICS_HEADERS
+		},
+		body: payload,
+	}).catch((err) => {
+		console.error('[Analytics] Error sending log:', err);
+	});
 	 */
 }
 
-export function handlePageLoadEventLogClient(
-	screenName: string,
-	metaObj: TEventMeta = {}
-): void {
+function handlePageLoadEventLogClient({
+	screenName,
+	metaData,
+}: THandleClientPageLoadArgs): void {
 	if (typeof window === 'undefined') {
 		return
 	} // SSR guard
@@ -346,13 +324,17 @@ export function handlePageLoadEventLogClient(
 	}
 
 	const route = window.location.pathname + window.location.search
-	const meta: TEventMeta = { ...metaObj, route }
+	const meta: TEventMeta = { ...metaData, route }
 
 	if (timeSinceLoadStart) {
 		meta.time_since_load_start = timeSinceLoadStart
 	}
 
-	handleEventLogClient(screenName, 'page_load', meta)
+	handleEventLogClient({
+		screenName,
+		event: EVENT_TYPE.PAGE_LOAD,
+		metaData: meta,
+	})
 
 	localStorage.removeItem(LOCAL_STORAGE_KEYS.APP_LOAD_START_TIME)
 }
@@ -363,9 +345,7 @@ export function handleWindowLocation() {
 	} // SSR guard
 
 	if (window.self === window.top) {
-		const searchParams = window.parent
-			? new URLSearchParams(window.parent.location.search)
-			: new URLSearchParams(window.location.search)
+		const searchParams = new URLSearchParams(window.location.search)
 
 		const referrer = searchParams.get(URL_PARAMS_KEYS.REFERRER)
 		const origin = searchParams.get(URL_PARAMS_KEYS.ORIGIN)
@@ -407,3 +387,6 @@ export function handleWindowLocation() {
 		}
 	}
 }
+
+export const track = handleEventLogClient
+export const trackPage = handlePageLoadEventLogClient

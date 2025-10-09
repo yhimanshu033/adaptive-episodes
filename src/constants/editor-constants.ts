@@ -18,7 +18,7 @@ export const rephraseMethods = [
 	{ id: 'dialog', method: 'Dialog', status: 'Dialogizing...' },
 	{ id: 'stylize', method: 'Stylize', status: 'Rewriting... (Stylize)' },
 	{ id: 'custom', method: 'Prompt', status: 'Running custom prompt...' },
-]
+] as const
 
 export const storyChatSuggestions: Array<
 	TStoryChatSuggestion & {
