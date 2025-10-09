@@ -212,11 +212,14 @@ export function getDeviceDetailsFromBrowser() {
 	const platform = navigator.platform || ''
 	const deviceDetails = parseDeviceFromUserAgent({ userAgent: ua, platform })
 
-	// Cache it locally
-	localStorage.setItem(
-		LOCAL_STORAGE_KEYS.DEVICE_DETAILS,
-		JSON.stringify(deviceDetails)
-	)
+	if (typeof localStorage !== 'undefined') {
+		// SSR Guard
+		// Cache it locally
+		localStorage.setItem(
+			LOCAL_STORAGE_KEYS.DEVICE_DETAILS,
+			JSON.stringify(deviceDetails)
+		)
+	}
 
 	return deviceDetails
 }
@@ -312,17 +315,17 @@ export function handleEventLogClient(
 
 	//  Uncomment when logic confirmed
 	/*
-       fetch(ANALYTICS_URL, {
-           method: 'POST',
-           headers: {
-               'Content-Type': 'application/json',
-               ...COMMON_ANALYTICS_HEADERS
-           },
-           body: JSON.stringify(payload),
-       }).catch((err) => {
-           console.error('[Analytics] Error sending log:', err);
-       });
-     */
+	   fetch(ANALYTICS_URL, {
+		   method: 'POST',
+		   headers: {
+			   'Content-Type': 'application/json',
+			   ...COMMON_ANALYTICS_HEADERS
+		   },
+		   body: JSON.stringify(payload),
+	   }).catch((err) => {
+		   console.error('[Analytics] Error sending log:', err);
+	   });
+	 */
 }
 
 export function handlePageLoadEventLogClient(
@@ -359,7 +362,7 @@ export function handleWindowLocation() {
 		return
 	} // SSR guard
 
-	if (window.location === window.parent.location) {
+	if (window.self === window.top) {
 		const searchParams = window.parent
 			? new URLSearchParams(window.parent.location.search)
 			: new URLSearchParams(window.location.search)

@@ -35,10 +35,13 @@ const AppProvider = ({
 }) => {
 	useEffect(() => {
 		updateUserData(session)
-		localStorage.setItem(
-			LOCAL_STORAGE_KEYS.UID,
-			String(session?.user?.id || 'na')
-		)
+		if (typeof localStorage !== 'undefined') {
+			// SSR Guard
+			localStorage.setItem(
+				LOCAL_STORAGE_KEYS.UID,
+				String(session?.user?.id || 'na')
+			)
+		}
 	}, [session])
 
 	useEffect(() => {
