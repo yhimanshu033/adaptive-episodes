@@ -68,6 +68,7 @@ export type TGetScenesMetadataQueryParams = {
 export type TEpisodeRegenerateParams = {
 	chapter_id: number
 	ep_text: string
+	episode_number?: number
 	input_language: ELanguage
 	project_id: number
 }

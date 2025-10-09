@@ -60,6 +60,7 @@ export const useEpisodeRegenerate = () => {
 			input_language:
 				episodeContent?.chapter.language || ELanguage.GERMAN_ORIGINAL,
 			ep_text: getText(episodeContent?.text || ''),
+			episode_number: episodeContent?.chapter.seq_number,
 		}
 		const taskId = await startTask<TEpisodeRegenerateParams>({
 			method: 'POST',
