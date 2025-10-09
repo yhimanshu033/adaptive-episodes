@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import { LASER_LEAF_KEYS } from '@/constants/editor-constants'
 import useLaserStore from '@/store/laser-store'
+import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { cn } from '@udecode/cn'
 import { Descendant, Text } from 'platejs'
 import {
@@ -9,6 +10,7 @@ import {
 	PlateLeafProps,
 	useEditorRef,
 	useEditorState,
+	usePluginOption,
 } from 'platejs/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
@@ -47,6 +49,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		store: laserStore,
 	} = useLaserStore()
 	const { children: allChildren } = useEditorState()
+	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
 
 	useEffect(() => {
 		if (!key || !divRef?.current) {
@@ -234,6 +237,10 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		btnRef.current?.focus()
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [key, responseMode])
+
+	if (isSuggesting) {
+		return <>{children}</>
+	}
 
 	return (
 		<PlateLeaf
