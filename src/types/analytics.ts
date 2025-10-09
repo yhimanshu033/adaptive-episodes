@@ -29,12 +29,14 @@ export interface TAnalyticsArgs {
 	referrer?: string | null
 	resolution?: string
 	screenName: TScreenName
+	sessionId?: string | null
 	uid?: string
 }
 
 export interface TAnalyticsPostData {
 	common_fields: {
 		device_id: string | null
+		session_id: string | null
 		uid?: string
 	}
 	events: Array<{ data: TEventMeta; eventId: string }>

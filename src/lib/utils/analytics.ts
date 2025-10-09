@@ -42,6 +42,7 @@ export const LOCAL_STORAGE_KEYS = {
 export const SESSION_STORAGE_KEYS = {
 	MEDIUM: 'medium',
 	CAMPAIGN: 'campaign',
+	UUID: 'uuid',
 } as const
 
 export const URL_PARAMS_KEYS = {
@@ -71,6 +72,7 @@ export function buildAnalyticsEvent({
 	medium,
 	campaign,
 	deviceId,
+	sessionId,
 	appVersionCode,
 	platformString = '',
 	resolution,
@@ -111,7 +113,11 @@ export function buildAnalyticsEvent({
 
 	return {
 		events: [{ data, eventId }],
-		common_fields: { device_id: deviceId || null, uid },
+		common_fields: {
+			device_id: deviceId || null,
+			session_id: sessionId || null,
+			uid,
+		},
 		group: 'user_events',
 	}
 }
@@ -257,6 +263,14 @@ function handleEventLogClient({
 			return newId
 		})()
 
+	const sessionId =
+		sessionStorage.getItem(SESSION_STORAGE_KEYS.UUID) ??
+		(() => {
+			const newId = uuidv4().replace(/-/g, '')
+			sessionStorage.setItem(SESSION_STORAGE_KEYS.UUID, newId)
+			return newId
+		})()
+
 	const referrer = localStorage.getItem(LOCAL_STORAGE_KEYS.REFERRER)
 	const contentLanguage = sessionStorage.getItem(
 		LOCAL_STORAGE_KEYS.CONTENT_LANGUAGE
@@ -288,6 +302,7 @@ function handleEventLogClient({
 		medium,
 		campaign,
 		deviceId,
+		sessionId,
 		appVersionCode,
 		resolution,
 		platformString,
