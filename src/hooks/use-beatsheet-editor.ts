@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useUndoRedo } from '@/hooks/use-undo-redo'
 import { TrashIcon } from '@/icons/trash-icon'
 import useBeatsheetStore from '@/store/beatsheet-store'
@@ -21,7 +21,10 @@ import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { shouldTriggerContentReorder } from '@/lib/utils/helpers'
-import { reorderChildrenBasedOnScenes } from '@/lib/utils/plate'
+import {
+	reorderChildrenBasedOnScenes,
+	reorderScenesBasedOnChildren,
+} from '@/lib/utils/plate'
 
 import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
 
@@ -52,6 +55,7 @@ const useBeatSheetEditorUtil = () => {
 	const { redo, undo, reset, canRedo, canUndo } = useUndoRedo(scenes, {
 		startIndex: 1,
 	})
+	const isInitiallyReorderedRef = useRef(false)
 
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
 		const scene = scenes.find((s) => s.id === sceneId)
@@ -319,6 +323,23 @@ const useBeatSheetEditorUtil = () => {
 		setOldScenes(scenes)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [scenes, oldScenes])
+
+	useEffect(() => {
+		if (isInitiallyReorderedRef.current || !scenes.length) {
+			return
+		}
+		const newScenes = reorderScenesBasedOnChildren({
+			children: editor.children,
+			scenes,
+		})
+		setScenes(newScenes)
+		isInitiallyReorderedRef.current = true
+
+		return () => {
+			isInitiallyReorderedRef.current = false
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [scenes])
 
 	return {
 		sensors,

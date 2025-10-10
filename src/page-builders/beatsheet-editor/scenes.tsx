@@ -150,7 +150,7 @@ export default function SceneTab() {
 			const newScenes = [...oldScenes]
 			const changedIdx = newScenes.findIndex((item) => item.id === sceneId)
 			const changedScene = scenes.find((scene) => scene.id === sceneId)
-			if (!changedScene) {
+			if (!changedScene || changedIdx === -1) {
 				return
 			}
 			newScenes[changedIdx] = changedScene

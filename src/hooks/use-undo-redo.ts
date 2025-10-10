@@ -19,17 +19,20 @@ function isSameArray<T>(a: T, b: T) {
 	return true
 }
 
-type Options = {
+type Options<T> = {
 	debounceMs?: number
-	maxSquashCount?: number // how many same-order states to merge
+	fallbackState?: T
+	maxSquashCount?: number
+	// how many same-order states to merge
 	startIndex?: number
 }
 
-export function useUndoRedo<T>(state: T, options?: Options) {
+export function useUndoRedo<T>(state: T, options?: Options<T>) {
 	const {
 		debounceMs = 400,
 		maxSquashCount = 10,
 		startIndex = 0,
+		fallbackState = [] as T,
 	} = options || {}
 
 	const [history, setHistory] = useState<T[]>([state])
@@ -40,7 +43,7 @@ export function useUndoRedo<T>(state: T, options?: Options) {
 	const lastCheckedState = useRef<T>(state)
 	const isUndoRedoClicked = useRef(false)
 
-	const current = history[index]
+	const current = history[index] || fallbackState
 
 	const initialData = useMemo(() => {
 		return history[startIndex]
@@ -101,8 +104,8 @@ export function useUndoRedo<T>(state: T, options?: Options) {
 		const newIndex = Math.max(index - 1, startIndex)
 		setIndex(newIndex)
 		isUndoRedoClicked.current = true
-		return history[newIndex]
-	}, [history, index, startIndex])
+		return history[newIndex] || fallbackState
+	}, [history, index, startIndex, fallbackState])
 
 	// --- Redo logic
 	const redo = useCallback((): T => {
@@ -110,16 +113,16 @@ export function useUndoRedo<T>(state: T, options?: Options) {
 		const newIndex = Math.min(index + 1, history.length - 1)
 		setIndex(newIndex)
 		isUndoRedoClicked.current = true
-		return history[newIndex]
-	}, [history, index])
+		return history[newIndex] || fallbackState
+	}, [history, index, fallbackState])
 
 	const reset = useCallback((): T => {
 		squashCounter.current = 0
 
 		setIndex(startIndex)
 		isUndoRedoClicked.current = true
-		return history[startIndex]
-	}, [history, startIndex])
+		return history[startIndex] || fallbackState
+	}, [history, startIndex, fallbackState])
 
 	const canUndo = useMemo(() => index > startIndex, [index, startIndex])
 	const canRedo = useMemo(

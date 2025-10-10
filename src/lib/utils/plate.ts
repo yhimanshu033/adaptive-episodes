@@ -1124,3 +1124,36 @@ export function reorderChildrenBasedOnScenes({
 
 	return sortedEditorChildren
 }
+
+export function getChildrenSceneIdOrder(children: Value) {
+	return children.reduce(
+		(acc, curr, currIdx) => {
+			if (!curr.scene_id) {
+				return acc
+			}
+			return {
+				...acc,
+				[curr.scene_id as string]: currIdx,
+			}
+		},
+		{} as Record<string, number>
+	)
+}
+
+export function reorderScenesBasedOnChildren({
+	scenes,
+	children,
+}: {
+	children: Value
+	scenes: TScene[]
+}) {
+	const newChildren = structuredClone(children)
+	const newSceneIdOrder = getChildrenSceneIdOrder(newChildren)
+	const sortedScenes = scenes.sort((a, b) => {
+		const aIdx = newSceneIdOrder[a.id] ?? -1
+		const bIdx = newSceneIdOrder[b.id] ?? -1
+		return aIdx - bIdx
+	})
+
+	return sortedScenes
+}
