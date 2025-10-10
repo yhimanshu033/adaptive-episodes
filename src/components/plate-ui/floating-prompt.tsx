@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import {
 	ESTIMATED_FLOATING_HEIGHT,
 	LASER_LEAF_KEYS,
@@ -16,6 +17,7 @@ import { Checkbox } from '@/components/aural-ui/checkbox'
 import Label from '@/components/aural-ui/label'
 import Textarea from '@/components/aural-ui/textarea'
 import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
+import { track } from '@/lib/utils/analytics'
 import { cn } from '@/lib/utils/helpers'
 
 import { Divider } from '../aural-ui/divider'
@@ -28,20 +30,26 @@ export default function FloatingPrompt() {
 	const [val, setVal] = React.useState<string>('')
 	const [additionalContext, setAdditionalContext] = useState(false)
 
+	const key = useMemo(() => {
+		if (promptActive) {
+			return `laser-id-${promptActive.split('floating-prompt-id-')[1]}`
+		}
+		return `laser-id-${nanoid()}`
+	}, [promptActive])
+
 	const traverse = useCallback(
 		(node: Descendant, intoLaser: boolean) => {
 			if (!promptActive) {
 				return
 			}
 			if (promptActive in node) {
-				const keys = Object.keys(node).filter((key) =>
-					key.startsWith('floating-prompt')
+				const keys = Object.keys(node).filter((nodeKey) =>
+					nodeKey.startsWith('floating-prompt')
 				)
-				keys.forEach((key) => {
-					delete node[key]
+				keys.forEach((nodeKey) => {
+					delete node[nodeKey]
 				})
 				if (intoLaser) {
-					const key = `laser-id-${nanoid()}`
 					node[LaserPlugin.key as string] = true
 					node[key] = true
 					node[LASER_LEAF_KEYS.CUSTOM_METHOD] = true
@@ -56,7 +64,7 @@ export default function FloatingPrompt() {
 			}
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[promptActive, val, additionalContext]
+		[promptActive, val, additionalContext, key]
 	)
 
 	const onResetLeaf = useCallback(
@@ -66,12 +74,21 @@ export default function FloatingPrompt() {
 				val.forEach((node) => traverse(node, intoLaser))
 				editor.tf.setValue(val)
 				setPromptActive(null)
+				track({
+					event: EVENT_TYPE.BUTTON_CLICK,
+					screenName: SCREEN_NAME.EPISODE_EDITOR,
+					metaData: {
+						action: ACTION.LASER_START,
+						method: 'custom-send',
+						flowId: key.split('laser-id-')[1],
+					},
+				})
 			} catch (error) {
 				console.error(error)
 			}
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[editor, traverse, setPromptActive]
+		[editor, traverse, setPromptActive, key]
 	)
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps

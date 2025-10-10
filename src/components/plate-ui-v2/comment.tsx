@@ -3,6 +3,7 @@
 
 import * as React from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { roleToData } from '@/constants/global-constants'
 import useCommentExampleHook from '@/hooks/mutation/use-comment-example-hook'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
@@ -52,6 +53,7 @@ import {
 	discussionPlugin,
 	type TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
+import { track } from '@/lib/utils/analytics'
 import { cn } from '@/lib/utils/helpers'
 import { resolveEditorComment } from '@/lib/utils/plate'
 
@@ -189,6 +191,14 @@ export function Comment(props: {
 	async function onExample() {
 		const taskId = await mutateAsync()
 		addActiveCommentExampleMap({ key: comment.id, value: taskId })
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.COMMENT_EXAMPLE,
+				flowId: taskId,
+			},
+		})
 	}
 
 	const handleCopy = (data: string | null) => {

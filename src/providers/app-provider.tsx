@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { colorOptions, USER_SELECTED_COLOR } from '@/constants/global-constants'
+import usePageChange from '@/hooks/query/use-page-change'
 import { SocketProvider } from '@/hooks/use-socket'
 import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
 import Player from '@/page-builders/plate-editor/player'
@@ -21,6 +22,7 @@ import { AdaptationProvider } from '@/providers/adaptation-provider'
 import { PlayerProvider } from '@/providers/player-provider'
 import { PollingProvider } from '@/providers/polling-provider'
 import { queryClient } from '@/lib/get-query-client'
+import { handleWindowLocation, LOCAL_STORAGE_KEYS } from '@/lib/utils/analytics'
 
 import { SessionData } from '@/types/admin-types'
 import { TColorKey } from '@/types/editor-types'
@@ -34,7 +36,18 @@ const AppProvider = ({
 }) => {
 	useEffect(() => {
 		updateUserData(session)
+		if (typeof localStorage !== 'undefined') {
+			// SSR Guard
+			localStorage.setItem(
+				LOCAL_STORAGE_KEYS.UID,
+				String(session?.user?.id || 'na')
+			)
+		}
 	}, [session])
+
+	useEffect(() => {
+		handleWindowLocation()
+	}, [])
 
 	useEffect(() => {
 		const selectedColor = localStorage.getItem(USER_SELECTED_COLOR) as
@@ -53,6 +66,8 @@ const AppProvider = ({
 			colorOptions[selectedColor].secondary
 		)
 	}, [])
+
+	usePageChange()
 
 	return (
 		<SessionProvider session={session}>

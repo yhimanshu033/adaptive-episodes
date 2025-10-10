@@ -22,6 +22,7 @@ const RunNWMButton = () => {
 		if (!data?.chapter.id) {
 			return toast.error('Error in NWM Regeneration!')
 		}
+
 		await mutateAsync({ episodeId: data.chapter.id })
 		setRecentEmail(NWM_EMAIL)
 	}, [data, mutateAsync, setRecentEmail])

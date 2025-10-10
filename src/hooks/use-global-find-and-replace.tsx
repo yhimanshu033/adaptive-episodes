@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { INITIAL_FAR_OPTIONS } from '@/constants/ai-constants'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import {
 	farSearchModes,
 	SAVE_EPISODE_BUTTON_ID,
@@ -23,6 +24,7 @@ import {
 	replaceAll,
 	replaceOnce,
 } from '@/lib/utils/ai-chatbot'
+import { track } from '@/lib/utils/analytics'
 import { getText } from '@/lib/utils/plate'
 
 import { TLocalizeArrayItem } from '@/types/ai-types'
@@ -199,6 +201,13 @@ function useGlobalFindAndReplaceUtil() {
 
 		setReplacedContentMap(replacedContent)
 		triggerSave()
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.FIND_REPLACE_ALL,
+			},
+		})
 	}, [
 		search,
 		triggerSave,
@@ -256,6 +265,15 @@ function useGlobalFindAndReplaceUtil() {
 	function handleSuggestionClick(suggestion: TLocalizeArrayItem) {
 		const replace = getSuggestionValue(suggestion)
 		setOptions({ search: suggestion.name, replace, replaceEnabled })
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.FIND_REPLACE_SUGGESTION,
+				suggestion: suggestion.name,
+				suggestionReason: suggestion.reason,
+			},
+		})
 	}
 
 	const localized_entities = useMemo(
