@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation'
 import useBeatsheetMutation from '@/hooks/mutation/use-beatsheet-mutation'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 import useLanguage from '@/hooks/use-language'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import { beatsheetContextEnglish } from '@/mock-data/beatsheet-editor'
@@ -29,6 +28,11 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from '@/components/ui/accordion'
+import useBeatSheetEditor from '@/providers/beat-sheet-provider'
+import {
+	convertScenesArrayToMap,
+	isOrderSceneOrderChange,
+} from '@/lib/utils/helpers'
 
 import { TScene } from '@/types/beatsheet-editor-types'
 
@@ -47,6 +51,8 @@ export default function SceneTab() {
 		handleDragOver,
 		fixCursorSnapOffset,
 		getSceneText,
+		oldScenes,
+		setOldScenes,
 	} = useBeatSheetEditor()
 
 	const language = useLanguage()
@@ -104,6 +110,16 @@ export default function SceneTab() {
 				beats: Object.fromEntries(
 					scenes.map((scene) => [`scene_${scene.index + 1}`, scene.data.beats])
 				),
+				beats_old: Object.fromEntries(
+					scenes.map((scene) => [
+						`scene_${scene.index + 1}`,
+						convertScenesArrayToMap(oldScenes)[scene.data.id]?.beats,
+					])
+				),
+				order_change: isOrderSceneOrderChange(
+					scenes.map((s) => convertScenesArrayToMap(oldScenes)[s.data.id]),
+					scenes.map((s) => s.data)
+				),
 				ep_text: editorText,
 				input_language: language,
 				scene_texts: Object.fromEntries(
@@ -131,6 +147,14 @@ export default function SceneTab() {
 				pendingContent.map((scene) => scene.id)
 			)
 			approveContent(sceneId)
+			const newScenes = [...scenes]
+			const changedIdx = newScenes.findIndex((item) => item.id === sceneId)
+			const changedScene = scenes.find((scene) => scene.id === sceneId)
+			if (!changedScene) {
+				return
+			}
+			newScenes[changedIdx] = changedScene
+			setOldScenes(newScenes)
 		}
 	}
 

@@ -1170,3 +1170,25 @@ export function shouldTriggerContentReorder(a: TScene[], b: TScene[]): boolean {
 	}
 	return false
 }
+
+export function isOrderSceneOrderChange(a: TScene[], b: TScene[]) {
+	for (let i = 0; i < a.length; i++) {
+		for (let j = 0; j < a[i].beats.length; j++) {
+			if (a[i].beats[j].id !== b[i]?.beats?.[j]?.id) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+export function convertScenesArrayToMap(
+	scenes: TScene[]
+): Record<string, TScene> {
+	return scenes.reduce((acc, curr) => {
+		return {
+			...acc,
+			[curr.id]: curr,
+		}
+	}, {})
+}

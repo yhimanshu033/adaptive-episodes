@@ -1,10 +1,10 @@
 import React from 'react'
-import useBeatSheetEditor from '@/hooks/use-beatsheet-editor'
 import { ArrowCornerUpLeftIcon } from '@/icons/arrow-corner-up-left-icon'
 import { ArrowCornerUpRightIcon } from '@/icons/arrow-corner-up-right-icon'
 import { ArchiveRestore } from 'lucide-react'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
+import useBeatSheetEditor from '@/providers/beat-sheet-provider'
 
 export default function UndoRedoButtons() {
 	const { handleRedo, canRedo, canUndo, handleUndo, handleReset } =

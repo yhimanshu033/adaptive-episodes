@@ -25,7 +25,7 @@ import { reorderChildrenBasedOnScenes } from '@/lib/utils/plate'
 
 import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
 
-const useBeatSheetEditor = () => {
+const useBeatSheetEditorUtil = () => {
 	const editor = useEditorRef()
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -40,9 +40,11 @@ const useBeatSheetEditor = () => {
 		setActiveDragItem,
 		setScenes,
 		setOpenSceneIds,
+		setOldScenes,
 	} = useBeatsheetStore()
 
 	const scenes = beatsheetStore(useShallow((state) => state.scenes))
+	const oldScenes = beatsheetStore(useShallow((state) => state.oldScenes))
 	const activeDragItem = beatsheetStore(
 		useShallow((state) => state.activeDragItem)
 	)
@@ -310,6 +312,14 @@ const useBeatSheetEditor = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [openSceneIds])
 
+	useEffect(() => {
+		if (oldScenes.length) {
+			return
+		}
+		setOldScenes(scenes)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [scenes, oldScenes])
+
 	return {
 		sensors,
 		handleInput,
@@ -325,7 +335,9 @@ const useBeatSheetEditor = () => {
 		handleReset,
 		canRedo,
 		canUndo,
+		oldScenes,
+		setOldScenes,
 	}
 }
 
-export default useBeatSheetEditor
+export default useBeatSheetEditorUtil
