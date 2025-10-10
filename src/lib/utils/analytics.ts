@@ -8,6 +8,8 @@ import {
 } from '@/constants/analytics'
 import { v4 as uuidv4 } from 'uuid'
 
+import { fetchAPI } from '@/lib/fetch-api'
+
 import {
 	TAnalyticsArgs,
 	TAnalyticsPostData,
@@ -315,28 +317,24 @@ function handleEventLogClient({
 			? ANALYTICS_URL
 			: QA_ANALYTICS_URL
 
-	console.log({ baseUrl, payload })
-
-	// Uncomment when logic verified
-	/*
 	// Skip sending on non-prod
 	if (process.env?.NODE_ENV !== 'production') {
 		console.log('[DEBUG] Analytics payload:', payload)
 		return
 	}
 
-	fetchAPI({
-	  url: "",
-	  baseUrl,
-	  method: 'POST',
-	  headers: {
-		...COMMON_ANALYTICS_HEADERS
-	  },
-	  body: payload,
+	void fetchAPI({
+		url: '',
+		baseUrl,
+		method: 'POST',
+		headers: {
+			...COMMON_ANALYTICS_HEADERS,
+		},
+		body: payload,
+		ignoreError: true,
 	}).catch((err) => {
-	  console.error('[Analytics] Error sending log:', err);
-	});
-	 */
+		console.error('[Analytics] Error sending log:', err)
+	})
 }
 
 function handlePageLoadEventLogClient({

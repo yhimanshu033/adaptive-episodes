@@ -30,9 +30,11 @@ export default function FloatingPrompt() {
 	const [val, setVal] = React.useState<string>('')
 	const [additionalContext, setAdditionalContext] = useState(false)
 
+	console.log({ promptActive })
+
 	const key = useMemo(() => {
 		if (promptActive) {
-			return `laser-id-${promptActive.split('_')[1]}`
+			return `laser-id-${promptActive.split('floating-prompt-id-')[1]}`
 		}
 		return `laser-id-${nanoid()}`
 	}, [promptActive])
@@ -43,11 +45,11 @@ export default function FloatingPrompt() {
 				return
 			}
 			if (promptActive in node) {
-				const keys = Object.keys(node).filter((key) =>
-					key.startsWith('floating-prompt')
+				const keys = Object.keys(node).filter((nodeKey) =>
+					nodeKey.startsWith('floating-prompt')
 				)
-				keys.forEach((key) => {
-					delete node[key]
+				keys.forEach((nodeKey) => {
+					delete node[nodeKey]
 				})
 				if (intoLaser) {
 					node[LaserPlugin.key as string] = true
@@ -88,7 +90,7 @@ export default function FloatingPrompt() {
 			}
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[editor, traverse, setPromptActive]
+		[editor, traverse, setPromptActive, key]
 	)
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
