@@ -8,10 +8,10 @@ import useLatestEpisodeInfo from '@/hooks/query/use-latest-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
+import { useGlobalStore } from '@/store/global-store'
 import usePlateStore from '@/store/plate-store'
 import { useQuery } from '@tanstack/react-query'
 import { X } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
@@ -53,11 +53,11 @@ export const useEpisodeContentUtil = () => {
 
 	const { isOriginal, isOriginalEp } = useAccessChecks()
 	const pathName = usePathname()
-	const { data: session } = useSession()
 
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
+	const userData = useGlobalStore(useShallow((state) => state.userData))
 
 	const selectedLanguage = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedLanguage)
@@ -137,7 +137,7 @@ export const useEpisodeContentUtil = () => {
 			)
 			setRecentEmail(NWM_EMAIL)
 		} else if (resp.email) {
-			if (resp.email !== session?.user?.email) {
+			if (resp.email !== userData?.user?.email) {
 				toast.info(`${resp.email} is now editing the chapter!`)
 			}
 			setRecentEmail(resp.email)
@@ -206,7 +206,7 @@ export const useEpisodeContentUtil = () => {
 		setSidebar,
 		setRecentEmail,
 		episode,
-		session,
+		userData,
 	])
 
 	const query = useQuery({
