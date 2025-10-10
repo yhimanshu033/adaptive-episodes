@@ -48,7 +48,7 @@ export const SearchHighlightLeaf = ({
 			const index = records.findIndex(
 				(i) => i.join('-') === [episodeId, ...id].join('-')
 			)
-			if (index) {
+			if (index !== -1) {
 				setPtr(index)
 			}
 			return

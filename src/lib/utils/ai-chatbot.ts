@@ -488,29 +488,42 @@ export function getRecordsUtil({
 	children: Value
 } & TGetRegexFAR) {
 	const records: number[][] = []
+
 	if (!search?.trim?.().length) {
 		return records
 	}
-	children.forEach((node, index) => {
-		const getCount = (node: Element | Text, path: number[]): void => {
-			if ('text' in node) {
-				const regex = getFindReplaceRegex({
-					caseSensitive,
-					genitive,
-					search,
-					wholeWord,
-				})
-				const matches = String(node.text).match(regex)
-				matches?.forEach((m, i) => records.push([...path, i]))
-			} else if ('children' in node) {
-				node.children.forEach((child, childIndex) =>
-					getCount(child, [...path, childIndex])
-				)
-			}
-		}
-		getCount(node, [index])
+
+	const regex = getFindReplaceRegex({
+		caseSensitive,
+		genitive,
+		search,
+		wholeWord,
 	})
-	console.log({ records, children, search, caseSensitive, genitive, wholeWord })
+
+	let blockIdx = 0
+	for (const block of children) {
+		let leafIdx = 0
+		let matchIndex = 0
+		for (const leaf of block.children) {
+			// Reset regex each time to allow multiple matches per text node
+			const text = String(leaf.text)
+			let match: RegExpExecArray | null
+
+			regex.lastIndex = 0
+
+			while ((match = regex.exec(text)) !== null) {
+				records.push([blockIdx, leafIdx, matchIndex])
+				matchIndex++
+
+				// Prevent infinite loop for zero-length matches
+				if (match[0].length === 0) {
+					regex.lastIndex++
+				}
+			}
+			leafIdx++
+		}
+		blockIdx++
+	}
 	return records
 }
 

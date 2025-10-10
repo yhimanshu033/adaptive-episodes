@@ -1192,3 +1192,16 @@ export function convertScenesArrayToMap(
 		}
 	}, {})
 }
+
+/**
+ * Randomly shuffles the elements of an array (Fisher–Yates algorithm).
+ * Returns a new array — does not modify the original.
+ */
+export function jumbleArray<T>(array: T[]): T[] {
+	const result = [...array] // make a copy so we don't mutate input
+	for (let i = result.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1))
+		;[result[i], result[j]] = [result[j], result[i]] // swap
+	}
+	return result
+}

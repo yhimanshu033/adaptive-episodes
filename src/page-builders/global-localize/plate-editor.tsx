@@ -13,6 +13,7 @@ import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelto
 import { Plate } from 'platejs/react'
 
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import EditorAccessProvider from '@/providers/editor-access-provider'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
 
@@ -44,19 +45,21 @@ function MyEditor({
 	return (
 		<Plate editor={editor}>
 			<EditorDataContextProvider>
-				<SavingContextProvider data={content}>
-					<div className="flex flex-col">
-						<EditorOverlayLoader />
-						<EpisodeHeader content={content} latestStatus={latestStatus} />
-						<SaveContentMap />
-						<FarConnection />
-						<div className={cn('animate-fade-in-up relative')}>
-							<ScrollArea className="relative overflow-y-auto">
-								<EditorHandler />
-							</ScrollArea>
+				<EditorAccessProvider hideContent>
+					<SavingContextProvider data={content}>
+						<div className="flex flex-col">
+							<EditorOverlayLoader />
+							<EpisodeHeader content={content} latestStatus={latestStatus} />
+							<SaveContentMap />
+							<FarConnection />
+							<div className={cn('animate-fade-in-up relative')}>
+								<ScrollArea className="relative overflow-y-auto">
+									<EditorHandler />
+								</ScrollArea>
+							</div>
 						</div>
-					</div>
-				</SavingContextProvider>
+					</SavingContextProvider>
+				</EditorAccessProvider>
 			</EditorDataContextProvider>
 		</Plate>
 	)

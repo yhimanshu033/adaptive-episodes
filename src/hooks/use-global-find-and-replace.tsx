@@ -185,8 +185,12 @@ function useGlobalFindAndReplaceUtil() {
 
 	useEffect(() => {
 		if (!records[ptr]) {
+			if (records[ptr % records.length]) {
+				setPtr(ptr % records.length)
+			}
 			return
 		}
+
 		setOptions({ currentId: records[ptr] })
 		const elem = document.getElementById(
 			`search-highlight-${records[ptr].join('-')}`
@@ -250,10 +254,12 @@ function useGlobalFindAndReplaceUtil() {
 
 		const children = contentMap[episodeId]?.children || []
 		const updatedChildren = replaceOnce({ children, path, search, replace })
+
 		setReplacedContentMap((prev) => ({
 			...prev,
 			[episodeId]: { children: updatedChildren },
 		}))
+
 		triggerSave()
 	}, [
 		currentId,

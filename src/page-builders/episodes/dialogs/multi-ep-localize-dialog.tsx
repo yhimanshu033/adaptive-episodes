@@ -19,7 +19,7 @@ export default function MultiEpLocalizeDialog({
 	return (
 		<Drawer>
 			<DrawerTrigger asChild>
-				<Button variant="outline" {...props} />
+				<Button tooltip="View in Full Screen" variant="outline" {...props} />
 			</DrawerTrigger>
 			<DrawerContent>
 				<DrawerTitle className="flex items-center justify-between px-6 pb-4">
