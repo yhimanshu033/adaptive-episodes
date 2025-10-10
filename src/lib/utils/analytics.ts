@@ -25,7 +25,7 @@ const ANALYTICS_URL =
 	'https://novel-analytics-api.pocketnovel.com/v2/logging_data/log'
 const QA_ANALYTICS_URL =
 	process.env.NEXT_PUBLIC_QA_ANALYTICS_URL ||
-	'https://qa-go-analytics.pocketfm.com'
+	'https://qa-go-analytics.pocketfm.com/v2/logging_data/log'
 
 const currentVersionTag = process.env.NEXT_PUBLIC_VERSION_TAG || ''
 

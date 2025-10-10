@@ -252,14 +252,6 @@ export async function fetchAPI<
 		}
 
 		const responseData = (await response.json()) as ResponseDataT
-		if (!url) {
-			log({
-				resolvedUrl,
-				body,
-				headers,
-				responseData,
-			})
-		}
 
 		if (sendLog) {
 			const message = `${sendLog}: ${session.user.id} - ${resolvedUrl.split(BASE_URL)[1]} - ${new Date().toUTCString()}`
