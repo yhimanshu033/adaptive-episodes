@@ -25,7 +25,7 @@ import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
 
 import { ERole } from '@/types/admin-types'
-import { TCharacter } from '@/types/beatsheet-editor-types'
+import { TCharacter, TScene } from '@/types/beatsheet-editor-types'
 import {
 	BASE_STATUS,
 	EEpisodeType,
@@ -1148,4 +1148,47 @@ export function convertChapterCharactersResponse(
 			name: item.canonical_name,
 		} as TCharacter
 	})
+}
+
+export function getSceneIdOrder(newSceneOrder: TScene[]) {
+	return newSceneOrder.reduce(
+		(acc, curr, currIdx) => {
+			return {
+				...acc,
+				[curr.id]: currIdx,
+			}
+		},
+		{} as Record<string, number>
+	)
+}
+export function shouldTriggerContentReorder(a: TScene[], b: TScene[]): boolean {
+	// Compare order
+	for (let i = 0; i < a.length; i++) {
+		if (a[i].id !== b[i]?.id) {
+			return true
+		} // order differs
+	}
+	return false
+}
+
+export function isOrderSceneOrderChange(a: TScene[], b: TScene[]) {
+	for (let i = 0; i < a?.length; i++) {
+		for (let j = 0; j < (a?.[i]?.beats?.length || 0); j++) {
+			if (a[i]?.beats?.[j]?.id !== b[i]?.beats?.[j]?.id) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+export function convertScenesArrayToMap(
+	scenes: TScene[]
+): Record<string, TScene> {
+	return scenes.reduce((acc, curr) => {
+		return {
+			...acc,
+			[curr.id]: curr,
+		}
+	}, {})
 }

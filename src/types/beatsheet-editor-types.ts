@@ -6,6 +6,7 @@ export interface BeatsheetEditorStoreType {
 	activeDragItem: DragItem | null
 	characters: TCharacter[]
 	enhancementPlan: boolean
+	oldScenes: TScene[]
 	openPromptId: string | null
 	openSceneIds: string[]
 	scenes: TScene[]
@@ -40,11 +41,13 @@ export enum EBeatSheetEditorTabs {
 
 export type TGenerateBeatsheetBody = {
 	beats: Record<string, TBeat[]>
+	beats_old: Record<string, TBeat[]>
 	characters?: TCharacter[]
 	context?: string
 	ep_text: string
 	episode_number: number
 	input_language: ELanguage
+	order_change: boolean
 	project_id: number
 	scene_texts: Record<string, string>
 	scene_wide_prompt?: string
@@ -68,6 +71,7 @@ export type TGetScenesMetadataQueryParams = {
 export type TEpisodeRegenerateParams = {
 	chapter_id: number
 	ep_text: string
+	episode_number?: number
 	input_language: ELanguage
 	project_id: number
 }

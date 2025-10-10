@@ -1,6 +1,6 @@
-import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
 import { CHAPTER_CHARACTERS_DATA_QUERY_KEY } from '@/constants/query-constants'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchAPI } from '@/lib/fetch-api'
@@ -12,7 +12,7 @@ import {
 } from '@/types/episode-type'
 
 export default function useChapterCharacters() {
-	const { id } = useParams()
+	const { data } = useEpisodeContent()
 
 	async function fetchChapterCharacters({
 		chapter_id,
@@ -33,8 +33,10 @@ export default function useChapterCharacters() {
 	}
 
 	const query = useQuery({
-		queryKey: [CHAPTER_CHARACTERS_DATA_QUERY_KEY, id],
-		queryFn: () => fetchChapterCharacters({ chapter_id: Number(id) }),
+		queryKey: [CHAPTER_CHARACTERS_DATA_QUERY_KEY, data?.chapter.id],
+		queryFn: () =>
+			fetchChapterCharacters({ chapter_id: Number(data?.chapter.id || 0) }),
+		enabled: !!data?.chapter.id,
 	})
 
 	return query

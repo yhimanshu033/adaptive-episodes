@@ -1,10 +1,13 @@
 import { useParams } from 'next/navigation'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { API_URLS } from '@/constants/global-constants'
-import { EPISODE_REGENERATE_MUTATION_KEY } from '@/constants/query-constants'
+import {
+	EPISODE_LIST_QUERY_KEY,
+	EPISODE_REGENERATE_MUTATION_KEY,
+} from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
 import { getEpisodeContent } from '@/server-action/content-action'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 
@@ -19,12 +22,18 @@ export const useEpisodeRegenerate = () => {
 	const { startTask } = useSocket()
 	const { data: session } = useSession()
 	const { id, episodeId: paramEpisodeId } = useParams()
+	const queryClient = useQueryClient()
 
-	const onSuccess = (data: string | undefined) => {
+	const onSuccess = async (data: string | undefined) => {
 		if (!data) {
 			return
 		}
 		toast.success('Episode regeneration started ...')
+
+		await queryClient.invalidateQueries({
+			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
+			type: 'all',
+		})
 	}
 
 	const onEpisodeRegenerateMutation = async ({
@@ -64,6 +73,7 @@ export const useEpisodeRegenerate = () => {
 			input_language:
 				episodeContent?.chapter.language || ELanguage.GERMAN_ORIGINAL,
 			ep_text: getText(episodeContent?.text || ''),
+			episode_number: episodeContent?.chapter.seq_number,
 		}
 		const taskId = await startTask<TEpisodeRegenerateParams>({
 			method: 'POST',

@@ -29,7 +29,9 @@ import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 import { ResolvedSuggestion } from '@/components/plate-ui-v2/block-suggestion'
 import { DEFAULT_COLOR } from '@/components/plate-ui/color-constants'
 import { EditorStatic } from '@/components/plate-ui/editor-static'
+import { getSceneIdOrder } from '@/lib/utils/helpers'
 
+import { TScene } from '@/types/beatsheet-editor-types'
 import { TCustomComment } from '@/types/editor-types'
 import { Selection, TDocxHTMLArgs } from '@/types/plate-types'
 
@@ -1102,4 +1104,56 @@ export function getPlaceholderContentFromTextOrValue(content: string = '') {
 	const textContent = getTextFromTextOrValue(content)
 
 	return getPlaceholderContent(textContent)
+}
+
+export function reorderChildrenBasedOnScenes({
+	children,
+	scenes,
+}: {
+	children: Value
+	scenes: TScene[]
+}) {
+	const sceneIdOrder = getSceneIdOrder(scenes)
+	const newChildren = structuredClone(children)
+
+	const sortedEditorChildren = newChildren.sort((a, b) => {
+		const aIdx = sceneIdOrder[a.scene_id as string] ?? -1
+		const bIdx = sceneIdOrder[b.scene_id as string] ?? -1
+		return aIdx - bIdx
+	})
+
+	return sortedEditorChildren
+}
+
+export function getChildrenSceneIdOrder(children: Value) {
+	return children.reduce(
+		(acc, curr, currIdx) => {
+			if (!curr.scene_id) {
+				return acc
+			}
+			return {
+				...acc,
+				[curr.scene_id as string]: currIdx,
+			}
+		},
+		{} as Record<string, number>
+	)
+}
+
+export function reorderScenesBasedOnChildren({
+	scenes,
+	children,
+}: {
+	children: Value
+	scenes: TScene[]
+}) {
+	const newChildren = structuredClone(children)
+	const newSceneIdOrder = getChildrenSceneIdOrder(newChildren)
+	const sortedScenes = scenes.sort((a, b) => {
+		const aIdx = newSceneIdOrder[a.id] ?? -1
+		const bIdx = newSceneIdOrder[b.id] ?? -1
+		return aIdx - bIdx
+	})
+
+	return sortedScenes
 }
