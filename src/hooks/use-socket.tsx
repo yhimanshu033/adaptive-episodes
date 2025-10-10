@@ -38,6 +38,7 @@ type StartTaskParams<
 }
 
 type TSocketContext = {
+	deleteResponse: (taskId: string) => boolean
 	getResponse: <T>(taskId: string) => Promise<T>
 	startTask: <
 		BodyParamsT = TNoParams,
@@ -181,8 +182,16 @@ export const SocketProvider = ({
 		})
 	}, [])
 
+	const deleteResponse = useCallback((taskId: string) => {
+		if (responsesRef.current[taskId]) {
+			responsesRef.current[taskId] = undefined
+			return true
+		}
+		return false
+	}, [])
+
 	return (
-		<SocketContext.Provider value={{ startTask, getResponse }}>
+		<SocketContext.Provider value={{ startTask, getResponse, deleteResponse }}>
 			{children}
 		</SocketContext.Provider>
 	)
