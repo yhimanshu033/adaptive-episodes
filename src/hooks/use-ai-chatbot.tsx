@@ -2,6 +2,7 @@
 import React, {
 	createContext,
 	RefObject,
+	useCallback,
 	useContext,
 	useEffect,
 	useMemo,
@@ -9,7 +10,9 @@ import React, {
 	useState,
 } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
+import useCountdownTimer from '@/hooks/use-countdown-timer'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useThrottle } from '@/hooks/use-throttle'
 import ReviewAdded from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages/review-added'
@@ -32,7 +35,13 @@ import {
 	TDiscussion,
 } from '@/components/editor/plugins/discussion-kit'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
-import { addSFX, convertReviewResponse, minify } from '@/lib/utils/ai-chatbot'
+import {
+	addSFX,
+	convertReviewResponse,
+	minify,
+	parseSFXResponse,
+} from '@/lib/utils/ai-chatbot'
+import { track } from '@/lib/utils/analytics'
 import { parseOptimistically } from '@/lib/utils/helpers'
 import { breakDownValue, getText } from '@/lib/utils/plate'
 
@@ -54,12 +63,15 @@ type TChatbotContext = {
 	changesPending: Value | null
 	clearMessages: () => void
 	disabled: boolean
+	getProgress: (taskId?: string) => number
+	getTimeLeft: (taskId?: string) => number
 	handleKeyDown: (e: React.KeyboardEvent) => void
 	handleSendMessage: (e: React.FormEvent) => void
 	handleSuggestion: (suggestion: TStoryChatSuggestion) => void
 	input: string
 	isFocused: boolean
 	isPending: boolean
+	isTaskRunning: (taskId: string) => boolean
 	removeReview: () => void
 	setInput: React.Dispatch<React.SetStateAction<string>>
 	setIsFocused: React.Dispatch<React.SetStateAction<boolean>>
@@ -83,6 +95,9 @@ const ChatbotContext = createContext<TChatbotContext>({
 	setIsFocused: () => {},
 	textContainerRef: null as unknown as RefObject<HTMLDivElement>,
 	textareaRef: null as unknown as RefObject<HTMLTextAreaElement>,
+	getTimeLeft: () => 0,
+	getProgress: () => 0,
+	isTaskRunning: () => false,
 })
 
 export function ChatbotProvider({
@@ -110,6 +125,7 @@ export function ChatbotProvider({
 		setResponseValue,
 		setRequestedAction,
 		updateMessages,
+		updateLastMessage,
 	} = useAIStore()
 
 	const { setSidebar, setDisableDiffAcceptReject } = usePlateStore()
@@ -123,8 +139,29 @@ export function ChatbotProvider({
 	const value = useEpisodeIdContext((state) => state.acceptedDiffValue)
 	const prevValue = store((state) => state.prevValue)
 
-	const { responses, taskEnded } = useSocketStreaming()
+	const { responses, taskEnded, stopTask } = useSocketStreaming()
 	const { initialStoryData } = useEpisodeTableContext()
+
+	const {
+		start: startCountdown,
+		stop: stopCountdown,
+		reset: resetCountdown,
+		getTimeLeft,
+		getProgress,
+		isTaskRunning,
+	} = useCountdownTimer()
+
+	const countdownStoppedRef = useRef<Set<string>>(new Set())
+
+	const stopCountdownOnResponse = useCallback(
+		(taskId: string) => {
+			if (!countdownStoppedRef.current.has(taskId)) {
+				stopCountdown(taskId)
+				countdownStoppedRef.current.add(taskId)
+			}
+		},
+		[stopCountdown]
+	)
 
 	const editor = useEditorRef()
 	const { children } = useEditorState()
@@ -169,6 +206,14 @@ export function ChatbotProvider({
 		addMessages({ role: EMessenger.USER, content: input })
 		setInput('')
 		setRequestedAction(EChatMode.BLOCK)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_CHAT_PROMPT,
+				prompt: input,
+			},
+		})
 	}
 
 	const addComment = (
@@ -187,6 +232,15 @@ export function ChatbotProvider({
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_CHAT_SUGGESTION,
+				suggestionAction: suggestion.action,
+				suggestionValue: suggestion.value,
+			},
+		})
 		if (suggestion.action === EChatMode.LOCALIZE) {
 			setSidebar(ESidebar.FAR)
 			return
@@ -251,6 +305,18 @@ export function ChatbotProvider({
 		setSfxStreaming('')
 		setReviewStreaming('')
 		setBlockStreaming('')
+		resetCountdown()
+		countdownStoppedRef.current.clear()
+		if (aiChatbotMutation.data) {
+			stopTask(aiChatbotMutation.data)
+		}
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_CHAT_CANCEL,
+			},
+		})
 	}
 
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
@@ -340,6 +406,9 @@ export function ChatbotProvider({
 
 	useEffect(() => {
 		if (!isPending && aiResponse) {
+			startCountdown(aiResponse)
+			countdownStoppedRef.current.delete(aiResponse)
+
 			if (requestedAction === EChatMode.REVIEW) {
 				setOriginalChildren(children)
 				setReviewStreaming(aiResponse)
@@ -387,6 +456,8 @@ export function ChatbotProvider({
 			return
 		}
 
+		stopCountdownOnResponse(sfxStreaming)
+
 		try {
 			let parsedResponse = parseOptimistically<IndexedSFXResponse>(
 				throttledResponse.join('')
@@ -394,27 +465,23 @@ export function ChatbotProvider({
 			if (!parsedResponse) {
 				return
 			}
-			parsedResponse = parsedResponse
-				.filter((item) => {
-					const keys = Object.keys(item)
-					return keys.includes('match_string') &&
-						keys.includes('sfx') &&
-						keys.includes('id')
-						? item
-						: null
-				})
-				.filter(Boolean)
+			parsedResponse = parseSFXResponse({ throttledResponse })
 
-			if (!parsedResponse.length) {
-				return
-			}
-
-			const responseValue = addSFX(
+			const { newChildren: responseValue, sfxCount } = addSFX(
 				parsedResponse,
 				originalChildren,
 				ParagraphPlugin.key
 			)
 
+			if (!sfxCount) {
+				return
+			}
+
+			updateLastMessage({
+				meta: {
+					sfxCount,
+				},
+			})
 			setResponseValue(structuredClone(responseValue))
 			setPrevValue(structuredClone(children))
 			setDisableDiffAcceptReject(true)
@@ -451,6 +518,9 @@ export function ChatbotProvider({
 		if (!responses[reviewStreaming]) {
 			return
 		}
+
+		stopCountdownOnResponse(reviewStreaming)
+
 		try {
 			const parsedResponse =
 				parseOptimistically<IndexedCommentsResponse[]>(
@@ -495,6 +565,11 @@ export function ChatbotProvider({
 					lastIndex
 				)
 			}
+			return
+		}
+
+		if (responses[blockStreaming] && responses[blockStreaming].length > 0) {
+			stopCountdownOnResponse(blockStreaming)
 		}
 	}, [blockStreaming, taskEnded[blockStreaming], responses[blockStreaming]])
 
@@ -543,6 +618,9 @@ export function ChatbotProvider({
 		clearMessages,
 		textContainerRef,
 		textareaRef,
+		getTimeLeft,
+		getProgress,
+		isTaskRunning,
 	}
 
 	return (

@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
 import { DiffStatus } from '@/constants/ai-constants'
-import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/editor-constants'
+import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/server-constants'
 import { getCommentKey } from '@platejs/comment'
 import { computeDiff, DiffOperation, DiffUpdate } from '@platejs/diff'
 // Create a new file: src/lib/comment-helpers.ts
@@ -29,7 +29,9 @@ import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 import { ResolvedSuggestion } from '@/components/plate-ui-v2/block-suggestion'
 import { DEFAULT_COLOR } from '@/components/plate-ui/color-constants'
 import { EditorStatic } from '@/components/plate-ui/editor-static'
+import { getSceneIdOrder } from '@/lib/utils/helpers'
 
+import { TScene } from '@/types/beatsheet-editor-types'
 import { TCustomComment } from '@/types/editor-types'
 import { Selection, TDocxHTMLArgs } from '@/types/plate-types'
 
@@ -402,7 +404,15 @@ export function getCommentNode(val: Value, id: string) {
 	return { beforeText, text, afterText }
 }
 
-export function getText(val: Value, separator?: string) {
+export function getText(val: Value | string, separator: string = '\n') {
+	let value: Value
+
+	try {
+		value = typeof val === 'string' ? JSON.parse(val) : val
+	} catch {
+		return val as string
+	}
+
 	let text = ''
 	function getTextFromNode(node: Descendant) {
 		if ('text' in node) {
@@ -411,9 +421,9 @@ export function getText(val: Value, separator?: string) {
 			node.children.forEach(getTextFromNode)
 		}
 	}
-	val.forEach((node, i) => {
+	value.forEach((node, i) => {
 		if (i > 0) {
-			text += separator || '\n'
+			text += separator
 		}
 		getTextFromNode(node)
 	})
@@ -452,9 +462,13 @@ export function breakDownValue(ogVal: Value | string): Value {
 				const lastBlock = newVal[newVal.length - 1]
 				if ('text' in child) {
 					const keys = Object.keys(child)
-					const shouldExclude = keys.some((k) =>
-						EXCLUDE_BREAKDOWN_KEYS.includes(k)
-					)
+					const shouldExclude = keys.some((k) => {
+						try {
+							return EXCLUDE_BREAKDOWN_KEYS.includes(k)
+						} catch {
+							return false
+						}
+					})
 					if (!String(child.text).includes('\n') || shouldExclude) {
 						if (lastBlock && lastBlock?.type === block.type && !isNewBlock) {
 							lastBlock.children.push(child) // added child to lastBlock
@@ -719,15 +733,16 @@ export function updateNodesWithStartKeys(
 }
 
 export function keyNodeOperationOnce(
-	children: Value,
+	ogChildren: Value,
 	key: string,
 	foundNodeOperation: (node: Descendant) => Descendant,
 	nodeOperation: (node: Descendant) => Descendant = (node) => node
 ) {
 	if (!key) {
-		return children
+		return ogChildren
 	}
 
+	const children = structuredClone(ogChildren)
 	let found = false
 	const traverse = (node: Descendant) => {
 		if (key in node) {
@@ -1061,4 +1076,85 @@ export async function valueToHTML({
 
 	const base64String = btoa(unescape(encodeURIComponent(html)))
 	return { base64String, html, title }
+}
+
+export function getTextFromTextOrValue(content: string) {
+	const jsonContent = jsonify(content)
+
+	if (typeof jsonContent === 'string') {
+		return content
+	}
+
+	return getText(jsonContent)
+}
+
+export function getPlaceholderContent(content: string) {
+	return [
+		{
+			type: 'p',
+			children: [
+				{
+					text: content,
+				},
+			],
+		},
+	] as Value
+}
+
+export function getPlaceholderContentFromTextOrValue(content: string = '') {
+	const textContent = getTextFromTextOrValue(content)
+
+	return getPlaceholderContent(textContent)
+}
+
+export function reorderChildrenBasedOnScenes({
+	children,
+	scenes,
+}: {
+	children: Value
+	scenes: TScene[]
+}) {
+	const sceneIdOrder = getSceneIdOrder(scenes)
+	const newChildren = structuredClone(children)
+
+	const sortedEditorChildren = newChildren.sort((a, b) => {
+		const aIdx = sceneIdOrder[a.scene_id as string] ?? -1
+		const bIdx = sceneIdOrder[b.scene_id as string] ?? -1
+		return aIdx - bIdx
+	})
+
+	return sortedEditorChildren
+}
+
+export function getChildrenSceneIdOrder(children: Value) {
+	return children.reduce(
+		(acc, curr, currIdx) => {
+			if (!curr.scene_id) {
+				return acc
+			}
+			return {
+				...acc,
+				[curr.scene_id as string]: currIdx,
+			}
+		},
+		{} as Record<string, number>
+	)
+}
+
+export function reorderScenesBasedOnChildren({
+	scenes,
+	children,
+}: {
+	children: Value
+	scenes: TScene[]
+}) {
+	const newChildren = structuredClone(children)
+	const newSceneIdOrder = getChildrenSceneIdOrder(newChildren)
+	const sortedScenes = scenes.sort((a, b) => {
+		const aIdx = newSceneIdOrder[a.id] ?? -1
+		const bIdx = newSceneIdOrder[b.id] ?? -1
+		return aIdx - bIdx
+	})
+
+	return sortedScenes
 }

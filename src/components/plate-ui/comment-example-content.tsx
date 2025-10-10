@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { AI_AVATAR } from '@/constants/editor-constants'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { StopIcon } from '@/icons/stop-icon'
@@ -7,6 +8,8 @@ import useAIStore from '@/store/ai-store'
 import useShowExampleVisibility from '@/store/comment-store'
 import { useTranslations } from 'next-intl'
 import { useShallow } from 'zustand/react/shallow'
+
+import { track } from '@/lib/utils/analytics'
 
 import { Avatar, AvatarImage } from '../aural-ui/avatar'
 import { Button } from '../aural-ui/button'
@@ -50,6 +53,18 @@ const CommentExampleContent = ({
 		}
 		return responses[key] || []
 	}, [comment.userId, key, responses])
+
+	function handleStopTask() {
+		stopTask(key)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.COMMENT_EXAMPLE_CANCEL,
+				flowId: key,
+			},
+		})
+	}
 
 	useEffect(() => {
 		const block = document.getElementById(`example-data-${comment.id}`)
@@ -129,7 +144,7 @@ const CommentExampleContent = ({
 								className="!w-fit"
 								size="sm"
 								innerClassName="!w-fit !pb-0"
-								onClick={() => stopTask(key)}
+								onClick={handleStopTask}
 							>
 								Stop
 							</Button>

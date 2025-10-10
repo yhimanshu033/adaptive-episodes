@@ -18,7 +18,7 @@ export const rephraseMethods = [
 	{ id: 'dialog', method: 'Dialog', status: 'Dialogizing...' },
 	{ id: 'stylize', method: 'Stylize', status: 'Rewriting... (Stylize)' },
 	{ id: 'custom', method: 'Prompt', status: 'Running custom prompt...' },
-]
+] as const
 
 export const storyChatSuggestions: Array<
 	TStoryChatSuggestion & {
@@ -101,6 +101,7 @@ export const BASE_SCRIPT_EDITOR_ID = 'base-script-editor'
 export const NOTE_EDITOR_BASE_ID = 'notes-editor'
 export const DIFF_EDITOR_ID = 'diff-editor'
 export const LOCAL_DIFF_EDITOR_ID = 'local-diff-editor'
+export const DUAL_VIEW_EDITOR_ID = 'dual-view-editor'
 
 export const LINES = 30
 
@@ -153,8 +154,6 @@ export const FAR_FILTER_OPTIONS = [
 ]
 
 export const SAVE_EPISODE_BUTTON_ID = 'save-episode-button'
-
-export const EXCLUDE_BREAKDOWN_KEYS = ['laser']
 
 export const DEFAULT_NAVIGATION_PAGE_LIMIT = 25
 

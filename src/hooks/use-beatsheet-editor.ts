@@ -1,5 +1,8 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
+import { useUndoRedo } from '@/hooks/use-undo-redo'
+import { TrashIcon } from '@/icons/trash-icon'
 import useBeatsheetStore from '@/store/beatsheet-store'
+import { popup } from '@/store/popup-store'
 import {
 	CollisionDetection,
 	DragEndEvent,
@@ -12,13 +15,20 @@ import {
 	useSensors,
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import { LucideIcon } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
+import { shouldTriggerContentReorder } from '@/lib/utils/helpers'
+import {
+	reorderChildrenBasedOnScenes,
+	reorderScenesBasedOnChildren,
+} from '@/lib/utils/plate'
+
 import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
 
-const useBeatSheetEditor = () => {
+const useBeatSheetEditorUtil = () => {
 	const editor = useEditorRef()
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -33,13 +43,19 @@ const useBeatSheetEditor = () => {
 		setActiveDragItem,
 		setScenes,
 		setOpenSceneIds,
+		setOldScenes,
 	} = useBeatsheetStore()
 
 	const scenes = beatsheetStore(useShallow((state) => state.scenes))
+	const oldScenes = beatsheetStore(useShallow((state) => state.oldScenes))
 	const activeDragItem = beatsheetStore(
 		useShallow((state) => state.activeDragItem)
 	)
 	const openSceneIds = beatsheetStore(useShallow((state) => state.openSceneIds))
+	const { redo, undo, reset, canRedo, canUndo } = useUndoRedo(scenes, {
+		startIndex: 1,
+	})
+	const isInitiallyReorderedRef = useRef(false)
 
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
 		const scene = scenes.find((s) => s.id === sceneId)
@@ -140,11 +156,9 @@ const useBeatSheetEditor = () => {
 			const newSceneOrder = arrayMove(scenes, oldIndex, newIndex)
 			setScenes(newSceneOrder)
 
-			const sceneIdOrder = newSceneOrder.map((scene) => scene.id)
-			const sortedEditorChildren = [...editor.children].sort((a, b) => {
-				const aIdx = sceneIdOrder.indexOf(a.scene_id as string)
-				const bIdx = sceneIdOrder.indexOf(b.scene_id as string)
-				return aIdx - bIdx
+			const sortedEditorChildren = reorderChildrenBasedOnScenes({
+				children: editor.children,
+				scenes: newSceneOrder,
 			})
 			editor.tf.setValue(sortedEditorChildren)
 		}
@@ -243,6 +257,45 @@ const useBeatSheetEditor = () => {
 		return text
 	}
 
+	const handleHistoryScenes = useCallback(
+		(newScenes: typeof scenes) => {
+			const shouldReorder = shouldTriggerContentReorder(scenes, newScenes)
+			if (shouldReorder) {
+				const sortedEditorChildren = reorderChildrenBasedOnScenes({
+					children: editor.children,
+					scenes: newScenes,
+				})
+				editor.tf.setValue(sortedEditorChildren)
+			}
+			setScenes(newScenes)
+		},
+		[scenes, setScenes, editor.children, editor.tf]
+	)
+
+	const handleUndo = useCallback(() => {
+		const previousScenes = undo()
+		handleHistoryScenes(previousScenes)
+	}, [undo, handleHistoryScenes])
+
+	const handleRedo = useCallback(() => {
+		const nextScenes = redo()
+		handleHistoryScenes(nextScenes)
+	}, [redo, handleHistoryScenes])
+
+	const handleReset = useCallback(() => {
+		popup({
+			title: 'Do you want to undo all your changes in the Beat Sheet Editor?',
+			description:
+				'All the reordering, edits, deletes, and inserts will be lost!',
+			icon: TrashIcon as LucideIcon,
+			type: 'negative',
+			onConfirm: () => {
+				const resetScenes = reset()
+				handleHistoryScenes(resetScenes)
+			},
+		})
+	}, [reset, handleHistoryScenes])
+
 	useEffect(() => {
 		const nodeEntries = [
 			...editor.api.nodes({
@@ -263,6 +316,31 @@ const useBeatSheetEditor = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [openSceneIds])
 
+	useEffect(() => {
+		if (oldScenes.length) {
+			return
+		}
+		setOldScenes(scenes)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [scenes, oldScenes])
+
+	useEffect(() => {
+		if (isInitiallyReorderedRef.current || !scenes.length) {
+			return
+		}
+		const newScenes = reorderScenesBasedOnChildren({
+			children: editor.children,
+			scenes,
+		})
+		setScenes(newScenes)
+		isInitiallyReorderedRef.current = true
+
+		return () => {
+			isInitiallyReorderedRef.current = false
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [scenes])
+
 	return {
 		sensors,
 		handleInput,
@@ -273,7 +351,14 @@ const useBeatSheetEditor = () => {
 		handleDragOver,
 		fixCursorSnapOffset,
 		getSceneText,
+		handleUndo,
+		handleRedo,
+		handleReset,
+		canRedo,
+		canUndo,
+		oldScenes,
+		setOldScenes,
 	}
 }
 
-export default useBeatSheetEditor
+export default useBeatSheetEditorUtil

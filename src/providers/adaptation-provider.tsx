@@ -15,7 +15,12 @@ import {
 } from '@/lib/utils/helpers'
 import { getRecentStore } from '@/lib/utils/indexed-db'
 
-import { ELanguage, LSMappingOutput, TSourceLanguage } from '@/types/common'
+import {
+	ELanguage,
+	LSMappingOutputItemV2,
+	LSMappingSequenceData,
+	TSourceLanguage,
+} from '@/types/common'
 import { TEpisode } from '@/types/episode-type'
 import { TStory } from '@/types/story-types'
 
@@ -27,11 +32,14 @@ function useAdaptationUtil() {
 		useState<ELanguage>(ELanguage.GERMAN)
 
 	const [storyData, setStory] = useState<TStory | null>()
-	const [tableData, setTableData] = useState<LSMappingOutput['ls_mapping']>([])
+	const [tableData, setTableData] = useState<LSMappingOutputItemV2>({})
 	const [isFetchingLSSheet, setFetchingLSSheet] = useState<boolean>(false)
 	const [isEpisodeAdaptation, setEpisodeAdaptation] = useState<boolean>(false)
 	const [llmModel, setLLMModel] = useState<ELLMModel>(ELLMModel.HYBRID)
 	const [abort, setAbort] = useState(false)
+	const [sequence, setSequence] = useState<
+		LSMappingSequenceData['sequence_ls']
+	>({})
 	const abortControllerRef = useRef<AbortController | null>(null)
 
 	const {
@@ -54,7 +62,7 @@ function useAdaptationUtil() {
 		if (sendLSPending) {
 			return 2
 		}
-		if (data?.ls_mapping || tableData.length) {
+		if (data?.ls_mapping || Object.keys(tableData).length) {
 			return 3
 		}
 		if (isPending || isFetchingLSSheet) {
@@ -102,7 +110,7 @@ function useAdaptationUtil() {
 	const resetMutations = useCallback(() => {
 		reset()
 		resetSendLS()
-		setTableData([])
+		setTableData({})
 	}, [reset, resetSendLS, setTableData])
 
 	useEffect(() => {
@@ -115,8 +123,10 @@ function useAdaptationUtil() {
 		if (!data) {
 			return
 		}
-		setTableData(parseInputLSMapping(data))
-	}, [data, setTableData])
+		const { data: tableData, sequence } = parseInputLSMapping(data)
+		setTableData(tableData)
+		setSequence(sequence || {})
+	}, [data, setTableData, setSequence])
 
 	useEffect(() => {
 		resetMutations()
@@ -190,6 +200,8 @@ function useAdaptationUtil() {
 		setOpenExitDialog,
 		setAbort,
 		isFetchingLSSheet,
+		setSequence,
+		sequence,
 	}
 }
 

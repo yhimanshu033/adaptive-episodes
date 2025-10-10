@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import useLSSheetQuery from '@/hooks/mutation/use-ls-sheet'
 import { CrossIcon } from '@/icons/cross-icon'
-import LSTableEditor from '@/page-builders/episodes/dialogs/ls-editor'
+import LsTabs from '@/page-builders/episodes/dialogs/ls-tabs'
 import { Table2 } from 'lucide-react'
 
 import {
@@ -16,17 +17,38 @@ import {
 import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import IfElse, { Else, If } from '@/components/if-else'
 import { ToolbarButton } from '@/components/plate-ui/toolbar'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { track } from '@/lib/utils/analytics'
 import { parseInputLSMapping } from '@/lib/utils/helpers'
 
 export default function ViewLS() {
 	const { data } = useLSSheetQuery()
+	const { initialStoryData } = useEpisodeTableContext()
+
+	const parsedData = useMemo(() => {
+		if (!data) {
+			return
+		}
+		return parseInputLSMapping(data)
+	}, [data])
+
+	const handleClick = useCallback(() => {
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.VIEW_LS,
+			},
+		})
+	}, [])
+
 	if (!data) {
 		return null
 	}
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<ToolbarButton tooltip="View LS Sheet">
+				<ToolbarButton onClick={handleClick} tooltip="View LS Sheet">
 					<Table2 />
 				</ToolbarButton>
 			</DialogTrigger>
@@ -34,7 +56,7 @@ export default function ViewLS() {
 				showCloseButton={false}
 				noise="none"
 				opacity="high"
-				className="bg-fm-divider-secondary-alpha-80/50 h-[80vh] min-w-[90vw] gap-0 p-0 pb-6"
+				className="bg-fm-divider-secondary-alpha-80/50 h-[80vh] min-w-[90vw] gap-0 overflow-y-auto p-0 pb-6"
 			>
 				<DialogHeader>
 					<DialogTitle className="flex items-center justify-between gap-4 px-6 py-4">
@@ -50,11 +72,14 @@ export default function ViewLS() {
 						</DialogClose>
 					</DialogTitle>
 				</DialogHeader>
-				<IfElse condition={!!data?.ls_mapping}>
+				<IfElse condition={!!parsedData?.data}>
 					<If>
-						<LSTableEditor
-							tableData={data ? parseInputLSMapping(data) : []}
+						<LsTabs
+							tableData={parsedData?.data || {}}
 							viewOnly
+							sequence={parsedData?.sequence || {}}
+							story={initialStoryData}
+							visibleRows={9}
 						/>
 					</If>
 					<Else>

@@ -1,4 +1,5 @@
 import React from 'react'
+import RunNWMButton from '@/page-builders/plate-editor/buttons/run-nwm'
 import SyncMetaData from '@/page-builders/plate-editor/buttons/sync-metadata'
 import useAIStore from '@/store/ai-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -52,6 +53,8 @@ export function CheckboxDropdown({ children }: { children: React.ReactNode }) {
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
 			<DropdownMenuContent align="start" className="w-fit">
 				<SyncMetaData />
+				<div className="h-1" />
+				<RunNWMButton />
 				<List size="sm" className="bg-fm-surface-frosted/20 pt-2">
 					{checkboxItems.map(({ key, label, checked }, index) => (
 						<React.Fragment key={`ai-checkbox-item-${index}`}>

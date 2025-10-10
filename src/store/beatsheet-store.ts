@@ -61,6 +61,10 @@ export default function useBeatsheetStore() {
 		useBeatsheetStoreContext.setState({ scenes })
 	}
 
+	const setOldScenes = (oldScenes: BeatsheetEditorStoreType['oldScenes']) => {
+		useBeatsheetStoreContext.setState({ oldScenes })
+	}
+
 	const setActiveDragItem = (
 		activeDragItem: BeatsheetEditorStoreType['activeDragItem']
 	) => {
@@ -69,6 +73,12 @@ export default function useBeatsheetStore() {
 
 	const setOpenSceneIds = (openSceneIds: string[]) => {
 		useBeatsheetStoreContext.setState({ openSceneIds })
+	}
+
+	const setCharacters = (
+		characters: BeatsheetEditorStoreType['characters']
+	) => {
+		useBeatsheetStoreContext.setState({ characters })
 	}
 
 	const addNewCharacter = () => {
@@ -133,5 +143,7 @@ export default function useBeatsheetStore() {
 		setEnhancementPlan,
 		deleteCharacter,
 		setOpenPromptId,
+		setCharacters,
+		setOldScenes,
 	}
 }

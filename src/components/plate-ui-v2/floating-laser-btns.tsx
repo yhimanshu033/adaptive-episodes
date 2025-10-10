@@ -1,10 +1,12 @@
 import React from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { rephraseMethods } from '@/constants/editor-constants'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import useLaserStore from '@/store/laser-store'
+import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { nanoid } from 'nanoid'
 import { Value } from 'platejs'
-import { useEditorRef } from 'platejs/react'
+import { useEditorRef, usePluginOption } from 'platejs/react'
 import type { Range } from 'slate'
 
 import {
@@ -15,6 +17,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
+import { track } from '@/lib/utils/analytics'
 import { mergeBlocks } from '@/lib/utils/plate'
 
 import { MarkToolbarButton } from './mark-toolbar-button'
@@ -22,6 +25,12 @@ import { MarkToolbarButton } from './mark-toolbar-button'
 export default function FloatingLaserBtns() {
 	const editor = useEditorRef()
 	const { setActiveLaser, setPromptActive } = useLaserStore()
+
+	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
+
+	if (isSuggesting) {
+		return null
+	}
 
 	return (
 		<DropdownMenu modal={false}>
@@ -46,8 +55,9 @@ export default function FloatingLaserBtns() {
 							onClick={() => {
 								const children = structuredClone(editor.children)
 								let newChildren: Value = children
+								const id = nanoid()
 								if (method.id === 'custom') {
-									const key = `floating-prompt-id-${nanoid()}`
+									const key = `floating-prompt-id-${id}`
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
@@ -56,7 +66,7 @@ export default function FloatingLaserBtns() {
 									document.getElementById('prompt-input')?.focus()
 									setPromptActive(key)
 								} else {
-									const key = `laser-id-${nanoid()}`
+									const key = `laser-id-${id}`
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
@@ -69,6 +79,15 @@ export default function FloatingLaserBtns() {
 									setActiveLaser(key)
 								}
 								editor.tf.setValue(newChildren)
+								track({
+									event: EVENT_TYPE.BUTTON_CLICK,
+									screenName: SCREEN_NAME.EPISODE_EDITOR,
+									metaData: {
+										action: ACTION.LASER_START,
+										method: method.id,
+										flowId: id,
+									},
+								})
 							}}
 						>
 							{method.method}

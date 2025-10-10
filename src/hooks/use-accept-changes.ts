@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import { useCallback } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import useSaveEpisode from '@/hooks/use-save-episode'
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
@@ -7,6 +8,7 @@ import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
+import { track } from '@/lib/utils/analytics'
 import { breakDownValue, getAcceptedDiffValue } from '@/lib/utils/plate'
 
 import { EAction, EMessenger } from '@/types/ai-types'
@@ -24,6 +26,14 @@ export default function useAcceptChanges() {
 	const { handleSave } = useSaveEpisode()
 
 	function handleAccept(i: number, all: boolean = true, isSfx: boolean = true) {
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.SFX_ACCEPT,
+				all,
+			},
+		})
 		handleAcceptResponse(all, isSfx)
 		updateMessages(
 			{

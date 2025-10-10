@@ -106,13 +106,15 @@ export const API_URLS = {
 	GET_SLACK_CHANNEL: '/project/:projectId/get-slack-channel-info/',
 	SEND_TASK_TO_ADAPTATION: '/project/send-task-to-adaptation',
 	GET_ADAPTATION_LS: '/project/:projectId/:language/get_ls_sheet',
-	GET_STORY_DETAILS: '/projects/:storyId',
+	GET_STORY_DETAILS: '/projects/:storyId/',
 	GET_DOC_EPISODE_COUNT: '/project/get-episode-count/',
 	BULK_EPISODE_DOWNLOAD: '/project/:projectId/download/',
 	BEATSHEET_GENERATE: '/aicopilot/bse',
 	BULK_PROMPT_SEND: '/project/:projectId/prompt/',
 	GET_SCENES_METADATA: '/scenes/metadata/',
 	SCENE_PROMPT_GENERATE: '/aicopilot/bse/scene_wide',
+	EPISODE_REGENERATE: '/aicopilot/nwm-extraction-pipeline/',
+	CHAPTER_CHARACTERS: '/chapters/characters/',
 }
 
 export const INDEXED_DB_KEYS = {
@@ -149,3 +151,23 @@ export const SAMPLE_DOC_LINK =
 	'https://docs.google.com/document/d/1i5s7OX9vmkLPw96htixpPs_xGZlk73NbqvVAVw9zHME/edit?usp=sharing'
 
 export const FETCHED_BUILD_VERSION_KEY = 'fetchedBuildVersion'
+
+export const SOCKET_STREAMING_TIMEOUT = 60000 //1 minute
+export const FETCH_TIMEOUT = 10000 //10 seconds
+
+export const MAX_SOCKET_RETRIES = 5
+export const SOCKET_ERROR_TOAST_ID = 'socket-connection-error'
+
+export const CORRELATION_ID_HEADER_KEY = 'X-Correlation-ID'
+
+export const COMMON_SITE_HEADERS = {
+	'X-Source': 'COPILOT_WEB',
+}
+
+export const IGNORE_ERROR_API_URLS = new Set([
+	API_URLS.GET_BASE_SCRIPT_EXTENSION,
+	API_URLS.GET_ADAPTATION_LS,
+	API_URLS.GET_LOC_SHEET,
+])
+
+export const NWM_EMAIL = 'NWM_REGENERATION_WORKER'

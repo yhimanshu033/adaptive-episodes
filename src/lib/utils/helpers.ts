@@ -1,13 +1,17 @@
-import { NextRequest } from 'next/server'
-import { AVAILABLE_TARGET_LANGUAGES } from '@/constants/ai-constants'
-import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
+import {
+	AVAILABLE_TARGET_LANGUAGES,
+	LSMappingTabs,
+} from '@/constants/ai-constants'
+import {
+	beatSheetEditorAllowedProjects,
+	DEFAULT_NAVIGATION_PAGE_LIMIT,
+} from '@/constants/editor-constants'
 import {
 	PRIMARY_KEYS_TO_COMPARE,
 	prioritizedStatuses,
 	PROPS_KEYS_TO_COMPARE,
 } from '@/constants/episodes-constants'
-import { API_URLS, roleToData } from '@/constants/global-constants'
-import { MANAGE_PROJECT } from '@/constants/route-constants'
+import { roleToData } from '@/constants/global-constants'
 import { EImportStatus } from '@/constants/story-constants'
 import { Locale } from '@/i18n/config'
 import { match } from '@formatjs/intl-localematcher'
@@ -20,7 +24,8 @@ import Negotiator from 'negotiator'
 import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
 
-import { ERole, SessionData, UserProject } from '@/types/admin-types'
+import { ERole } from '@/types/admin-types'
+import { TCharacter, TScene } from '@/types/beatsheet-editor-types'
 import {
 	BASE_STATUS,
 	EEpisodeType,
@@ -28,8 +33,11 @@ import {
 	ELSMappingType,
 	EStatus,
 	LSMappingInput,
-	LSMappingOutput,
+	LSMappingInputItem,
 	LSMappingOutputItem,
+	LSMappingOutputItemV2,
+	LSMappingSequenceData,
+	LSMappingSequenceField,
 	STATUS_ORDER,
 } from '@/types/common'
 import {
@@ -42,6 +50,7 @@ import {
 import {
 	SaveEpisodeParams,
 	TEpisode,
+	TGetChapterCharactersResponse,
 	TGetEpisodeResponse,
 	TGetEpisodesResponse,
 } from '@/types/episode-type'
@@ -520,34 +529,6 @@ export function downloadBlob(blob: Blob, fileName: string) {
 	URL.revokeObjectURL(url)
 }
 
-export async function projectAdminCheck(
-	req: NextRequest,
-	session: SessionData
-) {
-	let data: { projects: UserProject[] } | null = null
-	try {
-		data = (await fetch(
-			`${process.env.NEXT_PUBLIC_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
-			{
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.accessToken}`,
-				},
-			}
-		).then((res) => res.json())) as { projects: UserProject[] }
-	} catch (error) {
-		console.error('Error fetching user projects:', error)
-	}
-	const projectId = req.nextUrl.pathname.match(MANAGE_PROJECT)?.[1] || null
-	return data && projectId
-		? data?.projects?.some(
-				(project) =>
-					project.project.id === Number(projectId) &&
-					project.role === ERole.ADMIN
-			)
-		: false
-}
-
 export function sortOpenedStories(openedIds: number[], projects: TStory[]) {
 	const sortedProjects = [...projects].sort((a, b) => {
 		// Check if either story has "Importing" status
@@ -729,20 +710,69 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	return result
 }
 
-export function parseInputLSMapping(input: LSMappingInput) {
-	const tableItems: LSMappingOutputItem[] = Object.entries(
-		input.ls_mapping
-	).map(([key, value]) => ({
-		original_name: key,
-		...value,
-	}))
+export function sortInputLSMapping(
+	input: LSMappingOutputItemV2
+): LSMappingOutputItemV2 {
+	const sheets = Object.keys(input)
+	for (const sheet of sheets) {
+		const items = input[sheet]
+		input[sheet] = items.sort((a, b) => {
+			const aIdValue = a['ID'] || a['id'] || a['Id']
+			const bIdValue = b['ID'] || b['id'] || b['Id']
+			const aTypeValue = a['TYPE'] || a['type'] || a['Type']
+			const bTypeValue = b['TYPE'] || b['type'] || b['Type']
 
-	return tableItems
+			if (aIdValue && bIdValue) {
+				// sort by first splitting _ and then aSplit[0]<bSplit[0] would be first and after that Number(aSplit[1])<Number(bSplit[1]) would come first
+				const [aPrefix = '', aNum = ''] = String(aIdValue).split('_')
+				const [bPrefix = '', bNum = ''] = String(bIdValue).split('_')
+
+				if (aPrefix !== bPrefix) {
+					return aPrefix.localeCompare(bPrefix)
+				}
+
+				return Number(aNum) - Number(bNum)
+			}
+
+			if (aTypeValue && bTypeValue) {
+				// reverse sort by aTypeValue and bTypeValue
+				return String(bTypeValue).localeCompare(String(aTypeValue))
+			}
+
+			// default
+			return 0
+		})
+	}
+	return input
 }
 
-export function parseOutputLSMapping(
-	data: Partial<LSMappingOutput['ls_mapping']>
-) {
+export function parseInputLSMapping(input: LSMappingInput): {
+	data: LSMappingOutputItemV2
+	sequence?: LSMappingSequenceData['sequence_ls']
+} {
+	const parsedInput = Object.fromEntries(
+		Object.entries(input.ls_mapping).map(([section, items]) => {
+			if (section === LSMappingSequenceField) {
+				return [section, items]
+			}
+			return [
+				section,
+				Object.entries(items).map(([original_name, item]) => ({
+					original_name,
+					...item,
+				})),
+			]
+		})
+	) as {
+		[LSMappingSequenceField]: LSMappingSequenceData['sequence_ls']
+	} & LSMappingOutputItemV2
+
+	const { sequence_ls: sequence, ...rest } = parsedInput
+
+	return { data: sortInputLSMapping(rest), sequence }
+}
+
+export function parseOutputLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	return data.map((item) => {
 		if (item?.type !== ELSMappingType.PERSON) {
 			delete item?.gender
@@ -751,9 +781,7 @@ export function parseOutputLSMapping(
 	})
 }
 
-export function isInvalidLSMapping(
-	data: Partial<LSMappingOutput['ls_mapping']>
-) {
+export function isInvalidLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	return data.some(
 		(item) =>
 			!item?.original_name?.trim() ||
@@ -761,6 +789,32 @@ export function isInvalidLSMapping(
 			!item?.type ||
 			(item?.type === ELSMappingType.PERSON && !item?.gender)
 	)
+}
+
+export const migrateOldLSMapping = (
+	data?:
+		| LSMappingInput
+		| {
+				ls_mapping: LSMappingInputItem
+		  }
+		| null
+): LSMappingInput | null => {
+	if (!data) {
+		return null
+	}
+	const lsKeys = Object.keys(data.ls_mapping)
+	if (
+		LSMappingTabs.some((tab) =>
+			lsKeys.some((key) => key.toLowerCase().trim() === tab)
+		)
+	) {
+		return data as LSMappingInput
+	}
+	return {
+		ls_mapping: {
+			[LSMappingTabs[0]]: data.ls_mapping as LSMappingInputItem,
+		},
+	}
 }
 
 export function isInternalUser(session: Session | null) {
@@ -997,4 +1051,144 @@ export const checkForDuplicates = (existingFiles: File[], newFiles: File[]) => {
 	})
 
 	return duplicates
+}
+
+export function hasNWMRan(ep?: TEpisode) {
+	if (!ep?.props) {
+		return false
+	}
+	if (beatSheetEditorAllowedProjects.includes(Number(ep.project))) {
+		return true
+	}
+	return 'nwm_running' in ep.props
+}
+
+export function parseCSVRow(row: string): string[] {
+	const result: string[] = []
+	let current = ''
+	let inQuotes = false
+	let i = 0
+
+	while (i < row.length) {
+		const char = row[i]
+
+		if (char === '"') {
+			if (inQuotes && row[i + 1] === '"') {
+				current += '"'
+				i += 2
+			} else {
+				inQuotes = !inQuotes
+				i++
+			}
+		} else if (char === ',' && !inQuotes) {
+			result.push(current.trim())
+			current = ''
+			i++
+		} else {
+			current += char
+			i++
+		}
+	}
+
+	result.push(current.trim())
+	return result
+}
+
+export function parseCSV(text: string): string[][] {
+	const rows: string[] = []
+	let currentRow = ''
+	let inQuotes = false
+	let i = 0
+
+	while (i < text.length) {
+		const char = text[i]
+
+		if (char === '"') {
+			if (inQuotes && text[i + 1] === '"') {
+				currentRow += '"'
+				i += 2
+			} else {
+				inQuotes = !inQuotes
+				currentRow += char
+				i++
+			}
+		} else if (char === '\n' && !inQuotes) {
+			if (currentRow.trim()) {
+				rows.push(currentRow)
+			}
+			currentRow = ''
+			i++
+		} else {
+			currentRow += char
+			i++
+		}
+	}
+
+	if (currentRow.trim()) {
+		rows.push(currentRow)
+	}
+
+	return rows.map((row) => parseCSVRow(row))
+}
+
+export function sanitize<T>(data: T) {
+	return JSON.parse(JSON.stringify(data)) as T
+}
+
+export function convertChapterCharactersResponse(
+	data: TGetChapterCharactersResponse
+): TCharacter[] {
+	if (!data?.result) {
+		return []
+	}
+	return data.result.map((item, idx) => {
+		return {
+			...item,
+			id: String(idx),
+			name: item.canonical_name,
+		} as TCharacter
+	})
+}
+
+export function getSceneIdOrder(newSceneOrder: TScene[]) {
+	return newSceneOrder.reduce(
+		(acc, curr, currIdx) => {
+			return {
+				...acc,
+				[curr.id]: currIdx,
+			}
+		},
+		{} as Record<string, number>
+	)
+}
+export function shouldTriggerContentReorder(a: TScene[], b: TScene[]): boolean {
+	// Compare order
+	for (let i = 0; i < a.length; i++) {
+		if (a[i].id !== b[i]?.id) {
+			return true
+		} // order differs
+	}
+	return false
+}
+
+export function isOrderSceneOrderChange(a: TScene[], b: TScene[]) {
+	for (let i = 0; i < a?.length; i++) {
+		for (let j = 0; j < (a?.[i]?.beats?.length || 0); j++) {
+			if (a[i]?.beats?.[j]?.id !== b[i]?.beats?.[j]?.id) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+export function convertScenesArrayToMap(
+	scenes: TScene[]
+): Record<string, TScene> {
+	return scenes.reduce((acc, curr) => {
+		return {
+			...acc,
+			[curr.id]: curr,
+		}
+	}, {})
 }

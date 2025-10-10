@@ -1,20 +1,10 @@
-import React, { memo, useCallback, useMemo } from 'react'
+import React, { memo, useMemo, useRef } from 'react'
 import { EXCLUDED_HEADERS_LS_SHEET } from '@/constants/episodes-constants'
-import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
-import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
-import { DownloadIcon } from '@/icons/download-icon'
-import { PlusIcon } from '@/icons/plus-icon'
-import { UploadIcon } from '@/icons/upload-icon'
-import LSEditorRow from '@/page-builders/episodes/dialogs/ls-editor-row'
-import { toast } from 'sonner'
+import LSEditorRowV2 from '@/page-builders/episodes/dialogs/ls-editor-row-v2'
+import { useVirtualizer } from '@tanstack/react-virtual'
 
-import { Button } from '@/components/aural-ui/button'
-import { Divider } from '@/components/aural-ui/divider'
-import {
-	IconButton,
-	iconButtonVariants,
-} from '@/components/aural-ui/icon-button'
 import { If } from '@/components/aural-ui/if-else'
+import { ScrollArea, ScrollBar } from '@/components/aural-ui/scroll-area'
 import {
 	Table,
 	TableBody,
@@ -23,61 +13,65 @@ import {
 	TableRow,
 } from '@/components/aural-ui/table'
 import ForEach from '@/components/ui/for-each'
-import { TooltipComponent } from '@/components/ui/tooltip-component'
-import { downloadBlobUrl } from '@/lib/utils/client-helpers'
-import {
-	cn,
-	isInvalidLSMapping,
-	parseOutputLSMapping,
-	toSnakeCase,
-} from '@/lib/utils/helpers'
 
-import {
-	ELSMappingGender,
-	ELSMappingType,
-	LSMappingOutput,
-	LSMappingOutputItem,
-} from '@/types/common'
+import { LSMappingOutputItem } from '@/types/common'
 
+const ROW_HEIGHT = 76
+const COL_WIDTH = 180
+
+interface LSTableEditorProps {
+	columnSequence?: string[]
+	setTableData?: (data: LSMappingOutputItem[]) => void
+	tableData?: LSMappingOutputItem[]
+	viewOnly?: boolean
+	visibleRows?: number
+}
 const LSTableEditor = memo(
 	({
 		tableData = [],
 		setTableData = () => {},
-		onSubmit = () => {},
-		handleClose = () => {},
 		viewOnly = false,
-	}: {
-		handleClose?: () => void
-		onSubmit?: (data: LSMappingOutput) => void
-		setTableData?: React.Dispatch<
-			React.SetStateAction<LSMappingOutput['ls_mapping']>
-		>
-		tableData?: LSMappingOutput['ls_mapping']
-		viewOnly?: boolean
-	}) => {
-		const disabled = useMemo(() => isInvalidLSMapping(tableData), [tableData])
-
-		const keys = useMemo(() => Object.keys(tableData[0] || {}), [tableData])
-
-		const handleSubmit = useCallback(() => {
-			if (isInvalidLSMapping(tableData)) {
-				return
-			}
-			const refinedTableData = parseOutputLSMapping(tableData)
-			onSubmit({ ls_mapping: refinedTableData })
-		}, [tableData, onSubmit])
-
-		const addNewRow = () => {
-			setTableData([
-				...tableData,
-				{
-					original_name: '',
-					localised_name: '',
-					type: ELSMappingType.PERSON,
-					gender: ELSMappingGender.MALE,
+		columnSequence = [],
+		visibleRows = 6,
+	}: LSTableEditorProps) => {
+		const columnSequenceMap = useMemo(() => {
+			return columnSequence.reduce(
+				(acc, curr, currIdx) => {
+					return {
+						...acc,
+						[curr]: currIdx,
+					}
 				},
-			])
-		}
+				{} as Record<string, number>
+			)
+		}, [columnSequence])
+
+		const keys = useMemo(() => {
+			const cols = Object.keys(tableData[0] || {})
+			return cols.sort((a, b) => {
+				const aIdx =
+					a in columnSequenceMap
+						? columnSequenceMap[a]
+						: Number.MAX_SAFE_INTEGER
+				const bIdx =
+					b in columnSequenceMap
+						? columnSequenceMap[b]
+						: Number.MAX_SAFE_INTEGER
+				return aIdx - bIdx
+			})
+		}, [tableData, columnSequenceMap])
+		const parentRef = useRef<HTMLDivElement>(null)
+
+		const keysToDisplay = useMemo(() => {
+			return keys.filter((key) => !EXCLUDED_HEADERS_LS_SHEET.includes(key))
+		}, [keys])
+
+		const virtualizer = useVirtualizer({
+			count: tableData.length,
+			getScrollElement: () => parentRef.current,
+			estimateSize: () => ROW_HEIGHT, // Estimated row height
+			overscan: 5, // Number of items to render outside of the visible area
+		})
 
 		const removeRow = (index: number) => {
 			setTableData(tableData.filter((_, i) => i !== index))
@@ -88,172 +82,82 @@ const LSTableEditor = memo(
 			field: keyof LSMappingOutputItem,
 			value: string | boolean
 		) => {
-			setTableData((prev) => {
-				const updatedData = [...prev]
-				updatedData[index] = {
-					...updatedData[index],
-					[field]: value as string,
-				}
-				return updatedData
-			})
-		}
-
-		function handleCSV(files: FileList | null) {
-			const file = files?.[0]
-			if (!file) {
-				return
+			const updatedData = [...tableData]
+			updatedData[index] = {
+				...updatedData[index],
+				[field]: value as string,
 			}
-			const reader = new FileReader()
-			reader.onload = (event) => {
-				const text = event.target?.result as string
-
-				const rows = text
-					.trim()
-					.split('\n')
-					.map((row) => row.split(',').map((cell) => cell.trim()))
-
-				const headers = rows[0].map((item) => toSnakeCase(item))
-				const data = rows
-					.slice(1)
-					.map((row) =>
-						Object.fromEntries(row.map((val, i) => [headers[i], val]))
-					) as LSMappingOutputItem[]
-
-				setTableData(data)
-			}
-			reader.onerror = () => {
-				toast.error('Some error occurred while reading CSV', {
-					icon: <BubbleCrossedIcon />,
-				})
-			}
-			reader.readAsText(file)
-			toast.success('CSV import completed!', {
-				icon: <BubbleCheckIcon />,
-			})
-		}
-
-		function handleDownloadCSV() {
-			const headers = Object.keys(tableData[0])
-			const csvRows = [
-				headers.join(','), // header row
-				...tableData.map((row) =>
-					headers
-						.map(
-							(header) =>
-								`"${(row[header] ?? '').toString().replace(/"/g, '""')}"`
-						)
-						.join(',')
-				),
-			]
-
-			const blob = new Blob([csvRows.join('\n') as BlobPart], {
-				type: 'text/csv;charset=utf-8;',
-			})
-			const url = URL.createObjectURL(blob)
-			downloadBlobUrl(url, `${new Date().toUTCString()}.csv`)
+			setTableData(updatedData)
 		}
 
 		return (
-			<div
-				className={cn('flex h-full flex-col gap-4', {
-					'h-[calc(100%-64px)]': viewOnly,
-				})}
-			>
-				<div className="flex h-full flex-col gap-4 overflow-x-auto">
-					<If condition={!viewOnly}>
-						<div className="flex items-center justify-end gap-2 px-6">
-							<IconButton
-								label="Download Csv"
-								tooltip="Download CSV"
-								onClick={handleDownloadCSV}
-								icon={<DownloadIcon className="size-6" />}
-								shape="square"
-								variant="ghost"
-							/>
-							<TooltipComponent tooltip="Upload CSV">
-								<label
-									htmlFor="csv-input"
-									className={iconButtonVariants({
-										variant: 'ghost',
-										shape: 'square',
-									})}
-								>
-									<UploadIcon />
-								</label>
-							</TooltipComponent>
-							<input
-								type="file"
-								accept=".csv"
-								className="hidden"
-								id="csv-input"
-								value={[]}
-								onChange={(e) => handleCSV(e.target.files)}
-							/>
-							<Button
-								variant="outline"
-								onClick={addNewRow}
-								size="sm"
-								leftIcon={<PlusIcon />}
+			<ScrollArea className="max-w-full">
+				<ScrollBar orientation="horizontal" />
+				<div
+					className="relative max-w-full overflow-y-scroll"
+					ref={parentRef}
+					style={{
+						height: ROW_HEIGHT * visibleRows,
+						minWidth: COL_WIDTH * keysToDisplay.length,
+					}}
+				>
+					<Table className="bg-transparent">
+						<TableHeader className="bg-fm-surface-secondary sticky top-0 z-10">
+							<TableRow
+								className="grid min-h-12"
+								style={{
+									gridTemplateColumns: `repeat(${keysToDisplay.length}, minmax(0, 1fr))`,
+								}}
 							>
-								Add Row
-							</Button>
-						</div>
-					</If>
+								<ForEach data={keysToDisplay}>
+									{(item, idx) => <TableHead key={idx}>{item}</TableHead>}
+								</ForEach>
+							</TableRow>
+						</TableHeader>
+						<TableBody
+							style={{
+								height: `${virtualizer.getTotalSize()}px`,
+								width: '100%',
+								position: 'relative',
+							}}
+						>
+							<If condition={tableData.length === 0}>
+								<div className="text-muted-foreground p-4 text-center">
+									No data available.
+								</div>
+							</If>
 
-					<div className="h-full max-w-full overflow-y-auto px-6">
-						<Table className="bg-transparent">
-							<TableHeader className="bg-fm-surface-secondary sticky top-0 z-10">
-								<TableRow className="min-h-12">
-									<ForEach
-										data={keys}
-										filter={(key) => !EXCLUDED_HEADERS_LS_SHEET.includes(key)}
-									>
-										{(item, idx) => <TableHead key={idx}>{item}</TableHead>}
-									</ForEach>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								<ForEach data={tableData}>
-									{(item, index) => (
-										<LSEditorRow
+							<If condition={tableData.length > 0}>
+								{virtualizer.getVirtualItems().map((virtualItem) => {
+									const item = tableData[virtualItem.index]
+									return (
+										<LSEditorRowV2
 											rows={keys}
 											disabled={viewOnly}
-											key={`table-row-${index}`}
-											index={index}
+											index={virtualItem.index}
 											item={item}
 											removeRow={removeRow}
 											updateField={updateField}
+											key={virtualItem.key}
+											style={{
+												position: 'absolute',
+												top: 0,
+												left: 0,
+												width: '100%',
+												height: `${virtualItem.size}px`,
+												transform: `translateY(${virtualItem.start}px)`,
+												gridTemplateColumns: `repeat(${keysToDisplay.length}, minmax(0, 1fr))`,
+												display: 'grid',
+												alignItems: 'center',
+											}}
 										/>
-									)}
-								</ForEach>
-
-								<If condition={tableData.length === 0}>
-									<div className="text-muted-foreground p-4 text-center">
-										No data available.
-									</div>
-								</If>
-							</TableBody>
-						</Table>
-					</div>
+									)
+								})}
+							</If>
+						</TableBody>
+					</Table>
 				</div>
-				<If condition={!viewOnly}>
-					<div className="px-6">
-						<Divider variant="dashed" />
-					</div>
-					<div className="flex justify-between border-dashed p-6">
-						<Button variant="text" onClick={handleClose} innerClassName="!px-0">
-							Exit & Discard
-						</Button>
-						<Button
-							disabled={disabled}
-							isDisabled={disabled}
-							onClick={handleSubmit}
-						>
-							Save & Continue
-						</Button>
-					</div>
-				</If>
-			</div>
+			</ScrollArea>
 		)
 	}
 )
