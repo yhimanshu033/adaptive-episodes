@@ -1,3 +1,32 @@
+## <small>1.3.3 (2025-10-10)</small>
+
+* fix: 🐛 added api ([41e78e8](https://github.com/Pocket-Fm/co-writing/commit/41e78e8))
+* fix: 🐛 api fixed ([5aa4545](https://github.com/Pocket-Fm/co-writing/commit/5aa4545))
+* fix: 🐛 changed url ([ed10342](https://github.com/Pocket-Fm/co-writing/commit/ed10342))
+* fix: 🐛 disable “lock” toast notification for current user ([bab4a39](https://github.com/Pocket-Fm/co-writing/commit/bab4a39))
+* fix: 🐛 Disable Laser Tool in Suggestion Mode ([c62ea4e](https://github.com/Pocket-Fm/co-writing/commit/c62ea4e))
+* fix: 🐛 enhancements ([530d2da](https://github.com/Pocket-Fm/co-writing/commit/530d2da))
+* fix: 🐛 flowId same as taskId ([0234af1](https://github.com/Pocket-Fm/co-writing/commit/0234af1))
+* fix: 🐛 Location Comparison; LocalStorage Check ([b1f206b](https://github.com/Pocket-Fm/co-writing/commit/b1f206b))
+* fix: 🐛 nwm invalidate ([ebb0923](https://github.com/Pocket-Fm/co-writing/commit/ebb0923))
+* fix: 🐛 removed logs ([0d15f19](https://github.com/Pocket-Fm/co-writing/commit/0d15f19))
+* fix: 🐛 resolved comments ([e427fdc](https://github.com/Pocket-Fm/co-writing/commit/e427fdc))
+* fix: 🐛 resolved comments ([9783bc6](https://github.com/Pocket-Fm/co-writing/commit/9783bc6))
+* fix: 🐛 session storage to local ([a7719bb](https://github.com/Pocket-Fm/co-writing/commit/a7719bb))
+* fix: 🐛 used enums for platform and is ([15c94c0](https://github.com/Pocket-Fm/co-writing/commit/15c94c0))
+* feat: 🎸 added env in dockerfil;e ([82db1d5](https://github.com/Pocket-Fm/co-writing/commit/82db1d5))
+* feat: 🎸 added episode_number ([b51a259](https://github.com/Pocket-Fm/co-writing/commit/b51a259))
+* feat: 🎸 added general events ([99d9d6b](https://github.com/Pocket-Fm/co-writing/commit/99d9d6b))
+* feat: 🎸 added global popup and reorderig on history select ([a22d22d](https://github.com/Pocket-Fm/co-writing/commit/a22d22d))
+* feat: 🎸 added page load events ([0dd6531](https://github.com/Pocket-Fm/co-writing/commit/0dd6531))
+* feat: 🎸 added session id ([275ceda](https://github.com/Pocket-Fm/co-writing/commit/275ceda))
+* feat: 🎸 bse undo-redo-reset ([7575909](https://github.com/Pocket-Fm/co-writing/commit/7575909))
+* feat: 🎸 changed oldScenes to zustand state ([57d19d2](https://github.com/Pocket-Fm/co-writing/commit/57d19d2))
+* feat: 🎸 Implement Client-Side Analytics Utility ([d320d92](https://github.com/Pocket-Fm/co-writing/commit/d320d92))
+* feat: 🎸 useBeatsheetEditor converted to contexy ([8fd0087](https://github.com/Pocket-Fm/co-writing/commit/8fd0087))
+
+
+
 ## <small>1.3.2 (2025-10-08)</small>
 
 * fix: 🐛 added beatSheetEditorAllowedProjects checks ([2d3c95d](https://github.com/Pocket-Fm/co-writing/commit/2d3c95d))
