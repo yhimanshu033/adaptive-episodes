@@ -1,12 +1,15 @@
 'use client'
 
 import React from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { MoonIcon } from '@/icons/moon-icon'
 import { SunIcon } from '@/icons/sun-icon'
+import { CheckedState } from '@radix-ui/react-checkbox'
 import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 import { Button } from '@/components/ui/button'
+import { track } from '@/lib/utils/analytics'
 import { cn } from '@/lib/utils/helpers'
 
 import { Switch } from './aural-ui/switch'
@@ -39,10 +42,23 @@ export function ThemeSwitch() {
 
 	const isDark = resolvedTheme === 'dark'
 
+	function handleCheckChange(val: CheckedState) {
+		const newTheme = val ? 'dark' : 'light'
+		setTheme(newTheme)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.THEME_TOGGLE,
+				theme: newTheme,
+			},
+		})
+	}
+
 	return (
 		<Switch
 			checked={isDark}
-			onCheckedChange={(val) => setTheme(val ? 'dark' : 'light')}
+			onCheckedChange={handleCheckChange}
 			className="border-fm-divider-primary!"
 			onIcon={<MoonIcon />}
 			offIcon={<SunIcon />}

@@ -7,11 +7,13 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { TTS_MUTATION } from '@/constants/query-constants'
 import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import { track } from '@/lib/utils/analytics'
 import { splitStringByLength } from '@/lib/utils/helpers'
 
 import { TElevenLabsAPIBody } from '@/types/ai-types'
@@ -52,6 +54,13 @@ function usePlayerUtil() {
 	}: TPlayingEpisode & TElevenLabsAPIBody) {
 		setPlayingEpisode({
 			info,
+		})
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.TTS_TRIGGER,
+			},
 		})
 
 		const parts = splitStringByLength(text, 10000)

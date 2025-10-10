@@ -61,6 +61,10 @@ export default function useBeatsheetStore() {
 		useBeatsheetStoreContext.setState({ scenes })
 	}
 
+	const setOldScenes = (oldScenes: BeatsheetEditorStoreType['oldScenes']) => {
+		useBeatsheetStoreContext.setState({ oldScenes })
+	}
+
 	const setActiveDragItem = (
 		activeDragItem: BeatsheetEditorStoreType['activeDragItem']
 	) => {
@@ -140,5 +144,6 @@ export default function useBeatsheetStore() {
 		deleteCharacter,
 		setOpenPromptId,
 		setCharacters,
+		setOldScenes,
 	}
 }

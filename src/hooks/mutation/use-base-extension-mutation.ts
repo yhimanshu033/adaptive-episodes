@@ -1,4 +1,5 @@
 import { useParams } from 'next/navigation'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { API_URLS } from '@/constants/global-constants'
 import {
 	BASE_EXTENSION_MUTATION,
@@ -10,6 +11,7 @@ import { toast } from 'sonner'
 
 import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { track } from '@/lib/utils/analytics'
 
 import { TBaseScriptExtensionBody } from '@/types/admin-types'
 
@@ -57,6 +59,16 @@ const useBaseExtensionMutation = () => {
 			params.file_urls = file_urls
 			delete params.files
 		}
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_LIST,
+			metaData: {
+				action: ACTION.BASE_SCRIPT_EXTENSION,
+				size: String(
+					(params?.ranges?.de_end ?? 0) - (params?.ranges?.de_start ?? 1) + 1
+				),
+			},
+		})
 		const taskId = await startTask<
 			TBaseScriptExtensionBody,
 			{ message: string }

@@ -56,6 +56,7 @@ const initialBeatsheetEditorState: BeatsheetEditorStoreType = {
 	activeDragItem: null,
 	openSceneIds: [],
 	openPromptId: null,
+	oldScenes: [],
 }
 
 const initialLaserState: LaserStoreType = {

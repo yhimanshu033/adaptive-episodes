@@ -11,12 +11,14 @@ import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
 import { useQuery } from '@tanstack/react-query'
 import { X } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
+import { LOCAL_STORAGE_KEYS } from '@/lib/utils/analytics'
 import {
 	getAvailableLanguages,
 	getDisabledAvailableLanguages,
@@ -51,6 +53,7 @@ export const useEpisodeContentUtil = () => {
 
 	const { isOriginal, isOriginalEp } = useAccessChecks()
 	const pathName = usePathname()
+	const { data: session } = useSession()
 
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
@@ -119,6 +122,10 @@ export const useEpisodeContentUtil = () => {
 			return resp
 		}
 
+		localStorage.setItem(
+			LOCAL_STORAGE_KEYS.CONTENT_LANGUAGE,
+			resp.chapter.language || ELanguage.ENGLISH
+		)
 		const nwmRunning = resp?.chapter?.props?.nwm_running
 
 		addEpisodeMap(episodeId, resp)
@@ -130,7 +137,9 @@ export const useEpisodeContentUtil = () => {
 			)
 			setRecentEmail(NWM_EMAIL)
 		} else if (resp.email) {
-			toast.info(`${resp.email} is now editing the chapter!`)
+			if (resp.email !== session?.user?.email) {
+				toast.info(`${resp.email} is now editing the chapter!`)
+			}
 			setRecentEmail(resp.email)
 		}
 
@@ -197,6 +206,7 @@ export const useEpisodeContentUtil = () => {
 		setSidebar,
 		setRecentEmail,
 		episode,
+		session,
 	])
 
 	const query = useQuery({

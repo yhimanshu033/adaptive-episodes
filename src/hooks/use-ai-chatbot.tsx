@@ -10,6 +10,7 @@ import React, {
 	useState,
 } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useCountdownTimer from '@/hooks/use-countdown-timer'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
@@ -40,6 +41,7 @@ import {
 	minify,
 	parseSFXResponse,
 } from '@/lib/utils/ai-chatbot'
+import { track } from '@/lib/utils/analytics'
 import { parseOptimistically } from '@/lib/utils/helpers'
 import { breakDownValue, getText } from '@/lib/utils/plate'
 
@@ -204,6 +206,14 @@ export function ChatbotProvider({
 		addMessages({ role: EMessenger.USER, content: input })
 		setInput('')
 		setRequestedAction(EChatMode.BLOCK)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_CHAT_PROMPT,
+				prompt: input,
+			},
+		})
 	}
 
 	const addComment = (
@@ -222,6 +232,15 @@ export function ChatbotProvider({
 	}
 
 	const handleSuggestion = (suggestion: TStoryChatSuggestion) => {
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_CHAT_SUGGESTION,
+				suggestionAction: suggestion.action,
+				suggestionValue: suggestion.value,
+			},
+		})
 		if (suggestion.action === EChatMode.LOCALIZE) {
 			setSidebar(ESidebar.FAR)
 			return
@@ -291,6 +310,13 @@ export function ChatbotProvider({
 		if (aiChatbotMutation.data) {
 			stopTask(aiChatbotMutation.data)
 		}
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_CHAT_CANCEL,
+			},
+		})
 	}
 
 	function addReview(reviewResponse: IndexedCommentsResponse[]) {
