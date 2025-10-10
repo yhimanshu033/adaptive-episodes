@@ -117,18 +117,14 @@ export const useEpisodeContentUtil = () => {
 		}
 		const usedEpisodeId = episode?.id
 
-		let resp = await getEpisodeContent(usedEpisodeId)
+		const resp = await getEpisodeContent(usedEpisodeId)
 
 		if (!resp) {
 			return resp
 		}
 
-		if (usedEpisodeId === 64886) {
-			resp = {
-				...resp,
-				email: 'test@gmail.com',
-			}
-		}
+		addEpisodeMap(episodeId, resp)
+		addEpisodeKey(episodeId, queryKey)
 
 		localStorage.setItem(
 			LOCAL_STORAGE_KEYS.CONTENT_LANGUAGE,
@@ -146,9 +142,6 @@ export const useEpisodeContentUtil = () => {
 				toast.info(`${resp.email} is now editing the chapter!`)
 			}
 			setRecentEmail(resp.email)
-		} else {
-			addEpisodeMap(episodeId, resp)
-			addEpisodeKey(episodeId, queryKey)
 		}
 
 		const oldData = await getValue(`${resp.chapter.project}_${usedEpisodeId}`)

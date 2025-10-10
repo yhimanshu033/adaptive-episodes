@@ -185,7 +185,7 @@ function useGlobalFindAndReplaceUtil() {
 
 	useEffect(() => {
 		if (!records[ptr]) {
-			if (records[ptr % records.length]) {
+			if (records.length && records[ptr % records.length]) {
 				setPtr(ptr % records.length)
 			}
 			return
