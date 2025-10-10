@@ -19,6 +19,7 @@ export default function GlobalLocalize() {
 					wholeWord: props.wholeWord,
 					toggleSearchMode: props.toggleSearchMode,
 				}}
+				sheetURL={props.sheetURL}
 				hideCloseButton
 			/>
 			<FindAndReplaceUI {...props} isWriter={isWriter} />

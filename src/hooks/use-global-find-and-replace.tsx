@@ -8,7 +8,10 @@ import {
 	farSearchModes,
 	SAVE_EPISODE_BUTTON_ID,
 } from '@/constants/editor-constants'
-import useLocalizeHook from '@/hooks/mutation/use-localize-hook'
+import useLocalizeHook, {
+	useUpdateLOCSheetMutation,
+} from '@/hooks/mutation/use-localize-hook'
+import useLOCSheetData from '@/hooks/query/use-loc-sheet-data'
 import useEditorExtendedStore from '@/store/extended-store'
 import { Value } from 'platejs'
 import { useDebounceValue } from 'usehooks-ts'
@@ -27,7 +30,7 @@ import {
 import { track } from '@/lib/utils/analytics'
 import { getText } from '@/lib/utils/plate'
 
-import { TLocalizeArrayItem } from '@/types/ai-types'
+import { TLocalizeArrayItem, TLocalizeResponse } from '@/types/ai-types'
 
 function useGlobalFindAndReplaceUtil() {
 	const [options, setOptionsState] =
@@ -73,10 +76,27 @@ function useGlobalFindAndReplaceUtil() {
 		}, '')
 	}, [contentMapKeys, extended.length, contentMap])
 
-	const { data, isFetching } = useLocalizeHook({
+	const {
+		data: fetchedData,
+		isFetching,
+		refetch,
+	} = useLocalizeHook({
 		text,
 		episodeId: Number(episodeId),
 	})
+
+	const { isPending: updateLOCPending, mutateAsync: updateLOCMutateAsync } =
+		useUpdateLOCSheetMutation()
+
+	const { data: urlData } = useLOCSheetData()
+	const sheetURL = urlData ? urlData.loc_sheet_url : ''
+
+	const [data, setData] = useState<TLocalizeResponse['result'] | undefined>(
+		fetchedData
+	)
+	useEffect(() => {
+		setData(fetchedData)
+	}, [fetchedData])
 
 	const [replacedContentMap, setReplacedContentMap] = useState<
 		typeof contentMap
@@ -310,6 +330,11 @@ function useGlobalFindAndReplaceUtil() {
 		})
 	}
 
+	async function handleScanEpisode() {
+		await updateLOCMutateAsync('')
+		void refetch()
+	}
+
 	const localized_entities = useMemo(
 		() => getLocalizationData({ data }),
 		[data]
@@ -345,6 +370,10 @@ function useGlobalFindAndReplaceUtil() {
 		setReplacedContentMap,
 		recordTexts,
 		setPtr,
+		updateLOCPending,
+		handleScanEpisode,
+		sheetURL,
+		setData,
 	}
 }
 
@@ -396,6 +425,10 @@ export default function useGlobalFindAndReplace() {
 			toggleReplace: () => {},
 			toggleSearchMode: () => {},
 			wholeWord: false,
+			handleScanEpisode: async () => {},
+			sheetURL: '',
+			updateLOCPending: false,
+			setData: () => {},
 		} as ReturnType<typeof useGlobalFindAndReplaceUtil>
 	}
 	return value

@@ -2,10 +2,12 @@ import React, { useEffect } from 'react'
 import { HIDDEN_DATA } from '@/constants/editor-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useEditAccess from '@/hooks/use-edit-access'
+import useEditorExtendedStore from '@/store/extended-store'
 import usePlateStore from '@/store/plate-store'
 import { Lock } from 'lucide-react'
 import { usePlateState } from 'platejs/react'
 
+import useEpisodeId from '@/providers/episode-id-provider'
 import { jumbleArray, trim } from '@/lib/utils/helpers'
 
 interface EditorAccessProviderProps {
@@ -18,19 +20,26 @@ export default function EditorAccessProvider({
 	const { cannotEdit } = useEditAccess()
 	const { data } = useEpisodeContent()
 	const [, setReadOnly] = usePlateState('readOnly')
+	const { removeExtendedContentMap } = useEditorExtendedStore()
+	const episodeId = useEpisodeId()
 
 	const { store } = usePlateStore()
 	const viewMode = store((state) => state.viewMode)
 
 	useEffect(() => {
 		if (cannotEdit) {
-			setTimeout(() => {
-				setReadOnly(true)
-			}, 0)
+			setReadOnly(true)
 			return
 		}
 		setReadOnly(viewMode)
 	}, [cannotEdit, setReadOnly, viewMode])
+
+	useEffect(() => {
+		if (!cannotEdit) {
+			return
+		}
+		removeExtendedContentMap(episodeId)
+	}, [cannotEdit, removeExtendedContentMap, episodeId])
 
 	if (cannotEdit && hideContent) {
 		return (
