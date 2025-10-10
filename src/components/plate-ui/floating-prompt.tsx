@@ -30,8 +30,6 @@ export default function FloatingPrompt() {
 	const [val, setVal] = React.useState<string>('')
 	const [additionalContext, setAdditionalContext] = useState(false)
 
-	console.log({ promptActive })
-
 	const key = useMemo(() => {
 		if (promptActive) {
 			return `laser-id-${promptActive.split('floating-prompt-id-')[1]}`
