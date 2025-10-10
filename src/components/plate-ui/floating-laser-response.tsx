@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import {
 	ESTIMATED_FLOATING_HEIGHT,
 	RESPONSE_GAP,
@@ -13,6 +14,7 @@ import { useEditorRef } from 'platejs/react'
 import { Button } from '@/components/aural-ui/button'
 import Textarea from '@/components/aural-ui/textarea'
 import Image from '@/components/ui/image'
+import { track } from '@/lib/utils/analytics'
 import { cn } from '@/lib/utils/helpers'
 import {
 	breakDownValue,
@@ -105,16 +107,40 @@ export default function FloatingLaserResponse() {
 		onRephrase(val)
 		onResetLeaf()
 		setActiveLaser(null)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.LASER_RESPONSE_ACCEPT,
+				flowId: key?.split?.('laser-id-')?.[1],
+			},
+		})
 	}
 
 	function handleRejectRephrase() {
 		onResetLeaf()
 		setActiveLaser(null)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.LASER_RESPONSE_REJECT,
+				flowId: key?.split?.('laser-id-')?.[1],
+			},
+		})
 	}
 
 	function handleRephrase() {
 		setTriggerRephrase(key)
 		setResponseActive(null)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.LASER_RESPONSE_RETRY,
+				flowId: key?.split?.('laser-id-')?.[1],
+			},
+		})
 	}
 
 	const positionStyle = useMemo(() => {

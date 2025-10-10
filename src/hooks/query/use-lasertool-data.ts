@@ -4,27 +4,39 @@ import { API_URLS } from '@/constants/global-constants'
 import { LASERTOOLS_QUERY_KEY } from '@/constants/query-constants'
 import useSocket from '@/hooks/use-socket'
 import { useQuery } from '@tanstack/react-query'
+import { nanoid } from 'platejs'
 
 import useProjectId from '@/providers/project-id-provider'
 
 import { LaserToolsApiResponse, LaserToolsParams } from '@/types/ai-types'
+import { TNoParams, TSocketQueryParams } from '@/types/common'
 
 const useLaserToolsQuery = (key: string | null, params: LaserToolsParams) => {
-	const { startTask, getResponse } = useSocket()
+	const { startTask, getResponse, deleteResponse } = useSocket()
 	const { projectId } = useProjectId()
 	async function onRephraseFn() {
 		if (!key || !projectId) {
 			return
 		}
-		const taskId = await startTask<LaserToolsParams>({
-			method: 'POST',
-			url: API_URLS.STREAM_LASER,
-			body: {
-				...params,
-				project_id: Number(projectId),
-			},
-			noCache: true,
-		})
+
+		const keyId = key?.split?.('laser-id-')?.[1] || nanoid()
+		const responseExists = deleteResponse(keyId)
+		const taskId = responseExists ? keyId + '_' + nanoid(4) : keyId
+
+		await startTask<LaserToolsParams, TNoParams, TNoParams, TSocketQueryParams>(
+			{
+				method: 'POST',
+				url: API_URLS.STREAM_LASER,
+				body: {
+					...params,
+					project_id: Number(projectId),
+				},
+				query: {
+					task_id: taskId,
+				},
+				noCache: true,
+			}
+		)
 		const response: LaserToolsApiResponse['data'] = await getResponse(taskId)
 		return response
 	}

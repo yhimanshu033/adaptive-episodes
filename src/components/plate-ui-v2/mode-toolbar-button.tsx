@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import useEditAccess from '@/hooks/use-edit-access'
 import useCustomPlateStore, { usePlateStore } from '@/store/plate-store'
@@ -20,6 +21,7 @@ import {
 	SelectSeparator,
 	SelectTrigger,
 } from '@/components/aural-ui/select'
+import { track } from '@/lib/utils/analytics'
 import { cn, toPascalCase } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
@@ -60,6 +62,13 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 
 			if (newValue === String(EditorModes.suggesting)) {
 				setSidebar(ESidebar.COMMENTS)
+				track({
+					event: EVENT_TYPE.BUTTON_CLICK,
+					screenName: SCREEN_NAME.EPISODE_EDITOR,
+					metaData: {
+						action: ACTION.SUGGESTION_MODE,
+					},
+				})
 			}
 
 			if (newValue === String(EditorModes.editing)) {

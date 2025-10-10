@@ -1,6 +1,8 @@
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { updateIsEpisodeNavigationOpen } from '@/store/editor-store'
 
 import { useEpisodeContext } from '@/providers/episode-id-provider'
+import { track } from '@/lib/utils/analytics'
 
 import { PlateStoreData } from '@/types/plate-types'
 
@@ -14,6 +16,14 @@ export function usePlateStore() {
 				updateIsEpisodeNavigationOpen(false)
 			}
 			return { sidebar: newSidebar }
+		})
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.SIDEBAR_CHANGED,
+				sidebarType: sidebar || 'closed',
+			},
 		})
 	}
 

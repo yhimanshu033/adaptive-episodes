@@ -1,7 +1,10 @@
 'use client'
 
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { useEpisodeStore } from '@/store/episode-store'
 import { useShallow } from 'zustand/react/shallow'
+
+import { track } from '@/lib/utils/analytics'
 
 import { ENotesAction } from '@/types/episode-type'
 import { TNote } from '@/types/plate-types'
@@ -25,6 +28,13 @@ const useNotes = () => {
 			unique_id: noteId,
 			note_text: JSON.stringify({ ...targetedNote, ...params }),
 		})
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.NOTES_UPDATE,
+			},
+		})
 	}
 
 	const handleAddNote = (note: TNote, addToStart?: boolean) => {
@@ -34,6 +44,13 @@ const useNotes = () => {
 			unique_id: note.id,
 			note_text: JSON.stringify(note),
 		})
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.NOTES_ADD,
+			},
+		})
 	}
 
 	const handleDeleteNote = (noteId: string) => {
@@ -41,6 +58,13 @@ const useNotes = () => {
 		updateNotesMutation.mutate({
 			action: ENotesAction.DELETE,
 			unique_id: noteId,
+		})
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.NOTES_DELETE,
+			},
 		})
 	}
 

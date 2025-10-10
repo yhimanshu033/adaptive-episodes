@@ -43,9 +43,11 @@ import IfElse, { Else, If } from '@/components/if-else'
 import StoryDetails from '@/components/story-details'
 import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { LOCAL_STORAGE_KEYS } from '@/lib/utils/analytics'
 import { cn } from '@/lib/utils/helpers'
 
 import { ERole } from '@/types/admin-types'
+import { ELanguage } from '@/types/common'
 import {
 	EEpisodeHeaderKeys,
 	episodeTableColumnWidths,
@@ -95,6 +97,13 @@ const EpisodesTable = () => {
 			}
 		}
 	}, [])
+
+	useEffect(() => {
+		localStorage.setItem(
+			LOCAL_STORAGE_KEYS.CONTENT_LANGUAGE,
+			initialStoryData?.parent_language || ELanguage.ENGLISH
+		)
+	}, [initialStoryData])
 
 	const setHoverIndexWithDelay = (index: number | null) => {
 		if (hoverTimeoutRef.current) {

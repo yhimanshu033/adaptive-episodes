@@ -1,4 +1,7 @@
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
+
 import { useEpisodeContext } from '@/providers/episode-id-provider'
+import { track } from '@/lib/utils/analytics'
 
 import { EpisodeIdStoreType } from '@/types/episode-type'
 
@@ -27,6 +30,16 @@ function useEpisodeIdStore() {
 		useEpisodeIdStoreContext.setState(() => {
 			return { dualViewMode }
 		})
+		if (dualViewMode) {
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.DUAL_VIEW_CHANGED,
+					dualViewType: dualViewMode,
+				},
+			})
+		}
 	}
 
 	const setStartOverlayLoading = (
