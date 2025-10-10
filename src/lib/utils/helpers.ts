@@ -1172,9 +1172,9 @@ export function shouldTriggerContentReorder(a: TScene[], b: TScene[]): boolean {
 }
 
 export function isOrderSceneOrderChange(a: TScene[], b: TScene[]) {
-	for (let i = 0; i < a.length; i++) {
-		for (let j = 0; j < a[i].beats.length; j++) {
-			if (a[i].beats[j].id !== b[i]?.beats?.[j]?.id) {
+	for (let i = 0; i < a?.length; i++) {
+		for (let j = 0; j < (a?.[i]?.beats?.length || 0); j++) {
+			if (a[i]?.beats?.[j]?.id !== b[i]?.beats?.[j]?.id) {
 				return true
 			}
 		}

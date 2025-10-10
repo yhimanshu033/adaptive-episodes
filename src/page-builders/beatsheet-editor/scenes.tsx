@@ -147,7 +147,7 @@ export default function SceneTab() {
 				pendingContent.map((scene) => scene.id)
 			)
 			approveContent(sceneId)
-			const newScenes = [...scenes]
+			const newScenes = [...oldScenes]
 			const changedIdx = newScenes.findIndex((item) => item.id === sceneId)
 			const changedScene = scenes.find((scene) => scene.id === sceneId)
 			if (!changedScene) {
