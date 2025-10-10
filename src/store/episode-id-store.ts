@@ -32,7 +32,7 @@ function useEpisodeIdStore() {
 		})
 		if (dualViewMode) {
 			track({
-				event: EVENT_TYPE.SECTION_LOAD,
+				event: EVENT_TYPE.BUTTON_CLICK,
 				screenName: SCREEN_NAME.EPISODE_EDITOR,
 				metaData: {
 					action: ACTION.DUAL_VIEW_CHANGED,

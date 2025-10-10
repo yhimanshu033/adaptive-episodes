@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { colorOptions, USER_SELECTED_COLOR } from '@/constants/global-constants'
+import usePageChange from '@/hooks/query/use-page-change'
 import { SocketProvider } from '@/hooks/use-socket'
 import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
 import Player from '@/page-builders/plate-editor/player'
@@ -65,6 +66,8 @@ const AppProvider = ({
 			colorOptions[selectedColor].secondary
 		)
 	}, [])
+
+	usePageChange()
 
 	return (
 		<SessionProvider session={session}>

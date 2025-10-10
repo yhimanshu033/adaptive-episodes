@@ -80,7 +80,7 @@ export default function FloatingPrompt() {
 					metaData: {
 						action: ACTION.LASER_START,
 						method: 'custom-send',
-						flowId: key.split('floating-prompt-id-')[1],
+						flowId: key.split('laser-id-')[1],
 					},
 				})
 			} catch (error) {

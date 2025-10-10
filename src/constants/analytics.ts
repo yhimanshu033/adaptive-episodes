@@ -33,7 +33,6 @@ export enum EDeviceType {
 export enum EVENT_TYPE {
 	BUTTON_CLICK = 'button_click',
 	PAGE_LOAD = 'page_load',
-	SECTION_LOAD = 'section_load',
 }
 
 export enum SCREEN_NAME {
@@ -41,6 +40,7 @@ export enum SCREEN_NAME {
 	AUTH = 'auth',
 	EPISODE_EDITOR = 'episode_editor',
 	EPISODE_LIST = 'episode_list',
+	EPISODE_PREVIEW = 'episode_preview',
 	LANDING = 'landing',
 	PROJECTS = 'projects',
 	PROJECT_SETTINGS = 'project_settings',
