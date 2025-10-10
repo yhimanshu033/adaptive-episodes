@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useUndoRedo } from '@/hooks/use-undo-redo'
 import { TrashIcon } from '@/icons/trash-icon'
 import useBeatsheetStore from '@/store/beatsheet-store'
@@ -20,10 +20,7 @@ import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
-import {
-	convertScenesArrayToMap,
-	shouldTriggerContentReorder,
-} from '@/lib/utils/helpers'
+import { shouldTriggerContentReorder } from '@/lib/utils/helpers'
 import { reorderChildrenBasedOnScenes } from '@/lib/utils/plate'
 
 import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
@@ -43,9 +40,11 @@ const useBeatSheetEditorUtil = () => {
 		setActiveDragItem,
 		setScenes,
 		setOpenSceneIds,
+		setOldScenes,
 	} = useBeatsheetStore()
 
 	const scenes = beatsheetStore(useShallow((state) => state.scenes))
+	const oldScenes = beatsheetStore(useShallow((state) => state.oldScenes))
 	const activeDragItem = beatsheetStore(
 		useShallow((state) => state.activeDragItem)
 	)
@@ -53,7 +52,6 @@ const useBeatSheetEditorUtil = () => {
 	const { redo, undo, reset, canRedo, canUndo } = useUndoRedo(scenes, {
 		startIndex: 1,
 	})
-	const [oldScenes, setOldScenes] = useState(convertScenesArrayToMap(scenes))
 
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
 		const scene = scenes.find((s) => s.id === sceneId)
@@ -315,10 +313,11 @@ const useBeatSheetEditorUtil = () => {
 	}, [openSceneIds])
 
 	useEffect(() => {
-		if (Object.keys(oldScenes).length) {
+		if (oldScenes.length) {
 			return
 		}
-		setOldScenes(convertScenesArrayToMap(scenes))
+		setOldScenes(scenes)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [scenes, oldScenes])
 
 	return {

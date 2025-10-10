@@ -29,7 +29,10 @@ import {
 	AccordionTrigger,
 } from '@/components/ui/accordion'
 import useBeatSheetEditor from '@/providers/beat-sheet-provider'
-import { isOrderSceneOrderChange } from '@/lib/utils/helpers'
+import {
+	convertScenesArrayToMap,
+	isOrderSceneOrderChange,
+} from '@/lib/utils/helpers'
 
 import { TScene } from '@/types/beatsheet-editor-types'
 
@@ -110,11 +113,11 @@ export default function SceneTab() {
 				beats_old: Object.fromEntries(
 					scenes.map((scene) => [
 						`scene_${scene.index + 1}`,
-						oldScenes[scene.index].beats,
+						convertScenesArrayToMap(oldScenes)[scene.data.id]?.beats,
 					])
 				),
 				order_change: isOrderSceneOrderChange(
-					scenes.map((s) => oldScenes[s.index]),
+					scenes.map((s) => convertScenesArrayToMap(oldScenes)[s.data.id]),
 					scenes.map((s) => s.data)
 				),
 				ep_text: editorText,
@@ -136,7 +139,7 @@ export default function SceneTab() {
 		})
 	}
 
-	const handleApproveContent = (sceneId: string, sceneIdx: number) => {
+	const handleApproveContent = (sceneId: string) => {
 		const pendingContent = getPendingContentForScene(sceneId)
 		if (pendingContent) {
 			handleGenerateScenes(
@@ -144,12 +147,14 @@ export default function SceneTab() {
 				pendingContent.map((scene) => scene.id)
 			)
 			approveContent(sceneId)
-			setOldScenes((prev) => {
-				return {
-					...prev,
-					[sceneIdx]: scenes[sceneIdx],
-				}
-			})
+			const newScenes = [...scenes]
+			const changedIdx = newScenes.findIndex((item) => item.id === sceneId)
+			const changedScene = scenes.find((scene) => scene.id === sceneId)
+			if (!changedScene) {
+				return
+			}
+			newScenes[changedIdx] = changedScene
+			setOldScenes(newScenes)
 		}
 	}
 
@@ -282,9 +287,7 @@ export default function SceneTab() {
 															</Button>
 															<Button
 																size="sm"
-																onClick={() =>
-																	handleApproveContent(scene.id, idx)
-																}
+																onClick={() => handleApproveContent(scene.id)}
 																className="flex items-center gap-1"
 																variant="outline"
 															>
