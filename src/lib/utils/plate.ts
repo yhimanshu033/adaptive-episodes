@@ -733,15 +733,16 @@ export function updateNodesWithStartKeys(
 }
 
 export function keyNodeOperationOnce(
-	children: Value,
+	ogChildren: Value,
 	key: string,
 	foundNodeOperation: (node: Descendant) => Descendant,
 	nodeOperation: (node: Descendant) => Descendant = (node) => node
 ) {
 	if (!key) {
-		return children
+		return ogChildren
 	}
 
+	const children = structuredClone(ogChildren)
 	let found = false
 	const traverse = (node: Descendant) => {
 		if (key in node) {

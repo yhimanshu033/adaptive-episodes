@@ -3,9 +3,10 @@ import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { rephraseMethods } from '@/constants/editor-constants'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import useLaserStore from '@/store/laser-store'
+import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { nanoid } from 'nanoid'
 import { Value } from 'platejs'
-import { useEditorRef } from 'platejs/react'
+import { useEditorRef, usePluginOption } from 'platejs/react'
 import type { Range } from 'slate'
 
 import {
@@ -24,6 +25,12 @@ import { MarkToolbarButton } from './mark-toolbar-button'
 export default function FloatingLaserBtns() {
 	const editor = useEditorRef()
 	const { setActiveLaser, setPromptActive } = useLaserStore()
+
+	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
+
+	if (isSuggesting) {
+		return null
+	}
 
 	return (
 		<DropdownMenu modal={false}>
