@@ -1,0 +1,245 @@
+import React, { useMemo } from 'react'
+import { QUICK_PROMPTS_EN, sidebarToTitle } from '@/constants/ai-constants'
+import {
+	CLOSED_SIDEBAR_VALUE,
+	configurationDialogTabToTitle,
+} from '@/constants/editor-constants'
+import ChevronRightIcon from '@/icons/chevron-right-icon'
+import { CrossIcon } from '@/icons/cross-icon'
+import { MoonIcon } from '@/icons/moon-icon'
+import { SunIcon } from '@/icons/sun-icon'
+import EpisodeConfig, {
+	EpisodeConfigProps,
+} from '@/page-builders/plate-editor/configuration-dialog/episode-config'
+import { ConfigurationContentItem } from '@/page-builders/plate-editor/configuration-dialog/items'
+import QuickPrompts from '@/page-builders/plate-editor/configuration-dialog/quick-prompts'
+import { setConfigurationDialogTab } from '@/store/configuration-store'
+import { ArrowLeft } from 'lucide-react'
+
+import {
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogTitle,
+} from '@/components/aural-ui/dialog'
+import { Divider } from '@/components/aural-ui/divider'
+import {
+	IconButton,
+	iconButtonVariants,
+} from '@/components/aural-ui/icon-button'
+import { If } from '@/components/aural-ui/if-else'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import { Tabs, TabsContent } from '@/components/aural-ui/tabs'
+import { DialogHeader } from '@/components/ui/dialog'
+import ForEach from '@/components/ui/for-each'
+import useConfiguration from '@/providers/configuration-provider'
+
+import { TQuickPrompt } from '@/types/ai-types'
+import {
+	EConfigurationContentItemDataType,
+	EConfigurationDialogContentTab,
+	ESuggestionViewingType,
+	EThemeMode,
+	TConfigurationContentItem,
+} from '@/types/editor-types'
+import { ESidebar } from '@/types/plate-types'
+
+export interface ConfigurationDialogContentProps extends EpisodeConfigProps {
+	fallbackQuickPrompts?: TQuickPrompt[]
+	showEpisodeSpecificActions?: boolean
+}
+
+export default function ConfigurationDialogContent({
+	fallbackQuickPrompts = QUICK_PROMPTS_EN,
+	showEpisodeSpecificActions,
+	...episodeConfigProps
+}: ConfigurationDialogContentProps) {
+	const { configurationData, handleConfigurationDataChange } =
+		useConfiguration()
+	const configurationItems: TConfigurationContentItem[] = useMemo(() => {
+		return [
+			{
+				title: 'Default Sidebar Panel',
+				description:
+					'Select which sidebar opens by default when you launch Pocket Copilot.',
+				data: {
+					type: EConfigurationContentItemDataType.DROPDOWN,
+					onSelect: (newDefaultSidebar) =>
+						handleConfigurationDataChange({
+							defaultSidebar:
+								newDefaultSidebar === CLOSED_SIDEBAR_VALUE
+									? null
+									: (newDefaultSidebar as ESidebar),
+						}),
+					selectedValue:
+						configurationData.defaultSidebar || CLOSED_SIDEBAR_VALUE,
+					dropdownItems: [
+						ESidebar.CHATBOT,
+						ESidebar.OUTLINE,
+						ESidebar.COMMENTS,
+						ESidebar.BEAT_SHEET,
+						ESidebar.FAR,
+						ESidebar.NOTES,
+						CLOSED_SIDEBAR_VALUE,
+					].map((sidebar) => {
+						return {
+							value: sidebar,
+							title: sidebarToTitle[sidebar as ESidebar] || 'Closed',
+						}
+					}),
+				},
+			},
+			{
+				title: 'Editor Theme',
+				description:
+					'Choose between light and dark modes for your editor interface.',
+				data: {
+					type: EConfigurationContentItemDataType.TOGGLE,
+					onSelect: (dark) =>
+						handleConfigurationDataChange({
+							theme: dark ? EThemeMode.DARK : EThemeMode.LIGHT,
+						}),
+					selectedValue: configurationData.theme === EThemeMode.DARK,
+					onIcon: <MoonIcon />,
+					offIcon: <SunIcon />,
+				},
+			},
+			{
+				title: 'Hide Deleted Suggestions',
+				description:
+					'Toggle between showing desired suggestions or correction-focused ones.',
+				data: {
+					type: EConfigurationContentItemDataType.TOGGLE,
+					onSelect: (desired) =>
+						handleConfigurationDataChange(
+							{
+								suggestionDisplay: desired
+									? ESuggestionViewingType.DESIRED
+									: ESuggestionViewingType.CORRECTIONS,
+							},
+							true
+						),
+					selectedValue:
+						configurationData.suggestionDisplay ===
+						ESuggestionViewingType.DESIRED,
+				},
+			},
+			{
+				title: 'Quick Prompts',
+				description:
+					'Manage and edit your personalized quick prompts for faster interactions.',
+				data: {
+					type: EConfigurationContentItemDataType.CUSTOM,
+					customHandler: (
+						<IconButton
+							onClick={() =>
+								setConfigurationDialogTab(
+									EConfigurationDialogContentTab.QUICK_PROMPTS
+								)
+							}
+							icon={<ChevronRightIcon />}
+							label="Edit Quick Prompts"
+							variant="ghost"
+							size="small"
+						/>
+					),
+				},
+			},
+		] as TConfigurationContentItem[]
+	}, [configurationData, handleConfigurationDataChange])
+
+	return (
+		<DialogContent
+			noise="none"
+			showCloseButton={false}
+			opacity="high"
+			glass="high"
+			borderConfig={['left', 'right']}
+			className="h-[90vh] w-[90vh] max-w-137.5 gap-5 px-0 [box-shadow:none]"
+		>
+			<ScrollArea className="h-full">
+				<DialogHeader className="space-y-0 px-8">
+					<DialogTitle className="mb-0 flex h-14 items-center justify-between gap-4">
+						Personalize Your Pocket Copilot Experience
+						<DialogClose
+							className={iconButtonVariants({
+								variant: 'ghost',
+								size: 'small',
+								shape: 'square',
+							})}
+						>
+							<CrossIcon className="h-4 w-4" />
+						</DialogClose>
+					</DialogTitle>
+
+					<DialogDescription className="sr-only">
+						Fine-tune Pocket Copilot to match your workflow. Adjust themes,
+						panels, and AI behavior for a seamless creative experience.
+					</DialogDescription>
+
+					<Divider variant="dashed" className="border-fm-divider-secondary" />
+				</DialogHeader>
+				<Tabs className="px-8" value={configurationData.configurationDialogTab}>
+					<If
+						condition={
+							!!configurationDialogTabToTitle[
+								configurationData.configurationDialogTab
+							]
+						}
+					>
+						<div className="border-fm-divider-secondary flex items-center gap-4 border-b border-dashed py-2">
+							<IconButton
+								onClick={() =>
+									setConfigurationDialogTab(
+										EConfigurationDialogContentTab.OPTIONS
+									)
+								}
+								icon={<ArrowLeft />}
+								label="Back"
+								size="small"
+								variant="ghost"
+							/>
+							<p>
+								{
+									configurationDialogTabToTitle[
+										configurationData.configurationDialogTab
+									]
+								}
+							</p>
+						</div>
+					</If>
+					<TabsContent value={EConfigurationDialogContentTab.OPTIONS}>
+						<ForEach data={configurationItems}>
+							{(item, idx) => (
+								<ConfigurationContentItem
+									key={`config-content-item-${idx}`}
+									item={item}
+								/>
+							)}
+						</ForEach>
+						<If
+							condition={
+								showEpisodeSpecificActions && !!episodeConfigProps.episodeId
+							}
+						>
+							<EpisodeConfig {...episodeConfigProps} />
+						</If>
+					</TabsContent>
+
+					<TabsContent value={EConfigurationDialogContentTab.QUICK_PROMPTS}>
+						<QuickPrompts
+							quickPrompts={
+								configurationData.quickPrompts.length
+									? configurationData.quickPrompts
+									: fallbackQuickPrompts
+							}
+							setQuickPrompts={(prompts) =>
+								handleConfigurationDataChange({ quickPrompts: prompts })
+							}
+						/>
+					</TabsContent>
+				</Tabs>
+			</ScrollArea>
+		</DialogContent>
+	)
+}

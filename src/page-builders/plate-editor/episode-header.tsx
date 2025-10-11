@@ -1,8 +1,11 @@
 import React, { useMemo } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { QUICK_PROMPTS, QUICK_PROMPTS_EN } from '@/constants/ai-constants'
 import { statuses } from '@/constants/episodes-constants'
 import { SIMPLIFIED_VIEWABLE_EDITOR } from '@/constants/global-constants'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useIsGerman from '@/hooks/use-is-german'
 import useIsInternal from '@/hooks/use-is-internal'
 import { ArtBoardIcon } from '@/icons/art-borad-icon'
 import { FileTextIcon } from '@/icons/file-text-icon'
@@ -10,6 +13,7 @@ import { MessageIcon } from '@/icons/message-icon'
 import HomeButton from '@/page-builders/plate-editor/buttons/home-button'
 import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
 import Versions from '@/page-builders/plate-editor/buttons/versions'
+import ConfigurationDialogTrigger from '@/page-builders/plate-editor/configuration-dialog/trigger'
 import Title from '@/page-builders/plate-editor/title'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
@@ -20,7 +24,9 @@ import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import Languages from '@/components/plate-ui/languages'
 import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
 import { SidebarToggleButton } from '@/components/plate-ui/sidebar-toggle-button'
+import useEpisodeId from '@/providers/episode-id-provider'
 import useProjectId from '@/providers/project-id-provider'
+import { hasNWMRan } from '@/lib/utils/helpers'
 
 import { ERole } from '@/types/admin-types'
 import { BASE_STATUS, EStatus } from '@/types/common'
@@ -36,6 +42,11 @@ const EpisodeHeader = ({
 }) => {
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
+
+	const isGerman = useIsGerman()
+	const episodeId = useEpisodeId()
+
+	const { data } = useEpisodeContent()
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
@@ -127,6 +138,12 @@ const EpisodeHeader = ({
 						<DownloadDocxButton />
 					</Else>
 				</IfElse>
+				<ConfigurationDialogTrigger
+					fallbackQuickPrompts={isGerman ? QUICK_PROMPTS : QUICK_PROMPTS_EN}
+					episodeId={episodeId}
+					showEpisodeSpecificActions
+					allowNWM={!hasNWMRan(data?.chapter)}
+				/>
 			</div>
 		</div>
 	)

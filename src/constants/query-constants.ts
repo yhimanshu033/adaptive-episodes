@@ -66,3 +66,5 @@ export const GENERATE_BEATSHEET_MUTATION_KEY = 'generate-beatsheet-mutation'
 
 export const GET_DOCX_ESTIMATE_QUERY_KEY = 'docx-estimate-file-size'
 export const EPISODE_REGENERATE_MUTATION_KEY = 'episode-regenerate-mutation'
+
+export const CONFIGURATION_QUERY_KEY = 'get-configuration-data'

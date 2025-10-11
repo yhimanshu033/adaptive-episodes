@@ -151,18 +151,6 @@ const useEpisodeHook = () => {
 		return updateStatus(Number(id), parent_id, status, language)
 	}
 
-	const onMetadataSync = async (chapterId: number) => {
-		const taskId = await startTask({
-			method: 'PATCH',
-			url: '/chapters/:chapterId/sync_metadata',
-			urlParams: {
-				chapterId,
-			},
-		})
-		toast.success('Metadata sync started!')
-		return getResponse(taskId)
-	}
-
 	const saveEpisodeMutation = useMutation({
 		mutationKey: [EpisodeActions.UPDATE, id, episodeId],
 		mutationFn: onSaveEpisode,
@@ -217,11 +205,6 @@ const useEpisodeHook = () => {
 		onSuccess,
 	})
 
-	const metadataSyncMutation = useMutation({
-		mutationKey: [EpisodeActions.METATDATA, id],
-		mutationFn: onMetadataSync,
-	})
-
 	useEffect(() => {
 		setFullScreenLoading(
 			(saveEpisodeMutation.isPending && !episodeId) ||
@@ -270,7 +253,6 @@ const useEpisodeHook = () => {
 		episodeUnmergeMutation,
 		episodeInventMutation,
 		episodeDeleteMutation,
-		metadataSyncMutation,
 		statusUpdateMutation,
 		episodeMultipleDeleteMutation,
 	}

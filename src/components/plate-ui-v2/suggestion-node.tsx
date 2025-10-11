@@ -10,10 +10,19 @@ import {
 	suggestionPlugin,
 	type SuggestionConfig,
 } from '@/components/editor/plugins/suggestion-kit'
+import useConfiguration from '@/providers/configuration-provider'
 import { cn } from '@/lib/utils/helpers'
 
-export function SuggestionLeaf(props: PlateLeafProps<TSuggestionText>) {
+import { ESuggestionViewingType } from '@/types/editor-types'
+
+export function SuggestionLeaf({
+	children,
+	...props
+}: PlateLeafProps<TSuggestionText>) {
 	const { api, setOption } = useEditorPlugin(suggestionPlugin)
+
+	const { configurationData } = useConfiguration()
+
 	const leaf = props.leaf
 
 	const leafId: string = api.suggestion.nodeId(leaf) ?? ''
@@ -27,6 +36,24 @@ export function SuggestionLeaf(props: PlateLeafProps<TSuggestionText>) {
 	const Component = ({ delete: 'del', insert: 'ins', update: 'span' } as const)[
 		diffOperation.type
 	]
+
+	if (configurationData.suggestionDisplay === ESuggestionViewingType.DESIRED) {
+		return (
+			<PlateLeaf
+				className="decoration-fm-tag-emerald relative bg-transparent underline hover:bg-transparent"
+				{...props}
+				as={Component}
+				attributes={{
+					id: `suggestion-leaf-${leafId}`,
+					...props.attributes,
+					onMouseEnter: () => setOption('hoverId', leafId),
+					onMouseLeave: () => setOption('hoverId', null),
+				}}
+			>
+				{diffOperation.type === 'delete' ? '' : children}
+			</PlateLeaf>
+		)
+	}
 
 	return (
 		<PlateLeaf
@@ -44,7 +71,7 @@ export function SuggestionLeaf(props: PlateLeafProps<TSuggestionText>) {
 				onMouseLeave: () => setOption('hoverId', null),
 			}}
 		>
-			{props.children}
+			{children}
 		</PlateLeaf>
 	)
 }

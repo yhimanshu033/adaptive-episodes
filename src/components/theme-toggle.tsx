@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { MoonIcon } from '@/icons/moon-icon'
 import { SunIcon } from '@/icons/sun-icon'
@@ -9,6 +9,7 @@ import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 import { Button } from '@/components/ui/button'
+import useConfiguration from '@/providers/configuration-provider'
 import { track } from '@/lib/utils/analytics'
 import { cn } from '@/lib/utils/helpers'
 
@@ -64,4 +65,19 @@ export function ThemeSwitch() {
 			offIcon={<SunIcon />}
 		/>
 	)
+}
+
+export function ThemeConfigurationApply() {
+	const { setTheme } = useTheme()
+	const { configurationData } = useConfiguration()
+
+	useEffect(() => {
+		if (!configurationData) {
+			return
+		}
+		setTheme(configurationData.theme)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [configurationData])
+
+	return null
 }

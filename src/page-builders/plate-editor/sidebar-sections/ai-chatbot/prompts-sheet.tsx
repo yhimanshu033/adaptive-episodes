@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { QUICK_PROMPTS, QUICK_PROMPTS_EN } from '@/constants/ai-constants'
 import useAIChatbot from '@/hooks/use-ai-chatbot'
 import useIsGerman from '@/hooks/use-is-german'
@@ -6,6 +6,7 @@ import useIsGerman from '@/hooks/use-is-german'
 import { List, ListItem, ListSeparator } from '@/components/aural-ui/list'
 import { Sheet, SheetContent, SheetTitle } from '@/components/aural-ui/sheet'
 import ForEach from '@/components/ui/for-each'
+import useConfiguration from '@/providers/configuration-provider'
 import { trim } from '@/lib/utils/helpers'
 
 import { EChatMode } from '@/types/ai-types'
@@ -27,7 +28,14 @@ const PromptsSheet = ({
 	const { handleSuggestion } = useAIChatbot()
 	const isGerman = useIsGerman()
 
-	const prompts = isGerman ? QUICK_PROMPTS : QUICK_PROMPTS_EN
+	const { configurationData } = useConfiguration()
+
+	const prompts = useMemo(() => {
+		if (configurationData.quickPrompts?.length) {
+			return configurationData.quickPrompts
+		}
+		return isGerman ? QUICK_PROMPTS : QUICK_PROMPTS_EN
+	}, [isGerman, configurationData])
 
 	return (
 		<Sheet open={open} onOpenChange={setOpen}>

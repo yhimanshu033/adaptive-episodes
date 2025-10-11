@@ -19,6 +19,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
+import useConfiguration from '@/providers/configuration-provider'
 import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
@@ -42,6 +43,8 @@ const Sidebar = () => {
 	const showSidebar = sidebar && sidebar !== ESidebar.DUAL_VIEW && !focusMode
 	const globalLocalize = useSearchParams().get(GLOBAL_LOCALIZE)
 	const activeCommentId = usePluginOption(commentPlugin, 'activeId')
+
+	const { configurationData } = useConfiguration()
 
 	const isEpisodeNavigationOpen = useEditorStore(
 		useShallow((state) => state.isEpisodeNavigationOpen)
@@ -71,6 +74,14 @@ const Sidebar = () => {
 		setSidebar(null)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isEpisodeNavigationOpen])
+
+	useEffect(() => {
+		if (!configurationData) {
+			return
+		}
+		setSidebar(configurationData.defaultSidebar)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [configurationData])
 
 	if (sidebar === ESidebar.DUAL_VIEW) {
 		return null
