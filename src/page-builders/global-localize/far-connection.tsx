@@ -67,8 +67,9 @@ export default function FarConnection() {
 		}
 		editor.tf.setValue(replacedContentMap[episodeId].children)
 		setReplacedContentMap((prev) => {
-			delete prev[episodeId]
-			return prev
+			const updated = { ...prev }
+			delete updated[episodeId]
+			return updated
 		})
 	}, [replacedContentMap, episodeId, editor.tf, setReplacedContentMap])
 	return null

@@ -14,6 +14,7 @@ import useLocalizeHook, {
 import useLOCSheetData from '@/hooks/query/use-loc-sheet-data'
 import useEditorExtendedStore from '@/store/extended-store'
 import { Value } from 'platejs'
+import { toast } from 'sonner'
 import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -272,7 +273,12 @@ function useGlobalFindAndReplaceUtil() {
 	const onReplace = useCallback(() => {
 		const [episodeId, ...path] = currentId || records[ptr]
 
-		const children = contentMap[episodeId]?.children || []
+		if (!episodeId || !contentMap[episodeId]) {
+			toast.error('Episode could not be located!')
+			return
+		}
+
+		const children = contentMap[episodeId].children || []
 		const updatedChildren = replaceOnce({ children, path, search, replace })
 
 		setReplacedContentMap((prev) => ({

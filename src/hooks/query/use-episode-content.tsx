@@ -139,7 +139,9 @@ export const useEpisodeContentUtil = () => {
 			setRecentEmail(NWM_EMAIL)
 		} else if (resp.email) {
 			if (resp.email !== userData?.user?.email) {
-				toast.info(`${resp.email} is now editing the chapter!`)
+				toast.info(
+					`${resp.email} is now editing the chapter ${resp.chapter.seq_number}!`
+				)
 			}
 			setRecentEmail(resp.email)
 		}
