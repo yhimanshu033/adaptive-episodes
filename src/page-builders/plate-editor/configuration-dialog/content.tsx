@@ -60,8 +60,7 @@ export default function ConfigurationDialogContent({
 		return [
 			{
 				title: 'Default Sidebar Panel',
-				description:
-					'Select which sidebar opens by default when you launch Pocket Copilot.',
+				description: 'Select which sidebar opens by default.',
 				data: {
 					type: EConfigurationContentItemDataType.DROPDOWN,
 					onSelect: (newDefaultSidebar) =>
