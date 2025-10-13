@@ -249,6 +249,10 @@ function handleEventLogClient({
 		return
 	} // SSR guard
 
+	if (!process.env?.NEXT_PUBLIC_ANALYTICS_ENABLED) {
+		return
+	} // TODO: REMOVE THIS ONCE ANALYTICS IS ENABLED
+
 	const referrerParam = new URLSearchParams(window.location.search).get(
 		URL_PARAMS_KEYS.REFERRER
 	)
