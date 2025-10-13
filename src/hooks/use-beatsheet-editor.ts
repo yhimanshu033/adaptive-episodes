@@ -1,4 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { SOCKET_STREAMING_TIMEOUT } from '@/constants/global-constants'
+import useCountdownTimer from '@/hooks/use-countdown-timer'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useUndoRedo } from '@/hooks/use-undo-redo'
 import { TrashIcon } from '@/icons/trash-icon'
 import useBeatsheetStore from '@/store/beatsheet-store'
@@ -18,6 +21,7 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { LucideIcon } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import { shouldTriggerContentReorder } from '@/lib/utils/helpers'
@@ -26,7 +30,10 @@ import {
 	reorderScenesBasedOnChildren,
 } from '@/lib/utils/plate'
 
-import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
+import {
+	TGenerateBeatsheetResponse,
+	TGenerateBeatsheetResponseItem,
+} from '@/types/beatsheet-editor-types'
 
 const useBeatSheetEditorUtil = () => {
 	const editor = useEditorRef()
@@ -55,7 +62,57 @@ const useBeatSheetEditorUtil = () => {
 	const { redo, undo, reset, canRedo, canUndo } = useUndoRedo(scenes, {
 		startIndex: 1,
 	})
+	const [generatingSceneTaskId, setGeneratingSceneTaskId] = useState<
+		Record<string, string>
+	>({})
+	const [generatedContent, setGeneratedContent] = useState<
+		Record<string, TGenerateBeatsheetResponseItem>
+	>({})
+
+	const { taskEnded, tasksTimedOut, responses } = useSocketStreaming()
+
+	const { start: startCountdown, getTimeLeft } = useCountdownTimer()
+
 	const isInitiallyReorderedRef = useRef(false)
+
+	const currentlyGeneratingSceneTaskId = useMemo(() => {
+		const newGeneratingSceneTaskId = Object.fromEntries(
+			Object.entries(generatingSceneTaskId).filter(([, taskId]) => {
+				return !taskEnded[taskId]
+			})
+		)
+		return newGeneratingSceneTaskId
+	}, [taskEnded, generatingSceneTaskId])
+
+	const tasksConsumed = useMemo(() => {
+		const taskSceneIdMap = Object.fromEntries(
+			Object.entries(generatingSceneTaskId).map(([sceneId, taskId]) => [
+				taskId,
+				sceneId,
+			])
+		)
+
+		return new Set(
+			Object.keys(taskSceneIdMap).filter(
+				(taskId) => generatedContent[taskSceneIdMap[taskId]]
+			)
+		)
+	}, [generatingSceneTaskId, generatedContent])
+
+	const getSceneRemainingTime = useCallback(
+		(sceneId: string) => {
+			return getTimeLeft(sceneId)
+		},
+		[getTimeLeft]
+	)
+
+	const getSceneTimedOut = useCallback(
+		(sceneId: string) => {
+			const taskId = generatingSceneTaskId[sceneId]
+			return tasksTimedOut.has(taskId)
+		},
+		[tasksTimedOut, generatingSceneTaskId]
+	)
 
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
 		const scene = scenes.find((s) => s.id === sceneId)
@@ -84,60 +141,55 @@ const useBeatSheetEditorUtil = () => {
 	}
 
 	const handleGenerateScenes = (
-		generatedContent: TGenerateBeatsheetResponse,
-		sceneIds?: string[]
+		generatedContent: TGenerateBeatsheetResponseItem,
+		sceneId?: string
 	) => {
 		const newChildren = structuredClone(editor.children)
-		if (!sceneIds) {
+		if (!sceneId) {
 			return
 		}
 
-		for (const sceneId of sceneIds) {
-			const existingNodeIndex = newChildren.findIndex(
-				(node) => node.scene_id === sceneId
-			)
+		const existingNodeIndex = newChildren.findIndex(
+			(node) => node.scene_id === sceneId
+		)
 
-			const newNode = {
-				type: 'p',
-				children: [
-					{
-						text:
-							generatedContent.find((ele) => ele.id === sceneId)?.content ||
-							`Generated Content for ${sceneId}`,
-					},
-				],
-				id:
-					existingNodeIndex >= 0 ? newChildren[existingNodeIndex].id : nanoid(),
-				scene_id: sceneId,
-			}
-
-			if (existingNodeIndex >= 0) {
-				newChildren[existingNodeIndex] = newNode
-			} else {
-				const currentSceneIndex = scenes.findIndex(
-					(scene) => scene.id === sceneId
-				)
-				let insertIndex = newChildren.length
-
-				for (let i = 0; i < newChildren.length; i++) {
-					const node = newChildren[i]
-					const nodeSceneId = node.scene_id as string | undefined
-					if (!nodeSceneId) {
-						continue
-					}
-
-					const nodeSceneIndex = scenes.findIndex((s) => s.id === nodeSceneId)
-
-					if (nodeSceneIndex > currentSceneIndex) {
-						insertIndex = i
-						break
-					}
-				}
-
-				newChildren.splice(insertIndex, 0, newNode)
-			}
+		const newNode = {
+			type: 'p',
+			children: [
+				{
+					text: generatedContent.content || `Generated Content for ${sceneId}`,
+				},
+			],
+			id: existingNodeIndex >= 0 ? newChildren[existingNodeIndex].id : nanoid(),
+			scene_id: sceneId,
 		}
 
+		if (existingNodeIndex >= 0) {
+			newChildren[existingNodeIndex] = newNode
+		} else {
+			const currentSceneIndex = scenes.findIndex(
+				(scene) => scene.id === sceneId
+			)
+			let insertIndex = newChildren.length
+
+			for (let i = 0; i < newChildren.length; i++) {
+				const node = newChildren[i]
+				const nodeSceneId = node.scene_id as string | undefined
+				if (!nodeSceneId) {
+					continue
+				}
+
+				const nodeSceneIndex = scenes.findIndex((s) => s.id === nodeSceneId)
+
+				if (nodeSceneIndex > currentSceneIndex) {
+					insertIndex = i
+					break
+				}
+			}
+
+			newChildren.splice(insertIndex, 0, newNode)
+		}
+		approveContent(sceneId)
 		editor.tf.setValue(newChildren)
 	}
 
@@ -296,6 +348,96 @@ const useBeatSheetEditorUtil = () => {
 		})
 	}, [reset, handleHistoryScenes])
 
+	const handleStartBeatSheetGeneration = useCallback(
+		({ sceneIds, taskId }: { sceneIds: string[]; taskId: string }) => {
+			const newRecords = sceneIds.reduce(
+				(acc, curr) => {
+					return {
+						...acc,
+						[curr]: taskId,
+					}
+				},
+				{} as Record<string, string>
+			)
+			console.log({ newRecords })
+			setGeneratingSceneTaskId((prev) => {
+				return {
+					...prev,
+					...newRecords,
+				}
+			})
+			sceneIds.forEach((id) =>
+				startCountdown(
+					id,
+					sceneIds.length > 1
+						? 3 * SOCKET_STREAMING_TIMEOUT
+						: SOCKET_STREAMING_TIMEOUT
+				)
+			)
+		},
+		[startCountdown]
+	)
+
+	const handleCompleteBeatSheetGeneration = useCallback(
+		({
+			params,
+			taskId,
+		}: {
+			params: TGenerateBeatsheetResponse
+			taskId: string
+		}) => {
+			const sceneIds = Object.keys(generatingSceneTaskId).filter(
+				(key) => generatingSceneTaskId[key] === taskId
+			)
+			console.log({ sceneIds, params, generatingSceneTaskId })
+			params.forEach((data, idx) => {
+				setGeneratedContent((prev) => {
+					return {
+						...prev,
+						[sceneIds[idx]]: data,
+					}
+				})
+			})
+		},
+		[generatingSceneTaskId]
+	)
+
+	const approveContent = (sceneId: string) => {
+		const taskId = generatingSceneTaskId[sceneId]
+		setGeneratedContent((prev) => {
+			const newMap = { ...prev }
+			delete newMap[taskId]
+			return newMap
+		})
+		setGeneratingSceneTaskId((prev) => {
+			const newMap = { ...prev }
+			delete newMap[sceneId]
+			return newMap
+		})
+		toast.success('Generated content accepted!')
+		// setPendingApprovalContent((prev) => {
+		// 	const newState = { ...prev }
+		// 	delete newState[sceneId]
+		// 	return newState
+		// })
+		// onSuccess()
+	}
+
+	const rejectContent = (sceneId: string) => {
+		const taskId = generatingSceneTaskId[sceneId]
+		setGeneratedContent((prev) => {
+			const newMap = { ...prev }
+			delete newMap[taskId]
+			return newMap
+		})
+		setGeneratingSceneTaskId((prev) => {
+			const newMap = { ...prev }
+			delete newMap[sceneId]
+			return newMap
+		})
+		toast.info('Generated content rejected')
+	}
+
 	useEffect(() => {
 		const nodeEntries = [
 			...editor.api.nodes({
@@ -323,6 +465,33 @@ const useBeatSheetEditorUtil = () => {
 		setOldScenes(scenes)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [scenes, oldScenes])
+
+	useEffect(() => {
+		const taskIds = new Set(Object.values(generatingSceneTaskId))
+		console.log(taskIds, tasksConsumed)
+		for (const taskId of taskIds) {
+			if (
+				tasksConsumed.has(taskId) ||
+				!taskEnded[taskId] ||
+				!responses[taskId]
+			) {
+				continue
+			}
+			console.log({ r: responses[taskId] })
+			handleCompleteBeatSheetGeneration({
+				taskId,
+				params: JSON.parse(
+					responses[taskId].join('')
+				) as TGenerateBeatsheetResponse,
+			})
+		}
+	}, [
+		generatingSceneTaskId,
+		taskEnded,
+		responses,
+		handleCompleteBeatSheetGeneration,
+		tasksConsumed,
+	])
 
 	useEffect(() => {
 		if (isInitiallyReorderedRef.current || !scenes.length) {
@@ -358,6 +527,16 @@ const useBeatSheetEditorUtil = () => {
 		canUndo,
 		oldScenes,
 		setOldScenes,
+		generatedContent,
+		setGeneratedContent,
+		generatingSceneTaskId,
+		setGeneratingSceneTaskId,
+		handleCompleteBeatSheetGeneration,
+		handleStartBeatSheetGeneration,
+		getSceneRemainingTime,
+		getSceneTimedOut,
+		currentlyGeneratingSceneTaskId,
+		rejectContent,
 	}
 }
 

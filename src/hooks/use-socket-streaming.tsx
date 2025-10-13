@@ -32,6 +32,7 @@ import { v4 as uuid } from 'uuid'
 import { Button } from '@/components/aural-ui/button'
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 
+import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
 import { TNoParams, TSocketQueryParams } from '@/types/common'
 
 type TSocketStreamingContext =
@@ -109,6 +110,8 @@ export const SocketStreamingProvider = ({
 	const timeoutCallbacksRef = useRef<Record<string, (data: any) => void>>({})
 	const timeoutsRef = useRef<Record<string, NodeJS.Timeout>>({})
 	const [tasksTimedOut, setTasksTimedOut] = useState<Set<string>>(new Set())
+
+	console.log({ responses, taskEnded, tasksTimedOut })
 
 	useEffect(() => {
 		socket.connect()
@@ -272,6 +275,21 @@ export const SocketStreamingProvider = ({
 					...(params.query as QueryParamsT),
 				},
 			})
+
+			// test start
+			setTaskEnded((prev) => ({ ...prev, [taskId]: true }))
+			setResponses((prev) => ({
+				...prev,
+				[taskId]: [
+					JSON.stringify([
+						{
+							content: 'TEST CONTENT',
+							id: 'test',
+						},
+					] as TGenerateBeatsheetResponse),
+				],
+			}))
+			// test end
 
 			const timeoutId = setTimeout(() => {
 				const timeoutCallback = timeoutCallbacksRef.current[taskId]

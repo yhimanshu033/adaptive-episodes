@@ -54,10 +54,12 @@ export type TGenerateBeatsheetBody = {
 	use_enhancement_plan?: boolean
 }
 
-export type TGenerateBeatsheetResponse = Array<{
+export type TGenerateBeatsheetResponse = Array<TGenerateBeatsheetResponseItem>
+
+export type TGenerateBeatsheetResponseItem = {
 	content: string
 	id: string
-}>
+}
 
 export type TGetScenesMetadataAPIResponse = {
 	message: string
