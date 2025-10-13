@@ -1,10 +1,9 @@
 import React from 'react'
 import useGlobalFindAndReplace from '@/hooks/use-global-find-and-replace'
 import FindAndReplaceUI from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/far'
+import FarHeader from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/far-header'
 
 import useProjectId from '@/providers/project-id-provider'
-
-import FarHeader from '../find-and-replace/far-header'
 
 export default function GlobalLocalize() {
 	const props = useGlobalFindAndReplace()
@@ -20,6 +19,7 @@ export default function GlobalLocalize() {
 					wholeWord: props.wholeWord,
 					toggleSearchMode: props.toggleSearchMode,
 				}}
+				sheetURL={props.sheetURL}
 				hideCloseButton
 			/>
 			<FindAndReplaceUI {...props} isWriter={isWriter} />

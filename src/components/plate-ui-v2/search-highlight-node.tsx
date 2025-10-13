@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
+import useGlobalFindAndReplace from '@/hooks/use-global-find-and-replace'
 import usePlateStore from '@/store/plate-store'
 import {
 	PlateLeaf,
@@ -30,6 +31,8 @@ export const SearchHighlightLeaf = ({
 	const currentId = usePluginOption(FindReplacePlugin, 'currentId') || [0, 0, 0]
 	const id = leaf.id as number[]
 
+	const { setPtr, records } = useGlobalFindAndReplace()
+
 	const episodeId = useEpisodeId()
 	const globalLocalize = useSearchParams().get(GLOBAL_LOCALIZE)
 
@@ -41,10 +44,16 @@ export const SearchHighlightLeaf = ({
 	}, [episodeId, id, globalLocalize])
 
 	function setCurrent() {
-		setOption('currentId', id)
-		if (!globalLocalize) {
+		if (globalLocalize) {
+			const index = records.findIndex(
+				(i) => i.join('-') === [episodeId, ...id].join('-')
+			)
+			if (index !== -1) {
+				setPtr(index)
+			}
 			return
 		}
+		setOption('currentId', id)
 	}
 	function renderContent() {
 		if (isArrayEqual(id, currentId) && replaceEnabled) {

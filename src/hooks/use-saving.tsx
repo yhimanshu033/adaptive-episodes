@@ -145,7 +145,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 					if (message.email) {
 						// check if someone else is editing chapter
 						toast.error(
-							`Saving failed, ${message.email} is currently working on the episode!`
+							`Saving failed, ${message.email} is currently working on the episode ${params.chapterData.chapter.seq_number}!`
 						)
 						setRecentEmail(message.email)
 					} else {
