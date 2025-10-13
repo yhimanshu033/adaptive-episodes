@@ -135,7 +135,6 @@ export default function SceneTab() {
 					...(prompt ? { scene_wide_prompt: prompt } : {}),
 				},
 			})
-			console.log({ taskId })
 			const sceneIds = scenes.map((scene) => scene.data.id)
 			handleStartBeatSheetGeneration({ sceneIds, taskId })
 		},

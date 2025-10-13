@@ -359,7 +359,6 @@ const useBeatSheetEditorUtil = () => {
 				},
 				{} as Record<string, string>
 			)
-			console.log({ newRecords })
 			setGeneratingSceneTaskId((prev) => {
 				return {
 					...prev,
@@ -379,34 +378,27 @@ const useBeatSheetEditorUtil = () => {
 	)
 
 	const handleCompleteBeatSheetGeneration = useCallback(
-		({
-			params,
-			taskId,
-		}: {
-			params: TGenerateBeatsheetResponse
-			taskId: string
-		}) => {
-			const sceneIds = Object.keys(generatingSceneTaskId).filter(
-				(key) => generatingSceneTaskId[key] === taskId
-			)
-			console.log({ sceneIds, params, generatingSceneTaskId })
-			params.forEach((data, idx) => {
-				setGeneratedContent((prev) => {
-					return {
-						...prev,
-						[sceneIds[idx]]: data,
-					}
-				})
+		({ params }: { params: TGenerateBeatsheetResponse }) => {
+			const newContent = params.reduce((acc, curr) => {
+				return {
+					...acc,
+					[curr.id]: curr,
+				}
+			}, {})
+			setGeneratedContent((prev) => {
+				return {
+					...prev,
+					...newContent,
+				}
 			})
 		},
-		[generatingSceneTaskId]
+		[]
 	)
 
 	const approveContent = (sceneId: string) => {
-		const taskId = generatingSceneTaskId[sceneId]
 		setGeneratedContent((prev) => {
 			const newMap = { ...prev }
-			delete newMap[taskId]
+			delete newMap[sceneId]
 			return newMap
 		})
 		setGeneratingSceneTaskId((prev) => {
@@ -415,19 +407,12 @@ const useBeatSheetEditorUtil = () => {
 			return newMap
 		})
 		toast.success('Generated content accepted!')
-		// setPendingApprovalContent((prev) => {
-		// 	const newState = { ...prev }
-		// 	delete newState[sceneId]
-		// 	return newState
-		// })
-		// onSuccess()
 	}
 
 	const rejectContent = (sceneId: string) => {
-		const taskId = generatingSceneTaskId[sceneId]
 		setGeneratedContent((prev) => {
 			const newMap = { ...prev }
-			delete newMap[taskId]
+			delete newMap[sceneId]
 			return newMap
 		})
 		setGeneratingSceneTaskId((prev) => {
@@ -468,7 +453,6 @@ const useBeatSheetEditorUtil = () => {
 
 	useEffect(() => {
 		const taskIds = new Set(Object.values(generatingSceneTaskId))
-		console.log(taskIds, tasksConsumed)
 		for (const taskId of taskIds) {
 			if (
 				tasksConsumed.has(taskId) ||
@@ -477,21 +461,14 @@ const useBeatSheetEditorUtil = () => {
 			) {
 				continue
 			}
-			console.log({ r: responses[taskId] })
 			handleCompleteBeatSheetGeneration({
-				taskId,
 				params: JSON.parse(
 					responses[taskId].join('')
 				) as TGenerateBeatsheetResponse,
 			})
 		}
-	}, [
-		generatingSceneTaskId,
-		taskEnded,
-		responses,
-		handleCompleteBeatSheetGeneration,
-		tasksConsumed,
-	])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [taskEnded, responses])
 
 	useEffect(() => {
 		if (isInitiallyReorderedRef.current || !scenes.length) {
