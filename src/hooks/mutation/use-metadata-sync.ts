@@ -19,7 +19,9 @@ export default function useMetadataSyncMutation(chapterId?: number) {
 			},
 		})
 		toast.success('Metadata sync started!')
-		return getResponse(taskId)
+		const resp = await getResponse(taskId)
+		toast.success('Metadata sync completed!')
+		return resp
 	}
 
 	const metadataSyncMutation = useMutation({
