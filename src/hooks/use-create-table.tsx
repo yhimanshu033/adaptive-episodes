@@ -298,18 +298,6 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				)
 			},
 		},
-		{
-			accessorKey: EEpisodeHeaderKeys.WRITER,
-			header: 'Writer',
-			cell: ({ row }) =>
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-				!row.depth && (
-					<WriterCombobox
-						chapterId={String(row.original.id)}
-						selectedMemberId={String(row.original.writer || '')}
-					/>
-				),
-		},
 	]
 
 	const writerOnlySelectColumns: ColumnDef<TEpisode>[] = [
@@ -431,6 +419,18 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			),
 		},
 		...(isGerman || isOriginal ? languageDependentColumns : []),
+		{
+			accessorKey: EEpisodeHeaderKeys.WRITER,
+			header: 'Writer',
+			cell: ({ row }) =>
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				!row.depth && (
+					<WriterCombobox
+						chapterId={String(row.original.id)}
+						selectedMemberId={String(row.original.writer || '')}
+					/>
+				),
+		},
 		{
 			accessorKey: EEpisodeHeaderKeys.UPDATE_TIME,
 			header: 'Last Updated',
