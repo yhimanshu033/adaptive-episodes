@@ -3,7 +3,6 @@
 import * as React from 'react'
 import useWriterUpdateMutation from '@/hooks/mutation/use-writer-update-mutation'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
-import useAccessChecks from '@/hooks/use-access-checks'
 import { TickIcon } from '@/icons/tick-icon'
 import { useTranslations } from 'next-intl'
 
@@ -42,7 +41,6 @@ const WriterCombobox = ({
 	const triggerRef = React.useRef<HTMLButtonElement>(null)
 
 	const { mutate } = useWriterUpdateMutation(chapterId || '')
-	const { isGerman, isOriginal } = useAccessChecks()
 
 	const { isWriter } = useProjectId()
 
@@ -64,10 +62,6 @@ const WriterCombobox = ({
 		if (!isOpen && triggerRef.current) {
 			triggerRef.current.blur()
 		}
-	}
-
-	if (!(isGerman || isOriginal)) {
-		return null
 	}
 
 	return (
