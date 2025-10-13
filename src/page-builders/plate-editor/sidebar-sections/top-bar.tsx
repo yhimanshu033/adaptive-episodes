@@ -15,6 +15,8 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/aural-ui/tabs'
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
 import ForEach from '@/components/ui/for-each'
 
+import { ESidebar } from '@/types/plate-types'
+
 export default function SidebarTopBar() {
 	const { store: plateStore, setSidebar } = usePlateStore()
 	const sidebar = plateStore(useShallow((state) => state.sidebar))
@@ -52,7 +54,7 @@ export default function SidebarTopBar() {
 							label="Close Sidebar"
 							variant="ghost"
 							onClick={() => {
-								setSidebar(null)
+								setSidebar(ESidebar.CHATBOT)
 								setOption('activeId', null)
 							}}
 							shape="square"

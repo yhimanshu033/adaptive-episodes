@@ -31,7 +31,7 @@ export default function CopyAll({
 
 	return (
 		<div className="fixed top-[63px] right-3 z-20 text-right">
-			<div className="inline-flex h-22 w-40 items-center justify-end [background-image:linear-gradient(270deg,_var(--color-fm-surface-primary)_60.54%,_var(--color-fm-surface-primary-alpha-15)_79.18%)]">
+			<div className="inline-flex h-22 w-40 items-center justify-end [background-image:linear-gradient(220deg,_var(--color-fm-surface-primary)_60.54%,_var(--color-fm-surface-primary-alpha-15)_79.18%)]">
 				<Button
 					onClick={() => void copyAll()}
 					tooltip="Copy All"
