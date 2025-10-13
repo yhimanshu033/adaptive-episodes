@@ -137,6 +137,7 @@ export const pathsWithoutGlobalHeader = [
 	'/manage-project',
 	'/preview',
 	'/content',
+	'/localize',
 ]
 
 export const GDRIVE_BROADCAST_CHANNEL = 'gdrive-channel'

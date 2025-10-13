@@ -3,6 +3,7 @@ import ArrowRightIcon from '@/icons/arrow-right-icon'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/aural-ui/if-else'
+import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Typography } from '@/components/aural-ui/typography'
 import ForEach from '@/components/ui/for-each'
 
@@ -85,24 +86,26 @@ const FindAndReplaceResults = ({
 					/>
 				</div>
 			</div>
-			<ul className="flex flex-col pt-4">
-				<ForEach data={recordTexts}>
-					{(data, idx) => (
-						<li
-							key={idx}
-							className="text-fm-tertiary cursor-pointer px-6 py-2 [font-size:var(--text-fm-md)]"
-							onClick={() => setPtr(idx)}
-						>
-							<span>{data[0]}</span>
-							<del className="text-fm-secondary">{data[1]}</del>
-							<If condition={!!replace}>
-								<span className="text-fm-primary"> {replace}</span>
-							</If>
-							<span>{data[2]}</span>
-						</li>
-					)}
-				</ForEach>
-			</ul>
+			<ScrollArea>
+				<ul className="flex flex-col pt-4">
+					<ForEach data={recordTexts}>
+						{(data, idx) => (
+							<li
+								key={idx}
+								className="text-fm-tertiary cursor-pointer px-6 py-2 [font-size:var(--text-fm-md)]"
+								onClick={() => setPtr(idx)}
+							>
+								<span>{data[0]}</span>
+								<del className="text-fm-secondary">{data[1]}</del>
+								<If condition={!!replace}>
+									<span className="text-fm-primary"> {replace}</span>
+								</If>
+								<span>{data[2]}</span>
+							</li>
+						)}
+					</ForEach>
+				</ul>
+			</ScrollArea>
 		</section>
 	)
 }

@@ -63,7 +63,9 @@ export const useEpisodeRegenerate = () => {
 			!!episodeContent?.email &&
 			episodeContent.email !== session?.user?.email
 		) {
-			toast.warning(`${episodeContent.email} is now editing the chapter!`)
+			toast.warning(
+				`${episodeContent.email} is now editing the chapter ${episodeContent.chapter.seq_number}!`
+			)
 			return
 		}
 

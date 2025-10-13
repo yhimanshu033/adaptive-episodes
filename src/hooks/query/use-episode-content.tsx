@@ -118,18 +118,19 @@ export const useEpisodeContentUtil = () => {
 		const usedEpisodeId = episode?.id
 
 		const resp = await getEpisodeContent(usedEpisodeId)
+
 		if (!resp) {
 			return resp
 		}
+
+		addEpisodeMap(episodeId, resp)
+		addEpisodeKey(episodeId, queryKey)
 
 		localStorage.setItem(
 			LOCAL_STORAGE_KEYS.CONTENT_LANGUAGE,
 			resp.chapter.language || ELanguage.ENGLISH
 		)
 		const nwmRunning = resp?.chapter?.props?.nwm_running
-
-		addEpisodeMap(episodeId, resp)
-		addEpisodeKey(episodeId, queryKey)
 
 		if (nwmRunning) {
 			toast.info(
@@ -138,7 +139,9 @@ export const useEpisodeContentUtil = () => {
 			setRecentEmail(NWM_EMAIL)
 		} else if (resp.email) {
 			if (resp.email !== userData?.user?.email) {
-				toast.info(`${resp.email} is now editing the chapter!`)
+				toast.info(
+					`${resp.email} is now editing the chapter ${resp.chapter.seq_number}!`
+				)
 			}
 			setRecentEmail(resp.email)
 		}

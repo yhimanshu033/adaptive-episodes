@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { SAVE_EPISODE_BUTTON_ID } from '@/constants/editor-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useEditAccess from '@/hooks/use-edit-access'
 import useSaveEpisode from '@/hooks/use-save-episode'
 import { CircleCheck, CloudAlert } from 'lucide-react'
 import { useEventCallback } from 'usehooks-ts'
@@ -17,6 +18,8 @@ const SaveEpisode = () => {
 	const episodeId = useEpisodeId()
 	const { data: episodeContent } = useEpisodeContent()
 
+	const { cannotEdit } = useEditAccess()
+
 	const updatedAt = useMemo(() => {
 		const updateTime = lastSaved || episodeContent?.chapter.update_time
 		if (!updateTime) {
@@ -27,6 +30,9 @@ const SaveEpisode = () => {
 	}, [episodeContent, lastSaved])
 
 	const handleKeyDown = useEventCallback(async (event: KeyboardEvent) => {
+		if (cannotEdit) {
+			return
+		}
 		if ((event.metaKey || event.ctrlKey) && event.key === 's') {
 			event.preventDefault()
 			if (isSaved) {
@@ -36,6 +42,13 @@ const SaveEpisode = () => {
 		}
 	})
 
+	const handleSaveClick = () => {
+		if (cannotEdit) {
+			return
+		}
+		void handleSave()
+	}
+
 	useEffect(() => {
 		window.addEventListener('keydown', handleKeyDown)
 		return () => {
@@ -44,7 +57,7 @@ const SaveEpisode = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
-	if (readOnly) {
+	if (readOnly || cannotEdit) {
 		return null
 	}
 
@@ -54,7 +67,7 @@ const SaveEpisode = () => {
 			innerClassName="!px-0 !py-0 !translate-y-0 !text-fm-placeholder !text-fm-sm"
 			variant="text"
 			className="!text-fm-placeholder text-fm-sm flex items-center gap-2"
-			onClick={() => void handleSave()}
+			onClick={handleSaveClick}
 		>
 			<IfElse condition={isPending}>
 				<If>

@@ -79,7 +79,7 @@ const Explorer = ({ start, end }: { end: number; start: number }) => {
 							explorerData={content}
 							isLoading={isMetadataLoading}
 							isTimedOut={isTaskTimedOut}
-							enableNote={isTaskEnded}
+							enableNote={!taskId || isTaskEnded}
 							start={start}
 							end={end}
 							refetch={() => void refetchPlotOutline()}

@@ -33,7 +33,9 @@ export default function useSavingCheck() {
 			!!content?.email && content.email !== session?.user?.email
 		if (isBlockedByUser) {
 			setRecentEmail(content.email)
-			toast.info(`${content.email} is now editing the chapter`)
+			toast.info(
+				`${content.email} is now editing the chapter ${content.chapter.seq_number}`
+			)
 		}
 	}, [mutateAsync, session, setRecentEmail])
 

@@ -37,6 +37,7 @@ const useMyEditor = ({
 	content,
 	id = 'plate-editor',
 	comments = [],
+	simplified = false,
 }: {
 	comments?: TCommentGeneric[]
 	content: string
@@ -60,6 +61,13 @@ const useMyEditor = ({
 	}, [content])
 
 	const discussions = migrateOldComments(comments, value)
+
+	const nonSimplePlugins = useMemo(() => {
+		if (simplified) {
+			return []
+		}
+		return [...FloatingToolbarKit, ...LaserKit, ...LaserPromptKit]
+	}, [simplified])
 
 	const editor = usePlateEditor(
 		{
@@ -101,14 +109,11 @@ const useMyEditor = ({
 				...FindAndReplaceKit,
 
 				// UI
-				...FloatingToolbarKit,
 
 				//Parsers
 				...DocxKit,
 
-				//laser
-				...LaserKit,
-				...LaserPromptKit,
+				...nonSimplePlugins,
 			],
 			value,
 			id,

@@ -94,21 +94,27 @@ export function ContentActions({
 				variant="text"
 				onClick={handleCopy}
 				className="opacity-80 transition-opacity delay-100 hover:opacity-100"
-				disabled={enableNote}
+				disabled={!enableNote}
+				isDisabled={!enableNote}
 				leftIcon={<CopyIcon className="size-4 stroke-2" />}
 				size="sm"
-				innerClassName="!p-0"
+				innerClassName={cn('!p-0', {
+					'bg-transparent border-transparent': !enableNote,
+				})}
 			>
 				Copy
 			</Button>
 			<Button
 				variant="text"
 				onClick={addToNote}
-				disabled={enableNote}
+				disabled={!enableNote}
+				isDisabled={!enableNote}
 				leftIcon={savedIcon}
 				className="opacity-80 transition-opacity delay-100 hover:opacity-100"
 				size="sm"
-				innerClassName="!p-0"
+				innerClassName={cn('!p-0', {
+					'bg-transparent border-transparent': !enableNote,
+				})}
 			>
 				{savedText}
 			</Button>
