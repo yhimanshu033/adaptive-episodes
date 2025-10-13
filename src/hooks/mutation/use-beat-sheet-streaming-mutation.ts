@@ -22,6 +22,7 @@ const useBeatSheetStreamingMutation = () => {
 					? API_URLS.SCENE_PROMPT_GENERATE
 					: API_URLS.BEATSHEET_GENERATE,
 				body: params,
+				noCache: true,
 			}
 		)
 		return taskId

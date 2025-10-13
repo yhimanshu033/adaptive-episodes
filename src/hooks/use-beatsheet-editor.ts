@@ -101,7 +101,7 @@ const useBeatSheetEditorUtil = () => {
 
 	const getSceneRemainingTime = useCallback(
 		(sceneId: string) => {
-			return getTimeLeft(sceneId)
+			return Math.round((getTimeLeft(sceneId) || 0) / 1000)
 		},
 		[getTimeLeft]
 	)
@@ -469,6 +469,33 @@ const useBeatSheetEditorUtil = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [taskEnded, responses])
+
+	useEffect(() => {
+		const taskIds = new Set(Object.values(generatingSceneTaskId))
+
+		const timedOutTaskIds = new Set<string>([])
+		for (const taskId of taskIds) {
+			if (
+				tasksConsumed.has(taskId) ||
+				taskEnded[taskId] ||
+				!tasksTimedOut.has(taskId)
+			) {
+				continue
+			}
+			timedOutTaskIds.add(taskId)
+		}
+
+		setGeneratingSceneTaskId((prev) => {
+			const newMap = { ...prev }
+			for (const sceneId of Object.keys(prev)) {
+				if (timedOutTaskIds.has(prev[sceneId])) {
+					delete newMap[sceneId]
+				}
+			}
+			return newMap
+		})
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [taskEnded, tasksTimedOut])
 
 	useEffect(() => {
 		if (isInitiallyReorderedRef.current || !scenes.length) {
