@@ -11,6 +11,13 @@ import { TResolvedSuggestion } from '@platejs/suggestion'
 import { LucideIcon } from 'lucide-react'
 
 import { EChatMode, TStoryChatSuggestion } from '@/types/ai-types'
+import {
+	EConfigurationDialogContentTab,
+	ESuggestionViewingType,
+	EThemeMode,
+	TStoredConfigurationData,
+} from '@/types/editor-types'
+import { ESidebar } from '@/types/plate-types'
 
 export const rephraseMethods = [
 	{ id: 'shortenmore', method: 'Shorten', status: 'Shortening...' },
@@ -180,6 +187,22 @@ export const beatSheetEditorAllowedProjects = [
 
 export const DEFAULT_EDITOR_CONTENT = 'No content available!'
 
+export const DEFAULT_CONFIGURATION_DATA: TStoredConfigurationData = {
+	defaultSidebar: ESidebar.CHATBOT,
+	quickPrompts: [],
+	suggestionDisplay: ESuggestionViewingType.CORRECTIONS,
+	theme: EThemeMode.DARK,
+}
+
+export const CLOSED_SIDEBAR_VALUE = 'closed'
+
+export const configurationDialogTabToTitle: Partial<
+	Record<EConfigurationDialogContentTab, string>
+> = {
+	[EConfigurationDialogContentTab.QUICK_PROMPTS]:
+		'Customize your quick prompts!',
+}
+
 export const HIDDEN_DATA = [
 	`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.`,
 	`It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`,
@@ -194,3 +217,11 @@ export const HIDDEN_DATA = [
 	`Where can I get some?`,
 	`There `,
 ]
+
+export const configurationDialogTabToTooltipName: Record<
+	EConfigurationDialogContentTab,
+	string
+> = {
+	[EConfigurationDialogContentTab.QUICK_PROMPTS]: 'quick prompts',
+	[EConfigurationDialogContentTab.OPTIONS]: 'all options',
+}

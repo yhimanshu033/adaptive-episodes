@@ -20,6 +20,7 @@ import { Toaster } from '@/components/aural-ui/toast'
 import { TooltipProvider } from '@/components/plate-ui-v2/tooltip'
 import { PopupRoot } from '@/components/popup-root'
 import { AdaptationProvider } from '@/providers/adaptation-provider'
+import { ConfigurationContextProvider } from '@/providers/configuration-provider'
 import { PlayerProvider } from '@/providers/player-provider'
 import { PollingProvider } from '@/providers/polling-provider'
 import { queryClient } from '@/lib/get-query-client'
@@ -89,14 +90,16 @@ const AppProvider = ({
 											skipDelayDuration={0}
 										>
 											<AdaptationProvider>
-												<NextTopLoader
-													color="var(--color-fm-secondary-800)"
-													showSpinner={false}
-												/>
-												<PlayerProvider>
-													<Player />
-													{children}
-												</PlayerProvider>
+												<ConfigurationContextProvider>
+													<NextTopLoader
+														color="var(--color-fm-secondary-800)"
+														showSpinner={false}
+													/>
+													<PlayerProvider>
+														<Player />
+														{children}
+													</PlayerProvider>
+												</ConfigurationContextProvider>
 												<Toaster />
 												<PopupRoot />
 											</AdaptationProvider>

@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import {
+	CONFIGURATION_STORE_NAME,
 	DB_NAME,
 	INDEXED_DB_KEYS,
 	RECENT_STORE_NAME,
@@ -20,7 +21,7 @@ import { SaveEpisodeParams } from '@/types/episode-type'
 
 const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000 // 14 days in milliseconds
 
-const STORES = [STORE_NAME, RECENT_STORE_NAME]
+const STORES = [STORE_NAME, RECENT_STORE_NAME, CONFIGURATION_STORE_NAME]
 export function openDB(): Promise<IDBDatabase> {
 	return new Promise((resolve, reject) => {
 		try {
