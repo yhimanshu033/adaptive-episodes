@@ -221,7 +221,6 @@ export function Comment(props: {
 	const replyCount = discussionLength - 1
 	const isEditing = editingId && editingId === comment.id
 
-	const [hovering, setHovering] = React.useState(false)
 	const [dropdownOpen, setDropdownOpen] = React.useState(false)
 
 	return (
@@ -230,8 +229,6 @@ export function Comment(props: {
 				<Divider variant="secondary" className="mb-4" />
 			</If>
 			<div
-				onMouseEnter={() => setHovering(true)}
-				onMouseLeave={() => setHovering(false)}
 				className="space-y-3"
 				onClick={() => {
 					const elem = document.getElementById('comment-leaf-' + comment.id)
@@ -270,7 +267,7 @@ export function Comment(props: {
 									variant="ghost"
 									size="small"
 									onClick={() => handleCopy(commentText)}
-									className="hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity group-hover:opacity-100"
+									className="hover:!text-fm-primary text-fm-icon-inactive opacity-0 transition-opacity"
 									icon={<CopyIcon className="size-4 text-inherit" />}
 									shape="square"
 								/>
@@ -279,7 +276,6 @@ export function Comment(props: {
 								condition={
 									!isResolved &&
 									((activeCommentId === comment.discussionId && isFirst) ||
-										hovering ||
 										dropdownOpen)
 								}
 							>
@@ -305,7 +301,11 @@ export function Comment(props: {
 								/>
 							</If>
 
-							<If condition={!isReplyComment}>
+							<If
+								condition={
+									!isReplyComment && activeCommentId === comment.discussionId
+								}
+							>
 								<IconButton
 									label="Resolve"
 									variant="ghost"

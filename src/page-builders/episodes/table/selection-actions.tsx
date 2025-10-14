@@ -51,7 +51,7 @@ export default function SelectionActions({
 			.map((episode) => episode.parent || episode.id)
 			.join(',')
 
-		return `/projects/${String(id)}/${episodeId}/editor?extend=${extended}&${SIMPLIFIED_VIEWABLE_EDITOR}=true&${GLOBAL_LOCALIZE}=true&${HIDE_HEADER}=true`
+		return `/projects/${String(id)}/${episodeId}/localize?extend=${extended}&${SIMPLIFIED_VIEWABLE_EDITOR}=true&${GLOBAL_LOCALIZE}=true&${HIDE_HEADER}=true`
 	}, [selectedRowData, id])
 
 	/**Local adaptation is currently moved to global adaptation */

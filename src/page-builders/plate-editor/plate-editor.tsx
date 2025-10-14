@@ -21,6 +21,7 @@ import WordCountTag from '@/components/plate-ui-v2/word-count-tag'
 import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response'
 import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+import EditorAccessProvider from '@/providers/editor-access-provider'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
 
@@ -45,54 +46,56 @@ function MyEditor({
 	return (
 		<Plate editor={editor}>
 			<EditorDataContextProvider>
-				<SavingContextProvider data={content}>
-					<ChatbotProvider episodeContent={content}>
-						<div className="flex h-screen flex-col">
-							<EditorOverlayLoader />
-							<EpisodeHeader content={content} latestStatus={latestStatus} />
+				<EditorAccessProvider>
+					<SavingContextProvider data={content}>
+						<ChatbotProvider episodeContent={content}>
+							<div className="flex h-screen flex-col">
+								<EditorOverlayLoader />
+								<EpisodeHeader content={content} latestStatus={latestStatus} />
 
-							<div
-								className={cn(
-									'animate-fade-in-up relative min-h-0 flex-1 pb-4'
-								)}
-							>
-								<ResizablePanelGroup
-									direction="horizontal"
-									className="flex h-full overflow-visible!"
+								<div
+									className={cn(
+										'animate-fade-in-up relative min-h-0 flex-1 pb-4'
+									)}
 								>
-									<ResizablePanel
-										minSize={50}
-										order={1}
-										className="h-full w-full flex-1 overflow-visible!"
+									<ResizablePanelGroup
+										direction="horizontal"
+										className="flex h-full overflow-visible!"
 									>
-										<ResizablePanelGroup
-											direction="horizontal"
-											className="flex h-full overflow-visible!"
+										<ResizablePanel
+											minSize={50}
+											order={1}
+											className="h-full w-full flex-1 overflow-visible!"
 										>
-											<ResizablePanel
-												minSize={30}
-												order={1}
-												className="flex w-full flex-col overflow-visible!"
+											<ResizablePanelGroup
+												direction="horizontal"
+												className="flex h-full overflow-visible!"
 											>
-												<FixedToolbar className="overflow-visible! px-0 py-0">
-													<FixedToolbarButtons />
-												</FixedToolbar>
-												<ScrollArea className="relative overflow-y-auto">
-													<WordCountTag />
-													<EditorHandler />
-												</ScrollArea>
-											</ResizablePanel>
-											<DualView />
-										</ResizablePanelGroup>
-									</ResizablePanel>
-									<Sidebar />
-								</ResizablePanelGroup>
+												<ResizablePanel
+													minSize={30}
+													order={1}
+													className="flex w-full flex-col overflow-visible!"
+												>
+													<FixedToolbar className="overflow-visible! px-0 py-0">
+														<FixedToolbarButtons />
+													</FixedToolbar>
+													<ScrollArea className="relative overflow-y-auto">
+														<WordCountTag />
+														<EditorHandler />
+													</ScrollArea>
+												</ResizablePanel>
+												<DualView />
+											</ResizablePanelGroup>
+										</ResizablePanel>
+										<Sidebar />
+									</ResizablePanelGroup>
+								</div>
+								<FloatingPrompt />
+								<FloatingLaserResponse />
 							</div>
-							<FloatingPrompt />
-							<FloatingLaserResponse />
-						</div>
-					</ChatbotProvider>
-				</SavingContextProvider>
+						</ChatbotProvider>
+					</SavingContextProvider>
+				</EditorAccessProvider>
 			</EditorDataContextProvider>
 		</Plate>
 	)

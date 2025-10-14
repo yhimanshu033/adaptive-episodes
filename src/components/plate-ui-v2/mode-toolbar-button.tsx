@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import useEditAccess from '@/hooks/use-edit-access'
-import useCustomPlateStore, { usePlateStore } from '@/store/plate-store'
+import { usePlateStore } from '@/store/plate-store'
 import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
@@ -38,9 +38,6 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 	const { setOption } = useEditorPlugin(SuggestionPlugin)
 
 	const { cannotEdit } = useEditAccess()
-
-	const { store } = useCustomPlateStore()
-	const viewMode = store((state) => state.viewMode)
 
 	const filteredModesList = editorModesList.filter(
 		({ mode }) => !cannotEdit || mode === EditorModes.viewing
@@ -77,16 +74,6 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 		},
 		[cannotEdit, setReadOnly, setOption, editorRef.tf, setSidebar]
 	)
-
-	useEffect(() => {
-		if (cannotEdit) {
-			setTimeout(() => {
-				setReadOnly(true)
-			}, 0)
-			return
-		}
-		setReadOnly(viewMode)
-	}, [cannotEdit, setReadOnly, viewMode])
 
 	return (
 		<Select value={value} onValueChange={handleChange} {...props}>
