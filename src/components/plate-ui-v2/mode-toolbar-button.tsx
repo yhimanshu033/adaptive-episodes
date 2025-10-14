@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import useEditAccess from '@/hooks/use-edit-access'
@@ -39,15 +39,21 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 
 	const { cannotEdit } = useEditAccess()
 
-	const filteredModesList = editorModesList.filter(
-		({ mode }) => !cannotEdit || mode === EditorModes.viewing
-	)
+	const filteredModesList = useMemo(() => {
+		return editorModesList.filter(
+			({ mode }) => !cannotEdit || mode === EditorModes.viewing
+		)
+	}, [cannotEdit])
 
-	const value = readOnly
-		? EditorModes.viewing
-		: isSuggesting
-			? EditorModes.suggesting
-			: EditorModes.editing
+	const value = useMemo(() => {
+		if (readOnly || cannotEdit) {
+			return EditorModes.viewing
+		}
+		if (isSuggesting) {
+			return EditorModes.suggesting
+		}
+		return EditorModes.editing
+	}, [readOnly, cannotEdit, isSuggesting])
 
 	const handleChange = React.useCallback(
 		(newValue: string) => {

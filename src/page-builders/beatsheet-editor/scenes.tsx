@@ -7,7 +7,7 @@ import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useLanguage from '@/hooks/use-language'
 import { beatsheetContextEnglish } from '@/mock-data/beatsheet-editor'
-import SceneContent from '@/page-builders/beatsheet-editor/scene-content'
+import SceneItem from '@/page-builders/beatsheet-editor/scene-item'
 import UndoRedoButtons from '@/page-builders/beatsheet-editor/undo-redo-buttons'
 import useBeatsheetStore from '@/store/beatsheet-store'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
@@ -46,6 +46,7 @@ export default function SceneTab() {
 		getSceneTimedOut,
 		rejectContent,
 		currentlyGeneratingSceneTaskId,
+		getSceneLogs,
 	} = useBeatSheetEditor()
 
 	const language = useLanguage()
@@ -186,7 +187,8 @@ export default function SceneTab() {
 						onValueChange={setOpenSceneIds}
 					>
 						{scenes.map((scene, idx) => (
-							<SceneContent
+							<SceneItem
+								logs={getSceneLogs(scene.id)}
 								hasTimeoutError={!!getSceneTimedOut(scene.id)}
 								idx={idx}
 								isGenerating={!!currentlyGeneratingSceneTaskId[scene.id]}

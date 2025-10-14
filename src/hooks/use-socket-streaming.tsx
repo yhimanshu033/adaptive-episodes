@@ -170,7 +170,6 @@ export const SocketStreamingProvider = ({
 				if (blockedTasksRef.current[task_id]) {
 					return
 				}
-
 				const { chunk, status } = payload
 
 				// Handle task start
@@ -274,64 +273,47 @@ export const SocketStreamingProvider = ({
 			})
 
 			// 			// test start
-			// 			setTaskEnded((prev) => ({ ...prev, [taskId]: true }))
-			// 			setResponses((prev) => ({
-			// 				...prev,
-			// 				[taskId]: [
-			// 					JSON.stringify([
-			// 						{
-			// 							content: `test uhls.
-			// Die sanfte Umarmung und der Kuss der fremden Frau hatten ihn erröten lassen.
-			// Jan schaute missmutig drein.
-			// Er wurde streng erzogen, seit er ein Baby war.
-			// Jede seiner Mahlzeiten wurde sorgfältig zusammengestellt, ihm wurde beigebracht, wann er reden darf und wann er lieber schweigen sollte und wenn er das Bedürfnis hatte, nach draußen zu gehen, um das Anwesen der Forster Familie zu verlassen, wurde er von einer Entourage an Leibwächtern begleitet.
-			// Aber in dem Jungen, der immer allen Anordnungen folgen musste, kam plötzlich ein starkes Verlangen auf.
-			// Er verkündete selbstbewusst: „Ich möchte Mousse au Chocolat ".
-			// Marcel Forster war verwirrt über die Reaktion des Kindes.
-			// Er nahm ihn hoch und trug ihn auf einem Arm zurück in ihre Suite.
-			// Mit einem eiskalten Blick ging Marcel zu seinem Computer hinüber und setzte seine Videokonferenz fort.
-			// Die Person auf dem Bildschirm berichtete: „Herr Forster, wir können nun bestätigen, dass Athena tatsächlich nach Deutschland zurückgekehrt ist.
-			// Außerdem haben wir soeben ein Foto von ihr erhalten -damit kann man arbeiten.
-			// Ich werde es Ihnen sofort zusenden." [MUSIC: Threatening music] Marcels dünne Lippen spitzten sich leicht, nur zwei Worte spuckte er aus: „Findet sie!" In der Villa der Schmidts erhellten unzählige Kronleuchter das gesamte Interieur.
-			// Draußen vor der Tür hörte Varad, wie das digitale Schloss die Sprachansage " Eingabefehler " wiederholte, und ihre Lippen verzogen sich zu einem spöttischen Lächeln. [SFX: Error noise lock] Das Passwort war geändert worden, und natürlich hatte sich niemand die Mühe gemacht, es ihr mitzuteilen.
-			// Sie senkte emotionslos den Blick, nahm ihr Handy und tippte darauf herum. berührte sie mit dem Display das digitale Schloss.
-			// Ein paar Sekunden später öffnete sich die Tür mit einem Klicken. [SFX: Opening noise lock] Im Wohnzimmer herrschte eine lebhafte Atmosphäre.
-			// Als Varad die versammelte Menge sah, wurde ihr klar, dass sie sich auf der Geburtstagsfeier ihrer jüngeren Halbschwester, Clara, befand.
-			// Niemand sah sie kommen, also suchte Varad ein Sofa in der Ecke und setzte sich, um sich ein wenig auszuruhen.
-			// Doch schon bald hörte sie einen leisen Schrei, der von der Terrasse nach drinnen drang.`,
-			// 							id: 'e38c0c9d-25bb-4d63-a823-8f2d43733071',
-			// 						},
-			// 						{
-			// 							content: `test „N-o-r-a.
-			// S-chmidt." Hanna zeigte auf das Schild in Antons Hand „Richtig, oder?", fragte sie aufgeregt.
-			// Anton war geblendet von dem kleinen Lächeln, das ihre Lippen umspielte, als sie auf ihre Tochter herabblickte.
-			// Wer war diese erstaunliche Schönheit?
-			// Nicht für eine Sekunde dachte er, dass das seine Verlobte sein könnte.
-			// Varad hingegen war die aufflammende Begierde in seinen Augen gleichgültig.
-			// Hanna blinzelte und fragte unschuldig: „Hey, sind Sie hier, um ..." Bevor sie ihre Frage beenden konnte, gab Anton das Abholschild seinem Assistenten und unterbrach sie. „Natürlich nicht, kleines Mädchen.
-			// Mit dieser widerwärtigen Frau habe ich nichts am Hut." Ungläubig blickte Hanna auf.
-			// Welcher Teil ihrer Mutter war widerwärtig?! „Aber, wovon reden Sie?
-			// Sind Sie etwa blind?
-			// Das tut mir leid." Ihre Worte verunsicherten Anton einen Moment.
-			// Varad nutzte die Gelegenheit zur Flucht und eilte mit Hanna an der Hand davon.
-			// Anton wollte ihr hinterherrennen, aber sein Assistent hielt ihn auf. „Herr Peters, vergessen Sie nicht die Anweisungen Ihres Großvaters.
-			// Geduld heißt die Devise " Anton rollte mit den Augen und schaute wehmütig den beiden hinterher. - In der Präsidentensuite des Forster Plaza, einem Hotel der Forster Gruppe, scrollte Varad durch ihr Handy, nachdem sie Hanna ins Bett gebracht hatte.
-			// Bereits sieben oder acht verpasste Anrufe von ihrer Familie tauchten nacheinander auf.
-			// Als erstes hörte sie die Nachricht von ihrem Vater ab. „Varad verdammt, was machst du denn?!
-			// Warum nimmst du nicht ab?
-			// Du warst doch diejenige, die diesen ganzen Wirbel um die Auflösung der Verlobung gemacht hat!
-			// Komm her und hör auf unsere Zeit verschwenden.
-			// Deine jüngere Schwester und Anton haben etwas Gutes am Laufen.
-			// Ruiniere das bloß nicht!" [MUSIC: threatening music] Eine Trennung von den Peters kam für Varads Vater nicht infrage, nicht nachdem er die Verbindung zu einer so angesehenen Familie hergestellt und dadurch enormes Ansehen erlangt hatte.
-			// In seinen Augen war Varad das schwarze Schaf, sie war an allem Schuld und er musste es ausbaden.
-			// Also musste eine Lösung her.
-			// Varad Halbschwester Clara war Lückenbüßer.
-			// Die beiden Familien hatten endlich eine Einigung erzielt und Varads Vater war zufrieden.`,
-			// 							id: "0f017171-4d24-4984-bfbc-75242bd4e020"
-			// 						}
-			// 					] as TGenerateBeatsheetResponse),
-			// 				],
-			// 			}))
+			// 						setResponses((prev) => ({
+			// 							...prev,
+			// 							[taskId]: [
+			//   "Processing 1 matched scenes: ['scene_1'].",
+			//   "Processing scene: scene_1.",
+			//   "Enhanced result for scene: scene_1.",
+			//   "Running unified BSE workflow with expansion capabilities",
+			//   "Creating BSE DAG with provided context",
+			//   "Starting dynamic execution of DAG: bse_scene_1",
+			//   "Initializing workspace...",
+			//   "Workspace initialized: 8 active artifacts",
+			//   "Iteration 1: 0/2 nodes completed",
+			//   "Executing node: complexity_analysis",
+			//   "Preparing context for node: complexity_analysis",
+			//   "Using manifest with 6 consumes",
+			//   "Retrieved 6 artifacts from workspace",
+			//   "Processing 1 context variables",
+			//   "Applying 5 artifact mappings",
+			//   "Context preparation completed for node: complexity_analysis",
+			//   "Completed [complexity_analysis] in 6.76s",
+			//   "Executing node: execute_modification",
+			//   "Preparing context for node: execute_modification",
+			//   "Using manifest with 8 consumes",
+			//   "Retrieved 6 artifacts from workspace",
+			//   "Found artifact in results: result_complexity_analysis",
+			//   "Resolving 1 dependency results",
+			//   "Added dependency result: result_complexity_analysis",
+			//   "Processing 1 context variables",
+			//   "Applying 6 artifact mappings",
+			//   "Context preparation completed for node: execute_modification",
+			//   "Completed [execute_modification] in 16.32s",
+			//   "No more ready nodes - execution complete",
+			//   "DAG execution SUCCESS: 2/2 nodes in 25.18s",
+			//   "Final result: SUCCESS",
+			//   "DAG execution completed successfully.",
+			//   "Extracting modified scene from BSE result.",
+			//   "All scenes processed. Total scenes: 1.",
+			//   `[{"id":"scene_1","content":"Modified scene content","status":"success"}]` // final JSON
+			// ]
+			// 						}))
+			// 						setTaskEnded((prev) => ({ ...prev, [taskId]: true }))
 			// 			// test end
 
 			const timeoutId = setTimeout(() => {

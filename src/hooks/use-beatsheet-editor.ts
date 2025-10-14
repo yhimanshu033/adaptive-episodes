@@ -24,7 +24,10 @@ import { useEditorRef } from 'platejs/react'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
-import { shouldTriggerContentReorder } from '@/lib/utils/helpers'
+import {
+	isStringifiedJsonArray,
+	shouldTriggerContentReorder,
+} from '@/lib/utils/helpers'
 import {
 	reorderChildrenBasedOnScenes,
 	reorderScenesBasedOnChildren,
@@ -68,6 +71,9 @@ const useBeatSheetEditorUtil = () => {
 	const [generatedContent, setGeneratedContent] = useState<
 		Record<string, TGenerateBeatsheetResponseItem>
 	>({})
+	const [generationLogs, setGeneratedLogs] = useState<Record<string, string[]>>(
+		{}
+	)
 
 	const { taskEnded, tasksTimedOut, responses } = useSocketStreaming()
 
@@ -378,7 +384,10 @@ const useBeatSheetEditorUtil = () => {
 	)
 
 	const handleCompleteBeatSheetGeneration = useCallback(
-		({ params }: { params: TGenerateBeatsheetResponse }) => {
+		({ params }: { params?: TGenerateBeatsheetResponse }) => {
+			if (!params || !Array.isArray(params)) {
+				return
+			}
 			const newContent = params.reduce((acc, curr) => {
 				return {
 					...acc,
@@ -393,6 +402,28 @@ const useBeatSheetEditorUtil = () => {
 			})
 		},
 		[]
+	)
+
+	const handleStreamedBeatSheetResponse = useCallback(
+		({ params, taskId }: { params: string[]; taskId: string }) => {
+			setGeneratedLogs((prev) => {
+				return {
+					...prev,
+					[taskId]: params,
+				}
+			})
+		},
+		[]
+	)
+
+	const getSceneLogs = useCallback(
+		(sceneId: string) => {
+			const taskId = generatingSceneTaskId[sceneId]
+			const logs = generationLogs[taskId]
+
+			return logs || []
+		},
+		[generatingSceneTaskId, generationLogs]
 	)
 
 	const approveContent = (sceneId: string) => {
@@ -453,22 +484,31 @@ const useBeatSheetEditorUtil = () => {
 
 	useEffect(() => {
 		const taskIds = new Set(Object.values(generatingSceneTaskId))
+
 		for (const taskId of taskIds) {
 			if (
+				tasksTimedOut.has(taskId) ||
 				tasksConsumed.has(taskId) ||
-				!taskEnded[taskId] ||
 				!responses[taskId]
 			) {
 				continue
 			}
-			handleCompleteBeatSheetGeneration({
-				params: JSON.parse(
-					responses[taskId].join('')
-				) as TGenerateBeatsheetResponse,
+			handleStreamedBeatSheetResponse({
+				params: responses[taskId],
+				taskId,
 			})
+			if (taskEnded[taskId]) {
+				const lastChunk = responses[taskId].pop()
+				if (!lastChunk || !isStringifiedJsonArray(lastChunk)) {
+					return
+				}
+				handleCompleteBeatSheetGeneration({
+					params: JSON.parse(lastChunk) as TGenerateBeatsheetResponse,
+				})
+			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [taskEnded, responses])
+	}, [taskEnded, responses, tasksTimedOut])
 
 	useEffect(() => {
 		const taskIds = new Set(Object.values(generatingSceneTaskId))
@@ -541,6 +581,8 @@ const useBeatSheetEditorUtil = () => {
 		getSceneTimedOut,
 		currentlyGeneratingSceneTaskId,
 		rejectContent,
+		generationLogs,
+		getSceneLogs,
 	}
 }
 
