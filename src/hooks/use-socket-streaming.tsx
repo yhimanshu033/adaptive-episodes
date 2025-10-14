@@ -167,6 +167,7 @@ export const SocketStreamingProvider = ({
 					task_id: string
 				}
 			) => {
+				// let task_id = payload.task_id
 				if (blockedTasksRef.current[task_id]) {
 					return
 				}
@@ -271,51 +272,6 @@ export const SocketStreamingProvider = ({
 					...(params.query as QueryParamsT),
 				},
 			})
-
-			// 			// test start
-			// 						setResponses((prev) => ({
-			// 							...prev,
-			// 							[taskId]: [
-			//   "Processing 1 matched scenes: ['scene_1'].",
-			//   "Processing scene: scene_1.",
-			//   "Enhanced result for scene: scene_1.",
-			//   "Running unified BSE workflow with expansion capabilities",
-			//   "Creating BSE DAG with provided context",
-			//   "Starting dynamic execution of DAG: bse_scene_1",
-			//   "Initializing workspace...",
-			//   "Workspace initialized: 8 active artifacts",
-			//   "Iteration 1: 0/2 nodes completed",
-			//   "Executing node: complexity_analysis",
-			//   "Preparing context for node: complexity_analysis",
-			//   "Using manifest with 6 consumes",
-			//   "Retrieved 6 artifacts from workspace",
-			//   "Processing 1 context variables",
-			//   "Applying 5 artifact mappings",
-			//   "Context preparation completed for node: complexity_analysis",
-			//   "Completed [complexity_analysis] in 6.76s",
-			//   "Executing node: execute_modification",
-			//   "Preparing context for node: execute_modification",
-			//   "Using manifest with 8 consumes",
-			//   "Retrieved 6 artifacts from workspace",
-			//   "Found artifact in results: result_complexity_analysis",
-			//   "Resolving 1 dependency results",
-			//   "Added dependency result: result_complexity_analysis",
-			//   "Processing 1 context variables",
-			//   "Applying 6 artifact mappings",
-			//   "Context preparation completed for node: execute_modification",
-			//   "Completed [execute_modification] in 16.32s",
-			//   "No more ready nodes - execution complete",
-			//   "DAG execution SUCCESS: 2/2 nodes in 25.18s",
-			//   "Final result: SUCCESS",
-			//   "DAG execution completed successfully.",
-			//   "Extracting modified scene from BSE result.",
-			//   "All scenes processed. Total scenes: 1.",
-			//   `[{"id":"scene_1","content":"Modified scene content","status":"success"}]` // final JSON
-			// ]
-			// 						}))
-			// 						setTaskEnded((prev) => ({ ...prev, [taskId]: true }))
-			// 			// test end
-
 			const timeoutId = setTimeout(() => {
 				const timeoutCallback = timeoutCallbacksRef.current[taskId]
 				if (timeoutCallback) {

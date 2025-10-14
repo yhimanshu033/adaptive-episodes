@@ -384,14 +384,23 @@ const useBeatSheetEditorUtil = () => {
 	)
 
 	const handleCompleteBeatSheetGeneration = useCallback(
-		({ params }: { params?: TGenerateBeatsheetResponse }) => {
+		({
+			params,
+			taskId,
+		}: {
+			params?: TGenerateBeatsheetResponse
+			taskId: string
+		}) => {
 			if (!params || !Array.isArray(params)) {
 				return
 			}
-			const newContent = params.reduce((acc, curr) => {
+			const scenes = Object.keys(generatingSceneTaskId).filter(
+				(sceneId) => generatingSceneTaskId[sceneId] === taskId
+			)
+			const newContent = params.reduce((acc, curr, idx) => {
 				return {
 					...acc,
-					[curr.id]: curr,
+					[scenes[idx] || curr.id]: curr,
 				}
 			}, {})
 			setGeneratedContent((prev) => {
@@ -401,7 +410,7 @@ const useBeatSheetEditorUtil = () => {
 				}
 			})
 		},
-		[]
+		[generatingSceneTaskId]
 	)
 
 	const handleStreamedBeatSheetResponse = useCallback(
@@ -500,10 +509,12 @@ const useBeatSheetEditorUtil = () => {
 			if (taskEnded[taskId]) {
 				const lastChunk = responses[taskId].pop()
 				if (!lastChunk || !isStringifiedJsonArray(lastChunk)) {
+					toast.error('Response could not be generated!')
 					return
 				}
 				handleCompleteBeatSheetGeneration({
 					params: JSON.parse(lastChunk) as TGenerateBeatsheetResponse,
+					taskId,
 				})
 			}
 		}

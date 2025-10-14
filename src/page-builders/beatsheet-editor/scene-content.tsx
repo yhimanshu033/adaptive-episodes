@@ -53,7 +53,7 @@ export default function SceneContent({
 }: SceneContentProps) {
 	if (isGenerating) {
 		return (
-			<div className="bg-background/80 h-[600px] backdrop-blur-sm">
+			<div className="h-[600px]">
 				<GenerationStatusBar
 					isPending={isGenerating}
 					hasTimeoutError={hasTimeoutError}
@@ -82,7 +82,7 @@ export default function SceneContent({
 
 	if (isPendingApproval && pendingContent) {
 		return (
-			<div className="bg-background/80 absolute inset-0 z-15 flex flex-col backdrop-blur-sm">
+			<div className="flex flex-col">
 				<div className="flex-1 overflow-y-auto p-4">
 					<Typography
 						as="span"
