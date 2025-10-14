@@ -19,9 +19,10 @@ export function SuggestionLeaf({
 	children,
 	...props
 }: PlateLeafProps<TSuggestionText>) {
-	const { api, setOption } = useEditorPlugin(suggestionPlugin)
+	const { api, setOption, getOption } = useEditorPlugin(suggestionPlugin)
 
 	const { configurationData } = useConfiguration()
+	const isSuggesting = getOption('isSuggesting')
 
 	const leaf = props.leaf
 
@@ -37,7 +38,10 @@ export function SuggestionLeaf({
 		diffOperation.type
 	]
 
-	if (configurationData.suggestionDisplay === ESuggestionViewingType.DESIRED) {
+	if (
+		!isSuggesting &&
+		configurationData.suggestionDisplay === ESuggestionViewingType.DESIRED
+	) {
 		return (
 			<PlateLeaf
 				className="decoration-fm-tag-emerald relative bg-transparent underline hover:bg-transparent"
