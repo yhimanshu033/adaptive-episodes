@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import ChevronRightIcon from '@/icons/chevron-right-icon'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
 import Input from '@/components/aural-ui/input'
@@ -94,7 +95,8 @@ function QuickPromptActiveCard({
 
 	const handleSave = useCallback(() => {
 		onSave(promptData)
-	}, [promptData, onSave])
+		toast.success(`Saved changed in the prompt: ${trim(item.title || '', 8)}`)
+	}, [promptData, onSave, item.title])
 
 	return (
 		<div className="flex flex-col justify-between gap-2">

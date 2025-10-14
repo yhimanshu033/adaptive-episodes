@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { QUICK_PROMPTS_EN, sidebarToTitle } from '@/constants/ai-constants'
 import {
 	CLOSED_SIDEBAR_VALUE,
 	configurationDialogTabToTitle,
+	configurationDialogTabToTooltipName,
+	DEFAULT_CONFIGURATION_DATA,
 } from '@/constants/editor-constants'
 import ChevronRightIcon from '@/icons/chevron-right-icon'
 import { CrossIcon } from '@/icons/cross-icon'
@@ -14,8 +16,10 @@ import EpisodeConfig, {
 import { ConfigurationContentItem } from '@/page-builders/plate-editor/configuration-dialog/items'
 import QuickPrompts from '@/page-builders/plate-editor/configuration-dialog/quick-prompts'
 import { setConfigurationDialogTab } from '@/store/configuration-store'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, RotateCcw } from 'lucide-react'
+import { toast } from 'sonner'
 
+import { Button } from '@/components/aural-ui/button'
 import {
 	DialogClose,
 	DialogContent,
@@ -147,6 +151,30 @@ export default function ConfigurationDialogContent({
 		] as TConfigurationContentItem[]
 	}, [configurationData, handleConfigurationDataChange])
 
+	const handleRestoreClick = useCallback(() => {
+		if (
+			configurationData.configurationDialogTab ===
+			EConfigurationDialogContentTab.OPTIONS
+		) {
+			handleConfigurationDataChange(DEFAULT_CONFIGURATION_DATA)
+		} else if (
+			configurationData.configurationDialogTab ===
+			EConfigurationDialogContentTab.QUICK_PROMPTS
+		) {
+			handleConfigurationDataChange({
+				quickPrompts: fallbackQuickPrompts,
+			})
+		}
+
+		toast.success(
+			`Restored default settings for ${configurationDialogTabToTooltipName[configurationData.configurationDialogTab]}`
+		)
+	}, [
+		fallbackQuickPrompts,
+		configurationData.configurationDialogTab,
+		handleConfigurationDataChange,
+	])
+
 	return (
 		<DialogContent
 			noise="none"
@@ -154,30 +182,30 @@ export default function ConfigurationDialogContent({
 			opacity="high"
 			glass="high"
 			borderConfig={['left', 'right']}
-			className="h-[90vh] w-[90vh] max-w-137.5 gap-5 px-0 [box-shadow:none]"
+			className="h-[90vh] w-[90vh] max-w-137.5 gap-2 px-0 [box-shadow:none]"
 		>
-			<ScrollArea className="h-full">
-				<DialogHeader className="space-y-0 px-8">
-					<DialogTitle className="mb-0 flex h-14 items-center justify-between gap-4">
-						Personalize Your Pocket Copilot Experience
-						<DialogClose
-							className={iconButtonVariants({
-								variant: 'ghost',
-								size: 'small',
-								shape: 'square',
-							})}
-						>
-							<CrossIcon className="h-4 w-4" />
-						</DialogClose>
-					</DialogTitle>
+			<DialogHeader className="space-y-0 px-8">
+				<DialogTitle className="mb-0 flex h-14 items-center justify-between gap-4">
+					Personalize Your Pocket Copilot Experience
+					<DialogClose
+						className={iconButtonVariants({
+							variant: 'ghost',
+							size: 'small',
+							shape: 'square',
+						})}
+					>
+						<CrossIcon className="h-4 w-4" />
+					</DialogClose>
+				</DialogTitle>
 
-					<DialogDescription className="sr-only">
-						Fine-tune Pocket Copilot to match your workflow. Adjust themes,
-						panels, and AI behavior for a seamless creative experience.
-					</DialogDescription>
+				<DialogDescription className="sr-only">
+					Fine-tune Pocket Copilot to match your workflow. Adjust themes,
+					panels, and AI behavior for a seamless creative experience.
+				</DialogDescription>
 
-					<Divider variant="dashed" className="border-fm-divider-secondary" />
-				</DialogHeader>
+				<Divider variant="dashed" className="border-fm-divider-secondary" />
+			</DialogHeader>
+			<ScrollArea className="h-[calc(90vh-200px)]">
 				<Tabs className="px-8" value={configurationData.configurationDialogTab}>
 					<If
 						condition={
@@ -239,6 +267,17 @@ export default function ConfigurationDialogContent({
 					</TabsContent>
 				</Tabs>
 			</ScrollArea>
+			<div className="flex justify-end px-8">
+				<Button
+					onClick={handleRestoreClick}
+					tooltip={`Restore default settings for ${configurationDialogTabToTooltipName[configurationData.configurationDialogTab]}`}
+					leftIcon={<RotateCcw />}
+					size="sm"
+					variant="outline"
+				>
+					Restore Defaults
+				</Button>
+			</div>
 		</DialogContent>
 	)
 }

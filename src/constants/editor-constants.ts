@@ -217,3 +217,11 @@ export const HIDDEN_DATA = [
 	`Where can I get some?`,
 	`There `,
 ]
+
+export const configurationDialogTabToTooltipName: Record<
+	EConfigurationDialogContentTab,
+	string
+> = {
+	[EConfigurationDialogContentTab.QUICK_PROMPTS]: 'quick prompts',
+	[EConfigurationDialogContentTab.OPTIONS]: 'all options',
+}
