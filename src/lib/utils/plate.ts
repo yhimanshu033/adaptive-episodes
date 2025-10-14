@@ -1150,9 +1150,23 @@ export function reorderScenesBasedOnChildren({
 }) {
 	const newChildren = structuredClone(children)
 	const newSceneIdOrder = getChildrenSceneIdOrder(newChildren)
-	const sortedScenes = scenes.sort((a, b) => {
-		const aIdx = newSceneIdOrder[a.id] ?? -1
-		const bIdx = newSceneIdOrder[b.id] ?? -1
+	const sortedScenes = [...scenes].sort((a, b) => {
+		const aIdx = newSceneIdOrder[a.id]
+		const bIdx = newSceneIdOrder[b.id]
+		// if both undefined → keep order
+		if (aIdx === undefined && bIdx === undefined) {
+			return 0
+		}
+
+		// if only a is undefined → push a to the end
+		if (aIdx === undefined) {
+			return 1
+		}
+
+		// if only b is undefined → push b to the end
+		if (bIdx === undefined) {
+			return -1
+		}
 		return aIdx - bIdx
 	})
 

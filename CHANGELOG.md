@@ -1,3 +1,22 @@
+## <small>1.3.4 (2025-10-13)</small>
+
+* fix: 🐛 add scene error ([4196aad](https://github.com/Pocket-Fm/co-writing/commit/4196aad))
+* fix: 🐛 back to prod url ([70de0eb](https://github.com/Pocket-Fm/co-writing/commit/70de0eb))
+* fix: 🐛 disabled for external ([b3eaf7d](https://github.com/Pocket-Fm/co-writing/commit/b3eaf7d))
+* fix: 🐛 enabled writers column ([36b0028](https://github.com/Pocket-Fm/co-writing/commit/36b0028))
+* fix: 🐛 multi-ep-far: shallow copy; undefined check; ep-number ([8b65fb4](https://github.com/Pocket-Fm/co-writing/commit/8b65fb4))
+* fix: 🐛 removed laser and floating on sve ([92c6287](https://github.com/Pocket-Fm/co-writing/commit/92c6287))
+* fix: 🐛 resolved comments ([bbba693](https://github.com/Pocket-Fm/co-writing/commit/bbba693))
+* fix: 🐛 tab change refreshj ([a03b443](https://github.com/Pocket-Fm/co-writing/commit/a03b443))
+* fix: disabled analytcs ([c7571c9](https://github.com/Pocket-Fm/co-writing/commit/c7571c9))
+* feat: 🎸 added refetch; sheeturl and setData ([7e9ef6b](https://github.com/Pocket-Fm/co-writing/commit/7e9ef6b))
+* feat: 🎸 multi ep far with ep lock ([341c6c7](https://github.com/Pocket-Fm/co-writing/commit/341c6c7))
+* feat: 🎸 multi-ep-far ([2a6cd6f](https://github.com/Pocket-Fm/co-writing/commit/2a6cd6f))
+* feat: 🎸 voice pass & explorer qa enhancements ([23910d6](https://github.com/Pocket-Fm/co-writing/commit/23910d6))
+* test: 💍 changed to k8s qa ([0743a13](https://github.com/Pocket-Fm/co-writing/commit/0743a13))
+
+
+
 ## <small>1.3.3 (2025-10-10)</small>
 
 * fix: 🐛 added api ([41e78e8](https://github.com/Pocket-Fm/co-writing/commit/41e78e8))
