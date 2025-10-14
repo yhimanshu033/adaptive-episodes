@@ -72,12 +72,12 @@ export function ThemeConfigurationApply() {
 	const { configurationData } = useConfiguration()
 
 	useEffect(() => {
-		if (!configurationData) {
+		if (!configurationData.theme) {
 			return
 		}
 		setTheme(configurationData.theme)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [configurationData])
+	}, [configurationData.theme])
 
 	return null
 }

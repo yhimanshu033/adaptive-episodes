@@ -76,12 +76,12 @@ const Sidebar = () => {
 	}, [isEpisodeNavigationOpen])
 
 	useEffect(() => {
-		if (!configurationData) {
+		if (!configurationData?.defaultSidebar) {
 			return
 		}
 		setSidebar(configurationData.defaultSidebar)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [configurationData])
+	}, [configurationData.defaultSidebar])
 
 	if (sidebar === ESidebar.DUAL_VIEW) {
 		return null
