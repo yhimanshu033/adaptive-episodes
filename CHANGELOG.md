@@ -1,3 +1,12 @@
+## <small>1.3.6 (2025-10-15)</small>
+
+* fix: 🐛 bulk download now sequential ([810c3ee](https://github.com/Pocket-Fm/co-writing/commit/810c3ee))
+* fix: 🐛 changed storychat focus titles ([382f6a9](https://github.com/Pocket-Fm/co-writing/commit/382f6a9))
+* fix: 🐛 changed storychat focus titles ([e667f86](https://github.com/Pocket-Fm/co-writing/commit/e667f86))
+* fix: 🐛 shift to local storage ([e045744](https://github.com/Pocket-Fm/co-writing/commit/e045744))
+
+
+
 ## <small>1.3.5 (2025-10-14)</small>
 
 * fix: 🐛 added metadatasync completion toast ([6e23e1c](https://github.com/Pocket-Fm/co-writing/commit/6e23e1c))
