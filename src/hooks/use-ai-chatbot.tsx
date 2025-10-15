@@ -12,6 +12,7 @@ import React, {
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useCountdownTimer from '@/hooks/use-countdown-timer'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useThrottle } from '@/hooks/use-throttle'
@@ -141,6 +142,7 @@ export function ChatbotProvider({
 
 	const { responses, taskEnded, stopTask } = useSocketStreaming()
 	const { initialStoryData } = useEpisodeTableContext()
+	const { suggestionGuard } = useSuggestionGuard()
 
 	const {
 		start: startCountdown,
@@ -366,7 +368,9 @@ export function ChatbotProvider({
 		})
 		staleReviewIDRef.current = resp.comments.map((comment) => comment.id)
 		commentsCount.current = resp.comments.length
-		editor.tf.setValue(breakDownValue(resp.value))
+		suggestionGuard(() => {
+			editor.tf.setValue(breakDownValue(resp.value))
+		})
 	}
 
 	function removeStaleReviews(staleReviewIDs: string[]) {
@@ -401,7 +405,9 @@ export function ChatbotProvider({
 				.filter((discussion) => discussion.id !== comment.id)
 			editor.setOption(discussionPlugin, 'discussions', updatedDiscussions)
 		})
-		editor.tf.setValue(breakDownValue(children))
+		suggestionGuard(() => {
+			editor.tf.setValue(breakDownValue(children))
+		})
 	}
 
 	useEffect(() => {

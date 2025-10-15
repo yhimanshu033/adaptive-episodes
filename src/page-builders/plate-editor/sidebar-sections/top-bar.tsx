@@ -30,7 +30,7 @@ export default function SidebarTopBar() {
 		<div className="bg-fm-surface-primary border-fm-divider-tertiary sticky top-0 z-20 h-15.5 border-y">
 			<IfElse condition={sidebarButtons.includes(sidebar)}>
 				<If>
-					<Tabs defaultValue={sidebar} className="h-full">
+					<Tabs value={sidebar} className="h-full">
 						<TabsList className="h-full justify-between border-b-0">
 							<ForEach data={sidebarButtons}>
 								{(sidebarItem, idx) => (

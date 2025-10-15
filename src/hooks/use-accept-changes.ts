@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import { useCallback } from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useSaveEpisode from '@/hooks/use-save-episode'
 import useAIStore from '@/store/ai-store'
 import useEpisodeIdStore from '@/store/episode-id-store'
@@ -21,6 +22,7 @@ export default function useAcceptChanges() {
 	const value = useEpisodeIdContext(
 		useShallow((state) => state.acceptedDiffValue)
 	)
+	const { suggestionGuard } = useSuggestionGuard()
 
 	const editor = useEditorRef()
 	const { handleSave } = useSaveEpisode()
@@ -54,12 +56,21 @@ export default function useAcceptChanges() {
 				return
 			}
 			const currVal = getAcceptedDiffValue({ value, all, isSfx })
-			editor.tf.setValue(breakDownValue(currVal))
+			suggestionGuard(() => {
+				editor.tf.setValue(breakDownValue(currVal))
+			})
 			setResponseValue(null)
 			setPrevValue(null)
 			setAcceptedDiffValue(null)
 		},
-		[value, editor.tf, setPrevValue, setResponseValue, setAcceptedDiffValue]
+		[
+			value,
+			editor.tf,
+			setPrevValue,
+			setResponseValue,
+			setAcceptedDiffValue,
+			suggestionGuard,
+		]
 	)
 
 	return { handleAccept }

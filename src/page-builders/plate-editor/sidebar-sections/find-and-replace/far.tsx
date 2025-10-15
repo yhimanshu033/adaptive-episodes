@@ -35,6 +35,7 @@ export default function FindAndReplaceUI({
 	setData,
 	handleScanEpisode,
 	updateLOCPending,
+	replaceEnabled,
 }: IFindAndReplaceUIProps) {
 	return (
 		<>
@@ -50,6 +51,7 @@ export default function FindAndReplaceUI({
 				wholeWord={wholeWord}
 				toggleSearchMode={toggleSearchMode}
 				setData={setData}
+				replaceEnabled={replaceEnabled}
 			/>
 			<FindAndReplaceResults
 				search={search}

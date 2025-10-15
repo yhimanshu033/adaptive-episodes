@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import { useUndoRedo } from '@/hooks/use-undo-redo'
 import { TrashIcon } from '@/icons/trash-icon'
 import useBeatsheetStore from '@/store/beatsheet-store'
@@ -57,6 +58,8 @@ const useBeatSheetEditorUtil = () => {
 	})
 	const isInitiallyReorderedRef = useRef(false)
 
+	const { suggestionGuard } = useSuggestionGuard()
+
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
 		const scene = scenes.find((s) => s.id === sceneId)
 		if (!scene) {
@@ -78,7 +81,9 @@ const useBeatSheetEditorUtil = () => {
 		)
 		if (deleteNodeIndex > -1) {
 			newChildren.splice(deleteNodeIndex, 1)
-			editor.tf.setValue(newChildren)
+			suggestionGuard(() => {
+				editor.tf.setValue(newChildren)
+			})
 		}
 		deleteScene(sceneId)
 	}
@@ -137,8 +142,9 @@ const useBeatSheetEditorUtil = () => {
 				newChildren.splice(insertIndex, 0, newNode)
 			}
 		}
-
-		editor.tf.setValue(newChildren)
+		suggestionGuard(() => {
+			editor.tf.setValue(newChildren)
+		})
 	}
 
 	const handleDragEnd = (event: DragEndEvent) => {
@@ -160,7 +166,9 @@ const useBeatSheetEditorUtil = () => {
 				children: editor.children,
 				scenes: newSceneOrder,
 			})
-			editor.tf.setValue(sortedEditorChildren)
+			suggestionGuard(() => {
+				editor.tf.setValue(sortedEditorChildren)
+			})
 		}
 
 		// Handle BEAT reorder
@@ -265,11 +273,13 @@ const useBeatSheetEditorUtil = () => {
 					children: editor.children,
 					scenes: newScenes,
 				})
-				editor.tf.setValue(sortedEditorChildren)
+				suggestionGuard(() => {
+					editor.tf.setValue(sortedEditorChildren)
+				})
 			}
 			setScenes(newScenes)
 		},
-		[scenes, setScenes, editor.children, editor.tf]
+		[scenes, setScenes, editor.children, editor.tf, suggestionGuard]
 	)
 
 	const handleUndo = useCallback(() => {
