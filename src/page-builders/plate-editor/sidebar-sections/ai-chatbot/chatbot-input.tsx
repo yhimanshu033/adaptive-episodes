@@ -66,7 +66,7 @@ const ChatbotInput = () => {
 							type="button"
 						>
 							<Settings size={12} />
-							<p>Focus</p>
+							<p>Add Context</p>
 							<ChevronUpIcon className="w-4" />
 						</Button>
 					</CheckboxDropdown>
