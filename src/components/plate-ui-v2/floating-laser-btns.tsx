@@ -1,12 +1,12 @@
 import React from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { rephraseMethods } from '@/constants/editor-constants'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import useLaserStore from '@/store/laser-store'
-import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { nanoid } from 'nanoid'
 import { Value } from 'platejs'
-import { useEditorRef, usePluginOption } from 'platejs/react'
+import { useEditorRef } from 'platejs/react'
 import type { Range } from 'slate'
 
 import {
@@ -25,12 +25,7 @@ import { MarkToolbarButton } from './mark-toolbar-button'
 export default function FloatingLaserBtns() {
 	const editor = useEditorRef()
 	const { setActiveLaser, setPromptActive } = useLaserStore()
-
-	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
-
-	if (isSuggesting) {
-		return null
-	}
+	const { suggestionGuard } = useSuggestionGuard()
 
 	return (
 		<DropdownMenu modal={false}>
@@ -78,7 +73,9 @@ export default function FloatingLaserBtns() {
 									)
 									setActiveLaser(key)
 								}
-								editor.tf.setValue(newChildren)
+								suggestionGuard(() => {
+									editor.tf.setValue(newChildren)
+								})
 								track({
 									event: EVENT_TYPE.BUTTON_CLICK,
 									screenName: SCREEN_NAME.EPISODE_EDITOR,

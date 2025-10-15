@@ -24,7 +24,6 @@ import DownloadDocxButton from '@/components/plate-ui/download-docx-button'
 import Languages from '@/components/plate-ui/languages'
 import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
 import { SidebarToggleButton } from '@/components/plate-ui/sidebar-toggle-button'
-import useEpisodeId from '@/providers/episode-id-provider'
 import useProjectId from '@/providers/project-id-provider'
 import { hasNWMRan } from '@/lib/utils/helpers'
 
@@ -44,7 +43,6 @@ const EpisodeHeader = ({
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
 	const isGerman = useIsGerman()
-	const episodeId = useEpisodeId()
 
 	const { data } = useEpisodeContent()
 
@@ -140,7 +138,7 @@ const EpisodeHeader = ({
 				</IfElse>
 				<ConfigurationDialogTrigger
 					fallbackQuickPrompts={isGerman ? QUICK_PROMPTS : QUICK_PROMPTS_EN}
-					episodeId={episodeId}
+					episodeId={data?.chapter?.id}
 					showEpisodeSpecificActions
 					allowNWM={!hasNWMRan(data?.chapter)}
 				/>

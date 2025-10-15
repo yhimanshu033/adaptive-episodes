@@ -4,6 +4,7 @@ import {
 	ESTIMATED_FLOATING_HEIGHT,
 	RESPONSE_GAP,
 } from '@/constants/editor-constants'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import { CrossIcon } from '@/icons/cross-icon'
 import { TickIcon } from '@/icons/tick-icon'
 import useLaserStore from '@/store/laser-store'
@@ -39,6 +40,7 @@ export default function FloatingLaserResponse() {
 		lasers: allLasers,
 	} = laserStore()
 	const editor = useEditorRef()
+	const { suggestionGuard } = useSuggestionGuard()
 
 	const laser =
 		responseActive === activeLaser && responseActive
@@ -76,13 +78,14 @@ export default function FloatingLaserResponse() {
 					(node) => updateNodesWithStartKeys('laser', text, node),
 					(node) => updateNodesWithStartKeys('laser', '', node)
 				)
-
-				editor.tf.setValue(breakDownValue(newVal))
+				suggestionGuard(() => {
+					editor.tf.setValue(breakDownValue(newVal))
+				})
 			} catch (error) {
 				console.error(error)
 			}
 		},
-		[editor, key]
+		[editor, key, suggestionGuard]
 	)
 
 	const onResetLeaf = useCallback(() => {
@@ -97,11 +100,13 @@ export default function FloatingLaserResponse() {
 				(node) => deleteNodesWithStartKeys('laser', node),
 				(node) => deleteNodesWithStartKeys('laser', node)
 			)
-			editor.tf.setValue(breakDownValue(newVal))
+			suggestionGuard(() => {
+				editor.tf.setValue(breakDownValue(newVal))
+			})
 		} catch (error) {
 			console.error(error)
 		}
-	}, [editor, key])
+	}, [editor, key, suggestionGuard])
 
 	function handleAcceptRephrase() {
 		onRephrase(val)

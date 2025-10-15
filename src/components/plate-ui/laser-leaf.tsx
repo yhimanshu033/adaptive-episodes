@@ -2,8 +2,8 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { LASER_LEAF_KEYS } from '@/constants/editor-constants'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useLaserStore from '@/store/laser-store'
-import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { cn } from '@udecode/cn'
 import { Descendant, Text } from 'platejs'
 import {
@@ -11,7 +11,6 @@ import {
 	PlateLeafProps,
 	useEditorRef,
 	useEditorState,
-	usePluginOption,
 } from 'platejs/react'
 
 import LaserRephrase from '@/components/plate-ui/laser-rephrase'
@@ -51,7 +50,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		store: laserStore,
 	} = useLaserStore()
 	const { children: allChildren } = useEditorState()
-	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
+	const { suggestionGuard } = useSuggestionGuard()
 
 	useEffect(() => {
 		if (!key || !divRef?.current) {
@@ -149,7 +148,9 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		try {
 			const val = structuredClone(editor.children)
 			val.forEach(traverse)
-			editor.tf.setValue(breakDownValue(val))
+			suggestionGuard(() => {
+				editor.tf.setValue(breakDownValue(val))
+			})
 			track({
 				event: EVENT_TYPE.BUTTON_CLICK,
 				screenName: SCREEN_NAME.EPISODE_EDITOR,
@@ -162,7 +163,7 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		} catch (error) {
 			console.error(error)
 		}
-	}, [editor, traverse, key, methodId])
+	}, [editor, traverse, key, methodId, suggestionGuard])
 
 	const resetActive = useCallback(() => {
 		setActiveLaser(null)
@@ -248,10 +249,6 @@ export const LaserLeaf = ({ className, ...props }: PlateLeafProps) => {
 		btnRef.current?.focus()
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [key, responseMode])
-
-	if (isSuggesting) {
-		return <>{children}</>
-	}
 
 	return (
 		<PlateLeaf
