@@ -58,43 +58,25 @@ export default function useBulkEpisodeMutations() {
 		}
 
 		toast.info('Download started!')
-
 		if (separate) {
 			const maxDownloads = Math.min(fileUrls.length, selectedEpisodes.length)
-
-			const downloadPromises: Promise<{
-				filename: string
-				success: boolean
-			}>[] = []
-
+			let successfulDownloads = 0
 			for (let idx = 0; idx < maxDownloads; idx++) {
 				const url = fileUrls[idx]
 				const filename = (selectedEpisodes[idx]?.chapter_title ?? '') + '.docx'
-
-				const downloadPromise = downloadFileAsync(url, filename)
-					.then(() => ({ filename, success: true }))
-					.catch((error) => {
-						console.error(`Failed to download ${filename}:`, error)
-						toast.error(`Failed to download ${filename}`)
-						return { filename, success: false }
-					})
-
-				downloadPromises.push(downloadPromise)
+				try {
+					await downloadFileAsync(url, filename)
+					toast.success(
+						`Download started for chapter ${selectedEpisodes[idx]?.seq_number}`
+					)
+					successfulDownloads++
+				} catch {
+					toast.error(
+						`Download failed for chapter ${selectedEpisodes[idx]?.seq_number}`
+					)
+				}
 			}
-
-			const results = await Promise.allSettled(downloadPromises)
-			const successfulDownloads = results.filter(
-				(result) => result.status === 'fulfilled' && result.value.success
-			).length
-			const failedDownloads = maxDownloads - successfulDownloads
-
-			if (successfulDownloads > 0) {
-				toast.success(`Downloaded ${successfulDownloads} file(s) successfully!`)
-			}
-
-			if (failedDownloads > 0 && successfulDownloads === 0) {
-				toast.error(`Failed to download all ${failedDownloads} file(s)!`)
-			}
+			toast.success(`Download started for ${successfulDownloads} chapters `)
 		} else {
 			const filename =
 				initialStoryData?.project_title +
