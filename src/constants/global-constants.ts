@@ -172,3 +172,5 @@ export const IGNORE_ERROR_API_URLS = new Set([
 ])
 
 export const NWM_EMAIL = 'NWM_REGENERATION_WORKER'
+
+export const CONFIGURATION_DATA_KEY = 'CONFIGURATION_DATA'
