@@ -34,12 +34,12 @@ export function CheckboxDropdown({ children }: { children: React.ReactNode }) {
 			},
 			{
 				key: 'prev_eps' as const,
-				label: 'Add previous episode to context',
+				label: 'Add previous episodes to context',
 				checked: storyExplorerConfiguration.prev_eps,
 			},
 			{
 				key: 'next_eps' as const,
-				label: 'Add next episode to context',
+				label: 'Add next episodes to context',
 				checked: storyExplorerConfiguration.next_eps,
 			},
 		],
