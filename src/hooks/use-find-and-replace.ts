@@ -100,7 +100,7 @@ export default function useFindAndReplace() {
 			editor.tf.setValue(breakDownValue(newChildren))
 		})
 		// eslint-disable-next-line  react-hooks/exhaustive-deps
-	}, [debouncedData])
+	}, [debouncedData, suggestionGuard])
 
 	const editor = useEditorRef()
 	const occurrences = useMemo(
@@ -242,11 +242,6 @@ export default function useFindAndReplace() {
 	}
 
 	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-		// setOptions({ search: e.target.value })
-		// const updatedChildren = structuredClone(children)
-		// suggestionGuard(() => {
-		// 	editor.tf.setValue(breakDownValue(updatedChildren))
-		// })
 		setRealTimeData((prev) => {
 			return {
 				...prev,
