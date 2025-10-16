@@ -21,7 +21,7 @@ export default function FloatingLaserResponse({
 	onTryAgain,
 	onResetLeaf,
 }: {
-	onResetLeaf: () => void
+	onResetLeaf: (removeOld?: boolean) => void
 	onTryAgain: () => void
 }) {
 	const { setActiveLaser, setLaser, store: laserStore } = useLaserStore()
@@ -60,10 +60,8 @@ export default function FloatingLaserResponse({
 					return
 				}
 				suggestionGuard(() => {
-					editor.tf.insertText(text, {
-						at: firstMatch[1],
-					})
-					editor.tf.insertBreak()
+					editor.tf.select(firstMatch[1], { edge: 'start' })
+					editor.tf.insertNodes({ text })
 				})
 			} catch (error) {
 				console.error(error)
@@ -74,7 +72,7 @@ export default function FloatingLaserResponse({
 
 	function handleAcceptRephrase() {
 		onRephrase(val)
-		onResetLeaf()
+		onResetLeaf(true)
 		setActiveLaser(null)
 		track({
 			event: EVENT_TYPE.BUTTON_CLICK,

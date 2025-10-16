@@ -100,36 +100,46 @@ export default function LaserRephrase({
 		}
 	}, [key, leaf, editor.api, allChildren])
 
-	const onResetLeaf = useCallback(() => {
-		if (!key) {
-			return
-		}
-		try {
-			const matches = editor.api
-				.nodes({
-					at: [],
-					match: (n) => !!n?.[key],
+	const onResetLeaf = useCallback(
+		(removeOld?: boolean) => {
+			if (!key) {
+				return
+			}
+			try {
+				const matches = editor.api
+					.nodes({
+						at: [],
+						match: (n) => !!n?.[key],
+					})
+					.toArray()
+				const aggregateObject = matches.reduce((acc, curr) => {
+					return {
+						...acc,
+						...curr[0],
+					}
+				}, {})
+				const laserKeys = Object.keys(aggregateObject).filter((key) =>
+					key.startsWith('laser')
+				)
+				suggestionGuard(() => {
+					if (removeOld) {
+						editor.tf.removeNodes({
+							at: [],
+							match: (n) => !!n?.[key],
+						})
+					} else {
+						editor.tf.unsetNodes(laserKeys, {
+							at: [],
+							match: (n) => !!n?.[key],
+						})
+					}
 				})
-				.toArray()
-			const aggregateObject = matches.reduce((acc, curr) => {
-				return {
-					...acc,
-					...curr[0],
-				}
-			}, {})
-			const laserKeys = Object.keys(aggregateObject).filter((key) =>
-				key.startsWith('laser')
-			)
-			suggestionGuard(() => {
-				editor.tf.unsetNodes(laserKeys, {
-					at: [],
-					match: (n) => !!n?.[key],
-				})
-			})
-		} catch (error) {
-			console.error(error)
-		}
-	}, [editor, key, suggestionGuard])
+			} catch (error) {
+				console.error(error)
+			}
+		},
+		[editor, key, suggestionGuard]
+	)
 
 	const lasersResponseMap = laserStore(useShallow((state) => state.lasers))
 
@@ -203,7 +213,7 @@ export default function LaserRephrase({
 				</p>
 			</div>
 			<IconButton
-				onClick={onResetLeaf}
+				onClick={() => onResetLeaf()}
 				icon={<X size={16} />}
 				label="Close"
 				variant="ghost"
