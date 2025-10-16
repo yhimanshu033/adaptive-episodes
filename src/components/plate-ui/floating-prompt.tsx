@@ -1,23 +1,20 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import {
-	ESTIMATED_FLOATING_HEIGHT,
 	LASER_LEAF_KEYS,
-	RESPONSE_GAP,
+	LASER_PROMPT_KEYS,
 } from '@/constants/editor-constants'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useLaserStore from '@/store/laser-store'
 import { CheckedState } from '@radix-ui/react-checkbox'
 import { Send } from 'lucide-react'
 import { nanoid } from 'nanoid'
-import { Descendant } from 'platejs'
 import { useEditorRef } from 'platejs/react'
 
 import { Button } from '@/components/aural-ui/button'
 import { Checkbox } from '@/components/aural-ui/checkbox'
 import Label from '@/components/aural-ui/label'
 import Textarea from '@/components/aural-ui/textarea'
-import { LaserPlugin } from '@/lib/plate/plugins/laser-plugin'
 import { track } from '@/lib/utils/analytics'
 import { cn } from '@/lib/utils/helpers'
 
@@ -25,7 +22,7 @@ import { Divider } from '../aural-ui/divider'
 
 export default function FloatingPrompt() {
 	const { setActiveLaser, setPromptActive, store: laserStore } = useLaserStore()
-	const { promptPosition, promptActive } = laserStore()
+	const { promptActive } = laserStore()
 	const editor = useEditorRef()
 
 	const [val, setVal] = React.useState<string>('')
@@ -34,49 +31,61 @@ export default function FloatingPrompt() {
 
 	const key = useMemo(() => {
 		if (promptActive) {
-			return `laser-id-${promptActive.split('floating-prompt-id-')[1]}`
+			return `${LASER_LEAF_KEYS.ID_START}${promptActive.split(LASER_PROMPT_KEYS.ID_START)[1]}`
 		}
-		return `laser-id-${nanoid()}`
+		return `${LASER_LEAF_KEYS.ID_START}${nanoid()}`
 	}, [promptActive])
-
-	const traverse = useCallback(
-		(node: Descendant, intoLaser: boolean) => {
-			if (!promptActive) {
-				return
-			}
-			if (promptActive in node) {
-				const keys = Object.keys(node).filter((nodeKey) =>
-					nodeKey.startsWith('floating-prompt')
-				)
-				keys.forEach((nodeKey) => {
-					delete node[nodeKey]
-				})
-				if (intoLaser) {
-					node[LaserPlugin.key as string] = true
-					node[key] = true
-					node[LASER_LEAF_KEYS.CUSTOM_METHOD] = true
-					node[LASER_LEAF_KEYS.PROMPT] = val.trim()
-					node[LASER_LEAF_KEYS.ADDITIONAL_CONTEXT] = additionalContext
-					setActiveLaser(key)
-				}
-			} else if ('children' in node) {
-				;(node.children as Descendant[]).forEach((child) =>
-					traverse(child, intoLaser)
-				)
-			}
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[promptActive, val, additionalContext, key]
-	)
 
 	const onResetLeaf = useCallback(
 		(intoLaser = false) => {
+			if (!promptActive) {
+				return
+			}
 			try {
-				const val = structuredClone(editor.children)
-				val.forEach((node) => traverse(node, intoLaser))
+				const matches = editor.api
+					.nodes({
+						at: [],
+						match: (n) => !!n[promptActive],
+					})
+					.toArray()
+				const firstMatch = matches?.[0]
+				if (!firstMatch || !matches) {
+					return
+				}
+				const aggregateObj = matches.reduce((acc, curr) => {
+					return {
+						...acc,
+						...curr[0],
+					}
+				}, {})
+				const laserPromptKeys = Object.keys(aggregateObj).filter((k) =>
+					k.startsWith(LASER_PROMPT_KEYS.KEY)
+				)
+
 				suggestionGuard(() => {
-					editor.tf.setValue(val)
+					if (intoLaser) {
+						editor.tf.setNodes(
+							{
+								[LASER_LEAF_KEYS.KEY]: true,
+								[key]: true,
+								[LASER_LEAF_KEYS.CUSTOM_METHOD]: true,
+								[LASER_LEAF_KEYS.PROMPT]: val.trim(),
+								[LASER_LEAF_KEYS.ADDITIONAL_CONTEXT]: additionalContext,
+							},
+							{
+								at: firstMatch[1],
+							}
+						)
+						setTimeout(() => {
+							setActiveLaser(key)
+						}, 500)
+					}
+					editor.tf.unsetNodes(laserPromptKeys, {
+						at: [],
+						match: (n) => !!n[promptActive],
+					})
 				})
+
 				setPromptActive(null)
 				track({
 					event: EVENT_TYPE.BUTTON_CLICK,
@@ -84,45 +93,29 @@ export default function FloatingPrompt() {
 					metaData: {
 						action: ACTION.LASER_START,
 						method: 'custom-send',
-						flowId: key.split('laser-id-')[1],
+						flowId: key.split(LASER_LEAF_KEYS.ID_START)[1],
 					},
 				})
 			} catch (error) {
 				console.error(error)
 			}
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[editor, traverse, setPromptActive, key, suggestionGuard]
+
+		[
+			editor.api,
+			promptActive,
+			editor.tf,
+			setPromptActive,
+			key,
+			suggestionGuard,
+			additionalContext,
+			val,
+			setActiveLaser,
+		]
 	)
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const name = useMemo(nanoid, [promptActive])
-
-	const positionStyle = useMemo(() => {
-		if (!promptPosition) {
-			return {}
-		}
-		const yPosition =
-			(promptPosition.clientY ?? 0) +
-				(promptPosition.height ?? 0) +
-				ESTIMATED_FLOATING_HEIGHT >
-			window.innerHeight
-				? {
-						bottom:
-							window.innerHeight - (promptPosition.clientY ?? 0) + RESPONSE_GAP,
-					}
-				: {
-						top:
-							(promptPosition.clientY ?? 0) +
-							(promptPosition.height ?? 0) +
-							RESPONSE_GAP,
-					}
-		return {
-			...yPosition,
-			left: promptPosition.clientX || 500,
-			width: promptPosition.width || 800,
-		}
-	}, [promptPosition])
 
 	function handleCheckedChange(checked: CheckedState) {
 		if (checked === 'indeterminate') {
@@ -139,17 +132,19 @@ export default function FloatingPrompt() {
 	return (
 		<div
 			onBlur={(e) => {
-				if (e.currentTarget.contains(e.relatedTarget)) {
+				if (
+					e.currentTarget.contains(e.relatedTarget) ||
+					e.relatedTarget?.id === LASER_PROMPT_KEYS.POPOVER
+				) {
 					return
 				}
 				onResetLeaf()
+				setPromptActive(null)
 			}}
 			className={cn(
-				'fixed z-9999',
 				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg',
 				'flex w-full flex-col items-start justify-start gap-5'
 			)}
-			style={positionStyle}
 		>
 			<Textarea.Base
 				autoFocus
@@ -158,7 +153,7 @@ export default function FloatingPrompt() {
 				autoComplete="off"
 				value={val}
 				onChange={(e) => setVal(e.target.value)}
-				id="prompt-input"
+				id={LASER_PROMPT_KEYS.INPUT}
 				decoration="filled"
 				className="text-fm-primary/80 leading-fm-md w-full min-w-[300px] resize-none [font-size:var(--text-fm-md)] outline-none"
 				rows={4}
@@ -171,10 +166,10 @@ export default function FloatingPrompt() {
 					<Checkbox
 						checked={additionalContext}
 						onCheckedChange={handleCheckedChange}
-						id="additional-context-checkbox"
+						id={LASER_PROMPT_KEYS.CONTEXT_CHECKBOX}
 						className="size-6"
 					/>
-					<Label htmlFor="additional-context-checkbox">
+					<Label htmlFor={LASER_PROMPT_KEYS.CONTEXT_CHECKBOX}>
 						Use additional context
 					</Label>
 				</div>
