@@ -18,8 +18,6 @@ import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { FixedToolbar } from '@/components/plate-ui-v2/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui-v2/fixed-toolbar-buttons'
 import WordCountTag from '@/components/plate-ui-v2/word-count-tag'
-import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response'
-import FloatingPrompt from '@/components/plate-ui/floating-prompt'
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { BeatSheetEditorContextProvider } from '@/providers/beat-sheet-provider'
 import EditorAccessProvider from '@/providers/editor-access-provider'
@@ -95,8 +93,6 @@ function MyEditor({
 											<Sidebar />
 										</ResizablePanelGroup>
 									</div>
-									<FloatingPrompt />
-									<FloatingLaserResponse />
 								</div>
 							</BeatSheetEditorContextProvider>
 						</ChatbotProvider>
