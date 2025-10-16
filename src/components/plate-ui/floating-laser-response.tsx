@@ -80,6 +80,8 @@ export default function FloatingLaserResponse({
 			metaData: {
 				action: ACTION.LASER_RESPONSE_ACCEPT,
 				flowId: key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1],
+				source: laser?.text,
+				response: val,
 			},
 		})
 	}
@@ -93,6 +95,8 @@ export default function FloatingLaserResponse({
 			metaData: {
 				action: ACTION.LASER_RESPONSE_REJECT,
 				flowId: key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1],
+				source: laser?.text,
+				response: val,
 			},
 		})
 	}
@@ -105,6 +109,8 @@ export default function FloatingLaserResponse({
 			metaData: {
 				action: ACTION.LASER_RESPONSE_RETRY,
 				flowId: key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1],
+				source: laser?.text,
+				response: val,
 			},
 		})
 	}

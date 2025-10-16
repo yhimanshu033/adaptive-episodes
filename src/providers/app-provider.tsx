@@ -19,6 +19,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { Toaster } from '@/components/aural-ui/toast'
 import { TooltipProvider } from '@/components/plate-ui-v2/tooltip'
 import { PopupRoot } from '@/components/popup-root'
+import ExternalScripts from '@/components/scripts/external-scripts'
 import { AdaptationProvider } from '@/providers/adaptation-provider'
 import { ConfigurationContextProvider } from '@/providers/configuration-provider'
 import { PlayerProvider } from '@/providers/player-provider'
@@ -112,6 +113,7 @@ const AppProvider = ({
 					</SocketProvider>
 				</DndProvider>
 			</NuqsAdapter>
+			<ExternalScripts />
 		</SessionProvider>
 	)
 }

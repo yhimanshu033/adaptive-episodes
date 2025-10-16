@@ -70,6 +70,9 @@ export enum ACTION {
 	SIDEBAR_CHANGED = 'sidebar_changed',
 	STORY_CHAT_CANCEL = 'story_chat_cancel',
 	STORY_CHAT_PROMPT = 'story_chat_prompt',
+	STORY_CHAT_REVIEW_ADDED = 'story_chat_review_added',
+	// new
+	STORY_CHAT_SFX_ADDED = 'story_chat_sfx_added',
 	STORY_CHAT_SUGGESTION = 'story_chat_suggestion',
 	STORY_EXPLORER_ACTION = 'story_explorer_action',
 	STORY_EXPLORER_FOCUS = 'story_explorer_focus',
@@ -77,8 +80,10 @@ export enum ACTION {
 	SUGGESTION_MODE = 'suggestion_mode',
 	SYNC_METADATA = 'sync_metadata',
 	THEME_TOGGLE = 'theme-toggle',
+
 	TTS_TRIGGER = 'tts_trigger',
 	VIEW_LS = 'view_ls',
+	VOICE_PASS_ADDED = 'story_chat_voice_pass_added',
 }
 
 export const CONTENT_LANG_ALLOWED: Set<SCREEN_NAME> = new Set([
