@@ -21,7 +21,7 @@ const useLaserToolsQuery = (key: string | null, params: LaserToolsParams) => {
 
 		const keyId = key?.split?.('laser-id-')?.[1] || nanoid()
 		const responseExists = deleteResponse(keyId)
-		const taskId = responseExists ? keyId + '_' + nanoid(4) : keyId
+		const taskId = responseExists ? keyId.slice(0, 21) + '_' + nanoid(4) : keyId
 
 		await startTask<LaserToolsParams, TNoParams, TNoParams, TSocketQueryParams>(
 			{

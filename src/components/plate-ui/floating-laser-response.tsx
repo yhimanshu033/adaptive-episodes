@@ -118,6 +118,8 @@ export default function FloatingLaserResponse() {
 			metaData: {
 				action: ACTION.LASER_RESPONSE_ACCEPT,
 				flowId: key?.split?.('laser-id-')?.[1],
+				source: laser?.text,
+				response: val,
 			},
 		})
 	}
@@ -131,6 +133,8 @@ export default function FloatingLaserResponse() {
 			metaData: {
 				action: ACTION.LASER_RESPONSE_REJECT,
 				flowId: key?.split?.('laser-id-')?.[1],
+				source: laser?.text,
+				response: val,
 			},
 		})
 	}
@@ -144,6 +148,8 @@ export default function FloatingLaserResponse() {
 			metaData: {
 				action: ACTION.LASER_RESPONSE_RETRY,
 				flowId: key?.split?.('laser-id-')?.[1],
+				source: laser?.text,
+				response: val,
 			},
 		})
 	}

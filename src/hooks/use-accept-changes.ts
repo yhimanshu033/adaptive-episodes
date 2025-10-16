@@ -14,7 +14,7 @@ import { breakDownValue, getAcceptedDiffValue } from '@/lib/utils/plate'
 
 import { EAction, EMessenger } from '@/types/ai-types'
 
-export default function useAcceptChanges() {
+export default function useAcceptChanges(props?: { taskId: string }) {
 	const { updateMessages, setPrevValue, setResponseValue } = useAIStore()
 
 	const { setAcceptedDiffValue, store: useEpisodeIdContext } =
@@ -34,6 +34,7 @@ export default function useAcceptChanges() {
 			metaData: {
 				action: ACTION.SFX_ACCEPT,
 				all,
+				flowId: props?.taskId,
 			},
 		})
 		handleAcceptResponse(all, isSfx)

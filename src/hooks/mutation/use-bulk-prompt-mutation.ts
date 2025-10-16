@@ -36,6 +36,7 @@ export default function useBulkPromptMutation() {
 				size: String(body.seq_nos.length),
 				language: body.language,
 				prompt: body.prompt,
+				flowId: taskId,
 			},
 		})
 		toast.success('Bulk prompt processing started!')

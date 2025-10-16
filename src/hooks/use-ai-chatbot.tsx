@@ -208,14 +208,6 @@ export function ChatbotProvider({
 		addMessages({ role: EMessenger.USER, content: input })
 		setInput('')
 		setRequestedAction(EChatMode.BLOCK)
-		track({
-			event: EVENT_TYPE.BUTTON_CLICK,
-			screenName: SCREEN_NAME.EPISODE_EDITOR,
-			metaData: {
-				action: ACTION.STORY_CHAT_PROMPT,
-				prompt: input,
-			},
-		})
 	}
 
 	const addComment = (
@@ -317,6 +309,7 @@ export function ChatbotProvider({
 			screenName: SCREEN_NAME.EPISODE_EDITOR,
 			metaData: {
 				action: ACTION.STORY_CHAT_CANCEL,
+				flowId: aiResponse,
 			},
 		})
 	}
@@ -453,6 +446,15 @@ export function ChatbotProvider({
 			return
 		}
 		if (taskEnded[sfxStreaming]) {
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.STORY_CHAT_SFX_ADDED,
+					flowId: sfxStreaming,
+					response: throttledResponse.join(''),
+				},
+			})
 			setSfxStreaming('')
 			setDisableDiffAcceptReject(false)
 			setOriginalChildren(undefined)
@@ -506,6 +508,15 @@ export function ChatbotProvider({
 			return
 		}
 		if (taskEnded[reviewStreaming]) {
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.STORY_CHAT_REVIEW_ADDED,
+					flowId: reviewStreaming,
+					response: responses[reviewStreaming].join(''),
+				},
+			})
 			setReviewStreaming('')
 			updateMessages(
 				{
@@ -542,6 +553,7 @@ export function ChatbotProvider({
 			if (staleReviewIDRef.current && staleReviewIDRef.current.length > 0) {
 				removeStaleReviews(staleReviewIDRef.current)
 			}
+
 			addReview(parsedResponse)
 		} catch (error) {
 			console.error(error)
