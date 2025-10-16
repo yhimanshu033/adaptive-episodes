@@ -1218,8 +1218,8 @@ export function getLaserTextIndices(children: Value, path: Path) {
 		nextBlockTextEndOffset =
 			(
 				children[nextBlockTextEnd[0]].children[nextBlockTextEnd[1]]
-					.text! as string
-			).length || 0
+					.text as string
+			)?.length || 0
 	}
 
 	return {
