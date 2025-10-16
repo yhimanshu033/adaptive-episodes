@@ -72,7 +72,7 @@ const AppProvider = ({
 	usePageChange()
 
 	return (
-		<SessionProvider session={session}>
+		<SessionProvider session={session} refetchOnWindowFocus={false}>
 			<NuqsAdapter>
 				<DndProvider backend={HTML5Backend}>
 					<SocketProvider>
