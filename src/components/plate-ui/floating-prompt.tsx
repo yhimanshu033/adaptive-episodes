@@ -53,10 +53,7 @@ export default function FloatingPrompt() {
 					return
 				}
 				const aggregateObj = matches.reduce((acc, curr) => {
-					return {
-						...acc,
-						...curr[0],
-					}
+					return Object.assign(acc, curr[0])
 				}, {})
 				const laserPromptKeys = Object.keys(aggregateObj).filter((k) =>
 					k.startsWith(LASER_PROMPT_KEYS.KEY)

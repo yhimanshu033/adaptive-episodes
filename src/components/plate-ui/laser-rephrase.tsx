@@ -113,10 +113,7 @@ export default function LaserRephrase({
 					})
 					.toArray()
 				const aggregateObject = matches.reduce((acc, curr) => {
-					return {
-						...acc,
-						...curr[0],
-					}
+					return Object.assign(acc, curr[0])
 				}, {})
 				const laserKeys = Object.keys(aggregateObject).filter((key) =>
 					key.startsWith('laser')
