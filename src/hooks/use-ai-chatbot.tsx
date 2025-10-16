@@ -12,6 +12,7 @@ import React, {
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useCountdownTimer from '@/hooks/use-countdown-timer'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useThrottle } from '@/hooks/use-throttle'
@@ -141,6 +142,7 @@ export function ChatbotProvider({
 
 	const { responses, taskEnded, stopTask } = useSocketStreaming()
 	const { initialStoryData } = useEpisodeTableContext()
+	const { suggestionGuard } = useSuggestionGuard()
 
 	const {
 		start: startCountdown,
@@ -206,14 +208,6 @@ export function ChatbotProvider({
 		addMessages({ role: EMessenger.USER, content: input })
 		setInput('')
 		setRequestedAction(EChatMode.BLOCK)
-		track({
-			event: EVENT_TYPE.BUTTON_CLICK,
-			screenName: SCREEN_NAME.EPISODE_EDITOR,
-			metaData: {
-				action: ACTION.STORY_CHAT_PROMPT,
-				prompt: input,
-			},
-		})
 	}
 
 	const addComment = (
@@ -315,6 +309,7 @@ export function ChatbotProvider({
 			screenName: SCREEN_NAME.EPISODE_EDITOR,
 			metaData: {
 				action: ACTION.STORY_CHAT_CANCEL,
+				flowId: aiResponse,
 			},
 		})
 	}
@@ -366,7 +361,9 @@ export function ChatbotProvider({
 		})
 		staleReviewIDRef.current = resp.comments.map((comment) => comment.id)
 		commentsCount.current = resp.comments.length
-		editor.tf.setValue(breakDownValue(resp.value))
+		suggestionGuard(() => {
+			editor.tf.setValue(breakDownValue(resp.value))
+		})
 	}
 
 	function removeStaleReviews(staleReviewIDs: string[]) {
@@ -401,7 +398,9 @@ export function ChatbotProvider({
 				.filter((discussion) => discussion.id !== comment.id)
 			editor.setOption(discussionPlugin, 'discussions', updatedDiscussions)
 		})
-		editor.tf.setValue(breakDownValue(children))
+		suggestionGuard(() => {
+			editor.tf.setValue(breakDownValue(children))
+		})
 	}
 
 	useEffect(() => {
@@ -447,6 +446,15 @@ export function ChatbotProvider({
 			return
 		}
 		if (taskEnded[sfxStreaming]) {
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.STORY_CHAT_SFX_ADDED,
+					flowId: sfxStreaming,
+					response: throttledResponse.join(''),
+				},
+			})
 			setSfxStreaming('')
 			setDisableDiffAcceptReject(false)
 			setOriginalChildren(undefined)
@@ -500,6 +508,15 @@ export function ChatbotProvider({
 			return
 		}
 		if (taskEnded[reviewStreaming]) {
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.STORY_CHAT_REVIEW_ADDED,
+					flowId: reviewStreaming,
+					response: responses[reviewStreaming].join(''),
+				},
+			})
 			setReviewStreaming('')
 			updateMessages(
 				{
@@ -536,6 +553,7 @@ export function ChatbotProvider({
 			if (staleReviewIDRef.current && staleReviewIDRef.current.length > 0) {
 				removeStaleReviews(staleReviewIDRef.current)
 			}
+
 			addReview(parsedResponse)
 		} catch (error) {
 			console.error(error)

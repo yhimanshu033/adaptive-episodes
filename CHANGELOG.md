@@ -1,3 +1,25 @@
+## <small>1.3.6 (2025-10-15)</small>
+
+* fix: 🐛 bulk download now sequential ([810c3ee](https://github.com/Pocket-Fm/co-writing/commit/810c3ee))
+* fix: 🐛 changed storychat focus titles ([382f6a9](https://github.com/Pocket-Fm/co-writing/commit/382f6a9))
+* fix: 🐛 changed storychat focus titles ([e667f86](https://github.com/Pocket-Fm/co-writing/commit/e667f86))
+* fix: 🐛 shift to local storage ([e045744](https://github.com/Pocket-Fm/co-writing/commit/e045744))
+
+
+
+## <small>1.3.5 (2025-10-14)</small>
+
+* fix: 🐛 added metadatasync completion toast ([6e23e1c](https://github.com/Pocket-Fm/co-writing/commit/6e23e1c))
+* fix: 🐛 changed description text ([4f481a4](https://github.com/Pocket-Fm/co-writing/commit/4f481a4))
+* fix: 🐛 removed suggestiomn view mode in suggestion mode ([eb2015f](https://github.com/Pocket-Fm/co-writing/commit/eb2015f))
+* fix: 🐛 removed unnecessary dep ([b874f1b](https://github.com/Pocket-Fm/co-writing/commit/b874f1b))
+* fix: 🐛 reverted back to prod ([5feb0c7](https://github.com/Pocket-Fm/co-writing/commit/5feb0c7))
+* feat: 🎸 added restore option ([2c8a590](https://github.com/Pocket-Fm/co-writing/commit/2c8a590))
+* feat: 🎸 User Configuration Dialog (Global + Episode-Level) ([7136707](https://github.com/Pocket-Fm/co-writing/commit/7136707))
+* chore: 🤖 pointing to qa ([e2b3826](https://github.com/Pocket-Fm/co-writing/commit/e2b3826))
+
+
+
 ## <small>1.3.4 (2025-10-13)</small>
 
 * fix: 🐛 add scene error ([4196aad](https://github.com/Pocket-Fm/co-writing/commit/4196aad))

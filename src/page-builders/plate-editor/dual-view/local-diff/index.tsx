@@ -1,4 +1,5 @@
 import React from 'react'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { TickIcon } from '@/icons/tick-icon'
 import ApplyChangesAlert from '@/page-builders/episodes/dialogs/apply-changes-alert'
@@ -32,6 +33,7 @@ export default function LocalDiffSection() {
 	)
 	const { children } = useEditorState()
 	const editor = useEditorRef()
+	const { suggestionGuard } = useSuggestionGuard()
 
 	function handleAccept(all = false) {
 		setLocalDiffValue(null)
@@ -44,7 +46,9 @@ export default function LocalDiffSection() {
 				all,
 				isSfx: false,
 			})
-			editor.tf.setValue(acceptedValue)
+			suggestionGuard(() => {
+				editor.tf.setValue(acceptedValue)
+			})
 		}
 	}
 

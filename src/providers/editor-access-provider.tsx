@@ -19,20 +19,24 @@ export default function EditorAccessProvider({
 }: React.PropsWithChildren & EditorAccessProviderProps) {
 	const { cannotEdit } = useEditAccess()
 	const { data } = useEpisodeContent()
-	const [, setReadOnly] = usePlateState('readOnly')
+	const [readOnly, setReadOnly] = usePlateState('readOnly')
 	const { removeExtendedContentMap } = useEditorExtendedStore()
 	const episodeId = useEpisodeId()
 
-	const { store } = usePlateStore()
+	const { store, setViewMode } = usePlateStore()
 	const viewMode = store((state) => state.viewMode)
 
 	useEffect(() => {
-		if (cannotEdit) {
-			setReadOnly(true)
-			return
+		if (cannotEdit && !viewMode) {
+			setViewMode(true)
 		}
-		setReadOnly(viewMode)
-	}, [cannotEdit, setReadOnly, viewMode])
+	}, [cannotEdit, viewMode, setViewMode])
+
+	useEffect(() => {
+		if (cannotEdit && !readOnly) {
+			setReadOnly(true)
+		}
+	}, [readOnly, cannotEdit, setReadOnly])
 
 	useEffect(() => {
 		if (!cannotEdit) {
