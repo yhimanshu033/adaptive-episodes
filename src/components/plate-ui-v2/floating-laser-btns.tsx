@@ -1,6 +1,10 @@
 import React from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
-import { rephraseMethods } from '@/constants/editor-constants'
+import {
+	LASER_LEAF_KEYS,
+	LASER_PROMPT_KEYS,
+	rephraseMethods,
+} from '@/constants/editor-constants'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import useLaserStore from '@/store/laser-store'
@@ -52,26 +56,31 @@ export default function FloatingLaserBtns() {
 								let newChildren: Value = children
 								const id = nanoid()
 								if (method.id === 'custom') {
-									const key = `floating-prompt-id-${id}`
+									const key = `${LASER_PROMPT_KEYS.ID_START}${id}`
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
 										[PromptPlugin.key as string, key] as string[]
 									)
-									document.getElementById('prompt-input')?.focus()
-									setPromptActive(key)
+									document.getElementById(LASER_PROMPT_KEYS.INPUT)?.focus()
+									setTimeout(() => {
+										setPromptActive(key)
+									}, 500)
+									// setPromptActive(key)
 								} else {
-									const key = `laser-id-${id}`
+									const key = `${LASER_LEAF_KEYS.ID_START}${id}`
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
 										[
-											`laser-method-${String(method.id)}`,
+											`${LASER_LEAF_KEYS.METHOD_START}${String(method.id)}`,
 											LaserPlugin.key as string,
 											key,
 										] as string[]
 									)
-									setActiveLaser(key)
+									setTimeout(() => {
+										setActiveLaser(key)
+									}, 500)
 								}
 								suggestionGuard(() => {
 									editor.tf.setValue(newChildren)

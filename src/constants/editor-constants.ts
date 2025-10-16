@@ -179,8 +179,19 @@ export const LASER_LEAF_KEYS = {
 	CUSTOM_METHOD: 'laser-method-custom',
 	PROMPT: 'laser-inserted-prompt',
 	ADDITIONAL_CONTEXT: 'laser-additional-context',
+	KEY: 'laser',
+	ID_START: 'laser-id-',
+	METHOD_START: 'laser-method-',
+	POPOVER: 'floating-laser-popover',
 } as const
 
+export const LASER_PROMPT_KEYS = {
+	KEY: 'floating-prompt',
+	ID_START: 'floating-prompt-id-',
+	POPOVER: 'floating-prompt-popover',
+	INPUT: 'floating-prompt-input',
+	CONTEXT_CHECKBOX: 'additional-context-checkbox',
+} as const
 export const beatSheetEditorAllowedProjects = [
 	4861, 4863, 4866, 4873, 4881, 4935, 4944, 4952,
 ]
@@ -225,3 +236,6 @@ export const configurationDialogTabToTooltipName: Record<
 	[EConfigurationDialogContentTab.QUICK_PROMPTS]: 'quick prompts',
 	[EConfigurationDialogContentTab.OPTIONS]: 'all options',
 }
+
+export const LASER_PADDING = 4
+export const LASER_TEXT_LENGTH = 500

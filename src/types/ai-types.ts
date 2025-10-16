@@ -247,12 +247,8 @@ export interface TLocalizeUpdateRequest {
 }
 
 export type Laser = {
-	clientX?: number
-	clientY?: number
-	height?: number
 	response: string
 	text: string
-	width?: number
 }
 
 export interface CommentExampleParams {

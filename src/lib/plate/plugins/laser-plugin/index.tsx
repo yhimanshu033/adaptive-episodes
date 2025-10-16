@@ -1,10 +1,14 @@
+import {
+	LASER_LEAF_KEYS,
+	LASER_PROMPT_KEYS,
+} from '@/constants/editor-constants'
 import { PluginConfig } from 'platejs'
 import { createTPlatePlugin } from 'platejs/react'
 
 import { createLaserStore } from '@/lib/plate/plugins/laser-plugin/store'
 
 export type LaserPluginT = PluginConfig<
-	'laser',
+	typeof LASER_LEAF_KEYS.KEY,
 	{
 		active: string | null
 		laserStore: ReturnType<typeof createLaserStore>
@@ -15,7 +19,7 @@ export type LaserPluginT = PluginConfig<
 
 export function getLaserPlugin() {
 	const LaserPlugin = createTPlatePlugin({
-		key: 'laser',
+		key: LASER_LEAF_KEYS.KEY,
 		node: {
 			isLeaf: true,
 		},
@@ -31,13 +35,13 @@ export function getLaserPlugin() {
 export const LaserPlugin = getLaserPlugin()
 
 export type PromptPluginT = PluginConfig<
-	'floating-prompt',
+	typeof LASER_PROMPT_KEYS.KEY,
 	Record<string, never>,
 	object
 >
 export function getPromptPlugin() {
 	return createTPlatePlugin({
-		key: 'floating-prompt',
+		key: LASER_PROMPT_KEYS.KEY,
 		node: {
 			isLeaf: true,
 		},
