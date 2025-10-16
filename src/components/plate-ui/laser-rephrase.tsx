@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
-import {
-	LASER_LEAF_KEYS,
-	LASER_TEXT_LENGTH,
-	rephraseMethods,
-} from '@/constants/editor-constants'
+import { LASER_LEAF_KEYS, rephraseMethods } from '@/constants/editor-constants'
 import { languageToTitle } from '@/constants/episodes-constants'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -99,8 +95,8 @@ export default function LaserRephrase({
 
 		return {
 			text,
-			prevtext: prevText.slice(-1 * LASER_TEXT_LENGTH),
-			nexttext: nextText.slice(LASER_TEXT_LENGTH),
+			prevtext: prevText,
+			nexttext: nextText,
 		}
 	}, [key, leaf, editor.api, allChildren])
 
