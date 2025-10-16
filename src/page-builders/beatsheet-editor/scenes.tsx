@@ -98,16 +98,13 @@ export default function SceneTab() {
 					beats: Object.fromEntries(
 						scenes.map((scene) => [
 							`scene_${scene.index + 1}`,
-							scene.data.beats.slice(0, 2), // testing: please remove slice
+							scene.data.beats,
 						])
 					),
 					beats_old: Object.fromEntries(
 						scenes.map((scene) => [
 							`scene_${scene.index + 1}`,
-							convertScenesArrayToMap(oldScenes)[scene.data.id]?.beats?.slice(
-								0,
-								2
-							), // testing: please remove slice,
+							convertScenesArrayToMap(oldScenes)[scene.data.id]?.beats,
 						])
 					),
 					order_change: isOrderSceneOrderChange(
@@ -119,7 +116,7 @@ export default function SceneTab() {
 					scene_texts: Object.fromEntries(
 						scenes.map((scene) => [
 							`scene_${scene.index + 1}`,
-							getSceneText(scene.data.id).slice(0, 150), // testing: please remove slice,
+							getSceneText(scene.data.id),
 						])
 					),
 					characters,

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import useChapterCharacters from '@/hooks/query/use-chapter-characters'
 import useScenesMetadataQuery from '@/hooks/query/use-scenes-metadata-query'
 import useBeatsheetStore from '@/store/beatsheet-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -12,6 +13,7 @@ import {
 	TabsList,
 	TabsTrigger,
 } from '@/components/aural-ui/tabs'
+import { convertChapterCharactersResponse } from '@/lib/utils/helpers'
 
 import { EBeatSheetEditorTabs } from '@/types/beatsheet-editor-types'
 
@@ -20,7 +22,8 @@ import SceneTab from './scenes'
 import StyleTab from './style'
 
 export default function BeatSheetEditorContent() {
-	const { beatsheetStore, setEnhancementPlan, setScenes } = useBeatsheetStore()
+	const { beatsheetStore, setEnhancementPlan, setScenes, setCharacters } =
+		useBeatsheetStore()
 
 	const enhancementPlan = beatsheetStore(
 		useShallow((state) => state.enhancementPlan)
@@ -29,12 +32,21 @@ export default function BeatSheetEditorContent() {
 	const { data: sceneData, isLoading: isScenesLoading } =
 		useScenesMetadataQuery()
 
+	const { data: charactersData } = useChapterCharacters()
+
 	useEffect(() => {
 		if (sceneData && sceneData.result) {
 			setScenes(sceneData.result)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [sceneData])
+
+	useEffect(() => {
+		if (charactersData?.result) {
+			setCharacters(convertChapterCharactersResponse(charactersData))
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [charactersData])
 
 	if (isScenesLoading) {
 		return (

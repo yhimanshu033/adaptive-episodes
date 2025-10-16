@@ -1,5 +1,8 @@
 import { useParams } from 'next/navigation'
-import { API_URLS } from '@/constants/global-constants'
+import {
+	API_URLS,
+	BEATSHEET_STREAMING_TIMEOUT,
+} from '@/constants/global-constants'
 import { GENERATE_BEATSHEET_MUTATION_KEY } from '@/constants/query-constants'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useMutation } from '@tanstack/react-query'
@@ -23,6 +26,7 @@ const useBeatSheetStreamingMutation = () => {
 					: API_URLS.BEATSHEET_GENERATE,
 				body: params,
 				noCache: true,
+				timeout: BEATSHEET_STREAMING_TIMEOUT,
 			}
 		)
 		return taskId

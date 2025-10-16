@@ -19,21 +19,103 @@ import {
 import GenerationStatusBar from './generation-status-bar'
 import SortableBeat from './sortable-beat'
 
-export interface SceneContentProps {
+export type SceneContentProps = SceneGenerationProps &
+	ScenePendingProps & {
+		isPendingApproval: boolean
+		onGenerate: (prompt?: string) => void
+		onInput: (beatId: string, data: string) => void
+		onNewBeat: () => void
+		onPromptClose: () => void
+		openPromptId: string | null
+		scene: TScene
+	}
+
+interface SceneGenerationProps {
 	hasTimeoutError: boolean
 	isGenerating: boolean
-	isPendingApproval: boolean
 	logs: string[]
-	onAccept: () => void
-	onGenerate: (prompt?: string) => void
-	onInput: (beatId: string, data: string) => void
-	onNewBeat: () => void
-	onPromptClose: () => void
-	onReject: () => void
-	openPromptId: string | null
-	pendingContent: TGenerateBeatsheetResponseItem
 	remainingTime: number
-	scene: TScene
+}
+
+interface ScenePendingProps {
+	onAccept: () => void
+	onReject: () => void
+	pendingContent: TGenerateBeatsheetResponseItem
+}
+
+const SceneGeneration = ({
+	isGenerating,
+	logs,
+	hasTimeoutError,
+	remainingTime,
+}: SceneGenerationProps) => {
+	return (
+		<div className="h-[600px]">
+			<GenerationStatusBar
+				isPending={isGenerating}
+				hasTimeoutError={hasTimeoutError}
+				remainingTime={remainingTime}
+			/>
+
+			<IfElse condition={!!logs?.length}>
+				<If>
+					<ScrollArea className="text-fm-secondary h-full">
+						{logs.map((log, idx) => (
+							<p className="text-xs" key={`bse-log-${idx}`}>
+								{log}
+							</p>
+						))}
+					</ScrollArea>
+				</If>
+				<Else>
+					<div className="text-muted-foreground flex flex-col gap-2">
+						<CircularLoader className="h-4 w-4" text="Generating..." />
+					</div>
+				</Else>
+			</IfElse>
+		</div>
+	)
+}
+
+const ScenePending = ({
+	onAccept,
+	onReject,
+	pendingContent,
+}: ScenePendingProps) => {
+	return (
+		<div className="flex flex-col">
+			<div className="flex-1 overflow-y-auto p-4">
+				<Typography
+					as="span"
+					key={pendingContent?.id}
+					className="whitespace-pre-wrap"
+					variant="body-small"
+				>
+					{pendingContent?.content}
+				</Typography>
+			</div>
+			<div className="flex justify-between gap-2 p-4">
+				<Button
+					size="sm"
+					variant="outline"
+					onClick={() => onReject()}
+					className="flex items-center gap-1"
+				>
+					<X size={16} />
+					Reject
+				</Button>
+				<Button
+					size="sm"
+					onClick={() => onAccept()}
+					className="flex items-center gap-1"
+					variant="outline"
+				>
+					<Check size={16} />
+					Accept
+				</Button>
+			</div>
+		</div>
+	)
 }
 export default function SceneContent({
 	isGenerating,
@@ -41,79 +123,34 @@ export default function SceneContent({
 	hasTimeoutError,
 	isPendingApproval,
 	logs,
-	onAccept,
 	onGenerate,
 	onInput,
 	onNewBeat,
 	onPromptClose,
-	onReject,
 	openPromptId,
 	pendingContent,
 	remainingTime,
+	onAccept,
+	onReject,
 }: SceneContentProps) {
 	if (isGenerating) {
 		return (
-			<div className="h-[600px]">
-				<GenerationStatusBar
-					isPending={isGenerating}
-					hasTimeoutError={hasTimeoutError}
-					remainingTime={remainingTime}
-				/>
-
-				<IfElse condition={!!logs?.length}>
-					<If>
-						<ScrollArea className="text-fm-secondary h-full">
-							{logs.map((log, idx) => (
-								<p className="text-xs" key={`bse-log-${idx}`}>
-									{log}
-								</p>
-							))}
-						</ScrollArea>
-					</If>
-					<Else>
-						<div className="text-muted-foreground flex flex-col gap-2">
-							<CircularLoader className="h-4 w-4" text="Generating..." />
-						</div>
-					</Else>
-				</IfElse>
-			</div>
+			<SceneGeneration
+				hasTimeoutError={hasTimeoutError}
+				isGenerating={isGenerating}
+				logs={logs}
+				remainingTime={remainingTime}
+			/>
 		)
 	}
 
 	if (isPendingApproval && pendingContent) {
 		return (
-			<div className="flex flex-col">
-				<div className="flex-1 overflow-y-auto p-4">
-					<Typography
-						as="span"
-						key={pendingContent?.id}
-						className="whitespace-pre-wrap"
-						variant="body-small"
-					>
-						{pendingContent?.content}
-					</Typography>
-				</div>
-				<div className="flex justify-between gap-2 p-4">
-					<Button
-						size="sm"
-						variant="outline"
-						onClick={() => onReject()}
-						className="flex items-center gap-1"
-					>
-						<X size={16} />
-						Reject
-					</Button>
-					<Button
-						size="sm"
-						onClick={() => onAccept()}
-						className="flex items-center gap-1"
-						variant="outline"
-					>
-						<Check size={16} />
-						Accept
-					</Button>
-				</div>
-			</div>
+			<ScenePending
+				onAccept={onAccept}
+				onReject={onReject}
+				pendingContent={pendingContent}
+			/>
 		)
 	}
 	return (

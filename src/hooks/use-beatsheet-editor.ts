@@ -6,6 +6,7 @@ import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useUndoRedo } from '@/hooks/use-undo-redo'
 import { TrashIcon } from '@/icons/trash-icon'
 import useBeatsheetStore from '@/store/beatsheet-store'
+import usePlateStore from '@/store/plate-store'
 import { popup } from '@/store/popup-store'
 import {
 	CollisionDetection,
@@ -38,6 +39,7 @@ import {
 	TGenerateBeatsheetResponse,
 	TGenerateBeatsheetResponseItem,
 } from '@/types/beatsheet-editor-types'
+import { ESidebar } from '@/types/plate-types'
 
 const useBeatSheetEditorUtil = () => {
 	const editor = useEditorRef()
@@ -63,6 +65,9 @@ const useBeatSheetEditorUtil = () => {
 		useShallow((state) => state.activeDragItem)
 	)
 	const openSceneIds = beatsheetStore(useShallow((state) => state.openSceneIds))
+	const { store: customPlateStore } = usePlateStore()
+	const sidebar = customPlateStore(useShallow((state) => state.sidebar))
+
 	const { redo, undo, reset, canRedo, canUndo } = useUndoRedo(scenes, {
 		startIndex: 1,
 	})
@@ -387,7 +392,7 @@ const useBeatSheetEditorUtil = () => {
 					id,
 					sceneIds.length > 1
 						? 3 * SOCKET_STREAMING_TIMEOUT
-						: SOCKET_STREAMING_TIMEOUT
+						: 1.5 * SOCKET_STREAMING_TIMEOUT
 				)
 			)
 		},
@@ -408,17 +413,19 @@ const useBeatSheetEditorUtil = () => {
 			const scenes = Object.keys(generatingSceneTaskId).filter(
 				(sceneId) => generatingSceneTaskId[sceneId] === taskId
 			)
-			const newContent = params.reduce((acc, curr, idx) => {
-				return {
-					...acc,
-					[scenes[idx] || curr.id]: curr,
-				}
-			}, {})
+			toast.success(`Generation completed for ${scenes.length} scenes!`)
+			const newContent = params.reduce(
+				(acc, curr, idx) => {
+					if (!scenes[idx]) {
+						return acc
+					}
+					return Object.assign(acc, { [scenes[idx]]: curr })
+				},
+				{} as Record<string, TGenerateBeatsheetResponseItem>
+			)
+
 			setGeneratedContent((prev) => {
-				return {
-					...prev,
-					...newContent,
-				}
+				return Object.assign(prev, newContent)
 			})
 		},
 		[generatingSceneTaskId]
@@ -518,9 +525,14 @@ const useBeatSheetEditorUtil = () => {
 				taskId,
 			})
 			if (taskEnded[taskId]) {
-				const lastChunk = responses[taskId].pop()
+				const taskResponse = responses[taskId]
+				const lastChunk = taskResponse?.[(taskResponse?.length || 0) - 1]
 				if (!lastChunk || !isStringifiedJsonArray(lastChunk)) {
-					toast.error('Response could not be generated!')
+					if (!toast.getToasts().some((t) => t.id === taskId)) {
+						toast.error('Response could not be generated!', {
+							id: taskId,
+						})
+					}
 					return
 				}
 				handleCompleteBeatSheetGeneration({
@@ -531,6 +543,13 @@ const useBeatSheetEditorUtil = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [taskEnded, responses, tasksTimedOut])
+
+	useEffect(() => {
+		if (sidebar !== ESidebar.BEAT_SHEET) {
+			setOpenSceneIds([])
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sidebar])
 
 	useEffect(() => {
 		const taskIds = new Set(Object.values(generatingSceneTaskId))
