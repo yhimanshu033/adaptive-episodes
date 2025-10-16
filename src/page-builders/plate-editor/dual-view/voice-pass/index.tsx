@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { useAIChatbotQueryHook } from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
@@ -10,6 +11,7 @@ import { toast } from 'sonner'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { minify } from '@/lib/utils/ai-chatbot'
+import { track } from '@/lib/utils/analytics'
 import { removeVoicePass2XMLTags } from '@/lib/utils/client-helpers'
 import { prettifyVoiceXMLData } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
@@ -89,6 +91,16 @@ export default function VoicePass({
 		}
 		toastShownRef.current = true
 		toast.success('Voice Pass completed!')
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.VOICE_PASS_ADDED,
+				flowId: data,
+				response: responses[data].join(''),
+			},
+		})
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [taskEnded, data])
 
 	useEffect(() => {

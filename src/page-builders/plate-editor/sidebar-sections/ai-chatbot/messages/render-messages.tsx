@@ -4,7 +4,12 @@ import useSocketStreaming from '@/hooks/use-socket-streaming'
 import usePlateStore from '@/store/plate-store'
 import { useShallow } from 'zustand/react/shallow'
 
-import { EAction, EMessenger, TMessage } from '@/types/ai-types'
+import {
+	EAction,
+	EMessenger,
+	TAssistantMessage,
+	TMessage,
+} from '@/types/ai-types'
 
 import BlockContentMessage from './block-message'
 import RegularMessage from './regular-message'
@@ -19,7 +24,9 @@ export default function RenderMessage({
 	isLast?: boolean
 	message: TMessage
 }) {
-	const { handleAccept } = useAcceptChanges()
+	const { handleAccept } = useAcceptChanges({
+		taskId: (message as TAssistantMessage).taskId,
+	})
 	const { taskEnded, responses, tasksTimedOut } = useSocketStreaming()
 	const { store, setActiveDiffId } = usePlateStore()
 	const { diffIdList, activeDiffId } = store(

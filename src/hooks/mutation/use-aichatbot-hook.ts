@@ -1,6 +1,8 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
+import { storyChatSuggestions } from '@/constants/editor-constants'
 import { languageToTitle } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import useMetadataQuery from '@/hooks/query/use-metadata-query'
@@ -14,6 +16,7 @@ import {
 	extractFromMetadata,
 	getStoryExplorerConfigArray,
 } from '@/lib/utils/ai-chatbot'
+import { track } from '@/lib/utils/analytics'
 import { getMetaDataRange } from '@/lib/utils/helpers'
 
 import { AIChatbotHookParams, AIChatBotParams } from '@/types/ai-types'
@@ -53,6 +56,17 @@ const useAIChatbotHook = ({
 				beatsheets_array,
 				loglines_array,
 				input_language: languageToTitle[language],
+			},
+		})
+
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_CHAT_PROMPT,
+				prompt: params.aiChatbotData.user_message,
+				chat_mode: params.aiChatbotData.chat_mode,
+				flowId: taskId,
 			},
 		})
 		return taskId
@@ -99,6 +113,21 @@ export const useAIChatbotQueryHook = (
 				input_language: languageToTitle[language],
 			},
 		})
+
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.STORY_CHAT_PROMPT,
+				prompt:
+					storyChatSuggestions.find(
+						(sugg) => sugg.action === params.aiChatbotData.chat_mode
+					)?.value || '',
+				chat_mode: params.aiChatbotData.chat_mode,
+				flowId: taskId,
+			},
+		})
+
 		return taskId
 	}
 

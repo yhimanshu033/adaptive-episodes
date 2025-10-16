@@ -7,6 +7,8 @@ import {
 	SCREEN_NAME,
 } from '@/constants/analytics'
 
+import { EChatMode } from '@/types/ai-types'
+
 export type TEventData = Record<
 	string,
 	string | number | boolean | undefined | null
@@ -57,17 +59,37 @@ export interface TParseDeviceArgs {
 export type TConditionalMetadata =
 	| { action: ACTION.LASER_START; flowId: string; method: string }
 	| { action: ACTION.LASER_CANCEL; flowId: string; method: string }
-	| { action: ACTION.LASER_RESPONSE_ACCEPT; flowId: string }
-	| { action: ACTION.LASER_RESPONSE_REJECT; flowId: string }
-	| { action: ACTION.LASER_RESPONSE_RETRY; flowId: string }
-	| { action: ACTION.STORY_CHAT_CANCEL }
+	| {
+			action: ACTION.LASER_RESPONSE_ACCEPT
+			flowId?: string
+			response: string
+			source?: string
+	  }
+	| {
+			action: ACTION.LASER_RESPONSE_REJECT
+			flowId?: string
+			response: string
+			source?: string
+	  }
+	| {
+			action: ACTION.LASER_RESPONSE_RETRY
+			flowId?: string
+			response: string
+			source?: string
+	  }
+	| { action: ACTION.STORY_CHAT_CANCEL; flowId?: string }
 	| {
 			action: ACTION.STORY_CHAT_SUGGESTION
 			suggestionAction: string
 			suggestionValue: string
 	  }
-	| { action: ACTION.STORY_CHAT_PROMPT; prompt: string }
-	| { action: ACTION.SFX_ACCEPT; all: boolean }
+	| {
+			action: ACTION.STORY_CHAT_PROMPT
+			chat_mode?: EChatMode
+			flowId: string
+			prompt: string
+	  }
+	| { action: ACTION.SFX_ACCEPT; all: boolean; flowId?: string }
 	| { action: ACTION.COMMENT_EXAMPLE; flowId: string }
 	| { action: ACTION.COMMENT_EXAMPLE_CANCEL; flowId: string }
 	| { action: ACTION.SIDEBAR_CHANGED; sidebarType: string }
@@ -98,9 +120,26 @@ export type TConditionalMetadata =
 	| { action: ACTION.DOWNLOAD_BULK_EPISODES; separate: string; size: number }
 	| {
 			action: ACTION.PROMPT_BULK_EPISODES
-			language: string
+			flowId: string
+			language?: string
 			prompt: string
 			size: string
+	  }
+	// new
+	| {
+			action: ACTION.STORY_CHAT_SFX_ADDED
+			flowId: string
+			response: string
+	  }
+	| {
+			action: ACTION.STORY_CHAT_REVIEW_ADDED
+			flowId: string
+			response: string
+	  }
+	| {
+			action: ACTION.VOICE_PASS_ADDED
+			flowId: string
+			response: string
 	  }
 	| { action?: TAction }
 
