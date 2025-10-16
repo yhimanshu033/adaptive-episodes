@@ -180,6 +180,7 @@ export default function useFindAndReplace() {
 			editor.tf.setValue(breakDownValue(updatedChildren))
 		})
 		setOptions({ search: '', replace: '' })
+		setRealTimeData({ search: '' })
 	}, [
 		search,
 		replaceEnabled,
@@ -251,8 +252,9 @@ export default function useFindAndReplace() {
 	}
 
 	function handleSuggestionClick(suggestion: TLocalizeArrayItem) {
-		const replace = getSuggestionValue(suggestion)
+		const replace = getSuggestionValue(suggestion) || ''
 		setOptions({ search: suggestion.name })
+		setRealTimeData({ search: suggestion.name })
 		setOptions({ replace })
 		setOptions({ replaceEnabled: true })
 		const updatedChildren = structuredClone(children)
