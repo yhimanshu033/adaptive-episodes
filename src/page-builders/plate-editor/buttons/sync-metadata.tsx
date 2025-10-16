@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
-import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import useMetadataSyncMutation from '@/hooks/mutation/use-metadata-sync'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils/helpers'
 
 const SyncMetaData = () => {
 	const { data } = useEpisodeContent()
-	const { metadataSyncMutation } = useEpisodeHook()
+	const metadataSyncMutation = useMetadataSyncMutation(Number(data?.chapter.id))
 
 	const handleSync = useCallback(() => {
 		if (!data?.chapter.id) {
@@ -24,7 +24,7 @@ const SyncMetaData = () => {
 				action: ACTION.SYNC_METADATA,
 			},
 		})
-		metadataSyncMutation.mutate(Number(data?.chapter.id))
+		metadataSyncMutation.mutate()
 	}, [data, metadataSyncMutation])
 
 	return (

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SOCKET_STREAMING_TIMEOUT } from '@/constants/global-constants'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useCountdownTimer from '@/hooks/use-countdown-timer'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { useUndoRedo } from '@/hooks/use-undo-redo'
@@ -120,6 +121,8 @@ const useBeatSheetEditorUtil = () => {
 		[tasksTimedOut, generatingSceneTaskId]
 	)
 
+	const { suggestionGuard } = useSuggestionGuard()
+
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
 		const scene = scenes.find((s) => s.id === sceneId)
 		if (!scene) {
@@ -141,7 +144,9 @@ const useBeatSheetEditorUtil = () => {
 		)
 		if (deleteNodeIndex > -1) {
 			newChildren.splice(deleteNodeIndex, 1)
-			editor.tf.setValue(newChildren)
+			suggestionGuard(() => {
+				editor.tf.setValue(newChildren)
+			})
 		}
 		deleteScene(sceneId)
 	}
@@ -196,7 +201,9 @@ const useBeatSheetEditorUtil = () => {
 			newChildren.splice(insertIndex, 0, newNode)
 		}
 		approveContent(sceneId)
-		editor.tf.setValue(newChildren)
+		suggestionGuard(() => {
+			editor.tf.setValue(newChildren)
+		})
 	}
 
 	const handleDragEnd = (event: DragEndEvent) => {
@@ -218,7 +225,9 @@ const useBeatSheetEditorUtil = () => {
 				children: editor.children,
 				scenes: newSceneOrder,
 			})
-			editor.tf.setValue(sortedEditorChildren)
+			suggestionGuard(() => {
+				editor.tf.setValue(sortedEditorChildren)
+			})
 		}
 
 		// Handle BEAT reorder
@@ -323,11 +332,13 @@ const useBeatSheetEditorUtil = () => {
 					children: editor.children,
 					scenes: newScenes,
 				})
-				editor.tf.setValue(sortedEditorChildren)
+				suggestionGuard(() => {
+					editor.tf.setValue(sortedEditorChildren)
+				})
 			}
 			setScenes(newScenes)
 		},
-		[scenes, setScenes, editor.children, editor.tf]
+		[scenes, setScenes, editor.children, editor.tf, suggestionGuard]
 	)
 
 	const handleUndo = useCallback(() => {

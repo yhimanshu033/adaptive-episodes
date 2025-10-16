@@ -27,6 +27,7 @@ type FindAndReplaceFormProps = Pick<
 	| 'wholeWord'
 	| 'toggleSearchMode'
 	| 'setData'
+	| 'replaceEnabled'
 >
 
 const FindAndReplaceForm = ({
@@ -41,6 +42,7 @@ const FindAndReplaceForm = ({
 	onReplaceAll,
 	toggleSearchMode,
 	setData,
+	replaceEnabled,
 }: FindAndReplaceFormProps) => {
 	return (
 		<section className="border-fm-divider-tertiary space-y-5 border-b px-6 py-7">
@@ -115,8 +117,8 @@ const FindAndReplaceForm = ({
 						variant="outline"
 						size="sm"
 						className="flex-1"
-						disabled={!search || !replace}
-						isDisabled={!search || !replace}
+						disabled={!search || !replace || !replaceEnabled}
+						isDisabled={!search || !replace || !replaceEnabled}
 						innerClassName="border-fm-divider-secondary bg-transparent group-disabled:text-fm-tertiary translate-y-0 group-hover:text-fm-primary group-hover:border-fm-divider-contrast group-disabled:border-fm-divider-secondary"
 						onClick={onReplace}
 					>
@@ -126,8 +128,8 @@ const FindAndReplaceForm = ({
 						variant="outline"
 						size="sm"
 						className="flex-1"
-						disabled={!search || !replace}
-						isDisabled={!search || !replace}
+						disabled={!search || !replace || !replaceEnabled}
+						isDisabled={!search || !replace || !replaceEnabled}
 						innerClassName="border-fm-divider-secondary bg-transparent group-disabled:text-fm-tertiary translate-y-0 group-hover:text-fm-primary group-hover:border-fm-divider-contrast group-disabled:border-fm-divider-secondary"
 						onClick={onReplaceAll}
 					>

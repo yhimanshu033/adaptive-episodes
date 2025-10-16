@@ -9,8 +9,8 @@ import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
 	useEditorPlugin,
+	useEditorReadOnly,
 	useEditorRef,
-	usePlateState,
 	usePluginOption,
 } from 'platejs/react'
 
@@ -29,10 +29,9 @@ import { ESidebar } from '@/types/plate-types'
 import { Typography } from '../aural-ui/typography'
 
 export function ModeToolbarButton(props: DropdownMenuProps) {
-	const [readOnly, setReadOnly] = usePlateState('readOnly')
-	const { setSidebar } = usePlateStore()
-
+	const { setSidebar, setViewMode } = usePlateStore()
 	const editorRef = useEditorRef()
+	const readOnly = useEditorReadOnly()
 
 	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
 	const { setOption } = useEditorPlugin(SuggestionPlugin)
@@ -46,21 +45,22 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 	}, [cannotEdit])
 
 	const value = useMemo(() => {
-		if (readOnly || cannotEdit) {
+		if (cannotEdit || readOnly) {
 			return EditorModes.viewing
 		}
 		if (isSuggesting) {
 			return EditorModes.suggesting
 		}
 		return EditorModes.editing
-	}, [readOnly, cannotEdit, isSuggesting])
+	}, [cannotEdit, isSuggesting, readOnly])
 
 	const handleChange = React.useCallback(
 		(newValue: string) => {
 			if (cannotEdit) {
+				setViewMode(true)
 				return
 			}
-			setReadOnly(newValue === String(EditorModes.viewing))
+			setViewMode(newValue === String(EditorModes.viewing))
 			setOption('isSuggesting', newValue === String(EditorModes.suggesting))
 
 			if (newValue === String(EditorModes.suggesting)) {
@@ -78,7 +78,7 @@ export function ModeToolbarButton(props: DropdownMenuProps) {
 				editorRef.tf.focus({ edge: 'end' })
 			}
 		},
-		[cannotEdit, setReadOnly, setOption, editorRef.tf, setSidebar]
+		[cannotEdit, setViewMode, setOption, editorRef.tf, setSidebar]
 	)
 
 	return (

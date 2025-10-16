@@ -10,7 +10,8 @@ export const AI_AVATAR_ASSET = '/assets/ai_avatar.webp'
 export const DB_NAME = 'COPILOT_DB'
 export const STORE_NAME = 'EPISODE_DATA_STORE'
 export const RECENT_STORE_NAME = 'RECENT_DATA_STORE'
-export const VERSION = 6
+export const CONFIGURATION_STORE_NAME = 'CONFIGURATION_DATA_STORE'
+export const VERSION = 8
 export const EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000 // 1 week in milliseconds
 export const MAX_ENTRIES = 1000
 
@@ -171,3 +172,5 @@ export const IGNORE_ERROR_API_URLS = new Set([
 ])
 
 export const NWM_EMAIL = 'NWM_REGENERATION_WORKER'
+
+export const CONFIGURATION_DATA_KEY = 'CONFIGURATION_DATA'

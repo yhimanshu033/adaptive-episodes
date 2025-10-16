@@ -5,6 +5,7 @@ import {
 	LASER_LEAF_KEYS,
 	RESPONSE_GAP,
 } from '@/constants/editor-constants'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useLaserStore from '@/store/laser-store'
 import { CheckedState } from '@radix-ui/react-checkbox'
 import { Send } from 'lucide-react'
@@ -29,6 +30,7 @@ export default function FloatingPrompt() {
 
 	const [val, setVal] = React.useState<string>('')
 	const [additionalContext, setAdditionalContext] = useState(false)
+	const { suggestionGuard } = useSuggestionGuard()
 
 	const key = useMemo(() => {
 		if (promptActive) {
@@ -72,7 +74,9 @@ export default function FloatingPrompt() {
 			try {
 				const val = structuredClone(editor.children)
 				val.forEach((node) => traverse(node, intoLaser))
-				editor.tf.setValue(val)
+				suggestionGuard(() => {
+					editor.tf.setValue(val)
+				})
 				setPromptActive(null)
 				track({
 					event: EVENT_TYPE.BUTTON_CLICK,
@@ -88,7 +92,7 @@ export default function FloatingPrompt() {
 			}
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[editor, traverse, setPromptActive, key]
+		[editor, traverse, setPromptActive, key, suggestionGuard]
 	)
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -11,8 +11,10 @@ import {
 	TLocalizeConceptArrayItem,
 	TLocalizeObjectArrayItem,
 	TLocalizePlaceArrayItem,
+	TQuickPrompt,
 } from '@/types/ai-types'
 import { TGetEpisodeResponse } from '@/types/episode-type'
+import { ESidebar } from '@/types/plate-types'
 
 export type TCustomComment = TComment & { node: TCommentText }
 
@@ -100,3 +102,65 @@ export type TLocalizationObject = [
 	},
 ]
 export type TSuggestions = (typeof storyChatSuggestions)[number]
+
+export enum ESuggestionViewingType {
+	CORRECTIONS = 'corrections',
+	DESIRED = 'desired',
+}
+
+export enum EThemeMode {
+	DARK = 'dark',
+	LIGHT = 'light',
+}
+export type TStoredConfigurationData = {
+	defaultSidebar: ESidebar | null
+	quickPrompts: TQuickPrompt[]
+	suggestionDisplay: ESuggestionViewingType
+	theme: EThemeMode
+}
+
+export type TConfigurationData = {
+	configurationDialogOpen: boolean
+	configurationDialogTab: EConfigurationDialogContentTab
+} & TStoredConfigurationData
+
+export enum EConfigurationContentItemDataType {
+	BUTTON = 'button',
+	CUSTOM = 'custom',
+	DROPDOWN = 'dropdown',
+	TOGGLE = 'toggle',
+}
+
+export type ConfigurationContentItemData =
+	| {
+			dropdownItems: { title?: React.ReactNode; value: string }[]
+			onSelect: (data: string) => void
+			selectedValue: string
+			type: EConfigurationContentItemDataType.DROPDOWN
+	  }
+	| {
+			offIcon?: React.ReactNode
+			onIcon?: React.ReactNode
+			onSelect: (data: boolean) => void
+			selectedValue: boolean
+			type: EConfigurationContentItemDataType.TOGGLE
+	  }
+	| {
+			buttonText?: React.ReactNode
+			onSelect: () => void
+			type: EConfigurationContentItemDataType.BUTTON
+	  }
+	| {
+			customHandler: React.ReactNode
+			type: EConfigurationContentItemDataType.CUSTOM
+	  }
+export type TConfigurationContentItem = {
+	data: ConfigurationContentItemData
+	description: string
+	title: string
+}
+
+export enum EConfigurationDialogContentTab {
+	OPTIONS = 'options',
+	QUICK_PROMPTS = 'quick-prompts',
+}
