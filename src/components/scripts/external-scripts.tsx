@@ -11,7 +11,11 @@ export default function ExternalScripts() {
 		return () => clearTimeout(timer)
 	}, [])
 
-	if (!loaded || process.env.NODE_ENV !== 'production') {
+	if (
+		!loaded ||
+		process.env.NODE_ENV !== 'production' ||
+		process.env.NEXT_PUBLIC_DEPLOY_ENV !== 'production'
+	) {
 		return null
 	}
 

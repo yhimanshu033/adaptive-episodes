@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
-import { LASER_LEAF_KEYS, rephraseMethods } from '@/constants/editor-constants'
+import {
+	LASER_LEAF_KEYS,
+	LASER_PADDING,
+	rephraseMethods,
+} from '@/constants/editor-constants'
 import { languageToTitle } from '@/constants/episodes-constants'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -71,27 +75,46 @@ export default function LaserRephrase({
 			nextBlockTextEndOffset,
 		} = getLaserTextIndices(allChildren, leafPath[1])
 
-		const prevText = editor.api.string({
-			anchor: {
-				path: prevBlockTextStart,
-				offset: 0,
+		const prevTextChunks = editor.api.string(
+			{
+				anchor: {
+					path: prevBlockTextStart,
+					offset: 0,
+				},
+				focus: {
+					path: prevBlockTextEnd,
+					offset: 0,
+				},
 			},
-			focus: {
-				path: prevBlockTextEnd,
-				offset: 0,
-			},
-		})
+			{
+				voids: true,
+			}
+		)
 
-		const nextText = editor.api.string({
-			anchor: {
-				path: nextBlockTextStart,
-				offset: 0,
+		const nextTextChunks = editor.api.string(
+			{
+				anchor: {
+					path: nextBlockTextStart,
+					offset: 0,
+				},
+				focus: {
+					path: nextBlockTextEnd,
+					offset: nextBlockTextEndOffset,
+				},
 			},
-			focus: {
-				path: nextBlockTextEnd,
-				offset: nextBlockTextEndOffset,
-			},
-		})
+			{
+				voids: true,
+			}
+		)
+
+		const prevText = prevTextChunks
+			.split(/\r?\n+/)
+			.slice(-1 * LASER_PADDING)
+			.join('\n')
+		const nextText = nextTextChunks
+			.split(/\r?\n+/)
+			.slice(0, LASER_PADDING)
+			.join('\n')
 
 		return {
 			text,

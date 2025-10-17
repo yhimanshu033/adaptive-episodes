@@ -22,6 +22,10 @@ export type TGetStoriesResponse = {
 	}
 }
 
+export type TStoryProps = {
+	bulk_prompt_history?: string[]
+}
+
 export type TStory = {
 	adapting_seq_nos?: number[]
 	author: string | null
@@ -35,7 +39,7 @@ export type TStory = {
 	languages: ELanguage[]
 	parent_language?: ELanguage
 	project_title: string
-	props: Record<string, unknown>
+	props?: TStoryProps
 	source_language?: ELanguage
 	status: EImportStatus
 	update_time: string
