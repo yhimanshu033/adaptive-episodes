@@ -1,9 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
-import {
-	ESTIMATED_FLOATING_HEIGHT,
-	RESPONSE_GAP,
-} from '@/constants/editor-constants'
+import { LASER_LEAF_KEYS } from '@/constants/editor-constants'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import { CrossIcon } from '@/icons/cross-icon'
 import { TickIcon } from '@/icons/tick-icon'
@@ -17,52 +14,37 @@ import Textarea from '@/components/aural-ui/textarea'
 import Image from '@/components/ui/image'
 import { track } from '@/lib/utils/analytics'
 import { cn } from '@/lib/utils/helpers'
-import {
-	breakDownValue,
-	deleteNodesWithStartKeys,
-	keyNodeOperationOnce,
-	updateNodesWithStartKeys,
-} from '@/lib/utils/plate'
 
 import { Divider } from '../aural-ui/divider'
 
-export default function FloatingLaserResponse() {
-	const {
-		setActiveLaser,
-		setResponseActive,
-		setTriggerRephrase,
-		setLaser,
-		store: laserStore,
-	} = useLaserStore()
-	const {
-		responseActive,
-		active: activeLaser,
-		lasers: allLasers,
-	} = laserStore()
+export default function FloatingLaserResponse({
+	onTryAgain,
+	onResetLeaf,
+}: {
+	onResetLeaf: (removeOld?: boolean) => void
+	onTryAgain: () => void
+}) {
+	const { setActiveLaser, setLaser, store: laserStore } = useLaserStore()
+	const { active: key, lasers: allLasers } = laserStore()
 	const editor = useEditorRef()
 	const { suggestionGuard } = useSuggestionGuard()
 
-	const laser =
-		responseActive === activeLaser && responseActive
-			? allLasers[responseActive]
-			: null
+	const laser = useMemo(() => (key ? allLasers[key] : null), [key, allLasers])
 
 	const setVal = useCallback(
 		(val: string) => {
-			if (!activeLaser || !laser) {
+			if (!key || !laser) {
 				return
 			}
-			setLaser({ id: activeLaser, laser: { ...laser, response: val } })
+			setLaser({ id: key, laser: { ...laser, response: val } })
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[activeLaser, laser]
+		[key, laser]
 	)
 
-	const val = laser?.response || ''
+	const val = useMemo(() => laser?.response || '', [laser])
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const name = useMemo(nanoid, [responseActive])
-
-	const key = responseActive
+	const name = useMemo(nanoid, [key])
 
 	const onRephrase = useCallback(
 		(text: string) => {
@@ -70,16 +52,16 @@ export default function FloatingLaserResponse() {
 				return
 			}
 			try {
-				const val = structuredClone(editor.children)
-
-				const newVal = keyNodeOperationOnce(
-					val,
-					key,
-					(node) => updateNodesWithStartKeys('laser', text, node),
-					(node) => updateNodesWithStartKeys('laser', '', node)
-				)
+				const firstMatch = editor.api.node({
+					at: [],
+					match: (n) => !!n?.[key],
+				})
+				if (!firstMatch) {
+					return
+				}
 				suggestionGuard(() => {
-					editor.tf.setValue(breakDownValue(newVal))
+					editor.tf.select(firstMatch[1], { edge: 'start' })
+					editor.tf.insertNodes({ text })
 				})
 			} catch (error) {
 				console.error(error)
@@ -88,36 +70,16 @@ export default function FloatingLaserResponse() {
 		[editor, key, suggestionGuard]
 	)
 
-	const onResetLeaf = useCallback(() => {
-		if (!key) {
-			return
-		}
-		try {
-			const val = structuredClone(editor.children)
-			const newVal = keyNodeOperationOnce(
-				val,
-				key,
-				(node) => deleteNodesWithStartKeys('laser', node),
-				(node) => deleteNodesWithStartKeys('laser', node)
-			)
-			suggestionGuard(() => {
-				editor.tf.setValue(breakDownValue(newVal))
-			})
-		} catch (error) {
-			console.error(error)
-		}
-	}, [editor, key, suggestionGuard])
-
 	function handleAcceptRephrase() {
 		onRephrase(val)
-		onResetLeaf()
+		onResetLeaf(true)
 		setActiveLaser(null)
 		track({
 			event: EVENT_TYPE.BUTTON_CLICK,
 			screenName: SCREEN_NAME.EPISODE_EDITOR,
 			metaData: {
 				action: ACTION.LASER_RESPONSE_ACCEPT,
-				flowId: key?.split?.('laser-id-')?.[1],
+				flowId: key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1],
 				source: laser?.text,
 				response: val,
 			},
@@ -132,7 +94,7 @@ export default function FloatingLaserResponse() {
 			screenName: SCREEN_NAME.EPISODE_EDITOR,
 			metaData: {
 				action: ACTION.LASER_RESPONSE_REJECT,
-				flowId: key?.split?.('laser-id-')?.[1],
+				flowId: key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1],
 				source: laser?.text,
 				response: val,
 			},
@@ -140,38 +102,17 @@ export default function FloatingLaserResponse() {
 	}
 
 	function handleRephrase() {
-		setTriggerRephrase(key)
-		setResponseActive(null)
+		onTryAgain()
 		track({
 			event: EVENT_TYPE.BUTTON_CLICK,
 			screenName: SCREEN_NAME.EPISODE_EDITOR,
 			metaData: {
 				action: ACTION.LASER_RESPONSE_RETRY,
-				flowId: key?.split?.('laser-id-')?.[1],
+				flowId: key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1],
 				source: laser?.text,
 				response: val,
 			},
 		})
-	}
-
-	const positionStyle = useMemo(() => {
-		if (!laser) {
-			return {}
-		}
-		const yPosition =
-			(laser.clientY ?? 0) + (laser.height ?? 0) + ESTIMATED_FLOATING_HEIGHT >
-			window.innerHeight
-				? { bottom: window.innerHeight - (laser.clientY ?? 0) + RESPONSE_GAP }
-				: { top: (laser.clientY ?? 0) + (laser.height ?? 0) + RESPONSE_GAP }
-		return {
-			...yPosition,
-			left: laser.clientX || 500,
-			width: laser.width || 800,
-		}
-	}, [laser])
-
-	if (!laser) {
-		return null
 	}
 
 	return (
@@ -183,10 +124,9 @@ export default function FloatingLaserResponse() {
 				setActiveLaser(null)
 			}}
 			className={cn(
-				'fixed z-9999 flex gap-2',
+				'flex gap-2',
 				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg'
 			)}
-			style={positionStyle}
 		>
 			<Image
 				alt="laser gradient"

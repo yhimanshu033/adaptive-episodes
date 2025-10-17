@@ -4,15 +4,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
 import { DiffStatus } from '@/constants/ai-constants'
+import {
+	LASER_LEAF_KEYS,
+	LASER_PADDING,
+	LASER_PROMPT_KEYS,
+} from '@/constants/editor-constants'
 import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/server-constants'
 import { getCommentKey } from '@platejs/comment'
 import { computeDiff, DiffOperation, DiffUpdate } from '@platejs/diff'
 // Create a new file: src/lib/comment-helpers.ts
 import {
+	At,
 	createSlateEditor,
 	Descendant,
 	Element,
 	KEYS,
+	Path,
 	serializeHtml,
 	TCommentText,
 	TElement,
@@ -102,8 +109,8 @@ export function clearLasers(ogVal: Value): Value {
 	const traverse = (node: Descendant) => {
 		const keys = Object.keys(node).filter(
 			(key) =>
-				key.startsWith('laser') ||
-				key.startsWith('floating-prompt') ||
+				key.startsWith(LASER_LEAF_KEYS.KEY) ||
+				key.startsWith(LASER_PROMPT_KEYS.KEY) ||
 				key.startsWith('prompt-')
 		)
 		if (keys.length) {
@@ -1171,4 +1178,55 @@ export function reorderScenesBasedOnChildren({
 	})
 
 	return sortedScenes
+}
+
+export function getLaserTextIndices(children: Value, path: Path) {
+	const blockIdx = path[0]
+	const leafIdx = path[1]
+	const startBlockIdx = Math.max(blockIdx - LASER_PADDING, 0)
+	const currentBlock = children[blockIdx]
+
+	let prevBlockTextStart: At = [0, 0]
+	let prevBlockTextEnd: At = [0, 0]
+
+	const endBlockIdx = Math.min(blockIdx + LASER_PADDING, children.length - 1)
+	const endLeafIdx = children[endBlockIdx].children.length - 1
+	let nextBlockTextStart: At = [endBlockIdx, endLeafIdx]
+	let nextBlockTextEnd: At = [endBlockIdx, endLeafIdx]
+	let nextBlockTextEndOffset: number = 0
+
+	if (blockIdx > 0 || leafIdx > 0) {
+		const prevBlockIdx = Math.max(blockIdx - 1, 0)
+
+		const prevBlockTextEndBlock = leafIdx === 0 ? prevBlockIdx : blockIdx
+		const prevBlockTextEndLeaf = leafIdx
+
+		prevBlockTextStart = [startBlockIdx, 0]
+		prevBlockTextEnd = [prevBlockTextEndBlock, prevBlockTextEndLeaf]
+	}
+
+	if (blockIdx < endBlockIdx || leafIdx < endLeafIdx) {
+		const nextBlockIdx = Math.min(blockIdx + 1, endBlockIdx)
+
+		const nextBlockTextStartBlock =
+			leafIdx === currentBlock.children.length - 1 ? nextBlockIdx : blockIdx
+		const nextBlockTextStartLeaf =
+			leafIdx === currentBlock.children.length - 1 ? 0 : leafIdx + 1
+
+		nextBlockTextStart = [nextBlockTextStartBlock, nextBlockTextStartLeaf]
+		nextBlockTextEnd = [endBlockIdx, children[endBlockIdx].children.length - 1]
+		nextBlockTextEndOffset =
+			(
+				children[nextBlockTextEnd[0]].children[nextBlockTextEnd[1]]
+					.text as string
+			)?.length || 0
+	}
+
+	return {
+		prevBlockTextStart,
+		prevBlockTextEnd,
+		nextBlockTextStart,
+		nextBlockTextEnd,
+		nextBlockTextEndOffset,
+	}
 }

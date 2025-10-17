@@ -7,13 +7,13 @@ export default function useSuggestionGuard() {
 	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
 
 	const suggestionGuard = useCallback(
-		(fn: () => void) => {
+		(fn: (isSuggesting?: boolean) => void) => {
 			if (isSuggesting) {
 				setSuggestionOption('isSuggesting', false)
-				fn()
+				fn(true)
 				setSuggestionOption('isSuggesting', true)
 			} else {
-				fn()
+				fn(false)
 			}
 		},
 		[isSuggesting, setSuggestionOption]
