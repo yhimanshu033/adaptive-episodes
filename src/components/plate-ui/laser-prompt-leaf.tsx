@@ -1,35 +1,30 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useMemo, useRef } from 'react'
+import { LASER_PROMPT_KEYS } from '@/constants/editor-constants'
 import useLaserStore from '@/store/laser-store'
 import { PlateLeaf, PlateLeafProps } from 'platejs/react'
 
 import { cn } from '@/lib/utils/helpers'
-import { getParentWidth } from '@/lib/utils/plate'
 
 export default function LaserPromptLeaf({
 	className,
+	leaf,
 	...props
 }: PlateLeafProps) {
-	const { store: laserStore, setPromptPosition } = useLaserStore()
-	const { promptActive } = laserStore()
+	const { setPromptActive } = useLaserStore()
 	const areaRef = useRef<HTMLDivElement>(null)
 
-	useEffect(() => {
-		const rect = areaRef.current?.getBoundingClientRect()
+	const id = useMemo(() => {
+		const keys = Object.keys(leaf)
+		const idKey = keys.find((item) =>
+			item.startsWith(LASER_PROMPT_KEYS.ID_START)
+		)
 
-		const { blockAncestorContentWidth, blockAncestorClientX } =
-			getParentWidth(areaRef)
+		return idKey
+	}, [leaf])
 
-		setPromptPosition({
-			clientY: rect ? rect?.top : 0,
-			height: rect ? rect?.height : 0,
-			clientX: blockAncestorClientX,
-			width: blockAncestorContentWidth,
-		})
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [promptActive])
-
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const { children } = props
+	if (!id) {
+		return <>{props.children}</>
+	}
 	return (
 		<PlateLeaf
 			{...props}
@@ -38,9 +33,13 @@ export default function LaserPromptLeaf({
 				'bg-primary/40',
 				className
 			)}
+			leaf={leaf}
 			ref={areaRef}
+			attributes={{
+				onClick: () => setPromptActive(id),
+			}}
 		>
-			{children}
+			{props.children}
 		</PlateLeaf>
 	)
 }
