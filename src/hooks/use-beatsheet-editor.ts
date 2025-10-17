@@ -425,7 +425,10 @@ const useBeatSheetEditorUtil = () => {
 			)
 
 			setGeneratedContent((prev) => {
-				return Object.assign(prev, newContent)
+				return {
+					...prev,
+					...newContent,
+				}
 			})
 		},
 		[generatingSceneTaskId]

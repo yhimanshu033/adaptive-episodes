@@ -116,7 +116,7 @@ export default function SceneTab() {
 					scene_texts: Object.fromEntries(
 						scenes.map((scene) => [
 							`scene_${scene.index + 1}`,
-							getSceneText(scene.data.id),
+							getSceneText(scene.data.id) ?? '',
 						])
 					),
 					characters,
