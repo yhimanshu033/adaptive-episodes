@@ -184,6 +184,7 @@ const BaseScriptDocUpload = ({
 		baseExtensionMutation.mutate({
 			files: data.files,
 			project_id: Number(id),
+			run_nwm: Boolean(data.run_nwm),
 		})
 		setDialogOpen(false)
 	}
