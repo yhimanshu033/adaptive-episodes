@@ -9,11 +9,6 @@ import { IconButton } from '@/components/aural-ui/icon-button'
 import IfElse, { Else, If } from '@/components/if-else'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 
-type TBaseStatus = {
-	header: string
-	message: string
-}
-
 const BaseScriptStatus = ({
 	taskId,
 	reset,
@@ -24,19 +19,8 @@ const BaseScriptStatus = ({
 	const { responses, taskEnded } = useSocketStreaming()
 	const queryClient = useQueryClient()
 
-	const grouped = useMemo(() => {
-		return (
-			responses[taskId]?.reduce<Record<string, string[]>>((acc, status) => {
-				const { header, message } = JSON.parse(status) as TBaseStatus
-				if (!acc[header]) {
-					acc[header] = []
-				}
-				acc[header].push(message)
-				return acc
-			}, {}) || {
-				'Extension Started': ['Live Status will be shown here'],
-			}
-		)
+	const statuses = useMemo(() => {
+		return responses[taskId] || []
 	}, [responses, taskId])
 
 	const scrollRef = React.useRef<HTMLDivElement>(null)
@@ -61,22 +45,17 @@ const BaseScriptStatus = ({
 		<div className="border-fm-divider-primary w-full border p-4 shadow-xs">
 			<ScrollArea className="h-48 pr-2">
 				<div ref={scrollRef} className="h-full overflow-y-auto pr-2">
-					{Object.entries(grouped).map(([header, messages]) => (
-						<div key={header} className="mb-4">
-							<div className="mb-1 text-sm font-medium">{header}</div>
-							<ul className="space-y-1 pl-4">
-								{messages.map((msg, idx) => (
-									<li
-										key={idx}
-										className="text-muted-foreground flex items-center space-x-2 text-sm"
-									>
-										<CheckCircle className="text-success size-4" />
-										<span>{msg}</span>
-									</li>
-								))}
-							</ul>
-						</div>
-					))}
+					<ul className="space-y-1 pl-4">
+						{statuses?.map((msg, idx) => (
+							<li
+								key={idx}
+								className="text-muted-foreground flex items-center space-x-2 text-sm"
+							>
+								<CheckCircle className="text-success size-4" />
+								<span>{msg}</span>
+							</li>
+						))}
+					</ul>
 				</div>
 				<ScrollBar orientation="vertical" />
 			</ScrollArea>

@@ -1,3 +1,39 @@
+## <small>1.3.8 (2025-10-20)</small>
+
+* fix: 🐛 bse statuses schema change handling ([3d220e9](https://github.com/Pocket-Fm/co-writing/commit/3d220e9))
+* fix: 🐛 fixed ui issues ([ea6d046](https://github.com/Pocket-Fm/co-writing/commit/ea6d046))
+* fix: 🐛 removed obj.assign ([08b1fdc](https://github.com/Pocket-Fm/co-writing/commit/08b1fdc))
+* fix: 🐛 removed unused store ([abf1908](https://github.com/Pocket-Fm/co-writing/commit/abf1908))
+* feat: 🎸 add bse streaming v2 ([d452702](https://github.com/Pocket-Fm/co-writing/commit/d452702))
+* feat: 🎸 bse enhancement draft 2 ([b9edfdc](https://github.com/Pocket-Fm/co-writing/commit/b9edfdc))
+* feat: 🎸 bse enhancement draft 3 ([abdbeec](https://github.com/Pocket-Fm/co-writing/commit/abdbeec))
+* feat: 🎸 bse enhancement draft1 ([ef375ea](https://github.com/Pocket-Fm/co-writing/commit/ef375ea))
+* feat: 🎸 bse streaming draft 1 ([5b03e70](https://github.com/Pocket-Fm/co-writing/commit/5b03e70))
+
+
+
+## <small>1.3.7 (2025-10-17)</small>
+
+* fix: 🐛 disabled scripts in qa ([e254f56](https://github.com/Pocket-Fm/co-writing/commit/e254f56))
+* fix: 🐛 far search state stale ([3b06087](https://github.com/Pocket-Fm/co-writing/commit/3b06087))
+* fix: 🐛 insertion logic ([a8806e2](https://github.com/Pocket-Fm/co-writing/commit/a8806e2))
+* fix: 🐛 laser tool content length reduced ([974fa3c](https://github.com/Pocket-Fm/co-writing/commit/974fa3c))
+* fix: 🐛 removed slice ([9d465cc](https://github.com/Pocket-Fm/co-writing/commit/9d465cc))
+* fix: 🐛 resolved comments ([cca15df](https://github.com/Pocket-Fm/co-writing/commit/cca15df))
+* fix: 🐛 resolved comments ([352f246](https://github.com/Pocket-Fm/co-writing/commit/352f246))
+* fix: 🐛 session refeth prevented on blur ([bf138d3](https://github.com/Pocket-Fm/co-writing/commit/bf138d3))
+* fix: 🐛 sidebar top bar state ([10c8b31](https://github.com/Pocket-Fm/co-writing/commit/10c8b31))
+* fix: 🐛 suggestion;find-replace;episode-lock; ([9185691](https://github.com/Pocket-Fm/co-writing/commit/9185691))
+* feat: 🎸 added events ([30375a3](https://github.com/Pocket-Fm/co-writing/commit/30375a3))
+* feat: 🎸 history in bulk prompt ([fac9c3c](https://github.com/Pocket-Fm/co-writing/commit/fac9c3c))
+* feat: 🎸 refactored laser tools ([50c8038](https://github.com/Pocket-Fm/co-writing/commit/50c8038))
+* feat: 🎸 resolved comments ([a886040](https://github.com/Pocket-Fm/co-writing/commit/a886040))
+* feat: 🎸 startDelay in polling ([d98e9cc](https://github.com/Pocket-Fm/co-writing/commit/d98e9cc))
+* chore: 🤖 enabled analytics in prod ([51bc002](https://github.com/Pocket-Fm/co-writing/commit/51bc002))
+* chore: 🤖 integrated hotjar ([9b73945](https://github.com/Pocket-Fm/co-writing/commit/9b73945))
+
+
+
 ## <small>1.3.6 (2025-10-15)</small>
 
 * fix: 🐛 bulk download now sequential ([810c3ee](https://github.com/Pocket-Fm/co-writing/commit/810c3ee))
