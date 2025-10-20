@@ -73,14 +73,15 @@ export enum ACTION {
 	STORY_CHAT_REVIEW_ADDED = 'story_chat_review_added',
 	// new
 	STORY_CHAT_SFX_ADDED = 'story_chat_sfx_added',
+	STORY_CHAT_SINGLE_SFX_ACTION = 'single_sfx_action',
 	STORY_CHAT_SUGGESTION = 'story_chat_suggestion',
 	STORY_EXPLORER_ACTION = 'story_explorer_action',
 	STORY_EXPLORER_FOCUS = 'story_explorer_focus',
 	STORY_EXPLORER_TAB_CHANGE = 'story_explorer_tab_change',
 	SUGGESTION_MODE = 'suggestion_mode',
 	SYNC_METADATA = 'sync_metadata',
-	THEME_TOGGLE = 'theme-toggle',
 
+	THEME_TOGGLE = 'theme-toggle',
 	TTS_TRIGGER = 'tts_trigger',
 	VIEW_LS = 'view_ls',
 	VOICE_PASS_ADDED = 'story_chat_voice_pass_added',

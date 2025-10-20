@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo } from 'react'
 import { DiffStatus } from '@/constants/ai-constants'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
+import useAIChatbot from '@/hooks/use-ai-chatbot'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { Check, X } from 'lucide-react'
@@ -10,8 +12,11 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
+import { track } from '@/lib/utils/analytics'
 import { scrollToDivWithId } from '@/lib/utils/client-helpers'
 import { getDiffLeafID } from '@/lib/utils/plate'
+
+import { EAction, EMessenger } from '@/types/ai-types'
 
 export interface DiffControlsProps {
 	editor: PlateEditor
@@ -23,6 +28,7 @@ export default function DiffControls({ element, editor }: DiffControlsProps) {
 	const { store, setActiveDiffId } = usePlateStore()
 	const diffIdList = store(useShallow((state) => state.diffIdList))
 	const { suggestionGuard } = useSuggestionGuard()
+	const { lastMessage } = useAIChatbot()
 
 	const nextDiffId = useMemo(() => {
 		const list = diffIdList || [String(element.diff_id)]
@@ -38,6 +44,23 @@ export default function DiffControls({ element, editor }: DiffControlsProps) {
 			status: DiffStatus
 		) => {
 			e.stopPropagation()
+
+			if (
+				lastMessage?.role === EMessenger.ASSISTANT &&
+				lastMessage.action === EAction.CHANGES &&
+				status !== DiffStatus.PENDING
+			) {
+				track({
+					event: EVENT_TYPE.BUTTON_CLICK,
+					screenName: SCREEN_NAME.EPISODE_EDITOR,
+					metaData: {
+						action: ACTION.STORY_CHAT_SINGLE_SFX_ACTION,
+						change: status,
+						flowId: lastMessage.taskId,
+						sfx: String(element.text),
+					},
+				})
+			}
 			const value = structuredClone(originalValue)
 			function findNode(node: Descendant) {
 				if ('diff' in node) {
@@ -57,7 +80,14 @@ export default function DiffControls({ element, editor }: DiffControlsProps) {
 			setAcceptedDiffValue(value)
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[originalValue, element.diff_id, editor.tf, nextDiffId, suggestionGuard]
+		[
+			originalValue,
+			element,
+			editor.tf,
+			nextDiffId,
+			suggestionGuard,
+			lastMessage,
+		]
 	)
 	return (
 		<div className="absolute top-2/5 z-50 flex translate-x-full gap-2 pl-10">

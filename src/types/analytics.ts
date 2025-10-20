@@ -1,3 +1,4 @@
+import { DiffStatus } from '@/constants/ai-constants'
 import {
 	ACTION,
 	EDeviceBrowser,
@@ -140,6 +141,12 @@ export type TConditionalMetadata =
 			action: ACTION.VOICE_PASS_ADDED
 			flowId: string
 			response: string
+	  }
+	| {
+			action: ACTION.STORY_CHAT_SINGLE_SFX_ACTION
+			change: DiffStatus
+			flowId: string
+			sfx: string
 	  }
 	| { action?: TAction }
 
