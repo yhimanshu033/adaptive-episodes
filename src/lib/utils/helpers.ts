@@ -1207,3 +1207,6 @@ export function jumbleArray<T>(array: T[]): T[] {
 	}
 	return result
 }
+
+export const isStringifiedJsonArray = (text: string) =>
+	/^\s*\[.*\]\s*$/.test(text)

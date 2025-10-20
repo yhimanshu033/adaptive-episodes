@@ -54,6 +54,7 @@ type TSocketStreamingContext =
 					noCache?: boolean
 					onResponse?: (data: ResponseDataT) => void
 					onTimeout?: (taskId: string) => void
+					timeout?: number
 				}
 			) => Promise<string>
 			stopTask: (taskId: string) => void
@@ -167,10 +168,10 @@ export const SocketStreamingProvider = ({
 					task_id: string
 				}
 			) => {
+				// let task_id = payload.task_id
 				if (blockedTasksRef.current[task_id]) {
 					return
 				}
-
 				const { chunk, status } = payload
 
 				// Handle task start
@@ -241,10 +242,17 @@ export const SocketStreamingProvider = ({
 				noCache?: boolean
 				onResponse?: (data: ResponseDataT) => void
 				onTimeout?: (taskId: string) => void
+				timeout?: number
 			}
 		) => {
 			const key = JSON.stringify(params)
-			const { noCache, onResponse, onTimeout, ...rest } = params
+			const {
+				noCache,
+				onResponse,
+				onTimeout,
+				timeout = SOCKET_STREAMING_TIMEOUT,
+				...rest
+			} = params
 			if (fetchedData[key] && !noCache) {
 				return fetchedData[key]
 			}
@@ -272,7 +280,6 @@ export const SocketStreamingProvider = ({
 					...(params.query as QueryParamsT),
 				},
 			})
-
 			const timeoutId = setTimeout(() => {
 				const timeoutCallback = timeoutCallbacksRef.current[taskId]
 				if (timeoutCallback) {
@@ -285,7 +292,7 @@ export const SocketStreamingProvider = ({
 				delete timeoutsRef.current[taskId]
 				delete taskCallbacksRef.current[taskId]
 				delete timeoutCallbacksRef.current[taskId]
-			}, SOCKET_STREAMING_TIMEOUT)
+			}, timeout)
 
 			timeoutsRef.current[taskId] = timeoutId
 
