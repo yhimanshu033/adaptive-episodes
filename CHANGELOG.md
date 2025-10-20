@@ -1,3 +1,17 @@
+## <small>1.3.8 (2025-10-20)</small>
+
+* fix: 🐛 bse statuses schema change handling ([3d220e9](https://github.com/Pocket-Fm/co-writing/commit/3d220e9))
+* fix: 🐛 fixed ui issues ([ea6d046](https://github.com/Pocket-Fm/co-writing/commit/ea6d046))
+* fix: 🐛 removed obj.assign ([08b1fdc](https://github.com/Pocket-Fm/co-writing/commit/08b1fdc))
+* fix: 🐛 removed unused store ([abf1908](https://github.com/Pocket-Fm/co-writing/commit/abf1908))
+* feat: 🎸 add bse streaming v2 ([d452702](https://github.com/Pocket-Fm/co-writing/commit/d452702))
+* feat: 🎸 bse enhancement draft 2 ([b9edfdc](https://github.com/Pocket-Fm/co-writing/commit/b9edfdc))
+* feat: 🎸 bse enhancement draft 3 ([abdbeec](https://github.com/Pocket-Fm/co-writing/commit/abdbeec))
+* feat: 🎸 bse enhancement draft1 ([ef375ea](https://github.com/Pocket-Fm/co-writing/commit/ef375ea))
+* feat: 🎸 bse streaming draft 1 ([5b03e70](https://github.com/Pocket-Fm/co-writing/commit/5b03e70))
+
+
+
 ## <small>1.3.7 (2025-10-17)</small>
 
 * fix: 🐛 disabled scripts in qa ([e254f56](https://github.com/Pocket-Fm/co-writing/commit/e254f56))

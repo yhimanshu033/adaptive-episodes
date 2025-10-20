@@ -33,7 +33,7 @@ import { ESidebar } from '@/types/plate-types'
 import { If } from '../aural-ui/if-else'
 import { ScrollArea } from '../aural-ui/scroll-area'
 import { ThemeConfigurationApply } from '../theme-toggle'
-import ToogleBeatSheetEditor from './toogle-beatsheet-editor'
+import ToggleBeatSheetEditor from './toogle-beatsheet-editor'
 
 const toolbarIconVariants = iconVariants({ variant: 'toolbar' })
 
@@ -102,7 +102,7 @@ const RightToolbarSection = React.memo(() => (
 		<ToolbarGroup>
 			<ToggleFindAndReplace />
 		</ToolbarGroup>
-		<ToogleBeatSheetEditor />
+		<ToggleBeatSheetEditor />
 		<ToolbarGroup>
 			<TranslationToggleButton />
 		</ToolbarGroup>

@@ -1,30 +1,21 @@
 import React from 'react'
-import { useParams } from 'next/navigation'
-import { beatSheetEditorAllowedProjects } from '@/constants/editor-constants'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useBeatSheetEnabled from '@/hooks/use-beatsheet-enabled'
 import usePlateStore from '@/store/plate-store'
 import { BookOpen } from 'lucide-react'
-import { useEditorReadOnly } from 'platejs/react'
 
 import { ESidebar } from '@/types/plate-types'
 
 import { ToolbarButton } from '../plate-ui/toolbar'
 import { ToolbarGroup } from './toolbar'
 
-const ToogleBeatSheetEditor = () => {
-	const { id } = useParams()
+const ToggleBeatSheetEditor = () => {
 	const { store, setSidebar } = usePlateStore()
-	const readOnly = useEditorReadOnly()
 	const currentSidebar = store((state) => state.sidebar)
 	const isActive = currentSidebar === ESidebar.BEAT_SHEET
-	const { data: content } = useEpisodeContent()
 
-	const isNWMEpisode = content?.chapter?.props?.nwm_running === false
+	const isBSEEnabled = useBeatSheetEnabled()
 
-	if (
-		!(beatSheetEditorAllowedProjects.includes(Number(id)) || isNWMEpisode) ||
-		readOnly
-	) {
+	if (!isBSEEnabled) {
 		return null
 	}
 
@@ -41,4 +32,4 @@ const ToogleBeatSheetEditor = () => {
 	)
 }
 
-export default ToogleBeatSheetEditor
+export default ToggleBeatSheetEditor
