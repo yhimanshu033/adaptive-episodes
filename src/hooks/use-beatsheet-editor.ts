@@ -1,5 +1,13 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { SOCKET_STREAMING_TIMEOUT } from '@/constants/global-constants'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
+import useCountdownTimer from '@/hooks/use-countdown-timer'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
+import { useUndoRedo } from '@/hooks/use-undo-redo'
+import { TrashIcon } from '@/icons/trash-icon'
 import useBeatsheetStore from '@/store/beatsheet-store'
+import usePlateStore from '@/store/plate-store'
+import { popup } from '@/store/popup-store'
 import {
 	CollisionDetection,
 	DragEndEvent,
@@ -12,13 +20,28 @@ import {
 	useSensors,
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import { LucideIcon } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
-import { TGenerateBeatsheetResponse } from '@/types/beatsheet-editor-types'
+import {
+	isStringifiedJsonArray,
+	shouldTriggerContentReorder,
+} from '@/lib/utils/helpers'
+import {
+	reorderChildrenBasedOnScenes,
+	reorderScenesBasedOnChildren,
+} from '@/lib/utils/plate'
 
-const useBeatSheetEditor = () => {
+import {
+	TGenerateBeatsheetResponse,
+	TGenerateBeatsheetResponseItem,
+} from '@/types/beatsheet-editor-types'
+import { ESidebar } from '@/types/plate-types'
+
+const useBeatSheetEditorUtil = () => {
 	const editor = useEditorRef()
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -33,13 +56,77 @@ const useBeatSheetEditor = () => {
 		setActiveDragItem,
 		setScenes,
 		setOpenSceneIds,
+		setOldScenes,
 	} = useBeatsheetStore()
 
 	const scenes = beatsheetStore(useShallow((state) => state.scenes))
+	const oldScenes = beatsheetStore(useShallow((state) => state.oldScenes))
 	const activeDragItem = beatsheetStore(
 		useShallow((state) => state.activeDragItem)
 	)
 	const openSceneIds = beatsheetStore(useShallow((state) => state.openSceneIds))
+	const { store: customPlateStore } = usePlateStore()
+	const sidebar = customPlateStore(useShallow((state) => state.sidebar))
+
+	const { redo, undo, reset, canRedo, canUndo } = useUndoRedo(scenes, {
+		startIndex: 1,
+	})
+	const [generatingSceneTaskId, setGeneratingSceneTaskId] = useState<
+		Record<string, string>
+	>({})
+	const [generatedContent, setGeneratedContent] = useState<
+		Record<string, TGenerateBeatsheetResponseItem>
+	>({})
+	const [generationLogs, setGeneratedLogs] = useState<Record<string, string[]>>(
+		{}
+	)
+
+	const { taskEnded, tasksTimedOut, responses } = useSocketStreaming()
+
+	const { start: startCountdown, getTimeLeft } = useCountdownTimer()
+
+	const isInitiallyReorderedRef = useRef(false)
+
+	const currentlyGeneratingSceneTaskId = useMemo(() => {
+		const newGeneratingSceneTaskId = Object.fromEntries(
+			Object.entries(generatingSceneTaskId).filter(([, taskId]) => {
+				return !taskEnded[taskId]
+			})
+		)
+		return newGeneratingSceneTaskId
+	}, [taskEnded, generatingSceneTaskId])
+
+	const tasksConsumed = useMemo(() => {
+		const taskSceneIdMap = Object.fromEntries(
+			Object.entries(generatingSceneTaskId).map(([sceneId, taskId]) => [
+				taskId,
+				sceneId,
+			])
+		)
+
+		return new Set(
+			Object.keys(taskSceneIdMap).filter(
+				(taskId) => generatedContent[taskSceneIdMap[taskId]]
+			)
+		)
+	}, [generatingSceneTaskId, generatedContent])
+
+	const getSceneRemainingTime = useCallback(
+		(sceneId: string) => {
+			return Math.round((getTimeLeft(sceneId) || 0) / 1000)
+		},
+		[getTimeLeft]
+	)
+
+	const getSceneTimedOut = useCallback(
+		(sceneId: string) => {
+			const taskId = generatingSceneTaskId[sceneId]
+			return tasksTimedOut.has(taskId)
+		},
+		[tasksTimedOut, generatingSceneTaskId]
+	)
+
+	const { suggestionGuard } = useSuggestionGuard()
 
 	const handleInput = (sceneId: string, beatId: string, input: string) => {
 		const scene = scenes.find((s) => s.id === sceneId)
@@ -62,67 +149,66 @@ const useBeatSheetEditor = () => {
 		)
 		if (deleteNodeIndex > -1) {
 			newChildren.splice(deleteNodeIndex, 1)
-			editor.tf.setValue(newChildren)
+			suggestionGuard(() => {
+				editor.tf.setValue(newChildren)
+			})
 		}
 		deleteScene(sceneId)
 	}
 
 	const handleGenerateScenes = (
-		generatedContent: TGenerateBeatsheetResponse,
-		sceneIds?: string[]
+		generatedContent: TGenerateBeatsheetResponseItem,
+		sceneId?: string
 	) => {
 		const newChildren = structuredClone(editor.children)
-		if (!sceneIds) {
+		if (!sceneId) {
 			return
 		}
 
-		for (const sceneId of sceneIds) {
-			const existingNodeIndex = newChildren.findIndex(
-				(node) => node.scene_id === sceneId
-			)
+		const existingNodeIndex = newChildren.findIndex(
+			(node) => node.scene_id === sceneId
+		)
 
-			const newNode = {
-				type: 'p',
-				children: [
-					{
-						text:
-							generatedContent.find((ele) => ele.id === sceneId)?.content ||
-							`Generated Content for ${sceneId}`,
-					},
-				],
-				id:
-					existingNodeIndex >= 0 ? newChildren[existingNodeIndex].id : nanoid(),
-				scene_id: sceneId,
-			}
-
-			if (existingNodeIndex >= 0) {
-				newChildren[existingNodeIndex] = newNode
-			} else {
-				const currentSceneIndex = scenes.findIndex(
-					(scene) => scene.id === sceneId
-				)
-				let insertIndex = newChildren.length
-
-				for (let i = 0; i < newChildren.length; i++) {
-					const node = newChildren[i]
-					const nodeSceneId = node.scene_id as string | undefined
-					if (!nodeSceneId) {
-						continue
-					}
-
-					const nodeSceneIndex = scenes.findIndex((s) => s.id === nodeSceneId)
-
-					if (nodeSceneIndex > currentSceneIndex) {
-						insertIndex = i
-						break
-					}
-				}
-
-				newChildren.splice(insertIndex, 0, newNode)
-			}
+		const newNode = {
+			type: 'p',
+			children: [
+				{
+					text: generatedContent.content || `Generated Content for ${sceneId}`,
+				},
+			],
+			id: existingNodeIndex >= 0 ? newChildren[existingNodeIndex].id : nanoid(),
+			scene_id: sceneId,
 		}
 
-		editor.tf.setValue(newChildren)
+		if (existingNodeIndex >= 0) {
+			newChildren[existingNodeIndex] = newNode
+		} else {
+			const currentSceneIndex = scenes.findIndex(
+				(scene) => scene.id === sceneId
+			)
+			let insertIndex = newChildren.length
+
+			for (let i = 0; i < newChildren.length; i++) {
+				const node = newChildren[i]
+				const nodeSceneId = node.scene_id as string | undefined
+				if (!nodeSceneId) {
+					continue
+				}
+
+				const nodeSceneIndex = scenes.findIndex((s) => s.id === nodeSceneId)
+
+				if (nodeSceneIndex > currentSceneIndex) {
+					insertIndex = i
+					break
+				}
+			}
+
+			newChildren.splice(insertIndex, 0, newNode)
+		}
+		approveContent(sceneId)
+		suggestionGuard(() => {
+			editor.tf.setValue(newChildren)
+		})
 	}
 
 	const handleDragEnd = (event: DragEndEvent) => {
@@ -140,13 +226,13 @@ const useBeatSheetEditor = () => {
 			const newSceneOrder = arrayMove(scenes, oldIndex, newIndex)
 			setScenes(newSceneOrder)
 
-			const sceneIdOrder = newSceneOrder.map((scene) => scene.id)
-			const sortedEditorChildren = [...editor.children].sort((a, b) => {
-				const aIdx = sceneIdOrder.indexOf(a.scene_id as string)
-				const bIdx = sceneIdOrder.indexOf(b.scene_id as string)
-				return aIdx - bIdx
+			const sortedEditorChildren = reorderChildrenBasedOnScenes({
+				children: editor.children,
+				scenes: newSceneOrder,
 			})
-			editor.tf.setValue(sortedEditorChildren)
+			suggestionGuard(() => {
+				editor.tf.setValue(sortedEditorChildren)
+			})
 		}
 
 		// Handle BEAT reorder
@@ -243,6 +329,161 @@ const useBeatSheetEditor = () => {
 		return text
 	}
 
+	const handleHistoryScenes = useCallback(
+		(newScenes: typeof scenes) => {
+			const shouldReorder = shouldTriggerContentReorder(scenes, newScenes)
+			if (shouldReorder) {
+				const sortedEditorChildren = reorderChildrenBasedOnScenes({
+					children: editor.children,
+					scenes: newScenes,
+				})
+				suggestionGuard(() => {
+					editor.tf.setValue(sortedEditorChildren)
+				})
+			}
+			setScenes(newScenes)
+		},
+		[scenes, setScenes, editor.children, editor.tf, suggestionGuard]
+	)
+
+	const handleUndo = useCallback(() => {
+		const previousScenes = undo()
+		handleHistoryScenes(previousScenes)
+	}, [undo, handleHistoryScenes])
+
+	const handleRedo = useCallback(() => {
+		const nextScenes = redo()
+		handleHistoryScenes(nextScenes)
+	}, [redo, handleHistoryScenes])
+
+	const handleReset = useCallback(() => {
+		popup({
+			title: 'Do you want to undo all your changes in the Beat Sheet Editor?',
+			description:
+				'All the reordering, edits, deletes, and inserts will be lost!',
+			icon: TrashIcon as LucideIcon,
+			type: 'negative',
+			onConfirm: () => {
+				const resetScenes = reset()
+				handleHistoryScenes(resetScenes)
+			},
+		})
+	}, [reset, handleHistoryScenes])
+
+	const handleStartBeatSheetGeneration = useCallback(
+		({ sceneIds, taskId }: { sceneIds: string[]; taskId: string }) => {
+			const newRecords = sceneIds.reduce(
+				(acc, curr) => {
+					return {
+						...acc,
+						[curr]: taskId,
+					}
+				},
+				{} as Record<string, string>
+			)
+			setGeneratingSceneTaskId((prev) => {
+				return {
+					...prev,
+					...newRecords,
+				}
+			})
+			sceneIds.forEach((id) =>
+				startCountdown(
+					id,
+					sceneIds.length > 1
+						? 3 * SOCKET_STREAMING_TIMEOUT
+						: 1.5 * SOCKET_STREAMING_TIMEOUT
+				)
+			)
+		},
+		[startCountdown]
+	)
+
+	const handleCompleteBeatSheetGeneration = useCallback(
+		({
+			params,
+			taskId,
+		}: {
+			params?: TGenerateBeatsheetResponse
+			taskId: string
+		}) => {
+			if (!params || !Array.isArray(params)) {
+				return
+			}
+			const scenes = Object.keys(generatingSceneTaskId).filter(
+				(sceneId) => generatingSceneTaskId[sceneId] === taskId
+			)
+			toast.success(`Generation completed for ${scenes.length} scenes!`)
+			const newContent = params.reduce(
+				(acc, curr, idx) => {
+					if (!scenes[idx]) {
+						return acc
+					}
+					return Object.assign(acc, { [scenes[idx]]: curr })
+				},
+				{} as Record<string, TGenerateBeatsheetResponseItem>
+			)
+
+			setGeneratedContent((prev) => {
+				return {
+					...prev,
+					...newContent,
+				}
+			})
+		},
+		[generatingSceneTaskId]
+	)
+
+	const handleStreamedBeatSheetResponse = useCallback(
+		({ params, taskId }: { params: string[]; taskId: string }) => {
+			setGeneratedLogs((prev) => {
+				return {
+					...prev,
+					[taskId]: params,
+				}
+			})
+		},
+		[]
+	)
+
+	const getSceneLogs = useCallback(
+		(sceneId: string) => {
+			const taskId = generatingSceneTaskId[sceneId]
+			const logs = generationLogs[taskId]
+
+			return logs || []
+		},
+		[generatingSceneTaskId, generationLogs]
+	)
+
+	const approveContent = (sceneId: string) => {
+		setGeneratedContent((prev) => {
+			const newMap = { ...prev }
+			delete newMap[sceneId]
+			return newMap
+		})
+		setGeneratingSceneTaskId((prev) => {
+			const newMap = { ...prev }
+			delete newMap[sceneId]
+			return newMap
+		})
+		toast.success('Generated content accepted!')
+	}
+
+	const rejectContent = (sceneId: string) => {
+		setGeneratedContent((prev) => {
+			const newMap = { ...prev }
+			delete newMap[sceneId]
+			return newMap
+		})
+		setGeneratingSceneTaskId((prev) => {
+			const newMap = { ...prev }
+			delete newMap[sceneId]
+			return newMap
+		})
+		toast.info('Generated content rejected')
+	}
+
 	useEffect(() => {
 		const nodeEntries = [
 			...editor.api.nodes({
@@ -263,6 +504,100 @@ const useBeatSheetEditor = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [openSceneIds])
 
+	useEffect(() => {
+		if (oldScenes.length) {
+			return
+		}
+		setOldScenes(scenes)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [scenes, oldScenes])
+
+	useEffect(() => {
+		const taskIds = new Set(Object.values(generatingSceneTaskId))
+
+		for (const taskId of taskIds) {
+			if (
+				tasksTimedOut.has(taskId) ||
+				tasksConsumed.has(taskId) ||
+				!responses[taskId]
+			) {
+				continue
+			}
+			handleStreamedBeatSheetResponse({
+				params: responses[taskId],
+				taskId,
+			})
+			if (taskEnded[taskId]) {
+				const taskResponse = responses[taskId]
+				const lastChunk = taskResponse?.[(taskResponse?.length || 0) - 1]
+				if (!lastChunk || !isStringifiedJsonArray(lastChunk)) {
+					if (!toast.getToasts().some((t) => t.id === taskId)) {
+						toast.error('Response could not be generated!', {
+							id: taskId,
+						})
+					}
+					return
+				}
+				handleCompleteBeatSheetGeneration({
+					params: JSON.parse(lastChunk) as TGenerateBeatsheetResponse,
+					taskId,
+				})
+			}
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [taskEnded, responses, tasksTimedOut])
+
+	useEffect(() => {
+		if (sidebar !== ESidebar.BEAT_SHEET) {
+			setOpenSceneIds([])
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sidebar])
+
+	useEffect(() => {
+		const taskIds = new Set(Object.values(generatingSceneTaskId))
+
+		const timedOutTaskIds = new Set<string>([])
+		for (const taskId of taskIds) {
+			if (
+				tasksConsumed.has(taskId) ||
+				taskEnded[taskId] ||
+				!tasksTimedOut.has(taskId)
+			) {
+				continue
+			}
+			timedOutTaskIds.add(taskId)
+		}
+
+		setGeneratingSceneTaskId((prev) => {
+			const newMap = { ...prev }
+			for (const sceneId of Object.keys(prev)) {
+				if (timedOutTaskIds.has(prev[sceneId])) {
+					delete newMap[sceneId]
+				}
+			}
+			return newMap
+		})
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [taskEnded, tasksTimedOut])
+
+	useEffect(() => {
+		if (isInitiallyReorderedRef.current || !scenes.length) {
+			return
+		}
+		const newScenes = reorderScenesBasedOnChildren({
+			children: editor.children,
+			scenes,
+		})
+		setScenes(newScenes)
+		isInitiallyReorderedRef.current = true
+
+		return () => {
+			isInitiallyReorderedRef.current = false
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [scenes])
+
 	return {
 		sensors,
 		handleInput,
@@ -273,7 +608,26 @@ const useBeatSheetEditor = () => {
 		handleDragOver,
 		fixCursorSnapOffset,
 		getSceneText,
+		handleUndo,
+		handleRedo,
+		handleReset,
+		canRedo,
+		canUndo,
+		oldScenes,
+		setOldScenes,
+		generatedContent,
+		setGeneratedContent,
+		generatingSceneTaskId,
+		setGeneratingSceneTaskId,
+		handleCompleteBeatSheetGeneration,
+		handleStartBeatSheetGeneration,
+		getSceneRemainingTime,
+		getSceneTimedOut,
+		currentlyGeneratingSceneTaskId,
+		rejectContent,
+		generationLogs,
+		getSceneLogs,
 	}
 }
 
-export default useBeatSheetEditor
+export default useBeatSheetEditorUtil

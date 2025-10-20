@@ -4,8 +4,11 @@ import useBulkPromptFormResolver, {
 	TBulkPromptFormSchema,
 } from '@/hooks/form-resolvers/bulk-prompt-resolver'
 import useBulkPromptMutation from '@/hooks/mutation/use-bulk-prompt-mutation'
+import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { CrossIcon } from '@/icons/cross-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
+import * as SelectPrimitive from '@radix-ui/react-select'
+import { History } from 'lucide-react'
 
 import { Button } from '@/components/aural-ui/button'
 import {
@@ -27,6 +30,7 @@ import {
 	FormMessage,
 } from '@/components/aural-ui/form'
 import { iconButtonVariants } from '@/components/aural-ui/icon-button'
+import { If } from '@/components/aural-ui/if-else'
 import {
 	Select,
 	SelectContent,
@@ -35,8 +39,9 @@ import {
 	SelectValue,
 } from '@/components/aural-ui/select'
 import TextArea from '@/components/aural-ui/textarea'
+import { TooltipComponent } from '@/components/ui/tooltip-component'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
-import { getEpisodesShortTitle } from '@/lib/utils/helpers'
+import { getEpisodesShortTitle, trim } from '@/lib/utils/helpers'
 
 import { TEpisode } from '@/types/episode-type'
 
@@ -58,9 +63,13 @@ export default function BulkPromptDialog({
 		mutate({
 			prompt: data.prompt,
 			seq_nos: selectedRowData.map((item) => item.seq_number),
-			language: data.language,
+			language: data.language || availableLanguages[0],
 		})
 	}
+
+	const historyPrompts = useMemo(() => {
+		return initialStoryData?.props?.bulk_prompt_history || []
+	}, [initialStoryData])
 
 	const isDisabled = useMemo(() => {
 		return selectedRowData.length > 10
@@ -122,7 +131,49 @@ export default function BulkPromptDialog({
 							name="prompt"
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel>Prompt</FormLabel>
+									<FormLabel className="flex justify-between py-2">
+										Prompt
+										<If condition={historyPrompts.length > 0}>
+											<Select
+												onValueChange={(val) => {
+													form.setValue('prompt', val, {
+														shouldValidate: true,
+														shouldDirty: true,
+													})
+												}}
+											>
+												<SelectPrimitive.Trigger>
+													<div>
+														<Button
+															size="sm"
+															variant="outline"
+															className="text-fm-secondary"
+															innerClassName="border-none bg-fm-surface-frosted/20 h-6 !px-2"
+															type="button"
+														>
+															<History size={12} />
+															<p>History</p>
+															<ChevronDownIcon className="w-4" />
+														</Button>
+													</div>
+												</SelectPrimitive.Trigger>
+												<SelectContent align="end">
+													{historyPrompts.map((historyPrompt, idx) => (
+														<SelectItem
+															key={`history-prompt-${idx}`}
+															value={historyPrompt}
+														>
+															<TooltipComponent tooltip={historyPrompt}>
+																<p className="max-w-lg cursor-pointer py-2 text-xs">
+																	{trim(historyPrompt, 70)}
+																</p>
+															</TooltipComponent>
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										</If>
+									</FormLabel>
 									<FormControl>
 										<TextArea
 											placeholder="Enter prompt here"
@@ -138,30 +189,33 @@ export default function BulkPromptDialog({
 								</FormItem>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="language"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="mb-2">Language</FormLabel>
-									<Select value={field.value} onValueChange={field.onChange}>
-										<FormControl>
-											<SelectTrigger decoration="outline" className="w-full">
-												<SelectValue placeholder="Select language" />
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{availableLanguages.map((language) => (
-												<SelectItem key={language} value={language}>
-													{languageToTitle[language]}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+
+						<If condition={availableLanguages.length > 1}>
+							<FormField
+								control={form.control}
+								name="language"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="mb-2">Language</FormLabel>
+										<Select value={field.value} onValueChange={field.onChange}>
+											<FormControl>
+												<SelectTrigger decoration="outline" className="w-full">
+													<SelectValue placeholder="Select language" />
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												{availableLanguages.map((language) => (
+													<SelectItem key={language} value={language}>
+														{languageToTitle[language]}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</If>
 						<div className="flex flex-1 flex-col justify-end">
 							<DialogClose asChild>
 								<Button

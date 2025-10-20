@@ -1,7 +1,6 @@
 import { useEpisodeContext } from '@/providers/episode-id-provider'
 
 import { Laser } from '@/types/ai-types'
-import { PromptPosition } from '@/types/plate-types'
 
 function useLaserStore() {
 	const { useLaserContext } = useEpisodeContext()
@@ -32,10 +31,6 @@ function useLaserStore() {
 		useLaserContext.setState({ triggerRephrase: value })
 	}
 
-	const setPromptPosition = (promptPosition: PromptPosition) => {
-		useLaserContext.setState({ promptPosition })
-	}
-
 	const setResponseActive = (responseActive: string | null) => {
 		useLaserContext.setState({ responseActive })
 	}
@@ -48,7 +43,6 @@ function useLaserStore() {
 		getLaser,
 		setEditorCoords,
 		setTriggerRephrase,
-		setPromptPosition,
 		setResponseActive,
 	}
 }

@@ -30,6 +30,7 @@ const useAdaptationQuery = ({
 				projectId,
 			},
 			delay: 10000,
+			startDelay: 1000 * 60,
 			stop: (resp) => {
 				if (!resp.error && resp.data) {
 					return true

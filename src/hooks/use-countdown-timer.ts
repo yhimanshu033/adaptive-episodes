@@ -12,7 +12,7 @@ export interface CountdownControls {
 	getTimeLeft: (taskId?: string) => number
 	isTaskRunning: (taskId: string) => boolean
 	reset: () => void
-	start: (taskId?: string) => void
+	start: (taskId?: string, startTime?: number) => void
 	stop: (taskId?: string) => void
 }
 
@@ -40,9 +40,7 @@ export const useCountdownTimer = (): CountdownState & CountdownControls => {
 	}, [])
 
 	const startTimer = useCallback(
-		(taskId?: string) => {
-			const startTime = SOCKET_STREAMING_TIMEOUT
-
+		(taskId?: string, startTime: number = SOCKET_STREAMING_TIMEOUT) => {
 			if (taskId && intervalRefs.current[taskId]) {
 				clearInterval(intervalRefs.current[taskId])
 			} else if (!taskId && globalIntervalRef.current) {

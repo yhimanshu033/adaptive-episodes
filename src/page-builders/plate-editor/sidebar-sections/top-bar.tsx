@@ -15,6 +15,8 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/aural-ui/tabs'
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
 import ForEach from '@/components/ui/for-each'
 
+import { ESidebar } from '@/types/plate-types'
+
 export default function SidebarTopBar() {
 	const { store: plateStore, setSidebar } = usePlateStore()
 	const sidebar = plateStore(useShallow((state) => state.sidebar))
@@ -28,7 +30,7 @@ export default function SidebarTopBar() {
 		<div className="bg-fm-surface-primary border-fm-divider-tertiary sticky top-0 z-20 h-15.5 border-y">
 			<IfElse condition={sidebarButtons.includes(sidebar)}>
 				<If>
-					<Tabs defaultValue={sidebar} className="h-full">
+					<Tabs value={sidebar} className="h-full">
 						<TabsList className="h-full justify-between border-b-0">
 							<ForEach data={sidebarButtons}>
 								{(sidebarItem, idx) => (
@@ -52,7 +54,7 @@ export default function SidebarTopBar() {
 							label="Close Sidebar"
 							variant="ghost"
 							onClick={() => {
-								setSidebar(null)
+								setSidebar(ESidebar.CHATBOT)
 								setOption('activeId', null)
 							}}
 							shape="square"

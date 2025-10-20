@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import { DiffStatus } from '@/constants/ai-constants'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
 import { Check, X } from 'lucide-react'
@@ -21,6 +22,7 @@ export default function DiffControls({ element, editor }: DiffControlsProps) {
 	const { setAcceptedDiffValue } = useEpisodeIdStore()
 	const { store, setActiveDiffId } = usePlateStore()
 	const diffIdList = store(useShallow((state) => state.diffIdList))
+	const { suggestionGuard } = useSuggestionGuard()
 
 	const nextDiffId = useMemo(() => {
 		const list = diffIdList || [String(element.diff_id)]
@@ -49,11 +51,13 @@ export default function DiffControls({ element, editor }: DiffControlsProps) {
 			value.forEach(findNode)
 			setActiveDiffId(nextDiffId)
 			scrollToDivWithId(getDiffLeafID(nextDiffId))
-			editor.tf.setValue(value)
+			suggestionGuard(() => {
+				editor.tf.setValue(value)
+			})
 			setAcceptedDiffValue(value)
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[originalValue, element.diff_id, editor.tf, nextDiffId]
+		[originalValue, element.diff_id, editor.tf, nextDiffId, suggestionGuard]
 	)
 	return (
 		<div className="absolute top-2/5 z-50 flex translate-x-full gap-2 pl-10">

@@ -1,3 +1,194 @@
+## <small>1.3.8 (2025-10-20)</small>
+
+* fix: 🐛 bse statuses schema change handling ([3d220e9](https://github.com/Pocket-Fm/co-writing/commit/3d220e9))
+* fix: 🐛 fixed ui issues ([ea6d046](https://github.com/Pocket-Fm/co-writing/commit/ea6d046))
+* fix: 🐛 removed obj.assign ([08b1fdc](https://github.com/Pocket-Fm/co-writing/commit/08b1fdc))
+* fix: 🐛 removed unused store ([abf1908](https://github.com/Pocket-Fm/co-writing/commit/abf1908))
+* feat: 🎸 add bse streaming v2 ([d452702](https://github.com/Pocket-Fm/co-writing/commit/d452702))
+* feat: 🎸 bse enhancement draft 2 ([b9edfdc](https://github.com/Pocket-Fm/co-writing/commit/b9edfdc))
+* feat: 🎸 bse enhancement draft 3 ([abdbeec](https://github.com/Pocket-Fm/co-writing/commit/abdbeec))
+* feat: 🎸 bse enhancement draft1 ([ef375ea](https://github.com/Pocket-Fm/co-writing/commit/ef375ea))
+* feat: 🎸 bse streaming draft 1 ([5b03e70](https://github.com/Pocket-Fm/co-writing/commit/5b03e70))
+
+
+
+## <small>1.3.7 (2025-10-17)</small>
+
+* fix: 🐛 disabled scripts in qa ([e254f56](https://github.com/Pocket-Fm/co-writing/commit/e254f56))
+* fix: 🐛 far search state stale ([3b06087](https://github.com/Pocket-Fm/co-writing/commit/3b06087))
+* fix: 🐛 insertion logic ([a8806e2](https://github.com/Pocket-Fm/co-writing/commit/a8806e2))
+* fix: 🐛 laser tool content length reduced ([974fa3c](https://github.com/Pocket-Fm/co-writing/commit/974fa3c))
+* fix: 🐛 removed slice ([9d465cc](https://github.com/Pocket-Fm/co-writing/commit/9d465cc))
+* fix: 🐛 resolved comments ([cca15df](https://github.com/Pocket-Fm/co-writing/commit/cca15df))
+* fix: 🐛 resolved comments ([352f246](https://github.com/Pocket-Fm/co-writing/commit/352f246))
+* fix: 🐛 session refeth prevented on blur ([bf138d3](https://github.com/Pocket-Fm/co-writing/commit/bf138d3))
+* fix: 🐛 sidebar top bar state ([10c8b31](https://github.com/Pocket-Fm/co-writing/commit/10c8b31))
+* fix: 🐛 suggestion;find-replace;episode-lock; ([9185691](https://github.com/Pocket-Fm/co-writing/commit/9185691))
+* feat: 🎸 added events ([30375a3](https://github.com/Pocket-Fm/co-writing/commit/30375a3))
+* feat: 🎸 history in bulk prompt ([fac9c3c](https://github.com/Pocket-Fm/co-writing/commit/fac9c3c))
+* feat: 🎸 refactored laser tools ([50c8038](https://github.com/Pocket-Fm/co-writing/commit/50c8038))
+* feat: 🎸 resolved comments ([a886040](https://github.com/Pocket-Fm/co-writing/commit/a886040))
+* feat: 🎸 startDelay in polling ([d98e9cc](https://github.com/Pocket-Fm/co-writing/commit/d98e9cc))
+* chore: 🤖 enabled analytics in prod ([51bc002](https://github.com/Pocket-Fm/co-writing/commit/51bc002))
+* chore: 🤖 integrated hotjar ([9b73945](https://github.com/Pocket-Fm/co-writing/commit/9b73945))
+
+
+
+## <small>1.3.6 (2025-10-15)</small>
+
+* fix: 🐛 bulk download now sequential ([810c3ee](https://github.com/Pocket-Fm/co-writing/commit/810c3ee))
+* fix: 🐛 changed storychat focus titles ([382f6a9](https://github.com/Pocket-Fm/co-writing/commit/382f6a9))
+* fix: 🐛 changed storychat focus titles ([e667f86](https://github.com/Pocket-Fm/co-writing/commit/e667f86))
+* fix: 🐛 shift to local storage ([e045744](https://github.com/Pocket-Fm/co-writing/commit/e045744))
+
+
+
+## <small>1.3.5 (2025-10-14)</small>
+
+* fix: 🐛 added metadatasync completion toast ([6e23e1c](https://github.com/Pocket-Fm/co-writing/commit/6e23e1c))
+* fix: 🐛 changed description text ([4f481a4](https://github.com/Pocket-Fm/co-writing/commit/4f481a4))
+* fix: 🐛 removed suggestiomn view mode in suggestion mode ([eb2015f](https://github.com/Pocket-Fm/co-writing/commit/eb2015f))
+* fix: 🐛 removed unnecessary dep ([b874f1b](https://github.com/Pocket-Fm/co-writing/commit/b874f1b))
+* fix: 🐛 reverted back to prod ([5feb0c7](https://github.com/Pocket-Fm/co-writing/commit/5feb0c7))
+* feat: 🎸 added restore option ([2c8a590](https://github.com/Pocket-Fm/co-writing/commit/2c8a590))
+* feat: 🎸 User Configuration Dialog (Global + Episode-Level) ([7136707](https://github.com/Pocket-Fm/co-writing/commit/7136707))
+* chore: 🤖 pointing to qa ([e2b3826](https://github.com/Pocket-Fm/co-writing/commit/e2b3826))
+
+
+
+## <small>1.3.4 (2025-10-13)</small>
+
+* fix: 🐛 add scene error ([4196aad](https://github.com/Pocket-Fm/co-writing/commit/4196aad))
+* fix: 🐛 back to prod url ([70de0eb](https://github.com/Pocket-Fm/co-writing/commit/70de0eb))
+* fix: 🐛 disabled for external ([b3eaf7d](https://github.com/Pocket-Fm/co-writing/commit/b3eaf7d))
+* fix: 🐛 enabled writers column ([36b0028](https://github.com/Pocket-Fm/co-writing/commit/36b0028))
+* fix: 🐛 multi-ep-far: shallow copy; undefined check; ep-number ([8b65fb4](https://github.com/Pocket-Fm/co-writing/commit/8b65fb4))
+* fix: 🐛 removed laser and floating on sve ([92c6287](https://github.com/Pocket-Fm/co-writing/commit/92c6287))
+* fix: 🐛 resolved comments ([bbba693](https://github.com/Pocket-Fm/co-writing/commit/bbba693))
+* fix: 🐛 tab change refreshj ([a03b443](https://github.com/Pocket-Fm/co-writing/commit/a03b443))
+* fix: disabled analytcs ([c7571c9](https://github.com/Pocket-Fm/co-writing/commit/c7571c9))
+* feat: 🎸 added refetch; sheeturl and setData ([7e9ef6b](https://github.com/Pocket-Fm/co-writing/commit/7e9ef6b))
+* feat: 🎸 multi ep far with ep lock ([341c6c7](https://github.com/Pocket-Fm/co-writing/commit/341c6c7))
+* feat: 🎸 multi-ep-far ([2a6cd6f](https://github.com/Pocket-Fm/co-writing/commit/2a6cd6f))
+* feat: 🎸 voice pass & explorer qa enhancements ([23910d6](https://github.com/Pocket-Fm/co-writing/commit/23910d6))
+* test: 💍 changed to k8s qa ([0743a13](https://github.com/Pocket-Fm/co-writing/commit/0743a13))
+
+
+
+## <small>1.3.3 (2025-10-10)</small>
+
+* fix: 🐛 added api ([41e78e8](https://github.com/Pocket-Fm/co-writing/commit/41e78e8))
+* fix: 🐛 api fixed ([5aa4545](https://github.com/Pocket-Fm/co-writing/commit/5aa4545))
+* fix: 🐛 changed url ([ed10342](https://github.com/Pocket-Fm/co-writing/commit/ed10342))
+* fix: 🐛 disable “lock” toast notification for current user ([bab4a39](https://github.com/Pocket-Fm/co-writing/commit/bab4a39))
+* fix: 🐛 Disable Laser Tool in Suggestion Mode ([c62ea4e](https://github.com/Pocket-Fm/co-writing/commit/c62ea4e))
+* fix: 🐛 enhancements ([530d2da](https://github.com/Pocket-Fm/co-writing/commit/530d2da))
+* fix: 🐛 flowId same as taskId ([0234af1](https://github.com/Pocket-Fm/co-writing/commit/0234af1))
+* fix: 🐛 Location Comparison; LocalStorage Check ([b1f206b](https://github.com/Pocket-Fm/co-writing/commit/b1f206b))
+* fix: 🐛 nwm invalidate ([ebb0923](https://github.com/Pocket-Fm/co-writing/commit/ebb0923))
+* fix: 🐛 removed logs ([0d15f19](https://github.com/Pocket-Fm/co-writing/commit/0d15f19))
+* fix: 🐛 resolved comments ([e427fdc](https://github.com/Pocket-Fm/co-writing/commit/e427fdc))
+* fix: 🐛 resolved comments ([9783bc6](https://github.com/Pocket-Fm/co-writing/commit/9783bc6))
+* fix: 🐛 session storage to local ([a7719bb](https://github.com/Pocket-Fm/co-writing/commit/a7719bb))
+* fix: 🐛 used enums for platform and is ([15c94c0](https://github.com/Pocket-Fm/co-writing/commit/15c94c0))
+* feat: 🎸 added env in dockerfil;e ([82db1d5](https://github.com/Pocket-Fm/co-writing/commit/82db1d5))
+* feat: 🎸 added episode_number ([b51a259](https://github.com/Pocket-Fm/co-writing/commit/b51a259))
+* feat: 🎸 added general events ([99d9d6b](https://github.com/Pocket-Fm/co-writing/commit/99d9d6b))
+* feat: 🎸 added global popup and reorderig on history select ([a22d22d](https://github.com/Pocket-Fm/co-writing/commit/a22d22d))
+* feat: 🎸 added page load events ([0dd6531](https://github.com/Pocket-Fm/co-writing/commit/0dd6531))
+* feat: 🎸 added session id ([275ceda](https://github.com/Pocket-Fm/co-writing/commit/275ceda))
+* feat: 🎸 bse undo-redo-reset ([7575909](https://github.com/Pocket-Fm/co-writing/commit/7575909))
+* feat: 🎸 changed oldScenes to zustand state ([57d19d2](https://github.com/Pocket-Fm/co-writing/commit/57d19d2))
+* feat: 🎸 Implement Client-Side Analytics Utility ([d320d92](https://github.com/Pocket-Fm/co-writing/commit/d320d92))
+* feat: 🎸 useBeatsheetEditor converted to contexy ([8fd0087](https://github.com/Pocket-Fm/co-writing/commit/8fd0087))
+
+
+
+## <small>1.3.2 (2025-10-08)</small>
+
+* fix: 🐛 added beatSheetEditorAllowedProjects checks ([2d3c95d](https://github.com/Pocket-Fm/co-writing/commit/2d3c95d))
+* fix: 🐛 added cleanup ([7fc60ec](https://github.com/Pocket-Fm/co-writing/commit/7fc60ec))
+* fix: 🐛 changed correlation id key ([6cb87a1](https://github.com/Pocket-Fm/co-writing/commit/6cb87a1))
+* fix: 🐛 changed retry to 5 ([99f81d4](https://github.com/Pocket-Fm/co-writing/commit/99f81d4))
+* fix: 🐛 destrcutured user ([ab89105](https://github.com/Pocket-Fm/co-writing/commit/ab89105))
+* fix: 🐛 equality ([465b1d6](https://github.com/Pocket-Fm/co-writing/commit/465b1d6))
+* fix: 🐛 removed console log ([4c52cef](https://github.com/Pocket-Fm/co-writing/commit/4c52cef))
+* fix: 🐛 removed mock ([921f18f](https://github.com/Pocket-Fm/co-writing/commit/921f18f))
+* fix: 🐛 removed unnecessary sentry logs ([cac24c2](https://github.com/Pocket-Fm/co-writing/commit/cac24c2))
+* fix: 🐛 resolved comments ([344f929](https://github.com/Pocket-Fm/co-writing/commit/344f929))
+* fix: 🐛 resolved comments ([5221efd](https://github.com/Pocket-Fm/co-writing/commit/5221efd))
+* fix: 🐛 sanitized json ([53e097c](https://github.com/Pocket-Fm/co-writing/commit/53e097c))
+* fix: 🐛 view ls layout ([c0b056a](https://github.com/Pocket-Fm/co-writing/commit/c0b056a))
+* feat: 🎸 added socket retry limit and correlation id in fetch ([e0d22cb](https://github.com/Pocket-Fm/co-writing/commit/e0d22cb))
+* feat: 🎸 bse on demand ([cdf831b](https://github.com/Pocket-Fm/co-writing/commit/cdf831b))
+* feat: 🎸 bse on demand ([db1f258](https://github.com/Pocket-Fm/co-writing/commit/db1f258))
+* feat: 🎸 changed sequence field name ([350b710](https://github.com/Pocket-Fm/co-writing/commit/350b710))
+* feat: 🎸 characters get api integration in bse sidebar ([038c12a](https://github.com/Pocket-Fm/co-writing/commit/038c12a))
+* feat: 🎸 Lock episode when NWM is running and prevent NWM from r ([a0946d2](https://github.com/Pocket-Fm/co-writing/commit/a0946d2))
+* feat: 🎸 sequence ([0db26b3](https://github.com/Pocket-Fm/co-writing/commit/0db26b3))
+* feat: 🎸 table virtualization sorting excel ([83e2f92](https://github.com/Pocket-Fm/co-writing/commit/83e2f92))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
+## <small>1.3.1 (2025-10-06)</small>
+
+* fix: 🐛 client-only import breaks EXCLUDE_BREAKDOWN_KEYS us ([51e24bc](https://github.com/Pocket-Fm/co-writing/commit/51e24bc))
+* fix: 🐛 csv upload fix ([9d0cc1c](https://github.com/Pocket-Fm/co-writing/commit/9d0cc1c))
+* fix: 🐛 cursor bot comment resolve ([6b88035](https://github.com/Pocket-Fm/co-writing/commit/6b88035))
+* fix: 🐛 Improve Performance of "Share Access" Dialog ([0a9f566](https://github.com/Pocket-Fm/co-writing/commit/0a9f566))
+* fix: 🐛 remoived log ([b2677b4](https://github.com/Pocket-Fm/co-writing/commit/b2677b4))
+* fix: 🐛 removed comments ([878790f](https://github.com/Pocket-Fm/co-writing/commit/878790f))
+* fix: 🐛 removed extra config ([2f0a865](https://github.com/Pocket-Fm/co-writing/commit/2f0a865))
+* feat: 🎸 Add Source Maps to Sentry Integration ([e3740a7](https://github.com/Pocket-Fm/co-writing/commit/e3740a7))
+* feat: 🎸 Diff View in Copilot Dual-View Section ([4863eca](https://github.com/Pocket-Fm/co-writing/commit/4863eca))
+* ci: 🎡 sentry logs for long loading times ([9c066b0](https://github.com/Pocket-Fm/co-writing/commit/9c066b0))
+* style: 💄 changed text from story to image ([e0ade7a](https://github.com/Pocket-Fm/co-writing/commit/e0ade7a))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
+## 1.3.0 (2025-09-29)
+
+* fix: 🐛 backward compatibility ([26abb27](https://github.com/Pocket-Fm/co-writing/commit/26abb27))
+* fix: 🐛 bugbot comment ([a25a431](https://github.com/Pocket-Fm/co-writing/commit/a25a431))
+* fix: 🐛 comments ([6019e84](https://github.com/Pocket-Fm/co-writing/commit/6019e84))
+* fix: 🐛 far and ep title fix ([2cb5913](https://github.com/Pocket-Fm/co-writing/commit/2cb5913))
+* fix: 🐛 ls edit fix ([fbbdf9b](https://github.com/Pocket-Fm/co-writing/commit/fbbdf9b))
+* fix: 🐛 ls sheet fix ([7404a9e](https://github.com/Pocket-Fm/co-writing/commit/7404a9e))
+* fix: 🐛 preserved next occurence on replace ([60ef527](https://github.com/Pocket-Fm/co-writing/commit/60ef527))
+* fix: 🐛 removed clas ([084c5dd](https://github.com/Pocket-Fm/co-writing/commit/084c5dd))
+* fix: 🐛 resolved comments ([49df4cb](https://github.com/Pocket-Fm/co-writing/commit/49df4cb))
+* fix: 🐛 sfx flow, visibility and scroll ([2fc01c4](https://github.com/Pocket-Fm/co-writing/commit/2fc01c4))
+* fix: 🐛 timeout status message fix ([621c260](https://github.com/Pocket-Fm/co-writing/commit/621c260))
+* feat: 🎸 added timeout to socket streaming ([52b5111](https://github.com/Pocket-Fm/co-writing/commit/52b5111))
+* feat: 🎸 ls sheet v2 flow ([07159a6](https://github.com/Pocket-Fm/co-writing/commit/07159a6))
+* cursor comment fix ([ad08436](https://github.com/Pocket-Fm/co-writing/commit/ad08436))
+* refactor: 💡 revert devtools changes ([9dc4f82](https://github.com/Pocket-Fm/co-writing/commit/9dc4f82))
+
+
+### BREAKING CHANGE
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
 ## 1.2.0 (2025-09-25)
 
 * fix: 🐛 file size refactor ([41b9aae](https://github.com/Pocket-Fm/co-writing/commit/41b9aae))

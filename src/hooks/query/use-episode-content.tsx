@@ -2,11 +2,13 @@
 
 import React, { createContext, useCallback, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
+import { NWM_EMAIL } from '@/constants/global-constants'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useLatestEpisodeInfo from '@/hooks/query/use-latest-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
+import { useGlobalStore } from '@/store/global-store'
 import usePlateStore from '@/store/plate-store'
 import { useQuery } from '@tanstack/react-query'
 import { X } from 'lucide-react'
@@ -16,6 +18,7 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
+import { LOCAL_STORAGE_KEYS } from '@/lib/utils/analytics'
 import {
 	getAvailableLanguages,
 	getDisabledAvailableLanguages,
@@ -54,6 +57,7 @@ export const useEpisodeContentUtil = () => {
 	const selectedStatus = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedStatus)
 	)
+	const userData = useGlobalStore(useShallow((state) => state.userData))
 
 	const selectedLanguage = useEpisodeIdStoreContext(
 		useShallow((state) => state.selectedLanguage)
@@ -114,13 +118,33 @@ export const useEpisodeContentUtil = () => {
 		const usedEpisodeId = episode?.id
 
 		const resp = await getEpisodeContent(usedEpisodeId)
+
 		if (!resp) {
 			return resp
 		}
 
 		addEpisodeMap(episodeId, resp)
 		addEpisodeKey(episodeId, queryKey)
-		setRecentEmail(resp.email)
+
+		localStorage.setItem(
+			LOCAL_STORAGE_KEYS.CONTENT_LANGUAGE,
+			resp.chapter.language || ELanguage.ENGLISH
+		)
+		const nwmRunning = resp?.chapter?.props?.nwm_running
+
+		if (nwmRunning) {
+			toast.info(
+				'NWM is currently regenerating this chapter. Please check back later!'
+			)
+			setRecentEmail(NWM_EMAIL)
+		} else if (resp.email) {
+			if (resp.email !== userData?.user?.email) {
+				toast.info(
+					`${resp.email} is now editing the chapter ${resp.chapter.seq_number}!`
+				)
+			}
+			setRecentEmail(resp.email)
+		}
 
 		const oldData = await getValue(`${resp.chapter.project}_${usedEpisodeId}`)
 		if (!oldData) {
@@ -185,6 +209,7 @@ export const useEpisodeContentUtil = () => {
 		setSidebar,
 		setRecentEmail,
 		episode,
+		userData,
 	])
 
 	const query = useQuery({

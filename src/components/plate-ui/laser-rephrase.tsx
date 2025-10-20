@@ -1,84 +1,207 @@
-import React, { useEffect } from 'react'
-import { rephraseMethods } from '@/constants/editor-constants'
+import React, { useCallback, useEffect, useMemo } from 'react'
+import {
+	LASER_LEAF_KEYS,
+	LASER_PADDING,
+	rephraseMethods,
+} from '@/constants/editor-constants'
 import { languageToTitle } from '@/constants/episodes-constants'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useLaserToolsQuery from '@/hooks/query/use-lasertool-data'
 import useLanguage from '@/hooks/use-language'
 import useLaserStore from '@/store/laser-store'
 import { X } from 'lucide-react'
-import { useEditorState } from 'platejs/react'
+import { TText } from 'platejs'
+import { PlateEditor, useEditorState } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
+import FloatingLaserResponse from '@/components/plate-ui/floating-laser-response'
 import Image from '@/components/ui/image'
-import { getText } from '@/lib/utils/plate'
+import { getLaserTextIndices } from '@/lib/utils/plate'
 
 import { LaserToolsParams } from '@/types/ai-types'
-import { RephraseSelectionProps } from '@/types/editor-types'
 
 import CircularLoader from '../aural-ui/circular-loader'
 import { IconButton } from '../aural-ui/icon-button'
 
-export default function LaserRephrase({
-	getSelectedText,
-	methodId,
-	elemKey: key,
-	onResetLeaf,
-	promptInput,
-	setResponseMode,
-	additionalContext,
-}: RephraseSelectionProps) {
-	const { data: episodeContent } = useEpisodeContent()
-	const { children } = useEditorState()
-
-	const {
-		store: laserStore,
-		getLaser,
-		setLaser,
-		setResponseActive,
-		setTriggerRephrase,
-	} = useLaserStore()
-
-	const triggerRephrase = laserStore(
-		useShallow((state) => state.triggerRephrase)
+function getLaserKey(elem: TText) {
+	return Object.keys(elem).find((key) =>
+		key.startsWith(LASER_LEAF_KEYS.ID_START)
 	)
-	const responseActive = laserStore(useShallow((state) => state.responseActive))
+}
+
+function getMethodId(elem: TText) {
+	const method = Object.keys(elem).find((key) =>
+		key.startsWith(LASER_LEAF_KEYS.METHOD_START)
+	)
+	return method?.split('-').pop()
+}
+export default function LaserRephrase({
+	leaf,
+	editor,
+}: {
+	editor: PlateEditor
+	leaf: TText
+}) {
+	const { data: episodeContent } = useEpisodeContent()
+
+	const key = getLaserKey(leaf) || ''
+	const methodId = getMethodId(leaf)
+	const { children: allChildren } = useEditorState()
+	const { suggestionGuard } = useSuggestionGuard()
+	const { store: laserStore, setLaser } = useLaserStore()
+
+	const getSelectedText = useCallback(() => {
+		const defaultData = { text: leaf.text, prevtext: '', nexttext: '' }
+		if (!key) {
+			return defaultData
+		}
+		const { text } = leaf
+
+		const leafPath = editor.api.node({
+			at: [],
+			match: (n) => !!n[key],
+		})
+
+		if (!leafPath?.[1]) {
+			return defaultData
+		}
+
+		const {
+			prevBlockTextEnd,
+			nextBlockTextEnd,
+			nextBlockTextStart,
+			prevBlockTextStart,
+			nextBlockTextEndOffset,
+		} = getLaserTextIndices(allChildren, leafPath[1])
+
+		const prevTextChunks = editor.api.string(
+			{
+				anchor: {
+					path: prevBlockTextStart,
+					offset: 0,
+				},
+				focus: {
+					path: prevBlockTextEnd,
+					offset: 0,
+				},
+			},
+			{
+				voids: true,
+			}
+		)
+
+		const nextTextChunks = editor.api.string(
+			{
+				anchor: {
+					path: nextBlockTextStart,
+					offset: 0,
+				},
+				focus: {
+					path: nextBlockTextEnd,
+					offset: nextBlockTextEndOffset,
+				},
+			},
+			{
+				voids: true,
+			}
+		)
+
+		const prevText = prevTextChunks
+			.split(/\r?\n+/)
+			.slice(-1 * LASER_PADDING)
+			.join('\n')
+		const nextText = nextTextChunks
+			.split(/\r?\n+/)
+			.slice(0, LASER_PADDING)
+			.join('\n')
+
+		return {
+			text,
+			prevtext: prevText,
+			nexttext: nextText,
+		}
+	}, [key, leaf, editor.api, allChildren])
+
+	const onResetLeaf = useCallback(
+		(removeOld?: boolean) => {
+			if (!key) {
+				return
+			}
+			try {
+				const matches = editor.api
+					.nodes({
+						at: [],
+						match: (n) => !!n?.[key],
+					})
+					.toArray()
+				const aggregateObject = matches.reduce((acc, curr) => {
+					return Object.assign(acc, curr[0])
+				}, {})
+				const laserKeys = Object.keys(aggregateObject).filter((key) =>
+					key.startsWith('laser')
+				)
+				suggestionGuard(() => {
+					if (removeOld) {
+						editor.tf.removeNodes({
+							at: [],
+							match: (n) => !!n?.[key],
+						})
+					} else {
+						editor.tf.unsetNodes(laserKeys, {
+							at: [],
+							match: (n) => !!n?.[key],
+						})
+					}
+				})
+			} catch (error) {
+				console.error(error)
+			}
+		},
+		[editor, key, suggestionGuard]
+	)
+
 	const lasersResponseMap = laserStore(useShallow((state) => state.lasers))
 
 	const language = useLanguage()
-	const params: LaserToolsParams = {
-		action: methodId,
-		...getSelectedText(),
-		context: episodeContent?.chapter.props?.llm_memories?.context || '',
-		ep_number: episodeContent?.chapter.seq_number.toString() || '',
-		ep_text: getText(children) || '',
-		prompt: promptInput,
-		style_template: '',
-		input_language: languageToTitle[language],
-		use_rag_context: additionalContext,
-	}
-
-	if (key && triggerRephrase === key && lasersResponseMap[key]?.response) {
-		params.last_answer = lasersResponseMap[key].response
-	}
+	const params = useMemo(() => {
+		return {
+			action: methodId || '',
+			...getSelectedText(),
+			context: episodeContent?.chapter.props?.llm_memories?.context || '',
+			ep_number: episodeContent?.chapter.seq_number.toString() || '',
+			ep_text: editor.api.string([]),
+			prompt: leaf[LASER_LEAF_KEYS.PROMPT] || '',
+			style_template: '',
+			input_language: languageToTitle[language],
+			use_rag_context:
+				(leaf[LASER_LEAF_KEYS.ADDITIONAL_CONTEXT] as boolean) || false,
+			last_answer:
+				key && lasersResponseMap[key]?.response
+					? lasersResponseMap[key].response
+					: undefined,
+		} as LaserToolsParams
+	}, [
+		getSelectedText,
+		episodeContent,
+		leaf,
+		language,
+		methodId,
+		key,
+		lasersResponseMap,
+		editor.api,
+	])
 
 	const { data, isFetching, refetch } = useLaserToolsQuery(key, params)
-
-	useEffect(() => {
-		setResponseMode(!!data)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data])
 
 	useEffect(() => {
 		if (data && !isFetching) {
 			if (!key) {
 				return
 			}
-			setResponseActive(key)
-			const laser = getLaser(key)
 			setLaser({
 				id: key,
 				laser: {
-					...laser,
 					response: data.result,
 					text: getSelectedText().text,
 				},
@@ -87,16 +210,13 @@ export default function LaserRephrase({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data, isFetching, getSelectedText, key])
 
-	useEffect(() => {
-		if (triggerRephrase === key) {
-			void refetch()
-			setTriggerRephrase(null)
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [triggerRephrase, key, refetch])
-
-	if (data || responseActive === key) {
-		return null
+	if (data) {
+		return (
+			<FloatingLaserResponse
+				onTryAgain={() => void refetch()}
+				onResetLeaf={onResetLeaf}
+			/>
+		)
 	}
 
 	return (
@@ -113,7 +233,7 @@ export default function LaserRephrase({
 				</p>
 			</div>
 			<IconButton
-				onClick={onResetLeaf}
+				onClick={() => onResetLeaf()}
 				icon={<X size={16} />}
 				label="Close"
 				variant="ghost"

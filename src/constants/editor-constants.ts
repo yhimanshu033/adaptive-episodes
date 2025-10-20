@@ -11,6 +11,13 @@ import { TResolvedSuggestion } from '@platejs/suggestion'
 import { LucideIcon } from 'lucide-react'
 
 import { EChatMode, TStoryChatSuggestion } from '@/types/ai-types'
+import {
+	EConfigurationDialogContentTab,
+	ESuggestionViewingType,
+	EThemeMode,
+	TStoredConfigurationData,
+} from '@/types/editor-types'
+import { ESidebar } from '@/types/plate-types'
 
 export const rephraseMethods = [
 	{ id: 'shortenmore', method: 'Shorten', status: 'Shortening...' },
@@ -18,7 +25,7 @@ export const rephraseMethods = [
 	{ id: 'dialog', method: 'Dialog', status: 'Dialogizing...' },
 	{ id: 'stylize', method: 'Stylize', status: 'Rewriting... (Stylize)' },
 	{ id: 'custom', method: 'Prompt', status: 'Running custom prompt...' },
-]
+] as const
 
 export const storyChatSuggestions: Array<
 	TStoryChatSuggestion & {
@@ -155,8 +162,6 @@ export const FAR_FILTER_OPTIONS = [
 
 export const SAVE_EPISODE_BUTTON_ID = 'save-episode-button'
 
-export const EXCLUDE_BREAKDOWN_KEYS = ['laser']
-
 export const DEFAULT_NAVIGATION_PAGE_LIMIT = 25
 
 export const DEFAULT_INITIAL_PAGE = 1
@@ -174,10 +179,63 @@ export const LASER_LEAF_KEYS = {
 	CUSTOM_METHOD: 'laser-method-custom',
 	PROMPT: 'laser-inserted-prompt',
 	ADDITIONAL_CONTEXT: 'laser-additional-context',
+	KEY: 'laser',
+	ID_START: 'laser-id-',
+	METHOD_START: 'laser-method-',
+	POPOVER: 'floating-laser-popover',
 } as const
 
+export const LASER_PROMPT_KEYS = {
+	KEY: 'floating-prompt',
+	ID_START: 'floating-prompt-id-',
+	POPOVER: 'floating-prompt-popover',
+	INPUT: 'floating-prompt-input',
+	CONTEXT_CHECKBOX: 'additional-context-checkbox',
+} as const
 export const beatSheetEditorAllowedProjects = [
 	4861, 4863, 4866, 4873, 4881, 4935, 4944, 4952,
 ]
 
 export const DEFAULT_EDITOR_CONTENT = 'No content available!'
+
+export const DEFAULT_CONFIGURATION_DATA: TStoredConfigurationData = {
+	defaultSidebar: ESidebar.CHATBOT,
+	quickPrompts: [],
+	suggestionDisplay: ESuggestionViewingType.CORRECTIONS,
+	theme: EThemeMode.DARK,
+}
+
+export const CLOSED_SIDEBAR_VALUE = 'closed'
+
+export const configurationDialogTabToTitle: Partial<
+	Record<EConfigurationDialogContentTab, string>
+> = {
+	[EConfigurationDialogContentTab.QUICK_PROMPTS]:
+		'Customize your quick prompts!',
+}
+
+export const HIDDEN_DATA = [
+	`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.`,
+	`It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`,
+	`Why do we use it?`,
+	`It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages`,
+	`And web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).`,
+	``,
+	`Where does it come from?`,
+	``,
+	`Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.`,
+	`The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.`,
+	`Where can I get some?`,
+	`There `,
+]
+
+export const configurationDialogTabToTooltipName: Record<
+	EConfigurationDialogContentTab,
+	string
+> = {
+	[EConfigurationDialogContentTab.QUICK_PROMPTS]: 'quick prompts',
+	[EConfigurationDialogContentTab.OPTIONS]: 'all options',
+}
+
+export const LASER_PADDING = 4
+export const LASER_TEXT_LENGTH = 500

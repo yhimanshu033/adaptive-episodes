@@ -1,15 +1,16 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useMemo } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import useEditAccess from '@/hooks/use-edit-access'
-import useCustomPlateStore, { usePlateStore } from '@/store/plate-store'
+import { usePlateStore } from '@/store/plate-store'
 import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
 	useEditorPlugin,
+	useEditorReadOnly,
 	useEditorRef,
-	usePlateState,
 	usePluginOption,
 } from 'platejs/react'
 
@@ -20,6 +21,7 @@ import {
 	SelectSeparator,
 	SelectTrigger,
 } from '@/components/aural-ui/select'
+import { track } from '@/lib/utils/analytics'
 import { cn, toPascalCase } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
@@ -27,57 +29,57 @@ import { ESidebar } from '@/types/plate-types'
 import { Typography } from '../aural-ui/typography'
 
 export function ModeToolbarButton(props: DropdownMenuProps) {
-	const [readOnly, setReadOnly] = usePlateState('readOnly')
-	const { setSidebar } = usePlateStore()
-
+	const { setSidebar, setViewMode } = usePlateStore()
 	const editorRef = useEditorRef()
+	const readOnly = useEditorReadOnly()
 
 	const isSuggesting = usePluginOption(SuggestionPlugin, 'isSuggesting')
 	const { setOption } = useEditorPlugin(SuggestionPlugin)
 
 	const { cannotEdit } = useEditAccess()
 
-	const { store } = useCustomPlateStore()
-	const viewMode = store((state) => state.viewMode)
+	const filteredModesList = useMemo(() => {
+		return editorModesList.filter(
+			({ mode }) => !cannotEdit || mode === EditorModes.viewing
+		)
+	}, [cannotEdit])
 
-	const filteredModesList = editorModesList.filter(
-		({ mode }) => !cannotEdit || mode === EditorModes.viewing
-	)
-
-	const value = readOnly
-		? EditorModes.viewing
-		: isSuggesting
-			? EditorModes.suggesting
-			: EditorModes.editing
+	const value = useMemo(() => {
+		if (cannotEdit || readOnly) {
+			return EditorModes.viewing
+		}
+		if (isSuggesting) {
+			return EditorModes.suggesting
+		}
+		return EditorModes.editing
+	}, [cannotEdit, isSuggesting, readOnly])
 
 	const handleChange = React.useCallback(
 		(newValue: string) => {
 			if (cannotEdit) {
+				setViewMode(true)
 				return
 			}
-			setReadOnly(newValue === String(EditorModes.viewing))
+			setViewMode(newValue === String(EditorModes.viewing))
 			setOption('isSuggesting', newValue === String(EditorModes.suggesting))
 
 			if (newValue === String(EditorModes.suggesting)) {
 				setSidebar(ESidebar.COMMENTS)
+				track({
+					event: EVENT_TYPE.BUTTON_CLICK,
+					screenName: SCREEN_NAME.EPISODE_EDITOR,
+					metaData: {
+						action: ACTION.SUGGESTION_MODE,
+					},
+				})
 			}
 
 			if (newValue === String(EditorModes.editing)) {
 				editorRef.tf.focus({ edge: 'end' })
 			}
 		},
-		[cannotEdit, setReadOnly, setOption, editorRef.tf, setSidebar]
+		[cannotEdit, setViewMode, setOption, editorRef.tf, setSidebar]
 	)
-
-	useEffect(() => {
-		if (cannotEdit) {
-			setTimeout(() => {
-				setReadOnly(true)
-			}, 0)
-			return
-		}
-		setReadOnly(viewMode)
-	}, [cannotEdit, setReadOnly, viewMode])
 
 	return (
 		<Select value={value} onValueChange={handleChange} {...props}>

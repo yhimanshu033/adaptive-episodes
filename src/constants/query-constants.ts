@@ -33,6 +33,7 @@ export const BASE_EXTENSION_QUERY_KEY = 'base-script-extension'
 export const DOC_EPISODE_COUNT_QUERY_KEY = 'doc-episode-count'
 
 export const SCENES_METADATA_QUERY_KEY = 'scenes-metadata'
+export const CHAPTER_CHARACTERS_DATA_QUERY_KEY = 'chapter-characters-data'
 
 // Mutation keys
 export const RENAME_EPISODE_MUTATION = 'rename-episode'
@@ -64,3 +65,6 @@ export const EPISODE_LATEST_INFO_QUERY_KEY = 'latest-info'
 export const GENERATE_BEATSHEET_MUTATION_KEY = 'generate-beatsheet-mutation'
 
 export const GET_DOCX_ESTIMATE_QUERY_KEY = 'docx-estimate-file-size'
+export const EPISODE_REGENERATE_MUTATION_KEY = 'episode-regenerate-mutation'
+
+export const CONFIGURATION_QUERY_KEY = 'get-configuration-data'

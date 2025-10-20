@@ -20,6 +20,7 @@ const EditorHandler = ({ className }: { className?: string }) => {
 	useSavingCheck()
 
 	const sidebar = store(useShallow((state) => state.sidebar))
+	const viewMode = store(useShallow((state) => state.viewMode))
 	const { responseValue, prevValue } = aiStore(
 		useShallow((state) => ({
 			responseValue: state.responseValue,
@@ -54,6 +55,7 @@ const EditorHandler = ({ className }: { className?: string }) => {
 			autoFocus
 			variant="aural"
 			className={updatedClassname}
+			readOnly={viewMode}
 		/>
 	)
 }

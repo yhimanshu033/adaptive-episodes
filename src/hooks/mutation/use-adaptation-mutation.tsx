@@ -1,5 +1,6 @@
 import React from 'react'
 import { useParams } from 'next/navigation'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { ELLMModel } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import {
@@ -14,7 +15,8 @@ import { toast } from 'sonner'
 
 import { doPoll } from '@/lib/do-poll'
 import { fetchAPI } from '@/lib/fetch-api'
-import { migrateOldLSMapping } from '@/lib/utils/helpers'
+import { track } from '@/lib/utils/analytics'
+import { migrateOldLSMapping, sanitize } from '@/lib/utils/helpers'
 
 import {
 	TGetAdaptationLSUrlParams,
@@ -70,10 +72,19 @@ export default function useAdaptationMutation({
 				},
 			}
 		)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.ADAPTATION_DIALOG,
+			metaData: {
+				action: ACTION.ADAPTATION_LS_GEN,
+				sourceLang: currentLanguage || ELanguage.ENGLISH,
+				targetLang: language,
+				llmModel,
+			},
+		})
 		if (resp.error || !resp.data) {
 			throw new Error('Error during adaptation!')
 		}
-
 		const pollingResp = await doPoll<
 			TNoParams,
 			LSMappingInput,
@@ -86,6 +97,7 @@ export default function useAdaptationMutation({
 				projectId: String(selectedRowData?.[0]?.project),
 			},
 			delay: 10000,
+			startDelay: 1000 * 60,
 			stop: (resp) => {
 				if (!resp.error && resp.data) {
 					return true
@@ -131,21 +143,35 @@ export default function useAdaptationMutation({
 		selectedRowData: TEpisode[]
 		sourceLang: ELanguage
 	}) {
+		const body: TSendAdaptationStartBody = {
+			author: session?.user?.fullname || '',
+			inputls,
+			is_external: true,
+			project_id: projectId,
+			seq_no: selectedRowData.map((item) => item.seq_number),
+			source_lang: sourceLang || ELanguage.ENGLISH,
+			target_lang: language,
+			type: 'adaptation',
+			llm_model: llmModel,
+		}
+		const sanitizedBody = sanitize(body)
+
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.ADAPTATION_DIALOG,
+			metaData: {
+				action: ACTION.ADAPTATION_LS_SEND,
+				sourceLang: sourceLang || ELanguage.ENGLISH,
+				targetLang: language,
+				llmModel,
+			},
+		})
+
 		const resp = await fetchAPI<TNoParams, TNoParams, TSendAdaptationStartBody>(
 			{
 				method: 'POST',
 				url: API_URLS.SEND_TASK_TO_ADAPTATION,
-				body: {
-					author: session?.user?.fullname || '',
-					inputls,
-					is_external: true,
-					project_id: projectId,
-					seq_no: selectedRowData.map((item) => item.seq_number),
-					source_lang: sourceLang || ELanguage.ENGLISH,
-					target_lang: language,
-					type: 'adaptation',
-					llm_model: llmModel,
-				},
+				body: sanitizedBody,
 			}
 		)
 		if (resp.error || !resp.data) {

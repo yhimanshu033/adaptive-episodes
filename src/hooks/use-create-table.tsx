@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { statuses, titleToStatusText } from '@/constants/episodes-constants'
 import useEpisodeTable from '@/hooks/use-episode-table'
+import useIsInternal from '@/hooks/use-is-internal'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import ChevronUpIcon from '@/icons/chevron-up-icon'
 import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
@@ -48,10 +49,12 @@ import { Typography } from '@/components/aural-ui/typography'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
 import { formatDate } from '@/lib/format-date'
+import { hasNWMRan } from '@/lib/utils/helpers'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { EEpisodeHeaderKeys, TEpisode } from '@/types/episode-type'
 
+import { useEpisodeRegenerate } from './mutation/use-episode-regenerate'
 import useRenameTitleMutation from './mutation/use-rename-title'
 import useAccessChecks from './use-access-checks'
 
@@ -78,9 +81,13 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 		useEpisodeTable()
 
 	const { mutate: renameTitle, isPending } = useRenameTitleMutation()
+	const { mutate: episodeRegenerate, isPending: isRequestingRegenerate } =
+		useEpisodeRegenerate()
 
 	const { isWriter } = useProjectId()
 	const { isGerman, isOriginal } = useAccessChecks()
+
+	const isInternal = useIsInternal()
 
 	const handleRowSelection = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -142,6 +149,16 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 							>
 								Rename
 							</DropdownMenuItem>
+							<If condition={isWriter}>
+								<DropdownMenuItem
+									onClick={() =>
+										episodeRegenerate({ episodeId: row.original.id })
+									}
+									disabled={isRequestingRegenerate || hasNWMRan(row.original)}
+								>
+									Run NWM
+								</DropdownMenuItem>
+							</If>
 							<If condition={isWriter}>
 								<DropdownMenuItem
 									onClick={() =>
@@ -284,6 +301,9 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 				)
 			},
 		},
+	]
+
+	const userDependentColumns: ColumnDef<TEpisode>[] = [
 		{
 			accessorKey: EEpisodeHeaderKeys.WRITER,
 			header: 'Writer',
@@ -417,6 +437,7 @@ export const useCreateTable = (episodes: TEpisode[]) => {
 			),
 		},
 		...(isGerman || isOriginal ? languageDependentColumns : []),
+		...(isInternal ? userDependentColumns : []),
 		{
 			accessorKey: EEpisodeHeaderKeys.UPDATE_TIME,
 			header: 'Last Updated',

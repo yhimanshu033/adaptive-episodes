@@ -1,10 +1,13 @@
 'use client'
 
 import { DiffStatus } from '@/constants/ai-constants'
+import { CONFIGURATION_DATA_KEY } from '@/constants/global-constants'
 import { Node, Path } from 'platejs'
 import { PlateEditor } from 'platejs/react'
 
 import { DiffPlugin } from '@/components/editor/plugins/diff-kit'
+
+import { TConfigurationData } from '@/types/editor-types'
 
 export function downloadFile(url: string, filename: string) {
 	fetch(url)
@@ -136,4 +139,33 @@ export function scrollToDivWithId(
 			elem.scrollIntoView({ behavior: 'smooth', block: 'center', ...opts })
 		})
 	}, timeout)
+}
+
+export function getLocallyStoredConfiguration() {
+	if (typeof window === 'undefined') {
+		// SSR Guard
+		return null
+	}
+	const storedDataStr = localStorage.getItem(CONFIGURATION_DATA_KEY)
+	if (!storedDataStr) {
+		return null
+	}
+	try {
+		const parsedStoredData = JSON.parse(storedDataStr) as TConfigurationData
+		return parsedStoredData
+	} catch {
+		return null
+	}
+}
+
+export function setLocallyStoredConfiguration(
+	data: Partial<TConfigurationData>
+) {
+	const storedDataStr = (getLocallyStoredConfiguration() ||
+		{}) as Partial<TConfigurationData>
+	const newDataStr = JSON.stringify({
+		...storedDataStr,
+		...data,
+	})
+	localStorage.setItem(CONFIGURATION_DATA_KEY, newDataStr)
 }

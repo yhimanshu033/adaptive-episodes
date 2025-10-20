@@ -12,9 +12,16 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
+import {
+	COMMON_SITE_HEADERS,
+	CORRELATION_ID_HEADER_KEY,
+	FETCH_TIMEOUT,
+	MAX_SOCKET_RETRIES,
+} from '@/constants/global-constants'
 import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
+import { v4 as uuid } from 'uuid'
 
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 
@@ -31,6 +38,7 @@ type StartTaskParams<
 }
 
 type TSocketContext = {
+	deleteResponse: (taskId: string) => boolean
 	getResponse: <T>(taskId: string) => Promise<T>
 	startTask: <
 		BodyParamsT = TNoParams,
@@ -61,19 +69,27 @@ export const SocketProvider = ({
 		process.env.NEXT_PUBLIC_BACKEND_URL ||
 		''
 	const { data: session } = useSession()
+	const correlationId = useMemo(() => {
+		return uuid()
+	}, [])
 	const socket = useMemo(
 		() =>
 			io(socketUrl, {
 				autoConnect: false,
 				extraHeaders: {
 					Authorization: `Bearer ${session?.accessToken}`,
+					[CORRELATION_ID_HEADER_KEY]: correlationId,
+					...COMMON_SITE_HEADERS,
 				},
+				retries: MAX_SOCKET_RETRIES,
+				reconnectionAttempts: MAX_SOCKET_RETRIES,
+				requestTimeout: FETCH_TIMEOUT,
 				// transports: ['websocket'],
 				// auth: {
 				// 	token: `${session?.accessToken}`,
 				// },
 			}),
-		[socketUrl, session]
+		[socketUrl, session, correlationId]
 	)
 
 	const responsesRef = useRef<Record<string, any>>({})
@@ -166,8 +182,16 @@ export const SocketProvider = ({
 		})
 	}, [])
 
+	const deleteResponse = useCallback((taskId: string) => {
+		if (responsesRef.current[taskId]) {
+			responsesRef.current[taskId] = undefined
+			return true
+		}
+		return false
+	}, [])
+
 	return (
-		<SocketContext.Provider value={{ startTask, getResponse }}>
+		<SocketContext.Provider value={{ startTask, getResponse, deleteResponse }}>
 			{children}
 		</SocketContext.Provider>
 	)

@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { useAIChatbotQueryHook } from '@/hooks/mutation/use-aichatbot-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
@@ -6,11 +7,13 @@ import DualViewLoader from '@/page-builders/plate-editor/dual-view/dual-view-loa
 import Block from '@/page-builders/plate-editor/dual-view/voice-pass/block'
 import CopyAll from '@/page-builders/plate-editor/dual-view/voice-pass/copy-all'
 import { useEditorState } from 'platejs/react'
+import { toast } from 'sonner'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { minify } from '@/lib/utils/ai-chatbot'
+import { track } from '@/lib/utils/analytics'
 import { removeVoicePass2XMLTags } from '@/lib/utils/client-helpers'
-import { pretifyVoiceXMLData } from '@/lib/utils/helpers'
+import { prettifyVoiceXMLData } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
 
 import { EChatMode } from '@/types/ai-types'
@@ -23,7 +26,8 @@ export default function VoicePass({
 	const { data: episodeContent } = useEpisodeContent()
 	const { initialStoryData } = useEpisodeTableContext()
 
-	const { responses } = useSocketStreaming()
+	const { responses, taskEnded } = useSocketStreaming()
+	const toastShownRef = useRef(false)
 
 	const episodesCount = useMemo(() => {
 		return initialStoryData?.episode_count || 0
@@ -74,10 +78,30 @@ export default function VoicePass({
 		}
 		let concatenatedResponse = responses[data].join('')
 		if (voiceMode === EChatMode.VOICE2_XML) {
-			concatenatedResponse = pretifyVoiceXMLData(concatenatedResponse)
+			concatenatedResponse = prettifyVoiceXMLData(
+				concatenatedResponse + '<complete/>'
+			)
 		}
 		return concatenatedResponse.split('\n')
 	}, [data, responses, voiceMode])
+
+	useEffect(() => {
+		if (!data || !taskEnded[data] || toastShownRef.current) {
+			return
+		}
+		toastShownRef.current = true
+		toast.success('Voice Pass completed!')
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.VOICE_PASS_ADDED,
+				flowId: data,
+				response: responses[data].join(''),
+			},
+		})
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [taskEnded, data])
 
 	useEffect(() => {
 		removeVoicePass2XMLTags()

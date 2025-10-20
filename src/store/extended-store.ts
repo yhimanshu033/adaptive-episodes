@@ -67,6 +67,19 @@ function useEditorExtendedStore() {
 		})
 	}
 
+	const removeExtendedContentMap = (key?: number) => {
+		if (!key) {
+			return
+		}
+		useEpisodeExtendedStoreUtil.setState((state) => {
+			const newEpisodeContentMap = { ...state.episodeContentMap }
+			delete newEpisodeContentMap[key]
+			return {
+				episodeContentMap: newEpisodeContentMap,
+			}
+		})
+	}
+
 	const setEpisodeNavigationOpen = (
 		episodeNavigationOpen: EditorExtendedStore['episodeNavigationOpen']
 	) => {
@@ -96,6 +109,7 @@ function useEditorExtendedStore() {
 		addExtendedContentMap,
 		setEpisodeNavigationOpen,
 		toggleEpisodeNavigationOpen,
+		removeExtendedContentMap,
 	}
 }
 

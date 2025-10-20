@@ -1,21 +1,30 @@
 import React, { useCallback } from 'react'
-import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
+import useMetadataSyncMutation from '@/hooks/mutation/use-metadata-sync'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
+import { track } from '@/lib/utils/analytics'
 import { cn } from '@/lib/utils/helpers'
 
 const SyncMetaData = () => {
 	const { data } = useEpisodeContent()
-	const { metadataSyncMutation } = useEpisodeHook()
+	const metadataSyncMutation = useMetadataSyncMutation(Number(data?.chapter.id))
 
 	const handleSync = useCallback(() => {
 		if (!data?.chapter.id) {
 			return toast.error('Error in Metadata Sync!')
 		}
-		metadataSyncMutation.mutate(Number(data?.chapter.id))
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.SYNC_METADATA,
+			},
+		})
+		metadataSyncMutation.mutate()
 	}, [data, metadataSyncMutation])
 
 	return (

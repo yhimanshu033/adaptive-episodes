@@ -7,7 +7,7 @@ import {
 } from '@/constants/route-constants'
 import { getToken } from 'next-auth/jwt'
 
-import { projectAdminCheck } from '@/lib/utils/helpers'
+import { projectAdminCheck } from '@/lib/utils/server-helpers'
 
 import { SessionData } from '@/types/admin-types'
 

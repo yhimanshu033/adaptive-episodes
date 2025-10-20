@@ -1,5 +1,11 @@
 import React from 'react'
-import { rephraseMethods } from '@/constants/editor-constants'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
+import {
+	LASER_LEAF_KEYS,
+	LASER_PROMPT_KEYS,
+	rephraseMethods,
+} from '@/constants/editor-constants'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import useLaserStore from '@/store/laser-store'
 import { nanoid } from 'nanoid'
@@ -15,6 +21,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/aural-ui/dropdown'
 import { LaserPlugin, PromptPlugin } from '@/lib/plate/plugins/laser-plugin'
+import { track } from '@/lib/utils/analytics'
 import { mergeBlocks } from '@/lib/utils/plate'
 
 import { MarkToolbarButton } from './mark-toolbar-button'
@@ -22,6 +29,7 @@ import { MarkToolbarButton } from './mark-toolbar-button'
 export default function FloatingLaserBtns() {
 	const editor = useEditorRef()
 	const { setActiveLaser, setPromptActive } = useLaserStore()
+	const { suggestionGuard } = useSuggestionGuard()
 
 	return (
 		<DropdownMenu modal={false}>
@@ -46,29 +54,46 @@ export default function FloatingLaserBtns() {
 							onClick={() => {
 								const children = structuredClone(editor.children)
 								let newChildren: Value = children
+								const id = nanoid()
 								if (method.id === 'custom') {
-									const key = `floating-prompt-id-${nanoid()}`
+									const key = `${LASER_PROMPT_KEYS.ID_START}${id}`
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
 										[PromptPlugin.key as string, key] as string[]
 									)
-									document.getElementById('prompt-input')?.focus()
-									setPromptActive(key)
+									document.getElementById(LASER_PROMPT_KEYS.INPUT)?.focus()
+									setTimeout(() => {
+										setPromptActive(key)
+									}, 500)
+									// setPromptActive(key)
 								} else {
-									const key = `laser-id-${nanoid()}`
+									const key = `${LASER_LEAF_KEYS.ID_START}${id}`
 									newChildren = mergeBlocks(
 										children,
 										editor.selection as Range,
 										[
-											`laser-method-${String(method.id)}`,
+											`${LASER_LEAF_KEYS.METHOD_START}${String(method.id)}`,
 											LaserPlugin.key as string,
 											key,
 										] as string[]
 									)
-									setActiveLaser(key)
+									setTimeout(() => {
+										setActiveLaser(key)
+									}, 500)
 								}
-								editor.tf.setValue(newChildren)
+								suggestionGuard(() => {
+									editor.tf.setValue(newChildren)
+								})
+								track({
+									event: EVENT_TYPE.BUTTON_CLICK,
+									screenName: SCREEN_NAME.EPISODE_EDITOR,
+									metaData: {
+										action: ACTION.LASER_START,
+										method: method.id,
+										flowId: id,
+									},
+								})
 							}}
 						>
 							{method.method}

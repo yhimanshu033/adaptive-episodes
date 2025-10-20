@@ -1,10 +1,12 @@
 import { useParams } from 'next/navigation'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { BULK_EP_DOWNLOAD_MUTATION_KEY } from '@/constants/query-constants'
 import { getBulkEpisodeDownloadUrls } from '@/server-action/episode-action'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
+import { track } from '@/lib/utils/analytics'
 import { downloadFile, downloadFileAsync } from '@/lib/utils/client-helpers'
 import { getFilenameForSeqNos } from '@/lib/utils/helpers'
 
@@ -21,6 +23,16 @@ export default function useBulkEpisodeMutations() {
 		separate: boolean
 	}) {
 		let fileUrls
+
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_LIST,
+			metaData: {
+				action: ACTION.DOWNLOAD_BULK_EPISODES,
+				separate,
+				size: selectedEpisodes.length,
+			},
+		})
 		try {
 			fileUrls = await getBulkEpisodeDownloadUrls(String(id), {
 				separate,
@@ -46,43 +58,25 @@ export default function useBulkEpisodeMutations() {
 		}
 
 		toast.info('Download started!')
-
 		if (separate) {
 			const maxDownloads = Math.min(fileUrls.length, selectedEpisodes.length)
-
-			const downloadPromises: Promise<{
-				filename: string
-				success: boolean
-			}>[] = []
-
+			let successfulDownloads = 0
 			for (let idx = 0; idx < maxDownloads; idx++) {
 				const url = fileUrls[idx]
 				const filename = (selectedEpisodes[idx]?.chapter_title ?? '') + '.docx'
-
-				const downloadPromise = downloadFileAsync(url, filename)
-					.then(() => ({ filename, success: true }))
-					.catch((error) => {
-						console.error(`Failed to download ${filename}:`, error)
-						toast.error(`Failed to download ${filename}`)
-						return { filename, success: false }
-					})
-
-				downloadPromises.push(downloadPromise)
+				try {
+					await downloadFileAsync(url, filename)
+					toast.success(
+						`Download started for chapter ${selectedEpisodes[idx]?.seq_number}`
+					)
+					successfulDownloads++
+				} catch {
+					toast.error(
+						`Download failed for chapter ${selectedEpisodes[idx]?.seq_number}`
+					)
+				}
 			}
-
-			const results = await Promise.allSettled(downloadPromises)
-			const successfulDownloads = results.filter(
-				(result) => result.status === 'fulfilled' && result.value.success
-			).length
-			const failedDownloads = maxDownloads - successfulDownloads
-
-			if (successfulDownloads > 0) {
-				toast.success(`Downloaded ${successfulDownloads} file(s) successfully!`)
-			}
-
-			if (failedDownloads > 0 && successfulDownloads === 0) {
-				toast.error(`Failed to download all ${failedDownloads} file(s)!`)
-			}
+			toast.success(`Download started for ${successfulDownloads} chapters `)
 		} else {
 			const filename =
 				initialStoryData?.project_title +

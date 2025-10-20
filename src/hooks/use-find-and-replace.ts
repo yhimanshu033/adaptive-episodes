@@ -6,9 +6,16 @@ import useLocalizeHook, {
 	useUpdateLOCSheetMutation,
 } from '@/hooks/mutation/use-localize-hook'
 import useEditorData from '@/hooks/plate/use-editor-data'
+import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
+import { useDebounce } from '@/hooks/use-debounce'
 import useLanguage from '@/hooks/use-language'
 import { isEqual } from 'lodash'
-import { useEditorPlugin, useEditorRef, usePluginOptions } from 'platejs/react'
+import {
+	useEditorPlugin,
+	useEditorReadOnly,
+	useEditorRef,
+	usePluginOptions,
+} from 'platejs/react'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import useProjectId from '@/providers/project-id-provider'
@@ -31,6 +38,8 @@ import useLOCSheetData from './query/use-loc-sheet-data'
 
 export default function useFindAndReplace() {
 	const { setOptions } = useEditorPlugin(FindReplacePlugin)
+	const { suggestionGuard } = useSuggestionGuard()
+
 	const language = useLanguage()
 
 	const {
@@ -50,6 +59,12 @@ export default function useFindAndReplace() {
 		genitive: state.genitive || false,
 		currentId: state.currentId || [],
 	}))
+
+	const [realTimeData, setRealTimeData] = useState({ search })
+	const debouncedData = useDebounce(realTimeData, 250)
+
+	const readOnly = useEditorReadOnly()
+
 	const [ptr, setPtr] = useState(0)
 
 	const { children } = useEditorData()
@@ -75,8 +90,19 @@ export default function useFindAndReplace() {
 		setData(fetchedData)
 	}, [fetchedData])
 
-	const editor = useEditorRef()
+	useEffect(() => {
+		if (debouncedData.search === search) {
+			return
+		}
+		setOptions(debouncedData)
+		const newChildren = structuredClone(editor.children)
+		suggestionGuard(() => {
+			editor.tf.setValue(breakDownValue(newChildren))
+		})
+		// eslint-disable-next-line  react-hooks/exhaustive-deps
+	}, [debouncedData, suggestionGuard])
 
+	const editor = useEditorRef()
 	const occurrences = useMemo(
 		() =>
 			getOccurrencesUtil({
@@ -150,8 +176,11 @@ export default function useFindAndReplace() {
 			search,
 			wholeWord,
 		})
-		editor.tf.setValue(breakDownValue(updatedChildren))
+		suggestionGuard(() => {
+			editor.tf.setValue(breakDownValue(updatedChildren))
+		})
 		setOptions({ search: '', replace: '' })
+		setRealTimeData({ search: '' })
 	}, [
 		search,
 		replaceEnabled,
@@ -162,6 +191,7 @@ export default function useFindAndReplace() {
 		genitive,
 		caseSensitive,
 		replace,
+		suggestionGuard,
 	])
 
 	const onReplace = useCallback(() => {
@@ -175,8 +205,18 @@ export default function useFindAndReplace() {
 		}
 
 		const updatedChildren = replaceOnce({ children, path, search, replace })
-		editor.tf.setValue(breakDownValue(updatedChildren))
-	}, [children, editor.tf, currentId, replace, search, records])
+		suggestionGuard(() => {
+			editor.tf.setValue(breakDownValue(updatedChildren))
+		})
+	}, [
+		children,
+		editor.tf,
+		currentId,
+		replace,
+		search,
+		records,
+		suggestionGuard,
+	])
 
 	function handlePrev() {
 		setPtr(ptr > 0 ? ptr - 1 : ptr)
@@ -197,22 +237,30 @@ export default function useFindAndReplace() {
 			setOptions({ wholeWord: !wholeWord, genitive: !wholeWord })
 		}
 		const updatedChildren = structuredClone(children)
-		editor.tf.setValue(breakDownValue(updatedChildren))
+		suggestionGuard(() => {
+			editor.tf.setValue(breakDownValue(updatedChildren))
+		})
 	}
 
 	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-		setOptions({ search: e.target.value })
-		const updatedChildren = structuredClone(children)
-		editor.tf.setValue(breakDownValue(updatedChildren))
+		setRealTimeData((prev) => {
+			return {
+				...prev,
+				search: e.target.value,
+			}
+		})
 	}
 
 	function handleSuggestionClick(suggestion: TLocalizeArrayItem) {
-		const replace = getSuggestionValue(suggestion)
+		const replace = getSuggestionValue(suggestion) || ''
 		setOptions({ search: suggestion.name })
+		setRealTimeData({ search: suggestion.name })
 		setOptions({ replace })
 		setOptions({ replaceEnabled: true })
 		const updatedChildren = structuredClone(children)
-		editor.tf.setValue(breakDownValue(updatedChildren))
+		suggestionGuard(() => {
+			editor.tf.setValue(breakDownValue(updatedChildren))
+		})
 	}
 
 	async function handleDownload() {
@@ -250,9 +298,9 @@ export default function useFindAndReplace() {
 		isPending,
 		occurrences,
 		isFetching,
-		replaceEnabled: !!replaceEnabled,
+		replaceEnabled: !readOnly && !!replaceEnabled,
 		caseSensitive: !!caseSensitive,
-		search,
+		search: realTimeData.search,
 		ptr,
 		setOptions,
 		replace,

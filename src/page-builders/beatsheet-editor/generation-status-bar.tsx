@@ -7,27 +7,24 @@ import CircularLoader from '@/components/aural-ui/circular-loader'
 import IfElse from '@/components/if-else'
 
 interface GenerationStatusBarProps {
-	generatingSceneIds: string[]
 	hasTimeoutError: boolean
+	isGeneratingAll?: boolean
 	isPending: boolean
 	remainingTime: number | null
-	totalScenes: number
 }
 
 export default function GenerationStatusBar({
-	generatingSceneIds,
 	hasTimeoutError,
 	isPending,
 	remainingTime,
-	totalScenes,
+	isGeneratingAll,
 }: GenerationStatusBarProps) {
 	if (!isPending && !hasTimeoutError) {
 		return null
 	}
 
-	const isGeneratingAll = generatingSceneIds.length === totalScenes
 	const statusMessage = isPending
-		? `Generating ${isGeneratingAll ? 'All Scenes' : `${generatingSceneIds.length} Scene(s)`}...`
+		? `Generating ${isGeneratingAll ? 'All Scenes' : `Scene`}...`
 		: 'Generation timed out - please try again'
 
 	return (

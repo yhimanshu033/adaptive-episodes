@@ -30,7 +30,7 @@ export default function Characters() {
 	return (
 		<>
 			<Accordion type="multiple" className="w-full">
-				{characters.map((character) => (
+				{characters?.map((character) => (
 					<AccordionItem key={character.id} value={character.id}>
 						<AccordionTrigger className="flex items-center">
 							<div className="flex flex-1 items-center justify-between">

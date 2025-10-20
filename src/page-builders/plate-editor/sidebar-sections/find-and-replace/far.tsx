@@ -1,20 +1,14 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import React from 'react'
 import { UseGlobalFARRet } from '@/hooks/use-global-find-and-replace'
 
 import { If } from '@/components/if-else'
-
-import { TLocalizeResponse } from '@/types/ai-types'
 
 import FindAndReplaceForm from './far-form'
 import FindAndReplaceLocalizedList from './far-localized-list'
 import FindAndReplaceResults from './far-results'
 
 export interface IFindAndReplaceUIProps extends UseGlobalFARRet {
-	handleScanEpisode?: () => Promise<void>
 	isWriter: boolean
-	setData?: Dispatch<SetStateAction<TLocalizeResponse['result'] | undefined>>
-	sheetURL?: string
-	updateLOCPending?: boolean
 }
 
 export default function FindAndReplaceUI({
@@ -41,6 +35,7 @@ export default function FindAndReplaceUI({
 	setData,
 	handleScanEpisode,
 	updateLOCPending,
+	replaceEnabled,
 }: IFindAndReplaceUIProps) {
 	return (
 		<>
@@ -56,6 +51,7 @@ export default function FindAndReplaceUI({
 				wholeWord={wholeWord}
 				toggleSearchMode={toggleSearchMode}
 				setData={setData}
+				replaceEnabled={replaceEnabled}
 			/>
 			<FindAndReplaceResults
 				search={search}
