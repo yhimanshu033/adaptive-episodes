@@ -54,7 +54,7 @@ export default function DiffControls({ element, editor }: DiffControlsProps) {
 					event: EVENT_TYPE.BUTTON_CLICK,
 					screenName: SCREEN_NAME.EPISODE_EDITOR,
 					metaData: {
-						actionType: ACTION.STORY_CHAT_SINGLE_SFX_ACTION,
+						action: ACTION.STORY_CHAT_SINGLE_SFX_ACTION,
 						change: status,
 						flowId: lastMessage.taskId,
 						sfx: String(element.text),
