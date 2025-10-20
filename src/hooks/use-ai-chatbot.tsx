@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
 	createContext,
-	RefObject,
 	useCallback,
 	useContext,
 	useEffect,
@@ -59,53 +58,9 @@ import {
 import { EDualVIewMode, TGetEpisodeResponse } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
-type TChatbotContext = {
-	cancelRequest: () => void
-	changesPending: Value | null
-	clearMessages: () => void
-	disabled: boolean
-	getProgress: (taskId?: string) => number
-	getTimeLeft: (taskId?: string) => number
-	handleKeyDown: (e: React.KeyboardEvent) => void
-	handleSendMessage: (e: React.FormEvent) => void
-	handleSuggestion: (suggestion: TStoryChatSuggestion) => void
-	input: string
-	isFocused: boolean
-	isPending: boolean
-	isTaskRunning: (taskId: string) => boolean
-	removeReview: () => void
-	setInput: React.Dispatch<React.SetStateAction<string>>
-	setIsFocused: React.Dispatch<React.SetStateAction<boolean>>
-	textContainerRef: React.RefObject<HTMLDivElement>
-	textareaRef: React.RefObject<HTMLTextAreaElement>
-}
-
-const ChatbotContext = createContext<TChatbotContext>({
-	cancelRequest: () => {},
-	changesPending: null,
-	clearMessages: () => {},
-	disabled: false,
-	handleKeyDown: () => {},
-	handleSendMessage: () => {},
-	handleSuggestion: () => {},
-	input: '',
-	setInput: () => {},
-	isPending: false,
-	removeReview: () => {},
-	isFocused: false,
-	setIsFocused: () => {},
-	textContainerRef: null as unknown as RefObject<HTMLDivElement>,
-	textareaRef: null as unknown as RefObject<HTMLTextAreaElement>,
-	getTimeLeft: () => 0,
-	getProgress: () => 0,
-	isTaskRunning: () => false,
-})
-
-export function ChatbotProvider({
-	children: consumer,
+function useAIChatbotUtil({
 	episodeContent,
 }: {
-	children: React.ReactNode
 	episodeContent: TGetEpisodeResponse | null | undefined
 }) {
 	const [input, setInput] = useState('')
@@ -639,12 +594,28 @@ export function ChatbotProvider({
 		getTimeLeft,
 		getProgress,
 		isTaskRunning,
+		messages,
+		lastMessage,
 	}
 
+	return context
+}
+
+type TChatbotContext = ReturnType<typeof useAIChatbotUtil>
+
+const ChatbotContext = createContext<TChatbotContext | null>(null)
+
+export function ChatbotProvider({
+	children: consumer,
+	episodeContent,
+}: {
+	children: React.ReactNode
+	episodeContent: TGetEpisodeResponse | null | undefined
+}) {
+	const value = useAIChatbotUtil({ episodeContent })
+
 	return (
-		<ChatbotContext.Provider value={context}>
-			{consumer}
-		</ChatbotContext.Provider>
+		<ChatbotContext.Provider value={value}>{consumer}</ChatbotContext.Provider>
 	)
 }
 
