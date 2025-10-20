@@ -467,27 +467,50 @@ export function ImportStory() {
 													isInternal && storyType === ImportStoryType.IMPORT
 												}
 											>
-												<FormField
-													control={form.control}
-													name="run_adaptation"
-													render={({ field }) => (
-														<FormItem className="space-y-2">
-															<FormControl>
-																<div className="flex items-center gap-2">
-																	<Checkbox
-																		checked={field.value}
-																		id="adaptation-checkbox"
-																		onCheckedChange={field.onChange}
-																	/>
-																	<FormLabel htmlFor="adaptation-checkbox">
-																		Run Adaptation
-																	</FormLabel>
-																</div>
-															</FormControl>
-															<FormMessage />
-														</FormItem>
-													)}
-												/>
+												<div className="flex items-center justify-between">
+													<FormField
+														control={form.control}
+														name="run_adaptation"
+														render={({ field }) => (
+															<FormItem className="space-y-2">
+																<FormControl>
+																	<div className="flex items-center gap-2">
+																		<Checkbox
+																			checked={field.value}
+																			id="adaptation-checkbox"
+																			onCheckedChange={field.onChange}
+																		/>
+																		<FormLabel htmlFor="adaptation-checkbox">
+																			Run Adaptation
+																		</FormLabel>
+																	</div>
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+													<FormField
+														control={form.control}
+														name="run_nwm"
+														render={({ field }) => (
+															<FormItem className="space-y-2">
+																<FormControl>
+																	<div className="flex items-center gap-2">
+																		<Checkbox
+																			checked={field.value}
+																			id="nwm-checkbox"
+																			onCheckedChange={field.onChange}
+																		/>
+																		<FormLabel htmlFor="nwm-checkbox">
+																			Run NWM
+																		</FormLabel>
+																	</div>
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+												</div>
 											</If>
 
 											<If condition={form.watch('run_adaptation')}>
