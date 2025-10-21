@@ -6,7 +6,8 @@
 @import 'tailwind-scrollbar-hide/v4';
 @import './aural-theme.css';
 
-@custom-variant dark (&: is(.dark *));
+/* COMMENTED FOR ENABLING TURBO-PACK */
+/* @custom-variant dark (&: is(.dark *)); */
 @theme {
 	--text-xxs: 0.625rem;
 

@@ -37,12 +37,13 @@ export default function DiffComponent({
 
 	const Component = useMemo(() => {
 		if (!isLeaf) {
-			return 'div'
+			return 'div' as keyof React.JSX.IntrinsicElements
 		}
-		return diffOperationComponents[diffOperation?.type] || 'span'
+		return (diffOperationComponents[diffOperation?.type] ||
+			'span') as keyof React.JSX.IntrinsicElements
 	}, [isLeaf, diffOperation])
 
-	const NonDiffComponent: keyof JSX.IntrinsicElements = useMemo(() => {
+	const NonDiffComponent: keyof React.JSX.IntrinsicElements = useMemo(() => {
 		return isLeaf ? 'span' : 'div'
 	}, [isLeaf])
 
@@ -66,10 +67,10 @@ export default function DiffComponent({
 	const show = useMemo(() => {
 		return (
 			(status === DiffStatus.ACCEPTED &&
-				diffOperation.type === AiDiffOperation.INSERT) ||
+				String(diffOperation.type) === String(AiDiffOperation.INSERT)) ||
 			(status === DiffStatus.REJECTED &&
-				diffOperation.type === AiDiffOperation.DELETE) ||
-			diffOperation.type === AiDiffOperation.UPDATE
+				String(diffOperation.type) === String(AiDiffOperation.DELETE)) ||
+			String(diffOperation.type) === String(AiDiffOperation.UPDATE)
 		)
 	}, [status, diffOperation])
 
@@ -84,7 +85,7 @@ export default function DiffComponent({
 		<Component
 			className={cn(diffOperationClassnames[diffOperation?.type], 'relative')}
 			title={
-				diffOperation?.type === AiDiffOperation.UPDATE
+				diffOperation?.type === 'update'
 					? describeUpdate(diffOperation)
 					: undefined
 			}

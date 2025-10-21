@@ -23,7 +23,7 @@ export default function useVersions({
 }) {
 	const { id } = useParams()
 	const episodeId = useEpisodeId()
-	const currentSelection = useRef<EStatus>()
+	const currentSelection = useRef<EStatus>(EStatus.FIRST_DRAFT)
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const queryClient = useQueryClient()
 

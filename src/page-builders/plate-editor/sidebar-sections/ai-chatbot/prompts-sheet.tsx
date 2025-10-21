@@ -20,7 +20,7 @@ const PromptsSheet = ({
 	containerRef,
 	suggestions = [],
 }: {
-	containerRef?: React.RefObject<HTMLElement>
+	containerRef?: React.RefObject<HTMLElement | null>
 	open: boolean
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>
 	suggestions?: TSuggestions[]
