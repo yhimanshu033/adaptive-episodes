@@ -39,8 +39,7 @@ export default function DiffComponent({
 		if (!isLeaf) {
 			return 'div' as keyof React.JSX.IntrinsicElements
 		}
-		return (diffOperationComponents[diffOperation?.type] ||
-			'span') as keyof React.JSX.IntrinsicElements
+		return diffOperationComponents[diffOperation?.type] || 'span'
 	}, [isLeaf, diffOperation])
 
 	const NonDiffComponent: keyof React.JSX.IntrinsicElements = useMemo(() => {
