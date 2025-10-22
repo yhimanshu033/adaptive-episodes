@@ -48,7 +48,6 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 		comments: JSON.stringify(allComments),
 		title: data?.chapter.chapter_title || '',
 	})
-
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 

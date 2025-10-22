@@ -7,6 +7,7 @@ import { TickIcon } from '@/icons/tick-icon'
 import useLaserStore from '@/store/laser-store'
 import { RotateCw } from 'lucide-react'
 import { nanoid } from 'nanoid'
+import { KEYS } from 'platejs'
 import { useEditorRef } from 'platejs/react'
 
 import { Button } from '@/components/aural-ui/button'
@@ -59,9 +60,24 @@ export default function FloatingLaserResponse({
 				if (!firstMatch) {
 					return
 				}
-				suggestionGuard(() => {
+				suggestionGuard((isSuggesting, currentUser) => {
 					editor.tf.select(firstMatch[1], { edge: 'start' })
-					editor.tf.insertNodes({ text })
+					const id = key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1] || nanoid()
+					const extraFields = isSuggesting
+						? {
+								[KEYS.suggestion]: true,
+								[`${KEYS.suggestion}_${id}`]: {
+									id,
+									createdAt: Date.now(),
+									type: 'insert',
+									userId: currentUser,
+								},
+							}
+						: {}
+					editor.tf.insertNodes({
+						text,
+						...extraFields,
+					})
 				})
 			} catch (error) {
 				console.error(error)
@@ -123,10 +139,7 @@ export default function FloatingLaserResponse({
 				}
 				setActiveLaser(null)
 			}}
-			className={cn(
-				'flex gap-2',
-				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg'
-			)}
+			className={cn('flex gap-2', 'rounded-fm-l bg-fm-surface-primary p-5')}
 		>
 			<Image
 				alt="laser gradient"

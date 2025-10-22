@@ -1208,5 +1208,58 @@ export function jumbleArray<T>(array: T[]): T[] {
 	return result
 }
 
+/**
+ * Replaces the nth occurrence of a regex match in a string with a replacement.
+ *
+ * @param input        The original string
+ * @param regex        The regex pattern (must have the global flag `g`)
+ * @param replaceWith  The string to replace the nth match with
+ * @param n            The 1-based index of the occurrence to replace
+ * @returns            The modified string
+ */
+export function replaceNthOccurrence({
+	input,
+	n,
+	regex,
+	replaceWith,
+}: {
+	input: string
+	n: number
+	regex: RegExp
+	replaceWith: string
+}): { occurrence: string; occurrenceIdx: number; result: string } {
+	if (!regex.global) {
+		// Force global flag to find multiple matches
+		const flags = regex.flags.includes('g') ? regex.flags : regex.flags + 'g'
+		regex = new RegExp(regex.source, flags)
+	}
+
+	let match: RegExpExecArray | null
+	let matchIndex = 0
+	let lastIndex = 0
+	let result = ''
+
+	while ((match = regex.exec(input)) !== null) {
+		const before = input.slice(lastIndex, match.index)
+
+		if (matchIndex === n) {
+			// Found the nth match — replace it
+			result += before + replaceWith
+			// Append the rest of the string after the replaced match
+			result += input.slice(match.index + match[0].length)
+			return { result, occurrenceIdx: match.index, occurrence: match[0] }
+		}
+
+		// Not the nth yet — just copy the part before this match and the match itself
+		result += before + match[0]
+		lastIndex = regex.lastIndex
+
+		matchIndex++
+	}
+
+	// If we get here, nth occurrence was not found — return original string
+	return { result: input, occurrenceIdx: -1, occurrence: input }
+}
+
 export const isStringifiedJsonArray = (text: string) =>
 	/^\s*\[.*\]\s*$/.test(text)

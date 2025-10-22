@@ -19,6 +19,7 @@ import {
 	Descendant,
 	Element,
 	KEYS,
+	nanoid,
 	Path,
 	serializeHtml,
 	TCommentText,
@@ -920,15 +921,25 @@ export function getDiffClearedLeaves({
 	children,
 	all,
 	isSfx,
+	isSuggesting,
+	userId,
+	showDeletedSuggestions,
+	isAcceptedBlock,
 }: {
 	all?: boolean
 	children: Descendant[]
+	isAcceptedBlock?: boolean
 	isSfx?: boolean
+	isSuggesting?: boolean
+	showDeletedSuggestions?: boolean
+	userId?: string | null
 }) {
 	const diffClearedChildren = children
 		.map((child) => {
 			let add = true
-			if ('diff' in child && 'diffOperation' in child && child.diff_id) {
+			const isDiffLeaf =
+				'diff' in child && 'diffOperation' in child && child.diff_id
+			if (isDiffLeaf) {
 				const accepted = all
 					? child.status === DiffStatus.ACCEPTED ||
 						child.status === DiffStatus.PENDING
@@ -960,8 +971,37 @@ export function getDiffClearedLeaves({
 					add = false
 				}
 			}
-			if (add) {
+			const isSuggestion = (isDiffLeaf || isAcceptedBlock) && isSuggesting
+			if (add && !isSuggestion) {
 				return { ...child, text: String(child.text) }
+			}
+			if (add && isSuggestion) {
+				const id = nanoid()
+				return {
+					...child,
+					text: String(child.text),
+					[KEYS.suggestion]: true,
+					[`${KEYS.suggestion}_${id}`]: {
+						id,
+						createdAt: Date.now(),
+						type: 'insert',
+						userId,
+					},
+				}
+			}
+			if (!add && showDeletedSuggestions && isSuggestion) {
+				const id = nanoid()
+				return {
+					...child,
+					text: String(child.text),
+					[KEYS.suggestion]: true,
+					[`${KEYS.suggestion}_${id}`]: {
+						id,
+						createdAt: Date.now(),
+						type: 'remove',
+						userId,
+					},
+				}
 			}
 		})
 		.filter((child) => !!child)
@@ -976,10 +1016,16 @@ export function getDiffClearedBlock({
 	all?: boolean
 	block: TElement
 	isSfx?: boolean
+	isSuggesting?: boolean
 }) {
 	const block = structuredClone(originalBlock)
 	let add = true
-	if ('diff' in block && 'diffOperation' in block && block.diff_id) {
+	const isDiffBlock = !!(
+		'diff' in block &&
+		'diffOperation' in block &&
+		block.diff_id
+	)
+	if (isDiffBlock) {
 		const accepted = all
 			? block.status === DiffStatus.ACCEPTED ||
 				block.status === DiffStatus.PENDING
@@ -999,34 +1045,70 @@ export function getDiffClearedBlock({
 
 		add = (accepted && type !== 'delete') || (!accepted && type === 'delete')
 	}
-	if (add) {
-		return block
-	}
+	return { block: add ? block : null, isDiffBlock }
 }
 
 export function getAcceptedDiffValue({
 	value,
 	all = true,
 	isSfx,
+	isSuggesting,
+	userId,
+	showDeleted,
 }: {
 	all?: boolean
 	isSfx?: boolean
+	isSuggesting?: boolean
+	showDeleted?: boolean
+	userId?: string | null
 	value: Value
 }) {
 	const newValue = structuredClone(value)
 	const currVal = newValue
 		.map((node) => {
-			const diffClearedBlock = getDiffClearedBlock({ block: node, all, isSfx })
-			if (!diffClearedBlock) {
+			const { block: diffClearedBlock, isDiffBlock } = getDiffClearedBlock({
+				block: node,
+				all,
+				isSfx,
+			})
+			const shouldShowDeletedSuggestions = isSuggesting && showDeleted
+
+			if (!diffClearedBlock && !shouldShowDeletedSuggestions) {
 				return
+			}
+			if (!diffClearedBlock && shouldShowDeletedSuggestions) {
+				return {
+					...node,
+					children: node.children.map((currNode) => {
+						const id = nanoid()
+						return {
+							...currNode,
+							[KEYS.suggestion]: true,
+							[`${KEYS.suggestion}_${id}`]: {
+								id,
+								createdAt: Date.now(),
+								type: 'remove',
+								userId,
+							},
+						} as Descendant
+					}),
+				}
 			}
 			return {
 				...diffClearedBlock,
-				children: getDiffClearedLeaves({ children: node.children, all, isSfx }),
+				children: getDiffClearedLeaves({
+					children: node.children,
+					all,
+					isSfx,
+					isSuggesting,
+					userId,
+					showDeletedSuggestions: showDeleted,
+					isAcceptedBlock: isDiffBlock,
+				}),
 			}
 		})
 		.filter((node) => !!node)
-	return currVal
+	return currVal as Value
 }
 
 const siteUrl = 'https://platejs.org'

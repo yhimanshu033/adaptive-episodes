@@ -11,7 +11,7 @@ import useLaserToolsQuery from '@/hooks/query/use-lasertool-data'
 import useLanguage from '@/hooks/use-language'
 import useLaserStore from '@/store/laser-store'
 import { X } from 'lucide-react'
-import { TText } from 'platejs'
+import { KEYS, nanoid, TText } from 'platejs'
 import { PlateEditor, useEditorState } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -135,24 +135,45 @@ export default function LaserRephrase({
 						match: (n) => !!n?.[key],
 					})
 					.toArray()
-				const aggregateObject = matches.reduce((acc, curr) => {
-					return Object.assign(acc, curr[0])
-				}, {})
-				const laserKeys = Object.keys(aggregateObject).filter((key) =>
-					key.startsWith('laser')
-				)
-				suggestionGuard(() => {
-					if (removeOld) {
+
+				suggestionGuard((isSuggesting, currentUser) => {
+					if (removeOld && !isSuggesting) {
 						editor.tf.removeNodes({
 							at: [],
 							match: (n) => !!n?.[key],
 						})
-					} else {
-						editor.tf.unsetNodes(laserKeys, {
-							at: [],
-							match: (n) => !!n?.[key],
-						})
+						return
 					}
+
+					const aggregateObject = matches.reduce((acc, curr) => {
+						return Object.assign(acc, curr[0])
+					}, {})
+					const laserKeys = Object.keys(aggregateObject).filter((key) =>
+						key.startsWith('laser')
+					)
+
+					if (removeOld && isSuggesting) {
+						const id = key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1] || nanoid()
+						editor.tf.setNodes(
+							{
+								[KEYS.suggestion]: true,
+								[`${KEYS.suggestion}_${id}`]: {
+									id,
+									createdAt: Date.now(),
+									type: 'remove',
+									userId: currentUser,
+								},
+							},
+							{
+								at: [],
+								match: (n) => !!n?.[key],
+							}
+						)
+					}
+					editor.tf.unsetNodes(laserKeys, {
+						at: [],
+						match: (n) => !!n?.[key],
+					})
 				})
 			} catch (error) {
 				console.error(error)
@@ -220,7 +241,7 @@ export default function LaserRephrase({
 	}
 
 	return (
-		<div className="rounded-fm-l border-fm-divider-primary bg-fm-surface-primary relative flex w-full items-center justify-between gap-2 overflow-hidden border py-2 pr-2 pl-5 shadow-lg">
+		<div className="rounded-fm-l bg-fm-surface-primary relative flex w-full items-center justify-between gap-2 overflow-hidden py-2 pr-2 pl-5">
 			<Image
 				alt="laser gradient"
 				className="pointer-events-none absolute top-0 z-0"

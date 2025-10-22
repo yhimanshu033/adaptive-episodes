@@ -139,7 +139,7 @@ export default function FloatingPrompt() {
 				setPromptActive(null)
 			}}
 			className={cn(
-				'rounded-fm-l border-fm-divider-primary bg-fm-surface-primary border p-5 shadow-lg',
+				'rounded-fm-l bg-fm-surface-primary p-5',
 				'flex w-full flex-col items-start justify-start gap-5'
 			)}
 		>

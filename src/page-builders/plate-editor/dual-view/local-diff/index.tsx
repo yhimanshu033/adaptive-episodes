@@ -41,12 +41,14 @@ export default function LocalDiffSection() {
 		setSidebar(null)
 		setDualViewMode(EDualVIewMode.US_TRANSLATION)
 		if (acceptedDiffValue) {
-			const acceptedValue = getAcceptedDiffValue({
-				value: acceptedDiffValue,
-				all,
-				isSfx: false,
-			})
-			suggestionGuard(() => {
+			suggestionGuard((isSuggesting, userId) => {
+				const acceptedValue = getAcceptedDiffValue({
+					value: acceptedDiffValue,
+					all,
+					isSfx: false,
+					isSuggesting,
+					userId,
+				})
 				editor.tf.setValue(acceptedValue)
 			})
 		}

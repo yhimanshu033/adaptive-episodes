@@ -56,8 +56,14 @@ export default function useAcceptChanges(props?: { taskId: string }) {
 			if (!value) {
 				return
 			}
-			const currVal = getAcceptedDiffValue({ value, all, isSfx })
-			suggestionGuard(() => {
+			suggestionGuard((isSuggesting, userId) => {
+				const currVal = getAcceptedDiffValue({
+					value,
+					all,
+					isSfx,
+					isSuggesting,
+					userId,
+				})
 				editor.tf.setValue(breakDownValue(currVal))
 			})
 			setResponseValue(null)
