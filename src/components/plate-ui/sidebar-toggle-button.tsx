@@ -9,6 +9,7 @@ import { cn } from '@/lib/aural-ui/utils'
 import { ESidebar } from '@/types/plate-types'
 
 import { IconButton, type IconButtonProps } from '../aural-ui/icon-button'
+import { useUnifiedEditorStore } from 'unified-editor'
 
 interface SidebarToggleButtonProps extends IconButtonProps {
 	sidebar: ESidebar
@@ -33,7 +34,7 @@ export function SidebarToggleButton({
 	tooltipProps,
 	...props
 }: SidebarToggleButtonProps) {
-	const { store, setSidebar } = usePlateStore()
+	const { store, setSidebar } = useUnifiedEditorStore()
 	const currentSidebar = store((state) => state.sidebar)
 	const isActive = currentSidebar === sidebar
 

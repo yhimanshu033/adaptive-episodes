@@ -2,7 +2,7 @@ import React from 'react'
 import { statuses, titleToStatusText } from '@/constants/episodes-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
-import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEpisodeIdStore } from 'unified-editor'
 import { useEditorReadOnly } from 'platejs/react'
 
 import EditableText from '@/components/editable-text'
@@ -17,7 +17,7 @@ const Title = ({
 	memberId?: string
 }) => {
 	const { data: episodeContent } = useEpisodeContent()
-	const readOnly = useEditorReadOnly('editor')
+	// const readOnly = useEditorReadOnly('editor')
 	const { setCurrentTitle } = useEpisodeIdStore()
 	const { data } = useUserMembersQuery()
 	const members = data?.members || []
@@ -47,7 +47,7 @@ const Title = ({
 						rootClass="text-xl"
 						inputClass="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]"
 						textClass="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]"
-						isEditable={!readOnly}
+						// isEditable={!readOnly}
 						onComplete={(title) => void updateChapterTitle(title)}
 					/>
 				</div>

@@ -8,7 +8,7 @@ import {
 } from '@/hooks/form-resolvers/edit-note-resolver'
 import useNotes from '@/hooks/use-notes'
 import useEditorNoteStore from '@/store/edit-note-store'
-import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEpisodeIdStore } from 'unified-editor'
 import { useEpisodeStore } from '@/store/episode-store'
 import { nanoid } from 'platejs'
 import { useShallow } from 'zustand/react/shallow'

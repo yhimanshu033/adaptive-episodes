@@ -9,7 +9,7 @@ import {
 	ExplorerModeId,
 	PlotAction,
 } from '@/constants/story-explorer-constants'
-import useEditorData from '@/hooks/plate/use-editor-data'
+import { useEditorData } from 'unified-editor'
 import useMetadataQuery from '@/hooks/query/use-metadata-query'
 import useLanguage from '@/hooks/use-language'
 import useSocketStreaming from '@/hooks/use-socket-streaming'

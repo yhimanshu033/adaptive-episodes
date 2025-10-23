@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
-import useEditorData from '@/hooks/plate/use-editor-data'
-import useEpisodeIdStore from '@/store/episode-id-store'
-import { useEditorState, usePluginOption } from 'platejs/react'
+import { useEpisodeIdStore } from 'unified-editor'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -20,15 +18,19 @@ import {
 	TSaveEpisodeFailMessage,
 	TSaveEpisodeParams,
 } from '@/types/episode-type'
+import { useEditorData, usePluginOption, useUnifiedEditorState } from 'unified-editor'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
 
 interface IUseSavingUtilProps {
-	data: TGetEpisodeResponse
+	data?: TGetEpisodeResponse
 	initialForceSave?: boolean
 }
-function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
+function useSavingUtil(props?: IUseSavingUtilProps) {
+	const { data } = useEpisodeContent()
+	const initialForceSave = props?.initialForceSave
 	const { id } = useParams()
 	const { wordCount } = useEditorData()
-	const { children } = useEditorState()
+	const { children } = useUnifiedEditorState()
 	const allComments = usePluginOption(discussionPlugin, 'discussions')
 	const { saveEpisodeMutation } = useEpisodeHook()
 
@@ -66,7 +68,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 	}, [children, allComments, currentTitle, data?.chapter, forceSave, savedData])
 
 	const getSavingParams = useCallback((): TGetSavingParamsRet => {
-		const word_count = wordCount.value
+		const word_count = wordCount
 		const contentStr = JSON.stringify(children)
 		const commentsStr = JSON.stringify(allComments)
 		const title = currentTitle
@@ -74,7 +76,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 		const text = JSON.stringify(clearedLaser)
 		const status = data?.chapter.status || BASE_STATUS
 		const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
-		const chapterId = data?.chapter.id
+		const chapterId = data?.chapter.id || 0
 
 		return {
 			word_count,
@@ -85,10 +87,10 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			chapterId,
 			title,
 			commentsStr,
-			chapterData: data,
+			chapterData: data || undefined,
 			allComments,
 		}
-	}, [wordCount.value, children, allComments, data, currentTitle])
+	}, [wordCount, children, allComments, data, currentTitle])
 
 	const saveLocal = useCallback(
 		(args: TGetSavingParamsRet) => {
@@ -144,7 +146,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 					if (message.email) {
 						// check if someone else is editing chapter
 						toast.error(
-							`Saving failed, ${message.email} is currently working on the episode ${params.chapterData.chapter.seq_number}!`
+							`Saving failed, ${message.email} is currently working on the episode ${params.chapterData?.chapter.seq_number}!`
 						)
 						setRecentEmail(message.email)
 					} else {
@@ -211,10 +213,8 @@ const SavingContext = React.createContext<
 
 export function SavingContextProvider({
 	children: nodeChildren,
-	data,
-	initialForceSave = false,
 }: IUseSavingUtilProps & React.PropsWithChildren) {
-	const value = useSavingUtil({ data, initialForceSave })
+	const value = useSavingUtil()
 	return (
 		<SavingContext.Provider value={value}>
 			{nodeChildren}

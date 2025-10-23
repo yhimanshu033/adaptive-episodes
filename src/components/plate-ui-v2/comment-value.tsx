@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import useEditorData from '@/hooks/plate/use-editor-data'
+import { useEditorData } from 'unified-editor'
 
 import { cn } from '@/lib/aural-ui/utils'
 

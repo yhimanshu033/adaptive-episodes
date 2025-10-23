@@ -1,5 +1,5 @@
 import { GET_DOCX_ESTIMATE_QUERY_KEY } from '@/constants/query-constants'
-import useEditorData from '@/hooks/plate/use-editor-data'
+import { useEditorData } from 'unified-editor'
 import { useQuery } from '@tanstack/react-query'
 
 import { estimateDocxSizeWithOverhead } from '@/lib/utils/helpers'

@@ -6,7 +6,6 @@ import { NWM_EMAIL } from '@/constants/global-constants'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useLatestEpisodeInfo from '@/hooks/query/use-latest-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
-import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
 import { useGlobalStore } from '@/store/global-store'
 import usePlateStore from '@/store/plate-store'
@@ -39,6 +38,7 @@ import { EDualVIewMode } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
 import useAccessChecks from '../use-access-checks'
+import useEpisodeIdStore from '@/store/episode-id-store'
 
 /**
  * Retrieves episode content.
@@ -50,6 +50,7 @@ import useAccessChecks from '../use-access-checks'
 
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
+	console.log("useEpisodeContentUtil")
 
 	const { isOriginal, isOriginalEp } = useAccessChecks()
 	const pathName = usePathname()
@@ -111,6 +112,7 @@ export const useEpisodeContentUtil = () => {
 		[latestStatus, pathName, episode?.id]
 	)
 	const fetchEpisodeContent = useCallback(async () => {
+		console.log("fetchEpisodeContent")
 		// check for undefined episode.id
 		if (!episode?.id) {
 			return null
@@ -242,6 +244,7 @@ export function EpisodeContentProvider({
 }: {
 	children: React.ReactNode
 }) {
+	console.log("EpisodeContentProvider")
 	const value = useEpisodeContentUtil()
 	return (
 		<EpisodeContentContext.Provider value={value}>

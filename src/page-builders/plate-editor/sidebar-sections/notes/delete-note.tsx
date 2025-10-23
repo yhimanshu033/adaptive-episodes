@@ -4,7 +4,7 @@ import React from 'react'
 import useNotes from '@/hooks/use-notes'
 import { TrashIcon } from '@/icons/trash-icon'
 import useEditorNoteStore from '@/store/edit-note-store'
-import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEpisodeIdStore } from 'unified-editor'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useShallow } from 'zustand/react/shallow'
 

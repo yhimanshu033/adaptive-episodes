@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import useEditorData from '@/hooks/plate/use-editor-data'
+import { useEditorData } from 'unified-editor'
 
 import {
 	getPlaceholderContentFromTextOrValue,

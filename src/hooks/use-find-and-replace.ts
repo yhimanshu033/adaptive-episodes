@@ -5,7 +5,7 @@ import useLocalizeHook, {
 	useLocalizeDownloadMutation,
 	useUpdateLOCSheetMutation,
 } from '@/hooks/mutation/use-localize-hook'
-import useEditorData from '@/hooks/plate/use-editor-data'
+import { useEditorData } from 'unified-editor'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import { useDebounce } from '@/hooks/use-debounce'
 import useLanguage from '@/hooks/use-language'
@@ -278,10 +278,6 @@ export default function useFindAndReplace() {
 
 	async function handleDownload() {
 		const url = await mutateAsync()
-		if (!url?.csv_sheet_url) {
-			return
-		}
-		downloadFile(url.csv_sheet_url, `LOC_sheet.csv`)
 	}
 
 	async function handleScanEpisode() {
@@ -328,7 +324,7 @@ export default function useFindAndReplace() {
 		onReplaceChange,
 		options: INITIAL_FAR_OPTIONS,
 		replacedContentMap: {},
-		setReplacedContentMap: () => {},
+		setReplacedContentMap: () => { },
 		setPtr,
 	}
 }

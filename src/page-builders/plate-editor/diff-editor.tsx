@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { DIFF_EDITOR_ID } from '@/constants/editor-constants'
 import { useDiffEditor } from '@/hooks/use-diff-editor'
-import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEpisodeIdStore } from 'unified-editor'
 import usePlateStore from '@/store/plate-store'
 import { computeDiff } from '@platejs/diff'
 import { Value } from 'platejs'

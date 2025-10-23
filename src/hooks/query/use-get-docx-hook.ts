@@ -3,13 +3,13 @@ import { GET_DOCX_HTML_QUERY_KEY } from '@/constants/query-constants'
 import useDocxParams from '@/hooks/query/use-docx-params'
 import useEnableDocx from '@/hooks/use-enable-docx'
 import { useQuery } from '@tanstack/react-query'
-import { useEditorRef } from 'platejs/react'
 
 import { hashString } from '@/lib/utils/helpers'
 import { valueToHTML } from '@/lib/utils/plate'
+import { useUnifiedEditorRef } from 'unified-editor'
 
 export default function useDocxHtml() {
-	const editor = useEditorRef()
+	const editor = useUnifiedEditorRef()
 	const { downloadDocxEnabled } = useEnableDocx()
 
 	const editorString = useMemo(() => {

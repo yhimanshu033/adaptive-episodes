@@ -32,22 +32,16 @@ import { BASE_STATUS, EStatus } from '@/types/common'
 import { TGetEpisodeResponse } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
-const EpisodeHeader = ({
-	content,
-	latestStatus,
-}: {
-	content: TGetEpisodeResponse
-	latestStatus: EStatus | 'BASE'
-}) => {
+const EpisodeHeader = () => {
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
 	const isGerman = useIsGerman()
 
-	const { data } = useEpisodeContent()
+	const { data: content, latestStatus = BASE_STATUS } = useEpisodeContent()
 
 	const latestIndex = useMemo(
-		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
+		() => ((latestStatus !== BASE_STATUS) ? statuses.indexOf(latestStatus) : 0),
 		[latestStatus]
 	)
 
@@ -61,7 +55,7 @@ const EpisodeHeader = ({
 	if (simplifiedEditor) {
 		return (
 			<div className="flex items-center justify-between py-4">
-				<p className="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]">
+				<p className="text-fm-primary font-fm-text text-fm-lg">
 					{content?.chapter.seq_number}. {content?.chapter.chapter_title}
 				</p>
 				<SaveEpisode />
@@ -138,9 +132,9 @@ const EpisodeHeader = ({
 				</IfElse>
 				<ConfigurationDialogTrigger
 					fallbackQuickPrompts={isGerman ? QUICK_PROMPTS : QUICK_PROMPTS_EN}
-					episodeId={data?.chapter?.id}
+					episodeId={content?.chapter?.id}
 					showEpisodeSpecificActions
-					allowNWM={!hasNWMRan(data?.chapter)}
+					allowNWM={!hasNWMRan(content?.chapter)}
 				/>
 			</div>
 		</div>

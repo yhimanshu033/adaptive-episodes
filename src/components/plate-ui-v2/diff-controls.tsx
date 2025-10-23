@@ -3,7 +3,7 @@ import { DiffStatus } from '@/constants/ai-constants'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useAIChatbot from '@/hooks/use-ai-chatbot'
-import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEpisodeIdStore } from 'unified-editor'
 import usePlateStore from '@/store/plate-store'
 import { Check, X } from 'lucide-react'
 import { Descendant } from 'platejs'
@@ -68,7 +68,7 @@ export default function DiffControls({ element, editor }: DiffControlsProps) {
 						node.status = status
 					}
 				} else if ('children' in node) {
-					;(node.children as Descendant[]).forEach(findNode)
+					; (node.children as Descendant[]).forEach(findNode)
 				}
 			}
 			value.forEach(findNode)

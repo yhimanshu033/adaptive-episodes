@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEpisodeIdStore } from 'unified-editor'
 import { useSession } from 'next-auth/react'
 import { useShallow } from 'zustand/react/shallow'
 

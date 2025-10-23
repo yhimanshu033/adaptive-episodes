@@ -13,7 +13,6 @@ import { log } from '@/lib/utils/helpers'
 
 import { SessionData } from '@/types/admin-types'
 import { TNoParams } from '@/types/common'
-import { getSession } from 'next-auth/react'
 import { getServerSession } from 'next-auth'
 import authOptions from '@/lib/next-auth-options'
 
@@ -66,7 +65,7 @@ export async function fetchAPI<
 		QueryParamsT
 	>
 ): Promise<FetchResponseResult<ResponseDataT>> {
-	const session = (typeof window === "undefined" ? (await getServerSession(authOptions)) : await getSession()) as SessionData
+	const session = (await getServerSession(authOptions)) as SessionData
 
 	const {
 		url,

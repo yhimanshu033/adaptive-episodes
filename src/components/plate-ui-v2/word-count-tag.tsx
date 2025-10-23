@@ -1,5 +1,5 @@
 import React from 'react'
-import useEditorData from '@/hooks/plate/use-editor-data'
+import { useEditorData } from 'unified-editor'
 import { useTranslations } from 'next-intl'
 
 import { Tag } from '@/components/aural-ui/tag'

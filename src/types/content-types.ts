@@ -50,7 +50,7 @@ export type TGDriveAuthResponse = {
 
 export type TGetSavingParamsRet = {
 	allComments: TDiscussion[]
-	chapterData: TGetEpisodeResponse
+	chapterData?: TGetEpisodeResponse
 	chapterId: number
 	commentsStr: string
 	contentStr: string

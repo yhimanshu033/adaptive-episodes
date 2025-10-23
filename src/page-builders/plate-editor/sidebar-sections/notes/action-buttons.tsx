@@ -5,7 +5,7 @@ import { EyeCloseIcon } from '@/icons/eye-close-icon'
 import { EyeOpenIcon } from '@/icons/eye-open-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import useEditorNoteStore from '@/store/edit-note-store'
-import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEpisodeIdStore } from 'unified-editor'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'

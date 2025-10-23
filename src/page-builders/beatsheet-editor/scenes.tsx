@@ -3,7 +3,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import useBeatSheetStreamingMutation from '@/hooks/mutation/use-beat-sheet-streaming-mutation'
-import useEditorData from '@/hooks/plate/use-editor-data'
+import { useEditorData } from 'unified-editor'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useLanguage from '@/hooks/use-language'
 import { beatsheetContextEnglish } from '@/mock-data/beatsheet-editor'

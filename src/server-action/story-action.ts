@@ -1,5 +1,3 @@
-'use server'
-
 import { API_URLS } from '@/constants/global-constants'
 import { DEFAULT_STORIES_RESPONSE } from '@/constants/story-constants'
 

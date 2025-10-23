@@ -1,4 +1,3 @@
-'use server'
 
 import { API_URLS, TIdParams } from '@/constants/global-constants'
 

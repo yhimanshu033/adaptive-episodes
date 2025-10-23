@@ -4,7 +4,7 @@ import useEpisodeContentMutation from '@/hooks/mutation/use-episode-content-muta
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useRecentUser from '@/hooks/use-recent-user'
 import useSaving from '@/hooks/use-saving'
-import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEpisodeIdStore } from 'unified-editor'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 

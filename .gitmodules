@@ -1,0 +1,3 @@
+[submodule "packages/unified-editor"]
+	path = packages/unified-editor
+	url = https://github.com/Pocket-Fm/unified-editor

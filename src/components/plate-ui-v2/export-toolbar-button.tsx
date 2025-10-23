@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import useEditorData from '@/hooks/plate/use-editor-data'
+import { useEditorData } from 'unified-editor'
 import { MarkdownPlugin } from '@platejs/markdown'
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import { ArrowDownToLineIcon } from 'lucide-react'

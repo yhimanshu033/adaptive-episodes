@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@pocket-editor/*": ["./packages/unified-editor/src/*"],
+			"unified-editor": ["./packages/unified-editor/index.ts"]
     },
     "target": "ES2017"
   },
