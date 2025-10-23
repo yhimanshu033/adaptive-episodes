@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { RefObject, useCallback, useRef, useState } from 'react'
 import { Check, X } from 'lucide-react'
 import { useOnClickOutside } from 'usehooks-ts'
 
@@ -31,11 +31,11 @@ const EditableText = ({
 	rootClass,
 	icon: Icon,
 }: EditableTextProps) => {
-	const ref = useRef(null)
+	const ref = useRef<HTMLFormElement>(null)
 	const [isEditing, setIsEditing] = useState(false)
 	const [text, setText] = useState(defaultText)
 
-	const handleComplete = () => {
+	const handleComplete = useCallback(() => {
 		setIsEditing(false)
 		if (text === defaultText) {
 			return
@@ -44,14 +44,12 @@ const EditableText = ({
 		if (!text) {
 			setText(defaultText)
 		}
-	}
+	}, [defaultText, text, onComplete])
 
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		handleComplete()
 	}
-
-	useOnClickOutside(ref, handleComplete)
 
 	const handleTextClick = () => {
 		if (!isEditable) {
@@ -68,6 +66,8 @@ const EditableText = ({
 		setText(defaultText)
 		setIsEditing(false)
 	}
+
+	useOnClickOutside(ref as RefObject<HTMLFormElement>, handleComplete)
 
 	return (
 		<div className={cn('relative flex items-center', rootClass)}>

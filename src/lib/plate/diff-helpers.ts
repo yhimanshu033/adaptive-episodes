@@ -20,7 +20,7 @@ export const diffOperationClassnames: Record<DiffOperation['type'], string> = {
 
 export const diffOperationComponents: Record<
 	DiffOperation['type'],
-	keyof JSX.IntrinsicElements
+	keyof React.JSX.IntrinsicElements
 > = {
 	[AiDiffOperation.DELETE]: 'del',
 	[AiDiffOperation.INSERT]: 'ins',

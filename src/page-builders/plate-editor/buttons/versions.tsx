@@ -117,7 +117,7 @@ const Versions = ({
 					onOpenChange: setIsDialogOpen,
 				}}
 				title="Confirm Selection"
-				description={`Are you sure you want to switch to ${titleToStatus[currentSelection as EStatus] || currentSelection}?`}
+				description={`Are you sure you want to switch to ${titleToStatus[currentSelection] || currentSelection}?`}
 				onConfirm={() => void handleConfirm()}
 			/>
 		</>
