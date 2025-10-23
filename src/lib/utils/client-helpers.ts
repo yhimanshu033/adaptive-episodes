@@ -5,8 +5,6 @@ import { CONFIGURATION_DATA_KEY } from '@/constants/global-constants'
 import { Node, Path } from 'platejs'
 import { PlateEditor } from 'platejs/react'
 
-import { DiffPlugin } from '@/components/editor/plugins/diff-kit'
-
 import { TConfigurationData } from '@/types/editor-types'
 
 export function downloadFile(url: string, filename: string) {
@@ -85,23 +83,10 @@ export function removeVoicePass2XMLTags() {
 		el.insertAdjacentHTML('beforebegin', '<br/> <br/>')
 		const section = el.getAttribute('section')
 		if (hiddenSectionIds.has(section)) {
-			;(el as HTMLDivElement).style.display = 'none'
+			; (el as HTMLDivElement).style.display = 'none'
 		}
 	})
 }
-
-export const findAllDiffNodes = <E extends PlateEditor>(
-	editor: E
-): Array<{ node: Node; path: Path }> =>
-	Array.from(
-		editor.api.nodes({
-			match: (n: Node) => {
-				return DiffPlugin.key in n && n.status === DiffStatus.PENDING
-			},
-			at: [],
-		}),
-		([node, path]) => ({ node, path })
-	)
 
 export function adjustScrollIfAtTop(
 	container: HTMLDivElement | null,

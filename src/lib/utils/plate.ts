@@ -30,11 +30,6 @@ import {
 } from 'platejs'
 import { PlateEditor } from 'platejs/react'
 import { type BaseRange, type Range } from 'slate'
-
-import { BaseEditorKit } from '@/components/editor/editor-base-kit'
-import { commentPlugin } from '@/components/editor/plugins/comment-kit'
-import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
-import { ResolvedSuggestion } from '@/components/plate-ui-v2/block-suggestion'
 import { DEFAULT_COLOR } from '@/components/plate-ui/color-constants'
 import { EditorStatic } from '@/components/plate-ui/editor-static'
 import { getSceneIdOrder } from '@/lib/utils/helpers'
@@ -159,7 +154,7 @@ export function mergeElementNodes(ogVal: Element): Element {
 				'text' in merged[merged.length - 1] &&
 				keys.every((key) => prevKeys.includes(key))
 			) {
-				;(merged[merged.length - 1] as Text).text += String(node.text)
+				; (merged[merged.length - 1] as Text).text += String(node.text)
 			} else {
 				merged.push(node)
 			}
@@ -285,17 +280,17 @@ export function mergeBlocks(
 			childrenToMerge.length === 1
 				? String(childrenToMerge[0].text).slice(start.offset, end.offset)
 				: childrenToMerge
-						.map((child, index) => {
-							const text = (child as Text).text
-							if (index === 0) {
-								return text.slice(start.offset)
-							}
-							if (index === childrenToMerge.length - 1) {
-								return text.slice(0, end.offset)
-							}
-							return text
-						})
-						.join('')
+					.map((child, index) => {
+						const text = (child as Text).text
+						if (index === 0) {
+							return text.slice(start.offset)
+						}
+						if (index === childrenToMerge.length - 1) {
+							return text.slice(0, end.offset)
+						}
+						return text
+					})
+					.join('')
 
 		const middleText: Text = {
 			...firstChild,
@@ -565,66 +560,6 @@ export function getWordCountFromString(ogText: string) {
 	return getWordCount(val)
 }
 
-export function sortCommentsAndSuggestions(
-	editor: PlateEditor,
-	unresolvedComments: TDiscussion[],
-	suggestions: ResolvedSuggestion[]
-) {
-	const orderedNodes = Array.from(
-		editor.api.nodes({
-			at: [],
-			match: (n: TSuggestionText | TCommentText) =>
-				n.text && ('comment' in n || 'suggestion' in n),
-			mode: 'all',
-		})
-	)
-
-	const commentMap = new Map(unresolvedComments.map((c) => [c.id, c]))
-	const suggestionMap = new Map(suggestions.map((s) => [s.suggestionId, s]))
-
-	const orderedItems: (TDiscussion | ResolvedSuggestion)[] = []
-	const seenIds = new Set<string>()
-
-	for (const [node] of orderedNodes) {
-		if ('comment' in node) {
-			const commentKeys = Object.keys(node).filter((key) =>
-				key.startsWith('comment_')
-			)
-
-			for (const key of commentKeys) {
-				const commentId = key.replace('comment_', '')
-
-				if (!seenIds.has(commentId)) {
-					const comment = commentMap.get(commentId)
-					if (comment) {
-						orderedItems.push(comment)
-						seenIds.add(commentId)
-					}
-				}
-			}
-		}
-
-		if ('suggestion' in node) {
-			const suggestionKeys = Object.keys(node).filter((key) =>
-				key.startsWith('suggestion_')
-			)
-
-			for (const key of suggestionKeys) {
-				const suggestionId = key.replace('suggestion_', '')
-
-				if (!seenIds.has(suggestionId)) {
-					const suggestion = suggestionMap.get(suggestionId)
-					if (suggestion) {
-						orderedItems.push(suggestion)
-						seenIds.add(suggestionId)
-					}
-				}
-			}
-		}
-	}
-
-	return orderedItems
-}
 
 export function getCommentNodeKey(node: Descendant) {
 	const commentKey = Object.keys(node)
@@ -659,7 +594,7 @@ export function addResolvedCommentInChildren(
 		}
 
 		if ('children' in node) {
-			;(node.children as Descendant[]).forEach(traverse)
+			; (node.children as Descendant[]).forEach(traverse)
 		}
 	}
 
@@ -688,7 +623,7 @@ export function addUnresolvedCommentInChildren(
 		}
 
 		if ('children' in node) {
-			;(node.children as Descendant[]).forEach(traverse)
+			; (node.children as Descendant[]).forEach(traverse)
 		}
 	}
 
@@ -761,7 +696,7 @@ export function keyNodeOperationOnce(
 				node = nodeOperation(node)
 			}
 		} else if ('children' in node) {
-			;(node.children as Descendant[]).forEach(traverse)
+			; (node.children as Descendant[]).forEach(traverse)
 		}
 	}
 
@@ -844,74 +779,74 @@ export const getParentWidth = (ref: React.RefObject<HTMLDivElement>) => {
 	}
 }
 
-export const updateCommentMark = (
-	editor: PlateEditor,
-	options: {
-		add?: Record<string, any>
-		id: string
-		isResolved?: boolean
-		remove?: string[] // Flag to indicate if we're working with resolved comments
-	}
-) => {
-	const { id, add = {}, remove = [], isResolved = false } = options
+// export const updateCommentMark = (
+// 	editor: PlateEditor,
+// 	options: {
+// 		add?: Record<string, any>
+// 		id: string
+// 		isResolved?: boolean
+// 		remove?: string[] // Flag to indicate if we're working with resolved comments
+// 	}
+// ) => {
+// 	const { id, add = {}, remove = [], isResolved = false } = options
 
-	let nodes: any[] = []
+// 	let nodes: any[] = []
 
-	if (isResolved) {
-		nodes = [
-			...editor.api.nodes({
-				at: [],
-				match: (n) => {
-					return (
-						n.resolvedComment === true && n[`resolvedComment_${id}`] === true
-					)
-				},
-			}),
-		]
-	} else {
-		nodes = editor.getApi(commentPlugin).comment?.nodes({ id, at: [] }) || []
-	}
+// 	if (isResolved) {
+// 		nodes = [
+// 			...editor.api.nodes({
+// 				at: [],
+// 				match: (n) => {
+// 					return (
+// 						n.resolvedComment === true && n[`resolvedComment_${id}`] === true
+// 					)
+// 				},
+// 			}),
+// 		]
+// 	} else {
+// 		nodes = editor.getApi(commentPlugin).comment?.nodes({ id, at: [] }) || []
+// 	}
 
-	if (!nodes || nodes.length === 0) {
-		console.warn(`No nodes found for comment ID: ${id}`)
-		return
-	}
+// 	if (!nodes || nodes.length === 0) {
+// 		console.warn(`No nodes found for comment ID: ${id}`)
+// 		return
+// 	}
 
-	editor.tf.withoutNormalizing(() => {
-		nodes.forEach(([, path]) => {
-			if (Object.keys(add).length > 0) {
-				editor.tf.setNodes(add, { at: path })
-			}
-			if (remove.length > 0) {
-				editor.tf.unsetNodes(remove, { at: path })
-			}
-		})
-	})
-}
+// 	editor.tf.withoutNormalizing(() => {
+// 		nodes.forEach(([, path]) => {
+// 			if (Object.keys(add).length > 0) {
+// 				editor.tf.setNodes(add, { at: path })
+// 			}
+// 			if (remove.length > 0) {
+// 				editor.tf.unsetNodes(remove, { at: path })
+// 			}
+// 		})
+// 	})
+// }
 
-export const resolveEditorComment = (editor: PlateEditor, id: string) => {
-	updateCommentMark(editor, {
-		id,
-		add: {
-			resolvedComment: true,
-			[`resolvedComment_${id}`]: true,
-		},
-		remove: [KEYS.comment, getCommentKey(id)],
-		isResolved: false,
-	})
-}
+// export const resolveEditorComment = (editor: PlateEditor, id: string) => {
+// 	updateCommentMark(editor, {
+// 		id,
+// 		add: {
+// 			resolvedComment: true,
+// 			[`resolvedComment_${id}`]: true,
+// 		},
+// 		remove: [KEYS.comment, getCommentKey(id)],
+// 		isResolved: false,
+// 	})
+// }
 
-export const unresolveEditorComment = (editor: PlateEditor, id: string) => {
-	updateCommentMark(editor, {
-		id,
-		add: {
-			[KEYS.comment]: true,
-			[getCommentKey(id)]: true,
-		},
-		remove: ['resolvedComment', `resolvedComment_${id}`],
-		isResolved: true,
-	})
-}
+// export const unresolveEditorComment = (editor: PlateEditor, id: string) => {
+// 	updateCommentMark(editor, {
+// 		id,
+// 		add: {
+// 			[KEYS.comment]: true,
+// 			[getCommentKey(id)]: true,
+// 		},
+// 		remove: ['resolvedComment', `resolvedComment_${id}`],
+// 		isResolved: true,
+// 	})
+// }
 
 export function getDiffLeafID(id: string) {
 	return `diff-leaf-${id}`
@@ -942,7 +877,7 @@ export function getDiffClearedLeaves({
 			if (isDiffLeaf) {
 				const accepted = all
 					? child.status === DiffStatus.ACCEPTED ||
-						child.status === DiffStatus.PENDING
+					child.status === DiffStatus.PENDING
 					: child.status === DiffStatus.ACCEPTED
 				const type = (child.diffOperation as DiffOperation)?.type
 				if (type === 'update') {
@@ -1028,7 +963,7 @@ export function getDiffClearedBlock({
 	if (isDiffBlock) {
 		const accepted = all
 			? block.status === DiffStatus.ACCEPTED ||
-				block.status === DiffStatus.PENDING
+			block.status === DiffStatus.PENDING
 			: block.status === DiffStatus.ACCEPTED
 		const type = (block.diffOperation as DiffOperation)?.type
 		if (type === 'update') {
@@ -1120,7 +1055,7 @@ export async function valueToHTML({
 	words,
 }: TDocxHTMLArgs) {
 	const editorStatic = createSlateEditor({
-		plugins: BaseEditorKit,
+		plugins: [],
 		value,
 	})
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEpisodeIdStore } from 'unified-editor'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import { useShallow } from 'zustand/react/shallow'
 
 import DotLoader from '@/components/aural-ui/dot-loader'

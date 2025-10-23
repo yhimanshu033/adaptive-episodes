@@ -119,6 +119,8 @@ export const getLatestEpisodeDetails = async (
 		},
 	})
 
+	console.log({ episodes })
+
 	const sentData = episodes.data
 	if (sentData?.results.data) {
 		const languageAvailable = sentData.results.data.find((ep) => !!ep.language)

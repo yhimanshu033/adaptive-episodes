@@ -8,7 +8,7 @@ import {
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSaving from '@/hooks/use-saving'
-import { useEpisodeIdStore } from 'unified-editor'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import { useQueryClient } from '@tanstack/react-query'
 
 import useEpisodeId from '@/providers/episode-id-provider'

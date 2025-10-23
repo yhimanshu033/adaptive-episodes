@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useIsGerman from '@/hooks/use-is-german'
-import { useEpisodeIdStore } from 'unified-editor'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import { useShallow } from 'zustand/react/shallow'
 
 import { EStatus } from '@/types/common'

@@ -4,7 +4,6 @@ import { colorOptions } from '@/constants/global-constants'
 import { TSuggestionDescription } from '@platejs/suggestion'
 import { TCommentText, Value } from 'platejs'
 
-import { TComment } from '@/components/plate-ui-v2/comment'
 
 import {
 	TLocalizeCharacterArrayItem,
@@ -16,7 +15,6 @@ import {
 import { TGetEpisodeResponse } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
-export type TCustomComment = TComment & { node: TCommentText }
 
 export interface RephraseSelectionProps {
 	additionalContext?: boolean
@@ -77,10 +75,6 @@ export enum EReviewType {
 	DESCRIPTION = 'description',
 }
 
-export type TReview =
-	| { data: TCustomComment; type: EReviewType.COMMENT }
-	| { data: TSuggestionDescription; type: EReviewType.DESCRIPTION }
-
 export type TColorKey = keyof typeof colorOptions
 
 export type TLocalizationObject = [
@@ -133,27 +127,27 @@ export enum EConfigurationContentItemDataType {
 
 export type ConfigurationContentItemData =
 	| {
-			dropdownItems: { title?: React.ReactNode; value: string }[]
-			onSelect: (data: string) => void
-			selectedValue: string
-			type: EConfigurationContentItemDataType.DROPDOWN
-	  }
+		dropdownItems: { title?: React.ReactNode; value: string }[]
+		onSelect: (data: string) => void
+		selectedValue: string
+		type: EConfigurationContentItemDataType.DROPDOWN
+	}
 	| {
-			offIcon?: React.ReactNode
-			onIcon?: React.ReactNode
-			onSelect: (data: boolean) => void
-			selectedValue: boolean
-			type: EConfigurationContentItemDataType.TOGGLE
-	  }
+		offIcon?: React.ReactNode
+		onIcon?: React.ReactNode
+		onSelect: (data: boolean) => void
+		selectedValue: boolean
+		type: EConfigurationContentItemDataType.TOGGLE
+	}
 	| {
-			buttonText?: React.ReactNode
-			onSelect: () => void
-			type: EConfigurationContentItemDataType.BUTTON
-	  }
+		buttonText?: React.ReactNode
+		onSelect: () => void
+		type: EConfigurationContentItemDataType.BUTTON
+	}
 	| {
-			customHandler: React.ReactNode
-			type: EConfigurationContentItemDataType.CUSTOM
-	  }
+		customHandler: React.ReactNode
+		type: EConfigurationContentItemDataType.CUSTOM
+	}
 export type TConfigurationContentItem = {
 	data: ConfigurationContentItemData
 	description: string

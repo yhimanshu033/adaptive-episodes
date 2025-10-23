@@ -1,4 +1,5 @@
-// import { headers as nextHeaders } from 'next/headers'
+"use server"
+import { headers as nextHeaders } from 'next/headers'
 import {
 	COMMON_SITE_HEADERS,
 	CORRELATION_ID_HEADER_KEY,
@@ -13,7 +14,7 @@ import { log } from '@/lib/utils/helpers'
 
 import { SessionData } from '@/types/admin-types'
 import { TNoParams } from '@/types/common'
-import { getSession } from 'next-auth/react'
+// import { getSession } from 'next-auth/react'
 import { getServerSession } from 'next-auth'
 import authOptions from '@/lib/next-auth-options'
 
@@ -66,7 +67,8 @@ export async function fetchAPI<
 		QueryParamsT
 	>
 ): Promise<FetchResponseResult<ResponseDataT>> {
-	const session = (typeof window === "undefined" ? (await getServerSession(authOptions)) : await getSession()) as SessionData
+	// const session = (typeof window === "undefined" ? (await getServerSession(authOptions)) : await getSession()) as SessionData
+	const session = ((await getServerSession(authOptions))) as SessionData
 
 	const {
 		url,
@@ -85,9 +87,9 @@ export async function fetchAPI<
 
 	const sendError = !ignoreError && !IGNORE_ERROR_API_URLS.has(url)
 
-	// const nextHeadersObj = await nextHeaders()
-	// const forwardedFor = nextHeadersObj.get('x-forwarded-for')
-	// const realIp = nextHeadersObj.get('x-real-ip')
+	const nextHeadersObj = await nextHeaders()
+	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
+	const realIp = nextHeadersObj.get('x-real-ip')
 
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
@@ -177,11 +179,11 @@ export async function fetchAPI<
 			method,
 			headers: {
 				...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-				// 'API-Key': API_KEY,
+				'API-Key': API_KEY,
 				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
 				...headers,
-				// 'x-forwarded-for': forwardedFor || '',
-				// 'x-real-ip': realIp || '',
+				'x-forwarded-for': forwardedFor || '',
+				'x-real-ip': realIp || '',
 				[CORRELATION_ID_HEADER_KEY]: correlationId,
 				...COMMON_SITE_HEADERS,
 			},

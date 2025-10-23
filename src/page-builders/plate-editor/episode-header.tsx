@@ -29,7 +29,6 @@ import { hasNWMRan } from '@/lib/utils/helpers'
 
 import { ERole } from '@/types/admin-types'
 import { BASE_STATUS, EStatus } from '@/types/common'
-import { TGetEpisodeResponse } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
 
 const EpisodeHeader = () => {

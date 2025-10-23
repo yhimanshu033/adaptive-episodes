@@ -4,7 +4,7 @@ import { useEpisodeRegenerate } from '@/hooks/mutation/use-episode-regenerate'
 import useMetadataSyncMutation from '@/hooks/mutation/use-metadata-sync'
 import { SpinnerSolidIcon } from '@/icons/spinner-solid-icon'
 import { ConfigurationContentItem } from '@/page-builders/plate-editor/configuration-dialog/items'
-import { useEpisodeIdStore } from 'unified-editor'
+import useEpisodeIdStore from '@/store/episode-id-store'
 
 import { Button } from '@/components/aural-ui/button'
 import ForEach from '@/components/ui/for-each'

@@ -16,10 +16,10 @@ import {
 } from '@/components/aural-ui/dialog'
 import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import IfElse, { Else, If } from '@/components/if-else'
-import { ToolbarButton } from '@/components/plate-ui/toolbar'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { track } from '@/lib/utils/analytics'
 import { parseInputLSMapping } from '@/lib/utils/helpers'
+import { ToolbarButton } from 'unified-editor'
 
 export default function ViewLS() {
 	const { data } = useLSSheetQuery()

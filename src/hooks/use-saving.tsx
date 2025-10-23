@@ -5,7 +5,6 @@ import { useEpisodeIdStore } from 'unified-editor'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
-import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
 import { getSavingData } from '@/lib/utils/helpers'
 import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers } from '@/lib/utils/plate'
@@ -20,6 +19,7 @@ import {
 } from '@/types/episode-type'
 import { useEditorData, usePluginOption, useUnifiedEditorState } from 'unified-editor'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { KEYS } from 'platejs'
 
 interface IUseSavingUtilProps {
 	data?: TGetEpisodeResponse
@@ -31,7 +31,7 @@ function useSavingUtil(props?: IUseSavingUtilProps) {
 	const { id } = useParams()
 	const { wordCount } = useEditorData()
 	const { children } = useUnifiedEditorState()
-	const allComments = usePluginOption(discussionPlugin, 'discussions')
+	const allComments = usePluginOption({ key: 'discussion' }, 'discussions')
 	const { saveEpisodeMutation } = useEpisodeHook()
 
 	const {
