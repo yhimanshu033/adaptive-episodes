@@ -1,8 +1,7 @@
 import React from 'react'
-import useGlobalFindAndReplace from '@/hooks/use-global-find-and-replace'
 
 import useProjectId from '@/providers/project-id-provider'
-import { FarHeader, FindAndReplaceUI } from 'unified-editor'
+import { FarHeader, FindAndReplaceUI, useGlobalFindAndReplace } from 'unified-editor'
 
 export default function GlobalLocalize() {
 	const props = useGlobalFindAndReplace()
