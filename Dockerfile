@@ -2,8 +2,11 @@
 FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0 AS build-image
 WORKDIR /usr/src/app
 COPY ./ ./
-RUN pnpm install
 
+# Install pnpm globally
+RUN npm install -g pnpm
+
+RUN pnpm install
 
 #RUN echo "NEXTAUTH_URL=https://copilot.pocketfm.com" >> .env
 RUN echo "NEXTAUTH_SECRET=TwmBgFrFU1DTsnrvm8pLBXt0yMPYFyT/EOCoX6AZo1s=" >> .env
