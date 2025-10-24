@@ -118,7 +118,7 @@ src/
 ### Prerequisites
 
 - Node.js 22+
-- npm
+- pnpm
 
 ### Installation
 
@@ -132,7 +132,7 @@ src/
 2. **Install dependencies**
 
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Set up environment variables**
@@ -145,7 +145,7 @@ src/
 4. **Run the development server**
 
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
 5. **Open your browser** Navigate to
@@ -154,14 +154,14 @@ src/
 ### Available Scripts
 
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run lint:fix     # Fix ESLint issues
-npm run format       # Check Prettier formatting
-npm run format:fix   # Fix Prettier formatting
-npm run commit       # Interactive commit with commitizen
+  pnpm dev          # Start development server
+  pnpm build        # Build for production
+  pnpm start        # Start production server
+  pnpm lint         # Run ESLint
+  pnpm lint:fix     # Fix ESLint issues
+  pnpm format       # Check Prettier formatting
+  pnpm format:fix   # Fix Prettier formatting
+  pnpm commit       # Interactive commit with commitizen
 ```
 
 ## 🔧 Configuration
