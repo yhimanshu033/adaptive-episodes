@@ -56,6 +56,7 @@ export type StoryUploadParams = {
 		llm_model: string
 		project_urls: string[] | null
 		run_adaptation: boolean
+		run_nwm?: boolean
 		start_ep: number
 		target_language?: string
 		title: string

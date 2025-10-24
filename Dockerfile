@@ -2,7 +2,7 @@
 FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0 AS build-image
 WORKDIR /usr/src/app
 COPY ./ ./
-RUN npm install
+RUN pnpm install
 
 
 #RUN echo "NEXTAUTH_URL=https://copilot.pocketfm.com" >> .env
@@ -38,7 +38,7 @@ RUN echo "NEXT_PUBLIC_SENTRY_ENVIRONMENT=production" >> .env
 
 ENV SENTRY_AUTH_TOKEN=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
 
-RUN npm run build
+RUN pnpm build
 
 # Stage 2: Final production environment
 FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0-alpine3.19 AS final
@@ -48,4 +48,4 @@ RUN apk add --no-cache nginx curl nginx-mod-http-headers-more
 COPY --from=build-image /usr/src/app/ /usr/src/app/
 COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
-CMD ["sh", "-c", "npm start & nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "pnpm start & nginx -g 'daemon off;'"]

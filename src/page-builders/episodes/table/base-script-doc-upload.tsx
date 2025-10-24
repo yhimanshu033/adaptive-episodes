@@ -29,6 +29,7 @@ import z from 'zod'
 
 import Badge from '@/components/aural-ui/badge'
 import { Button, buttonVariants } from '@/components/aural-ui/button'
+import { Checkbox } from '@/components/aural-ui/checkbox'
 import { Divider } from '@/components/aural-ui/divider'
 import {
 	Form,
@@ -183,6 +184,7 @@ const BaseScriptDocUpload = ({
 		baseExtensionMutation.mutate({
 			files: data.files,
 			project_id: Number(id),
+			run_nwm: Boolean(data.run_nwm),
 		})
 		setDialogOpen(false)
 	}
@@ -396,6 +398,27 @@ const BaseScriptDocUpload = ({
 						</FormItem>
 					)}
 				/>
+
+				<FormField
+					control={form.control}
+					name="run_nwm"
+					render={({ field }) => (
+						<FormItem className="space-y-2">
+							<FormControl>
+								<div className="flex items-center gap-2">
+									<Checkbox
+										checked={field.value}
+										id="nwm-checkbox"
+										onCheckedChange={field.onChange}
+									/>
+									<FormLabel htmlFor="nwm-checkbox">Run NWM</FormLabel>
+								</div>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
 				<div className="flex flex-col justify-end">
 					<Divider variant="dashed" />
 
