@@ -51,4 +51,4 @@ RUN apk add --no-cache nginx curl nginx-mod-http-headers-more
 COPY --from=build-image /usr/src/app/ /usr/src/app/
 COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
-CMD ["sh", "-c", "pnpm start & nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "npm start & nginx -g 'daemon off;'"]
