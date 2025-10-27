@@ -1,3 +1,6 @@
+'use server'
+
+import { headers as nextHeaders } from 'next/headers'
 import {
 	COMMON_SITE_HEADERS,
 	CORRELATION_ID_HEADER_KEY,
@@ -7,7 +10,6 @@ import {
 } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
 import { getServerSession } from 'next-auth'
-import { getSession } from 'next-auth/react'
 import { v4 as uuid } from 'uuid'
 
 import authOptions from '@/lib/next-auth-options'
@@ -52,7 +54,7 @@ export type FetchResponseResult<ResponseDataT = TNoParams> =
 			success: false
 	  }
 
-export async function fetchAPI<
+export async function fetchAPIServer<
 	ResponseDataT = TNoParams,
 	UrlParamsT = TNoParams,
 	BodyParamsT = TNoParams,
@@ -65,13 +67,10 @@ export async function fetchAPI<
 		QueryParamsT
 	>
 ): Promise<FetchResponseResult<ResponseDataT>> {
-	const session = (
-		typeof window === 'undefined'
-			? await getServerSession(authOptions)
-			: await getSession()
-	) as SessionData | undefined
+	const session = (await getServerSession(authOptions)) as
+		| SessionData
+		| undefined
 
-	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 	const {
 		url,
 		method,
@@ -87,9 +86,15 @@ export async function fetchAPI<
 		ignoreError,
 	} = params
 
+	const nextHeadersObj = await nextHeaders()
+	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
+	const realIp = nextHeadersObj.get('x-real-ip')
+
 	const sendError = !ignoreError && !IGNORE_ERROR_API_URLS.has(url)
 
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
+
+	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {
 		throw new Error('Backend URL not set in env!')
@@ -177,10 +182,12 @@ export async function fetchAPI<
 			headers: {
 				...(isFormData ? {} : { 'Content-Type': 'application/json' }),
 				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
-				...(typeof window === 'undefined' ? { 'API-Key': API_KEY } : {}),
 				...headers,
 				[CORRELATION_ID_HEADER_KEY]: correlationId,
 				...COMMON_SITE_HEADERS,
+				'x-forwarded-for': forwardedFor || '',
+				'x-real-ip': realIp || '',
+				'API-Key': API_KEY,
 			},
 			...(method !== 'GET' && method !== 'DELETE'
 				? { body: isFormData ? body : JSON.stringify(body) }
@@ -250,7 +257,7 @@ export async function fetchAPI<
 		const responseData = (await response.json()) as ResponseDataT
 
 		if (sendLog) {
-			const message = `${sendLog}: ${session?.user.id || 'NA'} - ${resolvedUrl.split(BASE_URL)[1]} - ${new Date().toUTCString()}`
+			const message = `${sendLog}: ${session?.user?.id || 'NA'} - ${resolvedUrl.split(BASE_URL)[1]} - ${new Date().toUTCString()}`
 			Sentry.captureMessage(message, 'info')
 			log({
 				message,

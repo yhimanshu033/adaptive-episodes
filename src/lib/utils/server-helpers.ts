@@ -1,3 +1,4 @@
+import { headers as nextHeaders } from 'next/headers'
 import { NextRequest } from 'next/server'
 import { API_URLS } from '@/constants/global-constants'
 import { MANAGE_PROJECT } from '@/constants/route-constants'
@@ -9,6 +10,9 @@ export async function projectAdminCheck(
 	session: SessionData
 ) {
 	let data: { projects: UserProject[] } | null = null
+	const nextHeadersObj = await nextHeaders()
+	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
+	const realIp = nextHeadersObj.get('x-real-ip')
 	try {
 		data = (await fetch(
 			`${process.env.NEXT_PUBLIC_BACKEND_URL}${API_URLS.GET_USER_PROJECTS}`,
@@ -16,6 +20,8 @@ export async function projectAdminCheck(
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${session.accessToken}`,
+					'x-forwarded-for': forwardedFor || '',
+					'x-real-ip': realIp || '',
 				},
 			}
 		).then((res) => res.json())) as { projects: UserProject[] }

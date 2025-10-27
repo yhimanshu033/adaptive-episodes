@@ -4,7 +4,7 @@ import { API_URLS } from '@/constants/global-constants'
 import { Account } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
-import { fetchAPI } from '@/lib/fetch-api'
+import { fetchAPIServer } from '@/lib/fetch-api-server'
 
 import {
 	LoginBodyParams,
@@ -42,7 +42,11 @@ const authOptions = {
 			const account: Account = params.account
 			const token = params.token
 			if (account?.id_token) {
-				const resp = await fetchAPI<LoginResponse, TNoParams, LoginBodyParams>({
+				const resp = await fetchAPIServer<
+					LoginResponse,
+					TNoParams,
+					LoginBodyParams
+				>({
 					method: 'POST',
 					url: API_URLS.LOGIN,
 					body: {
@@ -51,7 +55,7 @@ const authOptions = {
 					noAuth: true,
 				})
 
-				const userData = await fetchAPI<
+				const userData = await fetchAPIServer<
 					{ data: UserData },
 					TNoParams,
 					TNoParams
