@@ -158,7 +158,7 @@ export async function fetchAPI<
 				extra: {
 					...defaultSentryData,
 					duration,
-					timeoutThreshol: FETCH_TIMEOUT,
+					timeoutThreshold: FETCH_TIMEOUT,
 				},
 			})
 			if (sendError) {
@@ -166,7 +166,7 @@ export async function fetchAPI<
 					extra: {
 						...defaultSentryData,
 						duration,
-						timeoutThreshol: FETCH_TIMEOUT,
+						timeoutThreshold: FETCH_TIMEOUT,
 					},
 				})
 			}
@@ -200,7 +200,7 @@ export async function fetchAPI<
 				extra: {
 					...defaultSentryData,
 					duration: requestDuration,
-					timeoutThreshol: FETCH_TIMEOUT,
+					timeoutThreshold: FETCH_TIMEOUT,
 				},
 			})
 			Sentry.captureMessage('API SLOW REQUEST COMPLETED', {
@@ -208,7 +208,7 @@ export async function fetchAPI<
 				extra: {
 					...defaultSentryData,
 					duration: requestDuration,
-					timeoutThreshol: FETCH_TIMEOUT,
+					timeoutThreshold: FETCH_TIMEOUT,
 				},
 			})
 		}

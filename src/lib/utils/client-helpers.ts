@@ -169,3 +169,41 @@ export function setLocallyStoredConfiguration(
 	})
 	localStorage.setItem(CONFIGURATION_DATA_KEY, newDataStr)
 }
+
+export function scaleFontSizes(id: string) {
+	// Select all descendants of the div
+	const rootDiv = document.getElementById(id)
+	if (!rootDiv) {
+		return
+	}
+	const elements = rootDiv.querySelectorAll('*')
+
+	elements.forEach((el) => {
+		const style = el.getAttribute('style')
+		if (!style) {
+			return
+		}
+
+		// Match font-size declarations (handles units like px, em, rem, etc.)
+		const fontSizeRegex = /font-size\s*:\s*([^;]+)/i
+		const match = style.match(fontSizeRegex)
+
+		if (match) {
+			const currentValue = match[1].trim()
+
+			// Avoid double-wrapping if already has calc()
+			if (!currentValue.startsWith('calc(')) {
+				const newFontSize = `calc(${currentValue} * var(--editor-scale,1))`
+
+				// Replace the font-size value in the style string
+				const newStyle = style.replace(
+					fontSizeRegex,
+					`font-size: ${newFontSize}`
+				)
+
+				// Apply the updated style
+				el.setAttribute('style', newStyle)
+			}
+		}
+	})
+}

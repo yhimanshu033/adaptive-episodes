@@ -75,7 +75,7 @@ export function FontSizeToolbarButton() {
 			return
 		}
 		if (newSize !== toUnitLess(cursorFontSize)) {
-			tf.fontSize.addMark(`${newSize}px`)
+			tf.fontSize.addMark(`calc(${newSize}px*var(--editor-scale,1))`)
 		}
 
 		editor.tf.focus()
@@ -83,7 +83,7 @@ export function FontSizeToolbarButton() {
 
 	const handleFontSizeChange = (delta: number) => {
 		const newSize = Number(displayValue) + delta
-		tf.fontSize.addMark(`${newSize}px`)
+		tf.fontSize.addMark(`calc(${newSize}px*var(--editor-scale,1))`)
 		editor.tf.focus()
 	}
 
@@ -147,7 +147,7 @@ export function FontSizeToolbarButton() {
 								key={size}
 								selected={size === displayValue}
 								onClick={() => {
-									tf.fontSize.addMark(`${size}px`)
+									tf.fontSize.addMark(`calc(${size}px*var(--editor-scale,1))`)
 									setInputValue(size)
 									setIsFocused(false)
 									editor.tf.focus()

@@ -328,6 +328,10 @@ export const SOURCE_TO_TARGET_LANGUAGE_MAP: Partial<
 	[ELanguage.HINDI]: [ELanguage.ENGLISH],
 	[ELanguage.JAPANESE]: [ELanguage.ENGLISH],
 	[ELanguage.DEUTSCH]: [ELanguage.ENGLISH],
+	[ELanguage.TAMIL]: [],
+	[ELanguage.TELUGU]: [],
+	[ELanguage.MALAYALAM]: [],
+	[ELanguage.KANNADA]: [],
 }
 
 export const LSMappingTabs = [

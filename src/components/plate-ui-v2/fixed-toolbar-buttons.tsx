@@ -27,6 +27,7 @@ import { ToolbarGroup } from '@/components/plate-ui-v2/toolbar'
 import TranslationToggleButton from '@/components/plate-ui-v2/translation-toggle-button'
 import TtsToolbarButton from '@/components/plate-ui-v2/tts-toolbar-button'
 import { TurnIntoToolbarButton } from '@/components/plate-ui-v2/turn-into-toolbar-button'
+import { ZoomDropdownToolbarButton } from '@/components/plate-ui-v2/zoom-dropdown-button'
 
 import { ESidebar } from '@/types/plate-types'
 
@@ -128,6 +129,10 @@ const FullToolbarContent = React.memo(() => {
 						<ToolbarGroup noSeparator>
 							<UndoToolbarButton />
 							<RedoToolbarButton />
+						</ToolbarGroup>
+
+						<ToolbarGroup>
+							<ZoomDropdownToolbarButton />
 						</ToolbarGroup>
 
 						<ToolbarGroup>

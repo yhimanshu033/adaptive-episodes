@@ -676,7 +676,7 @@ export function getAcceptLanguageLocale<AppLocales extends Locale[]>(
 		const orderedLocales = orderLocales(locales)
 		locale = match(languages, orderedLocales, defaultLocale)
 	} catch {
-		console.info('invalid language')
+		locale = defaultLocale
 	}
 
 	return locale
@@ -1210,3 +1210,7 @@ export function jumbleArray<T>(array: T[]): T[] {
 
 export const isStringifiedJsonArray = (text: string) =>
 	/^\s*\[.*\]\s*$/.test(text)
+
+export function getScaledValue(str: string) {
+	return `calc(${str}*var(--editor-scale,1))`
+}

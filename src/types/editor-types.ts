@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
-import { storyChatSuggestions } from '@/constants/editor-constants'
+import { storyChatSuggestions, zoomToWidth } from '@/constants/editor-constants'
 import { colorOptions } from '@/constants/global-constants'
 import { TSuggestionDescription } from '@platejs/suggestion'
 import { TCommentText, Value } from 'platejs'
@@ -117,6 +117,7 @@ export type TStoredConfigurationData = {
 	quickPrompts: TQuickPrompt[]
 	suggestionDisplay: ESuggestionViewingType
 	theme: EThemeMode
+	zoomLevel: TZoomLevel
 }
 
 export type TConfigurationData = {
@@ -164,3 +165,5 @@ export enum EConfigurationDialogContentTab {
 	OPTIONS = 'options',
 	QUICK_PROMPTS = 'quick-prompts',
 }
+
+export type TZoomLevel = keyof typeof zoomToWidth | 'Fit'

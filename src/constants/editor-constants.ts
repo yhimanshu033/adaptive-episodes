@@ -203,6 +203,7 @@ export const DEFAULT_CONFIGURATION_DATA: TStoredConfigurationData = {
 	quickPrompts: [],
 	suggestionDisplay: ESuggestionViewingType.CORRECTIONS,
 	theme: EThemeMode.DARK,
+	zoomLevel: 100,
 }
 
 export const CLOSED_SIDEBAR_VALUE = 'closed'
@@ -239,3 +240,12 @@ export const configurationDialogTabToTooltipName: Record<
 
 export const LASER_PADDING = 4
 export const LASER_TEXT_LENGTH = 500
+
+export const zoomToWidth = {
+	100: 628,
+	75: 568,
+	50: 488,
+	125: 788,
+	150: 935,
+	200: 1087,
+} as const

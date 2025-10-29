@@ -78,7 +78,7 @@ import { FetchResponseResult } from '@/lib/fetch-api'
 import { checkForDuplicates, formatFileSize } from '@/lib/utils/helpers'
 import { setRecentStore } from '@/lib/utils/indexed-db'
 
-import { ELanguage } from '@/types/common'
+import { ELanguage, TSourceLanguage } from '@/types/common'
 
 export function ImportStory() {
 	const [storyType, setStoryType] = useState(ImportStoryType.EMPTY)
@@ -112,6 +112,17 @@ export function ImportStory() {
 
 	const form = useStoryImportFormResolver()
 	const isInternal = useIsInternal()
+
+	const selectedLanguage = form.watch('input_language') as
+		| TSourceLanguage
+		| undefined
+
+	const enableAdaptation = useMemo(() => {
+		return (
+			!!selectedLanguage &&
+			!!SOURCE_TO_TARGET_LANGUAGE_MAP[selectedLanguage]?.length
+		)
+	}, [selectedLanguage])
 
 	const lastStep = useMemo(
 		() =>
@@ -338,7 +349,12 @@ export function ImportStory() {
 		const proceed = nextStep()
 		if (proceed) {
 			// Attach storyFiles to data
-			const submitData = { ...data, story_files: storyFiles }
+			const submitData: typeof data = {
+				...data,
+				story_files: storyFiles,
+				run_adaptation: enableAdaptation ? data.run_adaptation : false,
+				target_language: enableAdaptation ? data.target_language : undefined,
+			}
 			storyUploadMutation.mutate(submitData, {
 				onSuccess: async (taskId) => {
 					form.reset()
@@ -464,56 +480,39 @@ export function ImportStory() {
 											/>
 											<If
 												condition={
-													isInternal && storyType === ImportStoryType.IMPORT
+													isInternal &&
+													storyType === ImportStoryType.IMPORT &&
+													enableAdaptation
 												}
 											>
-												<div className="flex items-center justify-between">
-													<FormField
-														control={form.control}
-														name="run_adaptation"
-														render={({ field }) => (
-															<FormItem className="space-y-2">
-																<FormControl>
-																	<div className="flex items-center gap-2">
-																		<Checkbox
-																			checked={field.value}
-																			id="adaptation-checkbox"
-																			onCheckedChange={field.onChange}
-																		/>
-																		<FormLabel htmlFor="adaptation-checkbox">
-																			Run Adaptation
-																		</FormLabel>
-																	</div>
-																</FormControl>
-																<FormMessage />
-															</FormItem>
-														)}
-													/>
-													<FormField
-														control={form.control}
-														name="run_nwm"
-														render={({ field }) => (
-															<FormItem className="space-y-2">
-																<FormControl>
-																	<div className="flex items-center gap-2">
-																		<Checkbox
-																			checked={field.value}
-																			id="nwm-checkbox"
-																			onCheckedChange={field.onChange}
-																		/>
-																		<FormLabel htmlFor="nwm-checkbox">
-																			Run NWM
-																		</FormLabel>
-																	</div>
-																</FormControl>
-																<FormMessage />
-															</FormItem>
-														)}
-													/>
-												</div>
+												<FormField
+													control={form.control}
+													name="run_adaptation"
+													render={({ field }) => (
+														<FormItem className="space-y-2">
+															<FormControl>
+																<div className="flex items-center gap-2">
+																	<Checkbox
+																		checked={field.value}
+																		id="adaptation-checkbox"
+																		onCheckedChange={field.onChange}
+																	/>
+																	<FormLabel htmlFor="adaptation-checkbox">
+																		Run Adaptation
+																	</FormLabel>
+																</div>
+															</FormControl>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
 											</If>
 
-											<If condition={form.watch('run_adaptation')}>
+											<If
+												condition={
+													form.watch('run_adaptation') && enableAdaptation
+												}
+											>
 												<FormField
 													control={form.control}
 													name="target_language"
@@ -778,7 +777,7 @@ export function ImportStory() {
 														<FormControl>
 															<div
 																className={cn(
-																	'border-fm-divider-secondary hover:border-fm-divider-primary flex flex-col justify-center gap-1 rounded-xs border-1 border-dashed p-8 transition-colors duration-200',
+																	'border-fm-divider-secondary hover:border-fm-divider-primary flex flex-col justify-center gap-1 rounded-xs border border-dashed p-8 transition-colors duration-200',
 																	{
 																		'border-fm-divider-primary bg-fm-divider-primary/30':
 																			isDragging,

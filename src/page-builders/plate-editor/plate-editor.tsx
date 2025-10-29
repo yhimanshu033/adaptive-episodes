@@ -14,7 +14,7 @@ import EpisodeHeader from '@/page-builders/plate-editor/episode-header'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
 import { Plate } from 'platejs/react'
 
-import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import { ScrollArea, ScrollBar } from '@/components/aural-ui/scroll-area'
 import { FixedToolbar } from '@/components/plate-ui-v2/fixed-toolbar'
 import { FixedToolbarButtons } from '@/components/plate-ui-v2/fixed-toolbar-buttons'
 import WordCountTag from '@/components/plate-ui-v2/word-count-tag'
@@ -82,7 +82,8 @@ function MyEditor({
 														<FixedToolbar className="overflow-visible! px-0 py-0">
 															<FixedToolbarButtons />
 														</FixedToolbar>
-														<ScrollArea className="relative overflow-y-auto">
+														<ScrollArea className="relative overflow-auto">
+															<ScrollBar orientation="horizontal" />
 															<WordCountTag />
 															<EditorHandler />
 														</ScrollArea>

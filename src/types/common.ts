@@ -50,9 +50,13 @@ export enum ELanguage {
 	HINDI = 'hindi',
 	ITALIAN = 'italian',
 	JAPANESE = 'japanese',
+	KANNADA = 'kannada',
 	KOREAN = 'korean',
+	MALAYALAM = 'malayalam',
 	MEXICAN_SPANISH = 'mexican_spanish',
 	NEUTRAL_SPANISH = 'neutral_spanish',
+	TAMIL = 'tamil',
+	TELUGU = 'telugu',
 	TRANSLATED_ENGLISH = 'translated_english',
 }
 

@@ -1,3 +1,19 @@
+## [1.3.10](https://github.com/Pocket-Fm/co-writing/compare/v1.3.9...v1.3.10) (2025-10-29)
+
+
+### Bug Fixes
+
+* 🐛 start command ([#562](https://github.com/Pocket-Fm/co-writing/issues/562)) ([77d0cde](https://github.com/Pocket-Fm/co-writing/commit/77d0cdea4992ccb8f98164e27e3f1c258319eb72))
+
+
+### Features
+
+* 🎸 margin dropdown ([#561](https://github.com/Pocket-Fm/co-writing/issues/561)) ([8ab8497](https://github.com/Pocket-Fm/co-writing/commit/8ab8497bf5c86061772bf593ceffcb065977cfb9))
+* 🎸 shifted to client api calls ([#556](https://github.com/Pocket-Fm/co-writing/issues/556)) ([e8f2b60](https://github.com/Pocket-Fm/co-writing/commit/e8f2b6023efbf66c4a441a459eb52df6e6b34a07))
+* 🎸 shifted to client api calls ([#556](https://github.com/Pocket-Fm/co-writing/issues/556)) ([#563](https://github.com/Pocket-Fm/co-writing/issues/563)) ([105850a](https://github.com/Pocket-Fm/co-writing/commit/105850adf5ab7a8d26a2c89d8c05e21a122fbe83))
+
+
+
 ## [1.3.9](https://github.com/Pocket-Fm/co-writing/compare/v1.3.8...v1.3.9) (2025-10-24)
 
 

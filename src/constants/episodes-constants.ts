@@ -63,6 +63,10 @@ export const languageToTitle: Record<ELanguage, string> = {
 	[ELanguage.ENGLISH_UK]: 'English UK',
 	[ELanguage.JAPANESE]: 'Japanese',
 	[ELanguage.DEUTSCH]: 'Deútsch',
+	[ELanguage.TAMIL]: 'Tamil',
+	[ELanguage.TELUGU]: 'Telugu',
+	[ELanguage.MALAYALAM]: 'Malayalam',
+	[ELanguage.KANNADA]: 'Kannada',
 }
 
 export enum EpisodeActions {
