@@ -24,6 +24,7 @@ import { AdaptationProvider } from '@/providers/adaptation-provider'
 import { ConfigurationContextProvider } from '@/providers/configuration-provider'
 import { PlayerProvider } from '@/providers/player-provider'
 import { PollingProvider } from '@/providers/polling-provider'
+import { SessionProviderSync } from '@/providers/session-sync-provider'
 import { queryClient } from '@/lib/get-query-client'
 import { handleWindowLocation, LOCAL_STORAGE_KEYS } from '@/lib/utils/analytics'
 
@@ -74,46 +75,48 @@ const AppProvider = ({
 
 	return (
 		<SessionProvider session={session} refetchOnWindowFocus={false}>
-			<NuqsAdapter>
-				<DndProvider backend={HTML5Backend}>
-					<SocketProvider>
-						<SocketStreamingProvider>
-							<PollingProvider>
-								<QueryClientProvider client={queryClient}>
-									<ThemeProvider
-										attribute="class"
-										forcedTheme="dark"
-										disableTransitionOnChange
-									>
-										<TooltipProvider
-											disableHoverableContent
-											delayDuration={500}
-											skipDelayDuration={0}
+			<SessionProviderSync session={session}>
+				<NuqsAdapter>
+					<DndProvider backend={HTML5Backend}>
+						<SocketProvider>
+							<SocketStreamingProvider>
+								<PollingProvider>
+									<QueryClientProvider client={queryClient}>
+										<ThemeProvider
+											attribute="class"
+											forcedTheme="dark"
+											disableTransitionOnChange
 										>
-											<AdaptationProvider>
-												<ConfigurationContextProvider>
-													<NextTopLoader
-														color="var(--color-fm-secondary-800)"
-														showSpinner={false}
-													/>
-													<PlayerProvider>
-														<Player />
-														{children}
-													</PlayerProvider>
-												</ConfigurationContextProvider>
-												<Toaster />
-												<PopupRoot />
-											</AdaptationProvider>
-											<ReactQueryDevtools />
-										</TooltipProvider>
-									</ThemeProvider>
-								</QueryClientProvider>
-							</PollingProvider>
-						</SocketStreamingProvider>
-					</SocketProvider>
-				</DndProvider>
-			</NuqsAdapter>
-			<ExternalScripts />
+											<TooltipProvider
+												disableHoverableContent
+												delayDuration={500}
+												skipDelayDuration={0}
+											>
+												<AdaptationProvider>
+													<ConfigurationContextProvider>
+														<NextTopLoader
+															color="var(--color-fm-secondary-800)"
+															showSpinner={false}
+														/>
+														<PlayerProvider>
+															<Player />
+															{children}
+														</PlayerProvider>
+													</ConfigurationContextProvider>
+													<Toaster />
+													<PopupRoot />
+												</AdaptationProvider>
+												<ReactQueryDevtools />
+											</TooltipProvider>
+										</ThemeProvider>
+									</QueryClientProvider>
+								</PollingProvider>
+							</SocketStreamingProvider>
+						</SocketProvider>
+					</DndProvider>
+				</NuqsAdapter>
+				<ExternalScripts />
+			</SessionProviderSync>
 		</SessionProvider>
 	)
 }

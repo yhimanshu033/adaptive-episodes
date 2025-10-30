@@ -6,14 +6,11 @@ import {
 	validResponseStatuses,
 } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
-import { getServerSession } from 'next-auth'
-import { getSession } from 'next-auth/react'
 import { v4 as uuid } from 'uuid'
 
-import authOptions from '@/lib/next-auth-options'
+import { getUserSession } from '@/lib/get-session'
 import { log } from '@/lib/utils/helpers'
 
-import { SessionData } from '@/types/admin-types'
 import { TNoParams } from '@/types/common'
 
 export type FetchRequestParams<
@@ -65,11 +62,7 @@ export async function fetchAPI<
 		QueryParamsT
 	>
 ): Promise<FetchResponseResult<ResponseDataT>> {
-	const session = (
-		typeof window === 'undefined'
-			? await getServerSession(authOptions)
-			: await getSession()
-	) as SessionData | undefined
+	const session = await getUserSession()
 
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 	const {
