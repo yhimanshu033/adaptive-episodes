@@ -2,6 +2,7 @@
 
 import React, { useCallback, useMemo } from 'react'
 import { useParams } from 'next/navigation'
+import useBeatSheetMutations from '@/hooks/mutation/use-beat-sheet-mutations'
 import useBeatSheetStreamingMutation from '@/hooks/mutation/use-beat-sheet-streaming-mutation'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -22,6 +23,7 @@ import { Accordion } from '@/components/ui/accordion'
 import useBeatSheetEditor from '@/providers/beat-sheet-provider'
 import {
 	convertScenesArrayToMap,
+	convertSceneToUpdatePayload,
 	isOrderSceneOrderChange,
 } from '@/lib/utils/helpers'
 
@@ -49,6 +51,13 @@ export default function SceneTab() {
 		getSceneLogs,
 	} = useBeatSheetEditor()
 
+	const {
+		sceneUpdateMutation: {
+			mutateAsync: updateSceneAsync,
+			isPending: isSceneUpdating,
+		},
+	} = useBeatSheetMutations()
+
 	const language = useLanguage()
 	const { id } = useParams()
 	const { data: episodeData } = useEpisodeContent()
@@ -59,6 +68,7 @@ export default function SceneTab() {
 		addNewBeat,
 		addNewScene,
 		setOpenPromptId,
+		setScenes,
 	} = useBeatsheetStore()
 
 	const {
@@ -145,22 +155,48 @@ export default function SceneTab() {
 	)
 
 	const handleApproveContent = useCallback(
-		(sceneId: string) => {
+		async (sceneId: string) => {
 			const pendingContent = generatedContent[sceneId]
 			if (pendingContent) {
-				handleGenerateScenes(pendingContent, sceneId)
 				const newScenes = [...oldScenes]
 				const changedIdx = newScenes.findIndex((item) => item.id === sceneId)
-				const changedScene = scenes.find((scene) => scene.id === sceneId)
-				if (!changedScene || changedIdx === -1) {
+				const newSceneIdx = scenes.findIndex((scene) => scene.id === sceneId)
+				if (newSceneIdx === -1) {
 					return
 				}
-				newScenes[changedIdx] = changedScene
+				const changedScene = scenes[newSceneIdx]
+				const { updatedScene, updatedScenePayload } =
+					convertSceneToUpdatePayload(
+						changedScene,
+						newSceneIdx,
+						pendingContent,
+						episodeData,
+						changedIdx === -1
+					)
+				const updatedResponseData = await updateSceneAsync({
+					scenes: [updatedScenePayload],
+				})
+				const updatedData: typeof updatedScene = {
+					...updatedScene,
+					id: updatedResponseData?.[0]?.id || updatedScene.id,
+				}
+				if (changedIdx >= 0) {
+					newScenes[changedIdx] = updatedData
+				} else {
+					const updatedNewScenes = [...scenes]
+					updatedNewScenes[newSceneIdx] = {
+						...updatedNewScenes[newSceneIdx],
+						id: updatedData.id,
+					}
+					setScenes(updatedNewScenes)
+					newScenes.push(updatedData)
+				}
 				setOldScenes(newScenes)
+				handleGenerateScenes(pendingContent, sceneId, updatedData.id)
 			}
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[generatedContent, handleGenerateScenes, oldScenes, scenes]
+		[generatedContent, handleGenerateScenes, oldScenes, scenes, episodeData]
 	)
 
 	return (
@@ -185,13 +221,14 @@ export default function SceneTab() {
 					>
 						{scenes.map((scene, idx) => (
 							<SceneItem
+								pendingUpdate={isSceneUpdating}
 								logs={getSceneLogs(scene.id)}
 								hasTimeoutError={!!getSceneTimedOut(scene.id)}
 								idx={idx}
 								isGenerating={!!currentlyGeneratingSceneTaskId[scene.id]}
 								pendingContent={generatedContent[scene.id]}
 								isPendingApproval={!!generatedContent[scene.id]}
-								onAccept={() => handleApproveContent(scene.id)}
+								onAccept={() => void handleApproveContent(scene.id)}
 								onDelete={() => handleDelete(scene.id)}
 								onGenerate={(prompt) =>
 									void handleGenerateTask([{ data: scene, index: idx }], prompt)

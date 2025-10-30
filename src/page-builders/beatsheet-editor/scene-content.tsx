@@ -41,6 +41,7 @@ interface ScenePendingProps {
 	onAccept: () => void
 	onReject: () => void
 	pendingContent: TGenerateBeatsheetResponseItem
+	pendingUpdate: boolean
 }
 
 const SceneGeneration = ({
@@ -81,6 +82,7 @@ const ScenePending = ({
 	onAccept,
 	onReject,
 	pendingContent,
+	pendingUpdate,
 }: ScenePendingProps) => {
 	return (
 		<div className="flex flex-col">
@@ -99,6 +101,8 @@ const ScenePending = ({
 					size="sm"
 					variant="outline"
 					onClick={() => onReject()}
+					disabled={pendingUpdate}
+					isDisabled={pendingUpdate}
 					className="flex items-center gap-1"
 				>
 					<X size={16} />
@@ -107,10 +111,16 @@ const ScenePending = ({
 				<Button
 					size="sm"
 					onClick={() => onAccept()}
+					disabled={pendingUpdate}
+					isDisabled={pendingUpdate}
 					className="flex items-center gap-1"
 					variant="outline"
 				>
-					<Check size={16} />
+					<IfElse
+						condition={pendingUpdate}
+						if={<CircularLoader className="size-4" />}
+						else={<Check size={16} />}
+					/>
 					Accept
 				</Button>
 			</div>
@@ -132,6 +142,7 @@ export default function SceneContent({
 	remainingTime,
 	onAccept,
 	onReject,
+	pendingUpdate,
 }: SceneContentProps) {
 	if (isGenerating) {
 		return (
@@ -150,6 +161,7 @@ export default function SceneContent({
 				onAccept={onAccept}
 				onReject={onReject}
 				pendingContent={pendingContent}
+				pendingUpdate={pendingUpdate}
 			/>
 		)
 	}
@@ -163,7 +175,8 @@ export default function SceneContent({
 			{scene.beats.map((beat, index) => (
 				<SortableBeat key={beat.id} id={beat.id} index={index}>
 					<TextArea
-						value={beat.content || 'No content'}
+						value={beat.content || ''}
+						placeholder="Enter text here..."
 						onChange={(e) => onInput(beat.id, e.target.value)}
 						disabled={isGenerating}
 					/>

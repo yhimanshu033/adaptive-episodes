@@ -42,6 +42,8 @@ export const NOTES_MUTATION = 'update-notes'
 export const PROJECT_ACCESS_MUTATION = 'update-project-access'
 export const BASE_EXTENSION_MUTATION = 'base-script-extension-mutation'
 
+export const BSE_SCENE_UPDATE_MUTATION = 'bse-scene-update-mutation'
+
 export const TTS_MUTATION = 'tts-elevenlabs'
 
 export const GET_SLACK_CHANNEL_QUERY_KEY = 'get-slack-channel'

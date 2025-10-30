@@ -77,3 +77,50 @@ export type TEpisodeRegenerateParams = {
 	input_language: ELanguage
 	project_id: number
 }
+
+export interface TSceneUpdateBody {
+	scenes: TSceneUpdateBodyScene[]
+}
+
+interface TSceneUpdateBodyScene {
+	beats: TSceneUpdateBodyBeat[]
+	beats_count: number
+	chapter_id: number
+	char_count: number
+	line_count: number
+	location: string
+	nwm_scene_id: string
+	project_id: number
+	scene_id?: string
+	scene_number: number
+	scene_text: string
+	sentence_count: number
+	word_count: number
+}
+
+interface TSceneUpdateBodyBeat {
+	active_characters?: string[]
+	active_plot_threads?: string[]
+	beat_id: string
+	beat_text: string
+	beat_type?: string
+	text?: string
+}
+
+export interface TSceneUpdateResponse {
+	error?: string
+	message: string
+	result?: TSceneUpdateResponseScene[]
+	status: number
+}
+
+interface TSceneUpdateResponseScene {
+	beats: TSceneUpdateResponseBeat[]
+	id: string
+	title: string
+}
+
+interface TSceneUpdateResponseBeat {
+	content: string
+	id: string
+}

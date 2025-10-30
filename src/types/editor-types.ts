@@ -166,4 +166,11 @@ export enum EConfigurationDialogContentTab {
 	QUICK_PROMPTS = 'quick-prompts',
 }
 
+export interface TextStats {
+	charCount: number
+	lineCount: number
+	sentenceCount: number
+	wordCount: number
+}
+
 export type TZoomLevel = keyof typeof zoomToWidth | 'Fit'
