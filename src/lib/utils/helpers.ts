@@ -1311,3 +1311,7 @@ export function convertSceneToUpdatePayload(
 export function getScaledValue(str: string) {
 	return `calc(${str}*var(--editor-scale,1))`
 }
+
+export function prettifyArrayTrim(arr: number[], len = 4, separator = ', ') {
+	return arr.slice(0, len).join(separator)
+}
