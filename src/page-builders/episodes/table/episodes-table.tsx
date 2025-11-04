@@ -155,6 +155,11 @@ const EpisodesTable = () => {
 		}
 	}, [selectedRowLength])
 
+	useEffect(() => {
+		table.setRowSelection({})
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentPage, search, limit])
+
 	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
 		return <AdaptationContainer />
 	}
@@ -221,6 +226,7 @@ const EpisodesTable = () => {
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-3">
 							<Link
+								prefetch={false}
 								href="/projects"
 								role="button"
 								className={cn(

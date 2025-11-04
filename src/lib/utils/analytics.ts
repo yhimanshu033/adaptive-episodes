@@ -6,6 +6,7 @@ import {
 	EDeviceType,
 	EVENT_TYPE,
 } from '@/constants/analytics'
+import { APP_CONFIG } from '@/constants/global-constants'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -314,13 +315,14 @@ function handleEventLogClient({
 		resolution,
 		platformString,
 		metaData: metaDataToSend,
-		deployEnv: process.env?.NEXT_PUBLIC_DEPLOY_ENV || '',
+		deployEnv: APP_CONFIG.ENV || '',
 	})
 
 	const baseUrl = ANALYTICS_URL
 
 	// Skip sending on non-prod
-	if (process.env?.NODE_ENV !== 'production') {
+	if (process?.env?.NODE_ENV !== 'production') {
+		console.log({ env: process?.env?.NODE_ENV })
 		console.log('[DEBUG] Analytics payload:', payload)
 		return
 	}

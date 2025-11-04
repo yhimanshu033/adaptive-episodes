@@ -177,3 +177,8 @@ export const IGNORE_ERROR_API_URLS = new Set([
 export const NWM_EMAIL = 'NWM_REGENERATION_WORKER'
 
 export const CONFIGURATION_DATA_KEY = 'CONFIGURATION_DATA'
+
+export const APP_CONFIG = {
+	ENV: 'production',
+	NEXT_PUBLIC_ANALYTICS_ENABLED: true,
+}

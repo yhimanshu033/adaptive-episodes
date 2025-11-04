@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:web": "next dev",
-    "build": "next build --turbopack",
-    "build:web": "next build",
+    "build": "next build",
+    "build:turbo": "next build --turbopack",
     "start": "next start",
     "preview": "next build && next start",
     "prepare": "husky",

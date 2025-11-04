@@ -8,20 +8,12 @@ import React, {
 	useCallback,
 	useContext,
 	useEffect,
-	useMemo,
 	useRef,
 	useState,
 } from 'react'
-import {
-	COMMON_SITE_HEADERS,
-	CORRELATION_ID_HEADER_KEY,
-	FETCH_TIMEOUT,
-	MAX_SOCKET_RETRIES,
-} from '@/constants/global-constants'
+import useSocketUtil from '@/hooks/use-socket-util'
+import { useGlobalStore } from '@/store/global-store'
 import { nanoid } from 'nanoid'
-import { useSession } from 'next-auth/react'
-import { io } from 'socket.io-client'
-import { v4 as uuid } from 'uuid'
 
 import { fetchAPI, FetchRequestParams } from '@/lib/fetch-api'
 
@@ -56,48 +48,15 @@ type TSocketContext = {
 }
 const SocketContext = createContext<TSocketContext | undefined>(undefined)
 
-export const SocketProvider = ({
-	children,
-	baseUrl,
-}: {
-	baseUrl?: string
-	children: React.ReactNode
-}) => {
-	const socketUrl =
-		baseUrl ||
-		process.env.NEXT_PUBLIC_SOCKET_URL ||
-		process.env.NEXT_PUBLIC_BACKEND_URL ||
-		''
-	const { data: session } = useSession()
-	const correlationId = useMemo(() => {
-		return uuid()
-	}, [])
-	const socket = useMemo(
-		() =>
-			io(socketUrl, {
-				autoConnect: false,
-				extraHeaders: {
-					Authorization: `Bearer ${session?.accessToken}`,
-					[CORRELATION_ID_HEADER_KEY]: correlationId,
-					...COMMON_SITE_HEADERS,
-				},
-				retries: MAX_SOCKET_RETRIES,
-				reconnectionAttempts: MAX_SOCKET_RETRIES,
-				requestTimeout: FETCH_TIMEOUT,
-				// transports: ['websocket'],
-				// auth: {
-				// 	token: `${session?.accessToken}`,
-				// },
-			}),
-		[socketUrl, session, correlationId]
-	)
+export const SocketProvider = ({ children }: React.PropsWithChildren) => {
+	const { socket } = useSocketUtil()
+	const { userData } = useGlobalStore()
 
 	const responsesRef = useRef<Record<string, any>>({})
 	const taskCallbacksRef = useRef<Record<string, (data: any) => void>>({})
 	const [fetchedData, setFetchedData] = useState<Record<string, string>>({})
 
 	useEffect(() => {
-		socket.connect()
 		socket.onAny((taskId: string, data) => {
 			const callback = taskCallbacksRef.current[taskId]
 			if (callback) {
@@ -106,10 +65,6 @@ export const SocketProvider = ({
 			}
 			responsesRef.current[taskId] = data
 		})
-
-		return () => {
-			socket.disconnect()
-		}
 	}, [socket])
 
 	const startTask: TSocketContext['startTask'] = useCallback(
@@ -137,7 +92,7 @@ export const SocketProvider = ({
 				taskCallbacksRef.current[taskId] = onResponse
 			}
 
-			socket.emit('subscribe', { task_id: session?.user.id })
+			socket.emit('subscribe', { task_id: userData?.user.id })
 			const resp = await fetchAPI<
 				ResponseDataT,
 				UrlParamsT,
@@ -160,7 +115,7 @@ export const SocketProvider = ({
 
 			return taskId
 		},
-		[fetchedData, session, socket]
+		[fetchedData, userData, socket]
 	)
 
 	const getResponse = useCallback(<T,>(taskId: string) => {

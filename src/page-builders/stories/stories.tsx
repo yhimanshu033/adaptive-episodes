@@ -95,7 +95,7 @@ const Stories = ({ isLoading, stories, search, recentSize }: IStories) => {
 							/>
 						</div>
 						<div className="flex h-full flex-col gap-4 p-4">
-							<Link href={`/projects/${story.id}`}>
+							<Link prefetch={false} href={`/projects/${story.id}`}>
 								<div className="relative aspect-square">
 									<div className="absolute inset-x-0 top-2 z-10 flex justify-between px-2">
 										<If condition={index < (recentSize || 0)}>
@@ -141,6 +141,7 @@ const Stories = ({ isLoading, stories, search, recentSize }: IStories) => {
 								</div>
 							</Link>
 							<Link
+								prefetch={false}
 								href={`/projects/${story.id}`}
 								className="flex h-full flex-col justify-between"
 							>

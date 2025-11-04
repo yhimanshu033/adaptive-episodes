@@ -39,8 +39,7 @@ const EditorHandler = ({ className }: { className?: string }) => {
 	useEffect(() => {
 		let scale = 1
 		if (configurationData.zoomLevel === 'Fit') {
-			const width = window.innerWidth - 64
-			scale = width / 668
+			scale = 125 / 100
 		} else {
 			scale = configurationData.zoomLevel / 100
 		}

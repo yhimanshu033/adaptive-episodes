@@ -5,6 +5,7 @@ import { colorOptions, USER_SELECTED_COLOR } from '@/constants/global-constants'
 import usePageChange from '@/hooks/query/use-page-change'
 import { SocketProvider } from '@/hooks/use-socket'
 import { SocketStreamingProvider } from '@/hooks/use-socket-streaming'
+import { SocketUtilContextProvider } from '@/hooks/use-socket-util'
 import Player from '@/page-builders/plate-editor/player'
 import { updateUserData } from '@/store/global-store'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -78,41 +79,43 @@ const AppProvider = ({
 			<SessionProviderSync session={session}>
 				<NuqsAdapter>
 					<DndProvider backend={HTML5Backend}>
-						<SocketProvider>
-							<SocketStreamingProvider>
-								<PollingProvider>
-									<QueryClientProvider client={queryClient}>
-										<ThemeProvider
-											attribute="class"
-											forcedTheme="dark"
-											disableTransitionOnChange
-										>
-											<TooltipProvider
-												disableHoverableContent
-												delayDuration={500}
-												skipDelayDuration={0}
+						<SocketUtilContextProvider>
+							<SocketProvider>
+								<SocketStreamingProvider>
+									<PollingProvider>
+										<QueryClientProvider client={queryClient}>
+											<ThemeProvider
+												attribute="class"
+												forcedTheme="dark"
+												disableTransitionOnChange
 											>
-												<AdaptationProvider>
-													<ConfigurationContextProvider>
-														<NextTopLoader
-															color="var(--color-fm-secondary-800)"
-															showSpinner={false}
-														/>
-														<PlayerProvider>
-															<Player />
-															{children}
-														</PlayerProvider>
-													</ConfigurationContextProvider>
-													<Toaster />
-													<PopupRoot />
-												</AdaptationProvider>
-												<ReactQueryDevtools />
-											</TooltipProvider>
-										</ThemeProvider>
-									</QueryClientProvider>
-								</PollingProvider>
-							</SocketStreamingProvider>
-						</SocketProvider>
+												<TooltipProvider
+													disableHoverableContent
+													delayDuration={500}
+													skipDelayDuration={0}
+												>
+													<AdaptationProvider>
+														<ConfigurationContextProvider>
+															<NextTopLoader
+																color="var(--color-fm-secondary-800)"
+																showSpinner={false}
+															/>
+															<PlayerProvider>
+																<Player />
+																{children}
+															</PlayerProvider>
+														</ConfigurationContextProvider>
+														<Toaster />
+														<PopupRoot />
+													</AdaptationProvider>
+													<ReactQueryDevtools />
+												</TooltipProvider>
+											</ThemeProvider>
+										</QueryClientProvider>
+									</PollingProvider>
+								</SocketStreamingProvider>
+							</SocketProvider>
+						</SocketUtilContextProvider>
 					</DndProvider>
 				</NuqsAdapter>
 				<ExternalScripts />
