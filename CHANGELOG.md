@@ -1,3 +1,45 @@
+## [1.3.10](https://github.com/Pocket-Fm/co-writing/compare/v1.3.9...v1.3.10) (2025-10-29)
+
+
+### Bug Fixes
+
+* 🐛 start command ([#562](https://github.com/Pocket-Fm/co-writing/issues/562)) ([77d0cde](https://github.com/Pocket-Fm/co-writing/commit/77d0cdea4992ccb8f98164e27e3f1c258319eb72))
+
+
+### Features
+
+* 🎸 margin dropdown ([#561](https://github.com/Pocket-Fm/co-writing/issues/561)) ([8ab8497](https://github.com/Pocket-Fm/co-writing/commit/8ab8497bf5c86061772bf593ceffcb065977cfb9))
+* 🎸 shifted to client api calls ([#556](https://github.com/Pocket-Fm/co-writing/issues/556)) ([e8f2b60](https://github.com/Pocket-Fm/co-writing/commit/e8f2b6023efbf66c4a441a459eb52df6e6b34a07))
+* 🎸 shifted to client api calls ([#556](https://github.com/Pocket-Fm/co-writing/issues/556)) ([#563](https://github.com/Pocket-Fm/co-writing/issues/563)) ([105850a](https://github.com/Pocket-Fm/co-writing/commit/105850adf5ab7a8d26a2c89d8c05e21a122fbe83))
+
+
+
+## [1.3.9](https://github.com/Pocket-Fm/co-writing/compare/v1.3.8...v1.3.9) (2025-10-24)
+
+
+### Bug Fixes
+
+* 🐛 added checkboxes for nwm ([d6a31b7](https://github.com/Pocket-Fm/co-writing/commit/d6a31b7088968887b25ccc5efeeda6c4d81c3a10))
+* 🐛 changed actionType ([28b8ba1](https://github.com/Pocket-Fm/co-writing/commit/28b8ba16e7ec992276c3d5612cf454ae15b1f381))
+* 🐛 removed package lock ([54b69fc](https://github.com/Pocket-Fm/co-writing/commit/54b69fc7dfbe971329f98384f2baf19a41431d6c))
+* 🐛 removed unnecessary assertion ([497b3ad](https://github.com/Pocket-Fm/co-writing/commit/497b3ad6365690e8ea99882322daecdaa41d9ab6))
+* 🐛 resolved comment ([50ffdcb](https://github.com/Pocket-Fm/co-writing/commit/50ffdcb25e98b879fa02e7befc518be60867d38b))
+* 🐛 updated bse and story upload payload ([8d0437c](https://github.com/Pocket-Fm/co-writing/commit/8d0437cf0667af8eb4f4efb0f517a4384c9d6304))
+
+
+### Features
+
+* 🎸 tracking individual sfx ([0e35174](https://github.com/Pocket-Fm/co-writing/commit/0e351745a8d5c24cf333b124bb8f47d883c72e6b))
+
+
+### BREAKING CHANGES
+
+* 🧨 no
+* 🧨 no
+* 🧨 no
+
+
+
 ## <small>1.3.8 (2025-10-20)</small>
 
 * fix: 🐛 bse statuses schema change handling ([3d220e9](https://github.com/Pocket-Fm/co-writing/commit/3d220e9))

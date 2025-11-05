@@ -6,24 +6,24 @@ import {
 	EDeviceType,
 	EVENT_TYPE,
 } from '@/constants/analytics'
+import { APP_CONFIG } from '@/constants/global-constants'
 import { v4 as uuidv4 } from 'uuid'
-
-import { fetchAPI } from '@/lib/fetch-api'
 
 import {
 	TAnalyticsArgs,
 	TAnalyticsPostData,
 	TDeviceDetails,
+	TEvent,
 	TEventMeta,
 	THandleClientPageLoadArgs,
 	THandleEventLogClientArgs,
 	TParseDeviceArgs,
 } from '@/types/analytics'
 
-const ANALYTICS_URL =
+export const ANALYTICS_URL =
 	process.env.NEXT_PUBLIC_ANALYTICS_URL ||
 	'https://novel-analytics-api.pocketnovel.com/v2/logging_data/log'
-const QA_ANALYTICS_URL =
+export const QA_ANALYTICS_URL =
 	process.env.NEXT_PUBLIC_QA_ANALYTICS_URL ||
 	'https://qa-go-analytics.pocketfm.com/v2/logging_data/log'
 
@@ -57,10 +57,11 @@ export const URL_PARAMS_KEYS = {
 } as const
 
 export const COMMON_ANALYTICS_HEADERS = {
+	'Content-Type': 'application/json',
 	'app-version': '180',
 	'auth-token': 'web-auth',
-	'app-client': 'consumer-web',
-	platform: 'copilot-web',
+	'app-client': 'copilot-web',
+	platform: 'web',
 }
 /**
  * Builds a clean analytics event payload, no browser dependencies.
@@ -90,14 +91,10 @@ export function buildAnalyticsEvent({
 
 	const source = `${sourceParts.join('_')}_${platformString}`
 
-	const data: TEventMeta = {
-		screen_name: screenName,
-		client_ts: String(currentTimestamp),
-		event,
+	const meta: TEventMeta = {
 		source,
 		resolution,
 		app_version_code: appVersionCode,
-		user_uid: uid,
 	}
 
 	// Merge metadata safely
@@ -109,8 +106,17 @@ export function buildAnalyticsEvent({
 
 	for (const [key, value] of Object.entries(metaData)) {
 		if (value !== undefined) {
-			data[optionalFieldsKeyMap[key] ?? key] = value
+			meta[optionalFieldsKeyMap[key] ?? key] = value
 		}
+	}
+
+	const data: TEvent = {
+		event,
+		client_ts: String(currentTimestamp),
+		screen_name: screenName,
+		user_uid: uid,
+		service: 'copilot-web',
+		props: JSON.stringify(meta),
 	}
 
 	return {
@@ -249,10 +255,6 @@ function handleEventLogClient({
 		return
 	} // SSR guard
 
-	if (!process.env?.NEXT_PUBLIC_ANALYTICS_ENABLED) {
-		return
-	} // TODO: REMOVE THIS ONCE ANALYTICS IS ENABLED
-
 	const referrerParam = new URLSearchParams(window.location.search).get(
 		URL_PARAMS_KEYS.REFERRER
 	)
@@ -313,29 +315,24 @@ function handleEventLogClient({
 		resolution,
 		platformString,
 		metaData: metaDataToSend,
-		deployEnv: process.env?.NEXT_PUBLIC_DEPLOY_ENV || '',
+		deployEnv: APP_CONFIG.ENV || '',
 	})
 
-	const baseUrl =
-		process.env?.NEXT_PUBLIC_DEPLOY_ENV === 'production'
-			? ANALYTICS_URL
-			: QA_ANALYTICS_URL
+	const baseUrl = ANALYTICS_URL
 
 	// Skip sending on non-prod
-	if (process.env?.NODE_ENV !== 'production') {
+	if (process?.env?.NODE_ENV !== 'production') {
+		console.log({ env: process?.env?.NODE_ENV })
 		console.log('[DEBUG] Analytics payload:', payload)
 		return
 	}
 
-	void fetchAPI({
-		url: '',
-		baseUrl,
+	void fetch(baseUrl, {
 		method: 'POST',
 		headers: {
 			...COMMON_ANALYTICS_HEADERS,
 		},
-		body: payload,
-		ignoreError: true,
+		body: JSON.stringify(payload),
 	}).catch((err) => {
 		console.error('[Analytics] Error sending log:', err)
 	})

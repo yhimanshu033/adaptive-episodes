@@ -116,6 +116,7 @@ export const API_URLS = {
 	SCENE_PROMPT_GENERATE: '/aicopilot/bse/scene_wide',
 	EPISODE_REGENERATE: '/aicopilot/nwm-extraction-pipeline/',
 	CHAPTER_CHARACTERS: '/chapters/characters/',
+	BEATSHEET_SCENE_UPDATE: '/scenes/update-metadata/',
 }
 
 export const INDEXED_DB_KEYS = {
@@ -176,3 +177,8 @@ export const IGNORE_ERROR_API_URLS = new Set([
 export const NWM_EMAIL = 'NWM_REGENERATION_WORKER'
 
 export const CONFIGURATION_DATA_KEY = 'CONFIGURATION_DATA'
+
+export const APP_CONFIG = {
+	ENV: 'production',
+	NEXT_PUBLIC_ANALYTICS_ENABLED: true,
+}

@@ -40,7 +40,7 @@ const EpisodeHeader = () => {
 	const { data: content, latestStatus = BASE_STATUS } = useEpisodeContent()
 
 	const latestIndex = useMemo(
-		() => ((latestStatus !== BASE_STATUS) ? statuses.indexOf(latestStatus) : 0),
+		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
 		[latestStatus]
 	)
 

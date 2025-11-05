@@ -6,6 +6,7 @@ import { NWM_EMAIL } from '@/constants/global-constants'
 import { EPISODE_CONTENT_QUERY_KEY } from '@/constants/query-constants'
 import useLatestEpisodeInfo from '@/hooks/query/use-latest-episode-info'
 import { getEpisodeContent } from '@/server-action/content-action'
+import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
 import { useGlobalStore } from '@/store/global-store'
 // import usePlateStore from '@/store/plate-store'
@@ -24,14 +25,11 @@ import {
 	getSelectedEpisodeFromLanguage,
 } from '@/lib/utils/helpers'
 import { getValue, removeValue } from '@/lib/utils/indexed-db'
-import {
-	isEpisodeContentDifferent,
-} from '@/lib/utils/plate'
+import { isEpisodeContentDifferent } from '@/lib/utils/plate'
 
 import { BASE_STATUS, ELanguage } from '@/types/common'
 
 import useAccessChecks from '../use-access-checks'
-import useEpisodeIdStore from '@/store/episode-id-store'
 
 /**
  * Retrieves episode content.
@@ -43,7 +41,7 @@ import useEpisodeIdStore from '@/store/episode-id-store'
 
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
-	console.log("useEpisodeContentUtil")
+	console.log('useEpisodeContentUtil')
 
 	const { isOriginal, isOriginalEp } = useAccessChecks()
 	const pathName = usePathname()
@@ -105,7 +103,7 @@ export const useEpisodeContentUtil = () => {
 		[latestStatus, pathName, episode?.id]
 	)
 	const fetchEpisodeContent = useCallback(async () => {
-		console.log("fetchEpisodeContent")
+		console.log('fetchEpisodeContent')
 		// check for undefined episode.id
 		if (!episode?.id) {
 			return null
@@ -237,7 +235,7 @@ export function EpisodeContentProvider({
 }: {
 	children: React.ReactNode
 }) {
-	console.log("EpisodeContentProvider")
+	console.log('EpisodeContentProvider')
 	const value = useEpisodeContentUtil()
 	return (
 		<EpisodeContentContext.Provider value={value}>

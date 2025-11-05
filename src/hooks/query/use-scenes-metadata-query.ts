@@ -40,8 +40,6 @@ export const getScenesMetadata = async (id?: number) => {
 export default function useScenesMetadataQuery() {
 	const { episode } = useEpisodeContent()
 
-
-
 	const query = useQuery({
 		queryKey: [SCENES_METADATA_QUERY_KEY, Number(episode?.id)],
 		queryFn: () => getScenesMetadata(episode?.id),

@@ -1,10 +1,10 @@
 import React from 'react'
+import UCE from '@/page-builders/plate-editor/uce'
 import { PlateController } from 'platejs/react'
 
 import { EpisodeIdProvider } from '@/providers/episode-id-provider'
 
 import MultiEpLocalizePlateEditor from './plate-editor'
-import UCE from '@/page-builders/plate-editor/uce'
 
 export default function Editor({ episodeId }: { episodeId: number }) {
 	return (

@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { fetchAPI } from '@/lib/fetch-api'
+import { downloadFile } from '@/lib/utils/client-helpers'
 
 import {
 	TLocalizeBody,
@@ -22,7 +23,6 @@ import {
 	TLocalizeUpdateRequest,
 } from '@/types/ai-types'
 import { ELanguage, TNoParams } from '@/types/common'
-import { downloadFile } from '@/lib/utils/client-helpers'
 
 const useLocalizeHook = ({
 	text,
@@ -112,7 +112,7 @@ export async function downloadLOCSheet(id: string) {
 	const url = res.data?.csv_sheet_url
 
 	if (!url) {
-		toast.error("URL could not be fetched")
+		toast.error('URL could not be fetched')
 		return
 	}
 	downloadFile(url, `LOC_sheet.csv`)

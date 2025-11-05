@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
-import { useEditorData } from 'unified-editor'
 import useGlobalFindAndReplace from '@/hooks/use-global-find-and-replace'
 import useEditorExtendedStore from '@/store/extended-store'
 import { isEqual } from 'lodash'
 import { useEditorPlugin, useEditorRef } from 'platejs/react'
+import { useEditorData } from 'unified-editor'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import {

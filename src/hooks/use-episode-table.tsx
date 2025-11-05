@@ -2,6 +2,7 @@ import React from 'react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { EpisodeActions, titleToStatus } from '@/constants/episodes-constants'
 import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
+import { EImportStatus } from '@/constants/story-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { usePageState } from '@/hooks/use-page-state'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
@@ -18,6 +19,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { Button } from '@/components/aural-ui/button'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
+import { prettifyArrayTrim } from '@/lib/utils/helpers'
 
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TEpisode, TEpisodeInventForm } from '@/types/episode-type'
@@ -238,6 +240,16 @@ const useEpisodeTable = () => {
 		if (!isWriter) {
 			return
 		}
+		if (storyData?.adapting_seq_nos?.length) {
+			toast.info(
+				`Cannot add episode as adaptation is working on episodes: ${prettifyArrayTrim(storyData?.adapting_seq_nos)}!`
+			)
+			return
+		}
+		if (storyData?.status === EImportStatus.IMPORTING) {
+			toast.info(`Cannot add episode as story is importing!`)
+			return
+		}
 		// TODO add episode on last
 		episodeInventMutation.mutate(
 			{
@@ -293,6 +305,16 @@ const useEpisodeTable = () => {
 		if (!isWriter) {
 			return
 		}
+		if (storyData?.adapting_seq_nos?.length) {
+			toast.info(
+				`Cannot delete episode as adaptation is working on episodes: ${prettifyArrayTrim(storyData?.adapting_seq_nos)}!`
+			)
+			return
+		}
+		if (storyData?.status === EImportStatus.IMPORTING) {
+			toast.info(`Cannot delete episode as story is importing!`)
+			return
+		}
 		setAlertInfo({
 			action: EpisodeActions.DELETE,
 			variant: 'negative',
@@ -309,6 +331,16 @@ const useEpisodeTable = () => {
 
 	const handleMultiDeleteEpisode = (selectedRowData: TEpisode[]) => {
 		if (!isWriter) {
+			return
+		}
+		if (storyData?.adapting_seq_nos?.length) {
+			toast.info(
+				`Cannot delete episode as adaptation is working on episodes: ${prettifyArrayTrim(storyData?.adapting_seq_nos)}!`
+			)
+			return
+		}
+		if (storyData?.status === EImportStatus.IMPORTING) {
+			toast.info(`Cannot delete episode as story is importing!`)
 			return
 		}
 		setAlertInfo({

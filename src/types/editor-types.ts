@@ -1,9 +1,8 @@
 import { Dispatch, SetStateAction } from 'react'
-import { storyChatSuggestions } from '@/constants/editor-constants'
+import { storyChatSuggestions, zoomToWidth } from '@/constants/editor-constants'
 import { colorOptions } from '@/constants/global-constants'
 import { TSuggestionDescription } from '@platejs/suggestion'
 import { TCommentText, Value } from 'platejs'
-
 
 import {
 	TLocalizeCharacterArrayItem,
@@ -14,7 +13,6 @@ import {
 } from '@/types/ai-types'
 import { TGetEpisodeResponse } from '@/types/episode-type'
 import { ESidebar } from '@/types/plate-types'
-
 
 export interface RephraseSelectionProps {
 	additionalContext?: boolean
@@ -111,6 +109,7 @@ export type TStoredConfigurationData = {
 	quickPrompts: TQuickPrompt[]
 	suggestionDisplay: ESuggestionViewingType
 	theme: EThemeMode
+	zoomLevel: TZoomLevel
 }
 
 export type TConfigurationData = {
@@ -127,27 +126,27 @@ export enum EConfigurationContentItemDataType {
 
 export type ConfigurationContentItemData =
 	| {
-		dropdownItems: { title?: React.ReactNode; value: string }[]
-		onSelect: (data: string) => void
-		selectedValue: string
-		type: EConfigurationContentItemDataType.DROPDOWN
-	}
+			dropdownItems: { title?: React.ReactNode; value: string }[]
+			onSelect: (data: string) => void
+			selectedValue: string
+			type: EConfigurationContentItemDataType.DROPDOWN
+	  }
 	| {
-		offIcon?: React.ReactNode
-		onIcon?: React.ReactNode
-		onSelect: (data: boolean) => void
-		selectedValue: boolean
-		type: EConfigurationContentItemDataType.TOGGLE
-	}
+			offIcon?: React.ReactNode
+			onIcon?: React.ReactNode
+			onSelect: (data: boolean) => void
+			selectedValue: boolean
+			type: EConfigurationContentItemDataType.TOGGLE
+	  }
 	| {
-		buttonText?: React.ReactNode
-		onSelect: () => void
-		type: EConfigurationContentItemDataType.BUTTON
-	}
+			buttonText?: React.ReactNode
+			onSelect: () => void
+			type: EConfigurationContentItemDataType.BUTTON
+	  }
 	| {
-		customHandler: React.ReactNode
-		type: EConfigurationContentItemDataType.CUSTOM
-	}
+			customHandler: React.ReactNode
+			type: EConfigurationContentItemDataType.CUSTOM
+	  }
 export type TConfigurationContentItem = {
 	data: ConfigurationContentItemData
 	description: string
@@ -158,3 +157,12 @@ export enum EConfigurationDialogContentTab {
 	OPTIONS = 'options',
 	QUICK_PROMPTS = 'quick-prompts',
 }
+
+export interface TextStats {
+	charCount: number
+	lineCount: number
+	sentenceCount: number
+	wordCount: number
+}
+
+export type TZoomLevel = keyof typeof zoomToWidth | 'Fit'

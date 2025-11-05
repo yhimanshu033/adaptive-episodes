@@ -2,9 +2,9 @@ import React from 'react'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useAccessChecks from '@/hooks/use-access-checks'
 import useLanguage from '@/hooks/use-language'
+import useEpisodeIdStore from '@/store/episode-id-store'
 
 import LanguageSelector from '@/components/plate-ui/language-selector'
-import useEpisodeIdStore from '@/store/episode-id-store'
 
 const Languages = () => {
 	const { languages: languagesAvailable, disabledLanguages } =

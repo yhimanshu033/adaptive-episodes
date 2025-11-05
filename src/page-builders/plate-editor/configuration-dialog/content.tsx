@@ -17,6 +17,7 @@ import { ConfigurationContentItem } from '@/page-builders/plate-editor/configura
 import QuickPrompts from '@/page-builders/plate-editor/configuration-dialog/quick-prompts'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
+import { ConfigurationStore, useConfiguration } from 'unified-editor'
 
 import { Button } from '@/components/aural-ui/button'
 import {
@@ -45,7 +46,6 @@ import {
 	TConfigurationContentItem,
 } from '@/types/editor-types'
 import { ESidebar } from '@/types/plate-types'
-import { ConfigurationStore, useConfiguration } from 'unified-editor'
 
 export interface ConfigurationDialogContentProps extends EpisodeConfigProps {
 	fallbackQuickPrompts?: TQuickPrompt[]
@@ -210,7 +210,7 @@ export default function ConfigurationDialogContent({
 					<If
 						condition={
 							!!configurationDialogTabToTitle[
-							configurationData.configurationDialogTab
+								configurationData.configurationDialogTab
 							]
 						}
 					>
@@ -229,7 +229,7 @@ export default function ConfigurationDialogContent({
 							<p>
 								{
 									configurationDialogTabToTitle[
-									configurationData.configurationDialogTab
+										configurationData.configurationDialogTab
 									]
 								}
 							</p>

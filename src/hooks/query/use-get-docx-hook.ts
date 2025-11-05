@@ -3,10 +3,10 @@ import { GET_DOCX_HTML_QUERY_KEY } from '@/constants/query-constants'
 import useDocxParams from '@/hooks/query/use-docx-params'
 import useEnableDocx from '@/hooks/use-enable-docx'
 import { useQuery } from '@tanstack/react-query'
+import { useUnifiedEditorRef } from 'unified-editor'
 
 import { hashString } from '@/lib/utils/helpers'
 import { valueToHTML } from '@/lib/utils/plate'
-import { useUnifiedEditorRef } from 'unified-editor'
 
 export default function useDocxHtml() {
 	const editor = useUnifiedEditorRef()

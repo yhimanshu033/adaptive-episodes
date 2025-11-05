@@ -25,7 +25,12 @@ import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
 
 import { ERole } from '@/types/admin-types'
-import { TCharacter, TScene } from '@/types/beatsheet-editor-types'
+import {
+	TCharacter,
+	TGenerateBeatsheetResponseItem,
+	TScene,
+	TSceneUpdateBody,
+} from '@/types/beatsheet-editor-types'
 import {
 	BASE_STATUS,
 	EEpisodeType,
@@ -47,6 +52,7 @@ import {
 	TMetadata,
 	TSaveEpisodeMutationArgs,
 } from '@/types/content-types'
+import { TextStats } from '@/types/editor-types'
 import {
 	SaveEpisodeParams,
 	TEpisode,
@@ -676,7 +682,7 @@ export function getAcceptLanguageLocale<AppLocales extends Locale[]>(
 		const orderedLocales = orderLocales(locales)
 		locale = match(languages, orderedLocales, defaultLocale)
 	} catch {
-		console.info('invalid language')
+		locale = defaultLocale
 	}
 
 	return locale
@@ -1263,3 +1269,102 @@ export function replaceNthOccurrence({
 
 export const isStringifiedJsonArray = (text: string) =>
 	/^\s*\[.*\]\s*$/.test(text)
+
+/**
+ * Calculates text statistics including estimated line count based on font and width.
+ *
+ * @param text - Input text string
+ * @param fontSizePx - Font size in pixels (default: 16)
+ * @param screenWidthPx - Width of screen/container in pixels (default: 668)
+ */
+export function getTextStats(
+	text: string,
+	fontSizePx: number = 16,
+	screenWidthPx: number = 668
+): TextStats {
+	// --- Character count ---
+	const charCount = text.length
+
+	// --- Word count ---
+	const words = text.trim().split(/\s+/).filter(Boolean)
+	const wordCount = words.length
+
+	// --- Sentence count ---
+	const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0)
+	const sentenceCount = sentences.length
+
+	// --- Line count (approximate based on text wrapping) ---
+	// Average character width ≈ 0.5 * fontSize (roughly true for most fonts)
+	const avgCharWidth = fontSizePx * 0.5
+	const charsPerLine = Math.floor(screenWidthPx / avgCharWidth)
+
+	// Split text into words and simulate wrapping
+	let currentLineLength = 0
+	let lineCount = 1
+
+	for (const word of words) {
+		const wordLength = word.length + 1 // +1 for space
+		if (currentLineLength + wordLength > charsPerLine) {
+			lineCount++
+			currentLineLength = wordLength
+		} else {
+			currentLineLength += wordLength
+		}
+	}
+
+	return { wordCount, sentenceCount, lineCount, charCount }
+}
+
+export function convertSceneToUpdatePayload(
+	scene: TScene,
+	sceneIdx: number,
+	generatedContent: TGenerateBeatsheetResponseItem,
+	episode?: TGetEpisodeResponse | null,
+	isNew: boolean = false
+) {
+	const epId = episode?.chapter?.id || 0
+	const projId = episode?.chapter?.project || 0
+	const epSeqNo = episode?.chapter.seq_number
+	const nwmSceneId = `ep_${epSeqNo}_scene_${sceneIdx + 1}`
+	const { charCount, lineCount, sentenceCount, wordCount } = getTextStats(
+		generatedContent.content
+	)
+	const updatedScenePayload: TSceneUpdateBody['scenes'][number] = {
+		scene_id: isNew ? undefined : scene.id,
+		location: scene.title,
+		nwm_scene_id: nwmSceneId,
+		beats_count: scene.beats.length,
+		chapter_id: epId,
+		project_id: projId,
+		scene_number: sceneIdx + 1,
+		scene_text: generatedContent?.content,
+		char_count: charCount,
+		line_count: lineCount,
+		word_count: wordCount,
+		sentence_count: sentenceCount,
+		beats: scene.beats.map((item, beatIdx) => {
+			return {
+				beat_text: item.content || '',
+				beat_id: `ep_${epSeqNo}_scene_${sceneIdx + 1}_beat_${beatIdx + 1}`,
+			}
+		}),
+	}
+	const updatedScene: TScene = {
+		...scene,
+		beats: scene.beats.map((item, beatIdx) => {
+			return {
+				content: item.content || '',
+				id: `ep_${epSeqNo}_scene_${sceneIdx + 1}_beat_${beatIdx + 1}`,
+			}
+		}),
+	}
+	return { updatedScenePayload, updatedScene }
+}
+
+export function getScaledValue(str: string) {
+	return `calc(${str}*var(--editor-scale,1))`
+}
+
+export function prettifyArrayTrim(arr: number[], len = 4, separator = ', ') {
+	return arr.slice(0, len).join(separator)
+}

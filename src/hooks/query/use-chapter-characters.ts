@@ -32,8 +32,6 @@ export async function fetchChapterCharacters({
 export default function useChapterCharacters() {
 	const { data } = useEpisodeContent()
 
-
-
 	const query = useQuery({
 		queryKey: [CHAPTER_CHARACTERS_DATA_QUERY_KEY, data?.chapter.id],
 		queryFn: () =>

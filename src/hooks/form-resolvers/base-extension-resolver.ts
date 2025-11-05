@@ -44,12 +44,14 @@ export const useBaseScriptUploadResolver = () => {
 					files.every((file) => ACCEPTED_DOCX_TYPES.includes(file.type)),
 				'Only .docx format is supported.'
 			),
+		run_nwm: z.boolean().optional(),
 	})
 	const form = useForm<z.infer<typeof baseScriptUploadFormSchema>>({
 		resolver: zodResolver(baseScriptUploadFormSchema),
 		mode: 'onChange',
 		defaultValues: {
 			files: [],
+			run_nwm: false,
 		},
 	})
 

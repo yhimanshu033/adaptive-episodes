@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
-import { useEditorData } from 'unified-editor'
-import { useEpisodeIdStore } from 'unified-editor'
+import { useEditorData, useEpisodeIdStore } from 'unified-editor'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'

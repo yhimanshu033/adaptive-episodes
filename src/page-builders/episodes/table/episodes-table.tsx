@@ -155,6 +155,11 @@ const EpisodesTable = () => {
 		}
 	}, [selectedRowLength])
 
+	useEffect(() => {
+		table.setRowSelection({})
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentPage, search, limit])
+
 	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
 		return <AdaptationContainer />
 	}
@@ -221,6 +226,7 @@ const EpisodesTable = () => {
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-3">
 							<Link
+								prefetch={false}
 								href="/projects"
 								role="button"
 								className={cn(
@@ -263,24 +269,24 @@ const EpisodesTable = () => {
 									className="font-fm-brand h-11 text-sm"
 									disabled={table.getSelectedRowModel().rows.length === 0}
 									onClick={() =>
-									/** Global adaptation has been temporarily replaced with local adaptation */
-									// handleEpisodeInfo({
-									// 	icon: <MaintenanceIcon width={20} height={20} />,
-									// 	description: 'Global adaptation feature coming soon!',
-									// 	title: 'Coming Soon',
-									// })
-									{
-										const selectedRowModel = table.getSelectedRowModel().rows
-										const selectedRowData = selectedRowModel.map(
-											(row) => row.original
-										)
-										if (adaptationData.length === 0) {
-											setSelectedRowData(selectedRowData)
-											setStory(initialStoryData)
-											setEpisodeAdaptation(true)
+										/** Global adaptation has been temporarily replaced with local adaptation */
+										// handleEpisodeInfo({
+										// 	icon: <MaintenanceIcon width={20} height={20} />,
+										// 	description: 'Global adaptation feature coming soon!',
+										// 	title: 'Coming Soon',
+										// })
+										{
+											const selectedRowModel = table.getSelectedRowModel().rows
+											const selectedRowData = selectedRowModel.map(
+												(row) => row.original
+											)
+											if (adaptationData.length === 0) {
+												setSelectedRowData(selectedRowData)
+												setStory(initialStoryData)
+												setEpisodeAdaptation(true)
+											}
+											setOpen(true)
 										}
-										setOpen(true)
-									}
 									}
 								>
 									<MagicBookIcon width={20} height={20} />
@@ -310,7 +316,7 @@ const EpisodesTable = () => {
 												style={{
 													width:
 														episodeTableColumnWidths[
-														header.id as EEpisodeHeaderKeys
+															header.id as EEpisodeHeaderKeys
 														] || 'auto',
 												}}
 											>
@@ -318,12 +324,12 @@ const EpisodesTable = () => {
 													<div
 														className={cn(
 															header.column.getCanSort() &&
-															'font-fm-brand text-fm-tertiary flex cursor-pointer items-center text-xs uppercase'
+																'font-fm-brand text-fm-tertiary flex cursor-pointer items-center text-xs uppercase'
 														)}
 														onClick={(e) => {
 															if (
 																NON_SORTABLE_EPISODE_HEADER_KEYS[
-																header.id as EEpisodeHeaderKeys
+																	header.id as EEpisodeHeaderKeys
 																]
 															) {
 																return

@@ -1,8 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
-import { useEpisodeIdStore } from 'unified-editor'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { KEYS } from 'platejs'
 import { toast } from 'sonner'
+import {
+	useEditorData,
+	useEpisodeIdStore,
+	usePluginOption,
+	useUnifiedEditorState,
+} from 'unified-editor'
 import { useShallow } from 'zustand/react/shallow'
 
 import { getSavingData } from '@/lib/utils/helpers'
@@ -17,9 +24,6 @@ import {
 	TSaveEpisodeFailMessage,
 	TSaveEpisodeParams,
 } from '@/types/episode-type'
-import { useEditorData, usePluginOption, useUnifiedEditorState } from 'unified-editor'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { KEYS } from 'platejs'
 
 interface IUseSavingUtilProps {
 	data?: TGetEpisodeResponse

@@ -5,7 +5,6 @@ import useLocalizeHook, {
 	useLocalizeDownloadMutation,
 	useUpdateLOCSheetMutation,
 } from '@/hooks/mutation/use-localize-hook'
-import { useEditorData } from 'unified-editor'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import { useDebounce } from '@/hooks/use-debounce'
 import useLanguage from '@/hooks/use-language'
@@ -16,6 +15,7 @@ import {
 	useEditorRef,
 	usePluginOptions,
 } from 'platejs/react'
+import { useEditorData } from 'unified-editor'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import useProjectId from '@/providers/project-id-provider'
@@ -324,7 +324,7 @@ export default function useFindAndReplace() {
 		onReplaceChange,
 		options: INITIAL_FAR_OPTIONS,
 		replacedContentMap: {},
-		setReplacedContentMap: () => { },
+		setReplacedContentMap: () => {},
 		setPtr,
 	}
 }

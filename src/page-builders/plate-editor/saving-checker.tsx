@@ -1,8 +1,8 @@
-import useSavingCheck from '@/hooks/use-saving-check'
 import React from 'react'
+import useSavingCheck from '@/hooks/use-saving-check'
 
 export default function SavingChecker() {
-    useSavingCheck()
+	useSavingCheck()
 
-    return null
+	return null
 }

@@ -32,6 +32,7 @@ export default function EpisodeNavigationButton({
 		<Tooltip>
 			<TooltipTrigger asChild>
 				<Link
+					prefetch={false}
 					href={`/projects/${String(id)}/${String(episode_id)}/content?${EPISODE_SEQUENCE}=${item.seq_number}`}
 					className={cn(
 						buttonVariants({

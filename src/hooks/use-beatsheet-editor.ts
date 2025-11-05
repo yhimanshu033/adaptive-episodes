@@ -158,34 +158,37 @@ const useBeatSheetEditorUtil = () => {
 
 	const handleGenerateScenes = (
 		generatedContent: TGenerateBeatsheetResponseItem,
-		sceneId?: string
+		oldSceneId: string,
+		newSceneId: string
 	) => {
 		const newChildren = structuredClone(editor.children)
-		if (!sceneId) {
+		if (!oldSceneId) {
 			return
 		}
 
 		const existingNodeIndex = newChildren.findIndex(
-			(node) => node.scene_id === sceneId
+			(node) => node.scene_id === oldSceneId
 		)
 
 		const newNode = {
 			type: 'p',
 			children: [
 				{
-					text: generatedContent.content || `Generated Content for ${sceneId}`,
+					text:
+						generatedContent.content || `Generated Content for ${newSceneId}`,
 				},
 			],
 			id: existingNodeIndex >= 0 ? newChildren[existingNodeIndex].id : nanoid(),
-			scene_id: sceneId,
+			scene_id: newSceneId,
 		}
 
 		if (existingNodeIndex >= 0) {
 			newChildren[existingNodeIndex] = newNode
 		} else {
-			const currentSceneIndex = scenes.findIndex(
-				(scene) => scene.id === sceneId
+			let currentSceneIndex = scenes.findIndex(
+				(scene) => scene.id === oldSceneId
 			)
+			currentSceneIndex = currentSceneIndex >= 0 ? currentSceneIndex : Infinity
 			let insertIndex = newChildren.length
 
 			for (let i = 0; i < newChildren.length; i++) {
@@ -202,10 +205,9 @@ const useBeatSheetEditorUtil = () => {
 					break
 				}
 			}
-
 			newChildren.splice(insertIndex, 0, newNode)
 		}
-		approveContent(sceneId)
+		approveContent(oldSceneId)
 		suggestionGuard(() => {
 			editor.tf.setValue(newChildren)
 		})

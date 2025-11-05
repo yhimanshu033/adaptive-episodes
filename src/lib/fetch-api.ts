@@ -1,5 +1,3 @@
-"use server"
-import { headers as nextHeaders } from 'next/headers'
 import {
 	COMMON_SITE_HEADERS,
 	CORRELATION_ID_HEADER_KEY,
@@ -8,15 +6,15 @@ import {
 	validResponseStatuses,
 } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
-import { v4 as uuid } from 'uuid'
-
-import { log } from '@/lib/utils/helpers'
-
-import { SessionData } from '@/types/admin-types'
-import { TNoParams } from '@/types/common'
 // import { getSession } from 'next-auth/react'
 import { getServerSession } from 'next-auth'
+import { v4 as uuid } from 'uuid'
+
+import { getUserSession } from '@/lib/get-session'
 import authOptions from '@/lib/next-auth-options'
+import { log } from '@/lib/utils/helpers'
+
+import { TNoParams } from '@/types/common'
 
 export type FetchRequestParams<
 	ResponseDataT = TNoParams,
@@ -40,19 +38,19 @@ export type FetchRequestParams<
 
 export type FetchResponseResult<ResponseDataT = TNoParams> =
 	| {
-		data: ResponseDataT
-		error: null
-		headers?: Record<string, string>
-		status: number
-		success: true
-	}
+			data: ResponseDataT
+			error: null
+			headers?: Record<string, string>
+			status: number
+			success: true
+	  }
 	| {
-		data: null | ResponseDataT
-		error: Error
-		message?: Record<string, string>
-		status: number
-		success: false
-	}
+			data: null | ResponseDataT
+			error: Error
+			message?: Record<string, string>
+			status: number
+			success: false
+	  }
 
 export async function fetchAPI<
 	ResponseDataT = TNoParams,
@@ -67,9 +65,9 @@ export async function fetchAPI<
 		QueryParamsT
 	>
 ): Promise<FetchResponseResult<ResponseDataT>> {
-	// const session = (typeof window === "undefined" ? (await getServerSession(authOptions)) : await getSession()) as SessionData
-	const session = ((await getServerSession(authOptions))) as SessionData
+	const session = await getUserSession()
 
+	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 	const {
 		url,
 		method,
@@ -87,12 +85,7 @@ export async function fetchAPI<
 
 	const sendError = !ignoreError && !IGNORE_ERROR_API_URLS.has(url)
 
-	const nextHeadersObj = await nextHeaders()
-	const forwardedFor = nextHeadersObj.get('x-forwarded-for')
-	const realIp = nextHeadersObj.get('x-real-ip')
-
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
-	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
 
 	if (!BASE_URL) {
 		throw new Error('Backend URL not set in env!')
@@ -122,9 +115,9 @@ export async function fetchAPI<
 	const correlationId = uuid()
 
 	const defaultSentryData: Record<string, string> = {
-		user_uid: session?.user?.uid,
+		user_uid: session?.user?.uid || 'NA',
 		user_id: String(session?.user?.id),
-		user_email: session?.user?.email,
+		user_email: session?.user?.email || 'NA',
 		url: resolvedUrl,
 		method,
 		accessToken: accessToken ? 'exists' : "doesn't exist",
@@ -161,7 +154,7 @@ export async function fetchAPI<
 				extra: {
 					...defaultSentryData,
 					duration,
-					timeoutThreshol: FETCH_TIMEOUT,
+					timeoutThreshold: FETCH_TIMEOUT,
 				},
 			})
 			if (sendError) {
@@ -169,7 +162,7 @@ export async function fetchAPI<
 					extra: {
 						...defaultSentryData,
 						duration,
-						timeoutThreshol: FETCH_TIMEOUT,
+						timeoutThreshold: FETCH_TIMEOUT,
 					},
 				})
 			}
@@ -179,11 +172,9 @@ export async function fetchAPI<
 			method,
 			headers: {
 				...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-				'API-Key': API_KEY,
 				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
+				...(typeof window === 'undefined' ? { 'API-Key': API_KEY } : {}),
 				...headers,
-				'x-forwarded-for': forwardedFor || '',
-				'x-real-ip': realIp || '',
 				[CORRELATION_ID_HEADER_KEY]: correlationId,
 				...COMMON_SITE_HEADERS,
 			},
@@ -205,7 +196,7 @@ export async function fetchAPI<
 				extra: {
 					...defaultSentryData,
 					duration: requestDuration,
-					timeoutThreshol: FETCH_TIMEOUT,
+					timeoutThreshold: FETCH_TIMEOUT,
 				},
 			})
 			Sentry.captureMessage('API SLOW REQUEST COMPLETED', {
@@ -213,7 +204,7 @@ export async function fetchAPI<
 				extra: {
 					...defaultSentryData,
 					duration: requestDuration,
-					timeoutThreshol: FETCH_TIMEOUT,
+					timeoutThreshold: FETCH_TIMEOUT,
 				},
 			})
 		}
@@ -255,7 +246,7 @@ export async function fetchAPI<
 		const responseData = (await response.json()) as ResponseDataT
 
 		if (sendLog) {
-			const message = `${sendLog}: ${session.user.id} - ${resolvedUrl.split(BASE_URL)[1]} - ${new Date().toUTCString()}`
+			const message = `${sendLog}: ${session?.user.id || 'NA'} - ${resolvedUrl.split(BASE_URL)[1]} - ${new Date().toUTCString()}`
 			Sentry.captureMessage(message, 'info')
 			log({
 				message,
@@ -267,10 +258,6 @@ export async function fetchAPI<
 			status: response.status,
 			data: responseData,
 			error: null,
-			headers: {
-				// 'x-forwarded-for': forwardedFor || '',
-				// 'x-real-ip': realIp || '',
-			},
 		}
 	} catch (error) {
 		if (timeoutId) {

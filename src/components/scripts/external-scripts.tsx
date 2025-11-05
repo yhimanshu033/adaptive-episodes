@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Script from 'next/script'
+import { APP_CONFIG } from '@/constants/global-constants'
 
 export default function ExternalScripts() {
 	const [loaded, setLoaded] = useState(false)
@@ -13,8 +14,8 @@ export default function ExternalScripts() {
 
 	if (
 		!loaded ||
-		process.env.NODE_ENV !== 'production' ||
-		process.env.NEXT_PUBLIC_DEPLOY_ENV !== 'production'
+		process?.env?.NODE_ENV !== 'production' ||
+		APP_CONFIG.ENV !== 'production'
 	) {
 		return null
 	}

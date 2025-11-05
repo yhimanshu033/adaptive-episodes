@@ -1,14 +1,15 @@
 'use client'
 
 import React from 'react'
-
-import { EpisodeIdProvider } from '@/providers/episode-id-provider'
-import useEpisodeContent, { useEpisodeContentUtil } from '@/hooks/query/use-episode-content'
-import { PreviewContent, UnifiedCopilotEditorProvider } from 'unified-editor'
-import { IconButton } from '@/components/aural-ui/icon-button'
-import { CrossIcon } from '@/icons/cross-icon'
 import { useRouter } from 'next/navigation'
+import useEpisodeContent, {
+	useEpisodeContentUtil,
+} from '@/hooks/query/use-episode-content'
+import { CrossIcon } from '@/icons/cross-icon'
+import { PreviewContent, UnifiedCopilotEditorProvider } from 'unified-editor'
 
+import { IconButton } from '@/components/aural-ui/icon-button'
+import { EpisodeIdProvider } from '@/providers/episode-id-provider'
 
 const Preview = ({ episodeId }: { episodeId: number }) => {
 	const { data } = useEpisodeContentUtil()
@@ -27,18 +28,17 @@ const Preview = ({ episodeId }: { episodeId: number }) => {
 				variant="ghost"
 			/>
 			<UnifiedCopilotEditorProvider
-				config={
-					{
-						auth: {
-							accessToken: "",
-						},
-						contentConfig: {
-							content: data?.text || "",
-							seqNumber: data?.chapter?.seq_number,
-							title: data?.chapter?.chapter_title,
-						}
-					}
-				}>
+				config={{
+					auth: {
+						accessToken: '',
+					},
+					contentConfig: {
+						content: data?.text || '',
+						seqNumber: data?.chapter?.seq_number,
+						title: data?.chapter?.chapter_title,
+					},
+				}}
+			>
 				<PreviewContent />
 			</UnifiedCopilotEditorProvider>
 		</div>

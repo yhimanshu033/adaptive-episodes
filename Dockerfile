@@ -2,8 +2,11 @@
 FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0 AS build-image
 WORKDIR /usr/src/app
 COPY ./ ./
-RUN npm install
 
+# Install pnpm globally
+RUN npm install -g pnpm
+
+RUN pnpm install
 
 #RUN echo "NEXTAUTH_URL=https://copilot.pocketfm.com" >> .env
 RUN echo "NEXTAUTH_SECRET=TwmBgFrFU1DTsnrvm8pLBXt0yMPYFyT/EOCoX6AZo1s=" >> .env
@@ -38,7 +41,7 @@ RUN echo "NEXT_PUBLIC_SENTRY_ENVIRONMENT=production" >> .env
 
 ENV SENTRY_AUTH_TOKEN=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
 
-RUN npm run build
+RUN pnpm build
 
 # Stage 2: Final production environment
 FROM 856517911253.dkr.ecr.ap-southeast-1.amazonaws.com/docker-hub/node:22.11.0-alpine3.19 AS final

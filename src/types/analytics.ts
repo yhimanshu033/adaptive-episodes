@@ -10,7 +10,7 @@ import {
 
 import { EChatMode } from '@/types/ai-types'
 
-export type TEventData = Record<
+export type TEventExtraData = Record<
 	string,
 	string | number | boolean | undefined | null
 >
@@ -42,7 +42,7 @@ export interface TAnalyticsPostData {
 		session_id: string | null
 		uid?: string
 	}
-	events: Array<{ data: TEventMeta; eventId: string }>
+	events: Array<{ data: TEvent; eventId: string }>
 	group: string
 }
 
@@ -150,12 +150,21 @@ export type TConditionalMetadata =
 	  }
 	| { action?: TAction }
 
-export type TEventMeta = TEventData &
+export type TEventMeta = TEventExtraData &
 	TConditionalMetadata & {
 		content_language?: string
 		route?: string
 		time_since_load_start?: string
 	}
+
+export type TEvent = {
+	client_ts: string
+	event: TEventName
+	props: string
+	screen_name: TScreenName
+	service?: string
+	user_uid?: string
+}
 
 export interface THandleEventLogClientArgs {
 	event: TEventName

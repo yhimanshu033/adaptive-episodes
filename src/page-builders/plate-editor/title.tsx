@@ -51,7 +51,7 @@ const Title = ({
 					/>
 				</div>
 			</div>
-			<p className="text-fm-tertiary font-fm-brand flex items-center justify-start gap-2 text-fm-sm font-medium uppercase">
+			<p className="text-fm-tertiary font-fm-brand text-fm-sm flex items-center justify-start gap-2 font-medium uppercase">
 				{selectedMember?.user.fullname && (
 					<>
 						<span>{selectedMember?.user.fullname}</span>

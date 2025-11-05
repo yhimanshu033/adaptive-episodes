@@ -6,7 +6,13 @@ import { EditorModes, editorModesList } from '@/constants/editor-constants'
 import useEditAccess from '@/hooks/use-edit-access'
 import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
-
+import {
+	useEditorPlugin,
+	useEditorReadOnly,
+	usePluginOption,
+	useUnifiedEditorRef,
+	useUnifiedEditorStore,
+} from 'unified-editor'
 
 import {
 	Select,
@@ -21,7 +27,6 @@ import { cn, toPascalCase } from '@/lib/utils/helpers'
 import { ESidebar } from '@/types/plate-types'
 
 import { Typography } from '../aural-ui/typography'
-import { useEditorPlugin, useEditorReadOnly, usePluginOption, useUnifiedEditorRef, useUnifiedEditorStore } from 'unified-editor'
 
 export function ModeToolbarButton(props: DropdownMenuProps) {
 	const { setSidebar, setViewMode } = useUnifiedEditorStore()

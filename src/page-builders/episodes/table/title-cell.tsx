@@ -132,6 +132,7 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 						classes={{ scrollbar: 'hidden' }}
 					>
 						<Link
+							prefetch={false}
 							className="font-fm-text flex cursor-pointer items-center gap-2"
 							href={`/projects/${row.original.project}/${row.original.parent || row.original.id}/content/?${EPISODE_SEQUENCE}=${row.original.seq_number}`}
 						>

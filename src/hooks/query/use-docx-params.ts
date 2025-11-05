@@ -1,5 +1,9 @@
 import { useEpisodeContentUtil } from '@/hooks/query/use-episode-content'
-import { useEditorData, useEpisodeIdStore, useUnifiedEditorRef } from 'unified-editor'
+import {
+	useEditorData,
+	useEpisodeIdStore,
+	useUnifiedEditorRef,
+} from 'unified-editor'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { useEpisodeIdStore } from 'unified-editor'
 import { useSession } from 'next-auth/react'
+import { useEpisodeIdStore } from 'unified-editor'
 import { useShallow } from 'zustand/react/shallow'
 
 export default function useRecentUser() {

@@ -1,4 +1,3 @@
-
 import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
