@@ -1,13 +1,10 @@
 'use client'
 
 import React from 'react'
-import usePlateStore from '@/store/plate-store'
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
-import { useUnifiedEditorStore } from 'unified-editor'
+import { ESidebar, useUnifiedEditorStore } from 'unified-editor'
 
 import { cn } from '@/lib/aural-ui/utils'
-
-import { ESidebar } from '@/types/plate-types'
 
 import { IconButton, type IconButtonProps } from '../aural-ui/icon-button'
 

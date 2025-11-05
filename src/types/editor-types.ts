@@ -1,8 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
 import { storyChatSuggestions, zoomToWidth } from '@/constants/editor-constants'
 import { colorOptions } from '@/constants/global-constants'
-import { TSuggestionDescription } from '@platejs/suggestion'
-import { TCommentText, Value } from 'platejs'
+import { Value } from 'platejs'
 
 import {
 	TLocalizeCharacterArrayItem,

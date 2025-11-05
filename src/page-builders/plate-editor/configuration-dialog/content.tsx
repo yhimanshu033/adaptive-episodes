@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import React, { useCallback, useMemo } from 'react'
 import { QUICK_PROMPTS_EN, sidebarToTitle } from '@/constants/ai-constants'
 import {

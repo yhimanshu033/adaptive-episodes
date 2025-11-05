@@ -191,6 +191,7 @@ export const useEpisodeContentUtil = () => {
 		// 	}
 		// )
 		return resp
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		addEpisodeKey,
 		addEpisodeMap,
@@ -198,8 +199,6 @@ export const useEpisodeContentUtil = () => {
 		episodeId,
 		queryKey,
 		setDualViewMode,
-		// setLocalDiffValue,
-		// setSidebar,
 		setRecentEmail,
 		episode,
 		userData,

@@ -28,7 +28,6 @@ import {
 	getRecordsUtil,
 	getSuggestionValue,
 } from '@/lib/utils/ai-chatbot'
-import { downloadFile } from '@/lib/utils/client-helpers'
 import { replaceNthOccurrence } from '@/lib/utils/helpers'
 import { getText } from '@/lib/utils/plate'
 
@@ -277,7 +276,7 @@ export default function useFindAndReplace() {
 	}
 
 	async function handleDownload() {
-		const url = await mutateAsync()
+		await mutateAsync()
 	}
 
 	async function handleScanEpisode() {

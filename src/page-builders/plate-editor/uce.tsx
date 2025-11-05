@@ -10,10 +10,8 @@ import UnifiedCopilotEditorProvider from '@pocket-editor/features/unified-copilo
 import { DefaultEditor } from 'unified-editor'
 
 const UCE = React.memo(() => {
-	console.log('UCE')
 	const { editorConfig } = useEditorConfig()
 
-	console.log({ editorConfig })
 	if (editorConfig?.contentConfig?.isLoading) {
 		return <EditorSkeletonLoader />
 	}
@@ -38,3 +36,4 @@ const Editor = React.memo(() => {
 		</div>
 	)
 })
+Editor.displayName = 'Editor'

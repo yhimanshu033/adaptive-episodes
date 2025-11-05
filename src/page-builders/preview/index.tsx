@@ -2,16 +2,13 @@
 
 import React from 'react'
 import { useRouter } from 'next/navigation'
-import useEpisodeContent, {
-	useEpisodeContentUtil,
-} from '@/hooks/query/use-episode-content'
+import { useEpisodeContentUtil } from '@/hooks/query/use-episode-content'
 import { CrossIcon } from '@/icons/cross-icon'
 import { PreviewContent, UnifiedCopilotEditorProvider } from 'unified-editor'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
-import { EpisodeIdProvider } from '@/providers/episode-id-provider'
 
-const Preview = ({ episodeId }: { episodeId: number }) => {
+const Preview = () => {
 	const { data } = useEpisodeContentUtil()
 	const router = useRouter()
 	const handleClick = () => {

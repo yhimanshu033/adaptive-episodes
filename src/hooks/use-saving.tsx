@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import { KEYS } from 'platejs'
 import { toast } from 'sonner'
 import {
 	useEditorData,
@@ -35,7 +34,10 @@ function useSavingUtil(props?: IUseSavingUtilProps) {
 	const { id } = useParams()
 	const { wordCount } = useEditorData()
 	const { children } = useUnifiedEditorState()
-	const allComments = usePluginOption({ key: 'discussion' }, 'discussions')
+	const allComments = usePluginOption(
+		{ key: 'discussion' },
+		'discussions'
+	) as Array<unknown>
 	const { saveEpisodeMutation } = useEpisodeHook()
 
 	const {

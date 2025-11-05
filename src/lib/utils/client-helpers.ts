@@ -1,9 +1,6 @@
 'use client'
 
-import { DiffStatus } from '@/constants/ai-constants'
 import { CONFIGURATION_DATA_KEY } from '@/constants/global-constants'
-import { Node, Path } from 'platejs'
-import { PlateEditor } from 'platejs/react'
 
 import { TConfigurationData } from '@/types/editor-types'
 

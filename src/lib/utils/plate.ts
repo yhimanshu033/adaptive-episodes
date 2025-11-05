@@ -10,8 +10,8 @@ import {
 	LASER_PROMPT_KEYS,
 } from '@/constants/editor-constants'
 import { EXCLUDE_BREAKDOWN_KEYS } from '@/constants/server-constants'
-import { getCommentKey } from '@platejs/comment'
 import { computeDiff, DiffOperation, DiffUpdate } from '@platejs/diff'
+import { TCustomComment } from '@pocket-editor/types/editor-types'
 // Create a new file: src/lib/comment-helpers.ts
 import {
 	At,
@@ -22,13 +22,10 @@ import {
 	nanoid,
 	Path,
 	serializeHtml,
-	TCommentText,
 	TElement,
 	Text,
-	TSuggestionText,
 	Value,
 } from 'platejs'
-import { PlateEditor } from 'platejs/react'
 import { type BaseRange, type Range } from 'slate'
 
 import { DEFAULT_COLOR } from '@/components/plate-ui/color-constants'
@@ -36,7 +33,6 @@ import { EditorStatic } from '@/components/plate-ui/editor-static'
 import { getSceneIdOrder } from '@/lib/utils/helpers'
 
 import { TScene } from '@/types/beatsheet-editor-types'
-import { TCustomComment } from '@/types/editor-types'
 import { Selection, TDocxHTMLArgs } from '@/types/plate-types'
 
 export function isSameBlock(selection: Selection): boolean {

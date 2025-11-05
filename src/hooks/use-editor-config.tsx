@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/require-await */
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import { QUICK_PROMPTS, QUICK_PROMPTS_EN } from '@/constants/ai-constants'
 import { downloadLOCSheet } from '@/hooks/mutation/use-localize-hook'
 import { fetchChapterCharacters } from '@/hooks/query/use-chapter-characters'
@@ -27,8 +28,6 @@ import {
 } from 'unified-editor'
 
 import { Button } from '@/components/aural-ui/button'
-import { ToolbarGroup } from '@/components/plate-ui/toolbar'
-import useConfiguration from '@/providers/configuration-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
 import { hasNWMRan } from '@/lib/utils/helpers'
@@ -52,10 +51,6 @@ export default function useEditorConfig() {
 	} = useEpisodeContent()
 	const { initialStoryData } = useEpisodeTableContext()
 
-	// const { data: prevEpData } = usePreviousEpisodeContent()
-	// const { data: baseContent } = useBaseData()
-	// const { data: nextEpData, isPending } = useNextEpisodeContent()
-
 	const { isWriter, users } = useProjectId()
 
 	async function handleContentChange() {
@@ -72,6 +67,7 @@ export default function useEditorConfig() {
 			return 'Already saved'
 		}
 		console.log('Saving...')
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		savedContentRef.current = JSON.parse(JSON.stringify(props))
 	}
 
@@ -399,6 +395,7 @@ export default function useEditorConfig() {
 			},
 		}
 		return data
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		onContentChange,
 		contentData,

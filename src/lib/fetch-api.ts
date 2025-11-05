@@ -6,12 +6,9 @@ import {
 	validResponseStatuses,
 } from '@/constants/global-constants'
 import * as Sentry from '@sentry/nextjs'
-// import { getSession } from 'next-auth/react'
-import { getServerSession } from 'next-auth'
 import { v4 as uuid } from 'uuid'
 
 import { getUserSession } from '@/lib/get-session'
-import authOptions from '@/lib/next-auth-options'
 import { log } from '@/lib/utils/helpers'
 
 import { TNoParams } from '@/types/common'
