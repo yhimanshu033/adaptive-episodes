@@ -141,7 +141,10 @@ function useAIChatbotUtil({
 	const staleReviewIDRef = useRef<string[] | null>(null)
 	const commentsCount = useRef<number>(0)
 
-	const throttledResponse = useThrottle(responses[sfxStreaming], 1000)
+	const throttledResponse = useThrottle(
+		responses[sfxStreaming] as string[] | undefined,
+		1000
+	)
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -407,7 +410,7 @@ function useAIChatbotUtil({
 				metaData: {
 					action: ACTION.STORY_CHAT_SFX_ADDED,
 					flowId: sfxStreaming,
-					response: throttledResponse.join(''),
+					response: throttledResponse?.join(''),
 				},
 			})
 			setSfxStreaming('')

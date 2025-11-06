@@ -460,12 +460,12 @@ export function replaceAll({
 			if (!replaceEnabled || !search) {
 				return
 			}
-			const regex = new RegExp(
-				wholeWord
-					? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
-					: `(${search})`,
-				caseSensitive ? 'g' : 'gi'
-			)
+			const regex = getFindReplaceRegex({
+				search,
+				caseSensitive,
+				genitive,
+				wholeWord,
+			})
 			node.text = String(node.text).replace(regex, (match) =>
 				match !== search ? generateGenitives(replace) : replace
 			)
@@ -654,16 +654,21 @@ export function getRecordsTextUtil({
 	return texts
 }
 
+export function escapeRegex(str: string): string {
+	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 export function getFindReplaceRegex({
 	search,
 	caseSensitive,
 	genitive,
 	wholeWord,
 }: TGetRegexFAR) {
+	const safeSearch = escapeRegex(search)
 	return new RegExp(
 		wholeWord
-			? `(\\b${genitive ? generateGenitives(search) + "'?|" : ''}${search})(?=\\b|\\W|$)`
-			: `(${search})`,
+			? `(\\b${genitive ? escapeRegex(generateGenitives(search)) + "'?|" : ''}${safeSearch})(?=\\b|\\W|$)`
+			: `(${safeSearch})`,
 		caseSensitive ? 'g' : 'gi'
 	)
 }
