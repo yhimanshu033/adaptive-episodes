@@ -11,6 +11,7 @@ import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
 import { getSavingData } from '@/lib/utils/helpers'
 import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers } from '@/lib/utils/plate'
+import { createRateLimiter } from '@/lib/utils/rate-limit'
 
 import { BASE_STATUS, ELanguage } from '@/types/common'
 import { TGetSavingParamsRet } from '@/types/content-types'
@@ -42,6 +43,8 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 	const currentTitle = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
 	)
+
+	const rateLimit = useMemo(() => createRateLimiter(70, 60 * 1000), [])
 
 	const [savedData, setSavedData] = useState({
 		content: JSON.stringify(children),
@@ -120,7 +123,11 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			stopOverlayLoading = false,
 		}: TSaveEpisodeParams = {}) => {
 			// if current chapter data is unavailable or content is already saved with forceSaving disabled --> do not proceed
-			if (!data?.chapter || (!forced && isSaved)) {
+			if (
+				!data?.chapter ||
+				(!forced && isSaved) ||
+				saveEpisodeMutation.isPending
+			) {
 				return
 			}
 
@@ -134,9 +141,10 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 
 				saveLocal(params) // save a local backup in case saving fails
 
-				const respData = await saveEpisodeMutation.mutateAsync(
-					getSavingData(params)
-				) // update request
+				const respData = await rateLimit(
+					saveEpisodeMutation.mutateAsync,
+					getSavingData(getSavingParams())
+				) // add rate limit for saving requests in the frontend
 
 				// check if saving failed
 				if (!respData.success) {
@@ -180,6 +188,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			saveLocal,
 			setRecentEmail,
 			setSavedData,
+			rateLimit,
 		]
 	)
 
