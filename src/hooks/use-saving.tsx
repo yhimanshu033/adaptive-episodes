@@ -51,6 +51,8 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 
 	const rateLimit = useMemo(() => createRateLimiter(70, 60 * 1000), [])
 
+	const rateLimit = useMemo(() => createRateLimiter(70, 60 * 1000), [])
+
 	const [savedData, setSavedData] = useState({
 		content: JSON.stringify(children),
 		comments: JSON.stringify(allComments),

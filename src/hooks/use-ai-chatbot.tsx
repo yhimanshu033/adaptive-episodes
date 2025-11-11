@@ -472,7 +472,7 @@ function useAIChatbotUtil({
 				metaData: {
 					action: ACTION.STORY_CHAT_REVIEW_ADDED,
 					flowId: reviewStreaming,
-					response: responses[reviewStreaming].join(''),
+					response: responses[reviewStreaming]?.join(''),
 				},
 			})
 			setReviewStreaming('')
