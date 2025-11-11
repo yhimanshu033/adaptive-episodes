@@ -36,7 +36,7 @@ export type EpisodeStoreState = {
 	statusUpdating: number[]
 }
 
-type TEpisodeProps = {
+export type TEpisodeProps = {
 	beatsheet: string
 	context: string
 	loglines: string
@@ -180,9 +180,11 @@ export type TStatusUpdateResponse = {
 
 export type TGetDocxFromHtmlBody = { html_content: string }
 
+export type TLLMMemories = Partial<TEpisodeProps>
 export type EpisodeIdStoreType = {
 	acceptedDiffValue: Value | null
 	activeNoteId: string | null
+	currentLLMMemories: TLLMMemories
 	currentTitle: string
 	dualViewMode: EDualVIewMode | null
 	episodeId: number

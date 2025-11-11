@@ -322,7 +322,6 @@ function handleEventLogClient({
 
 	// Skip sending on non-prod
 	if (process?.env?.NODE_ENV !== 'production') {
-		console.log({ env: process?.env?.NODE_ENV })
 		console.log('[DEBUG] Analytics payload:', payload)
 		return
 	}

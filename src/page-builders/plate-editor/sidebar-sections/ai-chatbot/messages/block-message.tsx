@@ -16,7 +16,7 @@ import {
 
 import { PlotExplorerApiResponse, TAssistantMessage } from '@/types/ai-types'
 
-const StreamedResponseWithCopy = ({
+export const StreamedResponseWithCopy = ({
 	responses,
 	taskEnded,
 }: {

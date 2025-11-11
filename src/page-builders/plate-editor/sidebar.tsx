@@ -10,6 +10,7 @@ import {
 	SidebarTopBar,
 	StoryExplorer,
 } from '@/page-builders/plate-editor/sidebar-sections'
+import Outliner from '@/page-builders/plate-editor/sidebar-sections/outliner'
 import { useEditorStore } from '@/store/editor-store'
 import usePlateStore from '@/store/plate-store'
 import { usePluginOption } from 'platejs/react'
@@ -34,6 +35,7 @@ const renderSidebar: Record<ESidebar, React.ReactNode> = {
 	[ESidebar.DUAL_VIEW]: null,
 	[ESidebar.NOTES]: <Notes />,
 	[ESidebar.BEAT_SHEET]: <BeatSheetEditor />,
+	[ESidebar.OUTLINER]: <Outliner />,
 }
 
 const Sidebar = () => {

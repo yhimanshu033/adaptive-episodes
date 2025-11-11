@@ -33,8 +33,11 @@ export const BASE_EXTENSION_QUERY_KEY = 'base-script-extension'
 export const DOC_EPISODE_COUNT_QUERY_KEY = 'doc-episode-count'
 
 export const SCENES_METADATA_QUERY_KEY = 'scenes-metadata'
+export const OUTLINER_SCENES_METADATA_QUERY_KEY = 'outliner-scenes-metadata'
 export const CHAPTER_CHARACTERS_DATA_QUERY_KEY = 'chapter-characters-data'
 
+export const OUTLINER_DATA_QUERY_KEY = 'outliner-data'
+export const OUTLINER_METADATA_QUERY_KEY = 'outliner-metadata'
 // Mutation keys
 export const RENAME_EPISODE_MUTATION = 'rename-episode'
 
@@ -69,4 +72,12 @@ export const GENERATE_BEATSHEET_MUTATION_KEY = 'generate-beatsheet-mutation'
 export const GET_DOCX_ESTIMATE_QUERY_KEY = 'docx-estimate-file-size'
 export const EPISODE_REGENERATE_MUTATION_KEY = 'episode-regenerate-mutation'
 
+export const OUTLINER_NEW_IDEA_MUTATION_KEY = 'outliner-new-ideas'
+
 export const CONFIGURATION_QUERY_KEY = 'get-configuration-data'
+
+export const SUMMARY_TO_EPISODE_MUTATION_KEY =
+	'summary-episode-regenerate-mutation'
+
+export const SUMMARY_TO_OUTLINE_MUTATION_KEY =
+	'summary-outline-regenerate-mutation'

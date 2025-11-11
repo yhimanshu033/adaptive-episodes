@@ -102,6 +102,19 @@ function useEpisodeIdStore() {
 		useEpisodeIdStoreContext.setState({ recentEmail })
 	}
 
+	const setCurrentLLMMemories = (
+		currentLLMMemories: EpisodeIdStoreType['currentLLMMemories']
+	) => {
+		useEpisodeIdStoreContext.setState((state) => {
+			return {
+				currentLLMMemories: {
+					...state.currentLLMMemories,
+					...currentLLMMemories,
+				},
+			}
+		})
+	}
+
 	return {
 		store: useEpisodeIdStoreContext,
 		setSelectedStatus,
@@ -116,6 +129,7 @@ function useEpisodeIdStore() {
 		setEpisodeImported,
 		setAcceptedDiffValue,
 		setRecentEmail,
+		setCurrentLLMMemories,
 	}
 }
 

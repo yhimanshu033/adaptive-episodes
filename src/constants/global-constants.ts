@@ -117,6 +117,14 @@ export const API_URLS = {
 	EPISODE_REGENERATE: '/aicopilot/nwm-extraction-pipeline/',
 	CHAPTER_CHARACTERS: '/chapters/characters/',
 	BEATSHEET_SCENE_UPDATE: '/scenes/update-metadata/',
+	OUTLINER_CHAT: '/aicopilot/bse/chatbot',
+	GET_OUTLINER_METADATA: '/project/:projectId/fetch-bse-metadata',
+	UPDATE_NARRATIVE_ARCS: '/project/:projectId/narrative-arc-plan',
+	OUTLINER_SUMMARY_EPISODE: '/aicopilot/bse/generate_episode',
+	OUTLINER_SUMMARY_EPISODE_V2: '/aicopilot/bse/summary-to-episode/',
+	OUTLINER_NEW_IDEAS: '/chapter/:episodeId/new-episode-ideas',
+	OUTLINER_SUMMARY_OUTLINE: '/aicopilot/bse/summary-to-outlines/',
+	OUTLINER_SAVE_CACHED_OUTLINE: '/scenes/save-cached-scenes/',
 }
 
 export const INDEXED_DB_KEYS = {

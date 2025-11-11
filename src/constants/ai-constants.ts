@@ -184,11 +184,12 @@ export const sidebarToTitle: Record<ESidebar, string> = {
 	[ESidebar.NOTES]: 'Notes',
 	[ESidebar.OUTLINE]: 'Story Explorer',
 	[ESidebar.BEAT_SHEET]: 'Beat Sheet',
+	[ESidebar.OUTLINER]: 'Outliner',
 }
 
 export const sidebarButtons: ESidebar[] = [ESidebar.CHATBOT, ESidebar.OUTLINE]
 
-export const HIDE_SIDEBAR_HEADER: ESidebar[] = [ESidebar.FAR]
+export const HIDE_SIDEBAR_HEADER: ESidebar[] = [ESidebar.FAR, ESidebar.OUTLINER]
 
 export const SAMPLE_LS_DATA: LSMappingOutputItem[] = [
 	{

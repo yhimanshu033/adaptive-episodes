@@ -23,6 +23,7 @@ import {
 import { LineHeightToolbarButton } from '@/components/plate-ui-v2/line-height-toolbar-button'
 import { MarkToolbarButton } from '@/components/plate-ui-v2/mark-toolbar-button'
 import ToggleFindAndReplace from '@/components/plate-ui-v2/toggle-find-and-replace'
+import ToggleOutliner from '@/components/plate-ui-v2/toogle-outliner'
 import { ToolbarGroup } from '@/components/plate-ui-v2/toolbar'
 import TranslationToggleButton from '@/components/plate-ui-v2/translation-toggle-button'
 import TtsToolbarButton from '@/components/plate-ui-v2/tts-toolbar-button'
@@ -34,7 +35,6 @@ import { ESidebar } from '@/types/plate-types'
 import { If } from '../aural-ui/if-else'
 import { ScrollArea } from '../aural-ui/scroll-area'
 import { ThemeConfigurationApply } from '../theme-toggle'
-import ToggleBeatSheetEditor from './toogle-beatsheet-editor'
 
 const toolbarIconVariants = iconVariants({ variant: 'toolbar' })
 
@@ -103,7 +103,8 @@ const RightToolbarSection = React.memo(() => (
 		<ToolbarGroup>
 			<ToggleFindAndReplace />
 		</ToolbarGroup>
-		<ToggleBeatSheetEditor />
+		<ToggleOutliner />
+		{/* <ToggleBeatSheetEditor /> */}
 		<ToolbarGroup>
 			<TranslationToggleButton />
 		</ToolbarGroup>

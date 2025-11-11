@@ -14,6 +14,10 @@ import {
 import { roleToData } from '@/constants/global-constants'
 import { EImportStatus } from '@/constants/story-constants'
 import { Locale } from '@/i18n/config'
+import {
+	TOutlinerData,
+	TOutlinerTabData,
+} from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
 import { match } from '@formatjs/intl-localematcher'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
@@ -25,6 +29,7 @@ import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
 
 import { ERole } from '@/types/admin-types'
+import { EMessenger, TMessage, TSimplifiedMessage } from '@/types/ai-types'
 import {
 	TCharacter,
 	TGenerateBeatsheetResponseItem,
@@ -1042,6 +1047,7 @@ export function getSavingData(
 		prevProps: params.chapterData?.chapter.props,
 		language: params.language,
 		chapter_title: params.title || params.chapterData?.chapter.chapter_title,
+		newLLMMemories: params.llmMemories || {},
 	}
 }
 
@@ -1217,6 +1223,33 @@ export function jumbleArray<T>(array: T[]): T[] {
 export const isStringifiedJsonArray = (text: string) =>
 	/^\s*\[.*\]\s*$/.test(text)
 
+export function getContextStr({
+	tabData,
+	outlinerData,
+}: {
+	outlinerData?: TOutlinerData
+	tabData?: TOutlinerTabData
+}) {
+	const summary = outlinerData?.[tabData?.summaryIdx ?? -1]
+	const scene = summary?.scenes?.[tabData?.sceneIdx ?? -1]
+	const beat = scene?.beats?.[tabData?.beatIdx ?? -1]
+	let context = 'Summaries'
+	if (summary) {
+		context = summary.title
+	}
+	if (scene) {
+		context = scene.summary
+	}
+	if (beat) {
+		context = trim(beat.description || '', 15)
+	}
+	return context
+}
+
+export function getSafeArrayIdx(idx: number, len: number) {
+	return (len + (idx % len)) % len
+}
+
 /**
  * Calculates text statistics including estimated line count based on font and width.
  *
@@ -1314,4 +1347,27 @@ export function getScaledValue(str: string) {
 
 export function prettifyArrayTrim(arr: number[], len = 4, separator = ', ') {
 	return arr.slice(0, len).join(separator)
+}
+
+export function getSimplifiedMessageList({
+	messages,
+	responses,
+}: {
+	messages: TMessage[]
+	responses: Record<string, string[]>
+}): TSimplifiedMessage[] {
+	const simplified = [...messages].map((item) => {
+		if (item.role === EMessenger.ASSISTANT) {
+			return {
+				role: item.role,
+				content:
+					(item.taskId ? responses[item.taskId]?.join('') : item.content) || '',
+			}
+		}
+		return {
+			content: item.content,
+			role: item.role,
+		}
+	})
+	return simplified
 }

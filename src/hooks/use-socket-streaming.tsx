@@ -165,7 +165,9 @@ export const SocketStreamingProvider = ({
 			}
 
 			const taskId = nanoid()
+
 			setFetchedData((prev) => ({ ...prev, [key]: taskId }))
+
 			if (onResponse) {
 				taskCallbacksRef.current[taskId] = onResponse
 			}

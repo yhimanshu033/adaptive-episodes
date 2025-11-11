@@ -12,6 +12,7 @@ import EditorOverlayLoader from '@/page-builders/plate-editor/editor-overlay-loa
 import { EditorSkeletonLoader } from '@/page-builders/plate-editor/editor-skelton-loader'
 import EpisodeHeader from '@/page-builders/plate-editor/episode-header'
 import Sidebar from '@/page-builders/plate-editor/sidebar'
+import { OutlineContextProvider } from '@/page-builders/plate-editor/sidebar-sections/outliner/provider'
 import { Plate } from 'platejs/react'
 
 import { ScrollArea, ScrollBar } from '@/components/aural-ui/scroll-area'
@@ -48,54 +49,56 @@ function MyEditor({
 				<EditorAccessProvider>
 					<SavingContextProvider data={content}>
 						<ChatbotProvider episodeContent={content}>
-							<BeatSheetEditorContextProvider>
-								<div className="flex h-screen flex-col">
-									<EditorOverlayLoader />
-									<EpisodeHeader
-										content={content}
-										latestStatus={latestStatus}
-									/>
+							<OutlineContextProvider>
+								<BeatSheetEditorContextProvider>
+									<div className="flex h-screen flex-col">
+										<EditorOverlayLoader />
+										<EpisodeHeader
+											content={content}
+											latestStatus={latestStatus}
+										/>
 
-									<div
-										className={cn(
-											'animate-fade-in-up relative min-h-0 flex-1 pb-4'
-										)}
-									>
-										<ResizablePanelGroup
-											direction="horizontal"
-											className="flex h-full overflow-visible!"
+										<div
+											className={cn(
+												'animate-fade-in-up relative min-h-0 flex-1 pb-4'
+											)}
 										>
-											<ResizablePanel
-												minSize={50}
-												order={1}
-												className="h-full w-full flex-1 overflow-visible!"
+											<ResizablePanelGroup
+												direction="horizontal"
+												className="flex h-full overflow-visible!"
 											>
-												<ResizablePanelGroup
-													direction="horizontal"
-													className="flex h-full overflow-visible!"
+												<ResizablePanel
+													minSize={50}
+													order={1}
+													className="h-full w-full flex-1 overflow-visible!"
 												>
-													<ResizablePanel
-														minSize={30}
-														order={1}
-														className="flex w-full flex-col overflow-visible!"
+													<ResizablePanelGroup
+														direction="horizontal"
+														className="flex h-full overflow-visible!"
 													>
-														<FixedToolbar className="overflow-visible! px-0 py-0">
-															<FixedToolbarButtons />
-														</FixedToolbar>
-														<ScrollArea className="relative overflow-auto">
-															<ScrollBar orientation="horizontal" />
-															<WordCountTag />
-															<EditorHandler />
-														</ScrollArea>
-													</ResizablePanel>
-													<DualView />
-												</ResizablePanelGroup>
-											</ResizablePanel>
-											<Sidebar />
-										</ResizablePanelGroup>
+														<ResizablePanel
+															minSize={30}
+															order={1}
+															className="flex w-full flex-col overflow-visible!"
+														>
+															<FixedToolbar className="overflow-visible! px-0 py-0">
+																<FixedToolbarButtons />
+															</FixedToolbar>
+															<ScrollArea className="relative overflow-auto">
+																<ScrollBar orientation="horizontal" />
+																<WordCountTag />
+																<EditorHandler />
+															</ScrollArea>
+														</ResizablePanel>
+														<DualView />
+													</ResizablePanelGroup>
+												</ResizablePanel>
+												<Sidebar />
+											</ResizablePanelGroup>
+										</div>
 									</div>
-								</div>
-							</BeatSheetEditorContextProvider>
+								</BeatSheetEditorContextProvider>
+							</OutlineContextProvider>
 						</ChatbotProvider>
 					</SavingContextProvider>
 				</EditorAccessProvider>

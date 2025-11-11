@@ -25,7 +25,6 @@ import Languages from '@/components/plate-ui/languages'
 import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
 import { SidebarToggleButton } from '@/components/plate-ui/sidebar-toggle-button'
 import useProjectId from '@/providers/project-id-provider'
-import { hasNWMRan } from '@/lib/utils/helpers'
 
 import { ERole } from '@/types/admin-types'
 import { BASE_STATUS, EStatus } from '@/types/common'
@@ -140,7 +139,6 @@ const EpisodeHeader = ({
 					fallbackQuickPrompts={isGerman ? QUICK_PROMPTS : QUICK_PROMPTS_EN}
 					episodeId={data?.chapter?.id}
 					showEpisodeSpecificActions
-					allowNWM={!hasNWMRan(data?.chapter)}
 				/>
 			</div>
 		</div>

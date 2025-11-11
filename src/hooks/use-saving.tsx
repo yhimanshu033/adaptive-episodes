@@ -17,7 +17,9 @@ import { BASE_STATUS, ELanguage } from '@/types/common'
 import { TGetSavingParamsRet } from '@/types/content-types'
 import {
 	SaveEpisodeParams,
+	TEpisodeProps,
 	TGetEpisodeResponse,
+	TLLMMemories,
 	TSaveEpisodeFailMessage,
 	TSaveEpisodeParams,
 } from '@/types/episode-type'
@@ -43,6 +45,9 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 	const currentTitle = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentTitle)
 	)
+	const currentLLMMemories = useEpisodeIdStoreContext(
+		useShallow((state) => state.currentLLMMemories)
+	)
 
 	const rateLimit = useMemo(() => createRateLimiter(70, 60 * 1000), [])
 
@@ -50,6 +55,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 		content: JSON.stringify(children),
 		comments: JSON.stringify(allComments),
 		title: data?.chapter.chapter_title || '',
+		llmMemories: data?.chapter?.props?.llm_memories as TLLMMemories,
 	})
 
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
@@ -59,15 +65,33 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 		const currentChildren = JSON.stringify(children)
 		const currentComments = JSON.stringify(allComments)
 		const storedTitle = savedData.title || data?.chapter?.chapter_title
+		const storedLLMMemories =
+			savedData.llmMemories || data?.chapter?.props?.llm_memories
+		const storedLLMMemoriesStr = JSON.stringify(
+			savedData.llmMemories || data?.chapter?.props?.llm_memories
+		)
+		const currentLLMMemoriesStr = JSON.stringify({
+			...storedLLMMemories,
+			...currentLLMMemories,
+		})
 
 		const newIsSaved =
 			!forceSave &&
 			savedData.content === currentChildren &&
 			savedData.comments === currentComments &&
-			currentTitle === storedTitle
+			currentTitle === storedTitle &&
+			currentLLMMemoriesStr === storedLLMMemoriesStr
 
 		return newIsSaved
-	}, [children, allComments, currentTitle, data?.chapter, forceSave, savedData])
+	}, [
+		children,
+		allComments,
+		currentTitle,
+		data?.chapter,
+		forceSave,
+		savedData,
+		currentLLMMemories,
+	])
 
 	const getSavingParams = useCallback((): TGetSavingParamsRet => {
 		const word_count = wordCount.value
@@ -79,6 +103,10 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 		const status = data?.chapter.status || BASE_STATUS
 		const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
 		const chapterId = data?.chapter.id
+		const llmMemories = {
+			...savedData.llmMemories,
+			...currentLLMMemories,
+		}
 
 		return {
 			word_count,
@@ -91,8 +119,18 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			commentsStr,
 			chapterData: data,
 			allComments,
+			llmMemories,
+			llmMemoriesStr: JSON.stringify(llmMemories),
 		}
-	}, [wordCount.value, children, allComments, data, currentTitle])
+	}, [
+		wordCount.value,
+		children,
+		allComments,
+		data,
+		currentTitle,
+		currentLLMMemories,
+		savedData,
+	])
 
 	const saveLocal = useCallback(
 		(args: TGetSavingParamsRet) => {
@@ -107,6 +145,10 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 				props: {
 					...args.chapterData?.chapter.props,
 					comments: args.allComments,
+					llm_memories: {
+						...args.chapterData?.chapter.props?.llm_memories,
+						...((args.llmMemories as TLLMMemories) ?? {}),
+					} as TEpisodeProps,
 				},
 				chapter_title: args.title || args.chapterData?.chapter.chapter_title,
 			}
@@ -169,6 +211,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 					content: params.contentStr,
 					comments: params.commentsStr,
 					title: params.title,
+					llmMemories: params?.llmMemories || {},
 				})
 			} catch (error) {
 				console.error(error)
