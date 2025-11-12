@@ -114,6 +114,9 @@ export function getOutlinerNewNarrativeArcsOptions({
 }: {
 	newNarrativeArcs: TOutlinerChatGetNarrativeArcsResponse
 }) {
+	if (!Array.isArray(newNarrativeArcs)) {
+		return []
+	}
 	return newNarrativeArcs.map((item, idx) => {
 		return {
 			title: `Narrative Arc Plan ${idx + 1}`,

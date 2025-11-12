@@ -931,7 +931,7 @@ function useOutlinerUtil() {
 				...newData[2],
 				multiSelectOptions: [
 					...getOutlinerNewNarrativeArcsOptions({
-						newNarrativeArcs: streamedNewNarrativeArcs,
+						newNarrativeArcs: streamedNewNarrativeArcs || [],
 					}),
 					{
 						title: 'Your Own Narrative Arc Plan',
