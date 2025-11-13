@@ -64,6 +64,7 @@ export type TEpisode = {
 		notes?: TNote[]
 		nwm_running?: boolean
 		original_chapters?: TEpisode[]
+		views?: Record<string, string>
 	}
 	seq_number: number
 	status: EStatus | typeof BASE_STATUS

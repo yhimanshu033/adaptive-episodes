@@ -14,6 +14,21 @@ import {
 	TPatchEpisodeUrlParams,
 } from '@/types/episode-type'
 
+async function getAdditionalViews(views?: Record<string, string>) {
+	if (!views || Object.keys(views).length === 0) {
+		return {}
+	}
+
+	const entries = await Promise.all(
+		Object.entries(views).map(async ([key, url]) => {
+			const content = await getGCSContent({ url })
+			return [key, content] as const
+		})
+	)
+
+	return Object.fromEntries(entries)
+}
+
 export const getEpisodeContent = async (chapterId: number) => {
 	const episodeData = await fetchAPI<
 		TGetNewEpisodeResponse,
@@ -26,19 +41,23 @@ export const getEpisodeContent = async (chapterId: number) => {
 		},
 	})
 
-	if (!episodeData.data?.chapter) {
+	const chapter = episodeData?.data?.chapter
+
+	if (!chapter) {
 		return null
 	}
 
-	const [text, translation_text] = await Promise.all([
-		getGCSContent({ url: episodeData.data?.chapter?.file_url }),
-		getGCSContent({ url: episodeData.data?.chapter?.translation_url }),
+	const [text, translation_text, additional_view] = await Promise.all([
+		getGCSContent({ url: chapter.file_url }),
+		getGCSContent({ url: chapter.translation_url }),
+		getAdditionalViews(chapter.props?.views),
 	])
 
 	return {
 		...episodeData.data,
 		text,
 		translation_text,
+		additional_view,
 	} as TGetEpisodeResponse
 }
 
