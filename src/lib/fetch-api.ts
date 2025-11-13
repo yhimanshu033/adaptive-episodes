@@ -111,17 +111,20 @@ export async function fetchAPI<
 	const accessToken = session?.accessToken || ''
 	const correlationId = uuid()
 
-	const defaultSentryData: Record<string, string> = {
-		user_uid: session?.user?.uid || 'NA',
+	const defaultSentryTags: Record<string, string> = {
 		user_id: String(session?.user?.id),
 		user_email: session?.user?.email || 'NA',
-		url: resolvedUrl,
+		correlationId,
+		url,
 		method,
+	}
+
+	const defaultSentryData: Record<string, string> = {
+		user_uid: session?.user?.uid || 'NA',
 		accessToken: accessToken ? 'exists' : "doesn't exist",
 		body: JSON.stringify(body),
 		query: JSON.stringify(query),
 		headers: JSON.stringify(headers),
-		correlationId,
 	}
 
 	const startTime = Date.now()
@@ -136,10 +139,12 @@ export async function fetchAPI<
 				extra: {
 					...defaultSentryData,
 				},
+				tags: defaultSentryTags,
 			})
 			if (sendError) {
 				Sentry.captureException(new Error('API ACCESS_TOKEN ERROR'), {
 					extra: defaultSentryData,
+					tags: defaultSentryTags,
 				})
 			}
 		}
@@ -153,6 +158,7 @@ export async function fetchAPI<
 					duration,
 					timeoutThreshold: FETCH_TIMEOUT,
 				},
+				tags: defaultSentryTags,
 			})
 			if (sendError) {
 				Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
@@ -161,6 +167,7 @@ export async function fetchAPI<
 						duration,
 						timeoutThreshold: FETCH_TIMEOUT,
 					},
+					tags: defaultSentryTags,
 				})
 			}
 		}, FETCH_TIMEOUT)
@@ -195,6 +202,10 @@ export async function fetchAPI<
 					duration: requestDuration,
 					timeoutThreshold: FETCH_TIMEOUT,
 				},
+				tags: {
+					...defaultSentryTags,
+					duration: requestDuration,
+				},
 			})
 			Sentry.captureMessage('API SLOW REQUEST COMPLETED', {
 				level: 'warning',
@@ -202,6 +213,10 @@ export async function fetchAPI<
 					...defaultSentryData,
 					duration: requestDuration,
 					timeoutThreshold: FETCH_TIMEOUT,
+				},
+				tags: {
+					...defaultSentryTags,
+					duration: requestDuration,
 				},
 			})
 		}
@@ -218,6 +233,7 @@ export async function fetchAPI<
 					responseStatus: response.status,
 					responseStatusText: response.statusText,
 				},
+				tags: defaultSentryTags,
 			})
 			if (sendError) {
 				Sentry.captureException(new Error('API RESPONSE ERROR'), {
@@ -226,6 +242,7 @@ export async function fetchAPI<
 						responseStatus: response.status,
 						responseStatusText: response.statusText,
 					},
+					tags: defaultSentryTags,
 				})
 			}
 
@@ -261,18 +278,30 @@ export async function fetchAPI<
 			clearTimeout(timeoutId)
 		}
 
+		const duration = Date.now() - startTime
+
 		log({
 			type: 'API CATCH ERROR',
 			extra: {
 				...defaultSentryData,
 				error: JSON.stringify(error),
 			},
+			tags: {
+				...defaultSentryTags,
+				duration,
+			},
 		})
 		if (sendError) {
-			Sentry.captureException(new Error('API CATCH ERROR'), {
+			const errorTitle =
+				duration > FETCH_TIMEOUT ? 'SLOW API CATCH ERROR' : 'API CATCH ERROR'
+			Sentry.captureException(new Error(errorTitle), {
 				extra: {
 					...defaultSentryData,
 					error: JSON.stringify(error),
+				},
+				tags: {
+					...defaultSentryTags,
+					duration,
 				},
 			})
 		}
