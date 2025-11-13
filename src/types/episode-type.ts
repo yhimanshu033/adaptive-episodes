@@ -74,7 +74,7 @@ export type TEpisode = {
 	writer?: number
 }
 
-export type TEpisodesData = { data: TEpisode[]; message: string }
+export type TEpisodesData = { data: Omit<TEpisode, 'props'>[]; message: string }
 
 export type TGetEpisodesResponse = {
 	count: number
@@ -98,6 +98,14 @@ export type TGetEpisodeResponse = {
 	previous_parent_id: number | null
 	text: string
 	translation_text: string
+}
+
+export type TGetNewEpisodeResponse = {
+	additional_view?: Record<string, string>
+	chapter: TEpisode
+	email?: string
+	next_parent_id: number | null
+	previous_parent_id: number | null
 }
 
 export type TGetEpisodeUrlParams = { chapterId: number }

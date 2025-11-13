@@ -1,6 +1,7 @@
 import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
+import { getGCSContent } from '@/lib/utils/gcs'
 import { getWordCountFromString } from '@/lib/utils/plate'
 
 import {
@@ -8,22 +9,37 @@ import {
 	TEpisode,
 	TGetEpisodeResponse,
 	TGetEpisodeUrlParams,
+	TGetNewEpisodeResponse,
 	TPatchEpisodeBody,
 	TPatchEpisodeUrlParams,
 } from '@/types/episode-type'
 
 export const getEpisodeContent = async (chapterId: number) => {
-	const episodeData = await fetchAPI<TGetEpisodeResponse, TGetEpisodeUrlParams>(
-		{
-			method: 'GET',
-			url: API_URLS.GET_EPISODE,
-			urlParams: {
-				chapterId,
-			},
-		}
-	)
+	const episodeData = await fetchAPI<
+		TGetNewEpisodeResponse,
+		TGetEpisodeUrlParams
+	>({
+		method: 'GET',
+		url: API_URLS.GET_EPISODE,
+		urlParams: {
+			chapterId,
+		},
+	})
 
-	return episodeData.data
+	if (!episodeData.data?.chapter) {
+		return null
+	}
+
+	const [text, translation_text] = await Promise.all([
+		getGCSContent({ url: episodeData.data?.chapter?.file_url }),
+		getGCSContent({ url: episodeData.data?.chapter?.translation_url }),
+	])
+
+	return {
+		...episodeData.data,
+		text,
+		translation_text,
+	} as TGetEpisodeResponse
 }
 
 export const saveContent = async ({

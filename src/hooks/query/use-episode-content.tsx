@@ -119,7 +119,7 @@ export const useEpisodeContentUtil = () => {
 
 		const resp = await getEpisodeContent(usedEpisodeId)
 
-		if (!resp) {
+		if (!resp?.chapter) {
 			return resp
 		}
 
