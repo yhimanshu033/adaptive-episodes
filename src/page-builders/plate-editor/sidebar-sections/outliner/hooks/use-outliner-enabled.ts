@@ -12,6 +12,6 @@ export default function useOutlinerEnabled() {
 
 	return (
 		OUTLINER_ENABLED_PROJECTS.has(Number(id)) &&
-		OUTLINER_ENABLED_USERS.has(userData?.user?.email || '')
+		OUTLINER_ENABLED_USERS.has(userData?.user?.email?.toLowerCase() || '')
 	)
 }
