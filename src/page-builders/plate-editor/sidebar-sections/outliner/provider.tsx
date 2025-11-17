@@ -499,7 +499,7 @@ function useOutlinerUtil() {
 				}
 				newData[summaryIdx] = {
 					...newData[summaryIdx],
-					title: 'Current Episode',
+					...(summaryIdx === 1 ? { title: 'Current Episode' } : {}),
 					multiSelectOptions: undefined,
 					summary: option[optionIdx].summary,
 				}

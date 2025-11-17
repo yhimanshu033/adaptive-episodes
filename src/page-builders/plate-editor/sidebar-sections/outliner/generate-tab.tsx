@@ -13,7 +13,7 @@ export default function GenerateTab() {
 			<ResizablePanel
 				order={2}
 				minSize={30}
-				defaultSize={30}
+				defaultSize={50}
 				className="relative flex flex-col overflow-hidden border-t"
 			>
 				<Image

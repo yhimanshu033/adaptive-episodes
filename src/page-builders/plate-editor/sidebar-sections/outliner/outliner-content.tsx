@@ -45,6 +45,7 @@ export default function OutlinerContent() {
 			<ResizablePanel
 				minSize={30}
 				order={1}
+				defaultSize={50}
 				className="h-full w-full flex-1 overflow-y-scroll!"
 			>
 				<OutlinerSummaries />
