@@ -51,3 +51,23 @@ export const OUTLINER_ENABLED_USERS = new Set([
 	'nicole428@gmail.com',
 	'sagelavidarkchild@gmail.com',
 ])
+
+export const GLOBAL_USERS = new Set([
+	// DEVS
+	'aanand.yadav@pocketfm.com',
+	'raj.yadav1@pocketfm.com',
+	'himanshu.yadav@pocketfm.com',
+	'neha.n@pocketfm.com',
+	'pavan.patel@pocketfm.com',
+	'int-prabhu.varad@pocketfm.com',
+	'adaanand420@gmail.com',
+	'varadprabhu111@gmail.com',
+
+	// LEADS
+	'ilan.benjamin@pocketfm.com',
+	'thomas.kornmaier@pocketfm.com',
+	'hitesh.mantrala@pocketfm.com',
+	'mayank.sancheti@pocketfm.com',
+	'shubham.s@pocketfm.com',
+	'prateek@pocketfm.com',
+])

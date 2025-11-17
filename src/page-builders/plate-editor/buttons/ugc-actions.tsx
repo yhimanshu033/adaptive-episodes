@@ -7,6 +7,9 @@ import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useIsUGC from '@/hooks/ugc/use-is-ugc'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { UploadIcon } from '@/icons/upload-icon'
+import { GLOBAL_USERS } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/constants'
+import { useGlobalStore } from '@/store/global-store'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
@@ -15,8 +18,14 @@ import { IfElse } from '@/components/aural-ui/if-else'
 export default function UGCActions() {
 	const isUGC = useIsUGC()
 	const { data: episodeData } = useEpisodeContent()
+	const userData = useGlobalStore(useShallow((state) => state.userData))
 
-	if (!isUGC || !!episodeData?.next_parent_id) {
+	if (
+		!(
+			isUGC || GLOBAL_USERS.has(userData?.user?.email?.toLowerCase?.() || '')
+		) ||
+		!!episodeData?.next_parent_id
+	) {
 		return null
 	}
 
