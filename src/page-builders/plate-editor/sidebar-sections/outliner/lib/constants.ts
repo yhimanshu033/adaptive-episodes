@@ -19,6 +19,8 @@ export const OUTLINER_ENABLED_USERS = new Set([
 	'neha.n@pocketfm.com',
 	'pavan.patel@pocketfm.com',
 	'int-prabhu.varad@pocketfm.com',
+	'adaanand420@gmail.com',
+	'varadprabhu111@gmail.com',
 
 	// LEADS
 	'ilan.benjamin@pocketfm.com',

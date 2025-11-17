@@ -63,3 +63,48 @@ export async function doPoll<
 		})
 	}
 }
+
+export async function doPollFn<T>(params: {
+	delay: number
+	fn: () => Promise<T>
+	signal?: AbortSignal
+	startDelay?: number
+	stop: (data: T) => boolean
+}) {
+	const { stop, delay, signal, startDelay = 0, fn } = params
+
+	if (startDelay > 0) {
+		await new Promise<void>((resolve, reject) => {
+			const timeout = setTimeout(resolve, startDelay)
+			if (signal) {
+				const abortHandler = () => {
+					clearTimeout(timeout)
+					reject(new Error('Polling aborted before start'))
+				}
+				signal.addEventListener('abort', abortHandler, { once: true })
+			}
+		})
+	}
+
+	while (true) {
+		if (signal?.aborted) {
+			return null
+		}
+
+		const data = await fn()
+		if (stop(data)) {
+			return data
+		}
+
+		await new Promise<void>((resolve, reject) => {
+			const timeout = setTimeout(resolve, delay)
+			if (signal) {
+				const abortHandler = () => {
+					clearTimeout(timeout)
+					reject(new Error('Polling aborted'))
+				}
+				signal.addEventListener('abort', abortHandler, { once: true })
+			}
+		})
+	}
+}

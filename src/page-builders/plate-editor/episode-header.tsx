@@ -12,6 +12,7 @@ import { FileTextIcon } from '@/icons/file-text-icon'
 import { MessageIcon } from '@/icons/message-icon'
 import HomeButton from '@/page-builders/plate-editor/buttons/home-button'
 import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
+import UGCActions from '@/page-builders/plate-editor/buttons/ugc-actions'
 import Versions from '@/page-builders/plate-editor/buttons/versions'
 import ConfigurationDialogTrigger from '@/page-builders/plate-editor/configuration-dialog/trigger'
 import Title from '@/page-builders/plate-editor/title'
@@ -69,7 +70,7 @@ const EpisodeHeader = ({
 	}
 
 	return (
-		<div className="border-fm-divider-tertiary flex items-center justify-between border-l px-7 py-6">
+		<div className="border-fm-divider-tertiary flex items-center justify-between border-l py-6 pr-2 pl-7">
 			<div className="flex items-center gap-4">
 				<HomeButton />
 				<Title
@@ -121,7 +122,6 @@ const EpisodeHeader = ({
 				</Link>
 
 				<DownloadAudio />
-
 				<Languages />
 				<Versions latestStatus={latestStatus} isChildEpisode={false} />
 				<ModeToolbarButton />
@@ -140,6 +140,7 @@ const EpisodeHeader = ({
 					episodeId={data?.chapter?.id}
 					showEpisodeSpecificActions
 				/>
+				<UGCActions />
 			</div>
 		</div>
 	)

@@ -831,7 +831,11 @@ export const migrateOldLSMapping = (
 }
 
 export function isInternalUser(session: Session | null) {
-	return !!session && session.user.email.includes('@pocketfm')
+	return !!session && isInternalEmail(session.user.email)
+}
+
+export function isInternalEmail(email?: string) {
+	return !!email?.includes('@pocketfm')
 }
 
 export function getPageFromEpisode(

@@ -14,7 +14,7 @@ const Languages = () => {
 
 	const { isGerman } = useAccessChecks()
 
-	if (isGerman) {
+	if (isGerman || languagesAvailable.length <= 1) {
 		return null
 	}
 

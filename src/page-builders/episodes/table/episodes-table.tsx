@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
+import useIsUGC from '@/hooks/ugc/use-is-ugc'
 import { useCreateTable } from '@/hooks/use-create-table'
 // import useEpisodeTable from '@/hooks/use-episode-table'
 import useIsGerman from '@/hooks/use-is-german'
@@ -76,6 +77,7 @@ const EpisodesTable = () => {
 		() => data?.results?.data ?? [],
 		[data?.results?.data]
 	)
+	const isUGC = useIsUGC()
 	const { table, columnSize, isWriter, editingRowId } =
 		useCreateTable(tableData)
 
@@ -382,14 +384,17 @@ const EpisodesTable = () => {
 													handleInventMouseLeave,
 													onClick: () => onInvent(row.original.seq_number + 1),
 													shouldShowHoverAction,
-													show: isWriter,
+													show: isWriter && !isUGC,
 												}
 
 												return (
 													<React.Fragment key={row.id}>
 														<InventEpisodeButton
 															show={
-																isWriter && hoverIndex === -1 && rowIndex === 0
+																isWriter &&
+																hoverIndex === -1 &&
+																rowIndex === 0 &&
+																!isUGC
 															}
 															shouldShowHoverAction={hoverIndex === -1}
 															onClick={() => onInvent(row.original.seq_number)}
