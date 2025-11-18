@@ -1,10 +1,7 @@
 'use client'
 
 import React, { useCallback, useState } from 'react'
-import {
-	DEFAULT_EDITOR_CONTENT,
-	DUAL_VIEW_EDITOR_ID,
-} from '@/constants/editor-constants'
+import { DUAL_VIEW_EDITOR_ID } from '@/constants/editor-constants'
 import useMyEditor from '@/hooks/use-my-editor'
 import DualViewLoader from '@/page-builders/plate-editor/dual-view/dual-view-loader'
 import { Plate } from 'platejs/react'
@@ -33,7 +30,7 @@ export default function ContentDisplay({
 	customButton,
 }: ContentDisplayProps) {
 	const editor = useMyEditor({
-		content: content || DEFAULT_EDITOR_CONTENT,
+		content: content ?? '',
 		id,
 		simplified: true,
 	})

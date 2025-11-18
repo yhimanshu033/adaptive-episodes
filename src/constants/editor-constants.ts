@@ -9,6 +9,7 @@ import { SuggestionIcon } from '@/icons/suggestion-icon'
 import { VerticalMenuIcon } from '@/icons/vertical-menu-icon'
 import { TResolvedSuggestion } from '@platejs/suggestion'
 import { LucideIcon } from 'lucide-react'
+import { Value } from 'platejs'
 
 import { EChatMode, TStoryChatSuggestion } from '@/types/ai-types'
 import {
@@ -196,7 +197,12 @@ export const beatSheetEditorAllowedProjects = [
 	4861, 4863, 4866, 4873, 4881, 4935, 4944, 4952,
 ]
 
-export const DEFAULT_EDITOR_CONTENT = 'No content available!'
+export const DEFAULT_EDITOR_CONTENT: Value = [
+	{
+		children: [],
+		type: 'p',
+	},
+]
 
 export const DEFAULT_CONFIGURATION_DATA: TStoredConfigurationData = {
 	defaultSidebar: ESidebar.CHATBOT,
