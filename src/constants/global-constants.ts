@@ -168,6 +168,8 @@ export const SOCKET_STREAMING_TIMEOUT = 60000 //1 minute
 export const FETCH_TIMEOUT = 5000 //10 seconds
 
 export const BEATSHEET_STREAMING_TIMEOUT = 3 * 60000 //3 minute
+export const AI_CHATBOT_STREAMING_TIMEOUT = 90000 //90 seconds
+export const STORY_EXPLORE_STREAMING_TIMEOUT = 90000 //90 seconds
 
 export const MAX_SOCKET_RETRIES = 5
 export const SOCKET_ERROR_TOAST_ID = 'socket-connection-error'

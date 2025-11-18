@@ -5,6 +5,7 @@ export interface CountdownState {
 	isRunning: boolean
 	progress: number
 	timeLeft: number
+	totalTime: number
 }
 
 export interface CountdownControls {
@@ -26,18 +27,22 @@ export const useCountdownTimer = (): CountdownState & CountdownControls => {
 		timeLeft: 0,
 		isRunning: false,
 		progress: 0,
+		totalTime: 0,
 	})
 
 	const intervalRefs = useRef<Record<string, NodeJS.Timeout>>({})
 	const globalIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-	const calculateProgress = useCallback((timeLeft: number): number => {
-		const elapsed = SOCKET_STREAMING_TIMEOUT - timeLeft
-		return Math.min(
-			Math.max((elapsed / SOCKET_STREAMING_TIMEOUT) * 100, 0),
-			100
-		)
-	}, [])
+	const calculateProgress = useCallback(
+		(timeLeft: number, totalTime: number): number => {
+			if (totalTime <= 0) {
+				return 0
+			}
+			const elapsed = totalTime - timeLeft
+			return Math.min(Math.max((elapsed / totalTime) * 100, 0), 100)
+		},
+		[]
+	)
 
 	const startTimer = useCallback(
 		(taskId?: string, startTime: number = SOCKET_STREAMING_TIMEOUT) => {
@@ -51,6 +56,7 @@ export const useCountdownTimer = (): CountdownState & CountdownControls => {
 				timeLeft: startTime,
 				isRunning: true,
 				progress: 0,
+				totalTime: startTime,
 			}
 
 			if (taskId) {
@@ -65,7 +71,10 @@ export const useCountdownTimer = (): CountdownState & CountdownControls => {
 			const interval = setInterval(() => {
 				const updateTimer = (prevState: CountdownState): CountdownState => {
 					const newTimeLeft = Math.max(prevState.timeLeft - 100, 0)
-					const newProgress = calculateProgress(newTimeLeft)
+					const newProgress = calculateProgress(
+						newTimeLeft,
+						prevState.totalTime
+					)
 
 					if (newTimeLeft <= 0) {
 						if (taskId && intervalRefs.current[taskId]) {
@@ -80,6 +89,7 @@ export const useCountdownTimer = (): CountdownState & CountdownControls => {
 							timeLeft: 0,
 							isRunning: false,
 							progress: 100,
+							totalTime: prevState.totalTime,
 						}
 					}
 
@@ -87,6 +97,7 @@ export const useCountdownTimer = (): CountdownState & CountdownControls => {
 						timeLeft: newTimeLeft,
 						isRunning: true,
 						progress: newProgress,
+						totalTime: prevState.totalTime,
 					}
 				}
 
@@ -151,6 +162,7 @@ export const useCountdownTimer = (): CountdownState & CountdownControls => {
 			timeLeft: 0,
 			isRunning: false,
 			progress: 0,
+			totalTime: 0,
 		})
 	}, [])
 
@@ -194,6 +206,7 @@ export const useCountdownTimer = (): CountdownState & CountdownControls => {
 		timeLeft: globalTimer.timeLeft,
 		isRunning: globalTimer.isRunning,
 		progress: globalTimer.progress,
+		totalTime: globalTimer.totalTime,
 		start: startTimer,
 		stop: stopTimer,
 		reset: resetTimer,
