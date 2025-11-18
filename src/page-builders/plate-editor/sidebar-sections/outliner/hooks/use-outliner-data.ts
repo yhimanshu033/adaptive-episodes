@@ -2,6 +2,7 @@ import { useSearchParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
 import { OUTLINER_DATA_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { isMetadataIncomplete } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/fns'
 import {
 	TGetOutlinerMetadataQueryParams,
 	TGetOutlinerMetadataResponse,
@@ -12,9 +13,10 @@ import {
 	TOutlinerChatGetNewIdeasUrlParams,
 	TOutlinerFetchedData,
 } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import { doPoll } from '@/lib/do-poll'
 import { fetchAPI } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
@@ -61,6 +63,33 @@ export default function useOutlinerData() {
 			toast.error('Error fetching outliner metadata!')
 			throw new Error('Error fetching outliner metadata!')
 		}
+
+		if (isMetadataIncomplete(metadataResp.data)) {
+			const polledResp = await doPoll<
+				TNoParams,
+				TGetOutlinerMetadataResponse,
+				TGetOutlinerMetadataUrlParams,
+				TGetOutlinerMetadataQueryParams
+			>({
+				method: 'GET',
+				url: API_URLS.GET_OUTLINER_METADATA,
+				query: {
+					seq_number: data?.chapter?.seq_number || 0,
+				},
+				urlParams: {
+					projectId: data?.chapter?.project || 0,
+				},
+				delay: 20 * 1000,
+				stop: (data) => {
+					return !isMetadataIncomplete(data?.data)
+				},
+			})
+			metadataResp.data.result.previous_episode_context =
+				polledResp?.data?.result.previous_episode_context
+			metadataResp.data.result.previous_episode_summary =
+				polledResp?.data?.result.previous_episode_summary
+		}
+
 		metadataResp.data.result.current_episode_summary =
 			metadataResp.data.result.current_episode_summary ||
 			data?.chapter?.props?.llm_memories?.summary
@@ -90,15 +119,14 @@ export default function useOutlinerData() {
 		}
 	}
 
-	const query = useQuery({
-		queryKey: [
+	const query = useMutation({
+		mutationKey: [
 			OUTLINER_DATA_QUERY_KEY,
 			data?.chapter?.project,
 			data?.chapter?.id,
 			isUGC,
 		],
-		queryFn: getOutlinerData,
-		enabled: !!data?.chapter?.seq_number,
+		mutationFn: getOutlinerData,
 	})
 
 	return query

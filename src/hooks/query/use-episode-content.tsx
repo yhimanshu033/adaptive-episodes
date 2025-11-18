@@ -133,9 +133,7 @@ export const useEpisodeContentUtil = () => {
 		const nwmRunning = resp?.chapter?.props?.nwm_running
 
 		if (nwmRunning) {
-			toast.info(
-				'NWM is currently regenerating this chapter. Please check back later!'
-			)
+			toast.info('NWM is currently regenerating this chapter!')
 			setRecentEmail(NWM_EMAIL)
 		} else if (resp.email) {
 			if (resp.email !== userData?.user?.email) {

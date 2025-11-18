@@ -88,6 +88,7 @@ export type TGetOutlinerMetadataResponse = {
 	result: {
 		current_episode_summary?: string
 		narrative_arc_plan?: string
+		nwm_running?: boolean
 		previous_episode_context?: string
 		previous_episode_summary?: string
 	}

@@ -1,5 +1,6 @@
 import {
 	TGenerateEpisodeFromSummaryResponse,
+	TGetOutlinerMetadataResponse,
 	TOutlinerChatGetNarrativeArcsResponse,
 	TOutlinerData,
 	TOutlinerFetchedData,
@@ -123,4 +124,10 @@ export function getOutlinerNewNarrativeArcsOptions({
 			summary: item.narrative_arc_plan,
 		}
 	})
+}
+
+export function isMetadataIncomplete(
+	data?: TGetOutlinerMetadataResponse | null
+) {
+	return !!data?.result.nwm_running
 }

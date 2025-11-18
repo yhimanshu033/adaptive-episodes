@@ -7,15 +7,8 @@ import { useMutation } from '@tanstack/react-query'
 import { useEditorRef } from 'platejs/react'
 import { toast } from 'sonner'
 
-import { doPollFn } from '@/lib/do-poll'
-import { fetchAPI } from '@/lib/fetch-api'
-
 import { TEpisodeRegenerateParams } from '@/types/beatsheet-editor-types'
 import { ELanguage } from '@/types/common'
-import {
-	TGetEpisodeUrlParams,
-	TGetNewEpisodeResponse,
-} from '@/types/episode-type'
 
 export function useUGCPublishMutation() {
 	const { data: episodeData } = useEpisodeContent()
@@ -44,35 +37,8 @@ export function useUGCPublishMutation() {
 			toast.error('Error in extracting context!')
 			return
 		}
-
-		// check after 2 minutes
-		const resp = await doPollFn({
-			fn: async () => {
-				const episode = await fetchAPI<
-					TGetNewEpisodeResponse,
-					TGetEpisodeUrlParams
-				>({
-					method: 'GET',
-					url: API_URLS.GET_EPISODE,
-					urlParams: {
-						chapterId: episodeData.chapter.id,
-					},
-				})
-				return episode.data
-			},
-			stop: (episode) => {
-				if (!episode) {
-					// some error has occurred. lets not poll further
-					toast.error('Some error occurred!')
-					return true
-				}
-				return episode?.chapter?.props?.nwm_running === false
-			},
-			delay: 30 * 1000,
-			startDelay: 2 * 60 * 1000,
-		})
-		toast.success('Published Episode Successfully!')
-		return resp
+		toast.info('Publishing Episode...')
+		return taskId
 	}
 
 	const mutation = useMutation({

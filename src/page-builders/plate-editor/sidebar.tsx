@@ -78,10 +78,10 @@ const Sidebar = () => {
 	}, [isEpisodeNavigationOpen])
 
 	useEffect(() => {
-		if (!configurationData?.defaultSidebar) {
-			return
+		if (configurationData?.defaultSidebar) {
+			setSidebar(configurationData.defaultSidebar)
 		}
-		setSidebar(configurationData.defaultSidebar)
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [configurationData.defaultSidebar])
 

@@ -9,12 +9,14 @@ import useSocketStreaming from '@/hooks/use-socket-streaming'
 import useNarrativeArcsMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-narrative-arcs-mutation'
 import useNewIdeasSaving from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-new-ideas-mutation'
 import useOutlinerChat from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-chat'
+import useOutlinerData from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-data'
 import useOutlinerEnabled from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-enabled'
 import useSaveCachedOutlineMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-save-cached-outline'
 import useSummaryEpisodeV2Mutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-summary-episode-v2-mutation'
 import useSummaryOutlineMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-summary-outline-mutation'
 import {
 	areOutlinerTabDataEqual,
+	convertOutlinerData,
 	getCurrEpSummary,
 	getOutlinerNewNarrativeArcsOptions,
 } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/fns'
@@ -59,6 +61,10 @@ function useOutlinerUtil() {
 	const [taskGeneratedContentMap, setTaskGeneratedContentMap] = useState<
 		Record<string, string>
 	>({})
+
+	const isInitialOutlineDataFetched = useRef(false)
+	const { mutateAsync: fetchOutlinerData, isPending: isOutlinerDataPending } =
+		useOutlinerData()
 
 	const { data: episodeData } = useEpisodeContent()
 	const { setCurrentLLMMemories } = useEpisodeIdStore()
@@ -299,6 +305,23 @@ function useOutlinerUtil() {
 			fetchedData,
 		]
 	)
+
+	const handleOutlinerDataFetch = useCallback(async () => {
+		if (
+			!!outlinerData ||
+			isOutlinerDataPending ||
+			isInitialOutlineDataFetched.current
+		) {
+			return
+		}
+		isInitialOutlineDataFetched.current = true
+		const fetchedOutlinerData = await fetchOutlinerData()
+		if (!fetchedOutlinerData) {
+			return
+		}
+		setFetchedData(fetchedOutlinerData)
+		setOutlinerData(convertOutlinerData(fetchedOutlinerData))
+	}, [fetchOutlinerData, outlinerData, isOutlinerDataPending])
 
 	const isChatOpen = useMemo(() => {
 		return outlinerTab === EOutlinerTab.GENERATE
@@ -1083,6 +1106,8 @@ function useOutlinerUtil() {
 		newNarrativeArcsTaskId,
 		isNewNarrativeArcsStreaming,
 		streamedNewNarrativeArcs,
+		handleOutlinerDataFetch,
+		isOutlinerDataPending,
 	}
 }
 

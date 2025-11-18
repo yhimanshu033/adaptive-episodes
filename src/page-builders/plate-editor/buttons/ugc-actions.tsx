@@ -7,13 +7,17 @@ import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useIsUGC from '@/hooks/ugc/use-is-ugc'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { UploadIcon } from '@/icons/upload-icon'
-import { GLOBAL_USERS } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/constants'
+import {
+	GLOBAL_USERS,
+	OUTLINER_ENABLED_PROJECTS,
+} from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/constants'
 import { useGlobalStore } from '@/store/global-store'
 import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
 import { IfElse } from '@/components/aural-ui/if-else'
+import { hasNWMRan } from '@/lib/utils/helpers'
 
 export default function UGCActions() {
 	const isUGC = useIsUGC()
@@ -24,14 +28,15 @@ export default function UGCActions() {
 		!(
 			isUGC || GLOBAL_USERS.has(userData?.user?.email?.toLowerCase?.() || '')
 		) ||
-		!!episodeData?.next_parent_id
+		!!episodeData?.next_parent_id ||
+		!OUTLINER_ENABLED_PROJECTS.has(episodeData?.chapter.project ?? 0)
 	) {
 		return null
 	}
 
 	return (
 		<IfElse
-			condition={episodeData?.chapter?.props?.nwm_running === false}
+			condition={hasNWMRan(episodeData?.chapter)}
 			if={<UGCNextButton />}
 			else={<UGCPublishButton />}
 		/>
@@ -40,18 +45,17 @@ export default function UGCActions() {
 
 function UGCPublishButton() {
 	const { mutateAsync, isPending } = useUGCPublishMutation()
-	const { data: episodeData, refetch } = useEpisodeContent()
 
 	const handlePublish = useCallback(async () => {
 		const resp = await mutateAsync()
 		if (resp) {
-			await refetch()
+			window.location.reload()
 		}
-	}, [mutateAsync, refetch])
+	}, [mutateAsync])
 
 	const isRunning = useMemo(() => {
-		return episodeData?.chapter?.props?.nwm_running || isPending
-	}, [episodeData, isPending])
+		return isPending
+	}, [isPending])
 
 	return (
 		<Button
