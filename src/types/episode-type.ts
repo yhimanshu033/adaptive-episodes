@@ -111,7 +111,7 @@ export type TGetNewEpisodeResponse = {
 
 export type TGetEpisodeUrlParams = { chapterId: number }
 
-export type TPatchEpisodeBody = { text: string } & Partial<TEpisode>
+export type TPatchEpisodeBody = { text?: string } & Partial<TEpisode>
 
 export type SaveEpisodeParams = {
 	episodeId: number
@@ -352,4 +352,24 @@ export type TChapterCharacter = {
 
 export type TGetChapterCharactersQuery = {
 	chapter_id: number
+}
+
+export type TGetPresignedUrlRequest = {
+	chapter_id: number
+	content_type?: string
+	expiration_minutes?: number
+	project_id: number
+	version?: number
+}
+
+export type TGetPresignedUrlResponse = {
+	expiration_minutes: number
+	file_path: string
+	message: string
+	presigned_url: string
+	public_url: string
+}
+
+export type DeepPartial<T> = {
+	[K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
 }

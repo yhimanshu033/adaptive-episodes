@@ -81,3 +81,5 @@ export const SUMMARY_TO_EPISODE_MUTATION_KEY =
 
 export const SUMMARY_TO_OUTLINE_MUTATION_KEY =
 	'summary-outline-regenerate-mutation'
+
+export const GET_FILE_CONTENT = 'get-file-content'

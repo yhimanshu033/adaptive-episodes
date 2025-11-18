@@ -403,7 +403,7 @@ export function getEpisodeQueryResponseFromStoredData({
 }): TGetEpisodeResponse {
 	return {
 		...episodeData,
-		text: oldData.text,
+		text: oldData.text || episodeData.text,
 		chapter: {
 			...episodeData.chapter,
 			props: oldData.props,
@@ -1050,7 +1050,6 @@ export function getSavingData(
 		comments: params.allComments,
 		prevProps: params.chapterData?.chapter.props,
 		language: params.language,
-		chapter_title: params.title || params.chapterData?.chapter.chapter_title,
 		newLLMMemories: params.llmMemories || {},
 	}
 }

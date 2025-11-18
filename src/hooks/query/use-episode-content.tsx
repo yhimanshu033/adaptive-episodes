@@ -147,7 +147,7 @@ export const useEpisodeContentUtil = () => {
 		}
 
 		const oldData = await getValue(`${resp.chapter.project}_${usedEpisodeId}`)
-		if (!oldData) {
+		if (!oldData?.text) {
 			return resp
 		}
 

@@ -59,13 +59,11 @@ export type TGetSavingParamsRet = {
 	llmMemoriesStr?: string
 	status: EStatus | 'BASE'
 	text: string
-	title: string
 	word_count: number
 }
 
 export type TSaveEpisodeMutationArgs = {
 	chapterId?: number | null
-	chapter_title?: string
 	comments?: TDiscussion[]
 	language?: ELanguage
 	newLLMMemories?: TLLMMemories

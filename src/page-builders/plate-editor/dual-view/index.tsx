@@ -11,16 +11,13 @@ import Translation from '@/page-builders/plate-editor/dual-view/translation'
 import VoicePass from '@/page-builders/plate-editor/dual-view/voice-pass'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import usePlateStore from '@/store/plate-store'
-import { toast } from 'sonner'
 import { useDebounceValue } from 'usehooks-ts'
 import { useShallow } from 'zustand/react/shallow'
 
-import { Button } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import { cn } from '@/lib/utils/helpers'
-import { getTextFromTextOrValue } from '@/lib/utils/plate'
 
 import { EChatMode } from '@/types/ai-types'
 import { EDualVIewMode, MODE_TO_TITLE } from '@/types/episode-type'
@@ -38,31 +35,18 @@ const DualView = () => {
 	const showDualView = sidebar === ESidebar.DUAL_VIEW && !focusMode
 
 	const extraViews = useMemo(() => {
-		if (!data?.additional_view) {
+		const additionalViews = data?.chapter?.props?.views
+		if (!additionalViews) {
 			return {}
 		}
-		return Object.keys(data.additional_view).reduce(
+		return Object.keys(additionalViews).reduce(
 			(acc, k) => {
 				return {
 					...acc,
 					[k as EDualVIewMode]: (
 						<ContentDisplay
-							content={data?.additional_view?.[k]}
-							customButton={
-								<Button
-									tooltip="Copy Content"
-									variant="outline"
-									size="sm"
-									onClick={() => {
-										void navigator.clipboard.writeText(
-											getTextFromTextOrValue(data?.additional_view?.[k] || '')
-										)
-										toast.success('Content copied successfully!')
-									}}
-								>
-									Copy
-								</Button>
-							}
+							contentUrl={additionalViews[k]}
+							showCopy
 							enableDiff
 							reverseDiff
 						/>
@@ -138,7 +122,7 @@ const DualView = () => {
 				)}
 			>
 				<div className="border-fm-divider-tertiary flex h-15.5 items-center justify-between gap-4 border-b py-3 pr-4 pl-7">
-					<h3 className="text-fm-primary leading-fm-md [font-size:var(--text-fm-md)] font-normal">
+					<h3 className="text-fm-primary leading-fm-md text-fm-md font-normal">
 						{modeToTitle[dualViewMode]}
 					</h3>
 					<IconButton

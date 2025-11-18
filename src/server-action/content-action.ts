@@ -2,7 +2,6 @@ import { API_URLS } from '@/constants/global-constants'
 
 import { fetchAPI } from '@/lib/fetch-api'
 import { getGCSContent } from '@/lib/utils/gcs'
-import { getWordCountFromString } from '@/lib/utils/plate'
 
 import {
 	SaveEpisodeParams,
@@ -14,7 +13,7 @@ import {
 	TPatchEpisodeUrlParams,
 } from '@/types/episode-type'
 
-async function getAdditionalViews(views?: Record<string, string>) {
+export async function getAdditionalViews(views?: Record<string, string>) {
 	if (!views || Object.keys(views).length === 0) {
 		return {}
 	}
@@ -47,17 +46,13 @@ export const getEpisodeContent = async (chapterId: number) => {
 		return null
 	}
 
-	const [text, translation_text, additional_view] = await Promise.all([
-		getGCSContent({ url: chapter.file_url }),
-		getGCSContent({ url: chapter.translation_url }),
-		getAdditionalViews(chapter.props?.views),
-	])
+	const text = await getGCSContent({ url: chapter.file_url })
 
 	return {
 		...episodeData.data,
 		text,
-		translation_text,
-		additional_view,
+		additional_view: chapter.props?.views,
+		translation_text: chapter.translation_url,
 	} as TGetEpisodeResponse
 }
 
@@ -66,11 +61,6 @@ export const saveContent = async ({
 	episodeId,
 	...data
 }: SaveEpisodeParams) => {
-	let word_count = data.word_count
-	if (word_count === undefined) {
-		word_count = data.text ? getWordCountFromString(data.text) : 0
-	}
-
 	const responseData = await fetchAPI<
 		TPatchEpisodeBody,
 		TPatchEpisodeUrlParams,
@@ -80,7 +70,6 @@ export const saveContent = async ({
 		url: API_URLS.SAVE_EPISODE,
 		body: {
 			...data,
-			...(word_count ? { word_count } : {}),
 		},
 		urlParams: {
 			projectId,

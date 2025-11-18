@@ -1,26 +1,26 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
+import useChapterPropsMutation from '@/hooks/mutation/use-prop-saving'
+import useTextSaving from '@/hooks/mutation/use-text-saving'
 import useEditorData from '@/hooks/plate/use-editor-data'
+import useEditAccess from '@/hooks/use-edit-access'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { useEditorState, usePluginOption } from 'platejs/react'
-import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
 import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
-import { getSavingData } from '@/lib/utils/helpers'
 import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers } from '@/lib/utils/plate'
-import { createRateLimiter } from '@/lib/utils/rate-limit'
 
 import { BASE_STATUS, ELanguage } from '@/types/common'
 import { TGetSavingParamsRet } from '@/types/content-types'
 import {
+	DeepPartial,
 	SaveEpisodeParams,
+	TEpisode,
 	TEpisodeProps,
 	TGetEpisodeResponse,
 	TLLMMemories,
-	TSaveEpisodeFailMessage,
 	TSaveEpisodeParams,
 } from '@/types/episode-type'
 
@@ -33,71 +33,138 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 	const { wordCount } = useEditorData()
 	const { children } = useEditorState()
 	const allComments = usePluginOption(discussionPlugin, 'discussions')
-	const { saveEpisodeMutation } = useEpisodeHook()
+	const { mutateAsync: saveText, isPending: isTextSaving } = useTextSaving()
+	const { mutateAsync: saveProps, isPending: isPropsSaving } =
+		useChapterPropsMutation()
+
+	const { cannotEdit } = useEditAccess()
+
+	const saveWorking = useMemo(() => {
+		return isTextSaving || isPropsSaving
+	}, [isTextSaving, isPropsSaving])
 
 	const {
 		store: useEpisodeIdStoreContext,
 		setCurrentTitle,
-		setRecentEmail,
 		setStartOverlayLoading,
 	} = useEpisodeIdStore()
 
-	const currentTitle = useEpisodeIdStoreContext(
-		useShallow((state) => state.currentTitle)
-	)
 	const currentLLMMemories = useEpisodeIdStoreContext(
 		useShallow((state) => state.currentLLMMemories)
 	)
 
-	const rateLimit = useMemo(() => createRateLimiter(70, 60 * 1000), [])
-
 	const [savedData, setSavedData] = useState({
 		content: JSON.stringify(children),
 		comments: JSON.stringify(allComments),
-		title: data?.chapter.chapter_title || '',
 		llmMemories: data?.chapter?.props?.llm_memories as TLLMMemories,
+		wordCount: data?.chapter?.word_count,
 	})
 
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 
-	const isSaved = useMemo(() => {
-		const currentChildren = JSON.stringify(children)
-		const currentComments = JSON.stringify(allComments)
-		const storedTitle = savedData.title || data?.chapter?.chapter_title
-		const storedLLMMemories =
-			savedData.llmMemories || data?.chapter?.props?.llm_memories
-		const storedLLMMemoriesStr = JSON.stringify(
-			savedData.llmMemories || data?.chapter?.props?.llm_memories
-		)
-		const currentLLMMemoriesStr = JSON.stringify({
-			...storedLLMMemories,
-			...currentLLMMemories,
-		})
+	const isTextSaved = useCallback(
+		(text: string) => {
+			return text === savedData.content
+		},
+		[savedData]
+	)
 
+	const isCommentsSaved = useCallback(
+		(allComments: TGetSavingParamsRet['allComments']) => {
+			const comments = JSON.stringify(allComments || [])
+
+			return comments === savedData.comments
+		},
+		[savedData]
+	)
+
+	const isLLMMemoriesSaved = useCallback(
+		(llmMemories: TGetSavingParamsRet['llmMemories']) => {
+			const storedLLMMemories =
+				savedData.llmMemories || data?.chapter?.props?.llm_memories
+			const storedLLMMemoriesStr = JSON.stringify(
+				savedData.llmMemories || data?.chapter?.props?.llm_memories || {}
+			)
+			const currentLLMMemoriesStr = JSON.stringify({
+				...storedLLMMemories,
+				...llmMemories,
+			})
+			return currentLLMMemoriesStr === storedLLMMemoriesStr
+		},
+		[savedData, data]
+	)
+
+	const isWordCountSaved = useCallback(
+		(word_count: TGetSavingParamsRet['word_count']) => {
+			return word_count === savedData.wordCount
+		},
+		[savedData.wordCount]
+	)
+
+	const isSaved = useMemo(() => {
+		if (cannotEdit) {
+			return true
+		}
+		const currentChildren = JSON.stringify(children)
 		const newIsSaved =
 			!forceSave &&
-			savedData.content === currentChildren &&
-			savedData.comments === currentComments &&
-			currentTitle === storedTitle &&
-			currentLLMMemoriesStr === storedLLMMemoriesStr
+			isTextSaved(currentChildren) &&
+			isCommentsSaved(allComments) &&
+			isLLMMemoriesSaved(currentLLMMemories) &&
+			isWordCountSaved(wordCount.value)
 
 		return newIsSaved
 	}, [
 		children,
 		allComments,
-		currentTitle,
-		data?.chapter,
 		forceSave,
-		savedData,
 		currentLLMMemories,
+		wordCount.value,
+		isTextSaved,
+		isCommentsSaved,
+		isLLMMemoriesSaved,
+		isWordCountSaved,
+		cannotEdit,
 	])
+
+	const getUnsavedChapterSavingParams = useCallback(
+		(params: TGetSavingParamsRet): DeepPartial<TEpisode> => {
+			let body: DeepPartial<TEpisode> = {}
+			if (!isWordCountSaved(params.word_count)) {
+				body = {
+					word_count: params.word_count,
+				}
+			}
+
+			if (!isCommentsSaved(params.allComments)) {
+				body = {
+					...body,
+					props: {
+						comments: params.allComments,
+					},
+				}
+			}
+
+			if (!isLLMMemoriesSaved(params.llmMemories) && params.llmMemories) {
+				body = {
+					...body,
+					props: {
+						...body.props,
+						llm_memories: params.llmMemories as TEpisodeProps,
+					},
+				}
+			}
+
+			return body
+		},
+		[isLLMMemoriesSaved, isWordCountSaved, isCommentsSaved]
+	)
 
 	const getSavingParams = useCallback((): TGetSavingParamsRet => {
 		const word_count = wordCount.value
 		const contentStr = JSON.stringify(children)
 		const commentsStr = JSON.stringify(allComments)
-		const title = currentTitle
 		const clearedLaser = clearLasers(children)
 		const text = JSON.stringify(clearedLaser)
 		const status = data?.chapter.status || BASE_STATUS
@@ -115,7 +182,6 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			status,
 			language,
 			chapterId,
-			title,
 			commentsStr,
 			chapterData: data,
 			allComments,
@@ -127,9 +193,8 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 		children,
 		allComments,
 		data,
-		currentTitle,
-		currentLLMMemories,
 		savedData,
+		currentLLMMemories,
 	])
 
 	const saveLocal = useCallback(
@@ -150,7 +215,6 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 						...((args.llmMemories as TLLMMemories) ?? {}),
 					} as TEpisodeProps,
 				},
-				chapter_title: args.title || args.chapterData?.chapter.chapter_title,
 			}
 
 			void setValue(`${String(id)}_${String(args.chapterId)}`, dataToSave)
@@ -165,11 +229,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			stopOverlayLoading = false,
 		}: TSaveEpisodeParams = {}) => {
 			// if current chapter data is unavailable or content is already saved with forceSaving disabled --> do not proceed
-			if (
-				!data?.chapter ||
-				(!forced && isSaved) ||
-				saveEpisodeMutation.isPending
-			) {
+			if (!data?.chapter || (!forced && isSaved) || saveWorking) {
 				return
 			}
 
@@ -183,36 +243,35 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 
 				saveLocal(params) // save a local backup in case saving fails
 
-				const respData = await rateLimit(
-					saveEpisodeMutation.mutateAsync,
-					getSavingData(getSavingParams())
-				) // add rate limit for saving requests in the frontend
+				const unsavedParams = getUnsavedChapterSavingParams(params)
 
-				// check if saving failed
-				if (!respData.success) {
-					const message = respData.message as TSaveEpisodeFailMessage
+				const textPromise = !isTextSaved(params.contentStr)
+					? saveText({ content: params.contentStr })
+					: Promise.resolve(true)
 
-					if (message.email) {
-						// check if someone else is editing chapter
-						toast.error(
-							`Saving failed, ${message.email} is currently working on the episode ${params.chapterData.chapter.seq_number}!`
-						)
-						setRecentEmail(message.email)
-					} else {
-						toast.error('Saving failed!')
+				const propsPromise = saveProps(unsavedParams)
+
+				const [textSaved, propsSaved] = await Promise.all([
+					textPromise,
+					propsPromise,
+				])
+
+				setSavedData((prev) => {
+					return {
+						...prev,
+						content: textSaved ? params.contentStr : prev.content,
+						comments: propsSaved ? params.commentsStr : prev.comments,
+						llmMemories:
+							propsSaved && params?.llmMemories
+								? params?.llmMemories
+								: prev.llmMemories,
+						wordCount: propsSaved ? params.word_count : prev.wordCount,
 					}
-				} else {
-					setLastSaved(new Date()) // change last saved date if saving succeeds
-				}
-				// change states accordingly
-				setForceSave(false)
-				// Update last saved contents
-				setSavedData({
-					content: params.contentStr,
-					comments: params.commentsStr,
-					title: params.title,
-					llmMemories: params?.llmMemories || {},
 				})
+				if (textSaved && propsSaved) {
+					setLastSaved(new Date())
+				}
+				setForceSave(false)
 			} catch (error) {
 				console.error(error)
 			} finally {
@@ -227,11 +286,13 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			isSaved,
 			setStartOverlayLoading,
 			getSavingParams,
-			saveEpisodeMutation,
+			saveWorking,
 			saveLocal,
-			setRecentEmail,
 			setSavedData,
-			rateLimit,
+			isTextSaved,
+			saveProps,
+			saveText,
+			getUnsavedChapterSavingParams,
 		]
 	)
 
@@ -240,7 +301,6 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 			return
 		}
 		if (data.chapter.chapter_title) {
-			setSavedData((prev) => ({ ...prev, title: data.chapter.chapter_title }))
 			setCurrentTitle(data.chapter.chapter_title)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -249,7 +309,7 @@ function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 	return {
 		handleSave,
 		isSaved,
-		isPending: saveEpisodeMutation.isPending,
+		isPending: saveWorking,
 		setForceSave,
 		lastSaved,
 		getSavingParams,

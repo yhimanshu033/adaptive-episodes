@@ -56,7 +56,6 @@ const useEpisodeHook = () => {
 			text,
 			status,
 			chapterId,
-			chapter_title,
 			comments,
 			prevProps,
 			word_count,
@@ -89,7 +88,6 @@ const useEpisodeHook = () => {
 							? EStatus.FIRST_DRAFT
 							: status
 						: BASE_STATUS,
-				...(chapter_title ? { chapter_title } : {}),
 				word_count,
 				language,
 				props: {

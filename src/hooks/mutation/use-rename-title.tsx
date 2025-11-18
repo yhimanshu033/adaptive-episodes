@@ -1,25 +1,33 @@
 'use client'
 
 import React from 'react'
-import { useParams } from 'next/navigation'
 import {
 	EPISODE_LIST_QUERY_KEY,
 	RENAME_EPISODE_MUTATION,
 } from '@/constants/query-constants'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
 import { BubbleCrossedIcon } from '@/icons/bubble-crossed-icon'
-import { getEpisodeContent, saveContent } from '@/server-action/content-action'
+import { saveContent } from '@/server-action/content-action'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import { FetchResponseResult } from '@/lib/fetch-api'
+
+import { TEpisode, TPatchEpisodeBody } from '@/types/episode-type'
+
+type TRenameFuncProps = {
+	episode: TEpisode
+	newTitle: string
+}
 const useRenameTitleMutation = () => {
-	const { id } = useParams()
 	const queryClient = useQueryClient()
 
-	const onSuccess = async () => {
-		await queryClient.invalidateQueries({
-			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
-			type: 'all',
+	const onSuccess = async (
+		_: FetchResponseResult<TPatchEpisodeBody>,
+		arg: TRenameFuncProps
+	) => {
+		await queryClient.refetchQueries({
+			queryKey: [EPISODE_LIST_QUERY_KEY, arg.episode?.project],
 		})
 		toast.success('Title renamed successfully', {
 			icon: <BubbleCheckIcon />,
@@ -37,39 +45,24 @@ const useRenameTitleMutation = () => {
 
 	const onRenameTitleMutation = async ({
 		newTitle,
-		episodeId,
-	}: {
-		episodeId: number
-		newTitle: string
-	}) => {
-		if (!newTitle || !episodeId) {
+		episode,
+	}: TRenameFuncProps) => {
+		if (!newTitle || !episode?.id) {
 			throw new Error('New title or episode ID is missing')
 		}
 
-		const episodeContent = await getEpisodeContent(episodeId)
-		if (!episodeContent) {
-			throw new Error('Episode content not found')
-		}
-
-		const {
-			text,
-			chapter: { status, language, parent: parentId, word_count },
-		} = episodeContent
-
 		return saveContent({
-			projectId: Number(id),
-			episodeId: parentId || episodeId,
-			id: episodeId,
-			text,
-			status,
-			language,
-			word_count,
+			projectId: episode.project,
+			episodeId: episode.parent ?? episode.id,
+			id: episode.id,
+			status: episode.status,
+			language: episode.language,
 			chapter_title: newTitle,
 		})
 	}
 
 	const renameTitleMutation = useMutation({
-		mutationKey: [RENAME_EPISODE_MUTATION, Number(id)],
+		mutationKey: [RENAME_EPISODE_MUTATION],
 		mutationFn: onRenameTitleMutation,
 		onSuccess,
 		onError: (error: Error) => onError(error),

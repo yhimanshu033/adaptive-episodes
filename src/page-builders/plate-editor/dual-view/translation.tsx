@@ -7,6 +7,9 @@ export default function Translation() {
 	const { data, isPending } = useEpisodeContent()
 
 	return (
-		<ContentDisplay content={data?.translation_text} isLoading={isPending} />
+		<ContentDisplay
+			contentUrl={data?.chapter.translation_url}
+			isLoading={isPending}
+		/>
 	)
 }
