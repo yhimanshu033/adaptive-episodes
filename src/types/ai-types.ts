@@ -297,6 +297,7 @@ export type TSendAdaptationStartBody = {
 	llm_model: ELLMModel
 	project_id: number
 	seq_no: number[]
+	skip_extraction?: boolean
 	source_lang: ELanguage
 	target_lang: ELanguage
 	type: 'ls_sheet_gen' | 'adaptation'

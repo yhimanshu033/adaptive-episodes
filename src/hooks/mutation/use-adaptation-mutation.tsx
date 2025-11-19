@@ -135,12 +135,14 @@ export default function useAdaptationMutation({
 		inputls,
 		projectId,
 		llmModel,
+		skip_extraction,
 	}: {
 		inputls: LSMappingOutput
 		language: ELanguage
 		llmModel: ELLMModel
 		projectId: number
 		selectedRowData: TEpisode[]
+		skip_extraction?: boolean
 		sourceLang: ELanguage
 	}) {
 		const body: TSendAdaptationStartBody = {
@@ -153,6 +155,7 @@ export default function useAdaptationMutation({
 			target_lang: language,
 			type: 'adaptation',
 			llm_model: llmModel,
+			skip_extraction,
 		}
 		const sanitizedBody = sanitize(body)
 

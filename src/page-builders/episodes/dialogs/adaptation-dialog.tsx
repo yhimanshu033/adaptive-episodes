@@ -64,6 +64,7 @@ export default function AdaptationDialog({
 		setFetchingLSSheet,
 		setSequence,
 		sequence,
+		skipNewExtraction,
 	} = useAdaptation()
 
 	if (
@@ -295,6 +296,7 @@ export default function AdaptationDialog({
 													: storyData?.parent_language) || ELanguage.GERMAN,
 											selectedRowData,
 											llmModel,
+											skip_extraction: skipNewExtraction,
 										},
 										{ onSuccess: () => setEpisodeAdaptation(false) }
 									)

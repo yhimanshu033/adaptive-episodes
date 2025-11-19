@@ -40,6 +40,7 @@ function useAdaptationUtil() {
 	const [sequence, setSequence] = useState<
 		LSMappingSequenceData['sequence_ls']
 	>({})
+	const [skipNewExtraction, setSkipNewExtraction] = useState<boolean>(false)
 	const abortControllerRef = useRef<AbortController | null>(null)
 
 	const {
@@ -202,6 +203,8 @@ function useAdaptationUtil() {
 		isFetchingLSSheet,
 		setSequence,
 		sequence,
+		skipNewExtraction,
+		setSkipNewExtraction,
 	}
 }
 
