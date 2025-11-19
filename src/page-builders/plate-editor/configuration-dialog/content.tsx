@@ -80,7 +80,6 @@ export default function ConfigurationDialogContent({
 						ESidebar.CHATBOT,
 						ESidebar.OUTLINE,
 						ESidebar.COMMENTS,
-						ESidebar.BEAT_SHEET,
 						ESidebar.FAR,
 						ESidebar.NOTES,
 						CLOSED_SIDEBAR_VALUE,

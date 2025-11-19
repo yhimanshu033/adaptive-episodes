@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { TRANSITION_DURATION } from '@/constants/editor-constants'
 import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
@@ -11,6 +11,7 @@ import {
 	StoryExplorer,
 } from '@/page-builders/plate-editor/sidebar-sections'
 import Outliner from '@/page-builders/plate-editor/sidebar-sections/outliner'
+import useOutlinerEnabled from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-enabled'
 import { useEditorStore } from '@/store/editor-store'
 import usePlateStore from '@/store/plate-store'
 import { usePluginOption } from 'platejs/react'
@@ -45,6 +46,7 @@ const Sidebar = () => {
 	const showSidebar = sidebar && sidebar !== ESidebar.DUAL_VIEW && !focusMode
 	const globalLocalize = useSearchParams().get(GLOBAL_LOCALIZE)
 	const activeCommentId = usePluginOption(commentPlugin, 'activeId')
+	const isOutlinerEnabled = useOutlinerEnabled()
 
 	const { configurationData } = useConfiguration()
 
@@ -56,6 +58,10 @@ const Sidebar = () => {
 		TRANSITION_DURATION
 	)
 	const [debouncedSidebar] = useDebounceValue(sidebar, TRANSITION_DURATION)
+
+	const sidebarChanged = useMemo(() => {
+		return sidebar !== debouncedSidebar
+	}, [debouncedSidebar, sidebar])
 
 	const isTransitioning =
 		(!debouncedShowSidebarView && showSidebar) || !showSidebar
@@ -78,12 +84,16 @@ const Sidebar = () => {
 	}, [isEpisodeNavigationOpen])
 
 	useEffect(() => {
+		if (isOutlinerEnabled) {
+			setSidebar(ESidebar.OUTLINER)
+			return
+		}
 		if (configurationData?.defaultSidebar) {
 			setSidebar(configurationData.defaultSidebar)
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [configurationData.defaultSidebar])
+	}, [configurationData.defaultSidebar, isOutlinerEnabled])
 
 	if (sidebar === ESidebar.DUAL_VIEW) {
 		return null
@@ -98,7 +108,7 @@ const Sidebar = () => {
 			<ResizableHandle />
 			<ResizablePanel
 				order={2}
-				minSize={30}
+				minSize={sidebarChanged && sidebar === ESidebar.OUTLINER ? 50 : 30}
 				maxSize={50}
 				defaultSize={30}
 				style={{

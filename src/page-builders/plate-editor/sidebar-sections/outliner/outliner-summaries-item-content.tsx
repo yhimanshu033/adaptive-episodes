@@ -132,39 +132,30 @@ export default function OutlinerSummariesItemContent({
 			</IfElse>
 
 			<If condition={outlinerSummaryItemIdx === 1}>
-				<div
-					className={cn('mt-2 flex items-center justify-between gap-2', {
-						'justify-end':
-							outlinerData?.[outlinerSummaryItemIdx].scenes?.length,
-					})}
-				>
-					<If
-						condition={!outlinerData?.[outlinerSummaryItemIdx].scenes?.length}
-					>
-						<IconButton
-							variant="outlined"
-							label={
-								outlinerData?.[outlinerSummaryItemIdx].scenes
-									? 'Regenerate Outline'
-									: 'Generate Outline'
-							}
-							tooltip={
-								outlinerData?.[outlinerSummaryItemIdx].scenes
-									? 'Regenerate Outline'
-									: 'Generate Outline'
-							}
-							disabled={isOutlineGenerationDisabled}
-							icon={
-								isOutlineGenerationDisabled ? <CircularLoader /> : <ListTree />
-							}
-							size="small"
-							onClick={() => {
-								void handleGenerateOutline({
-									summaryIdx: outlinerSummaryItemIdx,
-								})
-							}}
-						/>
-					</If>
+				<div className={cn('mt-2 flex items-center justify-between gap-2')}>
+					<IconButton
+						variant="outlined"
+						label={
+							outlinerData?.[outlinerSummaryItemIdx].scenes
+								? 'Regenerate Outline'
+								: 'Generate Outline'
+						}
+						tooltip={
+							outlinerData?.[outlinerSummaryItemIdx].scenes
+								? 'Regenerate Outline'
+								: 'Generate Outline'
+						}
+						disabled={isOutlineGenerationDisabled}
+						icon={
+							isOutlineGenerationDisabled ? <CircularLoader /> : <ListTree />
+						}
+						size="small"
+						onClick={() => {
+							void handleGenerateOutline({
+								summaryIdx: outlinerSummaryItemIdx,
+							})
+						}}
+					/>
 
 					<IconButton
 						variant="outlined"

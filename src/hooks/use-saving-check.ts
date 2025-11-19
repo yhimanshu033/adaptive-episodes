@@ -25,7 +25,7 @@ export default function useSavingCheck() {
 		const isNWMRunning = content?.chapter?.props?.nwm_running
 		if (isNWMRunning) {
 			setRecentEmail(NWM_EMAIL)
-			toast.info(`NWM is regenerating the chapter`)
+			toast.info(`Published! This episode is locked for now`)
 			return
 		}
 
