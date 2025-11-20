@@ -804,6 +804,32 @@ export function isInvalidLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	)
 }
 
+export function invalidLSMappingDetails(data: Partial<LSMappingOutputItem[]>) {
+	for (let i = 0; i < data.length; i++) {
+		const item = data[i]
+		const missingFields: string[] = []
+
+		if (!item?.original_name?.trim()) {
+			missingFields.push('original_name')
+		}
+		if (!item?.localised_name?.trim()) {
+			missingFields.push('localised_name')
+		}
+		if (!item?.type) {
+			missingFields.push('type')
+		}
+		if (item?.type === ELSMappingType.PERSON && !item?.gender) {
+			missingFields.push('gender')
+		}
+
+		if (missingFields.length) {
+			return { index: i, missingFields }
+		}
+	}
+
+	return null
+}
+
 export const migrateOldLSMapping = (
 	data?:
 		| LSMappingInput

@@ -8,15 +8,23 @@ import { toast } from 'sonner'
 import * as XLSX from 'xlsx'
 
 import { Button } from '@/components/aural-ui/button'
+import { Checkbox } from '@/components/aural-ui/checkbox'
 import { Divider } from '@/components/aural-ui/divider'
 import { IconButton } from '@/components/aural-ui/icon-button'
+import Label from '@/components/aural-ui/label'
 import {
 	Tabs,
 	TabsContent,
 	TabsList,
 	TabsTrigger,
 } from '@/components/aural-ui/tabs'
-import { cn, getFormattedDate, isInvalidLSMapping } from '@/lib/utils/helpers'
+import { Typography } from '@/components/aural-ui/typography'
+import useAdaptation from '@/providers/adaptation-provider'
+import {
+	cn,
+	getFormattedDate,
+	invalidLSMappingDetails,
+} from '@/lib/utils/helpers'
 
 import {
 	ELSMappingGender,
@@ -25,6 +33,7 @@ import {
 	LSMappingOutputItem,
 	LSMappingOutputItemV2,
 	LSMappingSequenceData,
+	TInvalidLSMappingDetails,
 } from '@/types/common'
 import { TStory } from '@/types/story-types'
 
@@ -39,6 +48,29 @@ interface LsTabsProps {
 	tableData: LSMappingOutputItemV2
 	viewOnly?: boolean
 	visibleRows?: number
+}
+
+const InvalidMappingToast = ({
+	invalidData,
+}: {
+	invalidData: TInvalidLSMappingDetails
+}) => {
+	const sheetName = invalidData.tabKey.replace(/_/g, ' ')
+	const rowNumber = invalidData.index + 1
+	const fieldsText = invalidData.missingFields.join(', ')
+
+	return (
+		<div className="**:text-fm-contrast ml-2 flex flex-col gap-2">
+			<Typography weight="semibold" className="text-fm-md">
+				Validation Error
+			</Typography>
+			<div className="flex flex-col gap-1 opacity-90 **:text-sm">
+				<Typography>Sheet: {sheetName}</Typography>
+				<Typography>Row: {rowNumber}</Typography>
+				<Typography>Missing fields: {fieldsText}</Typography>
+			</div>
+		</div>
+	)
 }
 
 const TableCTAs = ({
@@ -175,14 +207,14 @@ const TableCTAs = ({
 const ActionButtons = ({
 	viewOnly,
 	handleClose,
-	hasInvalidData,
 	handleSubmit,
 }: {
 	handleClose?: () => void
 	handleSubmit: () => void
-	hasInvalidData: boolean
 	viewOnly: boolean
 }) => {
+	const { skipNewExtraction, setSkipNewExtraction } = useAdaptation()
+
 	if (viewOnly) {
 		return null
 	}
@@ -196,13 +228,21 @@ const ActionButtons = ({
 				<Button variant="text" onClick={handleClose} innerClassName="!px-0">
 					Exit & Discard
 				</Button>
-				<Button
-					disabled={hasInvalidData}
-					isDisabled={hasInvalidData}
-					onClick={handleSubmit}
-				>
-					Save & Continue
-				</Button>
+				<div className="flex items-center gap-3">
+					<div className="flex items-center space-x-2">
+						<Checkbox
+							id="terms"
+							checked={skipNewExtraction}
+							onCheckedChange={(checked) =>
+								setSkipNewExtraction(
+									checked === 'indeterminate' ? false : checked
+								)
+							}
+						/>
+						<Label htmlFor="terms">Skip New Extraction</Label>
+					</div>
+					<Button onClick={handleSubmit}>Save & Continue</Button>
+				</div>
 			</div>
 		</>
 	)
@@ -235,20 +275,31 @@ const LsTabs = ({
 		[setTableData]
 	)
 
-	const hasInvalidData = useMemo(() => {
-		return Object.values(tableData).some((tabData) =>
-			isInvalidLSMapping(tabData)
-		)
+	const invalidData: TInvalidLSMappingDetails | null = useMemo(() => {
+		for (const [tabKey, tabData] of Object.entries(tableData)) {
+			const invalidDataDetails = invalidLSMappingDetails(tabData)
+			if (invalidDataDetails) {
+				return { ...invalidDataDetails, tabKey }
+			}
+		}
+		return null
 	}, [tableData])
 
 	const handleSubmit = useCallback(() => {
-		if (hasInvalidData) {
+		if (invalidData) {
+			toast.error(<InvalidMappingToast invalidData={invalidData} />, {
+				icon: <BubbleCrossedIcon />,
+				duration: 6000,
+			})
+			if (activeTab !== invalidData.tabKey) {
+				setActiveTab(invalidData.tabKey)
+			}
 			return
 		}
 		if (onSubmit) {
 			onSubmit({ ls_mapping: { ...tableData } })
 		}
-	}, [hasInvalidData, tableData, onSubmit])
+	}, [invalidData, tableData, onSubmit, activeTab])
 
 	useEffect(() => {
 		if (tabKeys.length > 0 && !activeTab) {
@@ -351,7 +402,6 @@ const LsTabs = ({
 			<ActionButtons
 				viewOnly={viewOnly}
 				handleClose={handleClose}
-				hasInvalidData={hasInvalidData}
 				handleSubmit={handleSubmit}
 			/>
 		</div>
