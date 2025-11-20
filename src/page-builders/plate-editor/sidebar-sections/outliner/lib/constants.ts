@@ -50,6 +50,7 @@ export const OUTLINER_ENABLED_USERS = new Set([
 	'maceymarcinko22@gmail.com',
 	'nicole428@gmail.com',
 	'sagelavidarkchild@gmail.com',
+	'ejoywalker0777@gmail.com',
 ])
 
 export const GLOBAL_USERS = new Set([
