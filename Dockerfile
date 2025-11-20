@@ -51,4 +51,4 @@ RUN apk add --no-cache nginx curl nginx-mod-http-headers-more
 COPY --from=build-image /usr/src/app/ /usr/src/app/
 COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
-CMD ["sh", "-c", "npm start & nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "trap 'trap - TERM INT; nginx -s quit; kill -TERM $NEXTPID; wait' TERM INT; npm start & NEXTPID=$!; nginx -g \"daemon off;\" & NGINXPID=$!; wait -n; EXIT_CODE=$?; kill -TERM $NEXTPID $NGINXPID 2>/dev/null; exit $EXIT_CODE"]
