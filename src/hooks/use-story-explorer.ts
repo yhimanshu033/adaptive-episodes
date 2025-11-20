@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
+import { STORY_EXPLORE_STREAMING_TIMEOUT } from '@/constants/global-constants'
 import { ExplorerModeId } from '@/constants/story-explorer-constants'
 import usePlotOutlineQuery from '@/hooks/query/use-plotoutline-data'
 import useCountdownTimer from '@/hooks/use-countdown-timer'
@@ -116,7 +117,7 @@ export default function useStoryExplorer({
 			setTaskId(data.taskId)
 
 			if (!countdownStartedRef.current.has(data.taskId)) {
-				startCountdown(data.taskId)
+				startCountdown(data.taskId, STORY_EXPLORE_STREAMING_TIMEOUT)
 				countdownStartedRef.current.add(data.taskId)
 			}
 			return

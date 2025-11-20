@@ -10,6 +10,7 @@ import React, {
 } from 'react'
 import { AI_USER_ID } from '@/constants/ai-constants'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
+import { AI_CHATBOT_STREAMING_TIMEOUT } from '@/constants/global-constants'
 import useAIChatbotHook from '@/hooks/mutation/use-aichatbot-hook'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import useCountdownTimer from '@/hooks/use-countdown-timer'
@@ -363,7 +364,7 @@ function useAIChatbotUtil({
 
 	useEffect(() => {
 		if (!isPending && aiResponse) {
-			startCountdown(aiResponse)
+			startCountdown(aiResponse, AI_CHATBOT_STREAMING_TIMEOUT)
 			countdownStoppedRef.current.delete(aiResponse)
 
 			if (requestedAction === EChatMode.REVIEW) {
