@@ -109,6 +109,10 @@ export default function useAdaptationMutation({
 			signal: abortControllerRef?.current?.signal,
 		})
 
+		if (!pollingResp) {
+			throw new Error('LS sheet not found!')
+		}
+
 		const migratedData = migrateOldLSMapping(pollingResp?.data)
 
 		return migratedData
