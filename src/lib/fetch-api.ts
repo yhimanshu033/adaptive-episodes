@@ -8,6 +8,7 @@ import {
 import * as Sentry from '@sentry/nextjs'
 import { v4 as uuid } from 'uuid'
 
+import { getPerformanceTiming } from '@/lib/fetch-helper'
 import { getUserSession } from '@/lib/get-session'
 import { log } from '@/lib/utils/helpers'
 
@@ -128,7 +129,12 @@ export async function fetchAPI<
 	}
 
 	const startTime = Date.now()
+	const performanceMarkName = `fetch-${correlationId}`
 	let timeoutId: NodeJS.Timeout | undefined
+
+	if (typeof performance !== 'undefined' && performance.mark) {
+		performance.mark(`${performanceMarkName}-start`)
+	}
 
 	try {
 		const isFormData = body instanceof FormData
@@ -151,12 +157,15 @@ export async function fetchAPI<
 
 		timeoutId = setTimeout(() => {
 			const duration = Date.now() - startTime
+			const performanceTiming = getPerformanceTiming(resolvedUrl, startTime)
+
 			log({
 				type: 'API LONG REQUEST TIMEOUT',
 				extra: {
 					...defaultSentryData,
 					duration,
 					timeoutThreshold: FETCH_TIMEOUT,
+					timing: performanceTiming,
 				},
 				tags: defaultSentryTags,
 			})
@@ -166,6 +175,7 @@ export async function fetchAPI<
 						...defaultSentryData,
 						duration,
 						timeoutThreshold: FETCH_TIMEOUT,
+						timing: performanceTiming,
 					},
 					tags: defaultSentryTags,
 				})
@@ -194,6 +204,19 @@ export async function fetchAPI<
 		clearTimeout(timeoutId)
 		const requestDuration = Date.now() - startTime
 
+		if (typeof performance !== 'undefined' && performance.mark) {
+			performance.mark(`${performanceMarkName}-end`)
+			performance.measure(
+				performanceMarkName,
+				`${performanceMarkName}-start`,
+				`${performanceMarkName}-end`
+			)
+		}
+
+		const performanceTiming = getPerformanceTiming(resolvedUrl, startTime)
+
+		console.log('performanceTiming', performanceTiming)
+
 		if (requestDuration >= FETCH_TIMEOUT) {
 			log({
 				type: 'API SLOW REQUEST COMPLETED',
@@ -201,6 +224,8 @@ export async function fetchAPI<
 					...defaultSentryData,
 					duration: requestDuration,
 					timeoutThreshold: FETCH_TIMEOUT,
+					timing: performanceTiming,
+					responseStatus: response.status,
 				},
 				tags: {
 					...defaultSentryTags,
@@ -213,6 +238,8 @@ export async function fetchAPI<
 					...defaultSentryData,
 					duration: requestDuration,
 					timeoutThreshold: FETCH_TIMEOUT,
+					timing: performanceTiming,
+					responseStatus: response.status,
 				},
 				tags: {
 					...defaultSentryTags,
@@ -265,6 +292,12 @@ export async function fetchAPI<
 			log({
 				message,
 			})
+		}
+
+		if (typeof performance !== 'undefined' && performance.clearMarks) {
+			performance.clearMarks(`${performanceMarkName}-start`)
+			performance.clearMarks(`${performanceMarkName}-end`)
+			performance.clearMeasures(performanceMarkName)
 		}
 
 		return {
