@@ -5,7 +5,7 @@
 
 import * as Sentry from '@sentry/nextjs'
 
-const environment = process.env.NEXT_PUBLIC_DEPLOY_ENV || 'development'
+const environment = process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || 'development'
 
 /**
  * Only initialize Sentry in production to avoid any overhead
