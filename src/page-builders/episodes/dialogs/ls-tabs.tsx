@@ -81,11 +81,13 @@ const TableCTAs = ({
 	setActiveTab,
 	currentWorkbook,
 	story,
+	sequence,
 }: {
 	currentTabData: LSMappingOutputItem[]
 	currentWorkbook?: LSMappingOutputItemV2
 	onDataChange: (data: LSMappingOutputItem[]) => void
 	onWorkBookChange?: (data: LSMappingOutputItemV2) => void
+	sequence: LSMappingSequenceData['sequence_ls']
 	setActiveTab?: (tab: string) => void
 	story?: TStory | null
 	viewOnly: boolean
@@ -150,7 +152,10 @@ const TableCTAs = ({
 		const workbook = XLSX.utils.book_new()
 
 		Object.entries(currentWorkbook || {}).forEach(([sheetName, rows]) => {
-			const worksheet = XLSX.utils.json_to_sheet(rows)
+			const worksheetOptions = sequence?.[sheetName]
+				? { header: sequence[sheetName] }
+				: undefined
+			const worksheet = XLSX.utils.json_to_sheet(rows, worksheetOptions)
 			XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
 		})
 
@@ -332,6 +337,7 @@ const LsTabs = ({
 							onWorkBookChange={setTableData}
 							setActiveTab={setActiveTab}
 							currentWorkbook={tableData || {}}
+							sequence={sequence}
 						/>
 					</div>
 					<LSTableEditor
@@ -374,6 +380,7 @@ const LsTabs = ({
 						setActiveTab={setActiveTab}
 						currentWorkbook={tableData || {}}
 						story={story}
+						sequence={sequence}
 					/>
 				</div>
 
