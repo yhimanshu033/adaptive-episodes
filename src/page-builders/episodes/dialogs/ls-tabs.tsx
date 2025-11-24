@@ -162,10 +162,6 @@ const TableCTAs = ({
 		)
 	}
 
-	if (viewOnly) {
-		return null
-	}
-
 	return (
 		<div className="flex items-center gap-2">
 			<IconButton
@@ -176,30 +172,34 @@ const TableCTAs = ({
 				shape="square"
 				variant="ghost"
 			/>
-			<IconButton
-				label="Upload CSV"
-				tooltip="Upload CSV"
-				onClick={() => document.getElementById('csv-input')?.click()}
-				icon={<UploadIcon className="size-6" />}
-				shape="square"
-				variant="ghost"
-			/>
-			<input
-				type="file"
-				accept=".xlsx, .csv"
-				className="hidden"
-				id="csv-input"
-				onChange={(e) => handleXlsxUpload(e.target.files)}
-			/>
-			<Button
-				type="button"
-				onClick={addNewRow}
-				variant="outline"
-				size="sm"
-				leftIcon={<PlusIcon />}
-			>
-				Add Row
-			</Button>
+			{!viewOnly && (
+				<>
+					<IconButton
+						label="Upload CSV"
+						tooltip="Upload CSV"
+						onClick={() => document.getElementById('csv-input')?.click()}
+						icon={<UploadIcon className="size-6" />}
+						shape="square"
+						variant="ghost"
+					/>
+					<input
+						type="file"
+						accept=".xlsx, .csv"
+						className="hidden"
+						id="csv-input"
+						onChange={(e) => handleXlsxUpload(e.target.files)}
+					/>
+					<Button
+						type="button"
+						onClick={addNewRow}
+						variant="outline"
+						size="sm"
+						leftIcon={<PlusIcon />}
+					>
+						Add Row
+					</Button>
+				</>
+			)}
 		</div>
 	)
 }
