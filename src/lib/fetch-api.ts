@@ -157,29 +157,31 @@ export async function fetchAPI<
 
 		timeoutId = setTimeout(() => {
 			const duration = Date.now() - startTime
-			const performanceTiming = getPerformanceTiming(resolvedUrl, startTime)
-
-			log({
-				type: 'API LONG REQUEST TIMEOUT',
-				extra: {
-					...defaultSentryData,
-					duration,
-					timeoutThreshold: FETCH_TIMEOUT,
-					timing: performanceTiming,
-				},
-				tags: defaultSentryTags,
-			})
-			if (sendError) {
-				Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
-					extra: {
-						...defaultSentryData,
-						duration,
-						timeoutThreshold: FETCH_TIMEOUT,
-						timing: performanceTiming,
-					},
-					tags: defaultSentryTags,
-				})
-			}
+			void getPerformanceTiming(resolvedUrl, startTime).then(
+				(performanceTiming) => {
+					log({
+						type: 'API LONG REQUEST TIMEOUT',
+						extra: {
+							...defaultSentryData,
+							duration,
+							timeoutThreshold: FETCH_TIMEOUT,
+							timing: performanceTiming,
+						},
+						tags: defaultSentryTags,
+					})
+					if (sendError) {
+						Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
+							extra: {
+								...defaultSentryData,
+								duration,
+								timeoutThreshold: FETCH_TIMEOUT,
+								timing: performanceTiming,
+							},
+							tags: defaultSentryTags,
+						})
+					}
+				}
+			)
 		}, FETCH_TIMEOUT)
 
 		const response = await fetch(resolvedUrl, {
@@ -213,9 +215,9 @@ export async function fetchAPI<
 			)
 		}
 
-		const performanceTiming = getPerformanceTiming(resolvedUrl, startTime)
+		const performanceTiming = await getPerformanceTiming(resolvedUrl, startTime)
 
-		console.log('performanceTiming', performanceTiming)
+		console.log({ performanceTiming })
 
 		if (requestDuration >= FETCH_TIMEOUT) {
 			log({
