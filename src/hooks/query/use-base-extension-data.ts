@@ -23,7 +23,7 @@ const useBaseExtensionQuery = (enabled: boolean) => {
 			urlParams: { projectId: Number(id) },
 		})
 
-		if ('status' in resp) {
+		if (!resp.success) {
 			if (resp.status === 401) {
 				await redirectToGDriveAuth()
 			}
@@ -35,7 +35,7 @@ const useBaseExtensionQuery = (enabled: boolean) => {
 			}
 			return resp.data
 		}
-		return resp
+		return resp.data
 	}
 	const baseExtensionQuery = useQuery({
 		queryKey: [BASE_EXTENSION_QUERY_KEY, Number(id)],
