@@ -52,7 +52,7 @@ function useAdaptationUtil() {
 			reset: resetSendLS,
 		},
 	} = useAdaptationMutation({
-		abortController: abortControllerRef.current!,
+		abortControllerRef,
 	})
 
 	const step = useMemo(() => {
@@ -154,11 +154,12 @@ function useAdaptationUtil() {
 
 	useEffect(() => {
 		if (abort) {
-			abortControllerRef.current?.abort()
-			abortControllerRef.current = new AbortController()
+			if (step === 2) {
+				abortControllerRef.current?.abort()
+			}
 			setAbort(false)
 		}
-	}, [abort])
+	}, [abort, step])
 
 	useEffect(() => {
 		if (step !== 3) {
@@ -176,6 +177,7 @@ function useAdaptationUtil() {
 	}, [step])
 
 	return {
+		abortControllerRef,
 		selectedRowData,
 		setSelectedRowData,
 		selectedAdaptingLanguage,

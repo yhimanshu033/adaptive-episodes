@@ -4,6 +4,7 @@ import { ELLMModel } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import {
 	EPISODE_LIST_QUERY_KEY,
+	GET_LS_SHEET_QUERY_KEY,
 	STORY_ID_QUERY_KEY,
 } from '@/constants/query-constants'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
@@ -32,12 +33,13 @@ import { TStory } from '@/types/story-types'
 
 export default function useAdaptationMutation({
 	onSuccess = () => {},
-	abortController,
+	abortControllerRef,
 }: {
-	abortController?: AbortController
+	abortControllerRef?: React.RefObject<AbortController | null>
 	onSuccess?: () => void
 }) {
 	const { data: session } = useSession()
+	const { id: projectId } = useParams()
 	const queryClient = useQueryClient()
 
 	async function createAdaptation({
@@ -102,8 +104,12 @@ export default function useAdaptationMutation({
 				}
 				return false
 			},
-			signal: abortController?.signal,
+			signal: abortControllerRef?.current?.signal,
 		})
+
+		if (!pollingResp) {
+			throw new Error('LS sheet not found!')
+		}
 
 		const migratedData = migrateOldLSMapping(pollingResp?.data)
 
@@ -112,13 +118,19 @@ export default function useAdaptationMutation({
 
 	const createLSMutation = useMutation({
 		mutationFn: createAdaptation,
-		onSuccess: () => {
+		onSuccess: async () => {
 			onSuccess()
 			toast.success('Localization sheet fetched!', {
 				icon: <BubbleCheckIcon />,
 			})
+			await queryClient.invalidateQueries({
+				queryKey: [GET_LS_SHEET_QUERY_KEY, projectId],
+			})
 		},
 		onError: (error: Error) => {
+			if (abortControllerRef?.current) {
+				abortControllerRef.current = new AbortController()
+			}
 			toast.error(error.message || 'Localization Failed!', {
 				icon: <BubbleCrossedIcon />,
 			})
