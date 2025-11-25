@@ -39,7 +39,6 @@ export default function useAdaptationMutation({
 	onSuccess?: () => void
 }) {
 	const { data: session } = useSession()
-	const { id: projectId } = useParams()
 	const queryClient = useQueryClient()
 
 	async function createAdaptation({
@@ -118,13 +117,13 @@ export default function useAdaptationMutation({
 
 	const createLSMutation = useMutation({
 		mutationFn: createAdaptation,
-		onSuccess: async () => {
+		onSuccess: async (_, { storyData }) => {
 			onSuccess()
 			toast.success('Localization sheet fetched!', {
 				icon: <BubbleCheckIcon />,
 			})
 			await queryClient.invalidateQueries({
-				queryKey: [GET_LS_SHEET_QUERY_KEY, projectId],
+				queryKey: [GET_LS_SHEET_QUERY_KEY, String(storyData?.id)],
 			})
 		},
 		onError: (error: Error) => {
