@@ -1,5 +1,4 @@
 import React from 'react'
-import { useParams } from 'next/navigation'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { ELLMModel } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
@@ -40,7 +39,6 @@ export default function useAdaptationMutation({
 }) {
 	const { data: session } = useSession()
 	const queryClient = useQueryClient()
-	const { id } = useParams()
 
 	async function createAdaptation({
 		language,
@@ -186,14 +184,14 @@ export default function useAdaptationMutation({
 
 	const sendLSMutation = useMutation({
 		mutationFn: sendAdaptationLS,
-		onSuccess: async () => {
+		onSuccess: async (_, { projectId }) => {
 			onSuccess()
 			toast.success('Adaptation registered!')
 			await queryClient.invalidateQueries({
-				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
+				queryKey: [EPISODE_LIST_QUERY_KEY, projectId],
 			})
 			await queryClient.invalidateQueries({
-				queryKey: [STORY_ID_QUERY_KEY, Number(id)],
+				queryKey: [STORY_ID_QUERY_KEY, projectId],
 			})
 		},
 		onError: () => {
