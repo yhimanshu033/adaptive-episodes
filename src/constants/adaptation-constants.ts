@@ -1,0 +1,1 @@
+export const LARGE_TEXT_THRESHOLD = 100
