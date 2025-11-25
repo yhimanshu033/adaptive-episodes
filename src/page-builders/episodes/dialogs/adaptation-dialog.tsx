@@ -81,7 +81,7 @@ export default function AdaptationDialog({
 	const setAdaptDialogOpen = useCustomDialog ? setOpenDialog : setOpen
 
 	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
-		projectId: String(storyData?.id) || '',
+		projectId: storyData?.id ? String(storyData.id) : '',
 		language: storyData?.parent_language || ELanguage.ENGLISH,
 		enabled: isFetchingLSSheet,
 	})
@@ -286,7 +286,7 @@ export default function AdaptationDialog({
 									sendLS(
 										{
 											inputls,
-											projectId: storyData?.id || 0,
+											projectId: storyData?.id || selectedRowData[0].project,
 											sourceLang: currentLanguage || ELanguage.ENGLISH,
 											language:
 												(isEpisodeAdaptation
