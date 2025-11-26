@@ -54,6 +54,7 @@ export const OUTLINER_ENABLED_USERS = new Set([
 	'ejoywalker0777@gmail.com',
 	'hanna.seidel@pocketfm.com',
 	'con-gotze.felice@pocketfm.com',
+	'rachit.daruka@pocketfm.com',
 ])
 
 export const GLOBAL_USERS = new Set([
