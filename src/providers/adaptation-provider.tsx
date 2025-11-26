@@ -136,6 +136,7 @@ function useAdaptationUtil() {
 	useEffect(() => {
 		if ((step === 4 && !open) || abort) {
 			resetMutations()
+			setStory(null)
 			setFetchingLSSheet(false)
 			setSelectedRowData([])
 			setAbort(false)
