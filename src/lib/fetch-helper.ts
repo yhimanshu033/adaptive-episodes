@@ -23,6 +23,13 @@ const duration = (start?: number, end?: number) => {
 		? precise(end - start)
 		: undefined
 }
+const tlsDuration = (secureConnectionStart?: number, connectEnd?: number) => {
+	return secureConnectionStart !== undefined &&
+		secureConnectionStart > 0 &&
+		connectEnd !== undefined
+		? precise(connectEnd - secureConnectionStart)
+		: undefined
+}
 
 function normalizeUrl(url: string): string {
 	try {
@@ -154,7 +161,10 @@ export async function getPerformanceTiming(
 
 	timing.dnsLookup = duration(entry.domainLookupStart, entry.domainLookupEnd)
 	timing.tcpConnection = duration(entry.connectStart, entry.connectEnd)
-	timing.tlsHandshake = duration(entry.secureConnectionStart, entry.connectEnd)
+	timing.tlsHandshake = tlsDuration(
+		entry.secureConnectionStart,
+		entry.connectEnd
+	)
 	timing.timeToFirstByte = duration(entry.requestStart, entry.responseStart)
 	timing.contentDownload = duration(entry.responseStart, entry.responseEnd)
 	timing.redirectTime = duration(entry.redirectStart, entry.redirectEnd)
@@ -196,7 +206,10 @@ export function getPerformanceTimingSync(
 
 	timing.dnsLookup = duration(entry.domainLookupStart, entry.domainLookupEnd)
 	timing.tcpConnection = duration(entry.connectStart, entry.connectEnd)
-	timing.tlsHandshake = duration(entry.secureConnectionStart, entry.connectEnd)
+	timing.tlsHandshake = tlsDuration(
+		entry.secureConnectionStart,
+		entry.connectEnd
+	)
 	timing.timeToFirstByte = duration(entry.requestStart, entry.responseStart)
 	timing.contentDownload = duration(entry.responseStart, entry.responseEnd)
 	timing.redirectTime = duration(entry.redirectStart, entry.redirectEnd)
