@@ -819,7 +819,7 @@ function useOutlinerQuestionnaireUtil() {
 					return {
 						...msg,
 						content: derivedMessage.message,
-						taskId: lastMessageTaskId, // Keep taskId for feedback tracking
+						taskId: '',
 						meta: {
 							profileComplete: {
 								completed_requirements_count:

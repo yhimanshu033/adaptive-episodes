@@ -16,7 +16,9 @@ import { EMessenger, TMessage } from '@/types/ai-types'
 
 export default function OutlinerQuestionnaireChatMessage({
 	message,
+	isLast,
 }: {
+	isLast?: boolean
 	message: TMessage
 }) {
 	const { responses, taskEnded } = useSocketStreaming()
@@ -59,9 +61,8 @@ export default function OutlinerQuestionnaireChatMessage({
 	}
 
 	const taskId = message.taskId
-	const isTaskCompleted = !!taskId && taskEnded[taskId]
-	const showFeedback =
-		!!taskId && completedTaskId.chat === taskId && isTaskCompleted
+	const isTaskCompleted = !taskId || taskEnded[taskId]
+	const showFeedback = !!completedTaskId.chat && isLast && isTaskCompleted
 
 	return (
 		<div>
@@ -75,10 +76,14 @@ export default function OutlinerQuestionnaireChatMessage({
 				<div className="mt-2">
 					<OutlinerFeedback
 						onLike={(comment) =>
-							handleChatFeedback(taskId, EFeedback.LIKE, comment)
+							handleChatFeedback(completedTaskId.chat, EFeedback.LIKE, comment)
 						}
 						onDislike={(comment) =>
-							handleChatFeedback(taskId, EFeedback.DISLIKE, comment)
+							handleChatFeedback(
+								completedTaskId.chat,
+								EFeedback.DISLIKE,
+								comment
+							)
 						}
 					/>
 				</div>

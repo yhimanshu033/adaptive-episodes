@@ -54,6 +54,7 @@ export default function OutlinerQuestionnaireChat() {
 					<OutlinerQuestionnaireChatMessage
 						message={msg}
 						key={`outliner-questionnaire-message-${idx}`}
+						isLast={idx === messages.length - 1}
 					/>
 				))}
 				<If condition={isChatLoading || !!lastMessageTaskId}>
