@@ -4,6 +4,7 @@ import {
 } from '@/constants/global-constants'
 
 export type RequestTimingInfo = {
+	cachedRedirect?: boolean
 	contentDownload?: number
 	dnsLookup?: number
 	redirectTime?: number
@@ -136,12 +137,18 @@ export async function getPerformanceTiming(
 
 	if (!entry) {
 		console.warn('Performance entry not found for URL:', url)
-		console.log(
-			'Available resource entries:',
-			performance
-				.getEntriesByType('resource')
-				.map((e) => ({ name: e.name, startTime: e.startTime }))
-		)
+		return timing
+	}
+	const isCachedRedirect =
+		entry.responseStatus === 200 &&
+		entry.transferSize === 0 &&
+		entry.requestStart === 0 &&
+		entry.responseStart === 0 &&
+		entry.nextHopProtocol === ''
+
+	if (isCachedRedirect) {
+		console.warn('Cached redirect detected for:', url)
+		timing.cachedRedirect = true
 		return timing
 	}
 
@@ -172,6 +179,18 @@ export function getPerformanceTimingSync(
 	const entry = findPerformanceEntry(url, startTime)
 
 	if (!entry) {
+		return timing
+	}
+
+	const isCachedRedirect =
+		entry.responseStatus === 200 &&
+		entry.transferSize === 0 &&
+		entry.requestStart === 0 &&
+		entry.responseStart === 0 &&
+		entry.nextHopProtocol === ''
+
+	if (isCachedRedirect) {
+		timing.cachedRedirect = true
 		return timing
 	}
 

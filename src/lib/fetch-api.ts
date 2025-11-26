@@ -214,10 +214,7 @@ export async function fetchAPI<
 				`${performanceMarkName}-end`
 			)
 		}
-
 		const performanceTiming = await getPerformanceTiming(resolvedUrl, startTime)
-
-		console.log({ performanceTiming })
 
 		if (requestDuration >= FETCH_TIMEOUT) {
 			log({
