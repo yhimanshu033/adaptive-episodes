@@ -72,6 +72,7 @@ export const storyImportFormSchema = z.object({
 	llm_model: z.string(),
 	book_name: z.string().optional(),
 	run_nwm: z.boolean().optional(),
+	from_scratch: z.boolean().optional(),
 })
 
 export type StoryImportFormSchema = z.infer<typeof storyImportFormSchema>

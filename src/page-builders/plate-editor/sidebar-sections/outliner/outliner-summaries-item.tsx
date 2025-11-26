@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useMemo } from 'react'
+import useIsFirstEp from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-is-initial-base'
 import { TOutlinerData } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
+import OutlinerNewIdeas from '@/page-builders/plate-editor/sidebar-sections/outliner/outliner-new-ideas'
 import OutlinerSummariesItemContent from '@/page-builders/plate-editor/sidebar-sections/outliner/outliner-summaries-item-content'
 import useOutliner from '@/page-builders/plate-editor/sidebar-sections/outliner/provider'
 
+import { IfElse } from '@/components/aural-ui/if-else'
 import {
 	AccordionContent,
 	AccordionItem,
@@ -25,6 +28,11 @@ export default function OutlinerSummariesItem({
 		selectedOutlinerTabData,
 		handleSummarySelect,
 	} = useOutliner()
+	const isFirst = useIsFirstEp()
+
+	const showStoryIdea = useMemo(() => {
+		return !!isFirst && outlinerSummaryItemIdx === 0
+	}, [isFirst, outlinerSummaryItemIdx])
 
 	return (
 		<AccordionItem
@@ -52,12 +60,18 @@ export default function OutlinerSummariesItem({
 				)}
 				onClick={() => handleSummarySelect(outlinerSummaryItemIdx)}
 			>
-				{outlinerSummaryItem.title}
+				{showStoryIdea ? 'Selected Story Idea' : outlinerSummaryItem.title}
 			</AccordionTrigger>
 			<AccordionContent>
-				<OutlinerSummariesItemContent
-					outlinerSummaryItem={outlinerSummaryItem}
-					outlinerSummaryItemIdx={outlinerSummaryItemIdx}
+				<IfElse
+					condition={showStoryIdea}
+					if={<OutlinerNewIdeas />}
+					else={
+						<OutlinerSummariesItemContent
+							outlinerSummaryItem={outlinerSummaryItem}
+							outlinerSummaryItemIdx={outlinerSummaryItemIdx}
+						/>
+					}
 				/>
 			</AccordionContent>
 		</AccordionItem>

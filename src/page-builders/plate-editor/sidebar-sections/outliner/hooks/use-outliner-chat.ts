@@ -32,6 +32,7 @@ export default function useOutlinerChat() {
 		messages,
 		previous_episode_context,
 		previous_episode_summary,
+		selected_story_idea,
 	}: {
 		action?: EOutlinerChatAction
 		epText: string
@@ -43,7 +44,9 @@ export default function useOutlinerChat() {
 		selection?: TOutlinerTabData
 	} & Pick<
 		TOutlinerChatbotRequestBody,
-		'previous_episode_context' | 'previous_episode_summary'
+		| 'previous_episode_context'
+		| 'previous_episode_summary'
+		| 'selected_story_idea'
 	>) {
 		const taskId = await startTask<TOutlinerChatbotRequestBody>({
 			method: 'POST',
@@ -80,6 +83,7 @@ export default function useOutlinerChat() {
 				previous_episode_context,
 				previous_episode_summary,
 				scenes: outlinerData?.[1]?.scenes || [],
+				selected_story_idea,
 			},
 			noCache: retry,
 		})

@@ -107,6 +107,10 @@ export type TAssistantMessage = {
 	component?: React.ReactNode | null
 	content: string
 	meta?: {
+		profileComplete?: {
+			completed_requirements_count?: number
+			pending_requirements_count?: number
+		}
 		sfxCount?: number
 	}
 	outlinerAction?: EOutlinerChatAction

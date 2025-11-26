@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { ImportStoryType } from '@/constants/episodes-constants'
 
 import '@/hooks/form-resolvers/story-import-resolver'
 
+import { useRouter } from 'next/navigation'
 import { CI_DIALOG_TITLE } from '@/constants/story-constants'
+import useIsGlobal from '@/hooks/ugc/use-is-global'
 import { BubbleSparkleIcon } from '@/icons/bubble-sparkle-icon'
 import { ImportFolderIcon } from '@/icons/import-folder-icon'
+import { MagicBookIcon } from '@/icons/magic-book-icon'
 import useStoryStore from '@/store/story-store'
 
 import { Button } from '@/components/aural-ui/button'
@@ -21,15 +24,20 @@ const storyTypesInfoRecord: Record<
 	ImportStoryType,
 	{ desc: string; icon: IconComponent; title: string }
 > = {
-	[ImportStoryType.EMPTY]: {
-		title: 'Create new series',
-		desc: 'Start writing from the beginning',
-		icon: (props) => <BubbleSparkleIcon {...props} />,
+	[ImportStoryType.BRAINSTORM]: {
+		title: 'Brainstorm with Copilot',
+		desc: 'Collaborate with AI to create the core outline.',
+		icon: (props) => <MagicBookIcon {...props} />,
 	},
 	[ImportStoryType.IMPORT]: {
 		title: 'Import content for series',
 		desc: 'Already have a story? Just upload.',
 		icon: (props) => <ImportFolderIcon {...props} />,
+	},
+	[ImportStoryType.EMPTY]: {
+		title: 'Start with blank page',
+		desc: 'Start writing from the beginning',
+		icon: (props) => <BubbleSparkleIcon {...props} />,
 	},
 }
 
@@ -51,8 +59,32 @@ const ChooseStoryTypes = ({
 	nextStep,
 }: IChooseStoryPropsType) => {
 	const setTitle = useStoryStore((state) => state.setTitle)
+	const setFormOpen = useStoryStore((state) => state.setFormOpen)
+	const router = useRouter()
+	const isGlobal = useIsGlobal()
+
+	const displayedStoryTypes = useMemo(() => {
+		if (isGlobal) {
+			return storyTypesInfo
+		}
+		return storyTypesInfo.filter(
+			(item) => item.type !== ImportStoryType.BRAINSTORM
+		)
+	}, [isGlobal])
+
+	useEffect(() => {
+		if (isGlobal || storyType !== ImportStoryType.BRAINSTORM) {
+			return
+		}
+		updateStoryType(ImportStoryType.IMPORT)
+	}, [isGlobal, storyType, updateStoryType])
 
 	const handleButtonClick = () => {
+		if (storyType === ImportStoryType.BRAINSTORM) {
+			router.push('/projects/create')
+			setFormOpen(false)
+			return
+		}
 		if (storyType === ImportStoryType.EMPTY) {
 			setTitle(CI_DIALOG_TITLE.CREATE)
 		}
@@ -78,7 +110,7 @@ const ChooseStoryTypes = ({
 						onValueChange={(v) => updateStoryType(v as ImportStoryType)}
 						className="gap-5"
 					>
-						<ForEach data={storyTypesInfo}>
+						<ForEach data={displayedStoryTypes}>
 							{(item, idx) => (
 								<div
 									key={idx}

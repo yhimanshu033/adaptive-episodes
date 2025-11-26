@@ -2,10 +2,24 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import {
+	ACTION,
+	EFeedback,
+	EVENT_TYPE,
+	SCREEN_NAME,
+} from '@/constants/analytics'
 import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useDebounce } from '@/hooks/use-debounce'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import {
+	convertStoryStateArrToMap,
+	getStoryIdeaDataFromState,
+	getStoryIdeaStateFromData,
+} from '@/page-builders/episodes/outliner-questionnaire/lib/fns'
+import useNewIdeas from '@/page-builders/episodes/outliner-questionnaire/lib/hooks/use-new-ideas'
+import { TGetStoryIdeasResponse } from '@/page-builders/episodes/outliner-questionnaire/lib/types'
+import useIsInitial from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-is-initial'
 import useNarrativeArcsMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-narrative-arcs-mutation'
 import useNewIdeasSaving from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-new-ideas-mutation'
 import useOutlinerChat from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-chat'
@@ -37,9 +51,12 @@ import {
 	TOutlinerTabData,
 } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
 import useEpisodeIdStore from '@/store/episode-id-store'
+import { X } from 'lucide-react'
 import { useEditorRef } from 'platejs/react'
 import { toast } from 'sonner'
 
+import { OutlinerFeedback } from '@/components/outliner-feedback'
+import { track } from '@/lib/utils/analytics'
 import { parseOptimistically } from '@/lib/utils/helpers'
 import { breakDownValue, jsonify } from '@/lib/utils/plate'
 
@@ -62,6 +79,14 @@ function useOutlinerUtil() {
 		Record<string, string>
 	>({})
 
+	const {
+		storyIdeaDataState,
+		setStoryIdeaDataState,
+		isUpdateOutlinerStoryIdeaPending,
+		savedStoryData,
+		handleChangeStoryDataStateField,
+	} = useNewIdeas()
+
 	const isInitialOutlineDataFetched = useRef(false)
 	const { mutateAsync: fetchOutlinerData, isPending: isOutlinerDataPending } =
 		useOutlinerData()
@@ -72,6 +97,12 @@ function useOutlinerUtil() {
 		EOutlinerChatMode.CHAT
 	)
 	const [newIdeasTaskId, setNewIdeasTaskId] = useState('')
+	const [completedTaskId, setCompletedTaskId] = useState({
+		newIdeas: '',
+		newNarrativeArcs: '',
+		outline: '',
+		content: '',
+	})
 	const [newNarrativeArcsTaskId, setNewNarrativeArcsTaskId] = useState('')
 	const { taskEnded, responses } = useSocketStreaming()
 
@@ -79,22 +110,42 @@ function useOutlinerUtil() {
 		return outlinerData?.[1]?.multiSelectOptions
 	}, [outlinerData])
 
+	const selectedStoryIdea = useMemo(() => {
+		const selectedIdeaState = storyIdeaDataState[0]
+		if (!selectedIdeaState) {
+			return
+		}
+		const ideaData = getStoryIdeaDataFromState(selectedIdeaState)
+		if (!ideaData) {
+			return
+		}
+		return ideaData
+	}, [storyIdeaDataState])
+
 	const debouncedNewIdeas = useDebounce(currentNewIdeas, 500)
 	const { mutate } = useNewIdeasSaving()
 	const { mutateAsync: saveCachedOutline, isPending: isCachedScenesSaving } =
 		useSaveCachedOutlineMutation()
 
 	const editor = useEditorRef()
+	const isInitialNewIdeasFetched = useRef(false)
+
+	const isInitial = useIsInitial()
 
 	const taskIdContextMap = useRef<
 		Record<
 			string,
 			{
+				mode?: string
 				outlinerData?: TOutlinerData
+				prompt?: string
 				selectedOutlinerTabData?: TOutlinerTabData
 			}
 		>
 	>({})
+	const summaryOutlineTaskIdToSummary = useRef<Record<string, string>>({})
+	const newIdeasTaskIdToRetry = useRef<Record<string, boolean>>({})
+	const newNarrativeArcsTaskIdToRetry = useRef<Record<string, boolean>>({})
 
 	const lastMessageTaskId = useMemo(() => {
 		return (messages[messages.length - 1] as TAssistantMessage | undefined)
@@ -278,10 +329,24 @@ function useOutlinerUtil() {
 				outlinerData: outlinerData,
 				previous_episode_context: fetchedData?.previous_episode_context || '',
 				previous_episode_summary: fetchedData?.previous_episode_summary || '',
+				selected_story_idea: selectedStoryIdea,
+			})
+			const mode = isUGC ? EOutlinerMode.UGC : EOutlinerMode.PGC
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_CHAT_START,
+					flowId: taskId,
+					prompt,
+					mode,
+				},
 			})
 			taskIdContextMap.current[taskId] = {
 				selectedOutlinerTabData,
 				outlinerData,
+				prompt,
+				mode,
 			}
 			setMessages((prev) => {
 				return [
@@ -303,6 +368,7 @@ function useOutlinerUtil() {
 			editorText,
 			isUGC,
 			fetchedData,
+			selectedStoryIdea,
 		]
 	)
 
@@ -396,6 +462,17 @@ function useOutlinerUtil() {
 				retry,
 				previous_episode_context: fetchedData?.previous_episode_context || '',
 				previous_episode_summary: fetchedData?.previous_episode_summary || '',
+				selected_story_idea: selectedStoryIdea,
+			})
+			newIdeasTaskIdToRetry.current[taskId] = retry
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_NEW_IDEAS_START,
+					flowId: taskId,
+					retry,
+				},
 			})
 			setNewIdeasTaskId(taskId)
 		},
@@ -408,6 +485,7 @@ function useOutlinerUtil() {
 			editorText,
 			sendOutlinerChat,
 			fetchedData,
+			selectedStoryIdea,
 		]
 	)
 
@@ -428,6 +506,17 @@ function useOutlinerUtil() {
 				retry,
 				previous_episode_context: fetchedData?.previous_episode_context || '',
 				previous_episode_summary: fetchedData?.previous_episode_summary || '',
+				selected_story_idea: selectedStoryIdea,
+			})
+			newNarrativeArcsTaskIdToRetry.current[taskId] = retry
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_NARRATIVE_ARCS_START,
+					flowId: taskId,
+					retry,
+				},
 			})
 			setNewNarrativeArcsTaskId(taskId)
 		},
@@ -440,7 +529,25 @@ function useOutlinerUtil() {
 			editorText,
 			sendOutlinerChat,
 			fetchedData,
+			selectedStoryIdea,
 		]
+	)
+
+	const handleInitialNewIdeasFetch = useCallback(
+		(newIdeas: TGetStoryIdeasResponse) => {
+			if (isInitialNewIdeasFetched.current) {
+				return
+			}
+			if ('result' in newIdeas && newIdeas?.result?.new_story_ideas?.length) {
+				const storyIdeas = newIdeas.result.new_story_ideas.map(
+					getStoryIdeaStateFromData
+				)
+				setStoryIdeaDataState(storyIdeas)
+				savedStoryData.current = convertStoryStateArrToMap(storyIdeas)
+			}
+			isInitialNewIdeasFetched.current = true
+		},
+		[setStoryIdeaDataState, savedStoryData]
 	)
 
 	const handleNewIdeaChange = useCallback(
@@ -600,8 +707,20 @@ function useOutlinerUtil() {
 				project_id: episodeData?.chapter?.project || 0,
 				summary: getCurrEpSummary(outlinerData) || '',
 				input_language: episodeData?.chapter?.language,
+				selected_story_idea: selectedStoryIdea,
 			})
 			if (taskId) {
+				const summary = getCurrEpSummary(outlinerData) || ''
+				summaryOutlineTaskIdToSummary.current[taskId] = summary
+				track({
+					event: EVENT_TYPE.BUTTON_CLICK,
+					screenName: SCREEN_NAME.EPISODE_EDITOR,
+					metaData: {
+						action: ACTION.OUTLINER_GENERATE_OUTLINE_START,
+						flowId: taskId,
+						summary,
+					},
+				})
 				setSummaryOutlineTaskId(taskId)
 			}
 			setOutlinerTabData({ summaryIdx })
@@ -613,6 +732,7 @@ function useOutlinerUtil() {
 			fetchedData,
 			isSummaryOutlinePending,
 			startSummaryToOutline,
+			selectedStoryIdea,
 		]
 	)
 
@@ -634,6 +754,15 @@ function useOutlinerUtil() {
 			project_id: episodeData?.chapter?.project || 0,
 			episode_number: episodeData?.chapter?.seq_number || 0,
 			scenes: outlinerData?.[1]?.scenes || [],
+			selected_story_idea: selectedStoryIdea,
+		})
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.OUTLINER_GENERATE_CONTENT_START,
+				flowId: taskId,
+			},
 		})
 		setSummaryEpisodeTaskId(taskId)
 	}, [
@@ -642,6 +771,7 @@ function useOutlinerUtil() {
 		episodeData,
 		startSummaryToEpisode,
 		fetchedData,
+		selectedStoryIdea,
 	])
 
 	const handleBeatChange = useCallback(
@@ -783,6 +913,28 @@ function useOutlinerUtil() {
 	}, [outlinerDropDownOptions, outlinerChatMode])
 
 	useEffect(() => {
+		if (!lastMessageTaskId || !taskEnded[lastMessageTaskId]) {
+			return
+		}
+		const messageResponseStr = responses[lastMessageTaskId]?.join('') || ''
+		const context = taskIdContextMap.current[lastMessageTaskId]
+		const prompt = context?.prompt || ''
+		const mode =
+			context?.mode || (isUGC ? EOutlinerMode.UGC : EOutlinerMode.PGC)
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.OUTLINER_CHAT_END,
+				flowId: lastMessageTaskId,
+				prompt,
+				response: messageResponseStr,
+				mode,
+			},
+		})
+	}, [lastMessageTaskId, taskEnded, responses, isUGC])
+
+	useEffect(() => {
 		if (
 			!lastMessageTaskId ||
 			taskEnded[lastMessageTaskId] ||
@@ -905,6 +1057,25 @@ function useOutlinerUtil() {
 	}, [lastMessageTaskId, responses, taskEnded])
 
 	useEffect(() => {
+		if (!newIdeasTaskId || !taskEnded[newIdeasTaskId]) {
+			return
+		}
+		const responseStr = responses[newIdeasTaskId]?.join('') || ''
+		const retry = newIdeasTaskIdToRetry.current[newIdeasTaskId] ?? false
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.OUTLINER_NEW_IDEAS_END,
+				flowId: newIdeasTaskId,
+				response: responseStr,
+				retry,
+			},
+		})
+		delete newIdeasTaskIdToRetry.current[newIdeasTaskId]
+	}, [newIdeasTaskId, taskEnded, responses])
+
+	useEffect(() => {
 		if (
 			isNewIdeaStreaming ||
 			!newIdeasTaskId ||
@@ -931,10 +1102,36 @@ function useOutlinerUtil() {
 			return newData
 		})
 		setNewIdeasTaskId('')
+		setCompletedTaskId((prev) => {
+			return {
+				...prev,
+				newIdeas: newIdeasTaskId,
+			}
+		})
 		toast.info('Generated New Ideas!')
 		storedGeneratedIdeasId.current = newIdeasTaskId
 		previouslyParsedNewIdeas.current = undefined
 	}, [isNewIdeaStreaming, streamedNewIdeas, newIdeasTaskId])
+
+	useEffect(() => {
+		if (!newNarrativeArcsTaskId || !taskEnded[newNarrativeArcsTaskId]) {
+			return
+		}
+		const responseStr = responses[newNarrativeArcsTaskId]?.join('') || ''
+		const retry =
+			newNarrativeArcsTaskIdToRetry.current[newNarrativeArcsTaskId] ?? false
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.OUTLINER_NARRATIVE_ARCS_END,
+				flowId: newNarrativeArcsTaskId,
+				response: responseStr,
+				retry,
+			},
+		})
+		delete newNarrativeArcsTaskIdToRetry.current[newNarrativeArcsTaskId]
+	}, [newNarrativeArcsTaskId, taskEnded, responses])
 
 	useEffect(() => {
 		if (
@@ -965,6 +1162,12 @@ function useOutlinerUtil() {
 			return newData
 		})
 		setNewNarrativeArcsTaskId('')
+		setCompletedTaskId((prev) => {
+			return {
+				...prev,
+				newNarrativeArcs: newNarrativeArcsTaskId,
+			}
+		})
 		toast.info('Generated New Narrative Arc Plans!')
 		storedGeneratedNewNarrativeArcsId.current = newNarrativeArcsTaskId
 		previouslyParsedNewNarrativeArcs.current = undefined
@@ -1019,6 +1222,26 @@ function useOutlinerUtil() {
 			})
 		}
 		if (taskEnded[summaryOutlineTaskId]) {
+			const summary =
+				summaryOutlineTaskIdToSummary.current[summaryOutlineTaskId] || ''
+			const responseStr = responsesArray.join('')
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_GENERATE_OUTLINE_END,
+					flowId: summaryOutlineTaskId,
+					response: responseStr,
+					summary,
+				},
+			})
+			delete summaryOutlineTaskIdToSummary.current[summaryOutlineTaskId]
+			setCompletedTaskId((prev) => {
+				return {
+					...prev,
+					outline: summaryOutlineTaskId,
+				}
+			})
 			toast.success('Outline Generated Successfully!')
 			setSummaryOutlineTaskId('')
 		}
@@ -1036,6 +1259,59 @@ function useOutlinerUtil() {
 		}
 
 		if (taskEnded[summaryEpisodeTaskId]) {
+			const currentTaskId = summaryEpisodeTaskId
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_GENERATE_CONTENT_END,
+					flowId: currentTaskId,
+					response: responseStr || '',
+				},
+			})
+			setCompletedTaskId((prev) => {
+				return {
+					...prev,
+					content: currentTaskId,
+				}
+			})
+			const handleFeedback = (feedback: EFeedback, comment?: string) => {
+				track({
+					event: EVENT_TYPE.BUTTON_CLICK,
+					screenName: SCREEN_NAME.EPISODE_EDITOR,
+					metaData: {
+						action: ACTION.OUTLINER_GENERATE_CONTENT_USER_FEEDBACK,
+						flowId: currentTaskId,
+						feedback,
+						comment,
+					},
+				})
+				toast.dismiss(currentTaskId)
+			}
+			toast(`How was the generated content?`, {
+				id: currentTaskId,
+				action: (
+					<>
+						<div className="[--color-fm-button-shadow-secondary:transparent] [--color-fm-icon-active:var(--color-fm-icon-contrast)]">
+							<OutlinerFeedback
+								disablePopover
+								onLike={(comment?: string) =>
+									handleFeedback(EFeedback.LIKE, comment)
+								}
+								onDislike={(comment?: string) =>
+									handleFeedback(EFeedback.DISLIKE, comment)
+								}
+							/>
+						</div>
+						<X
+							className="absolute top-1 right-1 z-10 cursor-pointer"
+							onClick={() => toast.dismiss(currentTaskId)}
+							size={12}
+						/>
+					</>
+				),
+				duration: Infinity,
+			})
 			void handleCompleteContentGeneration({ accepted: true })
 		}
 	}, [
@@ -1045,6 +1321,104 @@ function useOutlinerUtil() {
 		handleCompleteContentGeneration,
 		editor.tf,
 	])
+
+	useEffect(() => {
+		setSelectedOutlinerTabData({
+			summaryIdx: 0,
+		})
+	}, [isInitial])
+
+	const handleChatFeedback = useCallback(
+		(taskId: string, feedback: EFeedback, comment?: string) => {
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_CHAT_USER_FEEDBACK,
+					flowId: taskId,
+					feedback,
+					comment,
+				},
+			})
+		},
+		[]
+	)
+
+	const handleNewIdeasFeedback = useCallback(
+		(feedback: EFeedback, comment?: string) => {
+			if (!completedTaskId.newIdeas) {
+				return
+			}
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_NEW_IDEAS_USER_FEEDBACK,
+					flowId: completedTaskId.newIdeas,
+					feedback,
+					comment,
+				},
+			})
+		},
+		[completedTaskId.newIdeas]
+	)
+
+	const handleNarrativeArcsFeedback = useCallback(
+		(feedback: EFeedback, comment?: string) => {
+			if (!completedTaskId.newNarrativeArcs) {
+				return
+			}
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_NARRATIVE_ARCS_USER_FEEDBACK,
+					flowId: completedTaskId.newNarrativeArcs,
+					feedback,
+					comment,
+				},
+			})
+		},
+		[completedTaskId.newNarrativeArcs]
+	)
+
+	const handleOutlineFeedback = useCallback(
+		(feedback: EFeedback, comment?: string) => {
+			if (!completedTaskId.outline) {
+				return
+			}
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_GENERATE_OUTLINE_USER_FEEDBACK,
+					flowId: completedTaskId.outline,
+					feedback,
+					comment,
+				},
+			})
+		},
+		[completedTaskId.outline]
+	)
+
+	const handleContentFeedback = useCallback(
+		(feedback: EFeedback, comment?: string) => {
+			if (!completedTaskId.content) {
+				return
+			}
+			track({
+				event: EVENT_TYPE.BUTTON_CLICK,
+				screenName: SCREEN_NAME.EPISODE_EDITOR,
+				metaData: {
+					action: ACTION.OUTLINER_GENERATE_CONTENT_USER_FEEDBACK,
+					flowId: completedTaskId.content,
+					feedback,
+					comment,
+				},
+			})
+		},
+		[completedTaskId.content]
+	)
 
 	return {
 		outlinerData,
@@ -1108,6 +1482,17 @@ function useOutlinerUtil() {
 		streamedNewNarrativeArcs,
 		handleOutlinerDataFetch,
 		isOutlinerDataPending,
+		handleInitialNewIdeasFetch,
+		storyIdeaDataState,
+		isUpdateOutlinerStoryIdeaPending,
+		handleChangeStoryDataStateField,
+		handleChatFeedback,
+		handleNewIdeasFeedback,
+		handleNarrativeArcsFeedback,
+		handleOutlineFeedback,
+		handleContentFeedback,
+		taskEnded,
+		completedTaskId,
 	}
 }
 

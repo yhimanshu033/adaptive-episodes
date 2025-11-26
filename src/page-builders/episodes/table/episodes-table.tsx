@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
 import useIsUGC from '@/hooks/ugc/use-is-ugc'
 import { useCreateTable } from '@/hooks/use-create-table'
@@ -13,6 +14,8 @@ import { MagicBookIcon } from '@/icons/magic-book-icon'
 import { UploadIcon } from '@/icons/upload-icon'
 import ActionAlert from '@/page-builders/episodes/dialogs/action-alert'
 import InventForm from '@/page-builders/episodes/dialogs/invent-form'
+import { useOutlinerQuestionnaireStatus } from '@/page-builders/episodes/outliner-questionnaire/lib/hooks/use-outliner-questionnaire-status'
+import { EOutlinerQuestionnaireTab } from '@/page-builders/episodes/outliner-questionnaire/lib/types'
 import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
 import ShareAccessDialog from '@/page-builders/episodes/shared-access-dialog/share-access-dialog'
 import AdaptationContainer from '@/page-builders/episodes/table/adaptation-container'
@@ -89,7 +92,9 @@ const EpisodesTable = () => {
 		selectedRowData: adaptationData,
 	} = useAdaptation()
 
-	// const { handleEpisodeInfo } = useEpisodeTable()
+	const router = useRouter()
+	const { data: statusData, isLoading: isStatusLoading } =
+		useOutlinerQuestionnaireStatus(!initialStoryData?.props?.from_scratch)
 	const selectedRowLength = table.getSelectedRowModel().rows.length
 
 	useEffect(() => {
@@ -106,6 +111,19 @@ const EpisodesTable = () => {
 			initialStoryData?.parent_language || ELanguage.ENGLISH
 		)
 	}, [initialStoryData])
+
+	useEffect(() => {
+		if (
+			!initialStoryData ||
+			!statusData?.result?.stage ||
+			statusData.result.stage === EOutlinerQuestionnaireTab.COMPLETED
+		) {
+			return
+		}
+		setTimeout(() => {
+			router.replace(`/projects/${initialStoryData.id}/onboard`)
+		}, 100)
+	}, [statusData, initialStoryData, router])
 
 	const setHoverIndexWithDelay = (index: number | null) => {
 		if (hoverTimeoutRef.current) {
@@ -211,9 +229,14 @@ const EpisodesTable = () => {
 
 	return (
 		<>
-			<IfElse condition={initialStoryData?.episode_count === 0}>
+			<IfElse
+				condition={
+					(initialStoryData?.episode_count === 0 && !data?.count) ||
+					isStatusLoading
+				}
+			>
 				<If>
-					<If condition={!isEpisodesLoading}>
+					<If condition={!isEpisodesLoading && !isStatusLoading}>
 						<StoryDetails titleClassname="text-xl" imageSize={40} />
 						<Divider className="mt-6 mb-10" variant="secondary" />
 					</If>
@@ -221,7 +244,7 @@ const EpisodesTable = () => {
 						initialStoryData={initialStoryData}
 						setInventSeq={setInventSeq}
 						setIsInventOpen={setIsInventOpen}
-						isLoading={isEpisodesLoading}
+						isLoading={isEpisodesLoading || isStatusLoading}
 					/>
 				</If>
 				<Else>

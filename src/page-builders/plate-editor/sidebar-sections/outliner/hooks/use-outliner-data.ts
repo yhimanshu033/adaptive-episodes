@@ -1,4 +1,3 @@
-import { useSearchParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
 import { OUTLINER_DATA_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
@@ -23,10 +22,6 @@ import { TNoParams } from '@/types/common'
 
 export default function useOutlinerData() {
 	const { data } = useEpisodeContent()
-
-	// test ugc
-	const searchParams = useSearchParams()
-	const isUGC = !!searchParams.get('ugc')
 
 	async function getOutlinerData(): Promise<TOutlinerFetchedData> {
 		const [metadataResp, scenesResp] = await Promise.all([
@@ -124,7 +119,6 @@ export default function useOutlinerData() {
 			OUTLINER_DATA_QUERY_KEY,
 			data?.chapter?.project,
 			data?.chapter?.id,
-			isUGC,
 		],
 		mutationFn: getOutlinerData,
 	})

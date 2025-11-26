@@ -117,6 +117,7 @@ export const API_URLS = {
 	EPISODE_REGENERATE: '/aicopilot/nwm-extraction-pipeline/',
 	CHAPTER_CHARACTERS: '/chapters/characters/',
 	BEATSHEET_SCENE_UPDATE: '/scenes/update-metadata/',
+
 	OUTLINER_CHAT: '/aicopilot/bse/chatbot',
 	GET_OUTLINER_METADATA: '/project/:projectId/fetch-bse-metadata',
 	UPDATE_NARRATIVE_ARCS: '/project/:projectId/narrative-arc-plan',
@@ -125,6 +126,21 @@ export const API_URLS = {
 	OUTLINER_NEW_IDEAS: '/chapter/:episodeId/new-episode-ideas',
 	OUTLINER_SUMMARY_OUTLINE: '/aicopilot/bse/summary-to-outlines/',
 	OUTLINER_SAVE_CACHED_OUTLINE: '/scenes/save-cached-scenes/',
+
+	OUTLINER_QUESTIONNAIRE_NEW_IDEAS: '/project/:projectId/new-story-idea',
+	OUTLINER_QUESTIONNAIRE_STATUS: '/user/fetch-profile-stage/',
+	OUTLINER_QUESTIONNAIRE_STATUS_UPDATE: '/user/profile-stage/:projectId/',
+	OUTLINER_QUESTIONNAIRE_CHAT: '/user/profile-chat/',
+	OUTLINER_QUESTIONNAIRE_SURVEY_QUESTIONS: '/user/survey/',
+	OUTLINER_QUESTIONNAIRE_SURVEY_QUESTIONS_SUBMIT: '/user/survey/submit/',
+	OUTLINER_QUESTIONNAIRE_NEW_IDEAS_REGENERATE:
+		'/project/:projectId/regenerate-story-idea',
+	OUTLINER_QUESTIONNAIRE_NEW_SHOWS_GENERATE:
+		'/user/survey/generate-custom-shows/',
+	OUTLINER_QUESTIONNAIRE_PROFILE: '/user/writer-profile',
+	OUTLINER_QUESTIONNAIRE_PROFILE_RESET: '/user/reset-profile/',
+
+	GET_ASSEMBLY_AI_TOKEN: '/user/assembly-ai-token/',
 
 	GET_PRESIGNED_CONTENT_URL: '/chapter/generate-presigned-upload-url/',
 }

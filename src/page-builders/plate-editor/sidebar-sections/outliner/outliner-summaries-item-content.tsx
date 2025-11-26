@@ -12,7 +12,6 @@ import CircularLoader from '@/components/aural-ui/circular-loader'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import TextArea from '@/components/aural-ui/textarea'
-import { cn } from '@/lib/aural-ui/utils'
 
 interface OutlinerSummariesItemProps {
 	outlinerSummaryItem: TOutlinerData[number]
@@ -132,7 +131,7 @@ export default function OutlinerSummariesItemContent({
 			</IfElse>
 
 			<If condition={outlinerSummaryItemIdx === 1}>
-				<div className={cn('mt-2 flex items-center justify-between gap-2')}>
+				<div className="mt-2 flex items-center justify-between gap-2">
 					<IconButton
 						variant="outlined"
 						label={

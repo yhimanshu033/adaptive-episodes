@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import { EFeedback } from '@/constants/analytics'
 import { CrossIcon } from '@/icons/cross-icon'
 import { TickIcon } from '@/icons/tick-icon'
 import { TOutlinerData } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
@@ -7,8 +8,10 @@ import { RefreshCcw } from 'lucide-react'
 
 import DotLoader from '@/components/aural-ui/dot-loader'
 import { IconButton } from '@/components/aural-ui/icon-button'
+import { If } from '@/components/aural-ui/if-else'
 import { TextAreaProps } from '@/components/aural-ui/textarea'
 import MultiTextArea from '@/components/multi-text-area'
+import { OutlinerFeedback } from '@/components/outliner-feedback'
 
 interface OutlinerSummariesItemProps {
 	outlinerSummaryItem: TOutlinerData[number]
@@ -28,6 +31,8 @@ export default function OutlinerSummariesItemNewIdeas({
 		streamedNewIdeas,
 		isNewIdeaStreaming,
 		lastMessageGeneratingNewIdeaIdx,
+		handleNewIdeasFeedback,
+		completedTaskId,
 	} = useOutliner()
 	const startTaskSent = useRef(false)
 
@@ -112,17 +117,30 @@ export default function OutlinerSummariesItemNewIdeas({
 				textarea={textareaOpts}
 			/>
 			<div className="mt-2 flex items-center justify-between gap-2">
-				<IconButton
-					label="Regenerate Ideas"
-					variant="ghost"
-					disabled={
-						isNewIdeaStreaming || lastMessageGeneratingNewIdeaIdx !== undefined
-					}
-					tooltip="Regenerate Ideas"
-					icon={<RefreshCcw />}
-					onClick={handleRetry}
-					size="small"
-				/>
+				<div className="flex items-center gap-2">
+					<If condition={!isNewIdeaStreaming && !!completedTaskId.newIdeas}>
+						<OutlinerFeedback
+							onLike={(comment) =>
+								handleNewIdeasFeedback(EFeedback.LIKE, comment)
+							}
+							onDislike={(comment) =>
+								handleNewIdeasFeedback(EFeedback.DISLIKE, comment)
+							}
+						/>
+					</If>
+					<IconButton
+						label="Regenerate Ideas"
+						variant="ghost"
+						disabled={
+							isNewIdeaStreaming ||
+							lastMessageGeneratingNewIdeaIdx !== undefined
+						}
+						tooltip="Regenerate Ideas"
+						icon={<RefreshCcw />}
+						onClick={handleRetry}
+						size="small"
+					/>
+				</div>
 				<div className="flex items-center gap-2">
 					<IconButton
 						tooltip="Reject Idea"
