@@ -244,7 +244,7 @@ function useOutlinerQuestionnaireUtil() {
 
 	const handleStoryIdeaGenerate = useCallback(async () => {
 		if (
-			isWriterProfileLoaded(writerProfileDataState) &&
+			!isWriterProfileLoaded(writerProfileDataState) &&
 			!storyIdeaDataState?.length
 		) {
 			setStoryIdeaDataState([
