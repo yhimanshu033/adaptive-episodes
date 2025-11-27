@@ -277,6 +277,12 @@ export async function fetchAPI<
 
 			const message = (await response.json()) as Record<string, string>
 
+			if (typeof performance !== 'undefined' && performance.clearMarks) {
+				performance.clearMarks(`${performanceMarkName}-start`)
+				performance.clearMarks(`${performanceMarkName}-end`)
+				performance.clearMeasures(performanceMarkName)
+			}
+
 			return {
 				success: false,
 				status: response.status,
@@ -341,6 +347,12 @@ export async function fetchAPI<
 			})
 		}
 		const errorInstance = error as Error
+
+		if (typeof performance !== 'undefined' && performance.clearMarks) {
+			performance.clearMarks(`${performanceMarkName}-start`)
+			performance.clearMarks(`${performanceMarkName}-end`)
+			performance.clearMeasures(performanceMarkName)
+		}
 
 		if (throwOnError) {
 			throw errorInstance
