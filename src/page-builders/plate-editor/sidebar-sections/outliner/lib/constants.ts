@@ -75,4 +75,20 @@ export const GLOBAL_USERS = new Set([
 	'mayank.sancheti@pocketfm.com',
 	'shubham.s@pocketfm.com',
 	'prateek@pocketfm.com',
+	'vaibhav.singla@pocketfm.com',
+
+	// USERS
+	'kavish.desai@pocketfm.com',
+	'srishti.chaturvedi@pocketfm.com',
+	'mishra.saurabh@pocketfm.com',
+	'lalit@pocketfm.com',
+	'patrick.brennan@pocketfm.com',
+	'con-vasu.sharma@pocketfm.com',
+	'mohammad.saifullah@pocketfm.com',
+	'shubham.sharma@pocketfm.com',
+	'uday.b@pocketfm.com',
+	'sarjita.jain@pocketfm.com',
+	'nishanth@pocketfm.com',
+	'rachit.jain@pocketfm.com',
+	'neeru.yadav@pocketfm.com',
 ])
