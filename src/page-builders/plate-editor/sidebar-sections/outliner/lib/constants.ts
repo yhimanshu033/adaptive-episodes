@@ -76,6 +76,7 @@ export const GLOBAL_USERS = new Set([
 	'shubham.s@pocketfm.com',
 	'prateek@pocketfm.com',
 	'vaibhav.singla@pocketfm.com',
+	'rohan@pocketfm.com',
 
 	// USERS
 	'kavish.desai@pocketfm.com',
