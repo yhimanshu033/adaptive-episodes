@@ -4,6 +4,7 @@ import useAdaptationQuery from '@/hooks/query/use-adaptation-query'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { TickCircleIcon } from '@/icons/tick-circle-icon'
 import LsTabs from '@/page-builders/episodes/dialogs/ls-tabs'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
@@ -27,7 +28,7 @@ import LanguageSelector, {
 import useAdaptation from '@/providers/adaptation-provider'
 import { cn, parseInputLSMapping } from '@/lib/utils/helpers'
 
-import { ELanguage } from '@/types/common'
+import { ELanguage, LSMappingOutput } from '@/types/common'
 
 import AdaptationStatus from '../info/adaptation-status'
 
@@ -133,6 +134,10 @@ export default function AdaptationDialog({
 	}, [step])
 
 	const onPrimaryBtnClick = () => {
+		if (!selectedAdaptingLanguage) {
+			toast.error('Target language is required')
+			return
+		}
 		if (step === 1) {
 			mutate({
 				language: selectedAdaptingLanguage,
@@ -149,6 +154,28 @@ export default function AdaptationDialog({
 
 	const handleClose = () => {
 		setOpenExitDialog(true)
+	}
+
+	const handleSendLSTask = (inputls: LSMappingOutput) => {
+		if (isEpisodeAdaptation && !selectedAdaptingLanguage) {
+			toast.error('Target language was not selected before adaptation')
+			return
+		}
+		sendLS(
+			{
+				inputls,
+				projectId: storyData?.id || selectedRowData[0].project,
+				sourceLang: currentLanguage || ELanguage.ENGLISH,
+				language:
+					(isEpisodeAdaptation
+						? selectedAdaptingLanguage
+						: storyData?.parent_language) || ELanguage.GERMAN,
+				selectedRowData,
+				llmModel,
+				skip_extraction: skipNewExtraction,
+			},
+			{ onSuccess: () => setEpisodeAdaptation(false) }
+		)
 	}
 
 	useEffect(() => {
@@ -240,10 +267,15 @@ export default function AdaptationDialog({
 									<div className="flex flex-1 flex-col justify-center gap-3">
 										<Label htmlFor="adapt_language">Adaptation language</Label>
 										<LanguageSelector
-											placeholder="Select adaptation language "
+											placeholder={
+												selectableLanguages.length
+													? 'Select adaptation language '
+													: 'No languages available'
+											}
 											value={selectedAdaptingLanguage}
 											onValueChange={setSelectedAdaptingLanguage}
 											selectableLanguages={selectableLanguages}
+											disabled={!selectableLanguages.length}
 											showSeparator
 											classes={{
 												trigger: {
@@ -282,23 +314,7 @@ export default function AdaptationDialog({
 								handleClose={handleClose}
 								story={storyData}
 								sequence={sequence}
-								onSubmit={(inputls) =>
-									sendLS(
-										{
-											inputls,
-											projectId: storyData?.id || selectedRowData[0].project,
-											sourceLang: currentLanguage || ELanguage.ENGLISH,
-											language:
-												(isEpisodeAdaptation
-													? selectedAdaptingLanguage
-													: storyData?.parent_language) || ELanguage.GERMAN,
-											selectedRowData,
-											llmModel,
-											skip_extraction: skipNewExtraction,
-										},
-										{ onSuccess: () => setEpisodeAdaptation(false) }
-									)
-								}
+								onSubmit={handleSendLSTask}
 							/>
 						</Case>
 						<Case value={4}>
