@@ -134,11 +134,11 @@ export default function AdaptationDialog({
 	}, [step])
 
 	const onPrimaryBtnClick = () => {
-		if (!selectedAdaptingLanguage) {
-			toast.error('Target language is required')
-			return
-		}
 		if (step === 1) {
+			if (!selectedAdaptingLanguage) {
+				toast.error('Target language is required')
+				return
+			}
 			mutate({
 				language: selectedAdaptingLanguage,
 				selectedRowData,
