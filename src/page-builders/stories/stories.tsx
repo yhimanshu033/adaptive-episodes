@@ -105,20 +105,26 @@ const Stories = ({ isLoading, stories, search, recentSize }: IStories) => {
 										</If>
 										<Tag
 											color={
-												story.status === EImportStatus.IMPORTING
-													? 'lemon'
-													: 'info'
+												story.props?.from_scratch
+													? 'hotpink'
+													: story.status === EImportStatus.IMPORTING
+														? 'lemon'
+														: 'info'
 											}
-											leftIcon={story.status === EImportStatus.IMPORTING}
+											leftIcon={
+												story.status === EImportStatus.IMPORTING ||
+												story.props?.from_scratch
+											}
 											size="xs"
 											variant={
-												story.status === EImportStatus.IMPORTING
+												story.status === EImportStatus.IMPORTING ||
+												story.props?.from_scratch
 													? 'promotional'
 													: 'system'
 											}
 											emphasis="primary"
 										>
-											{story.status}
+											{story.props?.from_scratch ? 'AI' : story.status}
 										</Tag>
 									</div>
 									<If condition={!!story.image?.trim()}>

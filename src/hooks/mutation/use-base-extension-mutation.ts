@@ -4,6 +4,7 @@ import { API_URLS } from '@/constants/global-constants'
 import {
 	BASE_EXTENSION_MUTATION,
 	BASE_EXTENSION_QUERY_KEY,
+	GET_LS_SHEET_QUERY_KEY,
 } from '@/constants/query-constants'
 import { uploadFile } from '@/server-action/file-upload'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -30,6 +31,9 @@ const useBaseExtensionMutation = () => {
 		toast.success('Base script extension started ...')
 		await queryClient.invalidateQueries({
 			queryKey: [BASE_EXTENSION_QUERY_KEY, Number(id)],
+		})
+		await queryClient.invalidateQueries({
+			queryKey: [GET_LS_SHEET_QUERY_KEY, id],
 		})
 		if (!isGerman && isOriginal) {
 			setOpen(true)

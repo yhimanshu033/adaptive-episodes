@@ -1,3 +1,5 @@
+import { TStoryIdeaData } from '@/page-builders/episodes/outliner-questionnaire/lib/types'
+
 import {
 	TAssistantMessage,
 	TSimplifiedMessage,
@@ -70,6 +72,7 @@ export interface TOutlinerChatbotRequestBody {
 	previous_episode_summary: string
 	project_id: number
 	scenes: TOutlinerScene[]
+	selected_story_idea?: TStoryIdeaData
 	user_prompt: string
 }
 
@@ -118,6 +121,7 @@ export type TGenerateEpisodeFromSummaryBody = {
 	input_language?: string
 	narrative_arc_plan?: string
 	prev_episode_summary?: string
+	selected_story_idea?: TStoryIdeaData
 }
 
 export type TOutlinerChatGetNewIdeasResponse = {
@@ -150,6 +154,7 @@ export type TOutlinerSummaryOutlineBody = {
 	input_language?: ELanguage
 	narrative_arc_plan?: string
 	project_id: number
+	selected_story_idea?: TStoryIdeaData
 	summary?: string
 }
 
@@ -222,6 +227,7 @@ export type TGenerateEpisodeFromSummaryV2Body = {
 	prev_episode_summary?: string
 	project_id: number
 	scenes: TOutlinerScene[]
+	selected_story_idea?: TStoryIdeaData
 	summary: string
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import useAdaptationQuery from '@/hooks/query/use-adaptation-query'
 import { CheckCircle } from 'lucide-react'
@@ -23,13 +23,8 @@ import { ELanguage } from '@/types/common'
 const AdaptationContainer = () => {
 	const { id } = useParams()
 	const { initialStoryData } = useEpisodeTableContext()
-	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
-		projectId: id as string,
-		language: initialStoryData?.parent_language || ELanguage.ENGLISH,
-		enabled: true,
-	})
-
 	const {
+		storyData,
 		setFetchingLSSheet,
 		setTableData,
 		setStory,
@@ -39,23 +34,37 @@ const AdaptationContainer = () => {
 		setSequence,
 	} = useAdaptation()
 
+	const isStoryAdaptationInProgress = useMemo(
+		() => !storyData || storyData?.id === Number(id),
+		[storyData, id]
+	)
+
+	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
+		projectId: id as string,
+		language: initialStoryData?.parent_language || ELanguage.ENGLISH,
+		enabled: isStoryAdaptationInProgress,
+	})
+
 	useEffect(() => {
-		setStory(initialStoryData)
-		setFetchingLSSheet(lsSheetLoading)
+		if (!storyData) {
+			setStory(initialStoryData)
+			setFetchingLSSheet(lsSheetLoading)
+		}
+	}, [
+		storyData,
+		initialStoryData,
+		lsSheetLoading,
+		setStory,
+		setFetchingLSSheet,
+	])
+
+	useEffect(() => {
 		if (lsSheetData) {
 			const { data, sequence } = parseInputLSMapping(lsSheetData)
 			setTableData(data)
 			setSequence(sequence || {})
 		}
-	}, [
-		initialStoryData,
-		lsSheetData,
-		lsSheetLoading,
-		setFetchingLSSheet,
-		setStory,
-		setTableData,
-		setSequence,
-	])
+	}, [lsSheetData, setTableData, setSequence])
 
 	return (
 		<div>
@@ -80,16 +89,20 @@ const AdaptationContainer = () => {
 							<Else>
 								<CircularLoader className="mx-auto mb-4" />
 								<CardTitle className="pb-4 text-xl font-semibold">
-									Adaptation in Progress
+									{isStoryAdaptationInProgress
+										? 'Adaptation in Progress'
+										: 'Another story is being adapted'}
 								</CardTitle>
 								<CardDescription className="text-muted-foreground">
-									Your content is being adapted. This may take a few moments.
+									{isStoryAdaptationInProgress
+										? 'Your content is being adapted. This may take a few moments.'
+										: 'Another story is being adapted. Please wait for it to complete.'}
 								</CardDescription>
 							</Else>
 						</IfElse>
 					</CardHeader>
 					<CardContent className="text-center">
-						<If condition={step !== 1}>
+						<If condition={step !== 1 && isStoryAdaptationInProgress}>
 							<Button
 								onClick={() => {
 									setOpen(true)

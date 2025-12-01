@@ -81,7 +81,7 @@ import { setRecentStore } from '@/lib/utils/indexed-db'
 import { ELanguage, TSourceLanguage } from '@/types/common'
 
 export function ImportStory() {
-	const [storyType, setStoryType] = useState(ImportStoryType.EMPTY)
+	const [storyType, setStoryType] = useState(ImportStoryType.BRAINSTORM)
 	const [step, setStep] = useState(ImportStoryStep.CHOOSE_TYPE)
 	const [isDragging, setIsDragging] = useState(false)
 	const [imageSrc, setImageSrc] = useState<string | null>(null)

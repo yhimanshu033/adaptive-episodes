@@ -137,6 +137,7 @@ export const PAGE_PADDING = 3
 export const PAGES_TO_SHOW = 5
 
 export enum ImportStoryType {
+	BRAINSTORM = 'brainstorm',
 	EMPTY = 'empty',
 	IMPORT = 'import',
 }

@@ -81,11 +81,13 @@ const TableCTAs = ({
 	setActiveTab,
 	currentWorkbook,
 	story,
+	sequence,
 }: {
 	currentTabData: LSMappingOutputItem[]
 	currentWorkbook?: LSMappingOutputItemV2
 	onDataChange: (data: LSMappingOutputItem[]) => void
 	onWorkBookChange?: (data: LSMappingOutputItemV2) => void
+	sequence: LSMappingSequenceData['sequence_ls']
 	setActiveTab?: (tab: string) => void
 	story?: TStory | null
 	viewOnly: boolean
@@ -150,7 +152,10 @@ const TableCTAs = ({
 		const workbook = XLSX.utils.book_new()
 
 		Object.entries(currentWorkbook || {}).forEach(([sheetName, rows]) => {
-			const worksheet = XLSX.utils.json_to_sheet(rows)
+			const worksheetOptions = sequence?.[sheetName]
+				? { header: sequence[sheetName] }
+				: undefined
+			const worksheet = XLSX.utils.json_to_sheet(rows, worksheetOptions)
 			XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
 		})
 
@@ -160,10 +165,6 @@ const TableCTAs = ({
 			workbook,
 			`${filePrefix}LS Sheet - ${getFormattedDate()}.xlsx`
 		)
-	}
-
-	if (viewOnly) {
-		return null
 	}
 
 	return (
@@ -176,30 +177,34 @@ const TableCTAs = ({
 				shape="square"
 				variant="ghost"
 			/>
-			<IconButton
-				label="Upload CSV"
-				tooltip="Upload CSV"
-				onClick={() => document.getElementById('csv-input')?.click()}
-				icon={<UploadIcon className="size-6" />}
-				shape="square"
-				variant="ghost"
-			/>
-			<input
-				type="file"
-				accept=".xlsx, .csv"
-				className="hidden"
-				id="csv-input"
-				onChange={(e) => handleXlsxUpload(e.target.files)}
-			/>
-			<Button
-				type="button"
-				onClick={addNewRow}
-				variant="outline"
-				size="sm"
-				leftIcon={<PlusIcon />}
-			>
-				Add Row
-			</Button>
+			{!viewOnly && (
+				<>
+					<IconButton
+						label="Upload CSV"
+						tooltip="Upload CSV"
+						onClick={() => document.getElementById('csv-input')?.click()}
+						icon={<UploadIcon className="size-6" />}
+						shape="square"
+						variant="ghost"
+					/>
+					<input
+						type="file"
+						accept=".xlsx, .csv"
+						className="hidden"
+						id="csv-input"
+						onChange={(e) => handleXlsxUpload(e.target.files)}
+					/>
+					<Button
+						type="button"
+						onClick={addNewRow}
+						variant="outline"
+						size="sm"
+						leftIcon={<PlusIcon />}
+					>
+						Add Row
+					</Button>
+				</>
+			)}
 		</div>
 	)
 }
@@ -332,6 +337,7 @@ const LsTabs = ({
 							onWorkBookChange={setTableData}
 							setActiveTab={setActiveTab}
 							currentWorkbook={tableData || {}}
+							sequence={sequence}
 						/>
 					</div>
 					<LSTableEditor
@@ -374,6 +380,7 @@ const LsTabs = ({
 						setActiveTab={setActiveTab}
 						currentWorkbook={tableData || {}}
 						story={story}
+						sequence={sequence}
 					/>
 				</div>
 

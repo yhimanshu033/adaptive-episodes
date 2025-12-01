@@ -24,6 +24,7 @@ export type TGetStoriesResponse = {
 
 export type TStoryProps = {
 	bulk_prompt_history?: string[]
+	from_scratch?: boolean
 }
 
 export type TStory = {
@@ -50,7 +51,9 @@ export type StoryUploadParams = {
 	task_data: {
 		author: string | null
 		book_name?: string
+		create_blank_project?: boolean
 		end_ep: number
+		from_scratch?: boolean
 		image: string | null
 		input_language: string
 		llm_model: string
@@ -78,4 +81,9 @@ export type TGetStoryDataResponse = {
 
 export type TGetStoryDataUrlParams = {
 	storyId: number
+}
+
+export type TUploadStoryResponse = {
+	message: string
+	project_id?: number
 }

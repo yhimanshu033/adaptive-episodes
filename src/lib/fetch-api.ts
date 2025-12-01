@@ -8,6 +8,7 @@ import {
 import * as Sentry from '@sentry/nextjs'
 import { v4 as uuid } from 'uuid'
 
+import { getPerformanceTiming } from '@/lib/fetch-helper'
 import { getUserSession } from '@/lib/get-session'
 import { log } from '@/lib/utils/helpers'
 
@@ -128,7 +129,12 @@ export async function fetchAPI<
 	}
 
 	const startTime = Date.now()
+	const performanceMarkName = `fetch-${correlationId}`
 	let timeoutId: NodeJS.Timeout | undefined
+
+	if (typeof performance !== 'undefined' && performance.mark) {
+		performance.mark(`${performanceMarkName}-start`)
+	}
 
 	try {
 		const isFormData = body instanceof FormData
@@ -151,25 +157,31 @@ export async function fetchAPI<
 
 		timeoutId = setTimeout(() => {
 			const duration = Date.now() - startTime
-			log({
-				type: 'API LONG REQUEST TIMEOUT',
-				extra: {
-					...defaultSentryData,
-					duration,
-					timeoutThreshold: FETCH_TIMEOUT,
-				},
-				tags: defaultSentryTags,
-			})
-			if (sendError) {
-				Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
-					extra: {
-						...defaultSentryData,
-						duration,
-						timeoutThreshold: FETCH_TIMEOUT,
-					},
-					tags: defaultSentryTags,
-				})
-			}
+			void getPerformanceTiming(resolvedUrl, startTime).then(
+				(performanceTiming) => {
+					log({
+						type: 'API LONG REQUEST TIMEOUT',
+						extra: {
+							...defaultSentryData,
+							duration,
+							timeoutThreshold: FETCH_TIMEOUT,
+							timing: performanceTiming,
+						},
+						tags: defaultSentryTags,
+					})
+					if (sendError) {
+						Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
+							extra: {
+								...defaultSentryData,
+								duration,
+								timeoutThreshold: FETCH_TIMEOUT,
+								timing: performanceTiming,
+							},
+							tags: defaultSentryTags,
+						})
+					}
+				}
+			)
 		}, FETCH_TIMEOUT)
 
 		const response = await fetch(resolvedUrl, {
@@ -194,13 +206,28 @@ export async function fetchAPI<
 		clearTimeout(timeoutId)
 		const requestDuration = Date.now() - startTime
 
+		if (typeof performance !== 'undefined' && performance.mark) {
+			performance.mark(`${performanceMarkName}-end`)
+			performance.measure(
+				performanceMarkName,
+				`${performanceMarkName}-start`,
+				`${performanceMarkName}-end`
+			)
+		}
+
 		if (requestDuration >= FETCH_TIMEOUT) {
+			const performanceTiming = await getPerformanceTiming(
+				resolvedUrl,
+				startTime
+			)
 			log({
 				type: 'API SLOW REQUEST COMPLETED',
 				extra: {
 					...defaultSentryData,
 					duration: requestDuration,
 					timeoutThreshold: FETCH_TIMEOUT,
+					timing: performanceTiming,
+					responseStatus: response.status,
 				},
 				tags: {
 					...defaultSentryTags,
@@ -213,6 +240,8 @@ export async function fetchAPI<
 					...defaultSentryData,
 					duration: requestDuration,
 					timeoutThreshold: FETCH_TIMEOUT,
+					timing: performanceTiming,
+					responseStatus: response.status,
 				},
 				tags: {
 					...defaultSentryTags,
@@ -248,6 +277,12 @@ export async function fetchAPI<
 
 			const message = (await response.json()) as Record<string, string>
 
+			if (typeof performance !== 'undefined' && performance.clearMarks) {
+				performance.clearMarks(`${performanceMarkName}-start`)
+				performance.clearMarks(`${performanceMarkName}-end`)
+				performance.clearMeasures(performanceMarkName)
+			}
+
 			return {
 				success: false,
 				status: response.status,
@@ -265,6 +300,12 @@ export async function fetchAPI<
 			log({
 				message,
 			})
+		}
+
+		if (typeof performance !== 'undefined' && performance.clearMarks) {
+			performance.clearMarks(`${performanceMarkName}-start`)
+			performance.clearMarks(`${performanceMarkName}-end`)
+			performance.clearMeasures(performanceMarkName)
 		}
 
 		return {
@@ -306,6 +347,12 @@ export async function fetchAPI<
 			})
 		}
 		const errorInstance = error as Error
+
+		if (typeof performance !== 'undefined' && performance.clearMarks) {
+			performance.clearMarks(`${performanceMarkName}-start`)
+			performance.clearMarks(`${performanceMarkName}-end`)
+			performance.clearMeasures(performanceMarkName)
+		}
 
 		if (throwOnError) {
 			throw errorInstance

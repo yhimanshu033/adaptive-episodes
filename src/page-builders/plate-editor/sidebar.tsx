@@ -22,6 +22,7 @@ import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { commentPlugin } from '@/components/editor/plugins/comment-kit'
 import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable'
 import useConfiguration from '@/providers/configuration-provider'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { cn } from '@/lib/utils/helpers'
 
 import { ESidebar } from '@/types/plate-types'
@@ -46,6 +47,7 @@ const Sidebar = () => {
 	const showSidebar = sidebar && sidebar !== ESidebar.DUAL_VIEW && !focusMode
 	const globalLocalize = useSearchParams().get(GLOBAL_LOCALIZE)
 	const activeCommentId = usePluginOption(commentPlugin, 'activeId')
+	const { initialStoryData } = useEpisodeTableContext()
 	const isOutlinerEnabled = useOutlinerEnabled()
 
 	const { configurationData } = useConfiguration()
@@ -84,6 +86,11 @@ const Sidebar = () => {
 	}, [isEpisodeNavigationOpen])
 
 	useEffect(() => {
+		if (initialStoryData?.props?.from_scratch) {
+			setSidebar(ESidebar.OUTLINER)
+			return
+		}
+
 		if (isOutlinerEnabled) {
 			setSidebar(ESidebar.OUTLINER)
 			return
@@ -93,7 +100,7 @@ const Sidebar = () => {
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [configurationData.defaultSidebar, isOutlinerEnabled])
+	}, [configurationData.defaultSidebar, initialStoryData, isOutlinerEnabled])
 
 	if (sidebar === ESidebar.DUAL_VIEW) {
 		return null

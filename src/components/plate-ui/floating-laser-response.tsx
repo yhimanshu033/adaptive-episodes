@@ -13,7 +13,7 @@ import { Button } from '@/components/aural-ui/button'
 import Textarea from '@/components/aural-ui/textarea'
 import Image from '@/components/ui/image'
 import { track } from '@/lib/utils/analytics'
-import { cn } from '@/lib/utils/helpers'
+import { cn, getWordCount } from '@/lib/utils/helpers'
 
 import { Divider } from '../aural-ui/divider'
 
@@ -82,6 +82,7 @@ export default function FloatingLaserResponse({
 				flowId: key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1],
 				source: laser?.text,
 				response: val,
+				responseWordCount: getWordCount(val),
 			},
 		})
 	}
@@ -97,6 +98,7 @@ export default function FloatingLaserResponse({
 				flowId: key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1],
 				source: laser?.text,
 				response: val,
+				responseWordCount: getWordCount(val),
 			},
 		})
 	}
@@ -111,6 +113,7 @@ export default function FloatingLaserResponse({
 				flowId: key?.split?.(LASER_LEAF_KEYS.ID_START)?.[1],
 				source: laser?.text,
 				response: val,
+				responseWordCount: getWordCount(val),
 			},
 		})
 	}

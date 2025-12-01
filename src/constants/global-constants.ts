@@ -117,6 +117,7 @@ export const API_URLS = {
 	EPISODE_REGENERATE: '/aicopilot/nwm-extraction-pipeline/',
 	CHAPTER_CHARACTERS: '/chapters/characters/',
 	BEATSHEET_SCENE_UPDATE: '/scenes/update-metadata/',
+
 	OUTLINER_CHAT: '/aicopilot/bse/chatbot',
 	GET_OUTLINER_METADATA: '/project/:projectId/fetch-bse-metadata',
 	UPDATE_NARRATIVE_ARCS: '/project/:projectId/narrative-arc-plan',
@@ -125,6 +126,21 @@ export const API_URLS = {
 	OUTLINER_NEW_IDEAS: '/chapter/:episodeId/new-episode-ideas',
 	OUTLINER_SUMMARY_OUTLINE: '/aicopilot/bse/summary-to-outlines/',
 	OUTLINER_SAVE_CACHED_OUTLINE: '/scenes/save-cached-scenes/',
+
+	OUTLINER_QUESTIONNAIRE_NEW_IDEAS: '/project/:projectId/new-story-idea',
+	OUTLINER_QUESTIONNAIRE_STATUS: '/user/fetch-profile-stage/',
+	OUTLINER_QUESTIONNAIRE_STATUS_UPDATE: '/user/profile-stage/:projectId/',
+	OUTLINER_QUESTIONNAIRE_CHAT: '/user/profile-chat/',
+	OUTLINER_QUESTIONNAIRE_SURVEY_QUESTIONS: '/user/survey/',
+	OUTLINER_QUESTIONNAIRE_SURVEY_QUESTIONS_SUBMIT: '/user/survey/submit/',
+	OUTLINER_QUESTIONNAIRE_NEW_IDEAS_REGENERATE:
+		'/project/:projectId/regenerate-story-idea',
+	OUTLINER_QUESTIONNAIRE_NEW_SHOWS_GENERATE:
+		'/user/survey/generate-custom-shows/',
+	OUTLINER_QUESTIONNAIRE_PROFILE: '/user/writer-profile',
+	OUTLINER_QUESTIONNAIRE_PROFILE_RESET: '/user/reset-profile/',
+
+	GET_ASSEMBLY_AI_TOKEN: '/user/assembly-ai-token/',
 
 	GET_PRESIGNED_CONTENT_URL: '/chapter/generate-presigned-upload-url/',
 }
@@ -165,7 +181,7 @@ export const SAMPLE_DOC_LINK =
 export const FETCHED_BUILD_VERSION_KEY = 'fetchedBuildVersion'
 
 export const SOCKET_STREAMING_TIMEOUT = 60000 //1 minute
-export const FETCH_TIMEOUT = 5000 //10 seconds
+export const FETCH_TIMEOUT = 5000 //5 seconds
 
 export const BEATSHEET_STREAMING_TIMEOUT = 3 * 60000 //3 minute
 export const AI_CHATBOT_STREAMING_TIMEOUT = 90000 //90 seconds
@@ -194,3 +210,6 @@ export const APP_CONFIG = {
 	ENV: 'production',
 	NEXT_PUBLIC_ANALYTICS_ENABLED: true,
 }
+
+export const DEFAULT_PERFORMANCE_ENTRY_TIMEOUT = 500 //500ms
+export const DEFAULT_PERFORMANCE_ENTRY_MAX_TIME_DIFFERENCE = 100 //100ms

@@ -17,19 +17,21 @@ import { useShallow } from 'zustand/react/shallow'
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
 import { IfElse } from '@/components/aural-ui/if-else'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { hasNWMRan } from '@/lib/utils/helpers'
 
 export default function UGCActions() {
 	const isUGC = useIsUGC()
 	const { data: episodeData } = useEpisodeContent()
 	const userData = useGlobalStore(useShallow((state) => state.userData))
+	const { initialStoryData } = useEpisodeTableContext()
 
 	if (
-		!(
-			isUGC || GLOBAL_USERS.has(userData?.user?.email?.toLowerCase?.() || '')
-		) ||
+		(!isUGC &&
+			!GLOBAL_USERS.has(userData?.user?.email?.toLowerCase?.() || '')) ||
 		!!episodeData?.next_parent_id ||
-		!OUTLINER_ENABLED_PROJECTS.has(episodeData?.chapter.project ?? 0)
+		(!OUTLINER_ENABLED_PROJECTS.has(episodeData?.chapter.project ?? 0) &&
+			!initialStoryData?.props?.from_scratch)
 	) {
 		return null
 	}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
 	COMMON_SITE_HEADERS,
 	CORRELATION_ID_HEADER_KEY,
@@ -26,6 +26,7 @@ function useSocketUtilFn({ baseUrl }: { baseUrl?: string }) {
 		return uuid()
 	}, [])
 	const failedCounterRef = useRef(0)
+	const [resetRetry, setResetRetry] = useState(false)
 	const socket = useMemo(
 		() =>
 			io(socketUrl, {
@@ -43,7 +44,8 @@ function useSocketUtilFn({ baseUrl }: { baseUrl?: string }) {
 				// 	token: `${session?.accessToken}`,
 				// },
 			}),
-		[socketUrl, userData, correlationId]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[socketUrl, userData, correlationId, resetRetry]
 	)
 
 	useEffect(() => {
@@ -51,9 +53,9 @@ function useSocketUtilFn({ baseUrl }: { baseUrl?: string }) {
 
 		function handleSocketConnectionError(err: Error) {
 			failedCounterRef.current = failedCounterRef.current + 1
-			if (failedCounterRef.current === MAX_SOCKET_RETRIES) {
+			if (failedCounterRef.current >= MAX_SOCKET_RETRIES) {
 				Sentry.captureException(
-					new Error(`Socket retry limit(${MAX_SOCKET_RETRIES}) reached`),
+					new Error(`Socket retry limit(${failedCounterRef.current}) reached`),
 					{
 						extra: {
 							error: err,
@@ -70,7 +72,9 @@ function useSocketUtilFn({ baseUrl }: { baseUrl?: string }) {
 								innerClassName="w-30!"
 								size="sm"
 								onClick={() => {
-									window.location.reload()
+									// window.location.reload()
+									failedCounterRef.current = 0
+									setResetRetry((prev) => !prev)
 									toast.dismiss(SOCKET_ERROR_TOAST_ID)
 								}}
 							>

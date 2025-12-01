@@ -1,7 +1,8 @@
 import { API_URLS } from '@/constants/global-constants'
-import { GET_LS_SHEET_QUERY_KEY } from '@/constants/query-constants'
+import { POLL_LS_SHEET_QUERY_KEY } from '@/constants/query-constants'
 import { useQuery } from '@tanstack/react-query'
 
+import useAdaptation from '@/providers/adaptation-provider'
 import { doPoll } from '@/lib/do-poll'
 import { migrateOldLSMapping } from '@/lib/utils/helpers'
 
@@ -17,6 +18,8 @@ const useAdaptationQuery = ({
 	language: ELanguage
 	projectId: string
 }) => {
+	const { abortControllerRef } = useAdaptation()
+
 	const pollLSMapping = async () => {
 		const pollingResp = await doPoll<
 			TNoParams,
@@ -37,16 +40,25 @@ const useAdaptationQuery = ({
 				}
 				return false
 			},
+			signal: abortControllerRef.current?.signal,
 		})
-		const migratedData = migrateOldLSMapping(pollingResp?.data)
+
+		if (!pollingResp) {
+			abortControllerRef.current = new AbortController()
+			return null
+		}
+
+		const migratedData = migrateOldLSMapping(pollingResp.data)
 
 		return migratedData
 	}
 
 	const query = useQuery({
-		queryKey: [GET_LS_SHEET_QUERY_KEY, projectId, language],
+		queryKey: [POLL_LS_SHEET_QUERY_KEY, projectId, language],
 		queryFn: pollLSMapping,
 		enabled,
+		staleTime: 0,
+		gcTime: 0,
 	})
 	return query
 }

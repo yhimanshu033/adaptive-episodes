@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react'
+import { EFeedback } from '@/constants/analytics'
 import OutlinerScenesItem from '@/page-builders/plate-editor/sidebar-sections/outliner/outliner-scenes-item'
 import useOutliner from '@/page-builders/plate-editor/sidebar-sections/outliner/provider'
 
 import CircularLoader from '@/components/aural-ui/circular-loader'
 import { If } from '@/components/aural-ui/if-else'
+import { OutlinerFeedback } from '@/components/outliner-feedback'
 import { Accordion } from '@/components/ui/accordion'
 import ForEach from '@/components/ui/for-each'
 
@@ -14,6 +16,8 @@ export default function OutlinerScenes() {
 		openSceneIdx,
 		summaryOutlineTaskId,
 		isSummaryOutlinePending,
+		completedTaskId,
+		handleOutlineFeedback,
 	} = useOutliner()
 
 	const outlinerScenes = useMemo(() => {
@@ -25,7 +29,7 @@ export default function OutlinerScenes() {
 	}
 
 	return (
-		<div className="">
+		<div>
 			<If condition={!!summaryOutlineTaskId || isSummaryOutlinePending}>
 				<p className="flex items-center gap-2">
 					<span className="animate-gradient-slide bg-clip-text text-transparent">
@@ -36,6 +40,18 @@ export default function OutlinerScenes() {
 					</span>
 				</p>
 			</If>
+			<If condition={!!completedTaskId.outline}>
+				<div className="flex items-center justify-between">
+					<p>Outline generated!</p>
+					<OutlinerFeedback
+						onLike={(comment) => handleOutlineFeedback(EFeedback.LIKE, comment)}
+						onDislike={(comment) =>
+							handleOutlineFeedback(EFeedback.DISLIKE, comment)
+						}
+					/>
+				</div>
+			</If>
+
 			<Accordion value={String(openSceneIdx)} type="single" className="w-full">
 				<ForEach data={outlinerScenes}>
 					{(outlinerSceneItem, outlinerSceneItemIdx) => {

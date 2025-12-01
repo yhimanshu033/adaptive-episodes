@@ -4,6 +4,7 @@ import {
 	EDeviceBrowser,
 	EDeviceOS,
 	EDeviceType,
+	EFeedback,
 	EVENT_TYPE,
 	SCREEN_NAME,
 } from '@/constants/analytics'
@@ -64,18 +65,21 @@ export type TConditionalMetadata =
 			action: ACTION.LASER_RESPONSE_ACCEPT
 			flowId?: string
 			response: string
+			responseWordCount?: number
 			source?: string
 	  }
 	| {
 			action: ACTION.LASER_RESPONSE_REJECT
 			flowId?: string
 			response: string
+			responseWordCount?: number
 			source?: string
 	  }
 	| {
 			action: ACTION.LASER_RESPONSE_RETRY
 			flowId?: string
 			response: string
+			responseWordCount?: number
 			source?: string
 	  }
 	| { action: ACTION.STORY_CHAT_CANCEL; flowId?: string }
@@ -147,6 +151,172 @@ export type TConditionalMetadata =
 			change: DiffStatus
 			flowId: string
 			sfx: string
+	  }
+	| {
+			action: ACTION.OUTLINER_CHAT_START
+			flowId: string
+			mode?: string
+			prompt: string
+	  }
+	| {
+			action: ACTION.OUTLINER_CHAT_END
+			flowId: string
+			mode?: string
+			prompt: string
+			response: string
+	  }
+	| {
+			action: ACTION.OUTLINER_NEW_IDEAS_START
+			flowId: string
+			retry?: boolean
+	  }
+	| {
+			action: ACTION.OUTLINER_NEW_IDEAS_END
+			flowId: string
+			response: string
+			retry?: boolean
+	  }
+	| {
+			action: ACTION.OUTLINER_NARRATIVE_ARCS_START
+			flowId: string
+			retry?: boolean
+	  }
+	| {
+			action: ACTION.OUTLINER_NARRATIVE_ARCS_END
+			flowId: string
+			response: string
+			retry?: boolean
+	  }
+	| {
+			action: ACTION.OUTLINER_GENERATE_OUTLINE_START
+			flowId: string
+			summary: string
+	  }
+	| {
+			action: ACTION.OUTLINER_GENERATE_OUTLINE_END
+			flowId: string
+			response: string
+			summary: string
+	  }
+	| {
+			action: ACTION.OUTLINER_GENERATE_CONTENT_START
+			flowId: string
+	  }
+	| {
+			action: ACTION.OUTLINER_GENERATE_CONTENT_END
+			flowId: string
+			response: string
+	  }
+	| {
+			action: ACTION.OUTLINER_CHAT_USER_FEEDBACK
+			comment?: string
+			feedback: EFeedback
+			flowId: string
+	  }
+	| {
+			action: ACTION.OUTLINER_NEW_IDEAS_USER_FEEDBACK
+			comment?: string
+			feedback: EFeedback
+			flowId: string
+	  }
+	| {
+			action: ACTION.OUTLINER_NARRATIVE_ARCS_USER_FEEDBACK
+			comment?: string
+			feedback: EFeedback
+			flowId: string
+	  }
+	| {
+			action: ACTION.OUTLINER_GENERATE_OUTLINE_USER_FEEDBACK
+			comment?: string
+			feedback: EFeedback
+			flowId: string
+	  }
+	| {
+			action: ACTION.OUTLINER_GENERATE_CONTENT_USER_FEEDBACK
+			comment?: string
+			feedback: EFeedback
+			flowId: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_STAGE_CHANGE
+			fromStage?: string
+			toStage: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_CHAT_START
+			flowId: string
+			prompt: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_CHAT_END
+			flowId: string
+			prompt: string
+			response: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_SURVEY_ANSWER
+			answer: string
+			isCustom: boolean
+			questionKey: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_SURVEY_OPTIONS_GENERATE
+			flowId: string
+			genre: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_PROFILE_RESET
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_NEW_IDEAS_START
+			flowId: string
+			hasWriterProfile: boolean
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_NEW_IDEAS_END
+			flowId: string
+			response: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_NEW_IDEAS_REGENERATE_START
+			flowId: string
+			hasFileUrls: boolean
+			hasPrompt: boolean
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_NEW_IDEAS_REGENERATE_END
+			flowId: string
+			response: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_PROFILE_UPDATE
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_COMPLETE
+			selectedIdeaTitle: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_CHAT_USER_FEEDBACK
+			comment?: string
+			feedback: EFeedback
+			flowId: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_NEW_IDEAS_USER_FEEDBACK
+			comment?: string
+			feedback: EFeedback
+			flowId: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_NEW_IDEAS_REGENERATE_USER_FEEDBACK
+			comment?: string
+			feedback: EFeedback
+			flowId: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ONBOARDING_PROFILE_USER_FEEDBACK
+			comment?: string
+			feedback: EFeedback
 	  }
 	| { action?: TAction }
 
