@@ -43,6 +43,7 @@ interface TLanguageSelectorProps {
 			root?: string
 		}
 	}
+	disabled?: boolean
 	disabledLanguages?: ELanguage[]
 	onValueChange: (language: ELanguage) => void
 	placeholder?: string
@@ -67,9 +68,10 @@ const LanguageSelector = ({
 	classes = {},
 	placeholder = 'Language',
 	showSeparator,
+	disabled = false,
 }: TLanguageSelectorProps) => {
 	return (
-		<Select value={value} onValueChange={onValueChange}>
+		<Select value={value} onValueChange={onValueChange} disabled={disabled}>
 			<SelectTrigger
 				id="adapt_language"
 				className={cn('gap-2', className)}

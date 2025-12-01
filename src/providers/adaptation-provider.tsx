@@ -28,8 +28,9 @@ function useAdaptationUtil() {
 	const [open, setOpen] = useState(false)
 	const [openExitDialog, setOpenExitDialog] = useState(false)
 	const [selectedRowData, setSelectedRowData] = useState<TEpisode[]>([])
-	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] =
-		useState<ELanguage>(ELanguage.GERMAN)
+	const [selectedAdaptingLanguage, setSelectedAdaptingLanguage] = useState<
+		ELanguage | undefined
+	>(ELanguage.GERMAN)
 
 	const [storyData, setStory] = useState<TStory | null>()
 	const [tableData, setTableData] = useState<LSMappingOutputItemV2>({})
