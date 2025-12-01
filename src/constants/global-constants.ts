@@ -143,6 +143,7 @@ export const API_URLS = {
 	GET_ASSEMBLY_AI_TOKEN: '/user/assembly-ai-token/',
 
 	GET_PRESIGNED_CONTENT_URL: '/chapter/generate-presigned-upload-url/',
+	GET_USER_FEATURE_ACCESS: '/user/feature-access',
 }
 
 export const INDEXED_DB_KEYS = {

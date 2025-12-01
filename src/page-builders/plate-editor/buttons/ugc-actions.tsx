@@ -4,15 +4,8 @@ import {
 	useUGCPublishMutation,
 } from '@/hooks/mutation/use-ugc-action-mutations'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
-import useIsUGC from '@/hooks/ugc/use-is-ugc'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { UploadIcon } from '@/icons/upload-icon'
-import {
-	GLOBAL_USERS,
-	OUTLINER_ENABLED_PROJECTS,
-} from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/constants'
-import { useGlobalStore } from '@/store/global-store'
-import { useShallow } from 'zustand/react/shallow'
 
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
@@ -21,18 +14,10 @@ import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { hasNWMRan } from '@/lib/utils/helpers'
 
 export default function UGCActions() {
-	const isUGC = useIsUGC()
 	const { data: episodeData } = useEpisodeContent()
-	const userData = useGlobalStore(useShallow((state) => state.userData))
 	const { initialStoryData } = useEpisodeTableContext()
 
-	if (
-		(!isUGC &&
-			!GLOBAL_USERS.has(userData?.user?.email?.toLowerCase?.() || '')) ||
-		!!episodeData?.next_parent_id ||
-		(!OUTLINER_ENABLED_PROJECTS.has(episodeData?.chapter.project ?? 0) &&
-			!initialStoryData?.props?.from_scratch)
-	) {
+	if (!!episodeData?.next_parent_id || !initialStoryData?.props?.from_scratch) {
 		return null
 	}
 

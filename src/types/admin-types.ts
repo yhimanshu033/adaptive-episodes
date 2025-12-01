@@ -186,3 +186,15 @@ export type TGetSlackChannelResponse = {
 export type TUpdateSlackChannelBody = {
 	slack_channel_id: string
 }
+
+export type TGetUserFeatureAccessQueryParams = {
+	features: string
+	project_id?: string | number
+}
+
+export type TGetUserFeatureAccessResponse = {
+	result: {
+		outliner: boolean
+		survey_onboarding: boolean
+	}
+}

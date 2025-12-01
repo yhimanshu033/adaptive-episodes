@@ -5,7 +5,7 @@ import '@/hooks/form-resolvers/story-import-resolver'
 
 import { useRouter } from 'next/navigation'
 import { CI_DIALOG_TITLE } from '@/constants/story-constants'
-import useIsGlobal from '@/hooks/ugc/use-is-global'
+import useUserAccess from '@/hooks/query/use-user-access'
 import { BubbleSparkleIcon } from '@/icons/bubble-sparkle-icon'
 import { ImportFolderIcon } from '@/icons/import-folder-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
@@ -20,15 +20,9 @@ import ForEach from '@/components/ui/for-each'
 
 import { IconComponent } from '@/types/common'
 
-const storyTypesInfoRecord: Record<
-	ImportStoryType,
-	{ desc: string; icon: IconComponent; title: string }
+const storyTypesInfoRecord: Partial<
+	Record<ImportStoryType, { desc: string; icon: IconComponent; title: string }>
 > = {
-	[ImportStoryType.BRAINSTORM]: {
-		title: 'Brainstorm with Copilot',
-		desc: 'Collaborate with AI to create the core outline.',
-		icon: (props) => <MagicBookIcon {...props} />,
-	},
 	[ImportStoryType.IMPORT]: {
 		title: 'Import content for series',
 		desc: 'Already have a story? Just upload.',
@@ -41,10 +35,25 @@ const storyTypesInfoRecord: Record<
 	},
 }
 
+const brainStormStoryItem: typeof storyTypesInfoRecord = {
+	[ImportStoryType.BRAINSTORM]: {
+		title: 'Brainstorm with Copilot',
+		desc: 'Collaborate with AI to create the core outline.',
+		icon: (props) => <MagicBookIcon {...props} />,
+	},
+}
+
 const storyTypesInfo = Object.keys(storyTypesInfoRecord).map((k) => ({
 	...storyTypesInfoRecord[k as ImportStoryType],
 	type: k as ImportStoryType,
 }))
+
+const storyTypesInfoWithBrainstorm = Object.keys(brainStormStoryItem).map(
+	(k) => ({
+		...brainStormStoryItem[k as ImportStoryType],
+		type: k as ImportStoryType,
+	})
+)
 
 interface IChooseStoryPropsType {
 	buttonText: React.JSX.Element | 'Create' | 'Continue'
@@ -61,23 +70,18 @@ const ChooseStoryTypes = ({
 	const setTitle = useStoryStore((state) => state.setTitle)
 	const setFormOpen = useStoryStore((state) => state.setFormOpen)
 	const router = useRouter()
-	const isGlobal = useIsGlobal()
+	const { data: accessData } = useUserAccess()
 
 	const displayedStoryTypes = useMemo(() => {
-		if (isGlobal) {
-			return storyTypesInfo
+		if (accessData?.survey_onboarding) {
+			return [...storyTypesInfoWithBrainstorm, ...storyTypesInfo]
 		}
-		return storyTypesInfo.filter(
-			(item) => item.type !== ImportStoryType.BRAINSTORM
-		)
-	}, [isGlobal])
+		return storyTypesInfo
+	}, [accessData])
 
 	useEffect(() => {
-		if (isGlobal || storyType !== ImportStoryType.BRAINSTORM) {
-			return
-		}
-		updateStoryType(ImportStoryType.IMPORT)
-	}, [isGlobal, storyType, updateStoryType])
+		updateStoryType(displayedStoryTypes[0].type)
+	}, [displayedStoryTypes, updateStoryType])
 
 	const handleButtonClick = () => {
 		if (storyType === ImportStoryType.BRAINSTORM) {
@@ -124,7 +128,7 @@ const ChooseStoryTypes = ({
 										/>
 										<Label
 											htmlFor={item.type}
-											className="!font-fm-text flex cursor-pointer flex-col items-start gap-1 normal-case"
+											className="font-fm-text! flex cursor-pointer flex-col items-start gap-1 normal-case"
 										>
 											<Typography
 												align="left"
@@ -148,7 +152,9 @@ const ChooseStoryTypes = ({
 										htmlFor={item.type}
 										className="flex h-full cursor-pointer items-end normal-case"
 									>
-										<item.icon className="text-fm-secondary/50 size-15 stroke-1" />
+										{item.icon && (
+											<item.icon className="text-fm-secondary/50 size-15 stroke-1" />
+										)}
 									</Label>
 								</div>
 							)}

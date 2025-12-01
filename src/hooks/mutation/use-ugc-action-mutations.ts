@@ -1,9 +1,10 @@
 import { useRouter } from 'next/navigation'
 import { API_URLS, EPISODE_SEQUENCE } from '@/constants/global-constants'
+import { EPISODE_LIST_QUERY_KEY } from '@/constants/query-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSocket from '@/hooks/use-socket'
 import { inventEpisode } from '@/server-action/episode-action'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEditorRef } from 'platejs/react'
 import { toast } from 'sonner'
 
@@ -51,6 +52,7 @@ export function useUGCPublishMutation() {
 export function useUGCInventMutation() {
 	const { data: episodeData } = useEpisodeContent()
 	const router = useRouter()
+	const queryClient = useQueryClient()
 
 	async function inventUGCChapter() {
 		if (!episodeData?.chapter.project) {
@@ -74,6 +76,12 @@ export function useUGCInventMutation() {
 		mutationFn: inventUGCChapter,
 		onError: () => {
 			toast.error('Error in extracting context!')
+		},
+		onSuccess: () => {
+			void queryClient.invalidateQueries({
+				queryKey: [EPISODE_LIST_QUERY_KEY, episodeData?.chapter.project],
+				refetchType: 'all',
+			})
 		},
 	})
 
