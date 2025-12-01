@@ -181,7 +181,7 @@ export const SAMPLE_DOC_LINK =
 export const FETCHED_BUILD_VERSION_KEY = 'fetchedBuildVersion'
 
 export const SOCKET_STREAMING_TIMEOUT = 60000 //1 minute
-export const FETCH_TIMEOUT = 5000 //10 seconds
+export const FETCH_TIMEOUT = 5000 //5 seconds
 
 export const BEATSHEET_STREAMING_TIMEOUT = 3 * 60000 //3 minute
 export const AI_CHATBOT_STREAMING_TIMEOUT = 90000 //90 seconds
@@ -210,3 +210,6 @@ export const APP_CONFIG = {
 	ENV: 'production',
 	NEXT_PUBLIC_ANALYTICS_ENABLED: true,
 }
+
+export const DEFAULT_PERFORMANCE_ENTRY_TIMEOUT = 500 //500ms
+export const DEFAULT_PERFORMANCE_ENTRY_MAX_TIME_DIFFERENCE = 100 //100ms
