@@ -1404,3 +1404,7 @@ export function getSimplifiedMessageList({
 export function wait(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms))
 }
+
+export function getWordCount(str?: string) {
+	return str?.split(/\s+/).length ?? 0
+}

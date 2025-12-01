@@ -65,18 +65,21 @@ export type TConditionalMetadata =
 			action: ACTION.LASER_RESPONSE_ACCEPT
 			flowId?: string
 			response: string
+			responseWordCount?: number
 			source?: string
 	  }
 	| {
 			action: ACTION.LASER_RESPONSE_REJECT
 			flowId?: string
 			response: string
+			responseWordCount?: number
 			source?: string
 	  }
 	| {
 			action: ACTION.LASER_RESPONSE_RETRY
 			flowId?: string
 			response: string
+			responseWordCount?: number
 			source?: string
 	  }
 	| { action: ACTION.STORY_CHAT_CANCEL; flowId?: string }
