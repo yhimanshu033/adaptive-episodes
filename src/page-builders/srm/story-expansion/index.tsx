@@ -6,6 +6,7 @@ import { EStoryExpansionTab } from './lib/types'
 import useStoryExpansion, { StoryExpansionContextProvider } from './provider'
 import ChatTab from './tabs/chat-tab'
 import ParametersTab from './tabs/parameters-tab'
+import ProgressTab from './tabs/progress-tab'
 import RangeTab from './tabs/range-tab'
 import ReviewTab from './tabs/review-tab'
 import StartTab from './tabs/start-tab'
@@ -19,6 +20,7 @@ function StoryExpansionContent() {
 		[EStoryExpansionTab.CHAT]: <ChatTab />,
 		[EStoryExpansionTab.PARAMETERS]: <ParametersTab />,
 		[EStoryExpansionTab.REVIEW]: <ReviewTab />,
+		[EStoryExpansionTab.PROGRESS]: <ProgressTab />,
 	}
 
 	return (

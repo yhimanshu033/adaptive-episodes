@@ -1,6 +1,7 @@
 export enum EStoryExpansionTab {
 	CHAT = 'chat',
 	PARAMETERS = 'parameters',
+	PROGRESS = 'progress',
 	RANGE = 'range',
 	REVIEW = 'review',
 	START = 'start',
@@ -53,4 +54,18 @@ export interface TSelectedItem {
 	arcId?: string
 	episodeId?: string
 	type: 'arc' | 'episode' | null
+}
+
+export type TEpisodeProgressStatus =
+	| 'pending'
+	| 'generating'
+	| 'completed'
+	| 'cancelled'
+
+export interface TEpisodeProgress {
+	arcName: string
+	episodeId: string
+	episodeName: string
+	progress: number
+	status: TEpisodeProgressStatus // 0-100
 }

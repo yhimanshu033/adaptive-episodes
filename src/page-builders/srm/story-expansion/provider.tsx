@@ -9,6 +9,7 @@ import useEpisodeTableContext from '@/providers/episode-table-provider'
 import {
 	EStoryExpansionTab,
 	TConversationSummary,
+	TEpisodeProgress,
 	TMessage,
 	TParameter,
 	TParameterSummary,
@@ -62,6 +63,16 @@ function useStoryExpansionUtil() {
 	})
 	const [reviewChatMessages, setReviewChatMessages] = useState<TMessage[]>([])
 	const [reviewChatInput, setReviewChatInput] = useState('')
+
+	// Global chat state (used in PARAMETERS tab)
+	const [globalChatMessages, setGlobalChatMessages] = useState<TMessage[]>([])
+	const [globalChatInput, setGlobalChatInput] = useState('')
+	const [isGlobalChatOpen, setIsGlobalChatOpen] = useState(false)
+
+	// Progress state
+	const [episodeProgresses, setEpisodeProgresses] = useState<
+		TEpisodeProgress[]
+	>([])
 
 	// Mock mutation for saving conversation summary
 	const saveConversationSummaryMutation = useMutation({
@@ -204,6 +215,24 @@ function useStoryExpansionUtil() {
 		},
 	})
 
+	// Mock mutation for sending global chat message
+	const sendGlobalChatMessageMutation = useMutation({
+		mutationKey: ['send-global-chat-message'],
+		mutationFn: async (message: string) => {
+			await new Promise((resolve) => setTimeout(resolve, 1000))
+			return {
+				id: nanoid(),
+				role: 'assistant' as const,
+				content: `Global AI response to: "${message}". This is a mock response for making changes to fields.`,
+				timestamp: new Date(),
+			} as TMessage
+		},
+		onSuccess: (response) => {
+			setGlobalChatMessages((prev) => [...prev, response])
+			setGlobalChatInput('')
+		},
+	})
+
 	// Mock mutation for generating episodes
 	const generateEpisodesMutation = useMutation({
 		mutationKey: ['generate-episodes'],
@@ -246,6 +275,22 @@ function useStoryExpansionUtil() {
 		sendReviewChatMessageMutation.mutate(reviewChatInput)
 	}, [reviewChatInput, sendReviewChatMessageMutation])
 
+	const handleSendGlobalChatMessage = useCallback(() => {
+		if (!globalChatInput.trim()) {
+			return
+		}
+
+		const userMessage: TMessage = {
+			id: nanoid(),
+			role: 'user',
+			content: globalChatInput,
+			timestamp: new Date(),
+		}
+
+		setGlobalChatMessages((prev) => [...prev, userMessage])
+		sendGlobalChatMessageMutation.mutate(globalChatInput)
+	}, [globalChatInput, sendGlobalChatMessageMutation])
+
 	const handleSaveConversationSummary = useCallback(() => {
 		saveConversationSummaryMutation.mutate()
 	}, [saveConversationSummaryMutation])
@@ -262,9 +307,83 @@ function useStoryExpansionUtil() {
 		finalizePlanFromParametersMutation.mutate()
 	}, [finalizePlanFromParametersMutation])
 
+	// Store interval refs for cleanup
+	const progressIntervalsRef = React.useRef<Map<string, NodeJS.Timeout>>(
+		new Map()
+	)
+
 	const handleGenerateEpisodes = useCallback(() => {
 		generateEpisodesMutation.mutate()
-	}, [generateEpisodesMutation])
+		// Initialize mock progress when generating episodes
+		if (plan) {
+			const progresses: TEpisodeProgress[] = []
+			plan.arcs.forEach((arc) => {
+				arc.episodes.forEach((episode) => {
+					progresses.push({
+						episodeId: episode.id,
+						episodeName: episode.name,
+						arcName: arc.name,
+						status: 'pending',
+						progress: 0,
+					})
+				})
+			})
+			setEpisodeProgresses(progresses)
+			setStoryExpansionTab(EStoryExpansionTab.PROGRESS)
+
+			// Sequential generation - start with first episode
+			let currentIndex = 0
+			const startNextEpisode = () => {
+				if (currentIndex >= progresses.length) {
+					return // All episodes completed
+				}
+
+				const currentProgress = progresses[currentIndex]
+				setEpisodeProgresses((prev) =>
+					prev.map((p) =>
+						p.episodeId === currentProgress.episodeId
+							? { ...p, status: 'generating', progress: 0 }
+							: p
+					)
+				)
+
+				// Simulate progress increment
+				let progressValue = 0
+				const interval = setInterval(() => {
+					progressValue += 10
+					if (progressValue <= 100) {
+						setEpisodeProgresses((prev) =>
+							prev.map((p) =>
+								p.episodeId === currentProgress.episodeId
+									? { ...p, progress: progressValue }
+									: p
+							)
+						)
+					} else {
+						clearInterval(interval)
+						progressIntervalsRef.current.delete(currentProgress.episodeId)
+						setEpisodeProgresses((prev) =>
+							prev.map((p) =>
+								p.episodeId === currentProgress.episodeId
+									? { ...p, status: 'completed', progress: 100 }
+									: p
+							)
+						)
+						// Start next episode
+						currentIndex++
+						if (currentIndex < progresses.length) {
+							setTimeout(startNextEpisode, 500)
+						}
+					}
+				}, 500)
+
+				progressIntervalsRef.current.set(currentProgress.episodeId, interval)
+			}
+
+			// Start first episode after a short delay
+			setTimeout(startNextEpisode, 1000)
+		}
+	}, [generateEpisodesMutation, plan, setStoryExpansionTab])
 
 	const updateArcName = useCallback((arcId: string, name: string) => {
 		setPlan((prev) => {
@@ -328,6 +447,28 @@ function useStoryExpansionUtil() {
 		[]
 	)
 
+	const handleStopAllGeneration = useCallback(() => {
+		// Clear all intervals
+		progressIntervalsRef.current.forEach((interval) => {
+			clearInterval(interval)
+		})
+		progressIntervalsRef.current.clear()
+
+		// Update all generating/pending episodes to cancelled
+		setEpisodeProgresses((prev) =>
+			prev.map((p) =>
+				p.status === 'generating' || p.status === 'pending'
+					? { ...p, status: 'cancelled', progress: 0 }
+					: p
+			)
+		)
+	}, [])
+
+	const handleGoToNewEpisode = useCallback((episodeId: string) => {
+		// Dummy function for now - can be implemented later
+		console.log('Navigate to episode:', episodeId)
+	}, [])
+
 	return {
 		// Tab state
 		storyExpansionTab,
@@ -376,6 +517,22 @@ function useStoryExpansionUtil() {
 		updateEpisodeSummary,
 		isSendingReviewMessage: sendReviewChatMessageMutation.isPending,
 		isGeneratingEpisodes: generateEpisodesMutation.isPending,
+
+		// Global chat state
+		globalChatMessages,
+		setGlobalChatMessages,
+		globalChatInput,
+		setGlobalChatInput,
+		handleSendGlobalChatMessage,
+		isSendingGlobalChatMessage: sendGlobalChatMessageMutation.isPending,
+		isGlobalChatOpen,
+		setIsGlobalChatOpen,
+
+		// Progress state
+		episodeProgresses,
+		setEpisodeProgresses,
+		handleStopAllGeneration,
+		handleGoToNewEpisode,
 	}
 }
 

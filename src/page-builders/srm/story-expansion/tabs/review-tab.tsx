@@ -1,23 +1,20 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
-import ArrowRightIcon from '@/icons/arrow-right-icon'
+import React from 'react'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
-import { IconButton } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
-import TextArea from '@/components/aural-ui/textarea'
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
 } from '@/components/ui/accordion'
-import { cn } from '@/lib/aural-ui/utils'
 
 import EditableText from '../components/editable-text'
 import useStoryExpansion from '../provider'
+import ChatTabUI from './chat-tab-ui'
 
 export default function ReviewTab() {
 	const {
@@ -34,23 +31,6 @@ export default function ReviewTab() {
 		isGeneratingEpisodes,
 	} = useStoryExpansion()
 
-	const messagesEndRef = useRef<HTMLDivElement>(null)
-
-	useEffect(() => {
-		if (messagesEndRef.current) {
-			messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
-		}
-	}, [reviewChatMessages])
-
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === 'Enter' && !e.shiftKey) {
-			e.preventDefault()
-			handleSendReviewChatMessage()
-		}
-	}
-
-	const hasText = reviewChatInput.trim().length > 0
-
 	if (!plan) {
 		return (
 			<div className="flex h-full items-center justify-center">
@@ -58,6 +38,11 @@ export default function ReviewTab() {
 			</div>
 		)
 	}
+
+	const totalEpisodes = plan.arcs.reduce(
+		(sum, arc) => sum + arc.episodes.length,
+		0
+	)
 
 	return (
 		<div className="grid h-full grid-cols-[1fr_1fr] overflow-hidden">
@@ -124,72 +109,47 @@ export default function ReviewTab() {
 				</div>
 			</div>
 
-			{/* Right: Chat Bot */}
-			<div className="grid h-full grid-rows-[1fr_auto_auto] overflow-hidden">
-				<ScrollArea className="h-full overflow-auto px-4">
-					<div className="flex flex-col gap-4 py-4">
-						{reviewChatMessages.length === 0 ? (
-							<div className="text-fm-tertiary py-8 text-center">
-								<p className="text-fm-md">
-									Start a conversation about the plan
+			{/* Right: Summary and Chat */}
+			<div className="flex flex-col overflow-hidden">
+				{/* Above: Summary of what's being done */}
+				<div className="border-fm-divider-primary flex flex-col border-b p-6">
+					<h3 className="text-fm-2xl font-fm-brand text-fm-primary mb-4">
+						Summary
+					</h3>
+					<Divider />
+					<div className="mt-4 space-y-2">
+						<p className="text-fm-md text-fm-secondary">
+							<span className="font-medium">Plan Overview:</span> This rewrite
+							plan consists of{' '}
+							<span className="font-medium">{plan.arcs.length}</span> narrative
+							arc{plan.arcs.length !== 1 ? 's' : ''} with a total of{' '}
+							<span className="font-medium">{totalEpisodes}</span> episode
+							{totalEpisodes !== 1 ? 's' : ''}.
+						</p>
+						<div className="mt-4 space-y-1">
+							<p className="text-fm-sm text-fm-primary font-medium">
+								Arc Breakdown:
+							</p>
+							{plan.arcs.map((arc, index) => (
+								<p key={arc.id} className="text-fm-sm text-fm-secondary pl-4">
+									{index + 1}. {arc.name} ({arc.episodes.length} episode
+									{arc.episodes.length !== 1 ? 's' : ''})
 								</p>
-							</div>
-						) : (
-							reviewChatMessages.map((message) => (
-								<div
-									key={message.id}
-									className={cn(
-										'flex',
-										message.role === 'user' ? 'justify-end' : 'justify-start'
-									)}
-								>
-									<div
-										className={cn(
-											'max-w-[80%] rounded-lg p-3',
-											message.role === 'user'
-												? 'bg-fm-primary text-fm-surface-secondary'
-												: 'bg-fm-surface-secondary text-fm-primary'
-										)}
-									>
-										<p className="text-fm-md whitespace-pre-wrap">
-											{message.content}
-										</p>
-									</div>
-								</div>
-							))
-						)}
-						{isSendingReviewMessage && (
-							<div className="flex justify-start">
-								<div className="bg-fm-surface-secondary text-fm-primary rounded-lg p-3">
-									<p className="text-fm-md">AI is thinking...</p>
-								</div>
-							</div>
-						)}
-						<div ref={messagesEndRef} />
+							))}
+						</div>
 					</div>
-				</ScrollArea>
-				<Divider className="mx-4" />
-				<div className="space-y-4 p-4">
-					<div className="flex gap-2">
-						<TextArea
-							value={reviewChatInput}
-							onChange={(e) => setReviewChatInput(e.target.value)}
-							onKeyDown={handleKeyDown}
-							placeholder="Type your message..."
-							decoration="outline"
-							autoGrow
-							minHeight={40}
-							maxHeight={120}
-							className="flex-1"
-						/>
-						<IconButton
-							onClick={handleSendReviewChatMessage}
-							disabled={!hasText || isSendingReviewMessage}
-							variant="outlined"
-							icon={<ArrowRightIcon width={16} height={16} />}
-							label="Send"
-						/>
-					</div>
+				</div>
+
+				{/* Below: SRM Chat */}
+				<div className="flex-1 overflow-hidden">
+					<ChatTabUI
+						messages={reviewChatMessages}
+						input={reviewChatInput}
+						setInput={setReviewChatInput}
+						handleSendMessage={handleSendReviewChatMessage}
+						isSendingMessage={isSendingReviewMessage}
+						emptyStateMessage="Start a conversation about the plan"
+					/>
 				</div>
 			</div>
 		</div>

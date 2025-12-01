@@ -1,14 +1,18 @@
 'use client'
 
 import React from 'react'
+import { MessageIcon } from '@/icons/message-icon'
 
 import { Button } from '@/components/aural-ui/button'
 import { Divider } from '@/components/aural-ui/divider'
+import { IconButton } from '@/components/aural-ui/icon-button'
 import { Label } from '@/components/aural-ui/label'
 import { Switch } from '@/components/aural-ui/switch'
 import TextArea from '@/components/aural-ui/textarea'
+import { cn } from '@/lib/aural-ui/utils'
 
 import useStoryExpansion from '../provider'
+import GlobalChatTab from './global-chat-tab'
 
 export default function ParametersTab() {
 	const {
@@ -19,6 +23,8 @@ export default function ParametersTab() {
 		handleFinalizePlanFromParameters,
 		isSavingParameterSummary,
 		isFinalizingFromParameters,
+		isGlobalChatOpen,
+		setIsGlobalChatOpen,
 	} = useStoryExpansion()
 
 	const handleParameterChange = (
@@ -41,7 +47,12 @@ export default function ParametersTab() {
 	return (
 		<div className="flex h-full">
 			{/* Left: Parameters Summary */}
-			<div className="border-fm-divider-primary flex w-1/2 flex-col border-r p-6">
+			<div
+				className={cn(
+					'border-fm-divider-primary flex flex-col border-r p-6 transition-all duration-200',
+					isGlobalChatOpen ? 'w-1/3' : 'w-1/2'
+				)}
+			>
 				<div className="space-y-4">
 					<h3 className="text-fm-2xl font-fm-brand text-fm-primary">
 						Parameters Summary
@@ -63,15 +74,30 @@ export default function ParametersTab() {
 				</div>
 			</div>
 
-			{/* Right: Parameters */}
-			<div className="flex w-1/2 flex-col space-y-6 p-6">
-				<div className="space-y-2">
-					<h3 className="text-fm-2xl font-fm-brand text-fm-primary">
-						Parameters
-					</h3>
-					<p className="text-fm-md text-fm-tertiary">
-						Define the key parameters for your episodes
-					</p>
+			{/* Middle: Parameters */}
+			<div
+				className={cn(
+					'flex flex-col space-y-6 p-6 transition-all duration-200',
+					isGlobalChatOpen ? 'w-1/3' : 'w-1/2'
+				)}
+			>
+				<div className="flex items-center justify-between">
+					<div className="space-y-2">
+						<h3 className="text-fm-2xl font-fm-brand text-fm-primary">
+							Parameters
+						</h3>
+						<p className="text-fm-md text-fm-tertiary">
+							Define the key parameters for your episodes
+						</p>
+					</div>
+					<IconButton
+						type="button"
+						label={isGlobalChatOpen ? 'Close Chat' : 'Open Chat'}
+						tooltip={isGlobalChatOpen ? 'Close Chat' : 'Open Chat'}
+						onClick={() => setIsGlobalChatOpen(!isGlobalChatOpen)}
+						variant="outlined"
+						icon={<MessageIcon width={18} height={18} />}
+					/>
 				</div>
 
 				<div className="flex-1 space-y-6 overflow-y-auto">
@@ -162,6 +188,13 @@ export default function ParametersTab() {
 					</Button>
 				</div>
 			</div>
+
+			{/* Right: Global Chat */}
+			{isGlobalChatOpen && (
+				<div className="border-fm-divider-primary w-1/3 border-l">
+					<GlobalChatTab />
+				</div>
+			)}
 		</div>
 	)
 }
