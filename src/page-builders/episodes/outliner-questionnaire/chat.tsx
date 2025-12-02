@@ -1,6 +1,8 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
+import useSocketStreaming from '@/hooks/use-socket-streaming'
+import { useThrottle } from '@/hooks/use-throttle'
 import { AiAvatarIcon } from '@/icons/ai-avatar-icon'
 import OutlinerQuestionnaireChatMessage from '@/page-builders/episodes/outliner-questionnaire/chat-message'
 import OutlinerQuestionnairePromptInput from '@/page-builders/episodes/outliner-questionnaire/chat-prompt'
@@ -23,13 +25,21 @@ export default function OutlinerQuestionnaireChat() {
 	} = useOutlinerQuestionnaire()
 	const messagesEndRef = useRef<HTMLDivElement>(null)
 
+	const { responses } = useSocketStreaming()
+
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
 	}
 
+	const lastMessageResponse = useMemo(() => {
+		return responses[lastMessageTaskId]
+	}, [lastMessageTaskId, responses])
+
+	const throttledLastMessageResponse = useThrottle(lastMessageResponse, 500)
+
 	useEffect(() => {
 		scrollToBottom()
-	}, [messages, isChatLoading])
+	}, [messages, isChatLoading, throttledLastMessageResponse])
 
 	return (
 		<div className="relative grid h-full grid-rows-[auto_1fr_auto] overflow-clip [--text-fm-md:1.125rem]">
