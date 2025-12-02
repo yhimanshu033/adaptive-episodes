@@ -819,11 +819,6 @@ function useOutlinerQuestionnaireUtil() {
 			if (!derivedMessage) {
 				return
 			}
-			if (derivedMessage.requirements?.length) {
-				toast.success(
-					`${derivedMessage.requirements.join(', ')} details have been updated!`
-				)
-			}
 			setMessages((prev) => {
 				const updated = updateLast(prev, (msg: TMessage) => {
 					if (!('taskId' in msg) || msg.taskId !== lastMessageTaskId) {
@@ -839,6 +834,7 @@ function useOutlinerQuestionnaireUtil() {
 									derivedMessage.completed_requirements_count,
 								pending_requirements_count:
 									derivedMessage.pending_requirements_count,
+								requirements: derivedMessage.requirements,
 							},
 						},
 					} as TMessage
