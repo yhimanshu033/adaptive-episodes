@@ -71,12 +71,17 @@ export function getWriterProfileDataFromState(data?: TWriterProfileState) {
 	}, {} as TWriterProfileData)
 }
 
-export function isWriterProfileLoaded(data?: TWriterProfileState) {
+export function isWriterProfileLoaded(state?: TWriterProfileState) {
+	if (!state) {
+		return false
+	}
+	const data = getWriterProfileDataFromState(state)
 	if (!data) {
 		return false
 	}
-	return Object.keys(data).reduce((acc, curr) => {
-		return acc || !!data[curr as TWriterProfileKey]?.value
+	const beData = convertWritersProfileFeToBe(data)
+	return Object.keys(beData).reduce((acc, curr) => {
+		return acc || !!beData[curr as TWriterProfileKey]
 	}, false)
 }
 
