@@ -214,3 +214,4 @@ export const APP_CONFIG = {
 
 export const DEFAULT_PERFORMANCE_ENTRY_TIMEOUT = 500 //500ms
 export const DEFAULT_PERFORMANCE_ENTRY_MAX_TIME_DIFFERENCE = 100 //100ms
+export const GZIP_THRESHOLD = 5 * 1024 // 5KB in bytes

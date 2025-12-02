@@ -1,6 +1,7 @@
 import {
 	DEFAULT_PERFORMANCE_ENTRY_MAX_TIME_DIFFERENCE,
 	DEFAULT_PERFORMANCE_ENTRY_TIMEOUT,
+	GZIP_THRESHOLD,
 } from '@/constants/global-constants'
 
 export type RequestTimingInfo = {
@@ -215,4 +216,61 @@ export function getPerformanceTimingSync(
 	timing.redirectTime = duration(entry.redirectStart, entry.redirectEnd)
 
 	return timing
+}
+
+function getPayloadSize(payloadString: string): number {
+	return new TextEncoder().encode(payloadString).length
+}
+
+async function compressWithStreams(data: string): Promise<Uint8Array> {
+	const encoder = new TextEncoder()
+	const encoded = encoder.encode(data)
+
+	const cs = new CompressionStream('gzip')
+
+	const blob = new Blob([encoded])
+	const stream = blob.stream().pipeThrough(cs)
+
+	const arrayBuffer = await new Response(stream).arrayBuffer()
+	return new Uint8Array(arrayBuffer)
+}
+
+/**
+ * Compresses payload using gzip if it exceeds the size threshold
+ * @param payload - The request payload (object, string, or FormData)
+ * @param threshold - Size threshold in bytes (default: 5KB)
+ * @returns Object containing the processed payload and compression metadata
+ */
+export async function compressPayload(
+	payload: string | FormData,
+	threshold: number = GZIP_THRESHOLD
+): Promise<{
+	body: BodyInit
+	headers: Record<string, string>
+}> {
+	const shouldBypassCompression =
+		payload instanceof FormData || getPayloadSize(payload) < threshold
+
+	if (shouldBypassCompression) {
+		return {
+			body: payload,
+			headers: {},
+		}
+	}
+
+	try {
+		const compressed = await compressWithStreams(payload)
+		return {
+			body: compressed as BodyInit,
+			headers: {
+				'Content-Encoding': 'gzip',
+			},
+		}
+	} catch (error) {
+		console.error('Failed to compress payload:', error)
+		return {
+			body: payload,
+			headers: {},
+		}
+	}
 }
