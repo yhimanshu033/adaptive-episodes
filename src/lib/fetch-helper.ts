@@ -3,6 +3,9 @@ import {
 	DEFAULT_PERFORMANCE_ENTRY_TIMEOUT,
 	GZIP_THRESHOLD,
 } from '@/constants/global-constants'
+import * as Sentry from '@sentry/nextjs'
+
+import { log } from '@/lib/utils/helpers'
 
 export type RequestTimingInfo = {
 	cachedRedirect?: boolean
@@ -223,6 +226,9 @@ function getPayloadSize(payloadString: string): number {
 }
 
 async function compressWithStreams(data: string): Promise<Uint8Array> {
+	if (typeof CompressionStream === 'undefined') {
+		throw new Error('CompressionStream not supported')
+	}
 	const encoder = new TextEncoder()
 	const encoded = encoder.encode(data)
 
@@ -267,7 +273,24 @@ export async function compressPayload(
 			},
 		}
 	} catch (error) {
-		console.error('Failed to compress payload:', error)
+		const compressionDebugData = {
+			threshold,
+			payload,
+			payloadLength: payload.length,
+			compressionSupported: typeof CompressionStream !== 'undefined',
+			runtime: typeof window === 'undefined' ? 'server' : 'client',
+			errorMessage: error instanceof Error ? error.message : String(error),
+		}
+
+		log({
+			type: 'Failed to compress payload',
+			extra: compressionDebugData,
+		})
+		Sentry.captureException('Failed to compress payload', {
+			level: 'warning',
+			extra: compressionDebugData,
+		})
+
 		return {
 			body: payload,
 			headers: {},

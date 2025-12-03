@@ -186,10 +186,11 @@ export async function fetchAPI<
 		}, FETCH_TIMEOUT)
 
 		const isFormData = body instanceof FormData
+		const hasBody = method !== 'GET' && method !== 'DELETE'
 		let bodyToSend: BodyInit = isFormData ? body : JSON.stringify(body)
 		let compressionHeaders: Record<string, string> = {}
 
-		if (enableCompression) {
+		if (hasBody && enableCompression) {
 			const compressionResult = await compressPayload(bodyToSend)
 			bodyToSend = compressionResult.body
 			compressionHeaders = compressionResult.headers
@@ -206,7 +207,7 @@ export async function fetchAPI<
 				[CORRELATION_ID_HEADER_KEY]: correlationId,
 				...COMMON_SITE_HEADERS,
 			},
-			...(method !== 'GET' && method !== 'DELETE' ? { body: bodyToSend } : {}),
+			...(hasBody ? { body: bodyToSend } : {}),
 			next: {
 				revalidate: 0,
 			},
