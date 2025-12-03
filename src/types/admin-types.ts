@@ -122,6 +122,11 @@ export enum EFolderType {
 	CMS = 'cms',
 }
 
+export enum EBSETaskType {
+	ADAPTATION = 'adaptation',
+	LS_GEN = 'ls_sheet_gen',
+}
+
 export type TAdminStoreState = {
 	addMemberQuery: string
 	deleteMemberMail: string
@@ -138,7 +143,17 @@ export type TUpdateGDriveFolderUrlParams = {
 
 export type TMessageResponse = { message: string }
 
-export type TBaseScriptExtensionResponse = {
+export type TBSEStatusBase = {
+	message?: string
+	status?: string
+	timestamp?: string
+}
+
+export type TBSEExtensionStatus = TBSEStatusBase & {
+	task_type?: EBSETaskType
+}
+
+export type TBSEGermanResponse = {
 	file_found: boolean
 	file_id: string
 	file_name: string
@@ -156,6 +171,24 @@ export type TBaseScriptExtensionResponse = {
 		us_start: number
 	}
 }
+
+export type TBSEResponse = {
+	message: string
+	previous_extension_status: Partial<TBSEExtensionStatus>
+	previous_task_id: string | null
+}
+
+export type TBSERunningResponse = {
+	error?: string
+	extension_status?: TBSEExtensionStatus
+	message?: string
+	task_id: string
+}
+
+export type TBaseScriptExtensionData =
+	| TBSEGermanResponse
+	| TBSEResponse
+	| TBSERunningResponse
 
 export type TBaseScriptExtensionBody = {
 	file_id?: string

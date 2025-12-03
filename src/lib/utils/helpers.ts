@@ -28,7 +28,13 @@ import Negotiator from 'negotiator'
 import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
 
-import { ERole } from '@/types/admin-types'
+import {
+	ERole,
+	TBaseScriptExtensionData,
+	TBSEGermanResponse,
+	TBSEResponse,
+	TBSERunningResponse,
+} from '@/types/admin-types'
 import { EMessenger, TMessage, TSimplifiedMessage } from '@/types/ai-types'
 import {
 	TCharacter,
@@ -1407,4 +1413,16 @@ export function wait(ms: number): Promise<void> {
 
 export function getWordCount(str?: string) {
 	return str?.split(/\s+/).length ?? 0
+}
+
+export function isBSERunning(
+	data?: TBaseScriptExtensionData | null
+): data is TBSERunningResponse {
+	return !!data && 'task_id' in data
+}
+
+export function isBSENotRunning(
+	data?: TBaseScriptExtensionData | null
+): data is TBSEResponse | TBSEGermanResponse {
+	return !!data && 'previous_extension_status' in data
 }

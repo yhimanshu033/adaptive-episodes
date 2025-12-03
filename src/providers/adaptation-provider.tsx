@@ -42,6 +42,7 @@ function useAdaptationUtil() {
 		LSMappingSequenceData['sequence_ls']
 	>({})
 	const [skipNewExtraction, setSkipNewExtraction] = useState<boolean>(false)
+	const [lsTaskId, setLsTaskId] = useState<string | null>(null)
 	const abortControllerRef = useRef<AbortController | null>(null)
 
 	const {
@@ -51,6 +52,10 @@ function useAdaptationUtil() {
 			data: sendLSData,
 			isPending: sendLSPending,
 			reset: resetSendLS,
+		},
+		discardLsTaskMutation: {
+			mutate: discardLsTask,
+			isPending: discardLsTaskPending,
 		},
 	} = useAdaptationMutation({
 		abortControllerRef,
@@ -114,6 +119,12 @@ function useAdaptationUtil() {
 		resetSendLS()
 		setTableData({})
 	}, [reset, resetSendLS, setTableData])
+
+	const handleDiscardLsTask = () => {
+		if (lsTaskId) {
+			discardLsTask({ lsTaskId }, { onSuccess: () => setLsTaskId(null) })
+		}
+	}
 
 	useEffect(() => {
 		setSelectedAdaptingLanguage(
@@ -209,6 +220,10 @@ function useAdaptationUtil() {
 		sequence,
 		skipNewExtraction,
 		setSkipNewExtraction,
+		lsTaskId,
+		setLsTaskId,
+		handleDiscardLsTask,
+		discardLsTaskPending,
 	}
 }
 

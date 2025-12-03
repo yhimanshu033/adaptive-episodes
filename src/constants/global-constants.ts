@@ -107,6 +107,7 @@ export const API_URLS = {
 	GET_SLACK_CHANNEL: '/project/:projectId/get-slack-channel-info/',
 	SEND_TASK_TO_ADAPTATION: '/project/send-task-to-adaptation',
 	GET_ADAPTATION_LS: '/project/:projectId/:language/get_ls_sheet',
+	DISCARD_LS_TASK: '/project/:projectId/get-or-update-atlastask',
 	GET_STORY_DETAILS: '/projects/:storyId/',
 	GET_DOC_EPISODE_COUNT: '/project/get-episode-count/',
 	BULK_EPISODE_DOWNLOAD: '/project/:projectId/download/',

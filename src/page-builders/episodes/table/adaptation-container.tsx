@@ -20,7 +20,13 @@ import { parseInputLSMapping } from '@/lib/utils/helpers'
 
 import { ELanguage } from '@/types/common'
 
-const AdaptationContainer = () => {
+const AdaptationContainer = ({
+	disableUI = false,
+	lsTaskId,
+}: {
+	disableUI?: boolean
+	lsTaskId?: string | null
+}) => {
 	const { id } = useParams()
 	const { initialStoryData } = useEpisodeTableContext()
 	const {
@@ -32,6 +38,7 @@ const AdaptationContainer = () => {
 		step,
 		setEpisodeAdaptation,
 		setSequence,
+		setLsTaskId,
 	} = useAdaptation()
 
 	const isStoryAdaptationInProgress = useMemo(
@@ -49,6 +56,9 @@ const AdaptationContainer = () => {
 		if (!storyData) {
 			setStory(initialStoryData)
 			setFetchingLSSheet(lsSheetLoading)
+			if (lsTaskId) {
+				setLsTaskId(lsTaskId)
+			}
 		}
 	}, [
 		storyData,
@@ -56,6 +66,8 @@ const AdaptationContainer = () => {
 		lsSheetLoading,
 		setStory,
 		setFetchingLSSheet,
+		lsTaskId,
+		setLsTaskId,
 	])
 
 	useEffect(() => {
@@ -65,6 +77,10 @@ const AdaptationContainer = () => {
 			setSequence(sequence || {})
 		}
 	}, [lsSheetData, setTableData, setSequence])
+
+	if (disableUI) {
+		return null
+	}
 
 	return (
 		<div>

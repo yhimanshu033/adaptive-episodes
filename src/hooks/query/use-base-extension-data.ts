@@ -5,7 +5,12 @@ import { useQuery } from '@tanstack/react-query'
 
 import { fetchAPI } from '@/lib/fetch-api'
 
-import { TBaseScriptExtensionResponse } from '@/types/admin-types'
+import {
+	TBSEGermanResponse,
+	TBSEResponse,
+	TBSERunningResponse,
+} from '@/types/admin-types'
+import { TNoParams } from '@/types/common'
 
 import useGDriveAuth from './use-gdrive-auth'
 
@@ -15,8 +20,11 @@ const useBaseExtensionQuery = (enabled: boolean) => {
 
 	const getBaseExtensionData = async () => {
 		const resp = await fetchAPI<
-			TBaseScriptExtensionResponse,
-			{ projectId: number }
+			TBSEGermanResponse,
+			{ projectId: number },
+			TNoParams,
+			TNoParams,
+			TBSEResponse | TBSERunningResponse
 		>({
 			method: 'GET',
 			url: API_URLS.GET_BASE_SCRIPT_EXTENSION,
@@ -28,9 +36,12 @@ const useBaseExtensionQuery = (enabled: boolean) => {
 				await redirectToGDriveAuth()
 				return
 			} else if (resp.status === 400) {
+				const errorData =
+					resp.message ?? ({} as TBSEResponse | TBSERunningResponse)
+
 				return {
+					...errorData,
 					message: 'Base script extension is currently running in background',
-					taskId: resp?.message?.task_id,
 				}
 			}
 		}

@@ -42,7 +42,7 @@ const BaseScriptExtension = () => {
 		: 0
 
 	const baseTaskId =
-		taskId || (data && 'taskId' in data ? data.taskId : undefined)
+		taskId || (data && 'task_id' in data ? data.task_id : undefined)
 
 	return (
 		<Dialog open={queryEnabled} onOpenChange={setQueryEnabled}>
@@ -64,7 +64,7 @@ const BaseScriptExtension = () => {
 				</DialogHeader>
 
 				{baseTaskId ? (
-					<BaseScriptStatus taskId={baseTaskId} reset={reset} />
+					<BaseScriptStatus status={''} taskId={baseTaskId} reset={reset} />
 				) : (
 					<IfElse condition={isFetching || isLoading}>
 						<If>

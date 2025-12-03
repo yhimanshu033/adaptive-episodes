@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 /* Font Face Definitions */
 @layer base {
 	@font-face {
@@ -300,6 +302,15 @@
 	--color-fm-red-500-alpha-80: rgba(255, 64, 0, 0.8);
 	--color-fm-blue-500-alpha-80: rgba(25, 186, 255, 0.8);
 	--color-fm-yellow-500-alpha-80: rgba(255, 191, 0, 0.8);
+
+	/* Gradient Colors */
+	--color-fm-white-alpha-16: rgba(255, 255, 255, 0.16);
+	--color-fm-white-alpha-0: rgba(255, 255, 255, 0);
+	--color-fm-gradient-white: linear-gradient(
+		to right,
+		var(--color-fm-white-alpha-16),
+		var(--color-fm-white-alpha-0)
+	);
 
 	/* TEXT SIZING */
 	--text-fm-xs: 0.625rem; /* 10px */
