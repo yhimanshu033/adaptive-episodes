@@ -8,7 +8,7 @@ import {
 import * as Sentry from '@sentry/nextjs'
 import { v4 as uuid } from 'uuid'
 
-import { getPerformanceTiming } from '@/lib/fetch-helper'
+import { compressPayload, getPerformanceTiming } from '@/lib/fetch-helper'
 import { getUserSession } from '@/lib/get-session'
 import { log } from '@/lib/utils/helpers'
 
@@ -23,6 +23,7 @@ export type FetchRequestParams<
 	baseUrl?: string
 	body?: BodyParamsT
 	defaultData?: ResponseDataT
+	enableCompression?: boolean
 	headers?: Record<string, string>
 	ignoreError?: boolean
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
@@ -79,6 +80,7 @@ export async function fetchAPI<
 		noAuth,
 		sendLog,
 		ignoreError,
+		enableCompression = true,
 	} = params
 
 	const sendError = !ignoreError && !IGNORE_ERROR_API_URLS.has(url)
@@ -137,7 +139,6 @@ export async function fetchAPI<
 	}
 
 	try {
-		const isFormData = body instanceof FormData
 		if (!accessToken && !noAuth) {
 			console.warn('No access token found in session')
 			log({
@@ -184,6 +185,17 @@ export async function fetchAPI<
 			)
 		}, FETCH_TIMEOUT)
 
+		const isFormData = body instanceof FormData
+		const hasBody = method !== 'GET' && method !== 'DELETE'
+		let bodyToSend: BodyInit = isFormData ? body : JSON.stringify(body)
+		let compressionHeaders: Record<string, string> = {}
+
+		if (hasBody && enableCompression) {
+			const compressionResult = await compressPayload(bodyToSend)
+			bodyToSend = compressionResult.body
+			compressionHeaders = compressionResult.headers
+		}
+
 		const response = await fetch(resolvedUrl, {
 			method,
 			headers: {
@@ -191,12 +203,11 @@ export async function fetchAPI<
 				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
 				...(typeof window === 'undefined' ? { 'API-Key': API_KEY } : {}),
 				...headers,
+				...compressionHeaders,
 				[CORRELATION_ID_HEADER_KEY]: correlationId,
 				...COMMON_SITE_HEADERS,
 			},
-			...(method !== 'GET' && method !== 'DELETE'
-				? { body: isFormData ? body : JSON.stringify(body) }
-				: {}),
+			...(hasBody ? { body: bodyToSend } : {}),
 			next: {
 				revalidate: 0,
 			},
