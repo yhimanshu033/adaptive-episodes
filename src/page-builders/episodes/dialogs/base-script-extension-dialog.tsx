@@ -9,7 +9,7 @@ import { CrossIcon } from '@/icons/cross-icon'
 import AdaptationContainer from '@/page-builders/episodes/table/adaptation-container'
 import BaseExtensionForm from '@/page-builders/manage-project/base-extension-form'
 import BaseScriptStatus, {
-	BaseScriptPreviousStatus,
+	BaseScriptStatusBanner,
 } from '@/page-builders/manage-project/base-script-status'
 import UpdateDriveFolder from '@/page-builders/manage-project/update-gdrive-folder'
 import { useEpisodeStore } from '@/store/episode-store'
@@ -34,9 +34,10 @@ import {
 } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
-import { isBSENotRunning, isBSERunning } from '@/lib/utils/helpers'
+import useAdaptation from '@/providers/adaptation-provider'
+import { isBSENotRunning, isBSERunning, parseIfJson } from '@/lib/utils/helpers'
 
-import { EBSETaskType, EFolderType } from '@/types/admin-types'
+import { EBSETaskType, EFolderType, TBSEStatusBase } from '@/types/admin-types'
 
 import BaseScriptDocUpload from '../table/base-script-doc-upload'
 
@@ -67,10 +68,17 @@ const BaseScriptExtensionDialog = () => {
 			if (!bseRunningTaskId || isGeneratingLS) {
 				return
 			}
-			const message =
+			const parsedMessage =
 				responses[bseRunningTaskId] && responses[bseRunningTaskId].length > 0
-					? responses[bseRunningTaskId].at(-1)
+					? parseIfJson(responses[bseRunningTaskId].at(-1))
 					: null
+			if (!parsedMessage) {
+				return
+			}
+			const message =
+				typeof parsedMessage === 'object'
+					? (parsedMessage as { message: string }).message
+					: parsedMessage
 			if (message) {
 				await queryClient.invalidateQueries({
 					queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
@@ -144,6 +152,8 @@ const BaseScriptExtension = ({
 	const baseExtensionMutation = useBaseExtensionMutation()
 	const { data: taskId, reset } = baseExtensionMutation
 
+	const { storyData } = useAdaptation()
+
 	const extendableRange = React.useMemo(() => {
 		if (data && !('message' in data)) {
 			return (data?.ranges?.de_end ?? 0) - (data?.ranges?.de_start ?? 1) + 1
@@ -154,31 +164,35 @@ const BaseScriptExtension = ({
 
 	const baseTaskId = data && 'task_id' in data ? data.task_id : taskId
 
-	const runningStatus =
-		isBSERunning(data) && data?.extension_status?.message
-			? data.extension_status.message
-			: ''
+	const statusData = React.useMemo(() => {
+		const build = (status: TBSEStatusBase, task_id: string | null) => ({
+			message: status.message,
+			status: status.status,
+			timestamp: status.timestamp,
+			task_id,
+		})
 
-	const previousExtensionData = React.useMemo(() => {
-		if (isBSENotRunning(data)) {
-			return {
-				message: data.previous_extension_status?.message,
-				status: data.previous_extension_status?.status,
-				timestamp: data.previous_extension_status?.timestamp,
-				previous_task_id:
-					'previous_task_id' in data ? data.previous_task_id : null,
-			}
+		if (isBSERunning(data)) {
+			const { extension_status: status, task_id } = data
+			return build(status, task_id)
 		}
+
+		if (isBSENotRunning(data)) {
+			const { previous_extension_status: status } = data
+			const task_id = 'previous_task_id' in data ? data.previous_task_id : null
+			return build(status, task_id)
+		}
+
 		return null
 	}, [data])
 
 	const renderContent = () => {
-		if (baseTaskId) {
+		if (baseTaskId || storyData?.id) {
 			return (
 				<BaseScriptStatus
-					status={runningStatus}
 					taskId={baseTaskId}
 					reset={reset}
+					storyId={storyData?.id}
 				/>
 			)
 		}
@@ -271,7 +285,7 @@ const BaseScriptExtension = ({
 	return (
 		<div className="flex h-full flex-col justify-between gap-5">
 			{renderContent()}
-			<BaseScriptPreviousStatus statusData={previousExtensionData} />
+			<BaseScriptStatusBanner statusData={statusData} />
 		</div>
 	)
 }

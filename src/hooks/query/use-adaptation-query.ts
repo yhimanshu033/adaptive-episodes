@@ -21,36 +21,42 @@ const useAdaptationQuery = ({
 	const { abortControllerRef } = useAdaptation()
 
 	const pollLSMapping = async () => {
-		const pollingResp = await doPoll<
-			TNoParams,
-			LSMappingInput,
-			TGetAdaptationLSUrlParams
-		>({
-			method: 'GET',
-			url: API_URLS.GET_ADAPTATION_LS,
-			urlParams: {
-				language,
-				projectId,
-			},
-			delay: 10000,
-			startDelay: 10000,
-			stop: (resp) => {
-				if (!resp.error && resp.data) {
-					return true
-				}
-				return false
-			},
-			signal: abortControllerRef.current?.signal,
-		})
+		try {
+			const pollingResp = await doPoll<
+				TNoParams,
+				LSMappingInput,
+				TGetAdaptationLSUrlParams
+			>({
+				method: 'GET',
+				url: API_URLS.GET_ADAPTATION_LS,
+				urlParams: {
+					language,
+					projectId,
+				},
+				delay: 10000,
+				startDelay: 10000,
+				stop: (resp) => {
+					if (!resp.error && resp.data) {
+						return true
+					}
+					return false
+				},
+				signal: abortControllerRef.current?.signal,
+			})
 
-		if (!pollingResp) {
+			if (!pollingResp) {
+				abortControllerRef.current = new AbortController()
+				return null
+			}
+
+			const migratedData = migrateOldLSMapping(pollingResp.data)
+
+			return migratedData
+		} catch (error) {
+			const errorMessage = (error as Error).message || 'Polling Error'
 			abortControllerRef.current = new AbortController()
-			return null
+			throw new Error(errorMessage)
 		}
-
-		const migratedData = migrateOldLSMapping(pollingResp.data)
-
-		return migratedData
 	}
 
 	const query = useQuery({

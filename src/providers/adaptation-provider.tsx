@@ -121,7 +121,6 @@ function useAdaptationUtil() {
 	}, [reset, resetSendLS, setTableData])
 
 	const handleDiscardAdaptationTask = () => {
-		console.log('taskid after discard', lsTaskId)
 		if (lsTaskId) {
 			discardLsTask(
 				{ lsTaskId, projectId: storyData?.id || 0 },

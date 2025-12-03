@@ -307,6 +307,23 @@ export function parseOptimistically<T>(input: string) {
 	return null
 }
 
+export function parseIfJson(str?: string | null) {
+	if (!str) {
+		return null
+	}
+
+	try {
+		const parsed = JSON.parse(str) as object | null
+
+		if (parsed !== null && typeof parsed === 'object') {
+			return parsed
+		}
+		return str
+	} catch {
+		return str
+	}
+}
+
 export function trim(str: string, length: number = 100) {
 	if (str.length <= length) {
 		return str

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
-import useAdaptationQuery from '@/hooks/query/use-adaptation-query'
 import { CheckCircle } from 'lucide-react'
 
 import { Button } from '@/components/aural-ui/button'
@@ -16,9 +15,6 @@ import IfElse, { Else, If } from '@/components/if-else'
 import { Separator } from '@/components/ui/separator'
 import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
-import { parseInputLSMapping } from '@/lib/utils/helpers'
-
-import { ELanguage } from '@/types/common'
 
 const AdaptationContainer = ({
 	disableUI = false,
@@ -32,12 +28,10 @@ const AdaptationContainer = ({
 	const {
 		storyData,
 		setFetchingLSSheet,
-		setTableData,
 		setStory,
 		setOpen,
 		step,
 		setEpisodeAdaptation,
-		setSequence,
 		setLsTaskId,
 	} = useAdaptation()
 
@@ -46,17 +40,10 @@ const AdaptationContainer = ({
 		[storyData, id]
 	)
 
-	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
-		projectId: id as string,
-		language: initialStoryData?.parent_language || ELanguage.ENGLISH,
-		enabled: isStoryAdaptationInProgress,
-	})
-
 	useEffect(() => {
 		if (!storyData) {
-			console.log('Adapatation data set again')
 			setStory(initialStoryData)
-			setFetchingLSSheet(lsSheetLoading)
+			setFetchingLSSheet(true)
 			if (lsTaskId) {
 				setLsTaskId(lsTaskId)
 			}
@@ -64,20 +51,11 @@ const AdaptationContainer = ({
 	}, [
 		storyData,
 		initialStoryData,
-		lsSheetLoading,
 		setStory,
 		setFetchingLSSheet,
 		lsTaskId,
 		setLsTaskId,
 	])
-
-	useEffect(() => {
-		if (lsSheetData) {
-			const { data, sequence } = parseInputLSMapping(lsSheetData)
-			setTableData(data)
-			setSequence(sequence || {})
-		}
-	}, [lsSheetData, setTableData, setSequence])
 
 	if (disableUI) {
 		return null
