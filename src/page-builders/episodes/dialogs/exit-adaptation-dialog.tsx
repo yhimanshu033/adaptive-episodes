@@ -17,7 +17,6 @@ const ExitAdaptationDialog = () => {
 		openExitDialog: open,
 		setOpenExitDialog,
 		setOpen,
-		setAbort,
 		handleDiscardAdaptationTask,
 	} = useAdaptation()
 
