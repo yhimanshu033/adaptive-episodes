@@ -286,7 +286,7 @@ export async function compressPayload(
 			type: 'Failed to compress payload',
 			extra: compressionDebugData,
 		})
-		Sentry.captureException('Failed to compress payload', {
+		Sentry.captureMessage('Failed to compress payload', {
 			level: 'warning',
 			extra: compressionDebugData,
 		})
