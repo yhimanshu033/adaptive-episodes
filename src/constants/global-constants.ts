@@ -126,6 +126,7 @@ export const API_URLS = {
 	OUTLINER_NEW_IDEAS: '/chapter/:episodeId/new-episode-ideas',
 	OUTLINER_SUMMARY_OUTLINE: '/aicopilot/bse/summary-to-outlines/',
 	OUTLINER_SAVE_CACHED_OUTLINE: '/scenes/save-cached-scenes/',
+	GENERATE_NARRATIVE_ARC_PLAN: '/aicopilot/bse/generate-narrative-arc-plan/',
 
 	OUTLINER_QUESTIONNAIRE_NEW_IDEAS: '/project/:projectId/new-story-idea',
 	OUTLINER_QUESTIONNAIRE_STATUS: '/user/fetch-profile-stage/',

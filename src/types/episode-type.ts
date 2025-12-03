@@ -39,6 +39,7 @@ export type EpisodeStoreState = {
 export type TEpisodeProps = {
 	beatsheet: string
 	context: string
+	logline?: string
 	loglines: string
 	summary: string
 }

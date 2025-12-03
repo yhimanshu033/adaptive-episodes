@@ -6,6 +6,7 @@ import {
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { UploadIcon } from '@/icons/upload-icon'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
@@ -35,6 +36,7 @@ function UGCPublishButton() {
 
 	const handlePublish = useCallback(async () => {
 		const resp = await mutateAsync()
+		toast.info('Publishing Episode...')
 		if (resp) {
 			window.location.reload()
 		}

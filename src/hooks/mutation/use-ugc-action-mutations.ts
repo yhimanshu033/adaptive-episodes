@@ -38,7 +38,6 @@ export function useUGCPublishMutation() {
 			toast.error('Error in extracting context!')
 			return
 		}
-		toast.info('Publishing Episode...')
 		return taskId
 	}
 
