@@ -54,6 +54,7 @@ const AdaptationContainer = ({
 
 	useEffect(() => {
 		if (!storyData) {
+			console.log('Adapatation data set again')
 			setStory(initialStoryData)
 			setFetchingLSSheet(lsSheetLoading)
 			if (lsTaskId) {

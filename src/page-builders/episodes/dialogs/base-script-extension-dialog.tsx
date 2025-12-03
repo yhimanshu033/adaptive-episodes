@@ -117,7 +117,7 @@ const BaseScriptExtensionDialog = () => {
 						</DialogDescription>
 						<Divider variant="dashed" />
 					</DialogHeader>
-					<div className="flex h-full flex-col space-y-4 pt-6">
+					<div className="flex h-full flex-col space-y-4 overflow-y-auto pt-6">
 						<If condition={isGerman}>
 							<UpdateDriveFolder folderType={EFolderType.BASE_SCRIPT} />
 						</If>
@@ -162,10 +162,9 @@ const BaseScriptExtension = ({
 	const previousExtensionData = React.useMemo(() => {
 		if (isBSENotRunning(data)) {
 			return {
-				message: data.previous_extension_status?.message || 'hey there',
-				status: data.previous_extension_status?.status || 'hey there',
-				timestamp:
-					data.previous_extension_status?.timestamp || Date.now().toString(),
+				message: data.previous_extension_status?.message,
+				status: data.previous_extension_status?.status,
+				timestamp: data.previous_extension_status?.timestamp,
 				previous_task_id:
 					'previous_task_id' in data ? data.previous_task_id : null,
 			}

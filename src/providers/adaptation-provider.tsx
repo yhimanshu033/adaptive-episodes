@@ -120,9 +120,24 @@ function useAdaptationUtil() {
 		setTableData({})
 	}, [reset, resetSendLS, setTableData])
 
-	const handleDiscardLsTask = () => {
+	const handleDiscardAdaptationTask = () => {
+		console.log('taskid after discard', lsTaskId)
 		if (lsTaskId) {
-			discardLsTask({ lsTaskId }, { onSuccess: () => setLsTaskId(null) })
+			discardLsTask(
+				{ lsTaskId, projectId: storyData?.id || 0 },
+				{
+					onSuccess: () => {
+						setLsTaskId(null)
+						setOpenExitDialog(false)
+						setAbort(true)
+						setOpen(false)
+					},
+				}
+			)
+		} else {
+			setOpenExitDialog(false)
+			setAbort(true)
+			setOpen(false)
 		}
 	}
 
@@ -222,7 +237,7 @@ function useAdaptationUtil() {
 		setSkipNewExtraction,
 		lsTaskId,
 		setLsTaskId,
-		handleDiscardLsTask,
+		handleDiscardAdaptationTask,
 		discardLsTaskPending,
 	}
 }

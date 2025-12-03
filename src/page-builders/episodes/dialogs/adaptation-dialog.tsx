@@ -65,7 +65,6 @@ export default function AdaptationDialog({
 		setSequence,
 		sequence,
 		skipNewExtraction,
-		handleDiscardLsTask,
 	} = useAdaptation()
 
 	if (
@@ -154,7 +153,6 @@ export default function AdaptationDialog({
 	}
 
 	const handleClose = () => {
-		handleDiscardLsTask()
 		setOpenExitDialog(true)
 	}
 

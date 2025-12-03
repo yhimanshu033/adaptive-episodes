@@ -219,13 +219,26 @@ export default function useAdaptationMutation({
 		mutationKey: ['send-adaptation-ls'],
 	})
 
-	const onDiscardLsTask = async ({ lsTaskId }: { lsTaskId: string }) => {
-		const resp = await fetchAPI<TNoParams, TNoParams, TDiscardLsTaskBody>({
+	const onDiscardLsTask = async ({
+		lsTaskId,
+		projectId,
+	}: {
+		lsTaskId: string
+		projectId: number
+	}) => {
+		const resp = await fetchAPI<
+			TNoParams,
+			{ projectId: number },
+			TDiscardLsTaskBody
+		>({
 			method: 'POST',
 			url: API_URLS.DISCARD_LS_TASK,
 			body: {
 				task_id: lsTaskId,
 				update_status: EDiscardLsTaskStatus.DISCARD,
+			},
+			urlParams: {
+				projectId,
 			},
 		})
 		if (resp.error || !resp.data) {
@@ -236,7 +249,11 @@ export default function useAdaptationMutation({
 
 	const discardLsTaskMutation = useMutation({
 		mutationFn: onDiscardLsTask,
-		onSuccess: () => {
+		onSuccess: async (_, { projectId }) => {
+			onSuccess()
+			await queryClient.invalidateQueries({
+				queryKey: [BASE_EXTENSION_QUERY_KEY, Number(projectId)],
+			})
 			toast.success('LS task discarded!')
 		},
 		onError: (error: Error) => {
