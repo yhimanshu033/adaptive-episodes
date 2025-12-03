@@ -62,7 +62,12 @@ export default function useOutlinerChat() {
 						outlinerData?.[1]?.multiSelectSelectedOption || 0
 					]?.summary ||
 					'',
-				narrative_arc_plan: outlinerData?.[2]?.summary || '',
+				narrative_arc_plan:
+					outlinerData?.[2]?.summary ||
+					outlinerData?.[2]?.multiSelectOptions?.[
+						outlinerData?.[2]?.multiSelectSelectedOption || 0
+					]?.summary ||
+					'',
 				ep_text: epText,
 				input_language: data?.chapter?.language || ELanguage.ENGLISH,
 				mode,

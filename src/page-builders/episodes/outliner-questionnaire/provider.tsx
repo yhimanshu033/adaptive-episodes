@@ -20,6 +20,7 @@ import { useDebounce } from '@/hooks/use-debounce'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import {
 	EMPTY_STORY_DATA,
+	FIRST_QUESTIONS,
 	INITIAL_CHAT_MESSAGE,
 } from '@/page-builders/episodes/outliner-questionnaire/lib/constants'
 import {
@@ -33,6 +34,7 @@ import {
 	getWriterProfileDataFromState,
 	getWriterProfileStateFromData,
 	isWriterProfileLoaded,
+	pickRandom,
 	updateLast,
 } from '@/page-builders/episodes/outliner-questionnaire/lib/fns'
 import useCompleteOnboarding from '@/page-builders/episodes/outliner-questionnaire/lib/hooks/use-complete-onboarding'
@@ -72,8 +74,16 @@ function useOutlinerQuestionnaireUtil() {
 	const [outlinerQuestionnaireTab, setOutlinerQuestionnaireTab] = useState(
 		EOutlinerQuestionnaireTab.START
 	)
-	const [messages, setMessages] = useState<TMessage[]>([INITIAL_CHAT_MESSAGE])
 	const [inputPrompt, setInputPrompt] = useState('')
+	const initialQuestion = useMemo(() => {
+		return pickRandom(FIRST_QUESTIONS)
+	}, [])
+	const [messages, setMessages] = useState<TMessage[]>([
+		{
+			...INITIAL_CHAT_MESSAGE,
+			content: initialQuestion ?? INITIAL_CHAT_MESSAGE.content,
+		},
+	])
 
 	const [questionsData, setQuestionsData] =
 		useState<TGetOutlinerQuestionnaireSurveyResponse['result']>()
@@ -243,10 +253,8 @@ function useOutlinerQuestionnaireUtil() {
 	)
 
 	const handleStoryIdeaGenerate = useCallback(async () => {
-		if (
-			!isWriterProfileLoaded(writerProfileDataState) &&
-			!storyIdeaDataState?.length
-		) {
+		const isLoaded = isWriterProfileLoaded(writerProfileDataState)
+		if (!isLoaded && !storyIdeaDataState?.length) {
 			setStoryIdeaDataState([
 				getStoryIdeaStateFromData({
 					title: '',
@@ -826,6 +834,7 @@ function useOutlinerQuestionnaireUtil() {
 									derivedMessage.completed_requirements_count,
 								pending_requirements_count:
 									derivedMessage.pending_requirements_count,
+								requirements: derivedMessage.requirements,
 							},
 						},
 					} as TMessage

@@ -109,6 +109,7 @@ export type TPostOutlinerQuestionnaireChatResponse = {
 		completed_requirements_count: number
 		message: string
 		pending_requirements_count: number
+		requirements?: string[]
 		stage: EOutlinerQuestionnaireTab
 	}
 	room_id: number

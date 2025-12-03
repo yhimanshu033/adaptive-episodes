@@ -124,3 +124,13 @@ export const EMPTY_STORY_DATA: TStoryIdeaData = {
 	why_this_fits: '',
 	world: '',
 }
+
+export const FIRST_QUESTIONS = [
+	"Hey! Let's cook up some stories. What genres or characters get you excited?",
+	'Hi there! Ready to brainstorm. Got a genre, character, or idea simmering?',
+	"Hey! I'm here to help bring your stories to life. What kind of tales spark your imagination?",
+	"Hi! Let's dream up something great. Any genres, characters, or premises calling to you?",
+	'Hey there! Story time. What kind of worlds do you want to explore—any genre or idea in mind?',
+	"Hi! Ready to dive into some storytelling. What's your vibe—fantasy, romance, mystery, something else?",
+	"Hey! Let's build a story together. What sparks your creativity—a character, a world, a wild premise?",
+]

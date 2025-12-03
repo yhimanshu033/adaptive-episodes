@@ -110,6 +110,7 @@ export type TAssistantMessage = {
 		profileComplete?: {
 			completed_requirements_count?: number
 			pending_requirements_count?: number
+			requirements?: string[]
 		}
 		sfxCount?: number
 	}

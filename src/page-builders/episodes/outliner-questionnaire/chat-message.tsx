@@ -72,6 +72,11 @@ export default function OutlinerQuestionnaireChatMessage({
 				taskId={taskId}
 				taskEnded={isTaskCompleted}
 			/>
+			<If condition={!!message.meta?.profileComplete?.requirements?.length}>
+				<p className="bg-fm-hotpink-200/30 mt-2 w-fit rounded px-2 py-1 text-sm">
+					{`Updated: ${message.meta?.profileComplete?.requirements?.join(', ')}`}
+				</p>
+			</If>
 			<If condition={showFeedback}>
 				<div className="mt-2">
 					<OutlinerFeedback
