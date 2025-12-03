@@ -24,7 +24,6 @@ export default function OutlinerSummariesItemContent({
 }: OutlinerSummariesItemProps) {
 	const {
 		isSomeSummaryZoomed,
-		outlinerData,
 		handleSummaryValueChange,
 		handleGenerateOutline,
 		handleGenerateContentFromSummary,
@@ -135,11 +134,6 @@ export default function OutlinerSummariesItemContent({
 				<div className="mt-2 flex items-center justify-between gap-2">
 					<Button
 						variant="outline"
-						tooltip={
-							outlinerData?.[outlinerSummaryItemIdx].scenes
-								? 'Regenerate Outline'
-								: 'Generate Outline'
-						}
 						disabled={isOutlineGenerationDisabled}
 						isDisabled={isOutlineGenerationDisabled}
 						rightIcon={
@@ -156,7 +150,6 @@ export default function OutlinerSummariesItemContent({
 					</Button>
 
 					<Button
-						tooltip="Generate Content"
 						disabled={!!summaryEpisodeTaskId}
 						isDisabled={!!summaryEpisodeTaskId}
 						rightIcon={

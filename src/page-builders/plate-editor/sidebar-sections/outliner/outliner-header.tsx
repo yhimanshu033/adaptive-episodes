@@ -94,21 +94,24 @@ export default function OutlinerHeader() {
 					disabled={!zoomOutEnabled}
 					onClick={handleZoomOut}
 					variant="outlined"
-					label="View"
+					label="Zoom Out"
+					tooltip="Zoom Out"
 					size="small"
 					icon={<ZoomOut />}
 				/>
 				<IconButton
 					disabled={!zoomInEnabled}
 					onClick={handleZoomIn}
-					label="View"
+					label="Zoom In"
+					tooltip="Zoom In"
 					variant="outlined"
 					size="small"
 					icon={<ZoomIn />}
 				/>
 				<IconButton
 					onClick={handleTabChange}
-					label="Generate"
+					label="Outliner Chat"
+					tooltip="Outliner Chat"
 					variant={
 						outlinerTab === EOutlinerTab.GENERATE ? 'background' : 'ghost'
 					}
