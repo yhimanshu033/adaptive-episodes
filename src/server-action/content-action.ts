@@ -53,6 +53,19 @@ export const getEpisodeContent = async (chapterId: number) => {
 		text,
 		additional_view: chapter.props?.views,
 		translation_text: chapter.translation_url,
+		chapter: {
+			...(episodeData?.data?.chapter || {}),
+			props: {
+				...(episodeData?.data?.chapter?.props || {}),
+				llm_memories: {
+					...(episodeData?.data?.chapter?.props?.llm_memories || {}),
+					loglines:
+						episodeData?.data?.chapter?.props?.llm_memories?.loglines ??
+						episodeData?.data?.chapter?.props?.llm_memories?.logline ??
+						'',
+				},
+			},
+		},
 	} as TGetEpisodeResponse
 }
 

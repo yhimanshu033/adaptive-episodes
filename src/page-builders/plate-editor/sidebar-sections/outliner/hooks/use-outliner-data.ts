@@ -23,7 +23,10 @@ import { TNoParams } from '@/types/common'
 export default function useOutlinerData() {
 	const { data } = useEpisodeContent()
 
-	async function getOutlinerData(): Promise<TOutlinerFetchedData> {
+	async function getOutlinerData(): Promise<TOutlinerFetchedData | undefined> {
+		if (!data?.chapter.id) {
+			return
+		}
 		const [metadataResp, scenesResp] = await Promise.all([
 			fetchAPI<
 				TGetOutlinerMetadataResponse,

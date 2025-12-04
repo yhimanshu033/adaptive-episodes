@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import { TOutlinerData } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
 import OutlinerScenes from '@/page-builders/plate-editor/sidebar-sections/outliner/outliner-scenes'
 import OutlinerStreamedResponse from '@/page-builders/plate-editor/sidebar-sections/outliner/outliner-streamed-response'
@@ -6,10 +7,10 @@ import OutlinerSummariesItemNewIdeas from '@/page-builders/plate-editor/sidebar-
 import OutlinerSummariesItemNewNarrativeArcs from '@/page-builders/plate-editor/sidebar-sections/outliner/outliner-summaries-item-new-narrative-arcs'
 import OutlinerSummaryEpGeneration from '@/page-builders/plate-editor/sidebar-sections/outliner/outliner-summary-ep-generation'
 import useOutliner from '@/page-builders/plate-editor/sidebar-sections/outliner/provider'
-import { File, ListTree } from 'lucide-react'
+import { ListTree } from 'lucide-react'
 
+import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
-import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
 import TextArea from '@/components/aural-ui/textarea'
 
@@ -23,7 +24,6 @@ export default function OutlinerSummariesItemContent({
 }: OutlinerSummariesItemProps) {
 	const {
 		isSomeSummaryZoomed,
-		outlinerData,
 		handleSummaryValueChange,
 		handleGenerateOutline,
 		handleGenerateContentFromSummary,
@@ -132,41 +132,36 @@ export default function OutlinerSummariesItemContent({
 
 			<If condition={outlinerSummaryItemIdx === 1}>
 				<div className="mt-2 flex items-center justify-between gap-2">
-					<IconButton
-						variant="outlined"
-						label={
-							outlinerData?.[outlinerSummaryItemIdx].scenes
-								? 'Regenerate Outline'
-								: 'Generate Outline'
-						}
-						tooltip={
-							outlinerData?.[outlinerSummaryItemIdx].scenes
-								? 'Regenerate Outline'
-								: 'Generate Outline'
-						}
+					<Button
+						variant="outline"
 						disabled={isOutlineGenerationDisabled}
-						icon={
+						isDisabled={isOutlineGenerationDisabled}
+						rightIcon={
 							isOutlineGenerationDisabled ? <CircularLoader /> : <ListTree />
 						}
-						size="small"
+						size="sm"
 						onClick={() => {
 							void handleGenerateOutline({
 								summaryIdx: outlinerSummaryItemIdx,
 							})
 						}}
-					/>
+					>
+						{'Expand to Outline'}
+					</Button>
 
-					<IconButton
-						variant="outlined"
-						label="Generate Content"
-						tooltip="Generate Content"
+					<Button
 						disabled={!!summaryEpisodeTaskId}
-						icon={summaryEpisodeTaskId ? <CircularLoader /> : <File />}
-						size="small"
+						isDisabled={!!summaryEpisodeTaskId}
+						rightIcon={
+							summaryEpisodeTaskId ? <CircularLoader /> : <SparklesSoftIcon />
+						}
+						size="sm"
 						onClick={() => {
 							void handleGenerateContentFromSummary()
 						}}
-					/>
+					>
+						{'Generate Full Episode'}
+					</Button>
 				</div>
 			</If>
 		</>

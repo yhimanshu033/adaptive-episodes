@@ -148,13 +148,13 @@ export default function OutlinerSummariesItemNewNarrativeArcs({
 						/>
 					</If>
 					<IconButton
-						label="Regenerate Ideas"
+						label="Regenerate Narrative Arc"
 						variant="ghost"
 						disabled={
 							isNewNarrativeArcsStreaming ||
 							lastMessageGeneratingNewIdeaIdx !== undefined
 						}
-						tooltip="Regenerate Ideas"
+						tooltip="Regenerate Narrative Arc"
 						icon={<RefreshCcw />}
 						onClick={handleRetry}
 						size="small"
@@ -163,8 +163,8 @@ export default function OutlinerSummariesItemNewNarrativeArcs({
 
 				<div className="flex items-center gap-2">
 					<IconButton
-						tooltip="Reject Idea"
-						label="Reject Idea"
+						tooltip="Reject Narrative Arc"
+						label="Reject Narrative Arc"
 						variant="outlined"
 						size="small"
 						disabled={
@@ -180,8 +180,8 @@ export default function OutlinerSummariesItemNewNarrativeArcs({
 						}}
 					/>
 					<IconButton
-						tooltip="Accept Idea"
-						label="Accept Idea"
+						tooltip="Accept Narrative Arc"
+						label="Accept Narrative Arc"
 						variant="outlined"
 						disabled={
 							isNewNarrativeArcsStreaming ||

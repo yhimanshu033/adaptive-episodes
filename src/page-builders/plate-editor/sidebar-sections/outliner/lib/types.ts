@@ -234,3 +234,21 @@ export type TGenerateEpisodeFromSummaryV2Body = {
 export type TOutlinerChatGetNarrativeArcsResponse = Array<{
 	narrative_arc_plan: string
 }>
+
+export type TGenerateNarrativeArcPlanChatMessage = {
+	content: string
+	role: 'user' | 'assistant'
+}
+
+export type TGenerateNarrativeArcPlanBody = {
+	chat_history: TGenerateNarrativeArcPlanChatMessage[]
+	current_episode_summary: string
+	ep_number: number
+	ep_text: string
+	input_language: ELanguage
+	narrative_arc_plan: string
+	previous_episode_context: string
+	previous_episode_summary: string
+	project_id: number
+	selected_story_idea?: TStoryIdeaData
+}

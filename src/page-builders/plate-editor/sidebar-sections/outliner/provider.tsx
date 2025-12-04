@@ -12,6 +12,7 @@ import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { useDebounce } from '@/hooks/use-debounce'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
+import { ArrowRightUpIcon } from '@/icons/arrow-right-up-icon'
 import {
 	convertStoryStateArrToMap,
 	getStoryIdeaDataFromState,
@@ -19,12 +20,14 @@ import {
 } from '@/page-builders/episodes/outliner-questionnaire/lib/fns'
 import useNewIdeas from '@/page-builders/episodes/outliner-questionnaire/lib/hooks/use-new-ideas'
 import { TGetStoryIdeasResponse } from '@/page-builders/episodes/outliner-questionnaire/lib/types'
+import useCurrentEpPublish from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-current-ep-publish'
 import useIsInitial from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-is-initial'
 import useNarrativeArcsMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-narrative-arcs-mutation'
 import useNewIdeasSaving from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-new-ideas-mutation'
 import useOutlinerChat from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-chat'
 import useOutlinerData from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-data'
 import useOutlinerEnabled from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-enabled'
+import useOutlinerNarrativeArcGeneration from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-narrative-arc-generation'
 import useSaveCachedOutlineMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-save-cached-outline'
 import useSummaryEpisodeV2Mutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-summary-episode-v2-mutation'
 import useSummaryOutlineMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-summary-outline-mutation'
@@ -52,15 +55,18 @@ import {
 } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import { X } from 'lucide-react'
+import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
 import { toast } from 'sonner'
 
+import { Button } from '@/components/aural-ui/button'
 import { OutlinerFeedback } from '@/components/outliner-feedback'
 import { track } from '@/lib/utils/analytics'
 import { parseOptimistically } from '@/lib/utils/helpers'
 import { breakDownValue, jsonify } from '@/lib/utils/plate'
 
 import { EAction, EMessenger, TAssistantMessage } from '@/types/ai-types'
+import { ELanguage } from '@/types/common'
 
 function useOutlinerUtil() {
 	const [fetchedData, setFetchedData] = useState<TOutlinerFetchedData>()
@@ -126,7 +132,11 @@ function useOutlinerUtil() {
 	const { mutate } = useNewIdeasSaving()
 	const { mutateAsync: saveCachedOutline, isPending: isCachedScenesSaving } =
 		useSaveCachedOutlineMutation()
+	const { mutateAsync: sendNarrativeArcsMutation } =
+		useOutlinerNarrativeArcGeneration()
 
+	const { mutateAsync: publishCurrentEp, isPending: isCurrentEpPublishing } =
+		useCurrentEpPublish()
 	const editor = useEditorRef()
 	const isInitialNewIdeasFetched = useRef(false)
 
@@ -372,8 +382,19 @@ function useOutlinerUtil() {
 		]
 	)
 
+	const fetchOutlinerDataFn = useCallback(async () => {
+		const fetchedOutlinerData = await fetchOutlinerData()
+		if (!fetchedOutlinerData) {
+			return
+		}
+		setFetchedData(fetchedOutlinerData)
+		setOutlinerData(convertOutlinerData(fetchedOutlinerData))
+		return fetchedOutlinerData
+	}, [fetchOutlinerData])
+
 	const handleOutlinerDataFetch = useCallback(async () => {
 		if (
+			!episodeData?.chapter ||
 			!!outlinerData ||
 			isOutlinerDataPending ||
 			isInitialOutlineDataFetched.current
@@ -381,13 +402,51 @@ function useOutlinerUtil() {
 			return
 		}
 		isInitialOutlineDataFetched.current = true
-		const fetchedOutlinerData = await fetchOutlinerData()
-		if (!fetchedOutlinerData) {
-			return
+		const fetchedOutlinerData = await fetchOutlinerDataFn()
+		// if scenes not present but llm_memories present --> legacy metadata present but new nwm pipeline has not ran
+		if (
+			!!fetchedOutlinerData &&
+			!fetchedOutlinerData?.scenesResponse?.result.length &&
+			// all of llm memories are present
+			episodeData?.chapter?.props?.llm_memories?.context &&
+			episodeData?.chapter?.props?.llm_memories?.loglines &&
+			episodeData?.chapter?.props?.llm_memories?.summary
+		) {
+			toast.info('Chapter metadata is out of date. Updating it now…')
+			await publishCurrentEp()
+			const id = nanoid()
+			toast(`New metadata ready!`, {
+				id,
+				action: (
+					<div className="flex flex-1 justify-end">
+						<Button
+							size="sm"
+							onClick={() => {
+								setOutlinerData(undefined)
+								toast.dismiss(id)
+								void fetchOutlinerDataFn()
+							}}
+							rightIcon={<ArrowRightUpIcon />}
+						>
+							Load
+						</Button>
+						<X
+							className="absolute top-1 right-1 z-10 cursor-pointer"
+							onClick={() => toast.dismiss(id)}
+							size={12}
+						/>
+					</div>
+				),
+				duration: Infinity,
+			})
 		}
-		setFetchedData(fetchedOutlinerData)
-		setOutlinerData(convertOutlinerData(fetchedOutlinerData))
-	}, [fetchOutlinerData, outlinerData, isOutlinerDataPending])
+	}, [
+		outlinerData,
+		isOutlinerDataPending,
+		episodeData,
+		fetchOutlinerDataFn,
+		publishCurrentEp,
+	])
 
 	const isChatOpen = useMemo(() => {
 		return outlinerTab === EOutlinerTab.GENERATE
@@ -494,18 +553,22 @@ function useOutlinerUtil() {
 			if (newNarrativeArcsTaskId) {
 				return
 			}
+			if (!episodeData?.chapter) {
+				toast.error('Chapter data not found!')
+				return
+			}
 			toast.info('Generating New Narrative Arcs Plan!')
-			const taskId = await sendOutlinerChat({
-				messages: messages,
-				prompt: '',
-				epText: editorText,
-				mode: isUGC ? EOutlinerMode.UGC : EOutlinerMode.PGC,
-				selection: selectedOutlinerTabData,
-				outlinerData: outlinerData,
-				action: EOutlinerChatAction.GENERATE_NARRATIVE_ARCS_PLAN,
-				retry,
+			const taskId = await sendNarrativeArcsMutation({
+				chat_history: messages,
+				current_episode_summary: outlinerData?.[1]?.summary ?? '',
+				ep_number: episodeData?.chapter?.seq_number,
+				input_language:
+					episodeData?.chapter?.language || ELanguage.GERMAN_ORIGINAL,
+				narrative_arc_plan: outlinerData?.[2]?.summary ?? '',
+				project_id: episodeData?.chapter?.project,
 				previous_episode_context: fetchedData?.previous_episode_context || '',
 				previous_episode_summary: fetchedData?.previous_episode_summary || '',
+				ep_text: editor.api.string([]),
 				selected_story_idea: selectedStoryIdea,
 			})
 			newNarrativeArcsTaskIdToRetry.current[taskId] = retry
@@ -522,14 +585,13 @@ function useOutlinerUtil() {
 		},
 		[
 			outlinerData,
-			selectedOutlinerTabData,
 			messages,
-			isUGC,
 			newNarrativeArcsTaskId,
-			editorText,
-			sendOutlinerChat,
+			sendNarrativeArcsMutation,
 			fetchedData,
+			episodeData,
 			selectedStoryIdea,
+			editor.api,
 		]
 	)
 
@@ -1493,6 +1555,8 @@ function useOutlinerUtil() {
 		handleContentFeedback,
 		taskEnded,
 		completedTaskId,
+		isCurrentEpPublishing,
+		setCompletedTaskId,
 	}
 }
 

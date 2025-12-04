@@ -9,8 +9,11 @@ import { EOutlinerTab } from '@/page-builders/plate-editor/sidebar-sections/outl
 import useOutliner from '@/page-builders/plate-editor/sidebar-sections/outliner/provider'
 import { ZoomIn, ZoomOut } from 'lucide-react'
 
+import CircularLoader from '@/components/aural-ui/circular-loader'
 import { IconButton } from '@/components/aural-ui/icon-button'
+import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
+import { TooltipComponent } from '@/components/ui/tooltip-component'
 
 import { ESidebar } from '@/types/plate-types'
 
@@ -22,6 +25,7 @@ export default function OutlinerHeader() {
 		outlinerTabData,
 		outlinerTab,
 		outlinerData,
+		isCurrentEpPublishing,
 	} = useOutliner()
 
 	const handleTabChange = useCallback(() => {
@@ -86,29 +90,39 @@ export default function OutlinerHeader() {
 
 	return (
 		<section className="border-fm-divider-tertiary bg-fm-surface-primary sticky top-0 left-0 z-20 flex min-h-15.5 items-center justify-between gap-4 border-y py-3 pr-4 pl-7">
-			<Typography variant="body-small" as="h4">
-				{sidebarToTitle[ESidebar.OUTLINER]}
-			</Typography>
+			<div className="flex items-center gap-2">
+				<Typography variant="body-small" as="h4">
+					{sidebarToTitle[ESidebar.OUTLINER]}
+				</Typography>
+				<If condition={isCurrentEpPublishing}>
+					<TooltipComponent tooltip="Regenerating Metadata...">
+						<CircularLoader className="size-3" />
+					</TooltipComponent>
+				</If>
+			</div>
 			<div className="flex items-center gap-2">
 				<IconButton
 					disabled={!zoomOutEnabled}
 					onClick={handleZoomOut}
 					variant="outlined"
-					label="View"
+					label="Zoom Out"
+					tooltip="Zoom Out"
 					size="small"
 					icon={<ZoomOut />}
 				/>
 				<IconButton
 					disabled={!zoomInEnabled}
 					onClick={handleZoomIn}
-					label="View"
+					label="Zoom In"
+					tooltip="Zoom In"
 					variant="outlined"
 					size="small"
 					icon={<ZoomIn />}
 				/>
 				<IconButton
 					onClick={handleTabChange}
-					label="Generate"
+					label="Outliner Chat"
+					tooltip="Outliner Chat"
 					variant={
 						outlinerTab === EOutlinerTab.GENERATE ? 'background' : 'ghost'
 					}

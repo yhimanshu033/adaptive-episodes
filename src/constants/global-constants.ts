@@ -127,6 +127,7 @@ export const API_URLS = {
 	OUTLINER_NEW_IDEAS: '/chapter/:episodeId/new-episode-ideas',
 	OUTLINER_SUMMARY_OUTLINE: '/aicopilot/bse/summary-to-outlines/',
 	OUTLINER_SAVE_CACHED_OUTLINE: '/scenes/save-cached-scenes/',
+	GENERATE_NARRATIVE_ARC_PLAN: '/aicopilot/bse/generate-narrative-arc-plan/',
 
 	OUTLINER_QUESTIONNAIRE_NEW_IDEAS: '/project/:projectId/new-story-idea',
 	OUTLINER_QUESTIONNAIRE_STATUS: '/user/fetch-profile-stage/',
@@ -215,3 +216,4 @@ export const APP_CONFIG = {
 
 export const DEFAULT_PERFORMANCE_ENTRY_TIMEOUT = 500 //500ms
 export const DEFAULT_PERFORMANCE_ENTRY_MAX_TIME_DIFFERENCE = 100 //100ms
+export const GZIP_THRESHOLD = 5 * 1024 // 5KB in bytes
