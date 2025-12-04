@@ -4,7 +4,7 @@
 
 import { useMemo } from 'react'
 import { DEFAULT_EDITOR_CONTENT } from '@/constants/editor-constants'
-import { TrailingBlockPlugin, Value } from 'platejs'
+import { TrailingBlockPlugin } from 'platejs'
 import { usePlateEditor } from 'platejs/react'
 
 import { AlignKit } from '@/components/editor/plugins/align-kit'
@@ -31,6 +31,7 @@ import { migrateOldComments } from '@/lib/plate/migrateOldComments'
 import { migrateOldSuggestions } from '@/lib/plate/migrateOldSuggestions'
 import { breakDownValue, jsonify } from '@/lib/utils/plate'
 
+import { ELanguage } from '@/types/common'
 import { TCommentGeneric } from '@/types/plate-types'
 
 const useMyEditor = ({
@@ -38,10 +39,12 @@ const useMyEditor = ({
 	id = 'plate-editor',
 	comments = [],
 	simplified = false,
+	language,
 }: {
 	comments?: TCommentGeneric[]
 	content: string
 	id?: string
+	language?: ELanguage
 	simplified?: boolean
 }) => {
 	const {
@@ -54,11 +57,11 @@ const useMyEditor = ({
 			return DEFAULT_EDITOR_CONTENT
 		}
 		try {
-			return migrateOldSuggestions(breakDownValue(JSON.parse(content) as Value))
+			return migrateOldSuggestions(breakDownValue(jsonify(content, language)))
 		} catch {
 			return breakDownValue(jsonify(content))
 		}
-	}, [content])
+	}, [content, language])
 
 	const discussions = migrateOldComments(comments, value)
 
