@@ -31,6 +31,7 @@ import { migrateOldComments } from '@/lib/plate/migrateOldComments'
 import { migrateOldSuggestions } from '@/lib/plate/migrateOldSuggestions'
 import { breakDownValue, jsonify } from '@/lib/utils/plate'
 
+import { ELanguage } from '@/types/common'
 import { TCommentGeneric } from '@/types/plate-types'
 
 const useMyEditor = ({
@@ -38,10 +39,12 @@ const useMyEditor = ({
 	id = 'plate-editor',
 	comments = [],
 	simplified = false,
+	language,
 }: {
 	comments?: TCommentGeneric[]
 	content: string
 	id?: string
+	language?: ELanguage
 	simplified?: boolean
 }) => {
 	const {
@@ -54,11 +57,11 @@ const useMyEditor = ({
 			return DEFAULT_EDITOR_CONTENT
 		}
 		try {
-			return migrateOldSuggestions(breakDownValue(jsonify(content)))
+			return migrateOldSuggestions(breakDownValue(jsonify(content, language)))
 		} catch {
-			return breakDownValue(jsonify(content))
+			return breakDownValue(jsonify(content, language))
 		}
-	}, [content])
+	}, [content, language])
 
 	const discussions = migrateOldComments(comments, value)
 

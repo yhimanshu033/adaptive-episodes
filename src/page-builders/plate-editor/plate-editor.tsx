@@ -25,7 +25,7 @@ import EditorAccessProvider from '@/providers/editor-access-provider'
 import useProjectId from '@/providers/project-id-provider'
 import { cn } from '@/lib/aural-ui/utils'
 
-import { EStatus } from '@/types/common'
+import { ELanguage, EStatus } from '@/types/common'
 import { TGetEpisodeResponse } from '@/types/episode-type'
 
 import EditorHandler from './editor-handler'
@@ -41,6 +41,7 @@ function MyEditor({
 		content: content.text || '',
 		id: MAIN_EDITOR_ID,
 		comments: content?.chapter?.props?.comments,
+		language: content?.chapter?.language as ELanguage,
 	})
 
 	return (
