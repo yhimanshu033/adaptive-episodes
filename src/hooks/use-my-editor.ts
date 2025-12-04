@@ -59,7 +59,7 @@ const useMyEditor = ({
 		try {
 			return migrateOldSuggestions(breakDownValue(jsonify(content, language)))
 		} catch {
-			return breakDownValue(jsonify(content))
+			return breakDownValue(jsonify(content, language))
 		}
 	}, [content, language])
 
