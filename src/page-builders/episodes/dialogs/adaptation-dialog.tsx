@@ -306,7 +306,10 @@ export default function AdaptationDialog({
 								<div className="animate-gradient-slide bg-clip-text text-center text-transparent">
 									<p>Adaptation in progress...</p>
 									<p className="text-xs">
-										Fetching LS mapping for projectId: {storyData?.id || 'N/A'}
+										Fetching LS mapping for project:{' '}
+										{storyData?.project_title || 'N/A'}
+										<br />
+										Project ID: {storyData?.id || 'N/A'}
 									</p>
 								</div>
 							</div>

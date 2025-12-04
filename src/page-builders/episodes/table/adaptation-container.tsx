@@ -91,7 +91,7 @@ const AdaptationContainer = ({
 								<CardDescription className="text-muted-foreground">
 									{isStoryAdaptationInProgress
 										? 'Your content is being adapted. This may take a few moments.'
-										: 'Another story is being adapted. Please wait for it to complete.'}
+										: 'Another story is currently being adapted. You can switch tabs to continue working, wait for this process to finish, or discard the current adaptation to proceed.'}
 								</CardDescription>
 							</Else>
 						</IfElse>

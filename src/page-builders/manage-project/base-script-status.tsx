@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { BSE_STATUS_MAP } from '@/constants/adaptation-constants'
 import { BASE_EXTENSION_QUERY_KEY } from '@/constants/query-constants'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
 import { AlertIcon } from '@/icons/alert-icon'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
-import { CircleTickIcon } from '@/icons/circle-tick-icon'
 import { CopyIcon } from '@/icons/copy-icon'
 import { useQueryClient } from '@tanstack/react-query'
 import { CheckCircle, Loader2 } from 'lucide-react'
@@ -173,16 +173,17 @@ export const BaseScriptStatusBanner = ({
 }: {
 	statusData: BaseScriptStatusBannerProps | null
 }) => {
-	if (!statusData) {
+	if (!statusData || !statusData.message) {
 		return null
 	}
 
-	const isSuccess = statusData.status === 'success'
-	const message = statusData.message?.trim() || 'No status message available.'
+	const statusVariant =
+		BSE_STATUS_MAP[statusData.status ?? 'default'] ?? BSE_STATUS_MAP.default
+
+	const message = statusData.message?.trim() ?? 'No status message available.'
 	const formattedTimestamp = statusData.timestamp
 		? formatDate(statusData.timestamp, true)
 		: null
-	const bannerVariant = isSuccess ? 'positive' : 'warning'
 
 	const handleCopyTaskId = () => {
 		void navigator.clipboard.writeText(statusData.task_id || 'N/A')
@@ -191,15 +192,10 @@ export const BaseScriptStatusBanner = ({
 
 	return (
 		<Banner
-			variant={bannerVariant}
+			variant={statusVariant.bannerVariant}
 			appearance="outlined"
 			heading={
-				<Typography
-					variant="caption-large"
-					className={
-						isSuccess ? '!text-fm-positive-sec' : '!text-fm-warning-sec'
-					}
-				>
+				<Typography variant="caption-large" className={statusVariant.className}>
 					{message}
 				</Typography>
 			}
@@ -222,13 +218,7 @@ export const BaseScriptStatusBanner = ({
 					)}
 				</div>
 			}
-			leftIcon={
-				isSuccess ? (
-					<CircleTickIcon className="size-5" />
-				) : (
-					<AlertIcon className="size-5" />
-				)
-			}
+			leftIcon={statusVariant.Icon}
 		/>
 	)
 }

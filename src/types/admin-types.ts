@@ -143,9 +143,15 @@ export type TUpdateGDriveFolderUrlParams = {
 
 export type TMessageResponse = { message: string }
 
+export enum EBSEStatus {
+	ERROR = 'error',
+	RUNNING = 'running',
+	SUCCESS = 'success',
+}
+
 export type TBSEStatusBase = {
 	message?: string
-	status?: string
+	status?: EBSEStatus
 	timestamp?: string
 }
 
@@ -159,7 +165,7 @@ export type TBSEGermanResponse = {
 	file_name: string
 	previous_extension_status: {
 		message: string
-		status: string
+		status: EBSEStatus
 		timestamp: string
 	}
 	ranges: {
