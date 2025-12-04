@@ -64,7 +64,11 @@ const BaseScriptExtension = () => {
 				</DialogHeader>
 
 				{baseTaskId ? (
-					<BaseScriptStatus status={''} taskId={baseTaskId} reset={reset} />
+					<BaseScriptStatus
+						storyId={initialStoryData?.id}
+						taskId={baseTaskId}
+						reset={reset}
+					/>
 				) : (
 					<IfElse condition={isFetching || isLoading}>
 						<If>
