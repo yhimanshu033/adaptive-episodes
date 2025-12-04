@@ -4,7 +4,7 @@
 
 import { useMemo } from 'react'
 import { DEFAULT_EDITOR_CONTENT } from '@/constants/editor-constants'
-import { TrailingBlockPlugin } from 'platejs'
+import { TrailingBlockPlugin, Value } from 'platejs'
 import { usePlateEditor } from 'platejs/react'
 
 import { AlignKit } from '@/components/editor/plugins/align-kit'
@@ -54,7 +54,7 @@ const useMyEditor = ({
 			return DEFAULT_EDITOR_CONTENT
 		}
 		try {
-			return migrateOldSuggestions(breakDownValue(jsonify(content)))
+			return migrateOldSuggestions(breakDownValue(JSON.parse(content) as Value))
 		} catch {
 			return breakDownValue(jsonify(content))
 		}
