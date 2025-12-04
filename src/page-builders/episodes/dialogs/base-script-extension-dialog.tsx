@@ -165,16 +165,20 @@ const BaseScriptExtension = ({
 	const baseTaskId = data && 'task_id' in data ? data.task_id : taskId
 
 	const statusData = React.useMemo(() => {
-		const build = (status: TBSEStatusBase, task_id: string | null) => ({
-			message: status.message,
+		const build = (
+			status: TBSEStatusBase,
+			task_id: string | null,
+			error?: string
+		) => ({
+			message: status.message || error,
 			status: status.status,
 			timestamp: status.timestamp,
 			task_id,
 		})
 
 		if (isBSERunning(data)) {
-			const { extension_status: status, task_id } = data
-			return build(status, task_id)
+			const { extension_status: status, task_id, error } = data
+			return build(status, task_id, error)
 		}
 
 		if (isBSENotRunning(data)) {

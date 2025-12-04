@@ -179,9 +179,8 @@ export type TBSEResponse = {
 }
 
 export type TBSERunningResponse = {
-	error?: string
+	error: string
 	extension_status: TBSEExtensionStatus
-	message?: string
 	task_id: string
 }
 
