@@ -44,6 +44,7 @@ const useEpisodeHook = () => {
 		await queryClient.invalidateQueries({
 			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
 			type: 'all',
+			refetchType: 'active',
 		})
 	}
 

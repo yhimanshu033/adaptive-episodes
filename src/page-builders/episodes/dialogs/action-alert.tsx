@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import useEpisodeTable from '@/hooks/use-episode-table'
 import { useEpisodeStore } from '@/store/episode-store'
 import { Table } from '@tanstack/react-table'
@@ -25,10 +25,17 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 	const { isDialogOpen } = useEpisodeTableStore()
 	const alertInfo = useEpisodeTableStore(useShallow((state) => state.alertInfo))
 	const { handleConfirm } = useEpisodeTable()
+	const isClicked = useRef(false)
 
 	const capitalizeFirstLetter = (str: string) => {
 		return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 	}
+
+	useEffect(() => {
+		if (isDialogOpen) {
+			isClicked.current = false
+		}
+	}, [isDialogOpen])
 
 	const isGotItAction = alertInfo?.secondAction === 'Got it'
 
@@ -69,8 +76,12 @@ const ActionAlert = ({ table }: { table: Table<TEpisode> }) => {
 							noise="low"
 							className="w-full"
 							onClick={() => {
-								void handleConfirm()
+								if (isClicked.current) {
+									return
+								}
+								isClicked.current = true
 								setIsDialogOpen(false)
+								void handleConfirm()
 								table.resetRowSelection()
 							}}
 						>

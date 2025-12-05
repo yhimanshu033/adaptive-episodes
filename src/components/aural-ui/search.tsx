@@ -14,6 +14,7 @@ export interface SearchResult {
 export interface SearchProps {
 	children?: React.ReactNode
 	className?: string
+	clearOnEnter?: boolean
 	disabled?: boolean
 	initialValue?: string
 	onChange?: (value: string) => void
@@ -40,6 +41,7 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 			children, // Children can be used to render custom search results
 			onEnterPressed = () => {},
 			disabled = false,
+			clearOnEnter = true,
 		},
 		ref
 	) => {
@@ -104,22 +106,29 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 			(e: React.KeyboardEvent<HTMLInputElement>) => {
 				if (e.key === 'Enter') {
 					onEnterPressed(internalValue)
-					if (!isControlled) {
+					if (!isControlled && clearOnEnter) {
 						setInternalValue('')
 					}
 
 					// Call onChange if provided (for controlled components)
-					if (onChange) {
+					if (onChange && clearOnEnter) {
 						onChange('')
 					}
 
 					// Call onSearch if provided
-					if (onSearch) {
+					if (onSearch && clearOnEnter) {
 						onSearch('')
 					}
 				}
 			},
-			[internalValue, onEnterPressed, isControlled, onSearch, onChange]
+			[
+				internalValue,
+				onEnterPressed,
+				isControlled,
+				onSearch,
+				onChange,
+				clearOnEnter,
+			]
 		)
 
 		return (

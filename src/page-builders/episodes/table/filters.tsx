@@ -78,6 +78,7 @@ const Filters = ({
 						className="[&_input]:border-fm-divider-secondary min-w-72"
 						onSearch={debouncedSearch}
 						initialValue={search}
+						clearOnEnter={false}
 					/>
 				</Else>
 			</IfElse>
