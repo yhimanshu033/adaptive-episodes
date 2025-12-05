@@ -17,7 +17,7 @@ const ExitAdaptationDialog = () => {
 		openExitDialog: open,
 		setOpenExitDialog,
 		setOpen,
-		setAbort,
+		handleDiscardAdaptationTask,
 	} = useAdaptation()
 
 	const handleDialogChange = () => {
@@ -62,9 +62,7 @@ const ExitAdaptationDialog = () => {
 							className="w-full"
 							innerClassName="h-11"
 							onClick={() => {
-								setOpenExitDialog(false)
-								setAbort(true)
-								setOpen(false)
+								handleDiscardAdaptationTask()
 							}}
 						>
 							Exit

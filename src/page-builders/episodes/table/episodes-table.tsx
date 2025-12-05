@@ -180,10 +180,6 @@ const EpisodesTable = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentPage, search, limit])
 
-	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
-		return <AdaptationContainer />
-	}
-
 	const anyRowSelected = selectedRowLength > 0
 	const isHoverable = !anyRowSelected && isWriter
 
@@ -225,6 +221,10 @@ const EpisodesTable = () => {
 	const onInvent = (seqNumber: number) => {
 		setIsInventOpen(true)
 		setInventSeq(seqNumber)
+	}
+
+	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
+		return <AdaptationContainer />
 	}
 
 	return (

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
-import useAdaptationQuery from '@/hooks/query/use-adaptation-query'
 import { CheckCircle } from 'lucide-react'
 
 import { Button } from '@/components/aural-ui/button'
@@ -16,22 +15,24 @@ import IfElse, { Else, If } from '@/components/if-else'
 import { Separator } from '@/components/ui/separator'
 import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
-import { parseInputLSMapping } from '@/lib/utils/helpers'
 
-import { ELanguage } from '@/types/common'
-
-const AdaptationContainer = () => {
+const AdaptationContainer = ({
+	disableUI = false,
+	lsTaskId,
+}: {
+	disableUI?: boolean
+	lsTaskId?: string | null
+}) => {
 	const { id } = useParams()
 	const { initialStoryData } = useEpisodeTableContext()
 	const {
 		storyData,
 		setFetchingLSSheet,
-		setTableData,
 		setStory,
 		setOpen,
 		step,
 		setEpisodeAdaptation,
-		setSequence,
+		setLsTaskId,
 	} = useAdaptation()
 
 	const isStoryAdaptationInProgress = useMemo(
@@ -39,32 +40,26 @@ const AdaptationContainer = () => {
 		[storyData, id]
 	)
 
-	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
-		projectId: id as string,
-		language: initialStoryData?.parent_language || ELanguage.ENGLISH,
-		enabled: isStoryAdaptationInProgress,
-	})
-
 	useEffect(() => {
 		if (!storyData) {
 			setStory(initialStoryData)
-			setFetchingLSSheet(lsSheetLoading)
+			setFetchingLSSheet(true)
+			if (lsTaskId) {
+				setLsTaskId(lsTaskId)
+			}
 		}
 	}, [
 		storyData,
 		initialStoryData,
-		lsSheetLoading,
 		setStory,
 		setFetchingLSSheet,
+		lsTaskId,
+		setLsTaskId,
 	])
 
-	useEffect(() => {
-		if (lsSheetData) {
-			const { data, sequence } = parseInputLSMapping(lsSheetData)
-			setTableData(data)
-			setSequence(sequence || {})
-		}
-	}, [lsSheetData, setTableData, setSequence])
+	if (disableUI) {
+		return null
+	}
 
 	return (
 		<div>
@@ -96,7 +91,7 @@ const AdaptationContainer = () => {
 								<CardDescription className="text-muted-foreground">
 									{isStoryAdaptationInProgress
 										? 'Your content is being adapted. This may take a few moments.'
-										: 'Another story is being adapted. Please wait for it to complete.'}
+										: 'Another story is currently being adapted. You can switch tabs to continue working, wait for this process to finish, or discard the current adaptation to proceed.'}
 								</CardDescription>
 							</Else>
 						</IfElse>

@@ -81,10 +81,12 @@ export default function AdaptationDialog({
 	const adaptOpen = useCustomDialog ? openDialog : open
 	const setAdaptDialogOpen = useCustomDialog ? setOpenDialog : setOpen
 
+	const shouldEnableQuery = isFetchingLSSheet && !!storyData?.id
+
 	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
 		projectId: storyData?.id ? String(storyData.id) : '',
 		language: storyData?.parent_language || ELanguage.ENGLISH,
-		enabled: isFetchingLSSheet,
+		enabled: shouldEnableQuery,
 	})
 
 	const selectedEpNo = useMemo(
@@ -301,9 +303,15 @@ export default function AdaptationDialog({
 						<Case value={2}>
 							<div className="flex h-full flex-col items-center justify-center gap-5 px-6">
 								<CircularLoader className="size-12" />
-								<p className="animate-gradient-slide bg-clip-text text-transparent">
-									Adaptation in progress...
-								</p>
+								<div className="animate-gradient-slide bg-clip-text text-center text-transparent">
+									<p>Adaptation in progress...</p>
+									<p className="text-xs">
+										Fetching LS mapping for project:{' '}
+										{storyData?.project_title || 'N/A'}
+										<br />
+										Project ID: {storyData?.id || 'N/A'}
+									</p>
+								</div>
 							</div>
 						</Case>
 

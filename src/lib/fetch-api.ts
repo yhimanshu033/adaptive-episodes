@@ -35,7 +35,10 @@ export type FetchRequestParams<
 	urlParams?: UrlParamsT
 }
 
-export type FetchResponseResult<ResponseDataT = TNoParams> =
+export type FetchResponseResult<
+	ResponseDataT = TNoParams,
+	ErrorDataT = TNoParams,
+> =
 	| {
 			data: ResponseDataT
 			error: null
@@ -46,7 +49,7 @@ export type FetchResponseResult<ResponseDataT = TNoParams> =
 	| {
 			data: null | ResponseDataT
 			error: Error
-			message?: Record<string, string>
+			message?: ErrorDataT
 			status: number
 			success: false
 	  }
@@ -56,6 +59,7 @@ export async function fetchAPI<
 	UrlParamsT = TNoParams,
 	BodyParamsT = TNoParams,
 	QueryParamsT = TNoParams,
+	ErrorDataT = TNoParams,
 >(
 	params: FetchRequestParams<
 		ResponseDataT,
@@ -63,7 +67,7 @@ export async function fetchAPI<
 		BodyParamsT,
 		QueryParamsT
 	>
-): Promise<FetchResponseResult<ResponseDataT>> {
+): Promise<FetchResponseResult<ResponseDataT, ErrorDataT>> {
 	const session = await getUserSession()
 
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
@@ -286,7 +290,7 @@ export async function fetchAPI<
 				})
 			}
 
-			const message = (await response.json()) as Record<string, string>
+			const errorData = (await response.json()) as ErrorDataT
 
 			if (typeof performance !== 'undefined' && performance.clearMarks) {
 				performance.clearMarks(`${performanceMarkName}-start`)
@@ -299,7 +303,7 @@ export async function fetchAPI<
 				status: response.status,
 				data: defaultData ?? null,
 				error: new Error(response.statusText),
-				message,
+				message: errorData,
 			}
 		}
 

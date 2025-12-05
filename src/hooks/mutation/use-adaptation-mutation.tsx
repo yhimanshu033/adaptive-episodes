@@ -3,6 +3,7 @@ import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { ELLMModel } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import {
+	BASE_EXTENSION_QUERY_KEY,
 	EPISODE_LIST_QUERY_KEY,
 	GET_LS_SHEET_QUERY_KEY,
 	STORY_ID_QUERY_KEY,
@@ -19,6 +20,8 @@ import { track } from '@/lib/utils/analytics'
 import { migrateOldLSMapping, sanitize } from '@/lib/utils/helpers'
 
 import {
+	EDiscardLsTaskStatus,
+	TDiscardLsTaskBody,
 	TGetAdaptationLSUrlParams,
 	TSendAdaptationStartBody,
 } from '@/types/ai-types'
@@ -96,7 +99,7 @@ export default function useAdaptationMutation({
 				projectId: String(selectedRowData?.[0]?.project),
 			},
 			delay: 10000,
-			startDelay: 1000 * 60,
+			startDelay: 10000,
 			stop: (resp) => {
 				if (!resp.error && resp.data) {
 					return true
@@ -204,6 +207,9 @@ export default function useAdaptationMutation({
 			await queryClient.invalidateQueries({
 				queryKey: [STORY_ID_QUERY_KEY, projectId],
 			})
+			await queryClient.invalidateQueries({
+				queryKey: [BASE_EXTENSION_QUERY_KEY, Number(projectId)],
+			})
 		},
 		onError: () => {
 			toast.error('Adaptation failed!', {
@@ -213,5 +219,49 @@ export default function useAdaptationMutation({
 		mutationKey: ['send-adaptation-ls'],
 	})
 
-	return { createLSMutation, sendLSMutation }
+	const onDiscardLsTask = async ({
+		lsTaskId,
+		projectId,
+	}: {
+		lsTaskId: string
+		projectId: number
+	}) => {
+		const resp = await fetchAPI<
+			TNoParams,
+			{ projectId: number },
+			TDiscardLsTaskBody
+		>({
+			method: 'POST',
+			url: API_URLS.DISCARD_LS_TASK,
+			body: {
+				task_id: lsTaskId,
+				update_status: EDiscardLsTaskStatus.DISCARD,
+			},
+			urlParams: {
+				projectId,
+			},
+		})
+		if (resp.error || !resp.data) {
+			throw new Error('Failed to discard LS task!')
+		}
+		return resp.data
+	}
+
+	const discardLsTaskMutation = useMutation({
+		mutationFn: onDiscardLsTask,
+		onSuccess: async (_, { projectId }) => {
+			onSuccess()
+			await queryClient.invalidateQueries({
+				queryKey: [BASE_EXTENSION_QUERY_KEY, Number(projectId)],
+			})
+			toast.success('LS task discarded!')
+		},
+		onError: (error: Error) => {
+			toast.error(error.message || 'Failed to discard LS task!', {
+				icon: <BubbleCrossedIcon />,
+			})
+		},
+	})
+
+	return { createLSMutation, discardLsTaskMutation, sendLSMutation }
 }

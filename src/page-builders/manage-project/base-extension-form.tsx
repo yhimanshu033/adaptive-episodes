@@ -17,7 +17,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 
-import { TBaseScriptExtensionResponse } from '@/types/admin-types'
+import { TBSEGermanResponse } from '@/types/admin-types'
 
 const BaseExtensionForm = ({
 	totalEpisodes,
@@ -25,7 +25,7 @@ const BaseExtensionForm = ({
 	baseExtensionMutation,
 }: {
 	baseExtensionMutation: ReturnType<typeof useBaseExtensionMutation>
-	data?: TBaseScriptExtensionResponse
+	data?: TBSEGermanResponse
 	totalEpisodes: number
 }) => {
 	const { id } = useParams()

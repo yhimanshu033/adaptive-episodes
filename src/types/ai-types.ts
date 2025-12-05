@@ -308,6 +308,15 @@ export type TSendAdaptationStartBody = {
 	type: 'ls_sheet_gen' | 'adaptation'
 }
 
+export enum EDiscardLsTaskStatus {
+	DISCARD = 'discard',
+}
+
+export type TDiscardLsTaskBody = {
+	task_id: string
+	update_status?: EDiscardLsTaskStatus
+}
+
 export type TGetAdaptationLSUrlParams = {
 	language: ELanguage
 	projectId: string
