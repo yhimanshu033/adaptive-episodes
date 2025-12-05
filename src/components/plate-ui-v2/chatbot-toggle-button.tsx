@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useMemo } from 'react'
+import useIsOutlinerTester from '@/hooks/ugc/use-is-outliner-tester'
 import { LayoutRightIcon } from '@/icons/layout-right-icon'
 import usePlateStore from '@/store/plate-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -14,11 +15,14 @@ import { IconButton } from '../aural-ui/icon-button'
 export function ChatbotToolbarButton() {
 	const { store, setSidebar } = usePlateStore()
 	const sidebar = store(useShallow((state) => state.sidebar))
+	const isOutlinerTester = useIsOutlinerTester()
 
-	const isSidebarButtonTriggered = useMemo(
-		() => sidebar === ESidebar.CHATBOT || sidebar === ESidebar.OUTLINE,
-		[sidebar]
-	)
+	const isSidebarButtonTriggered = useMemo(() => {
+		if (isOutlinerTester) {
+			return sidebar === ESidebar.OUTLINER
+		}
+		return sidebar === ESidebar.CHATBOT || sidebar === ESidebar.OUTLINE
+	}, [sidebar, isOutlinerTester])
 
 	return (
 		<IconButton

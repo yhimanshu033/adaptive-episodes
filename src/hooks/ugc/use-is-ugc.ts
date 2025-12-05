@@ -1,12 +1,10 @@
-import { useGlobalStore } from '@/store/global-store'
-import { useShallow } from 'zustand/react/shallow'
+import useIsExternalUser from '@/hooks/ugc/use-is-external-user'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
-import { isInternalUser } from '@/lib/utils/helpers'
 
 export default function useIsUGC() {
-	const userData = useGlobalStore(useShallow((store) => store.userData))
+	const isExternal = useIsExternalUser()
 	const { initialStoryData } = useEpisodeTableContext()
 
-	return !isInternalUser(userData) || !!initialStoryData?.props?.from_scratch
+	return isExternal || !!initialStoryData?.props?.from_scratch
 }

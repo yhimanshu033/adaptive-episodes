@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { TRANSITION_DURATION } from '@/constants/editor-constants'
 import { GLOBAL_LOCALIZE } from '@/constants/global-constants'
+import useIsOutlinerTester from '@/hooks/ugc/use-is-outliner-tester'
 import {
 	AIChatbot,
 	CommentSidebar,
@@ -50,6 +51,8 @@ const Sidebar = () => {
 	const { initialStoryData } = useEpisodeTableContext()
 	const isOutlinerEnabled = useOutlinerEnabled()
 
+	const isOutlinerTester = useIsOutlinerTester()
+
 	const { configurationData } = useConfiguration()
 
 	const isEpisodeNavigationOpen = useEditorStore(
@@ -76,6 +79,16 @@ const Sidebar = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeCommentId])
+
+	// FOR DISABLING STORY EXPLORER AND STORY CHAT FOR UGC OUTLINER USERS
+	useEffect(() => {
+		if (!isOutlinerTester) {
+			return
+		}
+		if (sidebar === ESidebar.CHATBOT || sidebar === ESidebar.OUTLINE) {
+			setSidebar(ESidebar.OUTLINER)
+		}
+	}, [isOutlinerTester, sidebar, setSidebar])
 
 	useEffect(() => {
 		if (!isEpisodeNavigationOpen) {
