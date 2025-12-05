@@ -27,6 +27,7 @@ import { jsonrepair } from 'jsonrepair'
 import Negotiator from 'negotiator'
 import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
+import * as XLSX from 'xlsx'
 
 import {
 	ERole,
@@ -744,6 +745,64 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	}
 
 	return result
+}
+
+export function workbookToLSMapping(
+	workbook: XLSX.WorkBook
+): LSMappingOutputItemV2 {
+	return workbook.SheetNames.reduce((acc, sheetName) => {
+		return {
+			...acc,
+			[sheetName]: XLSX.utils.sheet_to_json<LSMappingOutputItem>(
+				workbook.Sheets[sheetName]
+			),
+		}
+	}, {} as LSMappingOutputItemV2)
+}
+
+export async function readWorkbookFromFile(file: File): Promise<XLSX.WorkBook> {
+	const isCsv = file.name?.toLowerCase().endsWith('.csv')
+
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader()
+
+		reader.onload = (event) => {
+			const result = event.target?.result
+			if (result == null) {
+				reject(new Error('No data found in file'))
+				return
+			}
+
+			try {
+				if (isCsv) {
+					resolve(XLSX.read(result as string, { type: 'string' }))
+					return
+				}
+
+				resolve(
+					XLSX.read(new Uint8Array(result as ArrayBuffer), {
+						type: 'array',
+					})
+				)
+			} catch (error) {
+				reject(
+					error instanceof Error
+						? error
+						: new Error('Failed to parse workbook contents')
+				)
+			}
+		}
+
+		reader.onerror = () => {
+			reject(new Error('Some error occurred while reading XLSX'))
+		}
+
+		if (isCsv) {
+			reader.readAsText(file, 'utf-8')
+		} else {
+			reader.readAsArrayBuffer(file)
+		}
+	})
 }
 
 export function sortInputLSMapping(

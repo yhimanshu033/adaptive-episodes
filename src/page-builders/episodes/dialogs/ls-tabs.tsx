@@ -24,6 +24,8 @@ import {
 	cn,
 	getFormattedDate,
 	invalidLSMappingDetails,
+	readWorkbookFromFile,
+	workbookToLSMapping,
 } from '@/lib/utils/helpers'
 
 import {
@@ -104,28 +106,23 @@ const TableCTAs = ({
 		])
 	}
 
-	function handleXlsxUpload(files: FileList | null) {
+	const handleXlsxUpload = async (files: FileList | null) => {
 		const file = files?.[0]
 		if (!file) {
 			return
 		}
 
-		const reader = new FileReader()
-
-		reader.onload = (event) => {
-			const data = new Uint8Array(event.target?.result as ArrayBuffer)
-			const workbook = XLSX.read(data, { type: 'array' })
-
-			const parsedWorkbook = workbook.SheetNames.reduce((acc, curr) => {
-				return {
-					...acc,
-					[curr]: XLSX.utils.sheet_to_json<LSMappingOutputItem>(
-						workbook.Sheets[curr]
-					),
-				}
-			}, {} as LSMappingOutputItemV2)
-
+		try {
+			const workbook = await readWorkbookFromFile(file)
+			const parsedWorkbook = workbookToLSMapping(workbook)
 			const firstSheetName = Object.keys(parsedWorkbook)[0]
+
+			if (!firstSheetName) {
+				toast.error('No sheets found in file', {
+					icon: <BubbleCrossedIcon />,
+				})
+				return
+			}
 
 			if (Object.keys(parsedWorkbook).length === 1 || !onWorkBookChange) {
 				onDataChange(parsedWorkbook[firstSheetName])
@@ -137,15 +134,16 @@ const TableCTAs = ({
 			toast.success('XLSX import completed!', {
 				icon: <BubbleCheckIcon />,
 			})
-		}
+		} catch (error) {
+			const message =
+				error instanceof Error
+					? error.message
+					: 'Some error occurred while reading XLSX'
 
-		reader.onerror = () => {
-			toast.error('Some error occurred while reading XLSX', {
+			toast.error(message, {
 				icon: <BubbleCrossedIcon />,
 			})
 		}
-
-		reader.readAsArrayBuffer(file)
 	}
 
 	function handleDownloadXlsx() {
@@ -192,7 +190,7 @@ const TableCTAs = ({
 						accept=".xlsx, .csv"
 						className="hidden"
 						id="csv-input"
-						onChange={(e) => handleXlsxUpload(e.target.files)}
+						onChange={(e) => void handleXlsxUpload(e.target.files)}
 					/>
 					<Button
 						type="button"
