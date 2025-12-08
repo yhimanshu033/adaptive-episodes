@@ -112,7 +112,6 @@ export default function useEditorConfig() {
 		if (!contentData?.additional_view) {
 			return {}
 		}
-		console.log({ additional: contentData?.additional_view })
 		return Object.keys(contentData.additional_view).reduce(
 			(acc, k) => {
 				return {
@@ -223,6 +222,7 @@ export default function useEditorConfig() {
 					ESidebar.NOTES,
 					ESidebar.OUTLINE,
 					ESidebar.BEAT_SHEET,
+					ESidebar.OUTLINER,
 				],
 				sidebarButtons: [ESidebar.CHATBOT, ESidebar.OUTLINE],
 				defaultSidebarConfig: {
