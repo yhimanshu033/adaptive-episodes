@@ -13,7 +13,7 @@ import {
 } from '@/constants/global-constants'
 import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { useInfiniteEpisodesData } from '@/hooks/query/use-episode-data'
-import useIsUGC from '@/hooks/ugc/use-is-ugc'
+import useIsFromScratch from '@/hooks/ugc/use-is-from-scratch'
 import useExtendedSaving from '@/hooks/use-extended-saving'
 import useParentLanguage from '@/hooks/use-parent-language'
 import { LayoutLeftIcon } from '@/icons/layout-left-icon'
@@ -45,7 +45,7 @@ export default function EpisodeNavigation() {
 		useShallow((state) => state.isEpisodeNavigationOpen)
 	)
 	const scrollRef = useRef<HTMLDivElement | null>(null)
-	const isUGC = useIsUGC()
+	const isFromScratch = useIsFromScratch()
 
 	const page = useMemo(() => {
 		return episodeSequence
@@ -173,7 +173,9 @@ export default function EpisodeNavigation() {
 										item={item}
 										key={item.id}
 										onPlus={(ep) => void handleCreateEpInBetween(ep)}
-										showPlus={item.language === parentLanguage && !isUGC}
+										showPlus={
+											item.language === parentLanguage && !isFromScratch
+										}
 									/>
 								)}
 							</ForEach>
@@ -182,7 +184,8 @@ export default function EpisodeNavigation() {
 					<If
 						condition={
 							parentLanguage ===
-								sortedEpisodes?.[sortedEpisodes.length - 1]?.language && !isUGC
+								sortedEpisodes?.[sortedEpisodes.length - 1]?.language &&
+							!isFromScratch
 						}
 					>
 						<Button

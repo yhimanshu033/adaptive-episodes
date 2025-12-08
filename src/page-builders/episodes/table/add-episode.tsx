@@ -1,5 +1,5 @@
 import React from 'react'
-import useIsUGC from '@/hooks/ugc/use-is-ugc'
+import useIsFromScratch from '@/hooks/ugc/use-is-from-scratch'
 import ChevronDownIcon from '@/icons/chevron-down-icon'
 import { ImportLeftArrowFolderIcon } from '@/icons/import-left-folder-icon'
 import { PlusIcon } from '@/icons/plus-icon'
@@ -20,9 +20,9 @@ const AddEpisode = ({ episodeCount }: { episodeCount?: number }) => {
 	const { handleDialogClose } = useDialogCleanup({ threshold: 100 })
 
 	const { setBseDialogOpen } = useEpisodeStore()
-	const isUGC = useIsUGC()
+	const isFromScratch = useIsFromScratch()
 
-	if (isUGC) {
+	if (isFromScratch) {
 		return null
 	}
 

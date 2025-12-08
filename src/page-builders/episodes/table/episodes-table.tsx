@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEpisodesData } from '@/hooks/query/use-episode-data'
-import useIsUGC from '@/hooks/ugc/use-is-ugc'
+import useIsFromScratch from '@/hooks/ugc/use-is-from-scratch'
 import { useCreateTable } from '@/hooks/use-create-table'
 // import useEpisodeTable from '@/hooks/use-episode-table'
 import useIsGerman from '@/hooks/use-is-german'
@@ -80,7 +80,7 @@ const EpisodesTable = () => {
 		() => data?.results?.data ?? [],
 		[data?.results?.data]
 	)
-	const isUGC = useIsUGC()
+	const isFromScratch = useIsFromScratch()
 	const { table, columnSize, isWriter, editingRowId } =
 		useCreateTable(tableData)
 
@@ -407,7 +407,7 @@ const EpisodesTable = () => {
 													handleInventMouseLeave,
 													onClick: () => onInvent(row.original.seq_number + 1),
 													shouldShowHoverAction,
-													show: isWriter && !isUGC,
+													show: isWriter && !isFromScratch,
 												}
 
 												return (
@@ -417,7 +417,7 @@ const EpisodesTable = () => {
 																isWriter &&
 																hoverIndex === -1 &&
 																rowIndex === 0 &&
-																!isUGC
+																!isFromScratch
 															}
 															shouldShowHoverAction={hoverIndex === -1}
 															onClick={() => onInvent(row.original.seq_number)}

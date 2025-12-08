@@ -77,15 +77,15 @@ export default function useOutlinerData() {
 				urlParams: {
 					projectId: data?.chapter?.project || 0,
 				},
-				delay: 20 * 1000,
+				delay: 10 * 1000, // 10 seconds
 				stop: (data) => {
 					return !isMetadataIncomplete(data?.data)
 				},
 			})
-			metadataResp.data.result.previous_episode_context =
-				polledResp?.data?.result.previous_episode_context
-			metadataResp.data.result.previous_episode_summary =
-				polledResp?.data?.result.previous_episode_summary
+			metadataResp.data.result = {
+				...metadataResp.data.result,
+				...(polledResp?.data?.result || {}),
+			}
 		}
 
 		metadataResp.data.result.current_episode_summary =
