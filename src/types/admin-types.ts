@@ -122,6 +122,11 @@ export enum EFolderType {
 	CMS = 'cms',
 }
 
+export enum EBSETaskType {
+	ADAPTATION = 'adaptation',
+	LS_GEN = 'ls_sheet_gen',
+}
+
 export type TAdminStoreState = {
 	addMemberQuery: string
 	deleteMemberMail: string
@@ -138,13 +143,29 @@ export type TUpdateGDriveFolderUrlParams = {
 
 export type TMessageResponse = { message: string }
 
-export type TBaseScriptExtensionResponse = {
+export enum EBSEStatus {
+	ERROR = 'error',
+	RUNNING = 'running',
+	SUCCESS = 'success',
+}
+
+export type TBSEStatusBase = {
+	message?: string
+	status?: EBSEStatus
+	timestamp?: string
+}
+
+export type TBSEExtensionStatus = TBSEStatusBase & {
+	task_type?: EBSETaskType
+}
+
+export type TBSEGermanResponse = {
 	file_found: boolean
 	file_id: string
 	file_name: string
 	previous_extension_status: {
 		message: string
-		status: string
+		status: EBSEStatus
 		timestamp: string
 	}
 	ranges: {
@@ -156,6 +177,23 @@ export type TBaseScriptExtensionResponse = {
 		us_start: number
 	}
 }
+
+export type TBSEResponse = {
+	message: string
+	previous_extension_status: Partial<TBSEExtensionStatus>
+	previous_task_id: string | null
+}
+
+export type TBSERunningResponse = {
+	error: string
+	extension_status: TBSEExtensionStatus
+	task_id: string
+}
+
+export type TBaseScriptExtensionData =
+	| TBSEGermanResponse
+	| TBSEResponse
+	| TBSERunningResponse
 
 export type TBaseScriptExtensionBody = {
 	file_id?: string
@@ -185,4 +223,16 @@ export type TGetSlackChannelResponse = {
 
 export type TUpdateSlackChannelBody = {
 	slack_channel_id: string
+}
+
+export type TGetUserFeatureAccessQueryParams = {
+	features: string
+	project_id?: string | number
+}
+
+export type TGetUserFeatureAccessResponse = {
+	result: {
+		outliner: boolean
+		survey_onboarding: boolean
+	}
 }

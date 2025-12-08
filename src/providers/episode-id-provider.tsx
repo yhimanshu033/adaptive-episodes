@@ -21,6 +21,7 @@ const initialEpisodeIdState: EpisodeIdStoreType = {
 	importedLocal: false,
 	acceptedDiffValue: null,
 	recentEmail: '',
+	currentLLMMemories: {},
 }
 
 type EpisodeIdContextType = {

@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
-import useAdaptationQuery from '@/hooks/query/use-adaptation-query'
 import { CheckCircle } from 'lucide-react'
 
 import { Button } from '@/components/aural-ui/button'
@@ -16,46 +15,51 @@ import IfElse, { Else, If } from '@/components/if-else'
 import { Separator } from '@/components/ui/separator'
 import useAdaptation from '@/providers/adaptation-provider'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
-import { parseInputLSMapping } from '@/lib/utils/helpers'
 
-import { ELanguage } from '@/types/common'
-
-const AdaptationContainer = () => {
+const AdaptationContainer = ({
+	disableUI = false,
+	lsTaskId,
+}: {
+	disableUI?: boolean
+	lsTaskId?: string | null
+}) => {
 	const { id } = useParams()
 	const { initialStoryData } = useEpisodeTableContext()
-	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
-		projectId: id as string,
-		language: initialStoryData?.parent_language || ELanguage.ENGLISH,
-		enabled: true,
-	})
-
 	const {
+		storyData,
 		setFetchingLSSheet,
-		setTableData,
 		setStory,
 		setOpen,
 		step,
 		setEpisodeAdaptation,
-		setSequence,
+		setLsTaskId,
 	} = useAdaptation()
 
+	const isStoryAdaptationInProgress = useMemo(
+		() => !storyData || storyData?.id === Number(id),
+		[storyData, id]
+	)
+
 	useEffect(() => {
-		setStory(initialStoryData)
-		setFetchingLSSheet(lsSheetLoading)
-		if (lsSheetData) {
-			const { data, sequence } = parseInputLSMapping(lsSheetData)
-			setTableData(data)
-			setSequence(sequence || {})
+		if (!storyData) {
+			setStory(initialStoryData)
+			setFetchingLSSheet(true)
+			if (lsTaskId) {
+				setLsTaskId(lsTaskId)
+			}
 		}
 	}, [
+		storyData,
 		initialStoryData,
-		lsSheetData,
-		lsSheetLoading,
-		setFetchingLSSheet,
 		setStory,
-		setTableData,
-		setSequence,
+		setFetchingLSSheet,
+		lsTaskId,
+		setLsTaskId,
 	])
+
+	if (disableUI) {
+		return null
+	}
 
 	return (
 		<div>
@@ -80,16 +84,20 @@ const AdaptationContainer = () => {
 							<Else>
 								<CircularLoader className="mx-auto mb-4" />
 								<CardTitle className="pb-4 text-xl font-semibold">
-									Adaptation in Progress
+									{isStoryAdaptationInProgress
+										? 'Adaptation in Progress'
+										: 'Another story is being adapted'}
 								</CardTitle>
 								<CardDescription className="text-muted-foreground">
-									Your content is being adapted. This may take a few moments.
+									{isStoryAdaptationInProgress
+										? 'Your content is being adapted. This may take a few moments.'
+										: 'Another story is currently being adapted. You can switch tabs to continue working, wait for this process to finish, or discard the current adaptation to proceed.'}
 								</CardDescription>
 							</Else>
 						</IfElse>
 					</CardHeader>
 					<CardContent className="text-center">
-						<If condition={step !== 1}>
+						<If condition={step !== 1 && isStoryAdaptationInProgress}>
 							<Button
 								onClick={() => {
 									setOpen(true)

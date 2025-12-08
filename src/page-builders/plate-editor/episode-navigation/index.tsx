@@ -5,15 +5,19 @@ import React, {
 	useMemo,
 	useRef,
 } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { DEFAULT_NAVIGATION_PAGE_LIMIT } from '@/constants/editor-constants'
 import {
 	EPISODE_SEQUENCE,
 	SIMPLIFIED_VIEWABLE_EDITOR,
 } from '@/constants/global-constants'
+import useEpisodeHook from '@/hooks/mutation/use-episode-hook'
 import { useInfiniteEpisodesData } from '@/hooks/query/use-episode-data'
+import useIsUGC from '@/hooks/ugc/use-is-ugc'
 import useExtendedSaving from '@/hooks/use-extended-saving'
+import useParentLanguage from '@/hooks/use-parent-language'
 import { LayoutLeftIcon } from '@/icons/layout-left-icon'
+import { PlusIcon } from '@/icons/plus-icon'
 import EpisodeNavigationButton from '@/page-builders/plate-editor/episode-navigation/episode-navigation-button'
 import {
 	updateIsEpisodeNavigationOpen,
@@ -21,14 +25,16 @@ import {
 } from '@/store/editor-store'
 import { useShallow } from 'zustand/react/shallow'
 
+import { Button, buttonVariants } from '@/components/aural-ui/button'
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { ScrollArea } from '@/components/aural-ui/scroll-area'
+import { If } from '@/components/if-else'
 import CircularLoader from '@/components/ui/circular-loader'
 import ForEach from '@/components/ui/for-each'
 import { adjustScrollIfAtTop } from '@/lib/utils/client-helpers'
 import { cn } from '@/lib/utils/helpers'
 
-import { TGetEpisodesResponse } from '@/types/episode-type'
+import { TEpisode, TGetEpisodesResponse } from '@/types/episode-type'
 
 export default function EpisodeNavigation() {
 	const { episodeId } = useParams()
@@ -39,6 +45,7 @@ export default function EpisodeNavigation() {
 		useShallow((state) => state.isEpisodeNavigationOpen)
 	)
 	const scrollRef = useRef<HTMLDivElement | null>(null)
+	const isUGC = useIsUGC()
 
 	const page = useMemo(() => {
 		return episodeSequence
@@ -47,11 +54,36 @@ export default function EpisodeNavigation() {
 	}, [episodeSequence])
 
 	const { InfiniteScrollWithDebouncing, data } = useInfiniteEpisodesData(page)
+	const router = useRouter()
 
 	const { handleExitBySaving } = useExtendedSaving()
+	const { episodeInventMutation } = useEpisodeHook()
+
+	const { parentLanguage } = useParentLanguage()
 
 	const handleClick = async () => {
 		await handleExitBySaving({})
+	}
+
+	const handleCreateEpInBetween = async (
+		episode?: TEpisode,
+		after?: boolean
+	) => {
+		if (!episode || episode.language !== parentLanguage) {
+			return
+		}
+		const increment = after ? 1 : 0
+		const resp = await episodeInventMutation.mutateAsync({
+			chapter_title: `Chapter ${episode?.seq_number + increment}`,
+			seq_number: episode.seq_number + increment,
+			language: episode.language,
+		})
+		if (!resp?.id) {
+			return
+		}
+		router.replace(
+			`/projects/${resp.project_id}/${resp.id}/content/?${EPISODE_SEQUENCE}=${resp.seq_number}`
+		)
 	}
 
 	// Optimized: Combine flattening and sorting in one operation
@@ -140,11 +172,38 @@ export default function EpisodeNavigation() {
 										handleClick={() => void handleClick()}
 										item={item}
 										key={item.id}
+										onPlus={(ep) => void handleCreateEpInBetween(ep)}
+										showPlus={item.language === parentLanguage && !isUGC}
 									/>
 								)}
 							</ForEach>
 						</div>
 					</InfiniteScrollWithDebouncing>
+					<If
+						condition={
+							parentLanguage ===
+								sortedEpisodes?.[sortedEpisodes.length - 1]?.language && !isUGC
+						}
+					>
+						<Button
+							variant="text"
+							className={cn(
+								buttonVariants({
+									variant: 'text',
+								}),
+								'group text-fm-placeholder leading-fm-md hover:bg-fm-hotpink-50 focus-visible:bg-fm-hotpink-50 hover:text-fm-secondary-800 focus-visible:text-fm-secondary-800 w-full border-l-2 border-transparent [font-size:var(--text-fm-md)] backdrop-blur-3xl focus-visible:ring-0 focus-visible:ring-offset-0'
+							)}
+							onClick={() =>
+								void handleCreateEpInBetween(
+									sortedEpisodes?.[sortedEpisodes.length - 1],
+									true
+								)
+							}
+							tooltip="Invent episode at last"
+						>
+							<PlusIcon />
+						</Button>
+					</If>
 				</ScrollArea>
 			</div>
 		</div>

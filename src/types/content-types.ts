@@ -1,8 +1,7 @@
-import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
+import { TCustomComment, TDiscussion } from 'unified-editor'
 
 import { BASE_STATUS, ELanguage, EStatus, TStatus } from '@/types/common'
-import { TCustomComment } from '@/types/editor-types'
-import { TGetEpisodeResponse } from '@/types/episode-type'
+import { TGetEpisodeResponse, TLLMMemories } from '@/types/episode-type'
 
 export type TMetadata = {
 	beatsheet: string
@@ -55,17 +54,18 @@ export type TGetSavingParamsRet = {
 	commentsStr: string
 	contentStr: string
 	language: ELanguage
+	llmMemories?: TLLMMemories
+	llmMemoriesStr?: string
 	status: EStatus | 'BASE'
 	text: string
-	title: string
 	word_count: number
 }
 
 export type TSaveEpisodeMutationArgs = {
 	chapterId?: number | null
-	chapter_title?: string
 	comments?: TDiscussion[]
 	language?: ELanguage
+	newLLMMemories?: TLLMMemories
 	prevProps?: Record<string, unknown>
 	resolvedComments?: TCustomComment[]
 	status: EStatus | typeof BASE_STATUS

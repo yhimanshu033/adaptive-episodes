@@ -46,6 +46,11 @@ export enum SCREEN_NAME {
 	PROJECT_SETTINGS = 'project_settings',
 }
 
+export enum EFeedback {
+	DISLIKE = 'dislike',
+	LIKE = 'like',
+}
+
 export enum ACTION {
 	ADAPTATION_LS_GEN = 'adaptation_ls_generation',
 	ADAPTATION_LS_SEND = 'adaptation_ls_send',
@@ -64,11 +69,45 @@ export enum ACTION {
 	NOTES_ADD = 'notes_add',
 	NOTES_DELETE = 'notes_delete',
 	NOTES_UPDATE = 'notes_update',
+	OUTLINER_CHAT_END = 'outliner_chat_end',
+	// outliner
+	OUTLINER_CHAT_START = 'outliner_chat_start',
+	OUTLINER_CHAT_USER_FEEDBACK = 'outliner_chat_user_feedback',
+	OUTLINER_GENERATE_CONTENT_END = 'outliner_generate_content_end',
+	OUTLINER_GENERATE_CONTENT_START = 'outliner_generate_content_start',
+	OUTLINER_GENERATE_CONTENT_USER_FEEDBACK = 'outliner_generate_content_user_feedback',
+	OUTLINER_GENERATE_OUTLINE_END = 'outliner_generate_outline_end',
+	OUTLINER_GENERATE_OUTLINE_START = 'outliner_generate_outline_start',
+	OUTLINER_GENERATE_OUTLINE_USER_FEEDBACK = 'outliner_generate_outline_user_feedback',
+	OUTLINER_NARRATIVE_ARCS_END = 'outliner_narrative_arcs_end',
+	OUTLINER_NARRATIVE_ARCS_START = 'outliner_narrative_arcs_start',
+	OUTLINER_NARRATIVE_ARCS_USER_FEEDBACK = 'outliner_narrative_arcs_user_feedback',
+	OUTLINER_NEW_IDEAS_END = 'outliner_new_ideas_end',
+	OUTLINER_NEW_IDEAS_START = 'outliner_new_ideas_start',
+	OUTLINER_NEW_IDEAS_USER_FEEDBACK = 'outliner_new_ideas_user_feedback',
+	OUTLINER_ONBOARDING_CHAT_END = 'outliner_onboarding_chat_end',
+	OUTLINER_ONBOARDING_CHAT_START = 'outliner_onboarding_chat_start',
+	OUTLINER_ONBOARDING_CHAT_USER_FEEDBACK = 'outliner_onboarding_chat_user_feedback',
+	OUTLINER_ONBOARDING_COMPLETE = 'outliner_onboarding_complete',
+	OUTLINER_ONBOARDING_NEW_IDEAS_END = 'outliner_onboarding_new_ideas_end',
+	OUTLINER_ONBOARDING_NEW_IDEAS_REGENERATE_END = 'outliner_onboarding_new_ideas_regenerate_end',
+	OUTLINER_ONBOARDING_NEW_IDEAS_REGENERATE_START = 'outliner_onboarding_new_ideas_regenerate_start',
+	OUTLINER_ONBOARDING_NEW_IDEAS_REGENERATE_USER_FEEDBACK = 'outliner_onboarding_new_ideas_regenerate_user_feedback',
+	OUTLINER_ONBOARDING_NEW_IDEAS_START = 'outliner_onboarding_new_ideas_start',
+	OUTLINER_ONBOARDING_NEW_IDEAS_USER_FEEDBACK = 'outliner_onboarding_new_ideas_user_feedback',
+	OUTLINER_ONBOARDING_PROFILE_RESET = 'outliner_onboarding_profile_reset',
+	OUTLINER_ONBOARDING_PROFILE_UPDATE = 'outliner_onboarding_profile_update',
+	OUTLINER_ONBOARDING_PROFILE_USER_FEEDBACK = 'outliner_onboarding_profile_user_feedback',
+	// outliner onboarding
+	OUTLINER_ONBOARDING_STAGE_CHANGE = 'outliner_onboarding_stage_change',
+	OUTLINER_ONBOARDING_SURVEY_ANSWER = 'outliner_onboarding_survey_answer',
+	OUTLINER_ONBOARDING_SURVEY_OPTIONS_GENERATE = 'outliner_onboarding_survey_options_generate',
 	PROMPT_BULK_EPISODES = 'prompt_bulk_episodes',
 	RUN_NWM = 'run_nwm',
 	SFX_ACCEPT = 'sfx_accept',
 	SIDEBAR_CHANGED = 'sidebar_changed',
 	STORY_CHAT_CANCEL = 'story_chat_cancel',
+
 	STORY_CHAT_PROMPT = 'story_chat_prompt',
 	STORY_CHAT_REVIEW_ADDED = 'story_chat_review_added',
 	// new
@@ -80,7 +119,6 @@ export enum ACTION {
 	STORY_EXPLORER_TAB_CHANGE = 'story_explorer_tab_change',
 	SUGGESTION_MODE = 'suggestion_mode',
 	SYNC_METADATA = 'sync_metadata',
-
 	THEME_TOGGLE = 'theme-toggle',
 	TTS_TRIGGER = 'tts_trigger',
 	VIEW_LS = 'view_ls',

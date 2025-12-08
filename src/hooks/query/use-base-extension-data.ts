@@ -3,49 +3,49 @@ import { API_URLS } from '@/constants/global-constants'
 import { BASE_EXTENSION_QUERY_KEY } from '@/constants/query-constants'
 import { useQuery } from '@tanstack/react-query'
 
-import { FetchResponseResult } from '@/lib/fetch-api'
+import { fetchAPI } from '@/lib/fetch-api'
 
-import { TBaseScriptExtensionResponse } from '@/types/admin-types'
+import {
+	TBSEGermanResponse,
+	TBSEResponse,
+	TBSERunningResponse,
+} from '@/types/admin-types'
 import { TNoParams } from '@/types/common'
 
-import useSocket from '../use-socket'
 import useGDriveAuth from './use-gdrive-auth'
-
-type GetBaseResponse<T> = FetchResponseResult<T> | T
 
 const useBaseExtensionQuery = (enabled: boolean) => {
 	const { id } = useParams()
-	const { startTask, getResponse } = useSocket()
 	const { redirectToGDriveAuth } = useGDriveAuth()
 
 	const getBaseExtensionData = async () => {
-		const taskId = await startTask<
+		const resp = await fetchAPI<
+			TBSEGermanResponse,
+			{ projectId: number },
 			TNoParams,
-			TBaseScriptExtensionResponse,
-			{ projectId: number }
+			TNoParams,
+			TBSEResponse | TBSERunningResponse
 		>({
 			method: 'GET',
 			url: API_URLS.GET_BASE_SCRIPT_EXTENSION,
 			urlParams: { projectId: Number(id) },
-			noCache: true,
 		})
 
-		const resp =
-			await getResponse<GetBaseResponse<TBaseScriptExtensionResponse>>(taskId)
-
-		if ('status' in resp) {
+		if (!resp.success) {
 			if (resp.status === 401) {
 				await redirectToGDriveAuth()
-			}
-			if (resp.status === 400 && !resp.success) {
+				return
+			} else if (resp.status === 400) {
+				const errorData =
+					resp.message ?? ({} as TBSEResponse | TBSERunningResponse)
+
 				return {
+					...errorData,
 					message: 'Base script extension is currently running in background',
-					taskId: resp?.message?.task_id,
 				}
 			}
-			return resp.data
 		}
-		return resp
+		return resp.data
 	}
 	const baseExtensionQuery = useQuery({
 		queryKey: [BASE_EXTENSION_QUERY_KEY, Number(id)],

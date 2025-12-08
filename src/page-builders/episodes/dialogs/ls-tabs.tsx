@@ -8,15 +8,25 @@ import { toast } from 'sonner'
 import * as XLSX from 'xlsx'
 
 import { Button } from '@/components/aural-ui/button'
+import { Checkbox } from '@/components/aural-ui/checkbox'
 import { Divider } from '@/components/aural-ui/divider'
 import { IconButton } from '@/components/aural-ui/icon-button'
+import Label from '@/components/aural-ui/label'
 import {
 	Tabs,
 	TabsContent,
 	TabsList,
 	TabsTrigger,
 } from '@/components/aural-ui/tabs'
-import { cn, getFormattedDate, isInvalidLSMapping } from '@/lib/utils/helpers'
+import { Typography } from '@/components/aural-ui/typography'
+import useAdaptation from '@/providers/adaptation-provider'
+import {
+	cn,
+	getFormattedDate,
+	invalidLSMappingDetails,
+	readWorkbookFromFile,
+	workbookToLSMapping,
+} from '@/lib/utils/helpers'
 
 import {
 	ELSMappingGender,
@@ -25,6 +35,7 @@ import {
 	LSMappingOutputItem,
 	LSMappingOutputItemV2,
 	LSMappingSequenceData,
+	TInvalidLSMappingDetails,
 } from '@/types/common'
 import { TStory } from '@/types/story-types'
 
@@ -41,6 +52,29 @@ interface LsTabsProps {
 	visibleRows?: number
 }
 
+const InvalidMappingToast = ({
+	invalidData,
+}: {
+	invalidData: TInvalidLSMappingDetails
+}) => {
+	const sheetName = invalidData.tabKey.replace(/_/g, ' ')
+	const rowNumber = invalidData.index + 1
+	const fieldsText = invalidData.missingFields.join(', ')
+
+	return (
+		<div className="**:text-fm-contrast ml-2 flex flex-col gap-2">
+			<Typography weight="semibold" className="text-fm-md">
+				Validation Error
+			</Typography>
+			<div className="flex flex-col gap-1 opacity-90 **:text-sm">
+				<Typography>Sheet: {sheetName}</Typography>
+				<Typography>Row: {rowNumber}</Typography>
+				<Typography>Missing fields: {fieldsText}</Typography>
+			</div>
+		</div>
+	)
+}
+
 const TableCTAs = ({
 	viewOnly,
 	currentTabData,
@@ -49,11 +83,13 @@ const TableCTAs = ({
 	setActiveTab,
 	currentWorkbook,
 	story,
+	sequence,
 }: {
 	currentTabData: LSMappingOutputItem[]
 	currentWorkbook?: LSMappingOutputItemV2
 	onDataChange: (data: LSMappingOutputItem[]) => void
 	onWorkBookChange?: (data: LSMappingOutputItemV2) => void
+	sequence: LSMappingSequenceData['sequence_ls']
 	setActiveTab?: (tab: string) => void
 	story?: TStory | null
 	viewOnly: boolean
@@ -70,28 +106,23 @@ const TableCTAs = ({
 		])
 	}
 
-	function handleXlsxUpload(files: FileList | null) {
+	const handleXlsxUpload = async (files: FileList | null) => {
 		const file = files?.[0]
 		if (!file) {
 			return
 		}
 
-		const reader = new FileReader()
-
-		reader.onload = (event) => {
-			const data = new Uint8Array(event.target?.result as ArrayBuffer)
-			const workbook = XLSX.read(data, { type: 'array' })
-
-			const parsedWorkbook = workbook.SheetNames.reduce((acc, curr) => {
-				return {
-					...acc,
-					[curr]: XLSX.utils.sheet_to_json<LSMappingOutputItem>(
-						workbook.Sheets[curr]
-					),
-				}
-			}, {} as LSMappingOutputItemV2)
-
+		try {
+			const workbook = await readWorkbookFromFile(file)
+			const parsedWorkbook = workbookToLSMapping(workbook)
 			const firstSheetName = Object.keys(parsedWorkbook)[0]
+
+			if (!firstSheetName) {
+				toast.error('No sheets found in file', {
+					icon: <BubbleCrossedIcon />,
+				})
+				return
+			}
 
 			if (Object.keys(parsedWorkbook).length === 1 || !onWorkBookChange) {
 				onDataChange(parsedWorkbook[firstSheetName])
@@ -103,22 +134,26 @@ const TableCTAs = ({
 			toast.success('XLSX import completed!', {
 				icon: <BubbleCheckIcon />,
 			})
-		}
+		} catch (error) {
+			const message =
+				error instanceof Error
+					? error.message
+					: 'Some error occurred while reading XLSX'
 
-		reader.onerror = () => {
-			toast.error('Some error occurred while reading XLSX', {
+			toast.error(message, {
 				icon: <BubbleCrossedIcon />,
 			})
 		}
-
-		reader.readAsArrayBuffer(file)
 	}
 
 	function handleDownloadXlsx() {
 		const workbook = XLSX.utils.book_new()
 
 		Object.entries(currentWorkbook || {}).forEach(([sheetName, rows]) => {
-			const worksheet = XLSX.utils.json_to_sheet(rows)
+			const worksheetOptions = sequence?.[sheetName]
+				? { header: sequence[sheetName] }
+				: undefined
+			const worksheet = XLSX.utils.json_to_sheet(rows, worksheetOptions)
 			XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
 		})
 
@@ -128,10 +163,6 @@ const TableCTAs = ({
 			workbook,
 			`${filePrefix}LS Sheet - ${getFormattedDate()}.xlsx`
 		)
-	}
-
-	if (viewOnly) {
-		return null
 	}
 
 	return (
@@ -144,30 +175,34 @@ const TableCTAs = ({
 				shape="square"
 				variant="ghost"
 			/>
-			<IconButton
-				label="Upload CSV"
-				tooltip="Upload CSV"
-				onClick={() => document.getElementById('csv-input')?.click()}
-				icon={<UploadIcon className="size-6" />}
-				shape="square"
-				variant="ghost"
-			/>
-			<input
-				type="file"
-				accept=".xlsx, .csv"
-				className="hidden"
-				id="csv-input"
-				onChange={(e) => handleXlsxUpload(e.target.files)}
-			/>
-			<Button
-				type="button"
-				onClick={addNewRow}
-				variant="outline"
-				size="sm"
-				leftIcon={<PlusIcon />}
-			>
-				Add Row
-			</Button>
+			{!viewOnly && (
+				<>
+					<IconButton
+						label="Upload CSV"
+						tooltip="Upload CSV"
+						onClick={() => document.getElementById('csv-input')?.click()}
+						icon={<UploadIcon className="size-6" />}
+						shape="square"
+						variant="ghost"
+					/>
+					<input
+						type="file"
+						accept=".xlsx, .csv"
+						className="hidden"
+						id="csv-input"
+						onChange={(e) => void handleXlsxUpload(e.target.files)}
+					/>
+					<Button
+						type="button"
+						onClick={addNewRow}
+						variant="outline"
+						size="sm"
+						leftIcon={<PlusIcon />}
+					>
+						Add Row
+					</Button>
+				</>
+			)}
 		</div>
 	)
 }
@@ -175,14 +210,14 @@ const TableCTAs = ({
 const ActionButtons = ({
 	viewOnly,
 	handleClose,
-	hasInvalidData,
 	handleSubmit,
 }: {
 	handleClose?: () => void
 	handleSubmit: () => void
-	hasInvalidData: boolean
 	viewOnly: boolean
 }) => {
+	const { skipNewExtraction, setSkipNewExtraction } = useAdaptation()
+
 	if (viewOnly) {
 		return null
 	}
@@ -196,13 +231,21 @@ const ActionButtons = ({
 				<Button variant="text" onClick={handleClose} innerClassName="!px-0">
 					Exit & Discard
 				</Button>
-				<Button
-					disabled={hasInvalidData}
-					isDisabled={hasInvalidData}
-					onClick={handleSubmit}
-				>
-					Save & Continue
-				</Button>
+				<div className="flex items-center gap-3">
+					<div className="flex items-center space-x-2">
+						<Checkbox
+							id="terms"
+							checked={skipNewExtraction}
+							onCheckedChange={(checked) =>
+								setSkipNewExtraction(
+									checked === 'indeterminate' ? false : checked
+								)
+							}
+						/>
+						<Label htmlFor="terms">Skip New Extraction</Label>
+					</div>
+					<Button onClick={handleSubmit}>Save & Continue</Button>
+				</div>
 			</div>
 		</>
 	)
@@ -235,20 +278,31 @@ const LsTabs = ({
 		[setTableData]
 	)
 
-	const hasInvalidData = useMemo(() => {
-		return Object.values(tableData).some((tabData) =>
-			isInvalidLSMapping(tabData)
-		)
+	const invalidData: TInvalidLSMappingDetails | null = useMemo(() => {
+		for (const [tabKey, tabData] of Object.entries(tableData)) {
+			const invalidDataDetails = invalidLSMappingDetails(tabData)
+			if (invalidDataDetails) {
+				return { ...invalidDataDetails, tabKey }
+			}
+		}
+		return null
 	}, [tableData])
 
 	const handleSubmit = useCallback(() => {
-		if (hasInvalidData) {
+		if (invalidData) {
+			toast.error(<InvalidMappingToast invalidData={invalidData} />, {
+				icon: <BubbleCrossedIcon />,
+				duration: 6000,
+			})
+			if (activeTab !== invalidData.tabKey) {
+				setActiveTab(invalidData.tabKey)
+			}
 			return
 		}
 		if (onSubmit) {
 			onSubmit({ ls_mapping: { ...tableData } })
 		}
-	}, [hasInvalidData, tableData, onSubmit])
+	}, [invalidData, tableData, onSubmit, activeTab])
 
 	useEffect(() => {
 		if (tabKeys.length > 0 && !activeTab) {
@@ -281,6 +335,7 @@ const LsTabs = ({
 							onWorkBookChange={setTableData}
 							setActiveTab={setActiveTab}
 							currentWorkbook={tableData || {}}
+							sequence={sequence}
 						/>
 					</div>
 					<LSTableEditor
@@ -323,6 +378,7 @@ const LsTabs = ({
 						setActiveTab={setActiveTab}
 						currentWorkbook={tableData || {}}
 						story={story}
+						sequence={sequence}
 					/>
 				</div>
 
@@ -351,7 +407,6 @@ const LsTabs = ({
 			<ActionButtons
 				viewOnly={viewOnly}
 				handleClose={handleClose}
-				hasInvalidData={hasInvalidData}
 				handleSubmit={handleSubmit}
 			/>
 		</div>

@@ -8,6 +8,7 @@ import {
 import * as Sentry from '@sentry/nextjs'
 import { v4 as uuid } from 'uuid'
 
+import { compressPayload, getPerformanceTiming } from '@/lib/fetch-helper'
 import { getUserSession } from '@/lib/get-session'
 import { log } from '@/lib/utils/helpers'
 
@@ -22,6 +23,7 @@ export type FetchRequestParams<
 	baseUrl?: string
 	body?: BodyParamsT
 	defaultData?: ResponseDataT
+	enableCompression?: boolean
 	headers?: Record<string, string>
 	ignoreError?: boolean
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
@@ -33,7 +35,10 @@ export type FetchRequestParams<
 	urlParams?: UrlParamsT
 }
 
-export type FetchResponseResult<ResponseDataT = TNoParams> =
+export type FetchResponseResult<
+	ResponseDataT = TNoParams,
+	ErrorDataT = TNoParams,
+> =
 	| {
 			data: ResponseDataT
 			error: null
@@ -44,7 +49,7 @@ export type FetchResponseResult<ResponseDataT = TNoParams> =
 	| {
 			data: null | ResponseDataT
 			error: Error
-			message?: Record<string, string>
+			message?: ErrorDataT
 			status: number
 			success: false
 	  }
@@ -54,6 +59,7 @@ export async function fetchAPI<
 	UrlParamsT = TNoParams,
 	BodyParamsT = TNoParams,
 	QueryParamsT = TNoParams,
+	ErrorDataT = TNoParams,
 >(
 	params: FetchRequestParams<
 		ResponseDataT,
@@ -61,7 +67,7 @@ export async function fetchAPI<
 		BodyParamsT,
 		QueryParamsT
 	>
-): Promise<FetchResponseResult<ResponseDataT>> {
+): Promise<FetchResponseResult<ResponseDataT, ErrorDataT>> {
 	const session = await getUserSession()
 
 	const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY || ''
@@ -78,6 +84,7 @@ export async function fetchAPI<
 		noAuth,
 		sendLog,
 		ignoreError,
+		enableCompression = true,
 	} = params
 
 	const sendError = !ignoreError && !IGNORE_ERROR_API_URLS.has(url)
@@ -111,24 +118,31 @@ export async function fetchAPI<
 	const accessToken = session?.accessToken || ''
 	const correlationId = uuid()
 
-	const defaultSentryData: Record<string, string> = {
-		user_uid: session?.user?.uid || 'NA',
+	const defaultSentryTags: Record<string, string> = {
 		user_id: String(session?.user?.id),
 		user_email: session?.user?.email || 'NA',
-		url: resolvedUrl,
+		correlationId,
+		url,
 		method,
+	}
+
+	const defaultSentryData: Record<string, string> = {
+		user_uid: session?.user?.uid || 'NA',
 		accessToken: accessToken ? 'exists' : "doesn't exist",
 		body: JSON.stringify(body),
 		query: JSON.stringify(query),
 		headers: JSON.stringify(headers),
-		correlationId,
 	}
 
 	const startTime = Date.now()
+	const performanceMarkName = `fetch-${correlationId}`
 	let timeoutId: NodeJS.Timeout | undefined
 
+	if (typeof performance !== 'undefined' && performance.mark) {
+		performance.mark(`${performanceMarkName}-start`)
+	}
+
 	try {
-		const isFormData = body instanceof FormData
 		if (!accessToken && !noAuth) {
 			console.warn('No access token found in session')
 			log({
@@ -136,34 +150,55 @@ export async function fetchAPI<
 				extra: {
 					...defaultSentryData,
 				},
+				tags: defaultSentryTags,
 			})
 			if (sendError) {
 				Sentry.captureException(new Error('API ACCESS_TOKEN ERROR'), {
 					extra: defaultSentryData,
+					tags: defaultSentryTags,
 				})
 			}
 		}
 
 		timeoutId = setTimeout(() => {
 			const duration = Date.now() - startTime
-			log({
-				type: 'API LONG REQUEST TIMEOUT',
-				extra: {
-					...defaultSentryData,
-					duration,
-					timeoutThreshold: FETCH_TIMEOUT,
-				},
-			})
-			if (sendError) {
-				Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
-					extra: {
-						...defaultSentryData,
-						duration,
-						timeoutThreshold: FETCH_TIMEOUT,
-					},
-				})
-			}
+			void getPerformanceTiming(resolvedUrl, startTime).then(
+				(performanceTiming) => {
+					log({
+						type: 'API LONG REQUEST TIMEOUT',
+						extra: {
+							...defaultSentryData,
+							duration,
+							timeoutThreshold: FETCH_TIMEOUT,
+							timing: performanceTiming,
+						},
+						tags: defaultSentryTags,
+					})
+					if (sendError) {
+						Sentry.captureException(new Error('API LONG REQUEST TIMEOUT'), {
+							extra: {
+								...defaultSentryData,
+								duration,
+								timeoutThreshold: FETCH_TIMEOUT,
+								timing: performanceTiming,
+							},
+							tags: defaultSentryTags,
+						})
+					}
+				}
+			)
 		}, FETCH_TIMEOUT)
+
+		const isFormData = body instanceof FormData
+		const hasBody = method !== 'GET' && method !== 'DELETE'
+		let bodyToSend: BodyInit = isFormData ? body : JSON.stringify(body)
+		let compressionHeaders: Record<string, string> = {}
+
+		if (hasBody && enableCompression) {
+			const compressionResult = await compressPayload(bodyToSend)
+			bodyToSend = compressionResult.body
+			compressionHeaders = compressionResult.headers
+		}
 
 		const response = await fetch(resolvedUrl, {
 			method,
@@ -172,12 +207,11 @@ export async function fetchAPI<
 				...(noAuth ? {} : { Authorization: `Bearer ${accessToken}` }),
 				...(typeof window === 'undefined' ? { 'API-Key': API_KEY } : {}),
 				...headers,
+				...compressionHeaders,
 				[CORRELATION_ID_HEADER_KEY]: correlationId,
 				...COMMON_SITE_HEADERS,
 			},
-			...(method !== 'GET' && method !== 'DELETE'
-				? { body: isFormData ? body : JSON.stringify(body) }
-				: {}),
+			...(hasBody ? { body: bodyToSend } : {}),
 			next: {
 				revalidate: 0,
 			},
@@ -187,13 +221,32 @@ export async function fetchAPI<
 		clearTimeout(timeoutId)
 		const requestDuration = Date.now() - startTime
 
+		if (typeof performance !== 'undefined' && performance.mark) {
+			performance.mark(`${performanceMarkName}-end`)
+			performance.measure(
+				performanceMarkName,
+				`${performanceMarkName}-start`,
+				`${performanceMarkName}-end`
+			)
+		}
+
 		if (requestDuration >= FETCH_TIMEOUT) {
+			const performanceTiming = await getPerformanceTiming(
+				resolvedUrl,
+				startTime
+			)
 			log({
 				type: 'API SLOW REQUEST COMPLETED',
 				extra: {
 					...defaultSentryData,
 					duration: requestDuration,
 					timeoutThreshold: FETCH_TIMEOUT,
+					timing: performanceTiming,
+					responseStatus: response.status,
+				},
+				tags: {
+					...defaultSentryTags,
+					duration: requestDuration,
 				},
 			})
 			Sentry.captureMessage('API SLOW REQUEST COMPLETED', {
@@ -202,6 +255,12 @@ export async function fetchAPI<
 					...defaultSentryData,
 					duration: requestDuration,
 					timeoutThreshold: FETCH_TIMEOUT,
+					timing: performanceTiming,
+					responseStatus: response.status,
+				},
+				tags: {
+					...defaultSentryTags,
+					duration: requestDuration,
 				},
 			})
 		}
@@ -218,6 +277,7 @@ export async function fetchAPI<
 					responseStatus: response.status,
 					responseStatusText: response.statusText,
 				},
+				tags: defaultSentryTags,
 			})
 			if (sendError) {
 				Sentry.captureException(new Error('API RESPONSE ERROR'), {
@@ -226,17 +286,24 @@ export async function fetchAPI<
 						responseStatus: response.status,
 						responseStatusText: response.statusText,
 					},
+					tags: defaultSentryTags,
 				})
 			}
 
-			const message = (await response.json()) as Record<string, string>
+			const errorData = (await response.json()) as ErrorDataT
+
+			if (typeof performance !== 'undefined' && performance.clearMarks) {
+				performance.clearMarks(`${performanceMarkName}-start`)
+				performance.clearMarks(`${performanceMarkName}-end`)
+				performance.clearMeasures(performanceMarkName)
+			}
 
 			return {
 				success: false,
 				status: response.status,
 				data: defaultData ?? null,
 				error: new Error(response.statusText),
-				message,
+				message: errorData,
 			}
 		}
 
@@ -250,6 +317,12 @@ export async function fetchAPI<
 			})
 		}
 
+		if (typeof performance !== 'undefined' && performance.clearMarks) {
+			performance.clearMarks(`${performanceMarkName}-start`)
+			performance.clearMarks(`${performanceMarkName}-end`)
+			performance.clearMeasures(performanceMarkName)
+		}
+
 		return {
 			success: true,
 			status: response.status,
@@ -261,22 +334,40 @@ export async function fetchAPI<
 			clearTimeout(timeoutId)
 		}
 
+		const duration = Date.now() - startTime
+
 		log({
 			type: 'API CATCH ERROR',
 			extra: {
 				...defaultSentryData,
 				error: JSON.stringify(error),
 			},
+			tags: {
+				...defaultSentryTags,
+				duration,
+			},
 		})
 		if (sendError) {
-			Sentry.captureException(new Error('API CATCH ERROR'), {
+			const errorTitle =
+				duration > FETCH_TIMEOUT ? 'SLOW API CATCH ERROR' : 'API CATCH ERROR'
+			Sentry.captureException(new Error(errorTitle), {
 				extra: {
 					...defaultSentryData,
 					error: JSON.stringify(error),
 				},
+				tags: {
+					...defaultSentryTags,
+					duration,
+				},
 			})
 		}
 		const errorInstance = error as Error
+
+		if (typeof performance !== 'undefined' && performance.clearMarks) {
+			performance.clearMarks(`${performanceMarkName}-start`)
+			performance.clearMarks(`${performanceMarkName}-end`)
+			performance.clearMeasures(performanceMarkName)
+		}
 
 		if (throwOnError) {
 			throw errorInstance

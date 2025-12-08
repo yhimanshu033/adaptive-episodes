@@ -1,10 +1,11 @@
 import React from 'react'
-import { useParams } from 'next/navigation'
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { ELLMModel } from '@/constants/episodes-constants'
 import { API_URLS } from '@/constants/global-constants'
 import {
+	BASE_EXTENSION_QUERY_KEY,
 	EPISODE_LIST_QUERY_KEY,
+	GET_LS_SHEET_QUERY_KEY,
 	STORY_ID_QUERY_KEY,
 } from '@/constants/query-constants'
 import { BubbleCheckIcon } from '@/icons/bubble-check-icon'
@@ -19,6 +20,8 @@ import { track } from '@/lib/utils/analytics'
 import { migrateOldLSMapping, sanitize } from '@/lib/utils/helpers'
 
 import {
+	EDiscardLsTaskStatus,
+	TDiscardLsTaskBody,
 	TGetAdaptationLSUrlParams,
 	TSendAdaptationStartBody,
 } from '@/types/ai-types'
@@ -33,14 +36,13 @@ import { TStory } from '@/types/story-types'
 
 export default function useAdaptationMutation({
 	onSuccess = () => {},
-	abortController,
+	abortControllerRef,
 }: {
-	abortController?: AbortController
+	abortControllerRef?: React.RefObject<AbortController | null>
 	onSuccess?: () => void
 }) {
 	const { data: session } = useSession()
 	const queryClient = useQueryClient()
-	const { id } = useParams()
 
 	async function createAdaptation({
 		language,
@@ -97,15 +99,19 @@ export default function useAdaptationMutation({
 				projectId: String(selectedRowData?.[0]?.project),
 			},
 			delay: 10000,
-			startDelay: 1000 * 60,
+			startDelay: 10000,
 			stop: (resp) => {
 				if (!resp.error && resp.data) {
 					return true
 				}
 				return false
 			},
-			signal: abortController?.signal,
+			signal: abortControllerRef?.current?.signal,
 		})
+
+		if (!pollingResp) {
+			throw new Error('LS sheet not found!')
+		}
 
 		const migratedData = migrateOldLSMapping(pollingResp?.data)
 
@@ -114,13 +120,19 @@ export default function useAdaptationMutation({
 
 	const createLSMutation = useMutation({
 		mutationFn: createAdaptation,
-		onSuccess: () => {
+		onSuccess: async (_, { storyData }) => {
 			onSuccess()
 			toast.success('Localization sheet fetched!', {
 				icon: <BubbleCheckIcon />,
 			})
+			await queryClient.invalidateQueries({
+				queryKey: [GET_LS_SHEET_QUERY_KEY, String(storyData?.id)],
+			})
 		},
 		onError: (error: Error) => {
+			if (abortControllerRef?.current) {
+				abortControllerRef.current = new AbortController()
+			}
 			toast.error(error.message || 'Localization Failed!', {
 				icon: <BubbleCrossedIcon />,
 			})
@@ -135,12 +147,14 @@ export default function useAdaptationMutation({
 		inputls,
 		projectId,
 		llmModel,
+		skip_extraction,
 	}: {
 		inputls: LSMappingOutput
 		language: ELanguage
 		llmModel: ELLMModel
 		projectId: number
 		selectedRowData: TEpisode[]
+		skip_extraction?: boolean
 		sourceLang: ELanguage
 	}) {
 		const body: TSendAdaptationStartBody = {
@@ -153,6 +167,7 @@ export default function useAdaptationMutation({
 			target_lang: language,
 			type: 'adaptation',
 			llm_model: llmModel,
+			skip_extraction,
 		}
 		const sanitizedBody = sanitize(body)
 
@@ -183,14 +198,17 @@ export default function useAdaptationMutation({
 
 	const sendLSMutation = useMutation({
 		mutationFn: sendAdaptationLS,
-		onSuccess: async () => {
+		onSuccess: async (_, { projectId }) => {
 			onSuccess()
 			toast.success('Adaptation registered!')
 			await queryClient.invalidateQueries({
-				queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
+				queryKey: [EPISODE_LIST_QUERY_KEY, projectId],
 			})
 			await queryClient.invalidateQueries({
-				queryKey: [STORY_ID_QUERY_KEY, Number(id)],
+				queryKey: [STORY_ID_QUERY_KEY, projectId],
+			})
+			await queryClient.invalidateQueries({
+				queryKey: [BASE_EXTENSION_QUERY_KEY, Number(projectId)],
 			})
 		},
 		onError: () => {
@@ -201,5 +219,49 @@ export default function useAdaptationMutation({
 		mutationKey: ['send-adaptation-ls'],
 	})
 
-	return { createLSMutation, sendLSMutation }
+	const onDiscardLsTask = async ({
+		lsTaskId,
+		projectId,
+	}: {
+		lsTaskId: string
+		projectId: number
+	}) => {
+		const resp = await fetchAPI<
+			TNoParams,
+			{ projectId: number },
+			TDiscardLsTaskBody
+		>({
+			method: 'POST',
+			url: API_URLS.DISCARD_LS_TASK,
+			body: {
+				task_id: lsTaskId,
+				update_status: EDiscardLsTaskStatus.DISCARD,
+			},
+			urlParams: {
+				projectId,
+			},
+		})
+		if (resp.error || !resp.data) {
+			throw new Error('Failed to discard LS task!')
+		}
+		return resp.data
+	}
+
+	const discardLsTaskMutation = useMutation({
+		mutationFn: onDiscardLsTask,
+		onSuccess: async (_, { projectId }) => {
+			onSuccess()
+			await queryClient.invalidateQueries({
+				queryKey: [BASE_EXTENSION_QUERY_KEY, Number(projectId)],
+			})
+			toast.success('LS task discarded!')
+		},
+		onError: (error: Error) => {
+			toast.error(error.message || 'Failed to discard LS task!', {
+				icon: <BubbleCrossedIcon />,
+			})
+		},
+	})
+
+	return { createLSMutation, discardLsTaskMutation, sendLSMutation }
 }

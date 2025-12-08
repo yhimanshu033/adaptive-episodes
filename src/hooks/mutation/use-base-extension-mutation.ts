@@ -4,38 +4,31 @@ import { API_URLS } from '@/constants/global-constants'
 import {
 	BASE_EXTENSION_MUTATION,
 	BASE_EXTENSION_QUERY_KEY,
+	GET_LS_SHEET_QUERY_KEY,
 } from '@/constants/query-constants'
 import { uploadFile } from '@/server-action/file-upload'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import useAdaptation from '@/providers/adaptation-provider'
-import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { track } from '@/lib/utils/analytics'
 
 import { TBaseScriptExtensionBody } from '@/types/admin-types'
 
-import useAccessChecks from '../use-access-checks'
 import useSocketStreaming from '../use-socket-streaming'
 
 const useBaseExtensionMutation = () => {
 	const { startTask } = useSocketStreaming()
 	const { id } = useParams()
 	const queryClient = useQueryClient()
-	const { initialStoryData } = useEpisodeTableContext()
-	const { setOpen, setFetchingLSSheet, setStory } = useAdaptation()
-	const { isGerman, isOriginal } = useAccessChecks()
 
 	const onSuccess = async () => {
 		toast.success('Base script extension started ...')
 		await queryClient.invalidateQueries({
 			queryKey: [BASE_EXTENSION_QUERY_KEY, Number(id)],
 		})
-		if (!isGerman && isOriginal) {
-			setOpen(true)
-			setFetchingLSSheet(true)
-			setStory(initialStoryData)
-		}
+		await queryClient.invalidateQueries({
+			queryKey: [GET_LS_SHEET_QUERY_KEY, id],
+		})
 	}
 
 	const onError = () => {
@@ -76,6 +69,7 @@ const useBaseExtensionMutation = () => {
 			method: 'POST',
 			url: API_URLS.EXTEND_BASE_SCRIPT,
 			body: params,
+			noCache: true,
 		})
 		return taskId
 	}

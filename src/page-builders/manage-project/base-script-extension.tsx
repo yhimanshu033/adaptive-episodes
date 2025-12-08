@@ -25,6 +25,8 @@ import {
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { formatDate } from '@/lib/format-date'
 
+import { EBSEStatus } from '@/types/admin-types'
+
 import BaseExtensionForm from './base-extension-form'
 import BaseScriptStatus from './base-script-status'
 
@@ -42,7 +44,7 @@ const BaseScriptExtension = () => {
 		: 0
 
 	const baseTaskId =
-		taskId || (data && 'taskId' in data ? data.taskId : undefined)
+		taskId || (data && 'task_id' in data ? data.task_id : undefined)
 
 	return (
 		<Dialog open={queryEnabled} onOpenChange={setQueryEnabled}>
@@ -64,7 +66,11 @@ const BaseScriptExtension = () => {
 				</DialogHeader>
 
 				{baseTaskId ? (
-					<BaseScriptStatus taskId={baseTaskId} reset={reset} />
+					<BaseScriptStatus
+						storyId={initialStoryData?.id}
+						taskId={baseTaskId}
+						reset={reset}
+					/>
 				) : (
 					<IfElse condition={isFetching || isLoading}>
 						<If>
@@ -141,14 +147,15 @@ const BaseScriptExtension = () => {
 									<If condition={!!data?.previous_extension_status}>
 										<Card
 											className={`w-full ${
-												data?.previous_extension_status.status === 'success'
+												data?.previous_extension_status.status ===
+												EBSEStatus.SUCCESS
 													? 'text-success'
 													: 'text-destructive'
 											}`}
 										>
 											<CardContent className="flex items-start gap-2 px-4 py-3 text-sm">
 												{data?.previous_extension_status.status ===
-												'success' ? (
+												EBSEStatus.SUCCESS ? (
 													<CheckCircle2 className="mt-0.5 size-4" />
 												) : (
 													<AlertTriangle className="mt-0.5 size-4" />

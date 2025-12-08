@@ -12,6 +12,8 @@ const nextConfig = {
     },
   },
   images: {
+    unoptimized: true,
+    minimumCacheTTL: 259200,
     remotePatterns: [
       {
         protocol: 'https',
@@ -44,8 +46,45 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: "/js/:path*",
+        locale: false,
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=2592000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/:all*(svg|jpg|png|jpeg|gif|webp)",
+        locale: false,
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // matching all API routes
+        source: "/api/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "Access-Control-Allow-Private-Network", value: "true" },
+          { key: "Access-Control-Allow-Origin", value: "*" }, // replace this with your actual origin
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,DELETE,PATCH,POST,PUT,OPTIONS",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "*",
+          },
+        ],
+      },
     ]
-  },
+  }
 }
 
 export default withSentryConfig(withNextIntl(nextConfig), {

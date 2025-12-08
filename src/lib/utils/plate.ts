@@ -33,6 +33,7 @@ import { EditorStatic } from '@/components/plate-ui/editor-static'
 import { getSceneIdOrder } from '@/lib/utils/helpers'
 
 import { TScene } from '@/types/beatsheet-editor-types'
+import { ELanguage } from '@/types/common'
 import { Selection, TDocxHTMLArgs } from '@/types/plate-types'
 
 export function isSameBlock(selection: Selection): boolean {
@@ -75,9 +76,13 @@ export function getStartAndEnd(selection: Selection) {
 	return { start, end }
 }
 
-export function jsonify(value: string): string | Value {
+export function jsonify(value: string, language?: ELanguage): string | Value {
 	try {
 		const val = JSON.parse(value) as Value
+
+		if (language !== ELanguage.GERMAN_ORIGINAL) {
+			return val
+		}
 		const nonIdNode = val.find(
 			(node) => !node.id || isNaN(parseInt(node.id as string))
 		)

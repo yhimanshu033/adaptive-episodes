@@ -28,7 +28,7 @@ import useEpisodeId from '@/providers/episode-id-provider'
 
 import { BASE_STATUS, ELanguage, EStatus } from '@/types/common'
 import { TSaveEpisodeMutationArgs } from '@/types/content-types'
-import { TEpisodeMergeParams } from '@/types/episode-type'
+import { TEpisodeMergeParams, TEpisodeProps } from '@/types/episode-type'
 
 import useAccessChecks from '../use-access-checks'
 
@@ -44,6 +44,7 @@ const useEpisodeHook = () => {
 		await queryClient.invalidateQueries({
 			queryKey: [EPISODE_LIST_QUERY_KEY, Number(id)],
 			type: 'all',
+			refetchType: 'active',
 		})
 	}
 
@@ -56,12 +57,12 @@ const useEpisodeHook = () => {
 			text,
 			status,
 			chapterId,
-			chapter_title,
 			comments,
 			prevProps,
 			word_count,
 			resolvedComments,
 			language,
+			newLLMMemories,
 		}: TSaveEpisodeMutationArgs) => {
 			if (
 				status === BASE_STATUS &&
@@ -88,11 +89,14 @@ const useEpisodeHook = () => {
 							? EStatus.FIRST_DRAFT
 							: status
 						: BASE_STATUS,
-				...(chapter_title ? { chapter_title } : {}),
 				word_count,
 				language,
 				props: {
 					...prevProps,
+					llm_memories: {
+						...(prevProps?.llm_memories ?? {}),
+						...(newLLMMemories ?? {}),
+					} as TEpisodeProps,
 					comments,
 					resolvedComments,
 				},

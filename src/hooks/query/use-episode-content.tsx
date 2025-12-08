@@ -41,8 +41,6 @@ import useAccessChecks from '../use-access-checks'
 
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
-	console.log('useEpisodeContentUtil')
-
 	const { isOriginal, isOriginalEp } = useAccessChecks()
 	const pathName = usePathname()
 
@@ -103,7 +101,6 @@ export const useEpisodeContentUtil = () => {
 		[latestStatus, pathName, episode?.id]
 	)
 	const fetchEpisodeContent = useCallback(async () => {
-		console.log('fetchEpisodeContent')
 		// check for undefined episode.id
 		if (!episode?.id) {
 			return null
@@ -112,7 +109,7 @@ export const useEpisodeContentUtil = () => {
 
 		const resp = await getEpisodeContent(usedEpisodeId)
 
-		if (!resp) {
+		if (!resp?.chapter) {
 			return resp
 		}
 
@@ -126,9 +123,7 @@ export const useEpisodeContentUtil = () => {
 		const nwmRunning = resp?.chapter?.props?.nwm_running
 
 		if (nwmRunning) {
-			toast.info(
-				'NWM is currently regenerating this chapter. Please check back later!'
-			)
+			toast.info('Published! This episode is locked for now!')
 			setRecentEmail(NWM_EMAIL)
 		} else if (resp.email) {
 			if (resp.email !== userData?.user?.email) {
@@ -140,7 +135,7 @@ export const useEpisodeContentUtil = () => {
 		}
 
 		const oldData = await getValue(`${resp.chapter.project}_${usedEpisodeId}`)
-		if (!oldData) {
+		if (!oldData?.text) {
 			return resp
 		}
 
@@ -234,7 +229,6 @@ export function EpisodeContentProvider({
 }: {
 	children: React.ReactNode
 }) {
-	console.log('EpisodeContentProvider')
 	const value = useEpisodeContentUtil()
 	return (
 		<EpisodeContentContext.Provider value={value}>

@@ -21,7 +21,7 @@ interface TitleCellProps {
 		FetchResponseResult<TPatchEpisodeBody>,
 		Error,
 		{
-			episodeId: number
+			episode: TEpisode
 			newTitle: string
 		},
 		unknown
@@ -47,7 +47,7 @@ export const TitleCell: React.FC<TitleCellProps> = ({
 		inputValueMapRef.current[episodeId] = newTitle
 		renameTitle(
 			{
-				episodeId,
+				episode: row.original,
 				newTitle,
 			},
 			{

@@ -33,7 +33,20 @@ export const BASE_EXTENSION_QUERY_KEY = 'base-script-extension'
 export const DOC_EPISODE_COUNT_QUERY_KEY = 'doc-episode-count'
 
 export const SCENES_METADATA_QUERY_KEY = 'scenes-metadata'
+export const OUTLINER_SCENES_METADATA_QUERY_KEY = 'outliner-scenes-metadata'
 export const CHAPTER_CHARACTERS_DATA_QUERY_KEY = 'chapter-characters-data'
+
+export const OUTLINER_DATA_QUERY_KEY = 'outliner-data'
+export const OUTLINER_METADATA_QUERY_KEY = 'outliner-metadata'
+
+export const OUTLINER_QUESTIONNAIRE_NEW_IDEAS_QUERY_KEY =
+	'outliner-questionnaire-new-ideas'
+export const OUTLINER_QUESTIONNAIRE_STATUS_QUERY_KEY =
+	'outliner-questionnaire-status'
+export const OUTLINER_QUESTIONNAIRE_SURVEY_QUESTIONS_QUERY_KEY =
+	'outliner-questionnaire-survey-questions'
+export const OUTLINER_QUESTIONNAIRE_PROFILE_QUERY_KEY =
+	'outliner-questionnaire-profile'
 
 // Mutation keys
 export const RENAME_EPISODE_MUTATION = 'rename-episode'
@@ -48,6 +61,7 @@ export const TTS_MUTATION = 'tts-elevenlabs'
 
 export const GET_SLACK_CHANNEL_QUERY_KEY = 'get-slack-channel'
 export const GET_LS_SHEET_QUERY_KEY = 'get-ls-sheet-public'
+export const POLL_LS_SHEET_QUERY_KEY = 'poll-ls-sheet-public'
 export const UPDATE_SLACK_CHANNEL_MUTATION = 'update-slack-channel'
 
 export const GET_DOCX_HTML_QUERY_KEY = 'get-docx-html'
@@ -70,3 +84,17 @@ export const GET_DOCX_ESTIMATE_QUERY_KEY = 'docx-estimate-file-size'
 export const EPISODE_REGENERATE_MUTATION_KEY = 'episode-regenerate-mutation'
 
 export const CONFIGURATION_QUERY_KEY = 'get-configuration-data'
+
+export const OUTLINER_NEW_IDEA_MUTATION_KEY = 'outliner-new-ideas'
+export const SUMMARY_TO_EPISODE_MUTATION_KEY =
+	'summary-episode-regenerate-mutation'
+export const SUMMARY_TO_OUTLINE_MUTATION_KEY =
+	'summary-outline-regenerate-mutation'
+
+export const OUTLINER_QUESTIONNAIRE_NEW_IDEAS_MUTATION_KEY =
+	'outliner-questionnaire-new-ideas-mutation'
+export const OUTLINER_QUESTIONNAIRE_NEW_IDEAS_REGENERATE_MUTATION_KEY =
+	'outliner-questionnaire-new-ideas-regenerate-mutation'
+
+export const GET_FILE_CONTENT = 'get-file-content'
+export const GET_USER_ACCESS = 'get-user-feature-access'

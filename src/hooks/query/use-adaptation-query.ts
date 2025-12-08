@@ -1,7 +1,8 @@
 import { API_URLS } from '@/constants/global-constants'
-import { GET_LS_SHEET_QUERY_KEY } from '@/constants/query-constants'
+import { POLL_LS_SHEET_QUERY_KEY } from '@/constants/query-constants'
 import { useQuery } from '@tanstack/react-query'
 
+import useAdaptation from '@/providers/adaptation-provider'
 import { doPoll } from '@/lib/do-poll'
 import { migrateOldLSMapping } from '@/lib/utils/helpers'
 
@@ -17,36 +18,53 @@ const useAdaptationQuery = ({
 	language: ELanguage
 	projectId: string
 }) => {
-	const pollLSMapping = async () => {
-		const pollingResp = await doPoll<
-			TNoParams,
-			LSMappingInput,
-			TGetAdaptationLSUrlParams
-		>({
-			method: 'GET',
-			url: API_URLS.GET_ADAPTATION_LS,
-			urlParams: {
-				language,
-				projectId,
-			},
-			delay: 10000,
-			startDelay: 1000 * 60,
-			stop: (resp) => {
-				if (!resp.error && resp.data) {
-					return true
-				}
-				return false
-			},
-		})
-		const migratedData = migrateOldLSMapping(pollingResp?.data)
+	const { abortControllerRef } = useAdaptation()
 
-		return migratedData
+	const pollLSMapping = async () => {
+		try {
+			const pollingResp = await doPoll<
+				TNoParams,
+				LSMappingInput,
+				TGetAdaptationLSUrlParams
+			>({
+				method: 'GET',
+				url: API_URLS.GET_ADAPTATION_LS,
+				urlParams: {
+					language,
+					projectId,
+				},
+				delay: 10000,
+				startDelay: 10000,
+				stop: (resp) => {
+					if (!resp.error && resp.data) {
+						return true
+					}
+					return false
+				},
+				signal: abortControllerRef.current?.signal,
+			})
+
+			if (!pollingResp) {
+				abortControllerRef.current = new AbortController()
+				return null
+			}
+
+			const migratedData = migrateOldLSMapping(pollingResp.data)
+
+			return migratedData
+		} catch (error) {
+			const errorMessage = (error as Error).message || 'Polling Error'
+			abortControllerRef.current = new AbortController()
+			throw new Error(errorMessage)
+		}
 	}
 
 	const query = useQuery({
-		queryKey: [GET_LS_SHEET_QUERY_KEY, projectId, language],
+		queryKey: [POLL_LS_SHEET_QUERY_KEY, projectId, language],
 		queryFn: pollLSMapping,
 		enabled,
+		staleTime: 0,
+		gcTime: 0,
 	})
 	return query
 }

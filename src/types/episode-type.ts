@@ -2,11 +2,11 @@ import { ReactNode } from 'react'
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { VariantProps } from 'class-variance-authority'
 import { Value } from 'platejs'
+import { TCustomComment } from 'unified-editor'
 
 import { dialogVariants } from '@/components/aural-ui/dialog'
 
 import { BASE_STATUS, EEpisodeType, ELanguage, EStatus } from '@/types/common'
-import { TCustomComment } from '@/types/editor-types'
 import { TCommentGeneric, TNote } from '@/types/plate-types'
 
 export type EpisodeStoreState = {
@@ -36,9 +36,10 @@ export type EpisodeStoreState = {
 	statusUpdating: number[]
 }
 
-type TEpisodeProps = {
+export type TEpisodeProps = {
 	beatsheet: string
 	context: string
+	logline?: string
 	loglines: string
 	summary: string
 }
@@ -64,6 +65,7 @@ export type TEpisode = {
 		notes?: TNote[]
 		nwm_running?: boolean
 		original_chapters?: TEpisode[]
+		views?: Record<string, string>
 	}
 	seq_number: number
 	status: EStatus | typeof BASE_STATUS
@@ -74,7 +76,7 @@ export type TEpisode = {
 	writer?: number
 }
 
-export type TEpisodesData = { data: TEpisode[]; message: string }
+export type TEpisodesData = { data: Omit<TEpisode, 'props'>[]; message: string }
 
 export type TGetEpisodesResponse = {
 	count: number
@@ -100,9 +102,17 @@ export type TGetEpisodeResponse = {
 	translation_text: string
 }
 
+export type TGetNewEpisodeResponse = {
+	additional_view?: Record<string, string>
+	chapter: TEpisode
+	email?: string
+	next_parent_id: number | null
+	previous_parent_id: number | null
+}
+
 export type TGetEpisodeUrlParams = { chapterId: number }
 
-export type TPatchEpisodeBody = { text: string } & Partial<TEpisode>
+export type TPatchEpisodeBody = { text?: string } & Partial<TEpisode>
 
 export type SaveEpisodeParams = {
 	episodeId: number
@@ -180,9 +190,11 @@ export type TStatusUpdateResponse = {
 
 export type TGetDocxFromHtmlBody = { html_content: string }
 
+export type TLLMMemories = Partial<TEpisodeProps>
 export type EpisodeIdStoreType = {
 	acceptedDiffValue: Value | null
 	activeNoteId: string | null
+	currentLLMMemories: TLLMMemories
 	currentTitle: string
 	dualViewMode: EDualVIewMode | null
 	episodeId: number
@@ -341,4 +353,24 @@ export type TChapterCharacter = {
 
 export type TGetChapterCharactersQuery = {
 	chapter_id: number
+}
+
+export type TGetPresignedUrlRequest = {
+	chapter_id: number
+	content_type?: string
+	expiration_minutes?: number
+	project_id: number
+	version?: number
+}
+
+export type TGetPresignedUrlResponse = {
+	expiration_minutes: number
+	file_path: string
+	message: string
+	presigned_url: string
+	public_url: string
+}
+
+export type DeepPartial<T> = {
+	[K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
 }

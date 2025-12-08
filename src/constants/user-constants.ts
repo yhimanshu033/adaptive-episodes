@@ -18,3 +18,6 @@ export const VALID_GOOGLE_DRIVE_FOLDER =
 
 export const LOC_SHEET_SERVICE_ACCOUNT =
 	'text-to-speech-quickstart@pocketfmapp.iam.gserviceaccount.com'
+
+export const OUTLINER_FEATURE_KEY = 'outliner'
+export const OUTLINER_ONBOARDING_FEATURE_KEY = 'survey_onboarding'

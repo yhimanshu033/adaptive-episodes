@@ -107,6 +107,7 @@ export const API_URLS = {
 	GET_SLACK_CHANNEL: '/project/:projectId/get-slack-channel-info/',
 	SEND_TASK_TO_ADAPTATION: '/project/send-task-to-adaptation',
 	GET_ADAPTATION_LS: '/project/:projectId/:language/get_ls_sheet',
+	DISCARD_LS_TASK: '/project/:projectId/get-or-update-atlastask',
 	GET_STORY_DETAILS: '/projects/:storyId/',
 	GET_DOC_EPISODE_COUNT: '/project/get-episode-count/',
 	BULK_EPISODE_DOWNLOAD: '/project/:projectId/download/',
@@ -117,6 +118,34 @@ export const API_URLS = {
 	EPISODE_REGENERATE: '/aicopilot/nwm-extraction-pipeline/',
 	CHAPTER_CHARACTERS: '/chapters/characters/',
 	BEATSHEET_SCENE_UPDATE: '/scenes/update-metadata/',
+
+	OUTLINER_CHAT: '/aicopilot/bse/chatbot',
+	GET_OUTLINER_METADATA: '/project/:projectId/fetch-bse-metadata',
+	UPDATE_NARRATIVE_ARCS: '/project/:projectId/narrative-arc-plan',
+	OUTLINER_SUMMARY_EPISODE: '/aicopilot/bse/generate_episode',
+	OUTLINER_SUMMARY_EPISODE_V2: '/aicopilot/bse/summary-to-episode/',
+	OUTLINER_NEW_IDEAS: '/chapter/:episodeId/new-episode-ideas',
+	OUTLINER_SUMMARY_OUTLINE: '/aicopilot/bse/summary-to-outlines/',
+	OUTLINER_SAVE_CACHED_OUTLINE: '/scenes/save-cached-scenes/',
+	GENERATE_NARRATIVE_ARC_PLAN: '/aicopilot/bse/generate-narrative-arc-plan/',
+
+	OUTLINER_QUESTIONNAIRE_NEW_IDEAS: '/project/:projectId/new-story-idea',
+	OUTLINER_QUESTIONNAIRE_STATUS: '/user/fetch-profile-stage/',
+	OUTLINER_QUESTIONNAIRE_STATUS_UPDATE: '/user/profile-stage/:projectId/',
+	OUTLINER_QUESTIONNAIRE_CHAT: '/user/profile-chat/',
+	OUTLINER_QUESTIONNAIRE_SURVEY_QUESTIONS: '/user/survey/',
+	OUTLINER_QUESTIONNAIRE_SURVEY_QUESTIONS_SUBMIT: '/user/survey/submit/',
+	OUTLINER_QUESTIONNAIRE_NEW_IDEAS_REGENERATE:
+		'/project/:projectId/regenerate-story-idea',
+	OUTLINER_QUESTIONNAIRE_NEW_SHOWS_GENERATE:
+		'/user/survey/generate-custom-shows/',
+	OUTLINER_QUESTIONNAIRE_PROFILE: '/user/writer-profile',
+	OUTLINER_QUESTIONNAIRE_PROFILE_RESET: '/user/reset-profile/',
+
+	GET_ASSEMBLY_AI_TOKEN: '/user/assembly-ai-token/',
+
+	GET_PRESIGNED_CONTENT_URL: '/chapter/generate-presigned-upload-url/',
+	GET_USER_FEATURE_ACCESS: '/user/feature-access',
 }
 
 export const INDEXED_DB_KEYS = {
@@ -155,9 +184,11 @@ export const SAMPLE_DOC_LINK =
 export const FETCHED_BUILD_VERSION_KEY = 'fetchedBuildVersion'
 
 export const SOCKET_STREAMING_TIMEOUT = 60000 //1 minute
-export const FETCH_TIMEOUT = 10000 //10 seconds
+export const FETCH_TIMEOUT = 5000 //5 seconds
 
 export const BEATSHEET_STREAMING_TIMEOUT = 3 * 60000 //3 minute
+export const AI_CHATBOT_STREAMING_TIMEOUT = 90000 //90 seconds
+export const STORY_EXPLORE_STREAMING_TIMEOUT = 90000 //90 seconds
 
 export const MAX_SOCKET_RETRIES = 5
 export const SOCKET_ERROR_TOAST_ID = 'socket-connection-error'
@@ -182,3 +213,7 @@ export const APP_CONFIG = {
 	ENV: 'production',
 	NEXT_PUBLIC_ANALYTICS_ENABLED: true,
 }
+
+export const DEFAULT_PERFORMANCE_ENTRY_TIMEOUT = 500 //500ms
+export const DEFAULT_PERFORMANCE_ENTRY_MAX_TIME_DIFFERENCE = 100 //100ms
+export const GZIP_THRESHOLD = 5 * 1024 // 5KB in bytes

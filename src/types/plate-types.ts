@@ -50,6 +50,7 @@ export enum ESidebar {
 	FAR = 'far',
 	NOTES = 'notes',
 	OUTLINE = 'outline',
+	OUTLINER = 'outliner',
 }
 export type PlateStoreData = {
 	activeDiffId: string | null

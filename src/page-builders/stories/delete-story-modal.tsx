@@ -73,9 +73,15 @@ const DeleteStoryModal = ({
 							innerClassName="border border-fm-divider-secondary"
 							className="border-fm-divider-secondary border"
 							onClick={() => {
-								onDialogChange(false)
 								if (storyId) {
-									storyDeleteMutation.mutate({ id: storyId })
+									storyDeleteMutation.mutate(
+										{ id: storyId },
+										{
+											onSettled: () => {
+												onDialogChange(false)
+											},
+										}
+									)
 								}
 							}}
 							noise="low"

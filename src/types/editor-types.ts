@@ -11,7 +11,6 @@ import {
 	TQuickPrompt,
 } from '@/types/ai-types'
 import { TGetEpisodeResponse } from '@/types/episode-type'
-import { ESidebar } from '@/types/plate-types'
 
 export interface RephraseSelectionProps {
 	additionalContext?: boolean
@@ -104,7 +103,7 @@ export enum EThemeMode {
 	LIGHT = 'light',
 }
 export type TStoredConfigurationData = {
-	defaultSidebar: ESidebar | null
+	defaultSidebar: string | null
 	quickPrompts: TQuickPrompt[]
 	suggestionDisplay: ESuggestionViewingType
 	theme: EThemeMode

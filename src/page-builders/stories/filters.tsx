@@ -24,6 +24,7 @@ const Filters = ({
 			onSearch={debouncedSetSearch}
 			placeholder="Search Story"
 			initialValue={search}
+			clearOnEnter={false}
 		/>
 	)
 }

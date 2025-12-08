@@ -1,6 +1,6 @@
-import { TCharacter } from '@/types/beatsheet-editor-types'
+import { TCharacter, TScene } from '@/types/beatsheet-editor-types'
 
-export const scenesData = [
+export const scenesData: TScene[] = [
 	{
 		id: 'scene_1',
 		title: 'INT - SCHULKORRIDOR - SZENE 1',

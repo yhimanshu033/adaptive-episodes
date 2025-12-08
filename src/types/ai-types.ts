@@ -6,6 +6,7 @@ import {
 	PlotAction,
 	WorldAction,
 } from '@/constants/story-explorer-constants'
+import { EOutlinerChatAction } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
 import { Value } from 'platejs'
 
 import { ELanguage, LSMappingOutput, MinifiedValue } from '@/types/common'
@@ -102,15 +103,27 @@ export type TUserMessage = {
 }
 export type TAssistantMessage = {
 	action: EAction
+	chunks?: string[]
 	component?: React.ReactNode | null
 	content: string
 	meta?: {
+		profileComplete?: {
+			completed_requirements_count?: number
+			pending_requirements_count?: number
+			requirements?: string[]
+		}
 		sfxCount?: number
 	}
+	outlinerAction?: EOutlinerChatAction
 	role: EMessenger.ASSISTANT
 	taskId: string
 }
 export type TMessage = TUserMessage | TAssistantMessage
+
+export type TSimplifiedMessage = {
+	content: string
+	role: EMessenger
+}
 
 export type StoryExplorerConfiguration = {
 	current_ep: boolean
@@ -289,9 +302,19 @@ export type TSendAdaptationStartBody = {
 	llm_model: ELLMModel
 	project_id: number
 	seq_no: number[]
+	skip_extraction?: boolean
 	source_lang: ELanguage
 	target_lang: ELanguage
 	type: 'ls_sheet_gen' | 'adaptation'
+}
+
+export enum EDiscardLsTaskStatus {
+	DISCARD = 'discard',
+}
+
+export type TDiscardLsTaskBody = {
+	task_id: string
+	update_status?: EDiscardLsTaskStatus
 }
 
 export type TGetAdaptationLSUrlParams = {

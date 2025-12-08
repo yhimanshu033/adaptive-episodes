@@ -7,6 +7,7 @@ import useEditAccess from '@/hooks/use-edit-access'
 import { SuggestionPlugin } from '@platejs/suggestion/react'
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu'
 import {
+	ESidebar,
 	useEditorPlugin,
 	useEditorReadOnly,
 	usePluginOption,
@@ -23,8 +24,6 @@ import {
 } from '@/components/aural-ui/select'
 import { track } from '@/lib/utils/analytics'
 import { cn, toPascalCase } from '@/lib/utils/helpers'
-
-import { ESidebar } from '@/types/plate-types'
 
 import { Typography } from '../aural-ui/typography'
 

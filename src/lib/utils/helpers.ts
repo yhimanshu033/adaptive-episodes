@@ -14,6 +14,10 @@ import {
 import { roleToData } from '@/constants/global-constants'
 import { EImportStatus } from '@/constants/story-constants'
 import { Locale } from '@/i18n/config'
+import {
+	TOutlinerData,
+	TOutlinerTabData,
+} from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
 import { match } from '@formatjs/intl-localematcher'
 import { parse } from 'best-effort-json-parser'
 import { cva } from 'class-variance-authority'
@@ -23,8 +27,16 @@ import { jsonrepair } from 'jsonrepair'
 import Negotiator from 'negotiator'
 import { Session } from 'next-auth'
 import { twMerge } from 'tailwind-merge'
+import * as XLSX from 'xlsx'
 
-import { ERole } from '@/types/admin-types'
+import {
+	ERole,
+	TBaseScriptExtensionData,
+	TBSEGermanResponse,
+	TBSEResponse,
+	TBSERunningResponse,
+} from '@/types/admin-types'
+import { EMessenger, TMessage, TSimplifiedMessage } from '@/types/ai-types'
 import {
 	TCharacter,
 	TGenerateBeatsheetResponseItem,
@@ -296,6 +308,23 @@ export function parseOptimistically<T>(input: string) {
 	return null
 }
 
+export function parseIfJson(str?: string | null) {
+	if (!str) {
+		return null
+	}
+
+	try {
+		const parsed = JSON.parse(str) as object | null
+
+		if (parsed !== null && typeof parsed === 'object') {
+			return parsed
+		}
+		return str
+	} catch {
+		return str
+	}
+}
+
 export function trim(str: string, length: number = 100) {
 	if (str.length <= length) {
 		return str
@@ -398,7 +427,7 @@ export function getEpisodeQueryResponseFromStoredData({
 }): TGetEpisodeResponse {
 	return {
 		...episodeData,
-		text: oldData.text,
+		text: oldData.text || episodeData.text,
 		chapter: {
 			...episodeData.chapter,
 			props: oldData.props,
@@ -718,6 +747,64 @@ export function splitStringByLength(input: string, maxLen: number): string[] {
 	return result
 }
 
+export function workbookToLSMapping(
+	workbook: XLSX.WorkBook
+): LSMappingOutputItemV2 {
+	return workbook.SheetNames.reduce((acc, sheetName) => {
+		return {
+			...acc,
+			[sheetName]: XLSX.utils.sheet_to_json<LSMappingOutputItem>(
+				workbook.Sheets[sheetName]
+			),
+		}
+	}, {} as LSMappingOutputItemV2)
+}
+
+export async function readWorkbookFromFile(file: File): Promise<XLSX.WorkBook> {
+	const isCsv = file.name?.toLowerCase().endsWith('.csv')
+
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader()
+
+		reader.onload = (event) => {
+			const result = event.target?.result
+			if (result == null) {
+				reject(new Error('No data found in file'))
+				return
+			}
+
+			try {
+				if (isCsv) {
+					resolve(XLSX.read(result as string, { type: 'string' }))
+					return
+				}
+
+				resolve(
+					XLSX.read(new Uint8Array(result as ArrayBuffer), {
+						type: 'array',
+					})
+				)
+			} catch (error) {
+				reject(
+					error instanceof Error
+						? error
+						: new Error('Failed to parse workbook contents')
+				)
+			}
+		}
+
+		reader.onerror = () => {
+			reject(new Error('Some error occurred while reading XLSX'))
+		}
+
+		if (isCsv) {
+			reader.readAsText(file, 'utf-8')
+		} else {
+			reader.readAsArrayBuffer(file)
+		}
+	})
+}
+
 export function sortInputLSMapping(
 	input: LSMappingOutputItemV2
 ): LSMappingOutputItemV2 {
@@ -799,6 +886,32 @@ export function isInvalidLSMapping(data: Partial<LSMappingOutputItem[]>) {
 	)
 }
 
+export function invalidLSMappingDetails(data: Partial<LSMappingOutputItem[]>) {
+	for (let i = 0; i < data.length; i++) {
+		const item = data[i]
+		const missingFields: string[] = []
+
+		if (!item?.original_name?.trim()) {
+			missingFields.push('original_name')
+		}
+		if (!item?.localised_name?.trim()) {
+			missingFields.push('localised_name')
+		}
+		if (!item?.type) {
+			missingFields.push('type')
+		}
+		if (item?.type === ELSMappingType.PERSON && !item?.gender) {
+			missingFields.push('gender')
+		}
+
+		if (missingFields.length) {
+			return { index: i, missingFields }
+		}
+	}
+
+	return null
+}
+
 export const migrateOldLSMapping = (
 	data?:
 		| LSMappingInput
@@ -826,7 +939,11 @@ export const migrateOldLSMapping = (
 }
 
 export function isInternalUser(session: Session | null) {
-	return !!session && session.user.email.includes('@pocketfm')
+	return !!session && isInternalEmail(session.user.email)
+}
+
+export function isInternalEmail(email?: string) {
+	return !!email?.includes('@pocketfm')
 }
 
 export function getPageFromEpisode(
@@ -1041,7 +1158,7 @@ export function getSavingData(
 		comments: params.allComments,
 		prevProps: params.chapterData?.chapter.props,
 		language: params.language,
-		chapter_title: params.title || params.chapterData?.chapter.chapter_title,
+		newLLMMemories: params.llmMemories || {},
 	}
 }
 
@@ -1270,6 +1387,33 @@ export function replaceNthOccurrence({
 export const isStringifiedJsonArray = (text: string) =>
 	/^\s*\[.*\]\s*$/.test(text)
 
+export function getContextStr({
+	tabData,
+	outlinerData,
+}: {
+	outlinerData?: TOutlinerData
+	tabData?: TOutlinerTabData
+}) {
+	const summary = outlinerData?.[tabData?.summaryIdx ?? -1]
+	const scene = summary?.scenes?.[tabData?.sceneIdx ?? -1]
+	const beat = scene?.beats?.[tabData?.beatIdx ?? -1]
+	let context = 'Summaries'
+	if (summary) {
+		context = summary.title
+	}
+	if (scene) {
+		context = scene.summary
+	}
+	if (beat) {
+		context = trim(beat.description || '', 15)
+	}
+	return context
+}
+
+export function getSafeArrayIdx(idx: number, len: number) {
+	return (len + (idx % len)) % len
+}
+
 /**
  * Calculates text statistics including estimated line count based on font and width.
  *
@@ -1367,4 +1511,47 @@ export function getScaledValue(str: string) {
 
 export function prettifyArrayTrim(arr: number[], len = 4, separator = ', ') {
 	return arr.slice(0, len).join(separator)
+}
+
+export function getSimplifiedMessageList({
+	messages,
+	responses,
+}: {
+	messages: TMessage[]
+	responses: Record<string, string[]>
+}): TSimplifiedMessage[] {
+	const simplified = [...messages].map((item) => {
+		if (item.role === EMessenger.ASSISTANT) {
+			return {
+				role: item.role,
+				content:
+					(item.taskId ? responses[item.taskId]?.join('') : item.content) || '',
+			}
+		}
+		return {
+			content: item.content,
+			role: item.role,
+		}
+	})
+	return simplified
+}
+
+export function wait(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export function getWordCount(str?: string) {
+	return str?.split(/\s+/).length ?? 0
+}
+
+export function isBSERunning(
+	data?: TBaseScriptExtensionData | null
+): data is TBSERunningResponse {
+	return !!data && 'task_id' in data
+}
+
+export function isBSENotRunning(
+	data?: TBaseScriptExtensionData | null
+): data is TBSEResponse | TBSEGermanResponse {
+	return !!data && 'previous_extension_status' in data
 }

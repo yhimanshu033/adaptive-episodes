@@ -12,9 +12,11 @@ import { FileTextIcon } from '@/icons/file-text-icon'
 import { MessageIcon } from '@/icons/message-icon'
 import HomeButton from '@/page-builders/plate-editor/buttons/home-button'
 import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
+import UGCActions from '@/page-builders/plate-editor/buttons/ugc-actions'
 import Versions from '@/page-builders/plate-editor/buttons/versions'
 import ConfigurationDialogTrigger from '@/page-builders/plate-editor/configuration-dialog/trigger'
 import Title from '@/page-builders/plate-editor/title'
+import { ESidebar } from 'unified-editor'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
@@ -25,11 +27,9 @@ import Languages from '@/components/plate-ui/languages'
 import UploadDocxButton from '@/components/plate-ui/publish-docx-button'
 import { SidebarToggleButton } from '@/components/plate-ui/sidebar-toggle-button'
 import useProjectId from '@/providers/project-id-provider'
-import { hasNWMRan } from '@/lib/utils/helpers'
 
 import { ERole } from '@/types/admin-types'
 import { BASE_STATUS, EStatus } from '@/types/common'
-import { ESidebar } from '@/types/plate-types'
 
 const EpisodeHeader = () => {
 	const searchParams = useSearchParams()
@@ -63,7 +63,7 @@ const EpisodeHeader = () => {
 	}
 
 	return (
-		<div className="border-fm-divider-tertiary flex items-center justify-between border-l px-7 py-6">
+		<div className="border-fm-divider-tertiary flex items-center justify-between border-l py-6 pr-2 pl-7">
 			<div className="flex items-center gap-4">
 				<HomeButton />
 				<Title
@@ -115,7 +115,6 @@ const EpisodeHeader = () => {
 				</Link>
 
 				<DownloadAudio />
-
 				<Languages />
 				<Versions latestStatus={latestStatus} isChildEpisode={false} />
 				<ModeToolbarButton />
@@ -133,8 +132,8 @@ const EpisodeHeader = () => {
 					fallbackQuickPrompts={isGerman ? QUICK_PROMPTS : QUICK_PROMPTS_EN}
 					episodeId={content?.chapter?.id}
 					showEpisodeSpecificActions
-					allowNWM={!hasNWMRan(content?.chapter)}
 				/>
+				<UGCActions />
 			</div>
 		</div>
 	)

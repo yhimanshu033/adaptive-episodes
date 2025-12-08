@@ -1,10 +1,7 @@
 import React, { useMemo } from 'react'
-import { NWM_EMAIL } from '@/constants/global-constants'
-import { useEpisodeRegenerate } from '@/hooks/mutation/use-episode-regenerate'
 import useMetadataSyncMutation from '@/hooks/mutation/use-metadata-sync'
 import { SpinnerSolidIcon } from '@/icons/spinner-solid-icon'
 import { ConfigurationContentItem } from '@/page-builders/plate-editor/configuration-dialog/items'
-import useEpisodeIdStore from '@/store/episode-id-store'
 
 import { Button } from '@/components/aural-ui/button'
 import ForEach from '@/components/ui/for-each'
@@ -15,18 +12,11 @@ import {
 } from '@/types/editor-types'
 
 export interface EpisodeConfigProps {
-	allowNWM?: boolean
 	episodeId?: number
 }
-export default function EpisodeConfig({
-	episodeId,
-	allowNWM,
-}: EpisodeConfigProps) {
+export default function EpisodeConfig({ episodeId }: EpisodeConfigProps) {
 	const { mutate: mutateMetadataSync, isPending: isMetadataSyncPending } =
 		useMetadataSyncMutation(episodeId)
-	const { mutate: mutateNwm, isPending: isNwmPending } = useEpisodeRegenerate()
-
-	const { setRecentEmail } = useEpisodeIdStore()
 
 	const episodeConfigurationItems = useMemo(() => {
 		const configItems: TConfigurationContentItem[] = [
@@ -55,44 +45,9 @@ export default function EpisodeConfig({
 				},
 			},
 		]
-		if (allowNWM && episodeId) {
-			configItems.push({
-				title: 'Enable NWM (Beatsheet Editor)',
-				description:
-					'Start the NWM process to activate the Beatsheet Editor features.',
-				data: {
-					type: EConfigurationContentItemDataType.CUSTOM,
-					customHandler: (
-						<Button
-							variant="outline"
-							size="sm"
-							rightIcon={
-								isNwmPending && <SpinnerSolidIcon className="animate-spin" />
-							}
-							onClick={() => {
-								mutateNwm({ episodeId })
-								setRecentEmail(NWM_EMAIL)
-							}}
-							disabled={isNwmPending}
-							isDisabled={isNwmPending}
-						>
-							Run NWM
-						</Button>
-					),
-				},
-			})
-		}
 
 		return configItems
-	}, [
-		allowNWM,
-		episodeId,
-		mutateNwm,
-		isNwmPending,
-		mutateMetadataSync,
-		isMetadataSyncPending,
-		setRecentEmail,
-	])
+	}, [mutateMetadataSync, isMetadataSyncPending])
 
 	return (
 		<ForEach data={episodeConfigurationItems}>

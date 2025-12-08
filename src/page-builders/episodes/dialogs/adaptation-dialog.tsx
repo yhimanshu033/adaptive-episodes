@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo } from 'react'
-import { useParams } from 'next/navigation'
 import { languageToTitle } from '@/constants/episodes-constants'
 import useAdaptationQuery from '@/hooks/query/use-adaptation-query'
 import ArrowRightIcon from '@/icons/arrow-right-icon'
 import { TickCircleIcon } from '@/icons/tick-circle-icon'
 import LsTabs from '@/page-builders/episodes/dialogs/ls-tabs'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/aural-ui/button'
 import CircularLoader from '@/components/aural-ui/circular-loader'
@@ -28,7 +28,7 @@ import LanguageSelector, {
 import useAdaptation from '@/providers/adaptation-provider'
 import { cn, parseInputLSMapping } from '@/lib/utils/helpers'
 
-import { ELanguage } from '@/types/common'
+import { ELanguage, LSMappingOutput } from '@/types/common'
 
 import AdaptationStatus from '../info/adaptation-status'
 
@@ -64,6 +64,7 @@ export default function AdaptationDialog({
 		setFetchingLSSheet,
 		setSequence,
 		sequence,
+		skipNewExtraction,
 	} = useAdaptation()
 
 	if (
@@ -80,11 +81,12 @@ export default function AdaptationDialog({
 	const adaptOpen = useCustomDialog ? openDialog : open
 	const setAdaptDialogOpen = useCustomDialog ? setOpenDialog : setOpen
 
-	const { id } = useParams()
+	const shouldEnableQuery = isFetchingLSSheet && !!storyData?.id
+
 	const { data: lsSheetData, isLoading: lsSheetLoading } = useAdaptationQuery({
-		projectId: id as string,
+		projectId: storyData?.id ? String(storyData.id) : '',
 		language: storyData?.parent_language || ELanguage.ENGLISH,
-		enabled: isFetchingLSSheet,
+		enabled: shouldEnableQuery,
 	})
 
 	const selectedEpNo = useMemo(
@@ -135,6 +137,10 @@ export default function AdaptationDialog({
 
 	const onPrimaryBtnClick = () => {
 		if (step === 1) {
+			if (!selectedAdaptingLanguage) {
+				toast.error('Target language is required')
+				return
+			}
 			mutate({
 				language: selectedAdaptingLanguage,
 				selectedRowData,
@@ -150,6 +156,28 @@ export default function AdaptationDialog({
 
 	const handleClose = () => {
 		setOpenExitDialog(true)
+	}
+
+	const handleSendLSTask = (inputls: LSMappingOutput) => {
+		if (isEpisodeAdaptation && !selectedAdaptingLanguage) {
+			toast.error('Target language was not selected before adaptation')
+			return
+		}
+		sendLS(
+			{
+				inputls,
+				projectId: storyData?.id || selectedRowData[0].project,
+				sourceLang: currentLanguage || ELanguage.ENGLISH,
+				language:
+					(isEpisodeAdaptation
+						? selectedAdaptingLanguage
+						: storyData?.parent_language) || ELanguage.GERMAN,
+				selectedRowData,
+				llmModel,
+				skip_extraction: skipNewExtraction,
+			},
+			{ onSuccess: () => setEpisodeAdaptation(false) }
+		)
 	}
 
 	useEffect(() => {
@@ -241,10 +269,15 @@ export default function AdaptationDialog({
 									<div className="flex flex-1 flex-col justify-center gap-3">
 										<Label htmlFor="adapt_language">Adaptation language</Label>
 										<LanguageSelector
-											placeholder="Select adaptation language "
+											placeholder={
+												selectableLanguages.length
+													? 'Select adaptation language '
+													: 'No languages available'
+											}
 											value={selectedAdaptingLanguage}
 											onValueChange={setSelectedAdaptingLanguage}
 											selectableLanguages={selectableLanguages}
+											disabled={!selectableLanguages.length}
 											showSeparator
 											classes={{
 												trigger: {
@@ -270,9 +303,15 @@ export default function AdaptationDialog({
 						<Case value={2}>
 							<div className="flex h-full flex-col items-center justify-center gap-5 px-6">
 								<CircularLoader className="size-12" />
-								<p className="animate-gradient-slide bg-clip-text text-transparent">
-									Adaptation in progress...
-								</p>
+								<div className="animate-gradient-slide bg-clip-text text-center text-transparent">
+									<p>Adaptation in progress...</p>
+									<p className="text-xs">
+										Fetching LS mapping for project:{' '}
+										{storyData?.project_title || 'N/A'}
+										<br />
+										Project ID: {storyData?.id || 'N/A'}
+									</p>
+								</div>
 							</div>
 						</Case>
 
@@ -283,22 +322,7 @@ export default function AdaptationDialog({
 								handleClose={handleClose}
 								story={storyData}
 								sequence={sequence}
-								onSubmit={(inputls) =>
-									sendLS(
-										{
-											inputls,
-											projectId: Number(id),
-											sourceLang: currentLanguage || ELanguage.ENGLISH,
-											language:
-												(isEpisodeAdaptation
-													? selectedAdaptingLanguage
-													: storyData?.parent_language) || ELanguage.GERMAN,
-											selectedRowData,
-											llmModel,
-										},
-										{ onSuccess: () => setEpisodeAdaptation(false) }
-									)
-								}
+								onSubmit={handleSendLSTask}
 							/>
 						</Case>
 						<Case value={4}>

@@ -14,10 +14,10 @@ import { getEpisodeContent } from '@/server-action/content-action'
 import { getNotes, updateNotes } from '@/server-action/episode-action'
 import { getLOCSheet } from '@/server-action/localization-action'
 import { getMetadata } from '@/server-action/metadata-action'
+import ContentFetchDisplay from '@pocket-editor/features/plate-editor/dual-view/content-fetch-display'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
-	ContentDisplay,
 	EEditorKit,
 	EPlatform,
 	ESidebar,
@@ -30,6 +30,7 @@ import {
 import { Button } from '@/components/aural-ui/button'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
+import { getGCSContent } from '@/lib/utils/gcs'
 import { hasNWMRan } from '@/lib/utils/helpers'
 import { getTextFromTextOrValue } from '@/lib/utils/plate'
 
@@ -88,6 +89,7 @@ export default function useEditorConfig() {
 		}
 		// if (!localDiffValue) {
 		excludedModes.push(EDualVIewMode.LOCAL_DIFF)
+		excludedModes.push(EDualVIewMode.VOICE_PASS)
 		// }
 		return [...DUAL_VIEW_MODES, ...extraModes].filter(
 			(item) => !excludedModes.includes(item)
@@ -117,8 +119,14 @@ export default function useEditorConfig() {
 					...acc,
 					[k as EDualVIewMode]: {
 						component: (
-							<ContentDisplay
-								content={contentData?.additional_view?.[k]}
+							<ContentFetchDisplay
+								contentFetch={() => {
+									return getGCSContent({
+										url: contentData?.additional_view?.[k],
+									})
+								}}
+								queryKey={`dual-view-${k}`}
+								// ={contentData?.additional_view?.[k]}
 								customButton={
 									<Button
 										tooltip="Copy Content"
@@ -150,7 +158,9 @@ export default function useEditorConfig() {
 	const modeToComponent: Record<string, TRteDualViewRenderData> = useMemo(
 		() => ({
 			[EDualVIewMode.US_TRANSLATION]: {
-				content: contentData?.translation_text,
+				fetchContent: () => {
+					return getGCSContent({ url: contentData?.chapter?.translation_url })
+				},
 			},
 			[EDualVIewMode.BASE_SCRIPT]: {
 				fetchContent: async () =>

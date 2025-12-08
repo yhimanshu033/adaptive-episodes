@@ -165,3 +165,9 @@ export type StartPollingParams<
 	delay: number
 	stop: (data: FetchResponseResult<ResponseDataT>) => boolean
 }
+
+export type TInvalidLSMappingDetails = {
+	index: number
+	missingFields: string[]
+	tabKey: string
+}

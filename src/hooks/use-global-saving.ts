@@ -23,7 +23,7 @@ export default function useGlobalSaving() {
 		if (!data?.chapter) {
 			return
 		}
-		const { status, text, allComments, title } = getSavingParams()
+		const { status, text, allComments } = getSavingParams()
 
 		const dataToSave: SaveEpisodeParams = {
 			projectId: Number(id),
@@ -36,7 +36,6 @@ export default function useGlobalSaving() {
 				...data.chapter.props,
 				comments: allComments,
 			},
-			chapter_title: title || data.chapter.chapter_title,
 		}
 
 		addUnsavedEpisodeParams(
