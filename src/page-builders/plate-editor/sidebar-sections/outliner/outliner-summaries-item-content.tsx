@@ -148,7 +148,6 @@ export default function OutlinerSummariesItemContent({
 					>
 						{'Expand to Outline'}
 					</Button>
-
 					<Button
 						disabled={!!summaryEpisodeTaskId}
 						isDisabled={!!summaryEpisodeTaskId}

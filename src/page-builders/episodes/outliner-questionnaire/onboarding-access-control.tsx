@@ -22,7 +22,7 @@ export default function OnboardingAccessControl({
 
 	if (!accessData?.survey_onboarding) {
 		return (
-			<div className="flex min-h-[80dvh] flex-col items-center justify-center px-6 py-20 text-center">
+			<div className="animate-fade-in-up flex min-h-[80dvh] flex-col items-center justify-center px-6 py-20 text-center">
 				<div className="bg-fm-secondary-1000 border-fm-secondary-900 text-fm-secondary-600 max-w-lg rounded-lg border px-6 py-4 shadow-sm">
 					<h2 className="font-fm-brand text-fm-secondary-400 mb-4 text-2xl font-semibold">
 						Access Restricted!

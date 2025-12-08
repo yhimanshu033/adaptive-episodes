@@ -29,6 +29,7 @@ import useOutlinerData from '@/page-builders/plate-editor/sidebar-sections/outli
 import useOutlinerEnabled from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-enabled'
 import useOutlinerNarrativeArcGeneration from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-outliner-narrative-arc-generation'
 import useSaveCachedOutlineMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-save-cached-outline'
+import useSaveEpisodeSummaryMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-save-ep-summary-mutation'
 import useSummaryEpisodeV2Mutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-summary-episode-v2-mutation'
 import useSummaryOutlineMutation from '@/page-builders/plate-editor/sidebar-sections/outliner/hooks/use-summary-outline-mutation'
 import {
@@ -53,7 +54,6 @@ import {
 	TOutlinerSceneEditable,
 	TOutlinerTabData,
 } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
-import useEpisodeIdStore from '@/store/episode-id-store'
 import { X } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { useEditorRef } from 'platejs/react'
@@ -98,7 +98,6 @@ function useOutlinerUtil() {
 		useOutlinerData()
 
 	const { data: episodeData } = useEpisodeContent()
-	const { setCurrentLLMMemories } = useEpisodeIdStore()
 	const [outlinerChatMode, setOutlinerChatMode] = useState(
 		EOutlinerChatMode.CHAT
 	)
@@ -189,6 +188,11 @@ function useOutlinerUtil() {
 		return outlinerData?.[1]?.summary
 	}, [outlinerData])
 
+	const debouncedCurrentEpSummary = useDebounce(currentEpSummary, 500)
+	const savedCurrentSummary = useRef(currentEpSummary)
+
+	const { mutateAsync: saveEpisodeSummary } = useSaveEpisodeSummaryMutation()
+
 	const narrativeArcsPlan = useMemo(() => {
 		return outlinerData?.[2]?.summary
 	}, [outlinerData])
@@ -263,6 +267,16 @@ function useOutlinerUtil() {
 
 		return parsed
 	}, [responses, newNarrativeArcsTaskId])
+
+	const areSummariesSynced = useMemo(() => {
+		if (!fetchedData) {
+			return true
+		}
+		return (
+			currentEpSummary === fetchedData?.current_episode_summary &&
+			fetchedData?.summary_match
+		)
+	}, [currentEpSummary, fetchedData])
 
 	const isSummaryEpisodeGenerating = useMemo(() => {
 		if (isSummaryEpisodeStarting) {
@@ -388,6 +402,7 @@ function useOutlinerUtil() {
 			return
 		}
 		setFetchedData(fetchedOutlinerData)
+		savedCurrentSummary.current = fetchedOutlinerData.current_episode_summary
 		setOutlinerData(convertOutlinerData(fetchedOutlinerData))
 		return fetchedOutlinerData
 	}, [fetchOutlinerData])
@@ -803,8 +818,9 @@ function useOutlinerUtil() {
 			return
 		}
 		toast.info('Content generation will start!')
+		const summary = getCurrEpSummary(outlinerData)
 		const taskId = await startSummaryToEpisode({
-			summary: getCurrEpSummary(outlinerData),
+			summary,
 			input_language: episodeData?.chapter?.language,
 			narrative_arc_plan: outlinerData?.[2]?.summary,
 			prev_episode_summary: outlinerData?.[0]?.summary,
@@ -818,6 +834,7 @@ function useOutlinerUtil() {
 			scenes: outlinerData?.[1]?.scenes || [],
 			selected_story_idea: selectedStoryIdea,
 		})
+		summaryOutlineTaskIdToSummary.current[taskId] = summary
 		track({
 			event: EVENT_TYPE.BUTTON_CLICK,
 			screenName: SCREEN_NAME.EPISODE_EDITOR,
@@ -931,16 +948,39 @@ function useOutlinerUtil() {
 		[]
 	)
 
+	const handleSaveCurrentEpSummary = useCallback(
+		async (summary: string) => {
+			await saveEpisodeSummary({
+				summary,
+			})
+			savedCurrentSummary.current = summary
+		},
+		[saveEpisodeSummary]
+	)
+
 	const handleCompleteContentGeneration = useCallback(
 		async ({ accepted }: { accepted?: boolean }) => {
+			const summary =
+				summaryOutlineTaskIdToSummary.current[summaryEpisodeTaskId]
 			setSummaryEpisodeTaskId('')
 			if (!accepted) {
 				toast.info('Content generation stopped!')
 				return
 			}
 			toast.info('Generated Content inserted in the editor!')
-			if (!outlinerData?.[1]?.scenes?.length) {
+			setFetchedData((prev) => {
+				if (!prev) {
+					return
+				}
+				return {
+					...prev,
+					summary_match: true,
+					current_episode_summary: summary ?? prev?.current_episode_summary,
+				}
+			})
+			if (!outlinerData?.[1]?.scenes?.length || !areSummariesSynced) {
 				const savedScenes = await saveCachedOutline()
+
 				if (savedScenes?.scenes) {
 					setOutlinerData((prev) => {
 						const newData = Array.isArray(prev) ? [...prev] : []
@@ -960,7 +1000,7 @@ function useOutlinerUtil() {
 				toast.success('Outline created from generated content!')
 			}
 		},
-		[saveCachedOutline, outlinerData]
+		[saveCachedOutline, outlinerData, areSummariesSynced, summaryEpisodeTaskId]
 	)
 
 	useEffect(() => {
@@ -1240,14 +1280,15 @@ function useOutlinerUtil() {
 	])
 
 	useEffect(() => {
-		if (currentEpSummary === undefined) {
+		if (
+			debouncedCurrentEpSummary === undefined ||
+			savedCurrentSummary.current === debouncedCurrentEpSummary
+		) {
 			return
 		}
-		setCurrentLLMMemories({
-			summary: currentEpSummary,
-		})
+		void handleSaveCurrentEpSummary(debouncedCurrentEpSummary)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentEpSummary])
+	}, [debouncedCurrentEpSummary, handleSaveCurrentEpSummary])
 
 	useEffect(() => {
 		if (!debouncedNarrativeArcsPlan) {
@@ -1285,7 +1326,17 @@ function useOutlinerUtil() {
 		}
 		if (taskEnded[summaryOutlineTaskId]) {
 			const summary =
-				summaryOutlineTaskIdToSummary.current[summaryOutlineTaskId] || ''
+				summaryOutlineTaskIdToSummary.current[summaryOutlineTaskId]
+			setFetchedData((prev) => {
+				if (!prev) {
+					return
+				}
+				return {
+					...prev,
+					summary_match: true,
+					current_episode_summary: summary ?? prev?.current_episode_summary,
+				}
+			})
 			const responseStr = responsesArray.join('')
 			track({
 				event: EVENT_TYPE.BUTTON_CLICK,
@@ -1557,6 +1608,7 @@ function useOutlinerUtil() {
 		completedTaskId,
 		isCurrentEpPublishing,
 		setCompletedTaskId,
+		areSummariesSynced,
 	}
 }
 

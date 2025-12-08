@@ -94,6 +94,7 @@ export type TGetOutlinerMetadataResponse = {
 		nwm_running?: boolean
 		previous_episode_context?: string
 		previous_episode_summary?: string
+		summary_match?: boolean
 	}
 }
 
@@ -141,6 +142,7 @@ export type TOutlinerFetchedData = {
 	previous_episode_context?: string
 	previous_episode_summary?: string
 	scenesResponse: TGetOutlinerScenesMetadataAPIResponse | null
+	summary_match?: boolean
 }
 
 export type TOutlinerChatUpdateNewIdeasBody = {
@@ -251,4 +253,12 @@ export type TGenerateNarrativeArcPlanBody = {
 	previous_episode_summary: string
 	project_id: number
 	selected_story_idea?: TStoryIdeaData
+}
+
+export type TSaveEpisodeSummaryBody = {
+	summary: string
+}
+
+export type TSaveEpisodeSummaryUrlParams = {
+	episodeId: number
 }
