@@ -166,6 +166,25 @@ export type TConditionalMetadata =
 			response: string
 	  }
 	| {
+			action: ACTION.OUTLINER_CHAT_TOGGLE
+			beatIdx?: number
+			sceneIdx?: number
+			summaryIdx?: number
+			tab: string
+	  }
+	| {
+			action: ACTION.OUTLINER_ZOOM_IN
+			beatIdx?: number
+			sceneIdx?: number
+			summaryIdx?: number
+	  }
+	| {
+			action: ACTION.OUTLINER_ZOOM_OUT
+			beatIdx?: number
+			sceneIdx?: number
+			summaryIdx?: number
+	  }
+	| {
 			action: ACTION.OUTLINER_NEW_IDEAS_START
 			flowId: string
 			retry?: boolean
@@ -177,6 +196,20 @@ export type TConditionalMetadata =
 			retry?: boolean
 	  }
 	| {
+			action: ACTION.OUTLINER_NEW_IDEAS_ACCEPT
+			flowId: string
+			optionIdx: number
+			summary: string
+			summaryIdx: number
+	  }
+	| {
+			action: ACTION.OUTLINER_NEW_IDEAS_REJECT
+			flowId: string
+			optionIdx: number
+			summary: string
+			summaryIdx: number
+	  }
+	| {
 			action: ACTION.OUTLINER_NARRATIVE_ARCS_START
 			flowId: string
 			retry?: boolean
@@ -186,6 +219,20 @@ export type TConditionalMetadata =
 			flowId: string
 			response: string
 			retry?: boolean
+	  }
+	| {
+			action: ACTION.OUTLINER_NARRATIVE_ARCS_ACCEPT
+			flowId: string
+			optionIdx: number
+			summary: string
+			summaryIdx: number
+	  }
+	| {
+			action: ACTION.OUTLINER_NARRATIVE_ARCS_REJECT
+			flowId: string
+			optionIdx: number
+			summary: string
+			summaryIdx: number
 	  }
 	| {
 			action: ACTION.OUTLINER_GENERATE_OUTLINE_START

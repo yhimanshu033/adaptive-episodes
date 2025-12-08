@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import { sidebarToTitle } from '@/constants/ai-constants'
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 import { SparklesSoftIcon } from '@/icons/sparkles-soft-icon'
 import {
 	areOutlinerTabDataEqual,
@@ -14,6 +15,7 @@ import { IconButton } from '@/components/aural-ui/icon-button'
 import { If } from '@/components/aural-ui/if-else'
 import { Typography } from '@/components/aural-ui/typography'
 import { TooltipComponent } from '@/components/ui/tooltip-component'
+import { track } from '@/lib/utils/analytics'
 
 import { ESidebar } from '@/types/plate-types'
 
@@ -29,15 +31,43 @@ export default function OutlinerHeader() {
 	} = useOutliner()
 
 	const handleTabChange = useCallback(() => {
+		const newTab =
+			outlinerTab === EOutlinerTab.GENERATE
+				? EOutlinerTab.VIEW
+				: EOutlinerTab.GENERATE
+
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.OUTLINER_CHAT_TOGGLE,
+				tab: newTab,
+				summaryIdx: outlinerTabData?.summaryIdx,
+				sceneIdx: outlinerTabData?.sceneIdx,
+				beatIdx: outlinerTabData?.beatIdx,
+			},
+		})
+
 		setOutlinerTab((prev) => {
 			if (prev === EOutlinerTab.GENERATE) {
 				return EOutlinerTab.VIEW
 			}
 			return EOutlinerTab.GENERATE
 		})
-	}, [setOutlinerTab])
+	}, [setOutlinerTab, outlinerTab, outlinerTabData])
 
 	const handleZoomOut = useCallback(() => {
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.OUTLINER_ZOOM_OUT,
+				summaryIdx: outlinerTabData?.summaryIdx,
+				sceneIdx: outlinerTabData?.sceneIdx,
+				beatIdx: outlinerTabData?.beatIdx,
+			},
+		})
+
 		setOutlinerTabData((prev) => {
 			const newTabData = { ...prev }
 			if (newTabData?.beatIdx !== undefined) {
@@ -49,9 +79,35 @@ export default function OutlinerHeader() {
 			}
 			return newTabData
 		})
-	}, [setOutlinerTabData])
+	}, [setOutlinerTabData, outlinerTabData])
 
 	const handleZoomIn = useCallback(() => {
+		const newTabData = (() => {
+			if (outlinerTabData?.summaryIdx === undefined) {
+				return {
+					summaryIdx: selectedOutlinerTabData?.summaryIdx,
+				}
+			}
+			if (outlinerTabData?.sceneIdx === undefined) {
+				return {
+					summaryIdx: selectedOutlinerTabData?.summaryIdx,
+					sceneIdx: selectedOutlinerTabData?.sceneIdx,
+				}
+			}
+			return outlinerTabData
+		})()
+
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.OUTLINER_ZOOM_IN,
+				summaryIdx: newTabData?.summaryIdx,
+				sceneIdx: newTabData?.sceneIdx,
+				beatIdx: newTabData?.beatIdx,
+			},
+		})
+
 		setOutlinerTabData((prev) => {
 			if (prev?.summaryIdx === undefined) {
 				return {
@@ -66,7 +122,7 @@ export default function OutlinerHeader() {
 			}
 			return prev
 		})
-	}, [selectedOutlinerTabData, setOutlinerTabData])
+	}, [selectedOutlinerTabData, setOutlinerTabData, outlinerTabData])
 
 	const zoomInEnabled = useMemo(() => {
 		const latestSelection = getLatestOutlinerSelection(

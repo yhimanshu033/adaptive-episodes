@@ -669,6 +669,11 @@ function useOutlinerUtil() {
 			if (optionIdx === undefined) {
 				return
 			}
+			// Get summary before state update
+			const summary =
+				outlinerData?.[summaryIdx]?.multiSelectOptions?.[optionIdx]?.summary ||
+				''
+
 			setOutlinerData((prev) => {
 				const newData = Array.isArray(prev) ? [...prev] : []
 
@@ -689,8 +694,37 @@ function useOutlinerUtil() {
 				return newData as TOutlinerData
 			})
 			toast.success(`Rejected Idea ${optionIdx + 1}`)
+
+			// Track event based on summaryIdx
+			const flowId =
+				summaryIdx === 1
+					? completedTaskId.newIdeas
+					: summaryIdx === 2
+						? completedTaskId.newNarrativeArcs
+						: ''
+			if (flowId) {
+				const action =
+					summaryIdx === 1
+						? ACTION.OUTLINER_NEW_IDEAS_REJECT
+						: summaryIdx === 2
+							? ACTION.OUTLINER_NARRATIVE_ARCS_REJECT
+							: null
+				if (action) {
+					track({
+						event: EVENT_TYPE.BUTTON_CLICK,
+						screenName: SCREEN_NAME.EPISODE_EDITOR,
+						metaData: {
+							action,
+							flowId,
+							optionIdx,
+							summary,
+							summaryIdx,
+						},
+					})
+				}
+			}
 		},
-		[]
+		[completedTaskId, outlinerData]
 	)
 
 	const handleNewIdeaAccept = useCallback(
@@ -698,6 +732,11 @@ function useOutlinerUtil() {
 			if (optionIdx === undefined) {
 				return
 			}
+			// Get summary before state update
+			const summary =
+				outlinerData?.[summaryIdx]?.multiSelectOptions?.[optionIdx]?.summary ||
+				''
+
 			setOutlinerData((prev) => {
 				const newData = [...(prev || [])]
 				const option = newData?.[summaryIdx].multiSelectOptions
@@ -713,8 +752,37 @@ function useOutlinerUtil() {
 				return newData as TOutlinerData
 			})
 			toast.success(`Accepted Idea ${optionIdx + 1}`)
+
+			// Track event based on summaryIdx
+			const flowId =
+				summaryIdx === 1
+					? completedTaskId.newIdeas
+					: summaryIdx === 2
+						? completedTaskId.newNarrativeArcs
+						: ''
+			if (flowId) {
+				const action =
+					summaryIdx === 1
+						? ACTION.OUTLINER_NEW_IDEAS_ACCEPT
+						: summaryIdx === 2
+							? ACTION.OUTLINER_NARRATIVE_ARCS_ACCEPT
+							: null
+				if (action) {
+					track({
+						event: EVENT_TYPE.BUTTON_CLICK,
+						screenName: SCREEN_NAME.EPISODE_EDITOR,
+						metaData: {
+							action,
+							flowId,
+							optionIdx,
+							summary,
+							summaryIdx,
+						},
+					})
+				}
+			}
 		},
-		[]
+		[completedTaskId, outlinerData]
 	)
 
 	const handleNewIdeaNavigate = useCallback(
