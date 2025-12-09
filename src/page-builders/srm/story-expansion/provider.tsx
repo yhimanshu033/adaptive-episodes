@@ -48,10 +48,12 @@ function useStoryExpansionUtil() {
 
 	// Parameters state
 	const [parameters, setParameters] = useState<TParameter>({
-		character: '',
-		plot: '',
-		world: '',
-		focus: null,
+		activePlotThreads: '',
+		keyMoments: '',
+		recurringCharacters: '',
+		themes: '',
+		experiments: '',
+		focus: [],
 	})
 	const [parameterSummary, setParameterSummary] =
 		useState<TParameterSummary | null>(null)
@@ -137,8 +139,11 @@ function useStoryExpansionUtil() {
 		mutationKey: ['save-parameter-summary'],
 		mutationFn: async () => {
 			await new Promise((resolve) => setTimeout(resolve, 1000))
+			const focusedFields = parameters.focus?.length
+				? `Focus: ${parameters.focus.join(', ')}`
+				: 'No focus fields selected'
 			return {
-				content: `Parameters summary: Character focus: ${parameters.character || 'Not specified'}, Plot: ${parameters.plot || 'Not specified'}, World: ${parameters.world || 'Not specified'}`,
+				content: `Parameters summary: ${focusedFields}\n\nActive Plot Threads: ${parameters.activePlotThreads || 'Not specified'}\nKey Moments: ${parameters.keyMoments || 'Not specified'}\nRecurring Characters: ${parameters.recurringCharacters || 'Not specified'}\nThemes: ${parameters.themes || 'Not specified'}\nExperiments: ${parameters.experiments || 'Not specified'}`,
 			} as TParameterSummary
 		},
 		onSuccess: (data) => {
@@ -243,21 +248,25 @@ function useStoryExpansionUtil() {
 	})
 
 	// Functions
-	const handleSendChatMessage = useCallback(() => {
-		if (!chatInput.trim()) {
-			return
-		}
+	const handleSendChatMessage = useCallback(
+		(input: string, files?: File[]) => {
+			if (!input.trim()) {
+				return
+			}
+			console.log({ files })
 
-		const userMessage: TMessage = {
-			id: nanoid(),
-			role: 'user',
-			content: chatInput,
-			timestamp: new Date(),
-		}
+			const userMessage: TMessage = {
+				id: nanoid(),
+				role: 'user',
+				content: input,
+				timestamp: new Date(),
+			}
 
-		setChatMessages((prev) => [...prev, userMessage])
-		sendChatMessageMutation.mutate(chatInput)
-	}, [chatInput, sendChatMessageMutation])
+			setChatMessages((prev) => [...prev, userMessage])
+			sendChatMessageMutation.mutate(input)
+		},
+		[sendChatMessageMutation, setChatMessages]
+	)
 
 	const handleSendReviewChatMessage = useCallback(() => {
 		if (!reviewChatInput.trim()) {
@@ -275,21 +284,24 @@ function useStoryExpansionUtil() {
 		sendReviewChatMessageMutation.mutate(reviewChatInput)
 	}, [reviewChatInput, sendReviewChatMessageMutation])
 
-	const handleSendGlobalChatMessage = useCallback(() => {
-		if (!globalChatInput.trim()) {
-			return
-		}
+	const handleSendGlobalChatMessage = useCallback(
+		(input: string, files?: File[]) => {
+			if (!input.trim()) {
+				return
+			}
+			console.log({ files })
+			const userMessage: TMessage = {
+				id: nanoid(),
+				role: 'user',
+				content: input,
+				timestamp: new Date(),
+			}
 
-		const userMessage: TMessage = {
-			id: nanoid(),
-			role: 'user',
-			content: globalChatInput,
-			timestamp: new Date(),
-		}
-
-		setGlobalChatMessages((prev) => [...prev, userMessage])
-		sendGlobalChatMessageMutation.mutate(globalChatInput)
-	}, [globalChatInput, sendGlobalChatMessageMutation])
+			setGlobalChatMessages((prev) => [...prev, userMessage])
+			sendGlobalChatMessageMutation.mutate(input)
+		},
+		[sendGlobalChatMessageMutation, setGlobalChatMessages]
+	)
 
 	const handleSaveConversationSummary = useCallback(() => {
 		saveConversationSummaryMutation.mutate()

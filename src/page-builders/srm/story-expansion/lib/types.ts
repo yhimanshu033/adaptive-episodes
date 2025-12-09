@@ -24,10 +24,18 @@ export interface TConversationSummary {
 }
 
 export interface TParameter {
-	character: string
-	focus: 'character' | 'plot' | 'world' | null
-	plot: string
-	world: string
+	activePlotThreads: string
+	experiments: string
+	focus: (
+		| 'activePlotThreads'
+		| 'keyMoments'
+		| 'recurringCharacters'
+		| 'themes'
+		| 'experiments'
+	)[]
+	keyMoments: string
+	recurringCharacters: string
+	themes: string
 }
 
 export interface TParameterSummary {
