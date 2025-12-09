@@ -1,5 +1,5 @@
 import type { Decorate } from 'platejs'
-import { ElementApi, TextApi } from 'platejs'
+import { ElementApi, KEYS, TextApi } from 'platejs'
 import type { Range } from 'slate'
 
 import { type FindReplaceConfig } from '@/lib/plate/plugins/find-replace/FindReplacePlugin'
@@ -20,7 +20,8 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 			search &&
 			ElementApi.isElement(node) &&
 			search.trim().length &&
-			node.children.every(TextApi.isText)
+			node.children.every(TextApi.isText) &&
+			!node?.[KEYS.suggestion]
 		)
 	) {
 		return []
@@ -33,7 +34,9 @@ export const decorateFindReplace: Decorate<FindReplaceConfig> = ({
 		wholeWord,
 	})
 
-	const texts = node.children.map((it) => it.text)
+	const texts = node.children.map((it) =>
+		it?.[KEYS.suggestion] ? '' : it.text
+	)
 	const str = texts.join('')
 
 	const matches: { length: number; match: string; start: number }[] = []

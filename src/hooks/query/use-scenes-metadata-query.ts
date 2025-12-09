@@ -14,35 +14,35 @@ import { TNoParams } from '@/types/common'
 
 import useEpisodeContent from './use-episode-content'
 
+export const getScenesMetadata = async (id?: number) => {
+	const response = await fetchAPI<
+		TGetScenesMetadataAPIResponse,
+		TNoParams,
+		TNoParams,
+		TGetScenesMetadataQueryParams
+	>({
+		url: API_URLS.GET_SCENES_METADATA,
+		method: 'GET',
+		query: {
+			chapter_id: Number(id || null),
+		},
+	})
+
+	if (!response.success) {
+		throw new Error(
+			response.error?.message || 'Failed to fetch scenes metadata'
+		)
+	}
+
+	return response.data
+}
+
 export default function useScenesMetadataQuery() {
 	const { episode } = useEpisodeContent()
 
-	const getScenesMetadata = async () => {
-		const response = await fetchAPI<
-			TGetScenesMetadataAPIResponse,
-			TNoParams,
-			TNoParams,
-			TGetScenesMetadataQueryParams
-		>({
-			url: API_URLS.GET_SCENES_METADATA,
-			method: 'GET',
-			query: {
-				chapter_id: Number(episode?.id || null),
-			},
-		})
-
-		if (!response.success) {
-			throw new Error(
-				response.error?.message || 'Failed to fetch scenes metadata'
-			)
-		}
-
-		return response.data
-	}
-
 	const query = useQuery({
 		queryKey: [SCENES_METADATA_QUERY_KEY, Number(episode?.id)],
-		queryFn: () => getScenesMetadata(),
+		queryFn: () => getScenesMetadata(episode?.id),
 	})
 
 	useEffect(() => {

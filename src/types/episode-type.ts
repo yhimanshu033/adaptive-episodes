@@ -2,11 +2,11 @@ import { ReactNode } from 'react'
 import { EpisodeActions } from '@/constants/episodes-constants'
 import { VariantProps } from 'class-variance-authority'
 import { Value } from 'platejs'
+import { TCustomComment } from 'unified-editor'
 
 import { dialogVariants } from '@/components/aural-ui/dialog'
 
 import { BASE_STATUS, EEpisodeType, ELanguage, EStatus } from '@/types/common'
-import { TCustomComment } from '@/types/editor-types'
 import { TCommentGeneric, TNote } from '@/types/plate-types'
 
 export type EpisodeStoreState = {

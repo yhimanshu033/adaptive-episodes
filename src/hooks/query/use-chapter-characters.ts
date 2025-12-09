@@ -11,26 +11,26 @@ import {
 	TGetChapterCharactersResponse,
 } from '@/types/episode-type'
 
+export async function fetchChapterCharacters({
+	chapter_id,
+}: TGetChapterCharactersQuery) {
+	const resp = await fetchAPI<
+		TGetChapterCharactersResponse,
+		TNoParams,
+		TNoParams,
+		TGetChapterCharactersQuery
+	>({
+		method: 'GET',
+		url: API_URLS.CHAPTER_CHARACTERS,
+		query: {
+			chapter_id,
+		},
+	})
+	return resp.data as TGetChapterCharactersResponse
+}
+
 export default function useChapterCharacters() {
 	const { data } = useEpisodeContent()
-
-	async function fetchChapterCharacters({
-		chapter_id,
-	}: TGetChapterCharactersQuery) {
-		const resp = await fetchAPI<
-			TGetChapterCharactersResponse,
-			TNoParams,
-			TNoParams,
-			TGetChapterCharactersQuery
-		>({
-			method: 'GET',
-			url: API_URLS.CHAPTER_CHARACTERS,
-			query: {
-				chapter_id,
-			},
-		})
-		return resp.data
-	}
 
 	const query = useQuery({
 		queryKey: [CHAPTER_CHARACTERS_DATA_QUERY_KEY, data?.chapter.id],

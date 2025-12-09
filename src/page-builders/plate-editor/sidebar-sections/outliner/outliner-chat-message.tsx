@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react'
 import { EFeedback } from '@/constants/analytics'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
-import { StreamedResponseWithCopy } from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages/block-message'
 import {
 	EOutlinerChatAction,
 	TOutlinerChatMessage,
 } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
 import useOutliner from '@/page-builders/plate-editor/sidebar-sections/outliner/provider'
+import { StreamedResponseWithCopy } from 'unified-editor'
 
 import ChatbotStatus from '@/components/chatbot-status'
 import { If } from '@/components/if-else'

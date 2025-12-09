@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { fetchAPI } from '@/lib/fetch-api'
+import { downloadFile } from '@/lib/utils/client-helpers'
 
 import {
 	TLocalizeBody,
@@ -102,19 +103,27 @@ export const useLocalizeMutation = () => {
 	return mutation
 }
 
+export async function downloadLOCSheet(id: string) {
+	const res = await fetchAPI<{ csv_sheet_url: string }, TIdParams>({
+		method: 'GET',
+		url: API_URLS.LOCALIZATION_GET,
+		urlParams: { id: String(id) },
+	})
+	const url = res.data?.csv_sheet_url
+
+	if (!url) {
+		toast.error('URL could not be fetched')
+		return
+	}
+	downloadFile(url, `LOC_sheet.csv`)
+}
+
 export const useLocalizeDownloadMutation = () => {
 	const { id } = useParams()
 
 	const mutation = useMutation({
 		mutationKey: ['localize-sheet-download'],
-		mutationFn: async () => {
-			const res = await fetchAPI<{ csv_sheet_url: string }, TIdParams>({
-				method: 'GET',
-				url: API_URLS.LOCALIZATION_GET,
-				urlParams: { id: String(id) },
-			})
-			return res.data
-		},
+		mutationFn: () => downloadLOCSheet(String(id)),
 	})
 
 	return mutation

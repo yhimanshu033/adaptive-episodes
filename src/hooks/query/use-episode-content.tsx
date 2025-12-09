@@ -9,34 +9,25 @@ import { getEpisodeContent } from '@/server-action/content-action'
 import useEpisodeIdStore from '@/store/episode-id-store'
 import useEditorExtendedStore from '@/store/extended-store'
 import { useGlobalStore } from '@/store/global-store'
-import usePlateStore from '@/store/plate-store'
+// import usePlateStore from '@/store/plate-store'
 import { useQuery } from '@tanstack/react-query'
-import { X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 
-import { Button } from '@/components/aural-ui/button'
 import useEpisodeId from '@/providers/episode-id-provider'
 import { LOCAL_STORAGE_KEYS } from '@/lib/utils/analytics'
 import {
 	getAvailableLanguages,
 	getDisabledAvailableLanguages,
-	getEpisodeQueryResponseFromStoredData,
 	getSavedParamsFromEpisodeData,
 	getSelectedEpisode,
 	getSelectedEpisodeFromLanguage,
 } from '@/lib/utils/helpers'
 import { getValue, removeValue } from '@/lib/utils/indexed-db'
-import {
-	breakDownValue,
-	isEpisodeContentDifferent,
-	jsonify,
-} from '@/lib/utils/plate'
+import { isEpisodeContentDifferent } from '@/lib/utils/plate'
 
 import { BASE_STATUS, ELanguage } from '@/types/common'
-import { EDualVIewMode } from '@/types/episode-type'
-import { ESidebar } from '@/types/plate-types'
 
 import useAccessChecks from '../use-access-checks'
 
@@ -50,7 +41,6 @@ import useAccessChecks from '../use-access-checks'
 
 export const useEpisodeContentUtil = () => {
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()
-
 	const { isOriginal, isOriginalEp } = useAccessChecks()
 	const pathName = usePathname()
 
@@ -99,7 +89,7 @@ export const useEpisodeContentUtil = () => {
 		[data]
 	)
 
-	const { setLocalDiffValue, setSidebar } = usePlateStore()
+	// const { setLocalDiffValue, setSidebar } = usePlateStore()
 	const { setDualViewMode, setRecentEmail } = useEpisodeIdStore()
 	const queryKey = useMemo(
 		() => [
@@ -158,44 +148,45 @@ export const useEpisodeContentUtil = () => {
 			void removeValue(`${resp.chapter.project}_${usedEpisodeId}`)
 			return resp
 		}
-		toast(
-			`Episode ${resp?.chapter?.seq_number || ''}: ${dict('contentChanged')}`,
-			{
-				id: episodeId,
-				action: (
-					<>
-						<Button
-							innerClassName="w-30!"
-							size="sm"
-							onClick={() => {
-								setLocalDiffValue(
-									breakDownValue(
-										jsonify(
-											getEpisodeQueryResponseFromStoredData({
-												episodeData: resp,
-												oldData,
-											}).text
-										)
-									)
-								)
-								setSidebar(ESidebar.DUAL_VIEW)
-								setDualViewMode(EDualVIewMode.LOCAL_DIFF)
-								toast.dismiss(episodeId)
-							}}
-						>
-							{dict('localChanges')}
-						</Button>
-						<X
-							className="absolute top-1 right-1 z-10 cursor-pointer"
-							onClick={() => toast.dismiss(episodeId)}
-							size={12}
-						/>
-					</>
-				),
-				duration: Infinity,
-			}
-		)
+		// toast(
+		// 	`Episode ${resp?.chapter?.seq_number || ''}: ${dict('contentChanged')}`,
+		// 	{
+		// 		id: episodeId,
+		// 		action: (
+		// 			<>
+		// 				<Button
+		// 					innerClassName="w-30!"
+		// 					size="sm"
+		// 					onClick={() => {
+		// 						setLocalDiffValue(
+		// 							breakDownValue(
+		// 								jsonify(
+		// 									getEpisodeQueryResponseFromStoredData({
+		// 										episodeData: resp,
+		// 										oldData,
+		// 									}).text
+		// 								)
+		// 							)
+		// 						)
+		// 						setSidebar(ESidebar.DUAL_VIEW)
+		// 						setDualViewMode(EDualVIewMode.LOCAL_DIFF)
+		// 						toast.dismiss(episodeId)
+		// 					}}
+		// 				>
+		// 					{dict('localChanges')}
+		// 				</Button>
+		// 				<X
+		// 					className="absolute top-1 right-1 z-10 cursor-pointer"
+		// 					onClick={() => toast.dismiss(episodeId)}
+		// 					size={12}
+		// 				/>
+		// 			</>
+		// 		),
+		// 		duration: Infinity,
+		// 	}
+		// )
 		return resp
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		addEpisodeKey,
 		addEpisodeMap,
@@ -203,8 +194,6 @@ export const useEpisodeContentUtil = () => {
 		episodeId,
 		queryKey,
 		setDualViewMode,
-		setLocalDiffValue,
-		setSidebar,
 		setRecentEmail,
 		episode,
 		userData,

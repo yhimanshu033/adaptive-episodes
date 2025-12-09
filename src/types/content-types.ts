@@ -1,7 +1,6 @@
-import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
+import { TCustomComment, TDiscussion } from 'unified-editor'
 
 import { BASE_STATUS, ELanguage, EStatus, TStatus } from '@/types/common'
-import { TCustomComment } from '@/types/editor-types'
 import { TGetEpisodeResponse, TLLMMemories } from '@/types/episode-type'
 
 export type TMetadata = {
@@ -50,7 +49,7 @@ export type TGDriveAuthResponse = {
 
 export type TGetSavingParamsRet = {
 	allComments: TDiscussion[]
-	chapterData: TGetEpisodeResponse
+	chapterData?: TGetEpisodeResponse
 	chapterId: number
 	commentsStr: string
 	contentStr: string

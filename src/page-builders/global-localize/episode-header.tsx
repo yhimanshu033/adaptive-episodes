@@ -11,6 +11,7 @@ import HomeButton from '@/page-builders/plate-editor/buttons/home-button'
 import SaveEpisode from '@/page-builders/plate-editor/buttons/save-episode'
 import Versions from '@/page-builders/plate-editor/buttons/versions'
 import Title from '@/page-builders/plate-editor/title'
+import { ESidebar } from 'unified-editor'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
@@ -25,7 +26,6 @@ import useProjectId from '@/providers/project-id-provider'
 import { ERole } from '@/types/admin-types'
 import { BASE_STATUS, EStatus } from '@/types/common'
 import { TGetEpisodeResponse } from '@/types/episode-type'
-import { ESidebar } from '@/types/plate-types'
 
 const EpisodeHeader = ({
 	content,
