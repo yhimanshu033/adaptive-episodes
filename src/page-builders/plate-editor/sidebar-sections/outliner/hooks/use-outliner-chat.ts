@@ -1,4 +1,3 @@
-import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useSocketStreaming from '@/hooks/use-socket-streaming'
@@ -18,7 +17,6 @@ import { TMessage } from '@/types/ai-types'
 import { ELanguage } from '@/types/common'
 
 export default function useOutlinerChat() {
-	const { id } = useParams()
 	const { data } = useEpisodeContent()
 	const { startTask, responses } = useSocketStreaming()
 	async function sendOutlinerChat({
@@ -52,7 +50,8 @@ export default function useOutlinerChat() {
 			method: 'POST',
 			url: API_URLS.OUTLINER_CHAT,
 			body: {
-				project_id: Number(id),
+				project_id: data?.chapter?.project || 0,
+				chapter_id: data?.chapter?.id || 0,
 				ep_number: data?.chapter?.seq_number || 0,
 				current_episode_context:
 					data?.chapter?.props?.llm_memories?.context || '',
@@ -96,7 +95,11 @@ export default function useOutlinerChat() {
 		return taskId
 	}
 	const mutation = useMutation({
-		mutationKey: ['outliner-chat', id, data?.chapter?.seq_number],
+		mutationKey: [
+			'outliner-chat',
+			data?.chapter?.project,
+			data?.chapter?.seq_number,
+		],
 		mutationFn: sendOutlinerChat,
 	})
 
