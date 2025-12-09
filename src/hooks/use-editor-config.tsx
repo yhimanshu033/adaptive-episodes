@@ -390,6 +390,9 @@ export default function useEditorConfig() {
 						type: ToolbarTypes.BEAT_SHEET_EDITOR_TOGGLE,
 					},
 					{
+						type: ToolbarTypes.OUTLINER,
+					},
+					{
 						type: ToolbarTypes.TRANSLATION,
 					},
 					{
