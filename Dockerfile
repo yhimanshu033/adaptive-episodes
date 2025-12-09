@@ -13,11 +13,13 @@ RUN echo "NEXTAUTH_SECRET=TwmBgFrFU1DTsnrvm8pLBXt0yMPYFyT/EOCoX6AZo1s=" >> .env
 #RUN echo "NEXT_PUBLIC_BASE_URL=https://copilot.pocketfm.com" >> .env
 RUN echo "NEXT_PUBLIC_LASERTOOLS_API_KEY=JHvCML1yir-6d6JcYVlsEeHd8QzAhZMy98Rc62plmHI" >> .env
 
-RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-prod.pocketfm.com" >> .env
-RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket.pocketfm.com" >> .env
+# RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-prod.pocketfm.com" >> .env
+# RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket.pocketfm.com" >> .env
 
-# RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-be-qa.pocketfm.org" >> .env
-# RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket-qa.pocketfm.com" >> .env
+RUN echo "NEXT_PUBLIC_BACKEND_URL=https://copilot-be-qa.pocketfm.org" >> .env
+RUN echo "NEXT_PUBLIC_SOCKET_URL=https://copilot-socket-qa.pocketfm.com" >> .env
+RUN echo "NEXT_PUBLIC_RTE_BACKEND_URL=https://copilot-be-qa.pocketfm.org" >> .env
+RUN echo "NEXT_PUBLIC_RTE_SOCKET_URL=https://copilot-socket-qa.pocketfm.com" >> .env
 
 # RUN echo "NEXT_PUBLIC_BACKEND_URL=https://pocketfm-copilot-api.pocketfm.com" >> .env
 # RUN echo "NEXT_PUBLIC_SOCKET_URL=https://pocketfm-copilot-api.pocketfm.com" >> .env
@@ -33,11 +35,11 @@ RUN echo "NEXT_PUBLIC_SENTRY_DSN_URL=https://5c0b78d4ba827ea668db896758cc968a@o4
 RUN echo "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=hoGdfmov/g6jRwNGMZcGjKcM6LhkomKO0zSrxs9Rrs8=" >> .env
 
 # FOR ANALYTICS
-RUN echo "NEXT_PUBLIC_DEPLOY_ENV=production" >> .env
+RUN echo "NEXT_PUBLIC_DEPLOY_ENV=qa" >> .env
 RUN echo "NEXT_PUBLIC_ANALYTICS_ENABLED=true" >> .env
 
 # FOR SENTRY
-RUN echo "NEXT_PUBLIC_SENTRY_ENVIRONMENT=production" >> .env
+RUN echo "NEXT_PUBLIC_SENTRY_ENVIRONMENT=qa" >> .env
 
 ENV SENTRY_AUTH_TOKEN=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
 
