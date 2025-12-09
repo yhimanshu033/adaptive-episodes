@@ -4,11 +4,9 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import { QUICK_PROMPTS, QUICK_PROMPTS_EN } from '@/constants/ai-constants'
 import { downloadLOCSheet } from '@/hooks/mutation/use-localize-hook'
-import { fetchChapterCharacters } from '@/hooks/query/use-chapter-characters'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { getNextEpContent } from '@/hooks/query/use-next-episode-content'
 import { getPrevEpContent } from '@/hooks/query/use-prev-episode-content'
-import { getScenesMetadata } from '@/hooks/query/use-scenes-metadata-query'
 import ViewLS from '@/page-builders/episodes/info/view-ls'
 import { getEpisodeContent } from '@/server-action/content-action'
 import { getNotes, updateNotes } from '@/server-action/episode-action'
@@ -31,7 +29,6 @@ import { Button } from '@/components/aural-ui/button'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import useProjectId from '@/providers/project-id-provider'
 import { getGCSContent } from '@/lib/utils/gcs'
-import { hasNWMRan } from '@/lib/utils/helpers'
 import { getTextFromTextOrValue } from '@/lib/utils/plate'
 
 import { ELanguage } from '@/types/common'
@@ -65,7 +62,7 @@ export default function useEditorConfig() {
 			JSON.stringify(savedProps.content) === JSON.stringify(props.content)
 		) {
 			console.log('Already saved')
-			return 'Already saved'
+			return
 		}
 		console.log('Saving...')
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -232,14 +229,14 @@ export default function useEditorConfig() {
 								? QUICK_PROMPTS
 								: QUICK_PROMPTS_EN,
 					},
-					[ESidebar.BEAT_SHEET]: {
-						enableBeatSheetEditor: hasNWMRan(contentData?.chapter),
-						getChapterCharacters: () =>
-							fetchChapterCharacters({
-								chapter_id: Number(contentData?.chapter.id || 0),
-							}),
-						getScenesMetadata: () => getScenesMetadata(contentData?.chapter.id),
-					},
+					// [ESidebar.BEAT_SHEET]: {
+					// 	enableBeatSheetEditor: hasNWMRan(contentData?.chapter),
+					// 	getChapterCharacters: () =>
+					// 		fetchChapterCharacters({
+					// 			chapter_id: Number(contentData?.chapter.id || 0),
+					// 		}),
+					// 	getScenesMetadata: () => getScenesMetadata(contentData?.chapter.id),
+					// },
 					[ESidebar.NOTES]: {
 						getNotes: () => getNotes(Number(contentData?.chapter.project)),
 						updateNotes: ({ params }) =>
@@ -386,9 +383,9 @@ export default function useEditorConfig() {
 					{
 						type: ToolbarTypes.FIND_REPLACE,
 					},
-					{
-						type: ToolbarTypes.BEAT_SHEET_EDITOR_TOGGLE,
-					},
+					// {
+					// 	type: ToolbarTypes.BEAT_SHEET_EDITOR_TOGGLE,
+					// },
 					{
 						type: ToolbarTypes.OUTLINER,
 					},
