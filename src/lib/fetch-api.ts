@@ -90,6 +90,7 @@ export async function fetchAPI<
 	const sendError = !ignoreError && !IGNORE_ERROR_API_URLS.has(url)
 
 	const BASE_URL = baseUrl ?? process.env.NEXT_PUBLIC_BACKEND_URL
+	const isQAEnvironment = process.env.NEXT_PUBLIC_DEPLOY_ENV === 'qa'
 
 	if (!BASE_URL) {
 		throw new Error('Backend URL not set in env!')
@@ -194,7 +195,7 @@ export async function fetchAPI<
 		let bodyToSend: BodyInit = isFormData ? body : JSON.stringify(body)
 		let compressionHeaders: Record<string, string> = {}
 
-		if (hasBody && enableCompression) {
+		if (hasBody && enableCompression && !isQAEnvironment) {
 			const compressionResult = await compressPayload(bodyToSend)
 			bodyToSend = compressionResult.body
 			compressionHeaders = compressionResult.headers
