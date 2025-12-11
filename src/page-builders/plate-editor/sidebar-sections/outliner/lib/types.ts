@@ -59,6 +59,7 @@ export enum EOutlinerMode {
 
 export interface TOutlinerChatbotRequestBody {
 	action?: string
+	chapter_id: number
 	chat_history: TSimplifiedMessage[]
 	current_episode_context: string
 	current_episode_summary: string
