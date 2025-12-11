@@ -6,7 +6,6 @@ export async function getGCSContent({ url }: { url?: string | null }) {
 	}
 	try {
 		const urlObj = new URL(url)
-		urlObj.searchParams.set('v', Date.now().toString())
 		const resp = await fetch(urlObj, {
 			next: {
 				revalidate: 0,
