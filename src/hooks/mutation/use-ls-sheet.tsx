@@ -12,7 +12,7 @@ import { fetchAPI } from '@/lib/fetch-api'
 import { migrateOldLSMapping } from '@/lib/utils/helpers'
 
 import { TGetAdaptationLSUrlParams } from '@/types/ai-types'
-import { LSMappingInput } from '@/types/common'
+import { LSMappingAPIResponse } from '@/types/common'
 
 export default function useLSSheetQuery() {
 	const language = useLanguage()
@@ -22,7 +22,10 @@ export default function useLSSheetQuery() {
 		if (!sourceLanguage && language === parentLanguage) {
 			return null
 		}
-		const resp = await fetchAPI<LSMappingInput, TGetAdaptationLSUrlParams>({
+		const resp = await fetchAPI<
+			LSMappingAPIResponse,
+			TGetAdaptationLSUrlParams
+		>({
 			method: 'GET',
 			url: API_URLS.GET_ADAPTATION_LS,
 			urlParams: {
@@ -36,7 +39,7 @@ export default function useLSSheetQuery() {
 				icon: <BubbleCrossedIcon />,
 			})
 		}
-		const migratedData = migrateOldLSMapping(resp.data)
+		const migratedData = migrateOldLSMapping(resp.data?.result)
 
 		return migratedData
 	}
