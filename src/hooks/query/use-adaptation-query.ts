@@ -7,7 +7,7 @@ import { doPoll } from '@/lib/do-poll'
 import { migrateOldLSMapping } from '@/lib/utils/helpers'
 
 import { TGetAdaptationLSUrlParams } from '@/types/ai-types'
-import { ELanguage, LSMappingInput, TNoParams } from '@/types/common'
+import { ELanguage, LSMappingAPIResponse, TNoParams } from '@/types/common'
 
 const useAdaptationQuery = ({
 	language,
@@ -24,7 +24,7 @@ const useAdaptationQuery = ({
 		try {
 			const pollingResp = await doPoll<
 				TNoParams,
-				LSMappingInput,
+				LSMappingAPIResponse,
 				TGetAdaptationLSUrlParams
 			>({
 				method: 'GET',
@@ -49,7 +49,7 @@ const useAdaptationQuery = ({
 				return null
 			}
 
-			const migratedData = migrateOldLSMapping(pollingResp.data)
+			const migratedData = migrateOldLSMapping(pollingResp.data?.result)
 
 			return migratedData
 		} catch (error) {

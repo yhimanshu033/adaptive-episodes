@@ -850,13 +850,7 @@ export function parseInputLSMapping(input: LSMappingInput): {
 			if (section === LSMappingSequenceField) {
 				return [section, items]
 			}
-			return [
-				section,
-				Object.entries(items).map(([original_name, item]) => ({
-					original_name,
-					...item,
-				})),
-			]
+			return [section, Object.values(items)]
 		})
 	) as {
 		[LSMappingSequenceField]: LSMappingSequenceData['sequence_ls']

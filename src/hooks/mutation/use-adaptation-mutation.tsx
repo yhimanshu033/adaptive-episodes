@@ -27,7 +27,7 @@ import {
 } from '@/types/ai-types'
 import {
 	ELanguage,
-	LSMappingInput,
+	LSMappingAPIResponse,
 	LSMappingOutput,
 	TNoParams,
 } from '@/types/common'
@@ -89,7 +89,7 @@ export default function useAdaptationMutation({
 		}
 		const pollingResp = await doPoll<
 			TNoParams,
-			LSMappingInput,
+			LSMappingAPIResponse,
 			TGetAdaptationLSUrlParams
 		>({
 			method: 'GET',
@@ -113,7 +113,7 @@ export default function useAdaptationMutation({
 			throw new Error('LS sheet not found!')
 		}
 
-		const migratedData = migrateOldLSMapping(pollingResp?.data)
+		const migratedData = migrateOldLSMapping(pollingResp?.data?.result)
 
 		return migratedData
 	}
