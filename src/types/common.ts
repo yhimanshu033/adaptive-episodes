@@ -152,6 +152,12 @@ export interface LSMappingInput {
 	ls_mapping: LSMappingInputItemV2
 }
 
+export interface LSMappingAPIResponse {
+	message: string
+	result: LSMappingInput
+	status: number
+}
+
 export interface LSMappingOutput {
 	ls_mapping: LSMappingOutputItemV2
 }
