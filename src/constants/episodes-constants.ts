@@ -138,21 +138,24 @@ export const PAGES_TO_SHOW = 5
 
 export enum ImportStoryType {
 	BRAINSTORM = 'brainstorm',
+	CMS = 'cms',
 	EMPTY = 'empty',
 	IMPORT = 'import',
 }
 
 export enum ImportStoryStep {
 	CHOOSE_TYPE = 'choose-type',
+	CMS_IMPORT = 'cms-import',
 	CONTENT = 'content',
 	DETAILS = 'details',
 }
 
-export const storySteps = [
+export const storySteps: ImportStoryStep[] = [
 	ImportStoryStep.CHOOSE_TYPE,
 	ImportStoryStep.DETAILS,
 	ImportStoryStep.CONTENT,
 ] as const
+
 export const switchableStepsInfo: { title: string; type: ImportStoryStep }[] = [
 	{ type: ImportStoryStep.DETAILS, title: 'Set up name' },
 	{ type: ImportStoryStep.CONTENT, title: 'Import content' },
