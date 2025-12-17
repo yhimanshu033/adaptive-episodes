@@ -108,6 +108,10 @@ export type TGetOutlinerMetadataUrlParams = {
 	projectId: number
 }
 
+export type TUpdateOutlinerUrlParams = {
+	projectId: number
+}
+
 export type TUpdateOutlinerMetadataBody = {
 	narrative_arc_plan: string
 }
