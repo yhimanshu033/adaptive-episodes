@@ -5,13 +5,7 @@ export async function getGCSContent({ url }: { url?: string | null }) {
 		return ''
 	}
 	try {
-		const urlObj = new URL(url)
-
-		if (!urlObj.searchParams.has('X-Goog-Signature')) {
-			urlObj.searchParams.set('v', Date.now().toString())
-		}
-
-		const resp = await fetch(urlObj, {
+		const resp = await fetch(url, {
 			next: {
 				revalidate: 0,
 			},
