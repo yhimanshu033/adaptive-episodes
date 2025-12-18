@@ -5,8 +5,7 @@ export async function getGCSContent({ url }: { url?: string | null }) {
 		return ''
 	}
 	try {
-		const urlObj = new URL(url)
-		const resp = await fetch(urlObj, {
+		const resp = await fetch(url, {
 			next: {
 				revalidate: 0,
 			},

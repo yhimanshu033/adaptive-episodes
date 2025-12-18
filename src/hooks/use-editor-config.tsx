@@ -290,7 +290,13 @@ export default function useEditorConfig() {
 							contentData?.chapter?.language
 						)
 					).data,
-				storyData: initialStoryData,
+				storyData: {
+					id: initialStoryData?.id || 0,
+					episodeCount: initialStoryData?.episode_count,
+					image: initialStoryData?.image,
+					title: initialStoryData?.project_title,
+					props: initialStoryData?.props,
+				},
 			},
 			accessControlConfig: {
 				disableEditing:
@@ -332,42 +338,62 @@ export default function useEditorConfig() {
 				fixedToolbar: [
 					{
 						type: ToolbarTypes.UNDO,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.REDO,
+						separator: true,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.ZOOM_DROPDOWN,
+						separator: true,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.FONT_FAMILY,
+						separator: true,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.FONT_SIZE,
+						separator: true,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.BOLD,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.ITALIC,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.UNDERLINE,
+						separator: true,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.TURN_INTO,
+						separator: true,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.COLOR,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.BACKGROUND_COLOR,
+						separator: true,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.LINE_HEIGHT,
+						editOnly: true,
 					},
 					{
 						type: ToolbarTypes.ALIGN,
+						editOnly: true,
 					},
 					{
 						type: 'custom',
@@ -377,17 +403,20 @@ export default function useEditorConfig() {
 						? [
 								{
 									type: ToolbarTypes.TTS,
+									separator: true,
 								},
 							]
 						: []),
 					{
 						type: ToolbarTypes.FIND_REPLACE,
+						separator: true,
 					},
 					// {
 					// 	type: ToolbarTypes.BEAT_SHEET_EDITOR_TOGGLE,
 					// },
 					{
 						type: ToolbarTypes.OUTLINER,
+						separator: true,
 					},
 					{
 						type: ToolbarTypes.TRANSLATION,

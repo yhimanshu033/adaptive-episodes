@@ -11,7 +11,7 @@ import { getSelectedEpisode } from '@/lib/utils/helpers'
 import { TGetEpisodeResponse } from '@/types/episode-type'
 
 export async function getNextEpContent(data?: TGetEpisodeResponse | null) {
-	const episodeId = data?.previous_parent_id || 0
+	const episodeId = data?.next_parent_id || 0
 	const id = data?.chapter?.project || 0
 	if (!episodeId) {
 		return ''
