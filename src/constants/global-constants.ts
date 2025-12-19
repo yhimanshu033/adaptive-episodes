@@ -148,8 +148,8 @@ export const API_URLS = {
 	SAVE_EPISODE_SUMMARY: '/chapters/:episodeId/save-summary',
 	GET_USER_FEATURE_ACCESS: '/user/feature-access',
 
-	GET_CMS_SHOWS: '/api/cms/search/',
-	UPDATE_CMS_SHOW: '/aicopilot/cms-import',
+	GET_CMS_SHOWS: '/cms/search/',
+	UPLOAD_CMS_SHOW: '/aicopilot/cms-import',
 	CMS_FAILED_EPISODES: '/cms/:projectId/failed-chapters/',
 }
 

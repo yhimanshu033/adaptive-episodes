@@ -100,3 +100,5 @@ export const OUTLINER_QUESTIONNAIRE_NEW_IDEAS_REGENERATE_MUTATION_KEY =
 
 export const GET_FILE_CONTENT = 'get-file-content'
 export const GET_USER_ACCESS = 'get-user-feature-access'
+
+export const UPLOAD_CMS_SHOW_MUTATION_KEY = 'upload-cms-show'

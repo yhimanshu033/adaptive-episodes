@@ -87,3 +87,77 @@ export type TUploadStoryResponse = {
 	message: string
 	project_id?: number
 }
+
+export type TCMSShowUsers = {
+	badge_url?: string
+	bio?: string
+	entity_id: string
+	entity_type: string
+	image_url?: string
+	number_of_shows: string
+	role: string
+	subscriber_count: string
+	title: string
+	total_plays: string
+}
+
+export type TCMSShow = {
+	creator_name: string
+	days_since_upload: string
+	duration: number
+	entity_id: string
+	entity_type: string
+	image_url?: string
+	paid: number | null
+	plays: number
+	popularity_score: number
+	score: number
+	title: string
+	topics: string[] | null
+}
+
+export type TCMSShowMetadata = {
+	has_stories: boolean
+	story_count: number
+	top_story: {
+		creator_name: string
+		days_since_upload: string
+		duration: number
+		entity_id: string
+		entity_type: string
+		image_url: string
+		paid: number | null
+		plays: number
+		popularity_score: number
+		score: number
+		title: string
+		topics: string[] | null
+	}
+}
+
+export type TGetCMSShowsAPIResponse = {
+	message: string
+	result: {
+		message: string
+		metadata: TCMSShowMetadata
+		show_module_position: number
+		status: number
+		stories: TCMSShow[]
+		total_stories: number
+		total_users: number
+		users: TCMSShowUsers[]
+	}
+	status: number
+}
+
+export type TGetCMSShowsQueryParams = {
+	is_novel?: 0 | 1
+	query: string
+}
+
+export type TCMSShowUploadBody = {
+	author?: string
+	image?: string
+	llm_model?: string
+	show_id: string
+}
