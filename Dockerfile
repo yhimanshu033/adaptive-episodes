@@ -8,6 +8,13 @@ RUN npm install -g pnpm
 
 RUN pnpm install
 
+# Install submodule deps
+WORKDIR /usr/src/app/packages/unified-editor
+RUN pnpm install
+
+# Go back to main repo
+WORKDIR /usr/src/app
+
 #RUN echo "NEXTAUTH_URL=https://copilot.pocketfm.com" >> .env
 RUN echo "NEXTAUTH_SECRET=TwmBgFrFU1DTsnrvm8pLBXt0yMPYFyT/EOCoX6AZo1s=" >> .env
 #RUN echo "NEXT_PUBLIC_BASE_URL=https://copilot.pocketfm.com" >> .env
