@@ -41,7 +41,7 @@ const CMSFailedEpisodesBanner = () => {
 	}
 
 	const handleClose = () => {
-		setFailedSeqNumber(-1)
+		setFailedSeqNumber(null)
 		setCurrentIndex(0)
 	}
 
@@ -68,7 +68,7 @@ const CMSFailedEpisodesBanner = () => {
 			icon: <ChevronDownIcon />,
 			label: 'Next Episode',
 			onClick: () => void handleNextEpisode(),
-			disabled: currentIndex === failedEpisodesCount - 1,
+			disabled: currentIndex >= failedEpisodesCount - 1,
 		},
 		{
 			icon: (
@@ -81,6 +81,10 @@ const CMSFailedEpisodesBanner = () => {
 			className: 'w-auto px-2',
 		},
 	]
+
+	if (failedEpisodesCount === 0) {
+		return null
+	}
 
 	return (
 		<div className="bg-failed-banner mb-4 flex items-center justify-between p-4">

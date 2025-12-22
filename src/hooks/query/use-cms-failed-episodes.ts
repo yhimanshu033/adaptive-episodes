@@ -1,5 +1,6 @@
 import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
+import { GET_CMS_FAILED_EPISODES_QUERY_KEY } from '@/constants/query-constants'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchAPI } from '@/lib/fetch-api'
@@ -24,7 +25,7 @@ const useCMSFailedEpisodes = () => {
 		return response.data?.result
 	}
 	const query = useQuery({
-		queryKey: ['cms-failed-episodes'],
+		queryKey: [GET_CMS_FAILED_EPISODES_QUERY_KEY, projectId],
 		queryFn: () => getCMSFailedEpisodes(),
 	})
 
