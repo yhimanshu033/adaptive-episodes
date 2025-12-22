@@ -7,6 +7,7 @@ import { downloadLOCSheet } from '@/hooks/mutation/use-localize-hook'
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import { getNextEpContent } from '@/hooks/query/use-next-episode-content'
 import { getPrevEpContent } from '@/hooks/query/use-prev-episode-content'
+import useRecentUser from '@/hooks/use-recent-user'
 import ViewLS from '@/page-builders/episodes/info/view-ls'
 import { getEpisodeContent } from '@/server-action/content-action'
 import { getNotes, updateNotes } from '@/server-action/episode-action'
@@ -48,6 +49,7 @@ export default function useEditorConfig() {
 		latestStatus,
 	} = useEpisodeContent()
 	const { initialStoryData } = useEpisodeTableContext()
+	const { canCurrentUserBeRecent } = useRecentUser()
 
 	const { isWriter, users } = useProjectId()
 
@@ -61,10 +63,8 @@ export default function useEditorConfig() {
 			savedProps &&
 			JSON.stringify(savedProps.content) === JSON.stringify(props.content)
 		) {
-			console.log('Already saved')
 			return
 		}
-		console.log('Saving...')
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		savedContentRef.current = JSON.parse(JSON.stringify(props))
 	}
@@ -302,7 +302,9 @@ export default function useEditorConfig() {
 			},
 			accessControlConfig: {
 				disableEditing:
-					!isWriter || latestStatus !== contentData?.chapter?.status,
+					!isWriter ||
+					latestStatus !== contentData?.chapter?.status ||
+					!canCurrentUserBeRecent,
 				enableAccessControl:
 					!isWriter || latestStatus !== contentData?.chapter?.status,
 				members: Object.values(users),
