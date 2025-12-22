@@ -336,7 +336,7 @@ const EpisodesTable = () => {
 					<Divider className="mt-6 mb-10" variant="secondary" />
 					<If
 						condition={
-							!!initialStoryData?.props?.cms_show_id && !failedSeqNumber
+							!!initialStoryData?.props?.cms_show_id && !!failedSeqNumber
 						}
 					>
 						<CMSFailedEpisodesBanner />
