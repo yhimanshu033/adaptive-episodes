@@ -120,7 +120,7 @@ export const API_URLS = {
 	BEATSHEET_SCENE_UPDATE: '/scenes/update-metadata/',
 
 	OUTLINER_CHAT: '/aicopilot/bse/chatbot',
-	GET_OUTLINER_METADATA: '/project/:projectId/fetch-bse-metadata',
+	GET_OUTLINER_METADATA: '/project/:projectId/:chapterId/fetch-bse-metadata',
 	UPDATE_NARRATIVE_ARCS: '/project/:projectId/narrative-arc-plan',
 	OUTLINER_SUMMARY_EPISODE: '/aicopilot/bse/generate_episode',
 	OUTLINER_SUMMARY_EPISODE_V2: '/aicopilot/bse/summary-to-episode/',
