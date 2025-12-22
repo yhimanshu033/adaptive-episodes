@@ -94,6 +94,12 @@ export function useEpisodeStore() {
 		useEpisodeStoreUtil.setState({ isBseDialogOpen })
 	}
 
+	const setFailedSeqNumber = (
+		failedSeqNumber: EpisodeStoreState['failedSeqNumber']
+	) => {
+		useEpisodeStoreUtil.setState({ failedSeqNumber })
+	}
+
 	return {
 		setCurrentPage,
 		setEpisodeSearch,
@@ -112,5 +118,6 @@ export function useEpisodeStore() {
 		useEpisodeTableStore: useEpisodeStoreUtil,
 		setStatusUpdating,
 		setBseDialogOpen,
+		setFailedSeqNumber,
 	}
 }

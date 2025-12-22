@@ -6,7 +6,9 @@ import '@/hooks/form-resolvers/story-import-resolver'
 import { useRouter } from 'next/navigation'
 import { CI_DIALOG_TITLE } from '@/constants/story-constants'
 import useUserAccess from '@/hooks/query/use-user-access'
+import useIsInternal from '@/hooks/use-is-internal'
 import { BubbleSparkleIcon } from '@/icons/bubble-sparkle-icon'
+import { ColumnWideAddIcon } from '@/icons/column-wide-add-icon'
 import { ImportFolderIcon } from '@/icons/import-folder-icon'
 import { MagicBookIcon } from '@/icons/magic-book-icon'
 import useStoryStore from '@/store/story-store'
@@ -35,6 +37,14 @@ const storyTypesInfoRecord: Partial<
 	},
 }
 
+const cmsStoryItem: typeof storyTypesInfoRecord = {
+	[ImportStoryType.CMS]: {
+		title: 'Import from CMS',
+		desc: 'Get access to already published series',
+		icon: (props) => <ColumnWideAddIcon {...props} />,
+	},
+}
+
 const brainStormStoryItem: typeof storyTypesInfoRecord = {
 	[ImportStoryType.BRAINSTORM]: {
 		title: 'Brainstorm with Copilot',
@@ -55,6 +65,11 @@ const storyTypesInfoWithBrainstorm = Object.keys(brainStormStoryItem).map(
 	})
 )
 
+const cmsStoryTypesInfo = Object.keys(cmsStoryItem).map((k) => ({
+	...cmsStoryItem[k as ImportStoryType],
+	type: k as ImportStoryType,
+}))
+
 interface IChooseStoryPropsType {
 	buttonText: React.JSX.Element | 'Create' | 'Continue'
 	nextStep: () => true | undefined
@@ -71,13 +86,16 @@ const ChooseStoryTypes = ({
 	const setFormOpen = useStoryStore((state) => state.setFormOpen)
 	const router = useRouter()
 	const { data: accessData } = useUserAccess()
+	const isInternal = useIsInternal()
 
 	const displayedStoryTypes = useMemo(() => {
-		if (accessData?.survey_onboarding) {
-			return [...storyTypesInfoWithBrainstorm, ...storyTypesInfo]
-		}
-		return storyTypesInfo
-	}, [accessData])
+		const types = [
+			...(accessData?.survey_onboarding ? storyTypesInfoWithBrainstorm : []),
+			...storyTypesInfo,
+			...(isInternal ? cmsStoryTypesInfo : []),
+		]
+		return types
+	}, [accessData?.survey_onboarding, isInternal])
 
 	useEffect(() => {
 		updateStoryType(displayedStoryTypes[0].type)
@@ -88,8 +106,9 @@ const ChooseStoryTypes = ({
 			router.push('/projects/create')
 			setFormOpen(false)
 			return
-		}
-		if (storyType === ImportStoryType.EMPTY) {
+		} else if (storyType === ImportStoryType.CMS) {
+			setTitle(CI_DIALOG_TITLE.CMS)
+		} else if (storyType === ImportStoryType.EMPTY) {
 			setTitle(CI_DIALOG_TITLE.CREATE)
 		}
 		nextStep()

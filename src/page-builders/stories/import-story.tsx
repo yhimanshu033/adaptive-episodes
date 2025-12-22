@@ -29,6 +29,7 @@ import { PlusIcon } from '@/icons/plus-icon'
 import { TrashIcon } from '@/icons/trash-icon'
 import ChooseStoryTypes from '@/page-builders/stories/choose-story-types'
 import DeleteModal from '@/page-builders/stories/delete-modal'
+import ImportFromCMS from '@/page-builders/stories/import-from-cms'
 import useStoryStore from '@/store/story-store'
 import {
 	closestCenter,
@@ -137,13 +138,16 @@ export function ImportStory() {
 	}, [])
 
 	const nextStep = useCallback(() => {
-		const currentIdx = storySteps.indexOf(step)
 		if (storyType === ImportStoryType.IMPORT) {
 			setShowTitle(false)
 		}
-		if (step === lastStep) {
+
+		if (step === lastStep || step === ImportStoryStep.CMS_IMPORT) {
 			return true
+		} else if (storyType === ImportStoryType.CMS) {
+			setStep(ImportStoryStep.CMS_IMPORT)
 		} else {
+			const currentIdx = storySteps.indexOf(step)
 			setStep(storySteps[currentIdx + 1])
 		}
 	}, [lastStep, setShowTitle, step, storyType])
@@ -305,9 +309,15 @@ export function ImportStory() {
 	}
 
 	const handleStepClick = (stepIndex: number) => {
+		const selectedStep = switchableStepsInfo[stepIndex].type
+		const currentStepIndex = storySteps.indexOf(step)
+		const selectedStepIndex = storySteps.indexOf(selectedStep)
+
 		const isCompleted =
-			storySteps.indexOf(step) >=
-			storySteps.indexOf(switchableStepsInfo[stepIndex].type)
+			currentStepIndex >= 0 &&
+			selectedStepIndex >= 0 &&
+			currentStepIndex >= selectedStepIndex
+
 		if (!isCompleted) {
 			return
 		}
@@ -1006,6 +1016,9 @@ export function ImportStory() {
 							</div>
 						</form>
 					</Form>
+				</Case>
+				<Case value={ImportStoryStep.CMS_IMPORT}>
+					<ImportFromCMS />
 				</Case>
 			</SwitchCase>
 		</div>

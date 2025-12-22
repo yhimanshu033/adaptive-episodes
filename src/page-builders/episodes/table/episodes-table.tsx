@@ -20,6 +20,7 @@ import EpisodesPagination from '@/page-builders/episodes/pagination/pagination'
 import ShareAccessDialog from '@/page-builders/episodes/shared-access-dialog/share-access-dialog'
 import AdaptationContainer from '@/page-builders/episodes/table/adaptation-container'
 import AddEpisode from '@/page-builders/episodes/table/add-episode'
+import CMSFailedEpisodesBanner from '@/page-builders/episodes/table/cms-failed-episodes-banner'
 import EpisodeEmpty from '@/page-builders/episodes/table/episode-empty'
 import Filters from '@/page-builders/episodes/table/filters'
 import InventEpisodeButton, {
@@ -65,8 +66,13 @@ const EpisodesTable = () => {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 	const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-	const { setInventSeq, setIsInventOpen, setIsShareAccessDialogOpen } =
-		useEpisodeStore()
+	const {
+		setInventSeq,
+		setIsInventOpen,
+		setIsShareAccessDialogOpen,
+		useEpisodeTableStore,
+	} = useEpisodeStore()
+	const failedSeqNumber = useEpisodeTableStore((state) => state.failedSeqNumber)
 	const isGerman = useIsGerman()
 	const { initialStoryData } = useEpisodeTableContext()
 	const { currentPage, search, limit } = usePageState()
@@ -328,6 +334,13 @@ const EpisodesTable = () => {
 						</div>
 					</div>
 					<Divider className="mt-6 mb-10" variant="secondary" />
+					<If
+						condition={
+							!!initialStoryData?.props?.cms_show_id && failedSeqNumber !== -1
+						}
+					>
+						<CMSFailedEpisodesBanner />
+					</If>
 					<SelectionActions table={table} />
 					<Table
 						className={cn('bg-fm-transparent table-fixed', {
@@ -404,6 +417,8 @@ const EpisodesTable = () => {
 											{table.getRowModel().rows.map((row, rowIndex) => {
 												const isHovered = hoverIndex === rowIndex
 												const shouldShowHoverAction = isHoverable && isHovered
+												const isFailedEpisode =
+													row.original.seq_number === failedSeqNumber
 
 												const inventButtonProps: InventEpisodeButtonProps = {
 													handleInventMouseEnter: () =>
@@ -436,6 +451,8 @@ const EpisodesTable = () => {
 																	'bg-fm-secondary-50': row.getIsSelected(),
 																	'bg-fm-surface-frosted/20 border-b-[0.5px]':
 																		shouldShowHoverAction,
+																	'border-b-fm-divider-brand-primary border-b-[0.5px]':
+																		isFailedEpisode,
 																}
 															)}
 															onMouseMove={(e) => handleRowMouseMove(e, row)}
