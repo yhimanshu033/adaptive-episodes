@@ -13,6 +13,21 @@ import { TCMSShowUploadBody } from '@/types/story-types'
 const useCMSUploadMutation = () => {
 	const { startTask } = useSocket()
 	const queryClient = useQueryClient()
+
+	const onSuccess = () => {
+		toast.success('CMS show import started!')
+		setTimeout(() => {
+			void queryClient.invalidateQueries({
+				queryKey: [STORIES_QUERY_KEY],
+				type: 'all',
+			})
+			void queryClient.invalidateQueries({
+				queryKey: [USER_PROJECTS_QUERY_KEY],
+				type: 'all',
+			})
+		}, 1000)
+	}
+
 	const onCMSUploadMutation = async (body: TCMSShowUploadBody) => {
 		const taskId = await startTask<TCMSShowUploadBody>({
 			method: 'POST',
@@ -25,17 +40,7 @@ const useCMSUploadMutation = () => {
 	const cmsUploadMutation = useMutation({
 		mutationKey: [UPLOAD_CMS_SHOW_MUTATION_KEY],
 		mutationFn: onCMSUploadMutation,
-		onSuccess: async () => {
-			toast.success('CMS show import started!')
-			await queryClient.invalidateQueries({
-				queryKey: [STORIES_QUERY_KEY],
-				type: 'all',
-			})
-			await queryClient.invalidateQueries({
-				queryKey: [USER_PROJECTS_QUERY_KEY],
-				type: 'all',
-			})
-		},
+		onSuccess,
 		onError: () => {
 			toast.error('Error uploading CMS show')
 		},

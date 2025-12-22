@@ -27,7 +27,7 @@ const useGetCMSShows = (searchQuery?: string) => {
 				query: searchQuery,
 			},
 		})
-		return response.data?.result
+		return response.data?.result || ({} as TGetCMSShowsAPIResponse['result'])
 	}
 	const query = useQuery({
 		queryKey: [GET_CMS_SHOWS_QUERY_KEY, searchQuery],

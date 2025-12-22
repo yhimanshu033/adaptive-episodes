@@ -46,6 +46,8 @@
 	--color-card: hsl(var(--card));
 	--color-card-foreground: hsl(var(--card-foreground));
 
+	--color-failed-banner: rgb(38, 3, 1) /* #260301 */;
+
 	--shadow-editor: var(--box-shadow);
 
 	--radius-lg: var(--radius);

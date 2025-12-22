@@ -24,6 +24,7 @@ export type TGetStoriesResponse = {
 
 export type TStoryProps = {
 	bulk_prompt_history?: string[]
+	cms_show_id?: string
 	from_scratch?: boolean
 }
 
