@@ -23,6 +23,7 @@ export type EpisodeStoreState = {
 	currentPage: number
 	deleteEpisodeId: number | null
 	episodeSearch: string
+	failedSeqNumber: number | null
 	isBseDialogOpen: boolean
 	isDialogOpen: boolean
 	isInventOpen: boolean
@@ -373,4 +374,30 @@ export type TGetPresignedUrlResponse = {
 
 export type DeepPartial<T> = {
 	[K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
+}
+
+export type TFailedEpisode = {
+	chapter_title: string
+	create_time: string
+	id: number
+	language: string
+	seq_number: number
+	status: string
+	update_time: string
+	word_count: number
+}
+
+export type TGetCMSFailedEpisodesAPIResponse = {
+	message: string
+	result: {
+		failed_chapters: TFailedEpisode[]
+		project_id: number
+		project_title: string
+		total_failed_chapters: number
+	}
+	status: number
+}
+
+export type TGetCMSFailedEpisodesQueryParams = {
+	project_id: number
 }
