@@ -99,9 +99,10 @@ export default function useEditorConfig() {
 	])
 
 	const modeToTitle = useMemo(() => {
-		if (contentData?.chapter?.language !== ELanguage.GERMAN_ORIGINAL) {
-			MODE_TO_TITLE[EDualVIewMode.US_TRANSLATION] = 'Source Script'
-		}
+		MODE_TO_TITLE[EDualVIewMode.US_TRANSLATION] =
+			contentData?.chapter?.language !== ELanguage.GERMAN_ORIGINAL
+				? 'Source Script'
+				: 'US Original'
 		return MODE_TO_TITLE
 	}, [contentData])
 
