@@ -13,8 +13,7 @@ const CMSFailedEpisodesBanner = () => {
 	const [currentIndex, setCurrentIndex] = useState(0)
 	const { data } = useCMSFailedEpisodes()
 
-	const { setFailedSeqNumber, useEpisodeTableStore } = useEpisodeStore()
-	const failedSeqNumber = useEpisodeTableStore((state) => state.failedSeqNumber)
+	const { setFailedSeqNumber } = useEpisodeStore()
 	const { limit, setCurrentPage } = usePageState()
 	const failedEpisodesCount = data?.total_failed_chapters || 0
 
@@ -46,11 +45,7 @@ const CMSFailedEpisodesBanner = () => {
 	}
 
 	useEffect(() => {
-		if (
-			!failedSeqNumber &&
-			data?.failed_chapters?.length &&
-			data.failed_chapters.length > 0
-		) {
+		if (data?.failed_chapters?.length && data.failed_chapters.length > 0) {
 			setFailedSeqNumber(data.failed_chapters[0].seq_number)
 			setCurrentIndex(0)
 		}
