@@ -193,6 +193,7 @@ export default function useEditorConfig() {
 				accessToken: session.data?.accessToken || '',
 				platform: EPlatform.COPILOT,
 				uid: session.data?.user.id || '',
+				email: session.data?.user.email || '',
 			},
 			contentConfig: {
 				content: contentData?.text || '',
