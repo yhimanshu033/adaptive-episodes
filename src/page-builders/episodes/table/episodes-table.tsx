@@ -223,7 +223,11 @@ const EpisodesTable = () => {
 		setInventSeq(seqNumber)
 	}
 
-	if (initialStoryData?.is_original && !initialStoryData.episode_count) {
+	if (
+		initialStoryData?.is_original &&
+		!initialStoryData.episode_count &&
+		!isGerman
+	) {
 		return <AdaptationContainer />
 	}
 
