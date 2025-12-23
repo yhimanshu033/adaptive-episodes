@@ -104,6 +104,11 @@ export type TGetOutlinerMetadataQueryParams = {
 }
 
 export type TGetOutlinerMetadataUrlParams = {
+	chapterId: number
+	projectId: number
+}
+
+export type TUpdateOutlinerUrlParams = {
 	projectId: number
 }
 

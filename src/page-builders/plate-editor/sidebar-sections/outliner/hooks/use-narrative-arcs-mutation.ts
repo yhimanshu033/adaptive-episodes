@@ -2,8 +2,8 @@ import { useParams } from 'next/navigation'
 import { API_URLS } from '@/constants/global-constants'
 import { OUTLINER_METADATA_QUERY_KEY } from '@/constants/query-constants'
 import {
-	TGetOutlinerMetadataUrlParams,
 	TUpdateOutlinerMetadataBody,
+	TUpdateOutlinerUrlParams,
 } from '@/page-builders/plate-editor/sidebar-sections/outliner/lib/types'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -21,7 +21,7 @@ export default function useNarrativeArcsMutation() {
 		}
 		await fetchAPI<
 			TNoParams,
-			TGetOutlinerMetadataUrlParams,
+			TUpdateOutlinerUrlParams,
 			TUpdateOutlinerMetadataBody
 		>({
 			method: 'POST',

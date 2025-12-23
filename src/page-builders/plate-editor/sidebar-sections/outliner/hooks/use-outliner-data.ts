@@ -41,6 +41,7 @@ export default function useOutlinerData() {
 				},
 				urlParams: {
 					projectId: data?.chapter?.project || 0,
+					chapterId: data?.chapter?.id || 0,
 				},
 			}),
 			fetchAPI<
@@ -76,6 +77,7 @@ export default function useOutlinerData() {
 				},
 				urlParams: {
 					projectId: data?.chapter?.project || 0,
+					chapterId: data?.chapter?.id || 0,
 				},
 				delay: 10 * 1000, // 10 seconds
 				stop: (data) => {
