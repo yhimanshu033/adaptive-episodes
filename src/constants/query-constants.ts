@@ -49,6 +49,7 @@ export const OUTLINER_QUESTIONNAIRE_PROFILE_QUERY_KEY =
 	'outliner-questionnaire-profile'
 
 export const GET_CMS_SHOWS_QUERY_KEY = 'get-cms-shows'
+export const GET_CMS_FAILED_EPISODES_QUERY_KEY = 'get-cms-failed-episodes'
 
 // Mutation keys
 export const RENAME_EPISODE_MUTATION = 'rename-episode'
