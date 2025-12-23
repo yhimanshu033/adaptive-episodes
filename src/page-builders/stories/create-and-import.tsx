@@ -72,7 +72,7 @@ const CreateAndImport = ({ children }: ICreateAndImportProps) => {
 					<DialogDescription className="sr-only">
 						Create and Import story
 					</DialogDescription>
-					<Divider variant="dashed" />
+					<Divider variant="dashed" className="border-fm-divider-secondary" />
 				</DialogHeader>
 				<ImportStory />
 			</DialogContent>

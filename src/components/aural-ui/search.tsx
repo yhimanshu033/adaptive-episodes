@@ -147,7 +147,9 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 						<SearchIcon
 							width={16}
 							height={16}
-							className="text-fm-icon-active"
+							className={cn('text-fm-icon-active', {
+								'text-fm-icon-inactive': !isFocused,
+							})}
 						/>
 					}
 					endIcon={

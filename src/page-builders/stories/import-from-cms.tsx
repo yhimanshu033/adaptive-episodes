@@ -68,7 +68,7 @@ const CMSList = ({
 									>
 										<React.Fragment>
 											<ListItem
-												className="cursor-pointer"
+												className="cursor-pointer pt-4 !pb-3"
 												onClick={() => onStorySelect(story)}
 											>
 												{story.image_url && (
@@ -95,7 +95,7 @@ const CMSList = ({
 												</div>
 											</ListItem>
 											{virtualItem.index !== stories.length - 1 && (
-												<ListSeparator className="px-4" />
+												<ListSeparator className="my-0 px-4" />
 											)}
 										</React.Fragment>
 									</div>
@@ -108,7 +108,7 @@ const CMSList = ({
 					<ListItem>
 						<Typography
 							variant="body-medium"
-							className="text-fm-md mx-auto"
+							className="text-fm-md"
 							color="tertiary"
 						>
 							No Matches Found! Try again with another series name or ID.
@@ -189,8 +189,12 @@ const ImportFromCMS = () => {
 	}
 
 	return (
-		<section className="flex h-full min-h-0 flex-col gap-6 px-8">
-			<Search clearOnEnter={false} onChange={handleSearch} />
+		<section className="flex h-full min-h-0 flex-col gap-2 px-8">
+			<Search
+				placeholder="Search by series name or ID"
+				clearOnEnter={false}
+				onChange={handleSearch}
+			/>
 			<div className="min-h-0 flex-1">
 				<If condition={!!searchQuery}>
 					<IfElse condition={!isLoading}>
@@ -218,7 +222,9 @@ const ImportFromCMS = () => {
 			</div>
 			<Button
 				isDisabled={!selectedStory || isPending}
-				className="mb-5 w-full"
+				className={cn('mb-5 w-full', {
+					'text-fm-neutral-300': !selectedStory || isPending,
+				})}
 				onClick={handleImportSeries}
 			>
 				{isPending ? 'Importing...' : 'Import Series'}
