@@ -21,7 +21,7 @@ const initialState: EpisodeStoreState = {
 	selectedEpisodes: null,
 	currentInventSeq: null,
 	isBseDialogOpen: false,
-	failedSeqNumber: null,
+	failedSeqNumber: -1,
 	notes: [],
 }
 
