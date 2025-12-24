@@ -157,6 +157,7 @@ const SelectedStory = ({
 
 const ImportFromCMS = () => {
 	const [searchQuery, setSearchQuery] = useState<string>('')
+	const [isFocused, setIsFocused] = useState(false)
 	const [selectedStory, setSelectedStory] = useState<TCMSShow | null>(null)
 	const { data, isLoading } = useGetCMSShows(searchQuery)
 	const { mutate: uploadCMSShow, isPending } = useCMSUploadMutation()
@@ -191,9 +192,11 @@ const ImportFromCMS = () => {
 	return (
 		<section className="flex h-full min-h-0 flex-col gap-2 px-8">
 			<Search
-				placeholder="Search by series name or ID"
+				placeholder={isFocused ? '' : 'Search by series name or ID'}
 				clearOnEnter={false}
 				onChange={handleSearch}
+				onFocus={() => setIsFocused(true)}
+				onBlur={() => setIsFocused(false)}
 			/>
 			<div className="min-h-0 flex-1">
 				<If condition={!!searchQuery}>
