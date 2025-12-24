@@ -39,6 +39,7 @@ const useCMSUploadMutation = () => {
 			method: 'POST',
 			url: API_URLS.UPLOAD_CMS_SHOW,
 			body,
+			noCache: true,
 		})
 
 		const response =
