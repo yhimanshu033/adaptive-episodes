@@ -885,10 +885,10 @@ export function invalidLSMappingDetails(data: Partial<LSMappingOutputItem[]>) {
 		const item = data[i]
 		const missingFields: string[] = []
 
-		if (!item?.original_name?.trim()) {
+		if (!item?.original_name) {
 			missingFields.push('original_name')
 		}
-		if (!item?.localised_name?.trim()) {
+		if (!item?.localised_name) {
 			missingFields.push('localised_name')
 		}
 		if (!item?.type) {
