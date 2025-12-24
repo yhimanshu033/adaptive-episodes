@@ -162,3 +162,9 @@ export type TCMSShowUploadBody = {
 	llm_model?: string
 	show_id: string
 }
+
+export type TCMSUploadFailedResponse = {
+	error: string
+	existing_project_id: number
+	existing_project_title: string
+}
