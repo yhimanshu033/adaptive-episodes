@@ -48,6 +48,9 @@ export const OUTLINER_QUESTIONNAIRE_SURVEY_QUESTIONS_QUERY_KEY =
 export const OUTLINER_QUESTIONNAIRE_PROFILE_QUERY_KEY =
 	'outliner-questionnaire-profile'
 
+export const GET_CMS_SHOWS_QUERY_KEY = 'get-cms-shows'
+export const GET_CMS_FAILED_EPISODES_QUERY_KEY = 'get-cms-failed-episodes'
+
 // Mutation keys
 export const RENAME_EPISODE_MUTATION = 'rename-episode'
 
@@ -98,3 +101,5 @@ export const OUTLINER_QUESTIONNAIRE_NEW_IDEAS_REGENERATE_MUTATION_KEY =
 
 export const GET_FILE_CONTENT = 'get-file-content'
 export const GET_USER_ACCESS = 'get-user-feature-access'
+
+export const UPLOAD_CMS_SHOW_MUTATION_KEY = 'upload-cms-show'

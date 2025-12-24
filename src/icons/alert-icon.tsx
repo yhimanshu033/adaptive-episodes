@@ -4,9 +4,37 @@ import { AccessibleIcon } from '@radix-ui/react-accessible-icon'
 type AlertIconProps = React.JSX.IntrinsicAttributes &
 	React.SVGProps<SVGSVGElement> & {
 		filled?: boolean
+		variant?: 'default' | 'outline'
 	}
 
-export const AlertIcon = ({ filled = false, ...props }: AlertIconProps) => {
+export const AlertIcon = ({
+	filled = false,
+	variant = 'default',
+	stroke,
+	...props
+}: AlertIconProps) => {
+	if (variant === 'outline') {
+		return (
+			<AccessibleIcon label="Alert icon">
+				<svg
+					width="22"
+					height="19"
+					viewBox="0 0 22 19"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					{...props}
+				>
+					<path
+						d="M10.8174 7.96924V11.9692M10.8174 14.4592V14.4692M10.8174 1.46924L1.31738 17.4692H20.3174L10.8174 1.46924Z"
+						stroke={stroke || 'currentColor'}
+						strokeWidth="1.5"
+						strokeLinecap="square"
+					/>
+				</svg>
+			</AccessibleIcon>
+		)
+	}
+
 	if (filled) {
 		return (
 			<svg

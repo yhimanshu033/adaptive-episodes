@@ -17,9 +17,11 @@ export interface SearchProps {
 	clearOnEnter?: boolean
 	disabled?: boolean
 	initialValue?: string
+	onBlur?: () => void
 	onChange?: (value: string) => void
 	// Children can be used to render custom search results
 	onEnterPressed?: (value: string) => void
+	onFocus?: () => void
 	// Add value prop for controlled component
 	onSearch?: (query: string) => void
 	placeholder?: string
@@ -42,6 +44,8 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 			onEnterPressed = () => {},
 			disabled = false,
 			clearOnEnter = true,
+			onFocus,
+			onBlur,
 		},
 		ref
 	) => {
@@ -131,6 +135,20 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 			]
 		)
 
+		const handleFocus = () => {
+			setIsFocused(true)
+			if (onFocus) {
+				onFocus()
+			}
+		}
+
+		const handleBlur = () => {
+			setIsFocused(false)
+			if (onBlur) {
+				onBlur()
+			}
+		}
+
 		return (
 			<div
 				ref={ref || searchRef}
@@ -141,13 +159,15 @@ export const Search = React.forwardRef<HTMLDivElement, SearchProps>(
 					placeholder={placeholder}
 					value={value}
 					onChange={handleChange}
-					onFocus={() => setIsFocused(true)}
-					onBlur={() => setIsFocused(false)}
+					onFocus={handleFocus}
+					onBlur={handleBlur}
 					startIcon={
 						<SearchIcon
 							width={16}
 							height={16}
-							className="text-fm-icon-active"
+							className={cn('text-fm-icon-active', {
+								'text-fm-icon-inactive': !isFocused,
+							})}
 						/>
 					}
 					endIcon={
