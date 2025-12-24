@@ -4,11 +4,11 @@ import {
 	UPLOAD_CMS_SHOW_MUTATION_KEY,
 	USER_PROJECTS_QUERY_KEY,
 } from '@/constants/query-constants'
-import useSocket from '@/hooks/use-socket'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { nanoid } from 'nanoid'
 import { toast } from 'sonner'
 
-import { FetchResponseResult } from '@/lib/fetch-api'
+import { fetchAPI } from '@/lib/fetch-api'
 
 import { TNoParams } from '@/types/common'
 import {
@@ -17,7 +17,6 @@ import {
 } from '@/types/story-types'
 
 const useCMSUploadMutation = () => {
-	const { startTask, getResponse } = useSocket()
 	const queryClient = useQueryClient()
 
 	const onSuccess = () => {
@@ -35,22 +34,28 @@ const useCMSUploadMutation = () => {
 	}
 
 	const onCMSUploadMutation = async (body: TCMSShowUploadBody) => {
-		const taskId = await startTask<TCMSShowUploadBody>({
+		const taskId = nanoid()
+		const response = await fetchAPI<
+			TNoParams,
+			TNoParams,
+			TCMSShowUploadBody,
+			{ room_id: string; task_id: string },
+			TCMSUploadFailedResponse
+		>({
 			method: 'POST',
 			url: API_URLS.UPLOAD_CMS_SHOW,
 			body,
+			query: {
+				task_id: taskId,
+				room_id: 'true',
+			},
 		})
-
-		const response =
-			await getResponse<
-				FetchResponseResult<TNoParams, TCMSUploadFailedResponse>
-			>(taskId)
 
 		if (!response?.success) {
 			throw new Error(response.message?.error || 'Error uploading CMS show')
 		}
 
-		return taskId
+		return response?.data
 	}
 
 	const cmsUploadMutation = useMutation({
