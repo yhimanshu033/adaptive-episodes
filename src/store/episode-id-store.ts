@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
 
 import { useEpisodeContext } from '@/providers/episode-id-provider'

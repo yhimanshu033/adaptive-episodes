@@ -18,6 +18,7 @@ import {
 	EThemeMode,
 	TStoredConfigurationData,
 } from '@/types/editor-types'
+import { ESidebar } from '@/types/plate-types'
 
 export const rephraseMethods = [
 	{ id: 'shortenmore', method: 'Shorten', status: 'Shortening...' },
@@ -204,7 +205,7 @@ export const DEFAULT_EDITOR_CONTENT: Value = [
 ]
 
 export const DEFAULT_CONFIGURATION_DATA: TStoredConfigurationData = {
-	defaultSidebar: null,
+	defaultSidebar: ESidebar.CHATBOT,
 	quickPrompts: [],
 	suggestionDisplay: ESuggestionViewingType.CORRECTIONS,
 	theme: EThemeMode.DARK,

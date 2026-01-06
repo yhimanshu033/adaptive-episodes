@@ -1,13 +1,5 @@
 import { FAR_PADDING_TEXT } from '@/constants/editor-constants'
-import {
-	Descendant,
-	Element,
-	KEYS,
-	nanoid,
-	TCommentText,
-	Text,
-	Value,
-} from 'platejs'
+import { Descendant, Element, nanoid, TCommentText, Text, Value } from 'platejs'
 
 import {
 	extractWords,
@@ -85,13 +77,13 @@ export const maxify = (minified: MinifiedValue, children: Value): Value => {
 	}))
 }
 
-export function replaceNth(
+export function replaceNthInsensitive(
 	str: string,
+	search: string,
 	replace: string,
-	nth: number,
-	regexArgs: TGetRegexFAR
+	nth: number
 ): string {
-	const regex = getFindReplaceRegex(regexArgs)
+	const regex = new RegExp(search, 'gi')
 	let matchCount = 0
 
 	return str.replace(regex, (match) => {
@@ -417,12 +409,12 @@ export function replaceOnce({
 	children,
 	path,
 	replace,
-	regexArgs,
+	search,
 }: {
 	children: Value
 	path: number[]
-	regexArgs: TGetRegexFAR
 	replace: string
+	search: string
 }) {
 	const updatedChildren = structuredClone(children)
 	if (!path) {
@@ -432,7 +424,12 @@ export function replaceOnce({
 	if (!node?.text) {
 		return children
 	}
-	const text = replaceNth(node.text as string, replace, path[2], regexArgs)
+	const text = replaceNthInsensitive(
+		node.text as string,
+		search,
+		replace,
+		path[2]
+	)
 	updatedChildren[path[0]].children[path[1]] = {
 		...node,
 		text,
@@ -481,8 +478,6 @@ export function replaceAll({
 	return updatedChildren
 }
 
-// export function replaceAllRecords(records: number[], children:Number)
-
 export function getRecordsUtil({
 	children,
 	search,
@@ -509,16 +504,7 @@ export function getRecordsUtil({
 	for (const block of children) {
 		let leafIdx = 0
 		let matchIndex = 0
-
-		if (block?.[KEYS.suggestion]) {
-			blockIdx++
-			continue
-		}
 		for (const leaf of block.children) {
-			if (leaf?.[KEYS.suggestion]) {
-				leafIdx++
-				continue
-			}
 			// Reset regex each time to allow multiple matches per text node
 			const text = String(leaf.text)
 			let match: RegExpExecArray | null
@@ -678,11 +664,10 @@ export function getFindReplaceRegex({
 	genitive,
 	wholeWord,
 }: TGetRegexFAR) {
-	// Escape regex special characters in the search term
 	const safeSearch = escapeRegex(search)
 	return new RegExp(
 		wholeWord
-			? `(\\b${genitive ? generateGenitives(safeSearch) + "'?|" : ''}${safeSearch})(?=\\b|\\W|$)`
+			? `(\\b${genitive ? escapeRegex(generateGenitives(search)) + "'?|" : ''}${safeSearch})(?=\\b|\\W|$)`
 			: `(${safeSearch})`,
 		caseSensitive ? 'g' : 'gi'
 	)
@@ -702,9 +687,6 @@ export function getOccurrencesUtil({
 	}
 	return children.reduce((acc, node) => {
 		const getCount = (node: Element | Text): number => {
-			if (node?.[KEYS.suggestion]) {
-				return 0
-			}
 			if ('text' in node) {
 				const regex = getFindReplaceRegex({
 					search,

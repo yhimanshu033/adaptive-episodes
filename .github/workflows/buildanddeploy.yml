@@ -46,9 +46,6 @@ jobs:
           echo "Debug: Build job started"
       - name: Checkout Code
         uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets.GIT_TOKEN }}
       - name: Verify AWS CLI Installation
         run: |
           aws --version

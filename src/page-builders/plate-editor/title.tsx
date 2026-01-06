@@ -4,7 +4,7 @@ import useChapterTitleMutation from '@/hooks/mutation/use-chapter-title-mutation
 import useEpisodeContent from '@/hooks/query/use-episode-content'
 import useUserMembersQuery from '@/hooks/query/user-members-data'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import { useEditorReadOnly } from 'unified-editor'
+import { useEditorReadOnly } from 'platejs/react'
 
 import EditableText from '@/components/editable-text'
 import { If } from '@/components/if-else'

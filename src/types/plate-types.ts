@@ -1,9 +1,10 @@
 import { DiffStatus } from '@/constants/ai-constants'
 import { DiffProps as LegacyProps } from '@platejs/diff'
 import { SuggestionUser } from '@platejs/suggestion'
-import { TDiscussion } from '@pocket-editor/plugins'
 import { Descendant, Value } from 'platejs'
 import { PlatePlugin } from 'platejs/react'
+
+import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 
 import { ExplorerType, Laser } from '@/types/ai-types'
 

@@ -5,7 +5,7 @@ import { AiAvatarIcon } from '@/icons/ai-avatar-icon'
 import { getDerivedChatMessageContent } from '@/page-builders/episodes/outliner-questionnaire/lib/fns'
 import { TPostOutlinerQuestionnaireChatResponse } from '@/page-builders/episodes/outliner-questionnaire/lib/types'
 import useOutlinerQuestionnaire from '@/page-builders/episodes/outliner-questionnaire/provider'
-import { StreamedResponseWithCopy } from 'unified-editor'
+import { StreamedResponseWithCopy } from '@/page-builders/plate-editor/sidebar-sections/ai-chatbot/messages/block-message'
 
 import { If } from '@/components/aural-ui/if-else'
 import { OutlinerFeedback } from '@/components/outliner-feedback'

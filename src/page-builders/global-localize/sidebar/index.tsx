@@ -1,9 +1,7 @@
 import React from 'react'
-import {
-	FarHeader,
-	FindAndReplaceUI,
-	useGlobalFindAndReplace,
-} from 'unified-editor'
+import useGlobalFindAndReplace from '@/hooks/use-global-find-and-replace'
+import FindAndReplaceUI from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/far'
+import FarHeader from '@/page-builders/plate-editor/sidebar-sections/find-and-replace/far-header'
 
 import useProjectId from '@/providers/project-id-provider'
 
