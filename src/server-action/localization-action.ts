@@ -39,5 +39,5 @@ export const getLOCSheet = async (projectId: number) => {
 			projectId,
 		},
 	})
-	return resp.data as TGetLOCSheetResponse
+	return resp.data
 }

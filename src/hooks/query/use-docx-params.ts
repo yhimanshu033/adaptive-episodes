@@ -1,9 +1,7 @@
+import useEditorData from '@/hooks/plate/use-editor-data'
 import { useEpisodeContentUtil } from '@/hooks/query/use-episode-content'
-import {
-	useEditorData,
-	useEpisodeIdStore,
-	useUnifiedEditorRef,
-} from 'unified-editor'
+import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEditorRef } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'
@@ -13,7 +11,7 @@ import { TDocxHTMLArgs } from '@/types/plate-types'
 type TUseDocxParamsRet = TDocxHTMLArgs & { projectTitle: string }
 
 export default function useDocxParams(): TUseDocxParamsRet {
-	const editor = useUnifiedEditorRef()
+	const editor = useEditorRef()
 	const { editorText } = useEditorData()
 	const words = editorText.split(/\s+/).filter(Boolean).length
 	const { store: useEpisodeIdStoreContext } = useEpisodeIdStore()

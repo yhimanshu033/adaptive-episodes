@@ -2,17 +2,13 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import useChapterPropsMutation from '@/hooks/mutation/use-prop-saving'
 import useTextSaving from '@/hooks/mutation/use-text-saving'
-import useEpisodeContent from '@/hooks/query/use-episode-content'
+import useEditorData from '@/hooks/plate/use-editor-data'
 import useEditAccess from '@/hooks/use-edit-access'
 import useEpisodeIdStore from '@/store/episode-id-store'
-import {
-	TDiscussion,
-	useEditorData,
-	usePluginOption,
-	useUnifiedEditorState,
-} from 'unified-editor'
+import { useEditorState, usePluginOption } from 'platejs/react'
 import { useShallow } from 'zustand/react/shallow'
 
+import { discussionPlugin } from '@/components/editor/plugins/discussion-kit'
 import { setValue } from '@/lib/utils/indexed-db'
 import { clearLasers } from '@/lib/utils/plate'
 
@@ -29,19 +25,14 @@ import {
 } from '@/types/episode-type'
 
 interface IUseSavingUtilProps {
-	data?: TGetEpisodeResponse
+	data: TGetEpisodeResponse
 	initialForceSave?: boolean
 }
-function useSavingUtil(props?: IUseSavingUtilProps) {
-	const { data } = useEpisodeContent()
-	const initialForceSave = props?.initialForceSave
+function useSavingUtil({ data, initialForceSave }: IUseSavingUtilProps) {
 	const { id } = useParams()
 	const { wordCount } = useEditorData()
-	const { children } = useUnifiedEditorState()
-	const allComments = usePluginOption(
-		{ key: 'discussion' },
-		'discussions'
-	) as Array<TDiscussion>
+	const { children } = useEditorState()
+	const allComments = usePluginOption(discussionPlugin, 'discussions')
 	const { mutateAsync: saveText, isPending: isTextSaving } = useTextSaving()
 	const { mutateAsync: saveProps, isPending: isPropsSaving } =
 		useChapterPropsMutation()
@@ -68,6 +59,7 @@ function useSavingUtil(props?: IUseSavingUtilProps) {
 		llmMemories: data?.chapter?.props?.llm_memories as TLLMMemories,
 		wordCount: data?.chapter?.word_count,
 	})
+
 	const [forceSave, setForceSave] = React.useState(initialForceSave)
 	const [lastSaved, setLastSaved] = React.useState<Date>()
 
@@ -120,7 +112,7 @@ function useSavingUtil(props?: IUseSavingUtilProps) {
 			isTextSaved(currentChildren) &&
 			isCommentsSaved(allComments) &&
 			isLLMMemoriesSaved(currentLLMMemories) &&
-			isWordCountSaved(wordCount)
+			isWordCountSaved(wordCount.value)
 
 		return newIsSaved
 	}, [
@@ -128,7 +120,7 @@ function useSavingUtil(props?: IUseSavingUtilProps) {
 		allComments,
 		forceSave,
 		currentLLMMemories,
-		wordCount,
+		wordCount.value,
 		isTextSaved,
 		isCommentsSaved,
 		isLLMMemoriesSaved,
@@ -170,14 +162,14 @@ function useSavingUtil(props?: IUseSavingUtilProps) {
 	)
 
 	const getSavingParams = useCallback((): TGetSavingParamsRet => {
-		const word_count = wordCount
+		const word_count = wordCount.value
 		const contentStr = JSON.stringify(children)
 		const commentsStr = JSON.stringify(allComments)
 		const clearedLaser = clearLasers(children)
 		const text = JSON.stringify(clearedLaser)
 		const status = data?.chapter.status || BASE_STATUS
 		const language = data?.chapter.language || ELanguage.GERMAN_ORIGINAL
-		const chapterId = data?.chapter.id ?? 0
+		const chapterId = data?.chapter.id
 		const llmMemories = {
 			...savedData.llmMemories,
 			...currentLLMMemories,
@@ -191,12 +183,19 @@ function useSavingUtil(props?: IUseSavingUtilProps) {
 			language,
 			chapterId,
 			commentsStr,
-			chapterData: data || undefined,
+			chapterData: data,
 			allComments,
 			llmMemories,
 			llmMemoriesStr: JSON.stringify(llmMemories),
 		}
-	}, [wordCount, children, allComments, data, savedData, currentLLMMemories])
+	}, [
+		wordCount.value,
+		children,
+		allComments,
+		data,
+		savedData,
+		currentLLMMemories,
+	])
 
 	const saveLocal = useCallback(
 		(args: TGetSavingParamsRet) => {
@@ -325,8 +324,10 @@ const SavingContext = React.createContext<
 
 export function SavingContextProvider({
 	children: nodeChildren,
+	data,
+	initialForceSave = false,
 }: IUseSavingUtilProps & React.PropsWithChildren) {
-	const value = useSavingUtil()
+	const value = useSavingUtil({ data, initialForceSave })
 	return (
 		<SavingContext.Provider value={value}>
 			{nodeChildren}

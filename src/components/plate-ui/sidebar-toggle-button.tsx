@@ -1,10 +1,12 @@
 'use client'
 
 import React from 'react'
+import usePlateStore from '@/store/plate-store'
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
-import { ESidebar, useUnifiedEditorStore } from 'unified-editor'
 
 import { cn } from '@/lib/aural-ui/utils'
+
+import { ESidebar } from '@/types/plate-types'
 
 import { IconButton, type IconButtonProps } from '../aural-ui/icon-button'
 
@@ -31,7 +33,7 @@ export function SidebarToggleButton({
 	tooltipProps,
 	...props
 }: SidebarToggleButtonProps) {
-	const { store, setSidebar } = useUnifiedEditorStore()
+	const { store, setSidebar } = usePlateStore()
 	const currentSidebar = store((state) => state.sidebar)
 	const isActive = currentSidebar === sidebar
 

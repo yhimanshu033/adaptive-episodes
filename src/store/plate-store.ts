@@ -1,0 +1,95 @@
+import { ACTION, EVENT_TYPE, SCREEN_NAME } from '@/constants/analytics'
+import { updateIsEpisodeNavigationOpen } from '@/store/editor-store'
+
+import { useEpisodeContext } from '@/providers/episode-id-provider'
+import { track } from '@/lib/utils/analytics'
+
+import { PlateStoreData } from '@/types/plate-types'
+
+export function usePlateStore() {
+	const { usePlateStoreContext } = useEpisodeContext()
+
+	const setSidebar = (sidebar: PlateStoreData['sidebar'], toggle?: boolean) => {
+		usePlateStoreContext.setState((state) => {
+			const newSidebar = toggle && state.sidebar === sidebar ? null : sidebar
+			if (newSidebar) {
+				updateIsEpisodeNavigationOpen(false)
+			}
+			return { sidebar: newSidebar }
+		})
+		track({
+			event: EVENT_TYPE.BUTTON_CLICK,
+			screenName: SCREEN_NAME.EPISODE_EDITOR,
+			metaData: {
+				action: ACTION.SIDEBAR_CHANGED,
+				sidebarType: sidebar || 'closed',
+			},
+		})
+	}
+
+	const setResolved = (resolved: boolean, toggle?: boolean) => {
+		usePlateStoreContext.setState((state) => {
+			return { resolved: toggle ? !state.resolved : resolved }
+		})
+	}
+
+	const setScale = (scale: number) => {
+		usePlateStoreContext.setState({ scale })
+	}
+
+	const setActiveDiffId = (activeDiffId: PlateStoreData['activeDiffId']) => {
+		usePlateStoreContext.setState({ activeDiffId })
+	}
+
+	const setCurrentDiffValue = (
+		currentDiffValue: PlateStoreData['currentDiffValue']
+	) => {
+		usePlateStoreContext.setState({ currentDiffValue })
+	}
+
+	const setViewMode = (viewMode: boolean) => {
+		usePlateStoreContext.setState({ viewMode })
+	}
+	const setFontFamily = (fontFamily: PlateStoreData['fontFamily']) => {
+		usePlateStoreContext.setState({ fontFamily })
+	}
+
+	const setLocalDiffValue = (
+		localDiffValue: PlateStoreData['localDiffValue']
+	) => {
+		usePlateStoreContext.setState({ localDiffValue })
+	}
+
+	const setFocusMode = (focusMode: PlateStoreData['focusMode']) => {
+		usePlateStoreContext.setState(() => {
+			return { focusMode }
+		})
+	}
+
+	const setDiffIdList = (diffIdList: PlateStoreData['diffIdList']) => {
+		usePlateStoreContext.setState({ diffIdList })
+	}
+
+	const setDisableDiffAcceptReject = (
+		disableDiffAcceptReject: PlateStoreData['disableDiffAcceptReject']
+	) => {
+		usePlateStoreContext.setState({ disableDiffAcceptReject })
+	}
+
+	return {
+		store: usePlateStoreContext,
+		setSidebar,
+		setResolved,
+		setScale,
+		setActiveDiffId,
+		setCurrentDiffValue,
+		setViewMode,
+		setFontFamily,
+		setLocalDiffValue,
+		setFocusMode,
+		setDiffIdList,
+		setDisableDiffAcceptReject,
+	}
+}
+
+export default usePlateStore

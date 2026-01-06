@@ -83,7 +83,7 @@ const CollapsibleTrigger = forwardRef<
 })
 CollapsibleTrigger.displayName = 'CollapsibleTrigger'
 
-export type CollapsibleHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
+type CollapsibleHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
 	title: React.ReactNode
 }
 

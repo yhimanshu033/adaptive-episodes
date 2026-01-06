@@ -279,12 +279,7 @@ function useGlobalFindAndReplaceUtil() {
 		}
 
 		const children = contentMap[episodeId].children || []
-		const updatedChildren = replaceOnce({
-			children,
-			path,
-			regexArgs: { search, caseSensitive, genitive, wholeWord },
-			replace,
-		})
+		const updatedChildren = replaceOnce({ children, path, search, replace })
 
 		setReplacedContentMap((prev) => ({
 			...prev,
@@ -301,9 +296,6 @@ function useGlobalFindAndReplaceUtil() {
 		contentMap,
 		setReplacedContentMap,
 		triggerSave,
-		caseSensitive,
-		genitive,
-		wholeWord,
 	])
 
 	function handlePrev() {

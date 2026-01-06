@@ -16,7 +16,6 @@ import UGCActions from '@/page-builders/plate-editor/buttons/ugc-actions'
 import Versions from '@/page-builders/plate-editor/buttons/versions'
 import ConfigurationDialogTrigger from '@/page-builders/plate-editor/configuration-dialog/trigger'
 import Title from '@/page-builders/plate-editor/title'
-import { ESidebar } from 'unified-editor'
 
 import { IconButton } from '@/components/aural-ui/icon-button'
 import { Else, If, IfElse } from '@/components/aural-ui/if-else'
@@ -30,14 +29,22 @@ import useProjectId from '@/providers/project-id-provider'
 
 import { ERole } from '@/types/admin-types'
 import { BASE_STATUS, EStatus } from '@/types/common'
+import { TGetEpisodeResponse } from '@/types/episode-type'
+import { ESidebar } from '@/types/plate-types'
 
-const EpisodeHeader = () => {
+const EpisodeHeader = ({
+	content,
+	latestStatus,
+}: {
+	content: TGetEpisodeResponse
+	latestStatus: EStatus | 'BASE'
+}) => {
 	const searchParams = useSearchParams()
 	const simplifiedEditor = searchParams.get(SIMPLIFIED_VIEWABLE_EDITOR)
 
 	const isGerman = useIsGerman()
 
-	const { data: content, latestStatus = BASE_STATUS } = useEpisodeContent()
+	const { data } = useEpisodeContent()
 
 	const latestIndex = useMemo(
 		() => (latestStatus !== BASE_STATUS ? statuses.indexOf(latestStatus) : 0),
@@ -54,7 +61,7 @@ const EpisodeHeader = () => {
 	if (simplifiedEditor) {
 		return (
 			<div className="flex items-center justify-between py-4">
-				<p className="text-fm-primary font-fm-text text-fm-lg">
+				<p className="text-fm-primary font-fm-text [font-size:var(--text-fm-lg)]">
 					{content?.chapter.seq_number}. {content?.chapter.chapter_title}
 				</p>
 				<SaveEpisode />
@@ -130,7 +137,7 @@ const EpisodeHeader = () => {
 				</IfElse>
 				<ConfigurationDialogTrigger
 					fallbackQuickPrompts={isGerman ? QUICK_PROMPTS : QUICK_PROMPTS_EN}
-					episodeId={content?.chapter?.id}
+					episodeId={data?.chapter?.id}
 					showEpisodeSpecificActions
 				/>
 				<UGCActions />

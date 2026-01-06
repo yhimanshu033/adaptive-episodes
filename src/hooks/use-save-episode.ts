@@ -3,17 +3,13 @@
 
 import { useEffect } from 'react'
 import useSaving from '@/hooks/use-saving'
-// import { useEditorReadOnly } from 'platejs/react'
-import {
-	useEditorReadOnly,
-	useUnifiedEditorState,
-	useUnifiedEditorStore,
-} from 'unified-editor'
+import usePlateStore from '@/store/plate-store'
+import { useEditorReadOnly, useEditorState } from 'platejs/react'
 
 const useSaveEpisode = () => {
-	const { children } = useUnifiedEditorState()
+	const { children } = useEditorState()
 	const readOnly = useEditorReadOnly()
-	const { setCurrentDiffValue } = useUnifiedEditorStore()
+	const { setCurrentDiffValue } = usePlateStore()
 
 	const { handleSave, isSaved, isPending, lastSaved } = useSaving()
 

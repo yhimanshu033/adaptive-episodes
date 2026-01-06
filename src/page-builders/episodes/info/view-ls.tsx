@@ -4,7 +4,6 @@ import useLSSheetQuery from '@/hooks/mutation/use-ls-sheet'
 import { CrossIcon } from '@/icons/cross-icon'
 import LsTabs from '@/page-builders/episodes/dialogs/ls-tabs'
 import { Table2 } from 'lucide-react'
-import { ToolbarButton } from 'unified-editor'
 
 import {
 	Dialog,
@@ -17,6 +16,7 @@ import {
 } from '@/components/aural-ui/dialog'
 import { iconButtonVariants } from '@/components/aural-ui/icon-button'
 import IfElse, { Else, If } from '@/components/if-else'
+import { ToolbarButton } from '@/components/plate-ui/toolbar'
 import useEpisodeTableContext from '@/providers/episode-table-provider'
 import { track } from '@/lib/utils/analytics'
 import { parseInputLSMapping } from '@/lib/utils/helpers'

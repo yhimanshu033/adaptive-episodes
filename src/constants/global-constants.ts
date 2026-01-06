@@ -11,7 +11,7 @@ export const DB_NAME = 'COPILOT_DB'
 export const STORE_NAME = 'EPISODE_DATA_STORE'
 export const RECENT_STORE_NAME = 'RECENT_DATA_STORE'
 export const CONFIGURATION_STORE_NAME = 'CONFIGURATION_DATA_STORE'
-export const VERSION = 10
+export const VERSION = 8
 export const EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000 // 1 week in milliseconds
 export const MAX_ENTRIES = 1000
 

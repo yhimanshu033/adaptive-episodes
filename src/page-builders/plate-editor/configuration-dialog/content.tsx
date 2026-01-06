@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import React, { useCallback, useMemo } from 'react'
-import { QUICK_PROMPTS_EN } from '@/constants/ai-constants'
+import { QUICK_PROMPTS_EN, sidebarToTitle } from '@/constants/ai-constants'
 import {
 	CLOSED_SIDEBAR_VALUE,
 	configurationDialogTabToTitle,
@@ -17,14 +15,9 @@ import EpisodeConfig, {
 } from '@/page-builders/plate-editor/configuration-dialog/episode-config'
 import { ConfigurationContentItem } from '@/page-builders/plate-editor/configuration-dialog/items'
 import QuickPrompts from '@/page-builders/plate-editor/configuration-dialog/quick-prompts'
+import { setConfigurationDialogTab } from '@/store/configuration-store'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
-import {
-	ConfigurationStore,
-	ESidebar,
-	sidebarToTitle,
-	useConfiguration,
-} from 'unified-editor'
 
 import { Button } from '@/components/aural-ui/button'
 import {
@@ -43,6 +36,7 @@ import { ScrollArea } from '@/components/aural-ui/scroll-area'
 import { Tabs, TabsContent } from '@/components/aural-ui/tabs'
 import { DialogHeader } from '@/components/ui/dialog'
 import ForEach from '@/components/ui/for-each'
+import useConfiguration from '@/providers/configuration-provider'
 
 import { TQuickPrompt } from '@/types/ai-types'
 import {
@@ -52,6 +46,7 @@ import {
 	EThemeMode,
 	TConfigurationContentItem,
 } from '@/types/editor-types'
+import { ESidebar } from '@/types/plate-types'
 
 export interface ConfigurationDialogContentProps extends EpisodeConfigProps {
 	fallbackQuickPrompts?: TQuickPrompt[]
@@ -65,7 +60,6 @@ export default function ConfigurationDialogContent({
 }: ConfigurationDialogContentProps) {
 	const { configurationData, handleConfigurationDataChange } =
 		useConfiguration()
-	const { setConfigurationDialogTab } = ConfigurationStore
 	const configurationItems: TConfigurationContentItem[] = useMemo(() => {
 		return [
 			{
@@ -161,10 +155,7 @@ export default function ConfigurationDialogContent({
 			configurationData.configurationDialogTab ===
 			EConfigurationDialogContentTab.OPTIONS
 		) {
-			handleConfigurationDataChange({
-				...DEFAULT_CONFIGURATION_DATA,
-				defaultSidebar: ESidebar.CHATBOT,
-			})
+			handleConfigurationDataChange(DEFAULT_CONFIGURATION_DATA)
 		} else if (
 			configurationData.configurationDialogTab ===
 			EConfigurationDialogContentTab.QUICK_PROMPTS
