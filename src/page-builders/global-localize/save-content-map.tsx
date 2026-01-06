@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import useEditorData from '@/hooks/plate/use-editor-data'
 import useEditorExtendedStore from '@/store/extended-store'
+import { useEditorData } from 'unified-editor'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 

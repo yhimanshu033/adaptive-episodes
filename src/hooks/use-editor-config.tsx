@@ -1,0 +1,455 @@
+/* eslint-disable @typescript-eslint/require-await */
+'use client'
+
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import { QUICK_PROMPTS, QUICK_PROMPTS_EN } from '@/constants/ai-constants'
+import { downloadLOCSheet } from '@/hooks/mutation/use-localize-hook'
+import useEpisodeContent from '@/hooks/query/use-episode-content'
+import { getNextEpContent } from '@/hooks/query/use-next-episode-content'
+import { getPrevEpContent } from '@/hooks/query/use-prev-episode-content'
+import useRecentUser from '@/hooks/use-recent-user'
+import ViewLS from '@/page-builders/episodes/info/view-ls'
+import { getEpisodeContent } from '@/server-action/content-action'
+import { getNotes, updateNotes } from '@/server-action/episode-action'
+import { getLOCSheet } from '@/server-action/localization-action'
+import { getMetadata } from '@/server-action/metadata-action'
+import ContentFetchDisplay from '@pocket-editor/features/plate-editor/dual-view/content-fetch-display'
+import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
+import {
+	EEditorKit,
+	EPlatform,
+	ESidebar,
+	RteData,
+	ToolbarTypes,
+	TRteContent,
+	TRteDualViewRenderData,
+} from 'unified-editor'
+
+import { Button } from '@/components/aural-ui/button'
+import useEpisodeTableContext from '@/providers/episode-table-provider'
+import useProjectId from '@/providers/project-id-provider'
+import { getGCSContent } from '@/lib/utils/gcs'
+import { getTextFromTextOrValue } from '@/lib/utils/plate'
+
+import { ELanguage } from '@/types/common'
+import {
+	DUAL_VIEW_MODES,
+	EDualVIewMode,
+	MODE_TO_TITLE,
+} from '@/types/episode-type'
+
+export default function useEditorConfig() {
+	const contentRef = useRef<null | TRteContent>(null)
+	const savedContentRef = useRef<null | TRteContent>(null)
+	const session = useSession()
+	const {
+		data: contentData,
+		isPending: isContentPending,
+		latestStatus,
+	} = useEpisodeContent()
+	const { initialStoryData } = useEpisodeTableContext()
+	const { canCurrentUserBeRecent } = useRecentUser()
+
+	const { isWriter, users } = useProjectId()
+
+	async function handleContentChange() {
+		const props = contentRef?.current
+		const savedProps = savedContentRef?.current
+		if (!props) {
+			return
+		}
+		if (
+			savedProps &&
+			JSON.stringify(savedProps.content) === JSON.stringify(props.content)
+		) {
+			return
+		}
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		savedContentRef.current = JSON.parse(JSON.stringify(props))
+	}
+
+	const onContentChange = useCallback(async (props: TRteContent) => {
+		contentRef.current = props
+	}, [])
+
+	const modes = useMemo(() => {
+		const excludedModes: EDualVIewMode[] = []
+		const extraModes = Object.keys(contentData?.additional_view || {}).map(
+			(k) => k as EDualVIewMode
+		)
+		if (!contentData?.previous_parent_id) {
+			excludedModes.push(EDualVIewMode.PREV_EP)
+		}
+		if (!contentData?.next_parent_id) {
+			excludedModes.push(EDualVIewMode.NEXT_EP)
+		}
+		// if (!localDiffValue) {
+		excludedModes.push(EDualVIewMode.LOCAL_DIFF)
+		excludedModes.push(EDualVIewMode.VOICE_PASS)
+		// }
+		return [...DUAL_VIEW_MODES, ...extraModes].filter(
+			(item) => !excludedModes.includes(item)
+		)
+	}, [
+		contentData?.previous_parent_id,
+		contentData?.next_parent_id,
+		// localDiffValue,
+		contentData?.additional_view,
+	])
+
+	const modeToTitle = useMemo(() => {
+		MODE_TO_TITLE[EDualVIewMode.US_TRANSLATION] =
+			contentData?.chapter?.language !== ELanguage.GERMAN_ORIGINAL
+				? 'Source Script'
+				: 'US Original'
+		return MODE_TO_TITLE
+	}, [contentData])
+
+	const extraViews = useMemo(() => {
+		if (!contentData?.additional_view) {
+			return {}
+		}
+		return Object.keys(contentData.additional_view).reduce(
+			(acc, k) => {
+				return {
+					...acc,
+					[k as EDualVIewMode]: {
+						component: (
+							<ContentFetchDisplay
+								contentFetch={() => {
+									return getGCSContent({
+										url: contentData?.additional_view?.[k],
+									})
+								}}
+								queryKey={`dual-view-${k}`}
+								// ={contentData?.additional_view?.[k]}
+								customButton={
+									<Button
+										tooltip="Copy Content"
+										variant="outline"
+										size="sm"
+										onClick={() => {
+											void navigator.clipboard.writeText(
+												getTextFromTextOrValue(
+													contentData?.additional_view?.[k] || ''
+												)
+											)
+											toast.success('Content copied successfully!')
+										}}
+									>
+										Copy
+									</Button>
+								}
+								enableDiff
+								reverseDiff
+							/>
+						),
+					},
+				}
+			},
+			{} as Record<EDualVIewMode, { component: React.ReactNode }>
+		)
+	}, [contentData])
+
+	const modeToComponent: Record<string, TRteDualViewRenderData> = useMemo(
+		() => ({
+			[EDualVIewMode.US_TRANSLATION]: {
+				fetchContent: () => {
+					return getGCSContent({ url: contentData?.chapter?.translation_url })
+				},
+			},
+			[EDualVIewMode.BASE_SCRIPT]: {
+				fetchContent: async () =>
+					(
+						await getEpisodeContent(
+							Number(contentData?.chapter?.parent || contentData?.chapter?.id)
+						)
+					)?.text || '',
+			},
+			[EDualVIewMode.PREV_EP]: {
+				fetchContent: () => getPrevEpContent(contentData),
+			},
+			[EDualVIewMode.NEXT_EP]: {
+				fetchContent: () => getNextEpContent(contentData),
+			},
+			// [EDualVIewMode.LOCAL_DIFF]: { component: <LocalDiffSection /> },
+			...extraViews,
+		}),
+		[extraViews, contentData]
+	)
+
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			handleContentChange().catch(console.error)
+		}, 2000)
+
+		return () => clearInterval(intervalId)
+	}, [])
+
+	const editorConfig = useMemo(() => {
+		const data: RteData = {
+			auth: {
+				accessToken: session.data?.accessToken || '',
+				platform: EPlatform.COPILOT,
+				uid: session.data?.user.id || '',
+				email: session.data?.user.email || '',
+			},
+			contentConfig: {
+				content: contentData?.text || '',
+				comments: contentData?.chapter?.props?.comments,
+				id: contentData?.chapter?.id,
+				language: contentData?.chapter?.language,
+				llmProps: contentData?.chapter?.props?.llm_memories,
+				seqNumber: contentData?.chapter?.seq_number,
+				title: contentData?.chapter?.chapter_title,
+				isLoading: isContentPending,
+				onContentChange,
+			},
+			userData: {
+				...session?.data?.user,
+				name: session?.data?.user?.fullname || 'User',
+				id: String(session?.data?.user?.id),
+			},
+			sidebarConfig: {
+				activeSidebar: ESidebar.CHATBOT,
+				enabledDefaultSidebars: [
+					ESidebar.CHATBOT,
+					ESidebar.COMMENTS,
+					ESidebar.DUAL_VIEW,
+					ESidebar.FAR,
+					ESidebar.NOTES,
+					ESidebar.OUTLINE,
+					ESidebar.BEAT_SHEET,
+					ESidebar.OUTLINER,
+				],
+				sidebarButtons: [ESidebar.CHATBOT, ESidebar.OUTLINE],
+				defaultSidebarConfig: {
+					[ESidebar.CHATBOT]: {
+						quickPrompts:
+							contentData?.chapter?.language === ELanguage.GERMAN_ORIGINAL
+								? QUICK_PROMPTS
+								: QUICK_PROMPTS_EN,
+					},
+					// [ESidebar.BEAT_SHEET]: {
+					// 	enableBeatSheetEditor: hasNWMRan(contentData?.chapter),
+					// 	getChapterCharacters: () =>
+					// 		fetchChapterCharacters({
+					// 			chapter_id: Number(contentData?.chapter.id || 0),
+					// 		}),
+					// 	getScenesMetadata: () => getScenesMetadata(contentData?.chapter.id),
+					// },
+					[ESidebar.NOTES]: {
+						getNotes: () => getNotes(Number(contentData?.chapter.project)),
+						updateNotes: ({ params }) =>
+							updateNotes({
+								project_id: contentData?.chapter?.project || 0,
+								params,
+							}),
+					},
+					[ESidebar.FAR]: {
+						downloadLOCSheetFunc: () =>
+							downloadLOCSheet(String(contentData?.chapter?.project || 0)),
+						getLOCSheet: () =>
+							getLOCSheet(Number(contentData?.chapter?.project)),
+						showAddForm:
+							contentData?.chapter.language === ELanguage.GERMAN_ORIGINAL,
+						showSuggestions:
+							contentData?.chapter.language === ELanguage.GERMAN_ORIGINAL,
+						// remaining
+					},
+					outline: {
+						enableCustomSearch: true,
+					},
+				},
+			},
+			pluginConfig: {
+				plugins: [
+					EEditorKit.Align,
+					EEditorKit.Autoformat,
+					EEditorKit.BasicNodes,
+					EEditorKit.Comment,
+					EEditorKit.Discussion,
+					EEditorKit.Docx,
+					EEditorKit.ExitBreak,
+					EEditorKit.FindAndReplace,
+					EEditorKit.FloatingToolbar,
+					EEditorKit.Font,
+					EEditorKit.Laser,
+					EEditorKit.LaserPrompt,
+					EEditorKit.LineHeight,
+					EEditorKit.Suggestion,
+					EEditorKit.TrailingBlock,
+				],
+			},
+			extraConfig: {
+				getMetadata: async ({ start, end }) =>
+					(
+						await getMetadata(
+							Number(contentData?.chapter?.project),
+							start,
+							end,
+							contentData?.chapter?.language
+						)
+					).data,
+				storyData: {
+					id: initialStoryData?.id || 0,
+					episodeCount: initialStoryData?.episode_count,
+					image: initialStoryData?.image,
+					title: initialStoryData?.project_title,
+					props: initialStoryData?.props,
+				},
+			},
+			accessControlConfig: {
+				disableEditing:
+					!isWriter ||
+					latestStatus !== contentData?.chapter?.status ||
+					!canCurrentUserBeRecent,
+				enableAccessControl:
+					!isWriter || latestStatus !== contentData?.chapter?.status,
+				members: Object.values(users),
+			},
+			toolbarConfig: {
+				floatingToolbar: [
+					{
+						type: ToolbarTypes.FLOATING_TURN_INTO,
+					},
+					{
+						type: ToolbarTypes.FLOATING_BOLD,
+					},
+					{
+						type: ToolbarTypes.FLOATING_ITALIC,
+					},
+					{
+						type: ToolbarTypes.FLOATING_UNDERLINE,
+					},
+					{
+						type: ToolbarTypes.FLOATING_COLOR,
+					},
+					{
+						type: ToolbarTypes.FLOATING_BACKGROUND_COLOR,
+					},
+					{
+						type: ToolbarTypes.FLOATING_LASER,
+					},
+					{
+						type: ToolbarTypes.COMMENT_TOOLBAR,
+					},
+					{
+						type: ToolbarTypes.SUGGESTION_TOOLBAR,
+					},
+				],
+				fixedToolbar: [
+					{
+						type: ToolbarTypes.UNDO,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.REDO,
+						separator: true,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.ZOOM_DROPDOWN,
+						separator: true,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.FONT_FAMILY,
+						separator: true,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.FONT_SIZE,
+						separator: true,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.BOLD,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.ITALIC,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.UNDERLINE,
+						separator: true,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.TURN_INTO,
+						separator: true,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.COLOR,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.BACKGROUND_COLOR,
+						separator: true,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.LINE_HEIGHT,
+						editOnly: true,
+					},
+					{
+						type: ToolbarTypes.ALIGN,
+						editOnly: true,
+					},
+					{
+						type: 'custom',
+						component: <div className="w-full" />,
+					},
+					...(contentData?.chapter.language === ELanguage?.GERMAN_ORIGINAL
+						? [
+								{
+									type: ToolbarTypes.TTS,
+									separator: true,
+								},
+							]
+						: []),
+					{
+						type: ToolbarTypes.FIND_REPLACE,
+						separator: true,
+					},
+					// {
+					// 	type: ToolbarTypes.BEAT_SHEET_EDITOR_TOGGLE,
+					// },
+					{
+						type: ToolbarTypes.OUTLINER,
+						separator: true,
+					},
+					{
+						type: ToolbarTypes.TRANSLATION,
+					},
+					{
+						type: 'custom',
+						component: <ViewLS />,
+					},
+				],
+			},
+			dualViewConfig: {
+				dualViewButtons: modes,
+				dualViewKeyToTitle: modeToTitle,
+				dualViewMap: modeToComponent,
+			},
+		}
+		return data
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [
+		onContentChange,
+		contentData,
+		session,
+		isContentPending,
+		modeToComponent,
+		modeToTitle,
+		modes,
+		initialStoryData,
+		latestStatus,
+	])
+
+	return { editorConfig }
+}

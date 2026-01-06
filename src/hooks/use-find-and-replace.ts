@@ -5,7 +5,6 @@ import useLocalizeHook, {
 	useLocalizeDownloadMutation,
 	useUpdateLOCSheetMutation,
 } from '@/hooks/mutation/use-localize-hook'
-import useEditorData from '@/hooks/plate/use-editor-data'
 import useSuggestionGuard from '@/hooks/plate/use-suggestion-guard'
 import { useDebounce } from '@/hooks/use-debounce'
 import useLanguage from '@/hooks/use-language'
@@ -16,21 +15,21 @@ import {
 	useEditorRef,
 	usePluginOptions,
 } from 'platejs/react'
+import { useEditorData } from 'unified-editor'
 
 import useEpisodeId from '@/providers/episode-id-provider'
 import useProjectId from '@/providers/project-id-provider'
 import { FindReplacePlugin } from '@/lib/plate/plugins/find-replace'
 import {
+	getFindReplaceRegex,
 	getLocalizationData,
 	getOccurrencesUtil,
 	getRecordsTextUtil,
 	getRecordsUtil,
 	getSuggestionValue,
-	replaceAll,
-	replaceOnce,
 } from '@/lib/utils/ai-chatbot'
-import { downloadFile } from '@/lib/utils/client-helpers'
-import { breakDownValue, getText } from '@/lib/utils/plate'
+import { replaceNthOccurrence } from '@/lib/utils/helpers'
+import { getText } from '@/lib/utils/plate'
 
 import { TLocalizeArrayItem, TLocalizeResponse } from '@/types/ai-types'
 
@@ -85,6 +84,7 @@ export default function useFindAndReplace() {
 	const sheetURL = urlData ? urlData.loc_sheet_url : ''
 
 	const { isWriter } = useProjectId()
+	const editor = useEditorRef()
 
 	useEffect(() => {
 		setData(fetchedData)
@@ -95,14 +95,10 @@ export default function useFindAndReplace() {
 			return
 		}
 		setOptions(debouncedData)
-		const newChildren = structuredClone(editor.children)
-		suggestionGuard(() => {
-			editor.tf.setValue(breakDownValue(newChildren))
-		})
-		// eslint-disable-next-line  react-hooks/exhaustive-deps
-	}, [debouncedData, suggestionGuard])
+		editor.api.redecorate()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [debouncedData])
 
-	const editor = useEditorRef()
 	const occurrences = useMemo(
 		() =>
 			getOccurrencesUtil({
@@ -163,36 +159,70 @@ export default function useFindAndReplace() {
 	function toggleReplace() {
 		setOptions({ replaceEnabled: !replaceEnabled })
 	}
+
+	const onReplaceRecord = useCallback(
+		(record: number[]) => {
+			const [blockIdx, leafIdx, matchIdx] = record
+
+			const node = editor.api.node([blockIdx, leafIdx])
+			if (!node?.[0]) {
+				return
+			}
+			const { occurrenceIdx, occurrence } = replaceNthOccurrence({
+				input: String(node[0].text),
+				n: matchIdx,
+				regex: getFindReplaceRegex({
+					search,
+					caseSensitive,
+					genitive,
+					wholeWord,
+				}),
+				replaceWith: replace,
+			})
+
+			editor.tf.select({
+				path: [blockIdx, leafIdx],
+				offset: occurrenceIdx,
+			})
+
+			editor.tf.insertText(replace)
+
+			suggestionGuard((isSuggesting) => {
+				if (isSuggesting) {
+					Array.from({ length: occurrence.length }).forEach(() => {
+						editor.tf.deleteForward('character')
+					})
+				} else {
+					editor.tf.delete({
+						distance: occurrence.length,
+						reverse: false,
+					})
+				}
+			}, true)
+		},
+		[
+			editor.tf,
+			editor.api,
+			replace,
+			search,
+			suggestionGuard,
+			caseSensitive,
+			genitive,
+			wholeWord,
+		]
+	)
+
 	const onReplaceAll = useCallback(() => {
-		if (!search || !replaceEnabled || !editor) {
+		if (!search || !replaceEnabled || !replace) {
 			return
 		}
-		const updatedChildren = replaceAll({
-			caseSensitive,
-			children,
-			genitive,
-			replace,
-			replaceEnabled,
-			search,
-			wholeWord,
-		})
-		suggestionGuard(() => {
-			editor.tf.setValue(breakDownValue(updatedChildren))
-		})
+		const reversedRecords = [...records].reverse()
+		for (const record of reversedRecords) {
+			onReplaceRecord(record)
+		}
 		setOptions({ search: '', replace: '' })
 		setRealTimeData({ search: '' })
-	}, [
-		search,
-		replaceEnabled,
-		editor,
-		children,
-		setOptions,
-		wholeWord,
-		genitive,
-		caseSensitive,
-		replace,
-		suggestionGuard,
-	])
+	}, [search, replaceEnabled, replace, setOptions, records, onReplaceRecord])
 
 	const onReplace = useCallback(() => {
 		const path = currentId
@@ -203,20 +233,8 @@ export default function useFindAndReplace() {
 		} else {
 			setPtr(currentIdx % (records.length - 1))
 		}
-
-		const updatedChildren = replaceOnce({ children, path, search, replace })
-		suggestionGuard(() => {
-			editor.tf.setValue(breakDownValue(updatedChildren))
-		})
-	}, [
-		children,
-		editor.tf,
-		currentId,
-		replace,
-		search,
-		records,
-		suggestionGuard,
-	])
+		onReplaceRecord(path)
+	}, [currentId, records, onReplaceRecord])
 
 	function handlePrev() {
 		setPtr(ptr > 0 ? ptr - 1 : ptr)
@@ -236,10 +254,7 @@ export default function useFindAndReplace() {
 		} else if (mode === farSearchModes.WHOLE_WORD) {
 			setOptions({ wholeWord: !wholeWord, genitive: !wholeWord })
 		}
-		const updatedChildren = structuredClone(children)
-		suggestionGuard(() => {
-			editor.tf.setValue(breakDownValue(updatedChildren))
-		})
+		editor.api.redecorate()
 	}
 
 	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -257,18 +272,11 @@ export default function useFindAndReplace() {
 		setRealTimeData({ search: suggestion.name })
 		setOptions({ replace })
 		setOptions({ replaceEnabled: true })
-		const updatedChildren = structuredClone(children)
-		suggestionGuard(() => {
-			editor.tf.setValue(breakDownValue(updatedChildren))
-		})
+		editor.api.redecorate()
 	}
 
 	async function handleDownload() {
-		const url = await mutateAsync()
-		if (!url?.csv_sheet_url) {
-			return
-		}
-		downloadFile(url.csv_sheet_url, `LOC_sheet.csv`)
+		await mutateAsync()
 	}
 
 	async function handleScanEpisode() {

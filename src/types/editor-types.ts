@@ -1,10 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
 import { storyChatSuggestions, zoomToWidth } from '@/constants/editor-constants'
 import { colorOptions } from '@/constants/global-constants'
-import { TSuggestionDescription } from '@platejs/suggestion'
-import { TCommentText, Value } from 'platejs'
-
-import { TComment } from '@/components/plate-ui-v2/comment'
+import { Value } from 'platejs'
 
 import {
 	TLocalizeCharacterArrayItem,
@@ -14,9 +11,6 @@ import {
 	TQuickPrompt,
 } from '@/types/ai-types'
 import { TGetEpisodeResponse } from '@/types/episode-type'
-import { ESidebar } from '@/types/plate-types'
-
-export type TCustomComment = TComment & { node: TCommentText }
 
 export interface RephraseSelectionProps {
 	additionalContext?: boolean
@@ -77,10 +71,6 @@ export enum EReviewType {
 	DESCRIPTION = 'description',
 }
 
-export type TReview =
-	| { data: TCustomComment; type: EReviewType.COMMENT }
-	| { data: TSuggestionDescription; type: EReviewType.DESCRIPTION }
-
 export type TColorKey = keyof typeof colorOptions
 
 export type TLocalizationObject = [
@@ -113,7 +103,7 @@ export enum EThemeMode {
 	LIGHT = 'light',
 }
 export type TStoredConfigurationData = {
-	defaultSidebar: ESidebar | null
+	defaultSidebar: string | null
 	quickPrompts: TQuickPrompt[]
 	suggestionDisplay: ESuggestionViewingType
 	theme: EThemeMode

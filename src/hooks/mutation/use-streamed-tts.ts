@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import useEditorData from '@/hooks/plate/use-editor-data'
 import useEpisodeIdStore from '@/store/episode-id-store'
+import { useEditorData } from 'unified-editor'
 import { useShallow } from 'zustand/react/shallow'
 
 import useEpisodeTableContext from '@/providers/episode-table-provider'

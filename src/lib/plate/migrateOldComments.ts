@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 'use client'
 
+import { TDiscussion } from '@pocket-editor/plugins'
 import { Descendant, nanoid, Value } from 'platejs'
-
-import { TDiscussion } from '@/components/editor/plugins/discussion-kit'
 
 import { TCommentGeneric, TOldComment } from '@/types/plate-types'
 

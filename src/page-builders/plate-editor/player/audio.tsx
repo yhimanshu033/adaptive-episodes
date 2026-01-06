@@ -69,7 +69,7 @@ export default function PlayerAudio() {
 				className="hidden"
 			/>
 			<div className="bg-fm-neutral-0/50 flex h-full items-center rounded-md p-2 backdrop-blur-[1px]">
-				<div className="h-full w-0 gap-2 overflow-hidden px-0 transition-all group-hover:w-64 group-hover:pr-4 group-hover:pl-2">
+				<div className="h-full w-0 gap-2 overflow-hidden px-0 text-nowrap transition-all group-hover:w-64 group-hover:pr-4 group-hover:pl-2">
 					<PlayerInfo />
 					<div className="flex h-full flex-col gap-1">
 						<div className="flex w-full items-center justify-end text-[8px] font-light">
