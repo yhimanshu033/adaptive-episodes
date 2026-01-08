@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 
 import '@/styles/globals.css'
 
+import { ThemeProvider } from 'next-themes'
+
 export const metadata: Metadata = {
 	title: 'Adaptive Episodes',
 	description:
@@ -16,8 +18,11 @@ export default function RootLayout({
 }>) {
 	return (
 		<html suppressHydrationWarning className="scroll-smooth">
-			<body suppressHydrationWarning className={`font-body antialiased`}>
-				{children}
+			<body
+				suppressHydrationWarning
+				className={`font-body bg-fm-surface-primary antialiased`}
+			>
+				<ThemeProvider forcedTheme="dark">{children}</ThemeProvider>
 			</body>
 		</html>
 	)
