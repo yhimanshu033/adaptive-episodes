@@ -3,31 +3,21 @@ import type { Metadata } from 'next'
 
 import '@/styles/globals.css'
 
-import { NextIntlClientProvider } from 'next-intl'
-import { getLocale } from 'next-intl/server'
-
-import AppProvider from '@/providers/app-provider'
-import getServerSession from '@/lib/get-access-token'
-
 export const metadata: Metadata = {
-	title: 'Pocket CoPilot',
+	title: 'Adaptive Episodes',
 	description:
-		'Pocket CoPilot: An AI-powered writing assistant that helps you effortlessly craft and enhance your stories, making the writing process seamless and inspiring.',
+		'Adaptive Episodes: An AI-powered writing assistant that helps you effortlessly craft and enhance your episodes, making the writing process seamless and inspiring.',
 }
 
-export default async function RootLayout({
+export default function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
 }>) {
-	const session = await getServerSession()
-	const locale = await getLocale()
 	return (
-		<html lang={locale} suppressHydrationWarning className="scroll-smooth">
+		<html suppressHydrationWarning className="scroll-smooth">
 			<body suppressHydrationWarning className={`font-body antialiased`}>
-				<NextIntlClientProvider>
-					<AppProvider session={session}>{children}</AppProvider>
-				</NextIntlClientProvider>
+				{children}
 			</body>
 		</html>
 	)

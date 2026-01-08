@@ -1,3 +1,5 @@
+'use client'
+
 import React, { forwardRef } from 'react'
 import { AccessibleIcon } from '@radix-ui/react-accessible-icon'
 import { cva, type VariantProps } from 'class-variance-authority'
@@ -61,7 +63,8 @@ export const getIconSize = (size: 'xSmall' | 'small' | 'large' | 'medium') => {
 }
 
 interface IconButtonProps
-	extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+	extends
+		React.ButtonHTMLAttributes<HTMLButtonElement>,
 		Omit<VariantProps<typeof iconButtonVariants>, 'disabled'> {
 	// Accessible label for the button
 	className?: string

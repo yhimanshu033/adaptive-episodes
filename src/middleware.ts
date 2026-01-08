@@ -1,47 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-	AUTH,
-	DASHBOARD,
-	MANAGE_PROJECT,
-	PROTECTED_ROUTES,
-} from '@/constants/route-constants'
-import { getToken } from 'next-auth/jwt'
 
-import { projectAdminCheck } from '@/lib/utils/server-helpers'
+import { DEMO_AUTH_COOKIE, SIGNIN_ROUTE, STORIES_ROUTE } from '@/lib/demo-auth'
 
-import { SessionData } from '@/types/admin-types'
+export function middleware(req: NextRequest) {
+	const { pathname } = req.nextUrl
+	const cookieName: string = DEMO_AUTH_COOKIE
+	const homeRoute = '/' as const
+	const signinRoute: string = SIGNIN_ROUTE
+	const storiesRoute: string = STORIES_ROUTE
+	const storyRoute = '/story'
 
-const handleUIRoutes = async (
-	req: NextRequest,
-	session: SessionData | null
-) => {
-	const auth = req.nextUrl.clone()
-	auth.pathname = AUTH
-	const afterAuth = req.nextUrl.clone()
-	afterAuth.pathname = DASHBOARD
+	const isAuthed = Boolean(req.cookies.get(cookieName)?.value)
 
-	if (PROTECTED_ROUTES.test(req.nextUrl.pathname) && !session?.accessToken) {
-		return NextResponse.redirect(auth)
-	}
-	if (!!req.nextUrl.pathname.startsWith(AUTH) && session?.accessToken) {
-		return NextResponse.redirect(afterAuth)
+	// If user is already authenticated, don't let them visit /signin
+	if (pathname.startsWith(signinRoute) && isAuthed) {
+		const redirectUrl = req.nextUrl.clone()
+		redirectUrl.pathname = homeRoute
+		return NextResponse.redirect(redirectUrl)
 	}
 
-	if (MANAGE_PROJECT.test(req.nextUrl.pathname) && session?.accessToken) {
-		const isAdmin = await projectAdminCheck(req, session)
-		if (isAdmin) {
-			return NextResponse.next()
-		}
-		return NextResponse.redirect(afterAuth)
+	// If user isn't authenticated, protect /
+	if (pathname === homeRoute && !isAuthed) {
+		const redirectUrl = req.nextUrl.clone()
+		redirectUrl.pathname = signinRoute
+		return NextResponse.redirect(redirectUrl)
 	}
-}
 
-export async function middleware(req: NextRequest) {
-	const jwt = await getToken({
-		req,
-		secret: process.env.NEXTAUTH_SECRET,
-	})
-	return handleUIRoutes(req, jwt as unknown as SessionData)
+	// If user isn't authenticated, protect /stories
+	if (pathname.startsWith(storiesRoute) && !isAuthed) {
+		const redirectUrl = req.nextUrl.clone()
+		redirectUrl.pathname = signinRoute
+		return NextResponse.redirect(redirectUrl)
+	}
+
+	// If user isn't authenticated, protect /story/:id
+	if (pathname.startsWith(storyRoute) && !isAuthed) {
+		const redirectUrl = req.nextUrl.clone()
+		redirectUrl.pathname = signinRoute
+		return NextResponse.redirect(redirectUrl)
+	}
+
+	return NextResponse.next()
 }
 
 export const config = {

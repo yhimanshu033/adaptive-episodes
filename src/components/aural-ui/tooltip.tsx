@@ -1,3 +1,5 @@
+'use client'
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react'
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
@@ -242,8 +244,9 @@ const TooltipContext = React.createContext<{
 	variant: 'dark',
 })
 
-interface ToolTipProps
-	extends React.ComponentProps<typeof TooltipPrimitive.Root> {
+interface ToolTipProps extends React.ComponentProps<
+	typeof TooltipPrimitive.Root
+> {
 	variant?: 'dark' | 'light'
 }
 

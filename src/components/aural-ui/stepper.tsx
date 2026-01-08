@@ -225,8 +225,7 @@ export interface StepperStepProps extends React.HTMLAttributes<HTMLDivElement> {
 	label?: string
 }
 
-export interface StepperContentProps
-	extends React.HTMLAttributes<HTMLDivElement> {
+export interface StepperContentProps extends React.HTMLAttributes<HTMLDivElement> {
 	children?: React.ReactNode
 }
 

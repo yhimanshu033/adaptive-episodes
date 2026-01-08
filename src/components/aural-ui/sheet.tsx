@@ -300,7 +300,8 @@ const closeIconVariants = cva(
 )
 
 interface SheetContentProps
-	extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
+	extends
+		React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
 		VariantProps<typeof sheetVariants>,
 		ISheetOverlay {
 	container?: HTMLElement | null

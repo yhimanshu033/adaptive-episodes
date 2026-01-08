@@ -3,8 +3,7 @@ import { FeatureShineIcon } from '@/icons/feature-shine-icon'
 
 import { cn } from '@/lib/aural-ui/utils'
 
-export interface ChipProps
-	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ChipProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	/** Content to display inside the chip */
 	children: React.ReactNode
 	/** Additional class name */

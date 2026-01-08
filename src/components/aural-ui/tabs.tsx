@@ -56,8 +56,9 @@ function TabsList({
 	)
 }
 
-interface TabsTriggerProps
-	extends React.ComponentProps<typeof TabsPrimitive.Trigger> {
+interface TabsTriggerProps extends React.ComponentProps<
+	typeof TabsPrimitive.Trigger
+> {
 	// Optional override for individual triggers
 	className?: string
 	size?: 'sm' | 'md' | 'lg'

@@ -58,8 +58,9 @@ const sliderThumbVariants = cva(
 	}
 )
 
-interface SliderProps
-	extends React.ComponentProps<typeof SliderPrimitive.Root> {
+interface SliderProps extends React.ComponentProps<
+	typeof SliderPrimitive.Root
+> {
 	centeredTumbs?: boolean
 	classes?: {
 		range?: string

@@ -130,7 +130,8 @@ export const listLabelVariants = cva(
 
 // Base List Container Component
 export interface ListProps
-	extends React.HTMLAttributes<HTMLDivElement>,
+	extends
+		React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof listVariants> {
 	borderVariant?: 'default' | 'error' | 'warning' | 'success' | 'info'
 	classes?: {
@@ -204,7 +205,8 @@ ListGroup.displayName = 'ListGroup'
 
 // List Item Component
 export interface ListItemProps
-	extends React.HTMLAttributes<HTMLDivElement>,
+	extends
+		React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof listItemVariants> {
 	classes?: {
 		content?: string
@@ -305,8 +307,10 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
 ListItem.displayName = 'ListItem'
 
 // List Checkbox Item Component
-export interface ListCheckboxItemProps
-	extends Omit<ListItemProps, 'showIndicator'> {
+export interface ListCheckboxItemProps extends Omit<
+	ListItemProps,
+	'showIndicator'
+> {
 	checked?: boolean
 	onCheckedChange?: (checked: boolean) => void
 }
@@ -377,8 +381,7 @@ const ListRadioGroupContext =
 	React.createContext<ListRadioGroupContextValue | null>(null)
 
 // List Radio Group Component
-export interface ListRadioGroupProps
-	extends React.HTMLAttributes<HTMLDivElement> {
+export interface ListRadioGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 	classes?: {
 		root?: string
 	}
@@ -407,8 +410,10 @@ const ListRadioGroup = React.forwardRef<HTMLDivElement, ListRadioGroupProps>(
 ListRadioGroup.displayName = 'ListRadioGroup'
 
 // List Radio Item Component
-export interface ListRadioItemProps
-	extends Omit<ListItemProps, 'showIndicator' | 'selected' | 'onSelect'> {
+export interface ListRadioItemProps extends Omit<
+	ListItemProps,
+	'showIndicator' | 'selected' | 'onSelect'
+> {
 	onSelect?: (value: string) => void
 	value: string
 }
@@ -483,7 +488,8 @@ ListRadioItem.displayName = 'ListRadioItem'
 
 // List Label Component
 export interface ListLabelProps
-	extends React.HTMLAttributes<HTMLDivElement>,
+	extends
+		React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof listLabelVariants> {
 	classes?: {
 		root?: string
@@ -509,8 +515,7 @@ const ListLabel = React.forwardRef<HTMLDivElement, ListLabelProps>(
 ListLabel.displayName = 'ListLabel'
 
 // List Separator Component
-export interface ListSeparatorProps
-	extends React.HTMLAttributes<HTMLDivElement> {
+export interface ListSeparatorProps extends React.HTMLAttributes<HTMLDivElement> {
 	classes?: {
 		root?: string
 	}

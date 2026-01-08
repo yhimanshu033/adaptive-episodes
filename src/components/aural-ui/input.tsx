@@ -15,10 +15,9 @@ import HelperText from './helper-text'
 import { Else, If, IfElse } from './if-else'
 import { Label } from './label'
 
-interface InputComponent
-	extends ForwardRefExoticComponent<
-		InputProps & RefAttributes<HTMLInputElement>
-	> {
+interface InputComponent extends ForwardRefExoticComponent<
+	InputProps & RefAttributes<HTMLInputElement>
+> {
 	Base: typeof InputBase
 	CharCount: typeof CharCount
 	EndIcon: typeof EndIcon

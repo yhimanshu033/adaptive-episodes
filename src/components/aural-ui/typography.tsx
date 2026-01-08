@@ -76,7 +76,8 @@ export const typographyVariants = cva('', {
 })
 
 export interface TypographyProps
-	extends Omit<React.HTMLAttributes<HTMLElement>, 'color'>,
+	extends
+		Omit<React.HTMLAttributes<HTMLElement>, 'color'>,
 		VariantProps<typeof typographyVariants> {
 	as?: React.ElementType
 	children: React.ReactNode

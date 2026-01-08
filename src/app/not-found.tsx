@@ -1,16 +1,16 @@
+'use client'
+
 import React from 'react'
 import Link from 'next/link'
-import { getTranslations } from 'next-intl/server'
 
-import { buttonVariants } from '@/lib/utils/helpers'
+import { buttonVariants } from '@/components/aural-ui/button'
 
-export default async function NotFound() {
-	const dict = await getTranslations('notFound')
+export default function NotFound() {
 	return (
 		<div className="flex min-h-svh flex-col items-center justify-center gap-6">
-			<h2 className="text-4xl font-semibold">{dict('title')}</h2>
+			<h2 className="text-4xl font-semibold">{'Page Not Found'}</h2>
 			<Link href="/" className={buttonVariants()}>
-				{dict('description')}
+				{'Go to Home Page'}
 			</Link>
 		</div>
 	)

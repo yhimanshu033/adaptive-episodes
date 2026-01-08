@@ -124,8 +124,9 @@ const dividerVariants = cva('flex-auto', {
 	},
 })
 
-export interface DividerProps
-	extends React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root> {
+export interface DividerProps extends React.ComponentPropsWithoutRef<
+	typeof SeparatorPrimitive.Root
+> {
 	size?: 'half_default' | 'full_default' | 'full_medium' | 'full_large'
 	variant?: 'primary' | 'secondary' | 'stylised' | 'dashed'
 	wrapperClassName?: string

@@ -194,7 +194,8 @@ export const dialogVariants = cva(
 )
 
 interface DialogContentProps
-	extends React.HTMLAttributes<HTMLDivElement>,
+	extends
+		React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof dialogVariants> {
 	borderConfig?: BorderConfig
 	showCloseButton?: boolean

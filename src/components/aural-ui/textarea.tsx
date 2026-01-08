@@ -62,10 +62,9 @@ interface TextAreaProps extends TextAreaBaseProps {
 	showCharCount?: boolean
 }
 
-interface TextAreaComponent
-	extends ForwardRefExoticComponent<
-		TextAreaProps & RefAttributes<HTMLTextAreaElement>
-	> {
+interface TextAreaComponent extends ForwardRefExoticComponent<
+	TextAreaProps & RefAttributes<HTMLTextAreaElement>
+> {
 	Base: typeof TextAreaBase
 	CharCount: typeof CharCount
 	HelperText: typeof HelperText

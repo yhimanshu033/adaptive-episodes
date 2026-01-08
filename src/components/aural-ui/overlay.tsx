@@ -35,7 +35,8 @@ const overlayVariants = cva(
 )
 
 export interface OverlayProps
-	extends React.HTMLAttributes<HTMLDivElement>,
+	extends
+		React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof overlayVariants> {
 	classes?: {
 		content?: string
